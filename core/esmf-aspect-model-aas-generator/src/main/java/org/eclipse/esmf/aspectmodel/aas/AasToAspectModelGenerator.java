@@ -190,27 +190,14 @@ public class AasToAspectModelGenerator {
       } );
    }
 
-//      private String iriToReversedHostNameNotation( final IRI iri ) {
-//         final URI uri = URI.create( iri.toString().contains( "://" ) ? iri.toString() : "https://" + iri );
-//         return Stream.concat(
-//                     Arrays.stream( uri.getHost().split( "\\." ) ).collect( reverseOrder() ).stream(),
-//                     Arrays.stream( uri.getPath().split( "/" ) ) )
-//               .filter( StringUtils::isNotBlank )
-//               .map( this::escapeUrnNamespacePart )
-//               .collect( Collectors.joining( "." ) );
-//      }
-
    private String iriToReversedHostNameNotation( final IRI iri ) {
       final URI uri = URI.create( iri.toString().contains( "://" ) ? iri.toString() : "https://" + iri );
 
       String[] hostParts = uri.getHost().split( "\\." );
       String[] pathParts = uri.getPath().split( "/" );
 
-      String reversedHost = Arrays.stream( hostParts )
-            .collect( reverseOrder() )
-            .stream()
-            .map( part -> part.replaceAll( "-", "." ) )
-            .collect( Collectors.joining( "." ) );
+      String reversedHost = String.join( ".", Arrays.stream( hostParts )
+            .collect( reverseOrder() ) );
 
       String path = Arrays.stream( pathParts )
             .filter( StringUtils::isNotBlank )
