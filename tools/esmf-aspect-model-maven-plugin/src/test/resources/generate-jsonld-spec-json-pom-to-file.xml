@@ -17,10 +17,10 @@
    <modelVersion>4.0.0</modelVersion>
 
    <groupId>org.eclipse.esmf</groupId>
-   <artifactId>test-generate-asyncapi-spec-mojo</artifactId>
+   <artifactId>test-generate-jsonld-spec-mojo</artifactId>
    <version>1.0</version>
    <packaging>jar</packaging>
-   <name>Test Generate AsyncApi Spec Mojo</name>
+   <name>Test Generate JSON-LD Spec Mojo</name>
 
    <build>
       <plugins>
