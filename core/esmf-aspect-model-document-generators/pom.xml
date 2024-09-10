@@ -164,11 +164,6 @@
          <groupId>org.eclipse.esmf</groupId>
          <artifactId>esmf-aspect-model-serializer</artifactId>
       </dependency>
-      <dependency>
-         <groupId>com.github.jsonld-java</groupId>
-         <artifactId>jsonld-java</artifactId>
-         <version>0.13.5</version>
-      </dependency>
    </dependencies>
 
    <build>
