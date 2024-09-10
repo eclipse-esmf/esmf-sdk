@@ -16,9 +16,10 @@ package org.eclipse.esmf.aspectmodel.resolver;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Optional;
+import java.nio.file.Paths;
+import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.fs.ModelsRoot;
@@ -78,40 +79,53 @@ public class FileSystemStrategy implements ResolutionStrategy {
     */
    @Override
    public AspectModelFile apply( final AspectModelUrn aspectModelUrn, final ResolutionStrategySupport resolutionStrategySupport ) {
-      final Path directory = modelsRoot.directoryForNamespace( aspectModelUrn );
-      final File namedResourceFile = directory.resolve( aspectModelUrn.getName() + ".ttl" ).toFile();
+      final File namedResourceFile = modelsRoot.determineAspectModelFile( aspectModelUrn );
       if ( namedResourceFile.exists() ) {
          return AspectModelFileLoader.load( namedResourceFile );
       }
-
-      LOG.warn( "Looking for {}, but no {}.ttl was found. Inspecting files in {}", aspectModelUrn.getName(),
-            aspectModelUrn.getName(), directory );
-
-      final File[] files = Optional.ofNullable( directory.toFile().listFiles() ).orElse( new File[] {} );
-      Arrays.sort( files );
-
-      for ( final File file : files ) {
-         if ( !file.isFile() || !file.getName().endsWith( ".ttl" ) ) {
-            continue;
-         }
-         LOG.debug( "Looking for {} in {}", aspectModelUrn, file );
-         final Try<AspectModelFile> tryModel = Try.of( () -> AspectModelFileLoader.load( file ) );
-         if ( tryModel.isFailure() ) {
-            LOG.debug( "Could not load model from {}", file, tryModel.getCause() );
-         } else {
-            final AspectModelFile model = tryModel.get();
-            if ( resolutionStrategySupport.containsDefinition( model, aspectModelUrn ) ) {
-               return model;
-            } else {
-               LOG.debug( "File {} does not contain {}", file, aspectModelUrn );
-            }
-         }
-      }
-      throw new ModelResolutionException( "No model file containing " + aspectModelUrn + " could be found in directory: " + directory );
+      return modelsRoot.namespaceContents( aspectModelUrn )
+            .map( Paths::get )
+            .map( Path::toFile )
+            .flatMap( file ->
+                  Try.of( () -> AspectModelFileLoader.load( file ) )
+                        .toJavaStream()
+                        .flatMap( aspectModelFile -> resolutionStrategySupport.containsDefinition( aspectModelFile, aspectModelUrn )
+                              ? Stream.of( aspectModelFile )
+                              : Stream.of() ) )
+            .findFirst()
+            .orElseThrow( () -> new ModelResolutionException(
+                  "No model file containing " + aspectModelUrn + " could be found in models root: " + modelsRoot.rootPath() ) );
    }
 
    @Override
    public String toString() {
       return "FileSystemStrategy(root=" + modelsRoot + ')';
+   }
+
+   @Override
+   public Stream<URI> listContents() {
+      return modelsRoot.contents();
+   }
+
+   @Override
+   public Stream<URI> listContentsForNamespace( final AspectModelUrn namespace ) {
+      return modelsRoot.namespaceContents( namespace );
+   }
+
+   @Override
+   public Stream<AspectModelFile> loadContents() {
+      return modelsRoot.paths()
+            .map( Path::toFile )
+            .map( file -> Try.of( () -> AspectModelFileLoader.load( file ) ).getOrElseThrow( throwable ->
+                  new ModelResolutionException( "Could not load file", throwable ) ) );
+   }
+
+   @Override
+   public Stream<AspectModelFile> loadContentsForNamespace( final AspectModelUrn namespace ) {
+      return modelsRoot.namespaceContents( namespace )
+            .map( Paths::get )
+            .map( Path::toFile )
+            .map( file -> Try.of( () -> AspectModelFileLoader.load( file ) ).getOrElseThrow( throwable ->
+                  new ModelResolutionException( "Could not load file", throwable ) ) );
    }
 }

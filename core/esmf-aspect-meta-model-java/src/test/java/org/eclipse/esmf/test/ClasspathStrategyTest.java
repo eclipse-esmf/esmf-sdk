@@ -11,13 +11,16 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.aspectmodel.scanner;
+package org.eclipse.esmf.test;
 
-import java.util.List;
+import org.eclipse.esmf.aspectmodel.resolver.ClasspathStrategy;
 
-import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.junit.jupiter.api.Test;
 
-public interface AspectModelScanner {
-
-   List<AspectModelFile> find( final String aspectModelFileName );
+public class ClasspathStrategyTest {
+   @Test
+   void testListContents() {
+      final ClasspathStrategy classpathStrategy = new ClasspathStrategy( "samm_2_1_0" );
+      classpathStrategy.listContents().forEach( System.out::println );
+   }
 }

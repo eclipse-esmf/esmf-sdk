@@ -262,6 +262,9 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
          return modelElementName;
       }
       if ( MODEL_ELEMENT_TYPES.contains( elementType ) ) {
+         //Check root model element name before current element name
+         checkElementName( urnParts.get( ASPECT_NAME_INDEX ), "model element" );
+
          final String modelElementName = urnParts.get( MODEL_ELEMENT_NAME_INDEX );
          checkElementName( modelElementName, elementType.getValue() + " element" );
          return modelElementName;

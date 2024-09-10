@@ -13,9 +13,11 @@
 
 package org.eclipse.esmf.aspectmodel.resolver;
 
+import java.net.URI;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
@@ -57,5 +59,25 @@ public class EitherStrategy implements ResolutionStrategy {
       return new StringJoiner( ", ", EitherStrategy.class.getSimpleName() + "[", "]" )
             .add( "strategies=" + strategies )
             .toString();
+   }
+
+   @Override
+   public Stream<URI> listContents() {
+      return strategies.stream().flatMap( ResolutionStrategy::listContents );
+   }
+
+   @Override
+   public Stream<URI> listContentsForNamespace( final AspectModelUrn namespace ) {
+      return strategies.stream().flatMap( strategy -> strategy.listContentsForNamespace( namespace ) );
+   }
+
+   @Override
+   public Stream<AspectModelFile> loadContents() {
+      return strategies.stream().flatMap( ResolutionStrategy::loadContents );
+   }
+
+   @Override
+   public Stream<AspectModelFile> loadContentsForNamespace( final AspectModelUrn namespace ) {
+      return strategies.stream().flatMap( strategy -> strategy.loadContentsForNamespace( namespace ) );
    }
 }

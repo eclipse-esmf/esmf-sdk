@@ -344,15 +344,15 @@ class AspectModelUrnTest {
    }
 
    @Test
-   void invalidNamespaceTest() throws URISyntaxException {
-      final URI validNamespaceUrnUnderscore = new URI( "urn:samm:com.bosch.nexeed.digitaltwin:aspect-model:Er?ors:1.1.0#TestAspect" );
-      final AspectModelUrn elementUrnWithUnderscore = AspectModelUrn.fromUrn( validNamespaceUrnUnderscore );
-      assertThat( elementUrnWithUnderscore.getNamespaceMainPart() ).isNotEmpty();
-      assertThat( elementUrnWithUnderscore.getNamespaceMainPart() ).isEqualTo( "org.eclipse.esmf_test" );
+   void invalidModelElementNameTest() throws URISyntaxException {
+      final URI invalidRootModelElementName = new URI( sammBaseUri + "aspect-model:Er?ors:1.1.0#TestAspect" );
+      assertThatExceptionOfType( UrnSyntaxException.class )
+            .isThrownBy( () -> AspectModelUrn.fromUrn( invalidRootModelElementName ) )
+            .withMessage( "The model element name must match \\p{Alpha}\\p{Alnum}*: Er?ors" );
 
-      final URI invalidNamespaceUrnDash = new URI( "urn:samm:org.eclipse.esmf-test:0.0.1#TestAspect" );
-      final AspectModelUrn elementUrnWithDash = AspectModelUrn.fromUrn( invalidNamespaceUrnDash );
-      assertThat( elementUrnWithDash.getNamespaceMainPart() ).isNotEmpty();
-      assertThat( elementUrnWithDash.getNamespaceMainPart() ).isEqualTo( "org.eclipse.esmf-test" );
+      final URI invalidModelElementName = new URI( sammBaseUri + "aspect-model:Er?ors:1.1.0:dummy#TestAspect" );
+      assertThatExceptionOfType( UrnSyntaxException.class )
+            .isThrownBy( () -> AspectModelUrn.fromUrn( invalidModelElementName ) )
+            .withMessage( "The model element name must match \\p{Alpha}\\p{Alnum}*: Er?ors" );
    }
 }

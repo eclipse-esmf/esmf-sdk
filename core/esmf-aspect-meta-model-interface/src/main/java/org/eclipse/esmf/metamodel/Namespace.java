@@ -17,6 +17,7 @@ import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.VersionNumber;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 /**
  * Represents the namespace the model elements are contained in
@@ -29,14 +30,28 @@ public interface Namespace extends ModelElementGroup, HasDescription {
 
    /**
     * The package part of the model namespace is an identifier given in
-    * <a href="https://en.wikipedia.org/wiki/Reverse_domain_name_notation">reverse domain name notation</a>, e.g., com.example.myapp.
+    * <a href="https://en.wikipedia.org/wiki/Reverse_domain_name_notation">reverse domain name notation</a>, e.g.,
+    * {@code com.example.myapp}.
+    *
+    * @return the package part of the namespace
+    * @deprecated use {@link #namespaceMainPart()} instead
+    */
+   @Deprecated( forRemoval = true )
+   default String packagePart() {
+      return namespaceMainPart();
+   }
+
+   /**
+    * The package part of the model namespace is an identifier given in
+    * <a href="https://en.wikipedia.org/wiki/Reverse_domain_name_notation">reverse domain name notation</a>, e.g.,
+    * {@code com.example.myapp}.
     *
     * @return the package part of the namespace
     */
-   String packagePart();
+   String namespaceMainPart();
 
    /**
-    * The version part of the namespace. This is always a semantic version, e.g. 1.2.3.
+    * The version part of the namespace. This is always a semantic version, e.g. {@code 1.2.3}.
     *
     * @return the version part
     */
@@ -54,8 +69,8 @@ public interface Namespace extends ModelElementGroup, HasDescription {
     *
     * @return the identifier
     */
-   default String urn() {
-      return String.format( "urn:samm:%s:%s", packagePart(), version() );
+   default AspectModelUrn urn() {
+      return AspectModelUrn.fromUrn( String.format( "urn:samm:%s:%s", namespaceMainPart(), version() ) );
    }
 
    /**

@@ -38,22 +38,22 @@ import org.apache.jena.vocabulary.XSD;
  */
 public class MoveElementToNewFile extends StructuralChange {
    private final List<String> headerComment;
-   private final Optional<URI> sourceLocation;
+   private final URI sourceLocation;
    private final AspectModelUrn elementUrn;
    private ChangeGroup changes = null;
 
-   public MoveElementToNewFile( final ModelElement modelElement, final Optional<URI> sourceLocation ) {
+   public MoveElementToNewFile( final ModelElement modelElement, final URI sourceLocation ) {
       this( modelElement, null, sourceLocation );
    }
 
-   public MoveElementToNewFile( final ModelElement modelElement, final List<String> headerComment, final Optional<URI> sourceLocation ) {
+   public MoveElementToNewFile( final ModelElement modelElement, final List<String> headerComment, final URI sourceLocation ) {
       this( modelElement.urn(), headerComment, sourceLocation );
       if ( modelElement.isAnonymous() ) {
          throw new ModelChangeException( "Can not move anonymous model element" );
       }
    }
 
-   public MoveElementToNewFile( final AspectModelUrn elementUrn, final List<String> headerComment, final Optional<URI> sourceLocation ) {
+   public MoveElementToNewFile( final AspectModelUrn elementUrn, final List<String> headerComment, final URI sourceLocation ) {
       this.headerComment = headerComment;
       this.sourceLocation = sourceLocation;
       this.elementUrn = elementUrn;
@@ -67,7 +67,7 @@ public class MoveElementToNewFile extends StructuralChange {
             .orElse( List.of() );
       final RawAspectModelFile targetFile = RawAspectModelFileBuilder.builder()
             .headerComment( fileHeader )
-            .sourceLocation( sourceLocation )
+            .sourceLocation( Optional.of( sourceLocation ) )
             .build();
       final Model targetModel = targetFile.sourceModel();
       targetModel.setNsPrefix( SammNs.SAMM.getShortForm(), SammNs.SAMM.getNamespace() );
