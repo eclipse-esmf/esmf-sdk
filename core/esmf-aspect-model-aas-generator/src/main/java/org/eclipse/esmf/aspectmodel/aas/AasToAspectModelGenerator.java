@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -180,20 +181,29 @@ public class AasToAspectModelGenerator {
    }
 
    private String iriToReversedHostNameNotation( final IRI iri ) {
-      final URI uri = URI.create( iri.toString().contains( "://" ) ? iri.toString() : "https://" + iri );
+      URI uri;
+      try {
+         uri = URI.create( iri.toString().contains( "://" ) ? iri.toString() : "https://" + iri );
+      } catch ( IllegalArgumentException e ) {
+         throw new IllegalArgumentException( "Incorrect IRI: " + iri, e );
+      }
+
+      if ( uri.getHost() == null ) {
+         throw new IllegalArgumentException( "URI doesn't contain host: " + uri );
+      }
 
       final String[] hostParts = uri.getHost().split( "\\." );
+      final List<String> hostPartsList = Arrays.asList( hostParts );
+      Collections.reverse( hostPartsList );
+      final String reversedHost = String.join( ".", hostPartsList );
+
       final String[] pathParts = uri.getPath().split( "/" );
-
-      final String reversedHost = String.join( ".", Arrays.stream( hostParts )
-            .collect( reverseOrder() ) );
-
       final String path = Arrays.stream( pathParts )
             .filter( StringUtils::isNotBlank )
-            .limit( pathParts.length - 2 )
+            .limit( Math.max( 0, pathParts.length - 2 ) )
             .collect( Collectors.joining( "." ) );
 
-      return reversedHost + "." + path;
+      return reversedHost + ( path.isEmpty() ? "" : "." + path );
    }
 
    private Optional<IRI> iri( final String lexicalRepresentation ) {
