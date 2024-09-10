@@ -32,7 +32,6 @@
                   <include>urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEvent</include>
                </includes>
                <outputDirectory>${basedir}/target/test-artifacts</outputDirectory>
-               <outputFormat>jsonld</outputFormat>
             </configuration>
          </plugin>
       </plugins>
