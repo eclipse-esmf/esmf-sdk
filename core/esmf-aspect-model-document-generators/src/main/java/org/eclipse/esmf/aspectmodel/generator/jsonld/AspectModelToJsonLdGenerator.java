@@ -1,69 +1,42 @@
 package org.eclipse.esmf.aspectmodel.generator.jsonld;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.OutputStream;
+import java.io.StringWriter;
+import java.util.function.Function;
 
 import org.eclipse.esmf.aspectmodel.generator.AbstractGenerator;
-import org.eclipse.esmf.aspectmodel.jackson.AspectModelJacksonModule;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.github.jsonldjava.core.JsonLdError;
-import com.github.jsonldjava.core.JsonLdOptions;
-import com.github.jsonldjava.core.JsonLdProcessor;
-import com.github.jsonldjava.utils.JsonUtils;
+import org.eclipse.esmf.metamodel.Aspect;
 
 public class AspectModelToJsonLdGenerator extends AbstractGenerator {
 
-   private final ObjectMapper objectMapper;
+   private static final String JSON_LD_FORMAT = "JSON-LD";
+   private final Aspect aspect;
 
-   public AspectModelToJsonLdGenerator() {
-      objectMapper = AspectModelToJsonLdGenerator.createObjectMapper();
+   public AspectModelToJsonLdGenerator( final Aspect aspect ) {
+      this.aspect = aspect;
    }
 
-   private static ObjectMapper createObjectMapper() {
-      final ObjectMapper mapper = new ObjectMapper();
-      mapper.registerModule( new JavaTimeModule() );
-      mapper.registerModule( new AspectModelJacksonModule() );
-      mapper.configure( SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false );
-      return mapper;
+   /**
+    * Generates a JSON-LD representation of the aspect's source model and writes it to an output stream.
+    *
+    * <p>This method takes a function (nameMapper) that maps the name of the aspect to an output stream,
+    * then writes the aspect's source model in JSON-LD format to that stream. The function is expected
+    * to accept the aspect's name as a parameter and return an appropriate OutputStream where the JSON-LD
+    * will be written. The OutputStream is closed automatically when the operation is complete.</p>
+    *
+    * @param nameMapper a function that maps the aspect name to an OutputStream for writing the JSON-LD.
+    * @throws IOException if an I/O error occurs while writing to the output stream.
+    */
+   public void generateJsonLd( final Function<String, OutputStream> nameMapper ) throws IOException {
+      try ( final OutputStream output = nameMapper.apply( aspect.getName() ) ) {
+         aspect.getSourceFile().sourceModel().write( output, JSON_LD_FORMAT );
+      }
    }
 
-   public void generate() throws JsonLdError, IOException {
-      Map<String, Object> context = new HashMap<>();
-      context.put( "samm", "urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#" );
-      context.put( "samm-c", "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#" );
-      context.put( "samm-e", "urn:samm:org.eclipse.esmf.samm:entity:2.1.0#" );
-      context.put( "unit", "urn:samm:org.eclipse.esmf.samm:unit:2.1.0#" );
-      context.put( "xsd", "http://www.w3.org/2001/XMLSchema#" );
-
-      Map<String, Object> movement = new HashMap<>();
-      movement.put( "@id", "urn:uuid:123e4567-e89b-12d3-a456-426614174000" );
-      movement.put( "@type", "samm:Aspect" );
-      movement.put( "samm:preferredName", "movement" );
-      movement.put( "samm:description", "Aspect for movement information" );
-      movement.put( "isMoving", true );
-
-      Map<String, Object> position = new HashMap<>();
-      position.put( "@type", "samm-e:SpatialPosition" );
-      position.put( "latitude", 9.1781 );
-      position.put( "longitude", 48.80835 );
-      position.put( "altitude", 153.0 );
-      movement.put( "position", position );
-
-      movement.put( "speed", -2.422416E38 );
-      movement.put( "speedLimitWarning", "green" );
-
-      Map<String, Object> jsonld = new HashMap<>();
-      jsonld.put( "@context", context );
-      jsonld.putAll( movement );
-
-      JsonLdOptions options = new JsonLdOptions();
-      Map<String, Object> compacted = JsonLdProcessor.compact( jsonld, context, options );
-
-      String jsonldString = JsonUtils.toPrettyString( compacted );
-      System.out.println( jsonldString );
+   public String generateJsonLd() {
+      StringWriter stringWriter = new StringWriter();
+      aspect.getSourceFile().sourceModel().write( stringWriter, JSON_LD_FORMAT );
+      return stringWriter.toString();
    }
 }

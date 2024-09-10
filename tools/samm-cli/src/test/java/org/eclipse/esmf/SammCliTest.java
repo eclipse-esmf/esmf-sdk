@@ -686,6 +686,42 @@ class SammCliTest {
    }
 
    @Test
+   void testAspectToJsonLdToFile() {
+      final File targetFile = outputFile( "output.json" );
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "jsonld", "-o",
+            targetFile.getAbsolutePath() );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( targetFile )
+            .exists()
+            .content()
+            .contains( "\"@context\"" )
+            .contains( "\"@graph\": [" )
+            .contains( "\"xsd\": \"http://www.w3.org/2001/XMLSchema#\"," );
+   }
+
+   @Test
+   void testAspectToJsonLdStdout() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "jsonld" );
+      assertThat( result.stdout() )
+            .contains( "\"@context\"" )
+            .contains( "\"@graph\": [" )
+            .contains( "\"xsd\": \"http://www.w3.org/2001/XMLSchema#\"," );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectToJsonLdWithCustomResolver() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "jsonld",
+            "--custom-resolver", resolverCommand() );
+      assertThat( result.stdout() )
+            .contains( "\"@context\"" )
+            .contains( "\"@graph\": [" )
+            .contains( "\"xsd\": \"http://www.w3.org/2001/XMLSchema#\"," );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
    void testAspectToJsonSchemaToFile() {
       final File targetFile = outputFile( "output.schema.json" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "schema", "-o",
@@ -1370,7 +1406,7 @@ class SammCliTest {
     * Returns the File object for a test model file
     */
    private File inputFile( final TestModel testModel ) {
-      final boolean isValid = !( testModel instanceof InvalidTestAspect );
+      final boolean isValid = !(testModel instanceof InvalidTestAspect);
       final String resourcePath = String.format(
             "%s/../../core/esmf-test-aspect-models/src/main/resources/%s/org.eclipse.esmf.test/1.0.0/%s.ttl",
             System.getProperty( "user.dir" ), isValid ? "valid" : "invalid", testModel.getName() );
@@ -1421,8 +1457,8 @@ class SammCliTest {
       // are not resolved to the file system but to the jar)
       try {
          final String resolverScript = new File(
-               System.getProperty( "user.dir" ) + "/target/test-classes/model_resolver" + ( OS.WINDOWS.isCurrentOs()
-                     ? ".bat" : ".sh" ) ).getCanonicalPath();
+               System.getProperty( "user.dir" ) + "/target/test-classes/model_resolver" + (OS.WINDOWS.isCurrentOs()
+                     ? ".bat" : ".sh") ).getCanonicalPath();
          final String modelsRoot = new File( System.getProperty( "user.dir" ) + "/target/classes/valid" ).getCanonicalPath();
          final String metaModelVersion = KnownVersion.getLatest().toString().toLowerCase();
          return resolverScript + " " + modelsRoot + " " + metaModelVersion;
