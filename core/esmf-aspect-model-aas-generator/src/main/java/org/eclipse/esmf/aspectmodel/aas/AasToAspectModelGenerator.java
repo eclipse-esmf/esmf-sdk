@@ -172,17 +172,6 @@ public class AasToAspectModelGenerator {
             .collect( Collectors.toList() );
    }
 
-   protected String escapeUrnNamespacePart( String namespacePart ) {
-      if ( namespacePart.contains( "-" ) ) {
-         namespacePart = namespacePart.replaceAll( "-", "." );
-         return namespacePart;
-      }
-      if ( namespacePart.matches( AspectModelUrn.NAMESPACE_REGEX_PART ) ) {
-         return namespacePart;
-      }
-      throw new AspectModelGenerationException( "Encountered URI with invalid namespace part: " + namespacePart );
-   }
-
    private <T> Collector<T, ArrayDeque<T>, ArrayDeque<T>> reverseOrder() {
       return Collector.of( ArrayDeque::new, ArrayDeque::addFirst, ( deque1, deque2 ) -> {
          deque2.addAll( deque1 );
@@ -193,13 +182,13 @@ public class AasToAspectModelGenerator {
    private String iriToReversedHostNameNotation( final IRI iri ) {
       final URI uri = URI.create( iri.toString().contains( "://" ) ? iri.toString() : "https://" + iri );
 
-      String[] hostParts = uri.getHost().split( "\\." );
-      String[] pathParts = uri.getPath().split( "/" );
+      final String[] hostParts = uri.getHost().split( "\\." );
+      final String[] pathParts = uri.getPath().split( "/" );
 
-      String reversedHost = String.join( ".", Arrays.stream( hostParts )
+      final String reversedHost = String.join( ".", Arrays.stream( hostParts )
             .collect( reverseOrder() ) );
 
-      String path = Arrays.stream( pathParts )
+      final String path = Arrays.stream( pathParts )
             .filter( StringUtils::isNotBlank )
             .limit( pathParts.length - 2 )
             .collect( Collectors.joining( "." ) );
