@@ -24,10 +24,10 @@ import org.junit.Test;
 public class GenerateJsonLdTest extends AspectModelMojoTest {
 
    @Test
-   public void testGenerateAsyncApiSpecJsonValidAspectModel() throws Exception {
-      final File testPom = getTestFile( "generate-jsonld-spec-json-pom-to-file.xml" );
-      final Mojo generateAsyncApiSpec = lookupMojo( "generateJsonLd", testPom );
-      assertThatCode( generateAsyncApiSpec::execute ).doesNotThrowAnyException();
+   public void testGenerateJsonLdValidAspectModel() throws Exception {
+      final File testPom = getTestFile( "src/test/resources/generate-jsonld-spec-json-pom-to-file.xml" );
+      final Mojo generateJsonLd = lookupMojo( "generateJsonLd", testPom );
+      assertThatCode( generateJsonLd::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "AspectWithEvent.jsonld" ) ).exists();
    }
 }
