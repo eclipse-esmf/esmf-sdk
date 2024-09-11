@@ -43,6 +43,6 @@ public class GenerateJsonLd extends AspectModelMojo {
       } catch ( final IOException exception ) {
          throw new MojoExecutionException( "Could not generate JSON-LD.", exception );
       }
-      LOG.info( "Successfully generated example JSON-LD for Aspect Models." );
+      LOG.info( "Successfully generated JSON-LD for Aspect Models." );
    }
 }

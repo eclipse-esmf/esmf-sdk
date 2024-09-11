@@ -523,11 +523,9 @@ Configuration Properties:
 | `outputDirectory` | The path to the directory where the generated JSON payload will be written to. | `String` | none | {ok}
 |===
 
-=== Generating Sample JSON-LD
+=== Generating JSON-LD representation of an Aspect Model
 
-The `generateJsonLd` goal generates a valid sample JSON-LD for a given Aspect Model as it
-could be returned by an Aspect that implements that Aspect Model. The default life cycle phase for
-the goal is `generate-resources`.
+The `generateJsonLd` goal generates a JSON-LD represention of a given Aspect Model. The default life cycle phase for the goal is `generate-resources`.
 
 Usage:
 

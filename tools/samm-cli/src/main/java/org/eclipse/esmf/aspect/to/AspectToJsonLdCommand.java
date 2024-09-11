@@ -25,7 +25,7 @@ import org.eclipse.esmf.exception.CommandException;
 import picocli.CommandLine;
 
 @CommandLine.Command( name = AspectToJsonLdCommand.COMMAND_NAME,
-      description = "Generate JSON-LD specification for an Aspect Model",
+      description = "Generate JSON-LD representation of an Aspect Model",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",
       optionListHeading = "%n@|bold Options|@:%n"

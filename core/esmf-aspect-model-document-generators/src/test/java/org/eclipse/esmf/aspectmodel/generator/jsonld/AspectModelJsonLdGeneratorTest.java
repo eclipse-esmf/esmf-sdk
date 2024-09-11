@@ -7,13 +7,12 @@ import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
-import com.github.jsonldjava.core.JsonLdError;
 import org.junit.jupiter.api.Test;
 
 class AspectModelJsonLdGeneratorTest {
 
    @Test
-   void generateTest() throws JsonLdError {
+   void generateTest() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_ENTITY_LIST ).aspect();
       final AspectModelToJsonLdGenerator jsonGenerator = new AspectModelToJsonLdGenerator( aspect );
       final String generatedJsonLd = jsonGenerator.generateJsonLd();
