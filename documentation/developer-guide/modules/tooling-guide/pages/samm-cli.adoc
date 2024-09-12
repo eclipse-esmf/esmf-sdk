@@ -146,6 +146,9 @@ The available options and their meaning can also be seen in the help text of the
 .3+| [[aspect-to-json]] aspect <model> to json | Generate example JSON payload data for an Aspect Model                      | `samm aspect AspectModel.ttl to json`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
+.3+| [[aspect-to-jsonld]] aspect <model> to jsonld | Generate JSON-LD representation of an Aspect Model                      | `samm aspect AspectModel.ttl to jsonld`
+                                   | _--output, -o_ : output file path (default: stdout)                                     |
+                                   | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
 .4+| [[aspect-to-schema]] aspect <model> to schema | Generate JSON schema for an Aspect Model                                | `samm aspect AspectModel.ttl to schema`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--language, -l_ : The language from the model for which a JSON schema should be
