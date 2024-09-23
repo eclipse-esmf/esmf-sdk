@@ -160,6 +160,10 @@
          <artifactId>logback-core</artifactId>
          <scope>test</scope>
       </dependency>
+      <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-model-serializer</artifactId>
+      </dependency>
    </dependencies>
 
    <build>

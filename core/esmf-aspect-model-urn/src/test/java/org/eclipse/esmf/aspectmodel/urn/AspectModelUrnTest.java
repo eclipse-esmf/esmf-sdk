@@ -41,31 +41,13 @@ class AspectModelUrnTest {
    }
 
    @Test
-   void createFromValidLegacyUrn() throws URISyntaxException {
-      URI validUrn = new URI( baseUri + "aspect-model:Errors:1.0.0" );
-      AspectModelUrn aspectModelUrn = AspectModelUrn.fromUrn( validUrn );
-
-      assertAspectModelUrn( aspectModelUrn, "Errors", "org.eclipse.esmf.test" );
-
-      validUrn = new URI( baseUri + "aspect-model:E2:1.0.0" );
-      aspectModelUrn = AspectModelUrn.fromUrn( validUrn );
-
-      assertAspectModelUrn( aspectModelUrn, "E2", "org.eclipse.esmf.test" );
-
-      // Check that URNs using the schema of BAMM (which at the end of 2022 was renamed to SAMM) are still valid
-      final URI validBammUrn = new URI( "urn:bamm:com.example:1.0.0#MyAspect" );
-      final AspectModelUrn bammUrn = AspectModelUrn.fromUrn( validBammUrn );
-      assertModelElementUrn( bammUrn, "MyAspect", "com.example" );
-   }
-
-   @Test
    void createFromValidUrnMaxLength() throws URISyntaxException {
       final String namespace = Strings.repeat( "x", 62 );
       final URI validUrn = new URI(
-            "urn:samm:" + namespace + ".test:aspect-model:Errors:1.0.0" );
+            "urn:samm:" + namespace + ".test:1.0.0#Errors" );
       final AspectModelUrn aspectModelUrn = AspectModelUrn.fromUrn( validUrn );
 
-      assertAspectModelUrn( aspectModelUrn, "Errors", namespace + ".test" );
+      assertModelElementUrn( aspectModelUrn, "Errors", namespace + ".test" );
    }
 
    @Test
@@ -122,15 +104,7 @@ class AspectModelUrnTest {
    }
 
    @Test
-   void createFromUrnInvalidAspectName() {
-      assertThatExceptionOfType( UrnSyntaxException.class )
-            .isThrownBy( () -> AspectModelUrn.fromUrn( new URI( baseUri + "aspect-model:123Error:1.0.0" ) ) )
-            .withMessage( "The aspect name must match \\p{Alpha}\\p{Alnum}*: 123Error" );
-
-      assertThatExceptionOfType( UrnSyntaxException.class )
-            .isThrownBy( () -> AspectModelUrn.fromUrn( new URI( baseUri + "aspect-model:Error?s:1.0.0" ) ) )
-            .withMessage( "The aspect name must match \\p{Alpha}\\p{Alnum}*: Error?s" );
-
+   void createFromUrnInvalidAspectName() throws URISyntaxException {
       assertThatExceptionOfType( UrnSyntaxException.class )
             .isThrownBy( () -> AspectModelUrn.fromUrn( new URI( sammBaseUri + "meta-model:1.0.0#Aspe?ct" ) ) )
             .withMessage( "The meta model element name must match \\p{Alpha}\\p{Alnum}*: Aspe?ct" );
@@ -140,23 +114,11 @@ class AspectModelUrnTest {
             .withMessage( "The characteristic name must match \\p{Alpha}\\p{Alnum}*: Eit?her" );
 
       assertThatExceptionOfType( UrnSyntaxException.class )
-            .isThrownBy( () -> AspectModelUrn.fromUrn( new URI( baseUri + "characteristic:Eit?her:1.0.0" ) ) )
-            .withMessage( "The characteristic name must match \\p{Alpha}\\p{Alnum}*: Eit?her" );
-
-      assertThatExceptionOfType( UrnSyntaxException.class )
             .isThrownBy( () -> AspectModelUrn.fromUrn( new URI( sammBaseUri + "entity:1.0.0#Time?Series" ) ) )
             .withMessage( "The entity name must match \\p{Alpha}\\p{Alnum}*: Time?Series" );
 
       assertThatExceptionOfType( UrnSyntaxException.class )
-            .isThrownBy( () -> AspectModelUrn.fromUrn( new URI( baseUri + "entity:Time?Series:1.0.0" ) ) )
-            .withMessage( "The entity name must match \\p{Alpha}\\p{Alnum}*: Time?Series" );
-
-      assertThatExceptionOfType( UrnSyntaxException.class )
             .isThrownBy( () -> AspectModelUrn.fromUrn( new URI( baseUri + "unit:1.0.0#lit?re" ) ) )
-            .withMessage( "The unit name must match \\p{Alpha}\\p{Alnum}*: lit?re" );
-
-      assertThatExceptionOfType( UrnSyntaxException.class )
-            .isThrownBy( () -> AspectModelUrn.fromUrn( new URI( baseUri + "unit:lit?re:1.0.0" ) ) )
             .withMessage( "The unit name must match \\p{Alpha}\\p{Alnum}*: lit?re" );
    }
 
@@ -245,12 +207,7 @@ class AspectModelUrnTest {
          final String nameSpace ) {
       assertThat( aspectModelUrn.getName() ).isEqualTo( name );
       assertThat( aspectModelUrn.getVersion() ).isEqualTo( "1.0.0" );
-      assertThat( aspectModelUrn.getNamespace() ).isEqualTo( nameSpace );
-   }
-
-   private void assertAspectModelUrn( final AspectModelUrn aspectModelUrn, final String name, final String nameSpace ) {
-      assertModelElementUrn( aspectModelUrn, name, nameSpace );
-      assertThat( aspectModelUrn.getElementType() ).isEqualTo( ElementType.ASPECT_MODEL );
+      assertThat( aspectModelUrn.getNamespaceMainPart() ).isEqualTo( nameSpace );
    }
 
    @Test
@@ -260,7 +217,7 @@ class AspectModelUrnTest {
 
       assertThat( elementUrn.getName() ).isEqualTo( "property" );
       assertThat( elementUrn.getVersion() ).isEqualTo( "1.0.0" );
-      assertThat( elementUrn.getNamespace() ).isEqualTo( "org.eclipse.esmf.test" );
+      assertThat( elementUrn.getNamespaceMainPart() ).isEqualTo( "org.eclipse.esmf.test" );
       assertThat( elementUrn.getElementType() ).isEqualTo( ElementType.ASPECT_MODEL_ELEMENT );
       assertThat( elementUrn.isSammUrn() ).isFalse();
    }
@@ -272,21 +229,21 @@ class AspectModelUrnTest {
 
       assertThat( metaModelElementUrn.getName() ).isEqualTo( "Either" );
       assertThat( metaModelElementUrn.getVersion() ).isEqualTo( "1.0.0" );
-      assertThat( metaModelElementUrn.getNamespace() ).isEqualTo( "org.eclipse.esmf.samm" );
+      assertThat( metaModelElementUrn.getNamespaceMainPart() ).isEqualTo( "org.eclipse.esmf.samm" );
       assertThat( metaModelElementUrn.getElementType() ).isEqualTo( ElementType.CHARACTERISTIC );
       assertThat( metaModelElementUrn.isSammUrn() ).isTrue();
    }
 
    @Test
    void createUrnForCharacteristic() throws URISyntaxException {
-      final URI validUrn = new URI( baseUri + "characteristic:TestCharacteristic:1.0.0" );
+      final URI validUrn = new URI( baseUri + "characteristic:1.0.0#TestCharacteristic" );
       final AspectModelUrn elementUrn = AspectModelUrn.fromUrn( validUrn );
 
       assertThat( elementUrn.getName() ).isEqualTo( "TestCharacteristic" );
       assertThat( elementUrn.getVersion() ).isEqualTo( "1.0.0" );
-      assertThat( elementUrn.getNamespace() ).isEqualTo( "org.eclipse.esmf.test" );
+      assertThat( elementUrn.getNamespaceMainPart() ).isEqualTo( "org.eclipse.esmf.test" );
       assertThat( elementUrn.getElementType() ).isEqualTo( ElementType.CHARACTERISTIC );
-      assertThat( elementUrn.isSammUrn() ).isFalse();
+      assertThat( elementUrn.isSammUrn() ).isTrue();
    }
 
    @Test
@@ -296,7 +253,7 @@ class AspectModelUrnTest {
 
       assertThat( elementUrn.getName() ).isEqualTo( "RightCharacteristic" );
       assertThat( elementUrn.getVersion() ).isEqualTo( "1.0.0" );
-      assertThat( elementUrn.getNamespace() ).isEqualTo( "org.eclipse.esmf.test" );
+      assertThat( elementUrn.getNamespaceMainPart() ).isEqualTo( "org.eclipse.esmf.test" );
       assertThat( elementUrn.getElementType() ).isEqualTo( ElementType.CHARACTERISTIC_MODEL_ELEMENT );
       assertThat( elementUrn.isSammUrn() ).isFalse();
    }
@@ -308,7 +265,7 @@ class AspectModelUrnTest {
 
       assertThat( metaModelElementUrn.getName() ).isEqualTo( "TimeSeriesEntity" );
       assertThat( metaModelElementUrn.getVersion() ).isEqualTo( "1.0.0" );
-      assertThat( metaModelElementUrn.getNamespace() ).isEqualTo( "org.eclipse.esmf.samm" );
+      assertThat( metaModelElementUrn.getNamespaceMainPart() ).isEqualTo( "org.eclipse.esmf.samm" );
       assertThat( metaModelElementUrn.getElementType() ).isEqualTo( ElementType.ENTITY );
       assertThat( metaModelElementUrn.isSammUrn() ).isTrue();
    }
@@ -320,21 +277,21 @@ class AspectModelUrnTest {
 
       assertThat( metaModelElementUrn.getName() ).isEqualTo( "value" );
       assertThat( metaModelElementUrn.getVersion() ).isEqualTo( "1.0.0" );
-      assertThat( metaModelElementUrn.getNamespace() ).isEqualTo( "org.eclipse.esmf.samm" );
+      assertThat( metaModelElementUrn.getNamespaceMainPart() ).isEqualTo( "org.eclipse.esmf.samm" );
       assertThat( metaModelElementUrn.getElementType() ).isEqualTo( ElementType.ENTITY );
       assertThat( metaModelElementUrn.isSammUrn() ).isTrue();
    }
 
    @Test
    void createUrnForEntity() throws URISyntaxException {
-      final URI validUrn = new URI( baseUri + "entity:TestEntity:1.0.0" );
+      final URI validUrn = new URI( baseUri + "entity:1.0.0#TestEntity" );
       final AspectModelUrn elementUrn = AspectModelUrn.fromUrn( validUrn );
 
       assertThat( elementUrn.getName() ).isEqualTo( "TestEntity" );
       assertThat( elementUrn.getVersion() ).isEqualTo( "1.0.0" );
-      assertThat( elementUrn.getNamespace() ).isEqualTo( "org.eclipse.esmf.test" );
+      assertThat( elementUrn.getNamespaceMainPart() ).isEqualTo( "org.eclipse.esmf.test" );
       assertThat( elementUrn.getElementType() ).isEqualTo( ElementType.ENTITY );
-      assertThat( elementUrn.isSammUrn() ).isFalse();
+      assertThat( elementUrn.isSammUrn() ).isTrue();
    }
 
    @Test
@@ -344,7 +301,7 @@ class AspectModelUrnTest {
 
       assertThat( elementUrn.getName() ).isEqualTo( "property" );
       assertThat( elementUrn.getVersion() ).isEqualTo( "1.0.0" );
-      assertThat( elementUrn.getNamespace() ).isEqualTo( "org.eclipse.esmf.test" );
+      assertThat( elementUrn.getNamespaceMainPart() ).isEqualTo( "org.eclipse.esmf.test" );
       assertThat( elementUrn.getElementType() ).isEqualTo( ElementType.ENTITY_MODEL_ELEMENT );
       assertThat( elementUrn.isSammUrn() ).isFalse();
    }
@@ -356,7 +313,7 @@ class AspectModelUrnTest {
 
       assertThat( metaModelElementUrn.getName() ).isEqualTo( "litre" );
       assertThat( metaModelElementUrn.getVersion() ).isEqualTo( "1.0.0" );
-      assertThat( metaModelElementUrn.getNamespace() ).isEqualTo( "org.eclipse.esmf.samm" );
+      assertThat( metaModelElementUrn.getNamespaceMainPart() ).isEqualTo( "org.eclipse.esmf.samm" );
       assertThat( metaModelElementUrn.getElementType() ).isEqualTo( ElementType.UNIT );
       assertThat( metaModelElementUrn.isSammUrn() ).isTrue();
    }
@@ -368,7 +325,7 @@ class AspectModelUrnTest {
 
       assertThat( elementUrn.getName() ).isEqualTo( "litre" );
       assertThat( elementUrn.getVersion() ).isEqualTo( "1.0.0" );
-      assertThat( elementUrn.getNamespace() ).isEqualTo( "org.eclipse.esmf.test" );
+      assertThat( elementUrn.getNamespaceMainPart() ).isEqualTo( "org.eclipse.esmf.test" );
       assertThat( elementUrn.getElementType() ).isEqualTo( ElementType.UNIT );
       assertThat( elementUrn.isSammUrn() ).isFalse();
    }
@@ -377,12 +334,25 @@ class AspectModelUrnTest {
    void validNamespaceTest() throws URISyntaxException {
       final URI validNamespaceUrnUnderscore = new URI( "urn:samm:org.eclipse.esmf_test:0.0.1#TestAspect" );
       final AspectModelUrn elementUrnWithUnderscore = AspectModelUrn.fromUrn( validNamespaceUrnUnderscore );
-      assertThat( elementUrnWithUnderscore.getNamespace() ).isNotEmpty();
-      assertThat( elementUrnWithUnderscore.getNamespace() ).isEqualTo( "org.eclipse.esmf_test" );
+      assertThat( elementUrnWithUnderscore.getNamespaceMainPart() ).isNotEmpty();
+      assertThat( elementUrnWithUnderscore.getNamespaceMainPart() ).isEqualTo( "org.eclipse.esmf_test" );
 
       final URI invalidNamespaceUrnDash = new URI( "urn:samm:org.eclipse.esmf-test:0.0.1#TestAspect" );
       final AspectModelUrn elementUrnWithDash = AspectModelUrn.fromUrn( invalidNamespaceUrnDash );
-      assertThat( elementUrnWithDash.getNamespace() ).isNotEmpty();
-      assertThat( elementUrnWithDash.getNamespace() ).isEqualTo( "org.eclipse.esmf-test" );
+      assertThat( elementUrnWithDash.getNamespaceMainPart() ).isNotEmpty();
+      assertThat( elementUrnWithDash.getNamespaceMainPart() ).isEqualTo( "org.eclipse.esmf-test" );
+   }
+
+   @Test
+   void invalidModelElementNameTest() throws URISyntaxException {
+      final URI invalidRootModelElementName = new URI( sammBaseUri + "aspect-model:Er?ors:1.1.0#TestAspect" );
+      assertThatExceptionOfType( UrnSyntaxException.class )
+            .isThrownBy( () -> AspectModelUrn.fromUrn( invalidRootModelElementName ) )
+            .withMessage( "The model element name must match \\p{Alpha}\\p{Alnum}*: Er?ors" );
+
+      final URI invalidModelElementName = new URI( sammBaseUri + "aspect-model:Er?ors:1.1.0:dummy#TestAspect" );
+      assertThatExceptionOfType( UrnSyntaxException.class )
+            .isThrownBy( () -> AspectModelUrn.fromUrn( invalidModelElementName ) )
+            .withMessage( "The model element name must match \\p{Alpha}\\p{Alnum}*: Er?ors" );
    }
 }

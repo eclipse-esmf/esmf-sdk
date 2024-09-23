@@ -33,6 +33,8 @@ public class AasReflection extends AbstractSammCliFeature {
 
       registerClassesInPackage( ReflectionHelper.MODEL_PACKAGE_NAME );
       registerClassesInPackage( ReflectionHelper.DEFAULT_IMPLEMENTATION_PACKAGE_NAME );
+      registerClassesInPackage( ReflectionHelper.JSON_MIXINS_PACKAGE_NAME );
+      registerClassesInPackage( ReflectionHelper.XML_MIXINS_PACKAGE_NAME );
    }
 
    @Override

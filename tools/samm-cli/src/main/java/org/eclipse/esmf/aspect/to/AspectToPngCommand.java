@@ -16,8 +16,8 @@ package org.eclipse.esmf.aspect.to;
 import java.io.IOException;
 
 import org.eclipse.esmf.AbstractCommand;
-import org.eclipse.esmf.ExternalResolverMixin;
 import org.eclipse.esmf.LoggingMixin;
+import org.eclipse.esmf.ResolverConfigurationMixin;
 import org.eclipse.esmf.aspect.AspectToCommand;
 import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
 import org.eclipse.esmf.exception.CommandException;
@@ -28,8 +28,7 @@ import picocli.CommandLine;
       description = "Generate PNG diagram for an Aspect Model",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n",
-      mixinStandardHelpOptions = true
+      optionListHeading = "%n@|bold Options|@:%n"
 )
 public class AspectToPngCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "png";
@@ -50,13 +49,13 @@ public class AspectToPngCommand extends AbstractCommand {
    private LoggingMixin loggingMixin;
 
    @CommandLine.Mixin
-   private ExternalResolverMixin customResolver;
+   private ResolverConfigurationMixin resolverConfiguration;
 
    @Override
    public void run() {
       try {
          generateDiagram( parentCommand.parentCommand.getInput(), AspectModelDiagramGenerator.Format.PNG, outputFilePath, language,
-               customResolver );
+               resolverConfiguration );
       } catch ( final IOException e ) {
          throw new CommandException( e );
       }

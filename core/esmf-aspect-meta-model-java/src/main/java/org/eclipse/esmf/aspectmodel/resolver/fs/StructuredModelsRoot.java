@@ -13,8 +13,18 @@
 
 package org.eclipse.esmf.aspectmodel.resolver.fs;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.stream.Stream;
 
+import org.eclipse.esmf.aspectmodel.VersionNumber;
+import org.eclipse.esmf.aspectmodel.resolver.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 /**
@@ -39,11 +49,37 @@ public class StructuredModelsRoot extends ModelsRoot {
 
    @Override
    public Path directoryForNamespace( final AspectModelUrn urn ) {
-      return rootPath().resolve( urn.getNamespace() ).resolve( urn.getVersion() );
+      return rootPath().resolve( urn.getNamespaceMainPart() ).resolve( urn.getVersion() );
    }
 
    @Override
    public String toString() {
       return "StructuredModelsRoot(rootPath=" + rootPath() + ")";
+   }
+
+   @Override
+   public Stream<URI> contents() {
+      try {
+         try ( final Stream<Path> path = Files.walk( rootPath(), 3 ) ) {
+            return path.map( Path::toFile )
+                  .filter( file -> file.getName().endsWith( ".ttl" ) )
+                  .filter( file -> VersionNumber.tryParse( file.getParentFile().getName() )
+                        .flatMap( versionNumber -> AspectModelUrn.from( String.format( "urn:samm:%s:%s",
+                              file.getParentFile().getParentFile().getName(), versionNumber ) ) ).isSuccess() )
+                  .sorted( Comparator.comparing( File::getName ) )
+                  .map( File::toURI )
+                  .toList()
+                  .stream();
+         }
+      } catch ( final IOException exception ) {
+         throw new ModelResolutionException( "Could not list contents of " + rootPath(), exception );
+      }
+   }
+
+   @Override
+   public Stream<URI> namespaceContents( final AspectModelUrn namespace ) {
+      final File namespaceDirectory = rootPath().resolve( namespace.getNamespaceMainPart() ).resolve( namespace.getVersion() ).toFile();
+      return Arrays.stream( Objects.requireNonNull( namespaceDirectory.listFiles( file -> file.getName().endsWith( ".ttl" ) ) ) )
+            .map( File::toURI );
    }
 }

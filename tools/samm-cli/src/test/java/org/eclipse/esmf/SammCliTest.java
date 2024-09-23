@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,11 +35,13 @@ import java.util.stream.Stream;
 import org.eclipse.esmf.ProcessLauncher.ExecutionResult;
 import org.eclipse.esmf.aspect.AspectValidateCommand;
 import org.eclipse.esmf.aspectmodel.shacl.violation.InvalidSyntaxViolation;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.InvalidTestAspect;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
@@ -125,6 +128,22 @@ class SammCliTest {
    }
 
    @Test
+   void testSubCommandHelp() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "help", "aspect", "prettyprint" );
+      assertThat( result.stdout() ).contains( "Usage:" );
+      assertThat( result.stdout() ).contains( "--overwrite" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testSubSubCommandHelp() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "help", "aspect", "to", "svg" );
+      assertThat( result.stdout() ).contains( "Usage:" );
+      assertThat( result.stdout() ).contains( "--language" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
    void testVerboseOutput() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "validate", "-vvv" );
       assertThat( result.stdout() ).contains( "Input model is valid" );
@@ -147,6 +166,22 @@ class SammCliTest {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "prettyprint" );
       assertThat( result.stdout() ).contains( "@prefix" );
       assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectPrettyPrintOverwrite() throws IOException {
+      final File targetFile = outputFile( "output.ttl" );
+      FileUtils.copyFile( new File( defaultInputFile ), targetFile );
+      assertThat( targetFile ).content().contains( "@prefix xsd:" );
+
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", targetFile.getAbsolutePath(), "prettyprint",
+            "--overwrite" );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( targetFile ).exists();
+      assertThat( targetFile ).content().contains( "@prefix" );
+      // The xsd prefix is not actually used in the file, so it is removed by the pretty printer
+      assertThat( targetFile ).content().doesNotContain( "@prefix xsd:" );
    }
 
    @Test
@@ -351,7 +386,7 @@ class SammCliTest {
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
 
-      final File directory = outputDirectory.resolve( testModel.getUrn().getNamespace() )
+      final File directory = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
             .resolve( testModel.getUrn().getVersion() )
             .toFile();
       assertThat( directory ).exists();
@@ -391,7 +426,7 @@ class SammCliTest {
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
 
-      final File directory = outputDirectory.resolve( testModel.getUrn().getNamespace() )
+      final File directory = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
             .resolve( testModel.getUrn().getVersion() )
             .toFile();
       assertThat( directory ).exists();
@@ -647,6 +682,42 @@ class SammCliTest {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "json",
             "--custom-resolver", resolverCommand() );
       assertThat( result.stdout() ).contains( "\"entityProperty\" :" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectToJsonLdToFile() {
+      final File targetFile = outputFile( "output.json" );
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "jsonld", "-o",
+            targetFile.getAbsolutePath() );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( targetFile )
+            .exists()
+            .content()
+            .contains( "\"@context\"" )
+            .contains( "\"@graph\": [" )
+            .contains( "\"xsd\": \"http://www.w3.org/2001/XMLSchema#\"," );
+   }
+
+   @Test
+   void testAspectToJsonLdStdout() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "jsonld" );
+      assertThat( result.stdout() )
+            .contains( "\"@context\"" )
+            .contains( "\"@graph\": [" )
+            .contains( "\"xsd\": \"http://www.w3.org/2001/XMLSchema#\"," );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectToJsonLdWithCustomResolver() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "jsonld",
+            "--custom-resolver", resolverCommand() );
+      assertThat( result.stdout() )
+            .contains( "\"@context\"" )
+            .contains( "\"@graph\": [" )
+            .contains( "\"xsd\": \"http://www.w3.org/2001/XMLSchema#\"," );
       assertThat( result.stderr() ).isEmpty();
    }
 
@@ -1046,6 +1117,289 @@ class SammCliTest {
       assertThat( result.stdout() ).contains( "CREATE TABLE" );
       assertThat( result.stdout() ).contains( "custom ARRAY<STRING> NOT NULL COMMENT 'Custom column'" );
       assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectEditMoveExistingFile() throws IOException {
+      // Set up file system structure of writable files
+      final Path modelLocation = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
+            .resolve( testModel.getUrn().getVersion() );
+      modelLocation.toFile().mkdirs();
+      final File inputFile = modelLocation.resolve( "AspectWithEntity.ttl" ).toFile();
+      FileUtils.copyFile( inputFile( testModel ).getAbsoluteFile(), inputFile );
+      final File targetFile = modelLocation.resolve( "target.ttl" ).toFile();
+      Files.createFile( targetFile.toPath() );
+      try ( final PrintWriter out = new PrintWriter( targetFile ) ) {
+         out.printf( "@prefix : <%s> .", testModel.getUrn().getUrnPrefix() );
+      }
+
+      // Run refactoring
+      assertThat( inputFile ).content().contains( ":AspectWithEntity" );
+      assertThat( targetFile ).content().doesNotContain( ":AspectWithEntity" );
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", inputFile.getAbsolutePath(),
+            "edit", "move", "AspectWithEntity", targetFile.getName() );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( inputFile ).content().doesNotContain( ":AspectWithEntity" );
+      assertThat( targetFile ).content().contains( ":AspectWithEntity" );
+   }
+
+   @Test
+   void testAspectEditMoveExistingFileDryRun() throws IOException {
+      // Set up file system structure of writable files
+      final Path modelLocation = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
+            .resolve( testModel.getUrn().getVersion() );
+      modelLocation.toFile().mkdirs();
+      final File inputFile = modelLocation.resolve( "AspectWithEntity.ttl" ).toFile();
+      FileUtils.copyFile( inputFile( testModel ).getAbsoluteFile(), inputFile );
+      final File targetFile = modelLocation.resolve( "target.ttl" ).toFile();
+      Files.createFile( targetFile.toPath() );
+      try ( final PrintWriter out = new PrintWriter( targetFile ) ) {
+         out.printf( "@prefix : <%s> .", testModel.getUrn().getUrnPrefix() );
+      }
+
+      // Run refactoring
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", inputFile.getAbsolutePath(),
+            "edit", "move", "--dry-run", "--details", "AspectWithEntity", targetFile.getName() );
+      assertThat( result.stdout() ).contains( "Changes to be performed" );
+      assertThat( result.stdout() ).contains( "Remove definition of urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEntity" );
+      assertThat( result.stdout() ).contains( "Add definition of urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEntity" );
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( inputFile ).content().contains( ":AspectWithEntity" );
+      assertThat( targetFile ).content().doesNotContain( ":AspectWithEntity" );
+   }
+
+   @Test
+   void testAspectEditMoveNewFile() throws IOException {
+      // Set up file system structure of writable files
+      final Path modelLocation = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
+            .resolve( testModel.getUrn().getVersion() );
+      modelLocation.toFile().mkdirs();
+      final File inputFile = modelLocation.resolve( "AspectWithEntity.ttl" ).toFile();
+      FileUtils.copyFile( inputFile( testModel ).getAbsoluteFile(), inputFile );
+      final File targetFile = modelLocation.resolve( "target.ttl" ).toFile();
+
+      // Run refactoring
+      assertThat( inputFile ).content().contains( ":AspectWithEntity" );
+      assertThat( targetFile ).doesNotExist();
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", inputFile.getAbsolutePath(),
+            "edit", "move", "--copy-file-header", "AspectWithEntity", targetFile.getName() );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( inputFile ).content().doesNotContain( ":AspectWithEntity" );
+      assertThat( targetFile ).exists();
+      assertThat( targetFile ).content().contains( ":AspectWithEntity" );
+      assertThat( targetFile ).content().contains( "# Copyright" );
+   }
+
+   @Test
+   void testAspectEditMoveNewFileDryRun() throws IOException {
+      // Set up file system structure of writable files
+      final Path modelLocation = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
+            .resolve( testModel.getUrn().getVersion() );
+      modelLocation.toFile().mkdirs();
+      final File inputFile = modelLocation.resolve( "AspectWithEntity.ttl" ).toFile();
+      FileUtils.copyFile( inputFile( testModel ).getAbsoluteFile(), inputFile );
+      final File targetFile = modelLocation.resolve( "target.ttl" ).toFile();
+
+      // Run refactoring
+      assertThat( inputFile ).content().contains( ":AspectWithEntity" );
+      assertThat( targetFile ).doesNotExist();
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", inputFile.getAbsolutePath(),
+            "edit", "move", "--dry-run", "--details", "AspectWithEntity", targetFile.getName() );
+      assertThat( result.stdout() ).contains( "Changes to be performed" );
+      assertThat( result.stdout() ).contains( "Remove definition of urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEntity" );
+      assertThat( result.stdout() ).contains( "Add definition of urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEntity" );
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( inputFile ).content().contains( ":AspectWithEntity" );
+      assertThat( targetFile ).doesNotExist();
+   }
+
+   @Test
+   void testAspectEditMoveOtherNamespaceExistingFile() throws IOException {
+      // Set up file system structure of writable files
+      final Path modelLocationNs1 = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
+            .resolve( testModel.getUrn().getVersion() );
+      modelLocationNs1.toFile().mkdirs();
+      final File inputFile = modelLocationNs1.resolve( "AspectWithEntity.ttl" ).toFile();
+      FileUtils.copyFile( inputFile( testModel ).getAbsoluteFile(), inputFile );
+      final String targetNamespace = "urn:samm:org.eclipse.example.newnamespace:1.0.0";
+      final AspectModelUrn newNamespace = AspectModelUrn.fromUrn( targetNamespace );
+      final Path modelLocationNs2 = outputDirectory.resolve( newNamespace.getNamespaceMainPart() )
+            .resolve( newNamespace.getVersion() );
+      modelLocationNs2.toFile().mkdirs();
+      final File targetFile = modelLocationNs2.resolve( "target.ttl" ).toFile();
+      Files.createFile( targetFile.toPath() );
+      try ( final PrintWriter out = new PrintWriter( targetFile ) ) {
+         out.printf( "@prefix : <%s#> .", targetNamespace );
+      }
+
+      // Run refactoring
+      assertThat( inputFile ).content().contains( ":AspectWithEntity" );
+      assertThat( targetFile ).content().doesNotContain( ":AspectWithEntity" );
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", inputFile.getAbsolutePath(),
+            "edit", "move", "AspectWithEntity", targetFile.getName(), targetNamespace );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( inputFile ).content().doesNotContain( ":AspectWithEntity" );
+      assertThat( targetFile ).content().contains( ":AspectWithEntity" );
+   }
+
+   @Test
+   void testAspectEditMoveOtherNamespaceExistingFileDryRun() throws IOException {
+      // Set up file system structure of writable files
+      final Path modelLocationNs1 = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
+            .resolve( testModel.getUrn().getVersion() );
+      modelLocationNs1.toFile().mkdirs();
+      final File inputFile = modelLocationNs1.resolve( "AspectWithEntity.ttl" ).toFile();
+      FileUtils.copyFile( inputFile( testModel ).getAbsoluteFile(), inputFile );
+      final String targetNamespace = "urn:samm:org.eclipse.example.newnamespace:1.0.0";
+      final AspectModelUrn newNamespace = AspectModelUrn.fromUrn( targetNamespace );
+      final Path modelLocationNs2 = outputDirectory.resolve( newNamespace.getNamespaceMainPart() )
+            .resolve( newNamespace.getVersion() );
+      modelLocationNs2.toFile().mkdirs();
+      final File targetFile = modelLocationNs2.resolve( "target.ttl" ).toFile();
+      Files.createFile( targetFile.toPath() );
+      try ( final PrintWriter out = new PrintWriter( targetFile ) ) {
+         out.printf( "@prefix : <%s#> .", targetNamespace );
+      }
+
+      // Run refactoring
+      assertThat( inputFile ).content().contains( ":AspectWithEntity" );
+      assertThat( targetFile ).content().doesNotContain( ":AspectWithEntity" );
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", inputFile.getAbsolutePath(),
+            "edit", "move", "--dry-run", "--details", "AspectWithEntity", targetFile.getName(), targetNamespace );
+      assertThat( result.stdout() ).contains( "Changes to be performed" );
+      assertThat( result.stdout() ).contains( "Remove definition of urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEntity" );
+      assertThat( result.stdout() ).contains( "Add definition of urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEntity" );
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( inputFile ).content().contains( ":AspectWithEntity" );
+      assertThat( targetFile ).content().doesNotContain( ":AspectWithEntity" );
+   }
+
+   @Test
+   void testAspectEditMoveOtherNamespaceNewFile() throws IOException {
+      // Set up file system structure of writable files
+      final Path modelLocationNs1 = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
+            .resolve( testModel.getUrn().getVersion() );
+      modelLocationNs1.toFile().mkdirs();
+      final File inputFile = modelLocationNs1.resolve( "AspectWithEntity.ttl" ).toFile();
+      FileUtils.copyFile( inputFile( testModel ).getAbsoluteFile(), inputFile );
+      final String targetNamespace = "urn:samm:org.eclipse.example.newnamespace:1.0.0";
+      final AspectModelUrn newNamespace = AspectModelUrn.fromUrn( targetNamespace );
+      final Path modelLocationNs2 = outputDirectory.resolve( newNamespace.getNamespaceMainPart() )
+            .resolve( newNamespace.getVersion() );
+      final File targetFile = modelLocationNs2.resolve( "target.ttl" ).toFile();
+
+      // Run refactoring
+      assertThat( inputFile ).content().contains( ":AspectWithEntity" );
+      assertThat( targetFile ).doesNotExist();
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", inputFile.getAbsolutePath(),
+            "edit", "move", "--copy-file-header", "AspectWithEntity", targetFile.getName(), targetNamespace );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( inputFile ).content().doesNotContain( ":AspectWithEntity" );
+      assertThat( targetFile ).exists();
+      assertThat( targetFile ).content().contains( ":AspectWithEntity" );
+      assertThat( targetFile ).content().contains( "# Copyright" );
+   }
+
+   @Test
+   void testAspectEditMoveOtherNamespaceNewFileDryRun() throws IOException {
+      // Set up file system structure of writable files
+      final Path modelLocationNs1 = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
+            .resolve( testModel.getUrn().getVersion() );
+      modelLocationNs1.toFile().mkdirs();
+      final File inputFile = modelLocationNs1.resolve( "AspectWithEntity.ttl" ).toFile();
+      FileUtils.copyFile( inputFile( testModel ).getAbsoluteFile(), inputFile );
+      final String targetNamespace = "urn:samm:org.eclipse.example.newnamespace:1.0.0";
+      final AspectModelUrn newNamespace = AspectModelUrn.fromUrn( targetNamespace );
+      final Path modelLocationNs2 = outputDirectory.resolve( newNamespace.getNamespaceMainPart() )
+            .resolve( newNamespace.getVersion() );
+      final File targetFile = modelLocationNs2.resolve( "target.ttl" ).toFile();
+
+      // Run refactoring
+      assertThat( inputFile ).content().contains( ":AspectWithEntity" );
+      assertThat( targetFile ).doesNotExist();
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", inputFile.getAbsolutePath(),
+            "edit", "move", "--dry-run", "--details", "AspectWithEntity", targetFile.getName(), targetNamespace );
+      assertThat( result.stdout() ).contains( "Changes to be performed" );
+      assertThat( result.stdout() ).contains( "Remove definition of urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEntity" );
+      assertThat( result.stdout() ).contains( "Add definition of urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEntity" );
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( inputFile ).content().contains( ":AspectWithEntity" );
+      assertThat( targetFile ).doesNotExist();
+   }
+
+   @Test
+   void testAspectEditNewVersionForFile() throws IOException {
+      // Set up file system structure of writable files
+      final Path modelLocation = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
+            .resolve( testModel.getUrn().getVersion() );
+      modelLocation.toFile().mkdirs();
+      final File inputFile = modelLocation.resolve( "AspectWithEntity.ttl" ).toFile();
+      FileUtils.copyFile( inputFile( testModel ).getAbsoluteFile(), inputFile );
+
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", inputFile.getAbsolutePath(),
+            "edit", "newversion", "--major" );
+
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      final File newlyCreatedFile = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
+            .resolve( "2.0.0" ).resolve( "AspectWithEntity.ttl" ).toFile();
+      assertThat( newlyCreatedFile ).exists();
+      assertThat( newlyCreatedFile ).content().contains( "@prefix : <urn:samm:org.eclipse.esmf.test:2.0.0#>" );
+   }
+
+   @Test
+   void testAspectEditNewVersionForNamespace() throws IOException {
+      // Set up file system structure of writable files
+      final Path modelLocation = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
+            .resolve( testModel.getUrn().getVersion() );
+      modelLocation.toFile().mkdirs();
+      final File inputFile = modelLocation.resolve( "AspectWithEntity.ttl" ).toFile();
+      FileUtils.copyFile( inputFile( testModel ).getAbsoluteFile(), inputFile );
+
+      final String namespaceUrn = TestModel.TEST_NAMESPACE.replace( "#", "" );
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", namespaceUrn,
+            "edit", "newversion", "--major", "--models-root", outputDirectory.toFile().getAbsolutePath() );
+
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      final File newlyCreatedFile = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
+            .resolve( "2.0.0" ).resolve( "AspectWithEntity.ttl" ).toFile();
+      assertThat( newlyCreatedFile ).exists();
+      assertThat( newlyCreatedFile ).content().contains( "@prefix : <urn:samm:org.eclipse.esmf.test:2.0.0#>" );
+   }
+
+   @Test
+   void testAspectUsageFromFile() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "usage" );
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( result.stdout() ).contains( TestModel.TEST_NAMESPACE + "testProperty" );
+   }
+
+   @Test
+   void testAspectUsageFromUrn() {
+      final String modelsRoot = inputFile( testModel ).getParentFile().getParentFile().getParentFile().getAbsolutePath();
+      final String urnToCheck = TestModel.TEST_NAMESPACE + "testProperty";
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", urnToCheck, "usage",
+            "--models-root", modelsRoot );
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( result.stdout() ).contains( TestModel.TEST_NAMESPACE + "testProperty" );
+   }
+
+   // Running this test from within the regular JUnit test harness yields a java.lang.SecurityException for
+   // java.net.URLPermission, therefore it is executed only in the native build
+   @Test
+   @EnabledIfSystemProperty( named = "packaging-type", matches = "native" )
+   void testAspectUsageWithGitHubResolution() {
+      final String remoteModelsDirectory = "core/esmf-test-aspect-models/src/main/resources/valid";
+      final String urnToCheck = TestModel.TEST_NAMESPACE + "testProperty";
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", urnToCheck, "usage",
+            "--github", "--github-name", "eclipse-esmf/esmf-sdk", "--github-directory", remoteModelsDirectory );
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( result.stdout() ).contains( TestModel.TEST_NAMESPACE + "testProperty" );
    }
 
    /**

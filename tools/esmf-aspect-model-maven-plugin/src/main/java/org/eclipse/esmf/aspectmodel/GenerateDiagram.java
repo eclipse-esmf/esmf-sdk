@@ -36,7 +36,7 @@ public class GenerateDiagram extends AspectModelMojo {
    private Set<String> targetFormats;
 
    @Override
-   public void execute() throws MojoExecutionException {
+   public void executeGeneration() throws MojoExecutionException {
       validateParameters();
 
       final Set<Aspect> aspects = loadAspects();

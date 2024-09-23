@@ -13,6 +13,9 @@
 
 package org.eclipse.esmf.aspectmodel.resolver;
 
+import java.net.URI;
+import java.util.stream.Stream;
+
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
@@ -34,5 +37,29 @@ public class FromLoadedFileStrategy implements ResolutionStrategy {
          return aspectModelFile;
       }
       throw new ModelResolutionException( "File " + aspectModelFile + " should contain defintion, but does not: " + aspectModelUrn );
+   }
+
+   @Override
+   public Stream<URI> listContents() {
+      return aspectModelFile.sourceLocation().stream();
+   }
+
+   @Override
+   public Stream<URI> listContentsForNamespace( final AspectModelUrn namespace ) {
+      return aspectModelFile.namespace().urn().equals( namespace )
+            ? aspectModelFile.sourceLocation().stream()
+            : Stream.empty();
+   }
+
+   @Override
+   public Stream<AspectModelFile> loadContents() {
+      return Stream.of( aspectModelFile );
+   }
+
+   @Override
+   public Stream<AspectModelFile> loadContentsForNamespace( final AspectModelUrn namespace ) {
+      return aspectModelFile.namespace().urn().equals( namespace )
+            ? Stream.of( aspectModelFile )
+            : Stream.empty();
    }
 }

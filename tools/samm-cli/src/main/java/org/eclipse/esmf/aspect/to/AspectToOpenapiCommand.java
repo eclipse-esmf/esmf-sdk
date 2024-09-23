@@ -30,8 +30,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.esmf.AbstractCommand;
-import org.eclipse.esmf.ExternalResolverMixin;
 import org.eclipse.esmf.LoggingMixin;
+import org.eclipse.esmf.ResolverConfigurationMixin;
 import org.eclipse.esmf.aspect.AspectToCommand;
 import org.eclipse.esmf.aspectmodel.generator.openapi.AspectModelOpenApiGenerator;
 import org.eclipse.esmf.aspectmodel.generator.openapi.OpenApiSchemaArtifact;
@@ -56,8 +56,7 @@ import picocli.CommandLine;
       description = "Generate OpenAPI specification for an Aspect Model",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n",
-      mixinStandardHelpOptions = true
+      optionListHeading = "%n@|bold Options|@:%n"
 )
 public class AspectToOpenapiCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "openapi";
@@ -150,13 +149,13 @@ public class AspectToOpenapiCommand extends AbstractCommand {
    private LoggingMixin loggingMixin;
 
    @CommandLine.Mixin
-   private ExternalResolverMixin customResolver;
+   private ResolverConfigurationMixin resolverConfiguration;
 
    @Override
    public void run() {
       final Locale locale = Optional.ofNullable( language ).map( Locale::forLanguageTag ).orElse( Locale.ENGLISH );
       final AspectModelOpenApiGenerator generator = new AspectModelOpenApiGenerator();
-      final Aspect aspect = loadAspectOrFail( parentCommand.parentCommand.getInput(), customResolver );
+      final Aspect aspect = loadAspectOrFail( parentCommand.parentCommand.getInput(), resolverConfiguration );
       final ObjectMapper objectMapper = new ObjectMapper();
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( useSemanticApiVersion )
@@ -214,7 +213,7 @@ public class AspectToOpenapiCommand extends AbstractCommand {
       }
    }
 
-   private ObjectNode readFile( String file ) throws CommandException {
+   private ObjectNode readFile( final String file ) throws CommandException {
       if ( StringUtils.isBlank( file ) ) {
          return null;
       }

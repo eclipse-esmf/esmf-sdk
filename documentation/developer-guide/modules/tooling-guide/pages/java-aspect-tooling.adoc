@@ -152,15 +152,16 @@ include::esmf-developer-guide:ROOT:partial$esmf-aspect-meta-model-java-artifact.
 [[understanding-model-resolution]]
 === Understanding Model Resolution
 
-The example in the last section showed how a self-contained Aspect Model file can be loaded (i.e., a file that
-does not refer to model element definitions in other files or namespaces). Whenever models are loaded that
-could contain such references, or you want to load a model element by URN, the AspectModelLoader relies on
-so-called _resolution strategies_. A resolution strategy is a function that takes a model element identifier
-(a model element URN) as an input and returns the content of the file that contains the corresponding model
-element definition. Note that this is not necessarily a file in the local filesystem, but it could also be a
-remote file or even exist only virtually as a collection of statements in an RDF triple store. Several
-`ResolutionStrategy`s are provided that can be instantiated and passed to the `AspectModelLoader` constructor
-to enable it to find model element definitions:
+The example in the last section showed how a self-contained Aspect Model file can be loaded (i.e., a
+file that does not refer to model element definitions in other files or namespaces). Whenever models
+are loaded that could contain such references, or you want to load a model element by URN, the
+AspectModelLoader relies on so-called _resolution strategies_. A resolution strategy is a function
+that takes a model element identifier (a model element URN) as an input and returns the content of
+the file that contains the corresponding model element definition. Note that this is not necessarily
+a file in the local filesystem, but it could also be a remote file or even exist only virtually as a
+collection of statements in an RDF triple store. Several `ResolutionStrategy`&#8203;s are provided
+that can be instantiated and passed to the `AspectModelLoader` constructor to enable it to find
+model element definitions:
 
 * The `FileSystemStrategy` resolves elements from files in the file system which are either structured in the
   xref:tooling-guide:samm-cli.adoc#models-directory-structure[models directory structure] or exist as flat
@@ -168,7 +169,7 @@ to enable it to find model element definitions:
 * The `ClassPathStrategy` resolves model elements from resources in the Java class path.
 * The `FromLoadedFileStrategy` resolves model elements from an `AspectModelFile` that already resides in
   memory.
-* The `EitherStrategy` can be used to chain two or more different `ResolutionStrategy`s.
+* The `EitherStrategy` can be used to chain two or more different `ResolutionStrategy`&#8203;s.
 * The `ExternalResolverStrategy` delegates resolution to an external command such as a script; it is used in
   the implementation of the `--custom-resolver` option of the xref:tooling-guide:samm-cli.adoc[samm-cli].
 
@@ -197,7 +198,7 @@ include::example$LoadAspectModelRdf.java[tags=loadAndResolveFromUrn]
 [[loading-an-aspect-model-rdf-level]]
 === Loading an Aspect Model to work on the RDF Level
 
-The following example shows how to use the `AspectModelResolver` to load an Aspect Model.
+The following example shows how to use the `AspectModelLoad` to load an Aspect Model.
 
 ++++
 <details>
@@ -243,6 +244,13 @@ include::example$SerializeAspectModel.java[tags=imports]
 [source,java,indent=0,subs="+macros,+quotes"]
 ----
 include::example$SerializeAspectModel.java[tags=serialize]
+----
+
+Alternatively, you can also serialize a complete `AspectModelFile`:
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$SerializeAspectModel.java[tags=serializeFile]
 ----
 
 To include the serializer artifact, use the following dependencies:
@@ -709,6 +717,32 @@ Example:
 [source,indent=0]
 ----
 include::example$sample-file-header.vm[]
+----
+
+[[modifying-and-creating-aspect-models]]
+== Modifying and creating Aspect Models
+
+You can use the `AspectChangeManager` to modify an Aspect Model. Each modifying operation performed
+on an Aspect Model is called a _change_. Instances of classes that implement the `Change` interface
+can be passed to the `AspectChangeManager` `applyChange()` method. Available `Change`&#8203;s
+include renaming Aspect Model files or Model elements, adding and removing Aspect Model files and
+moving Aspect Model elements to other or new files in the same or another namespace.
+
+++++
+<details>
+<summary>Show used imports</summary>
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$EditAspectModel.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$EditAspectModel.java[tags=editModel]
 ----
 
 [[accessing-samm-programmatically]]

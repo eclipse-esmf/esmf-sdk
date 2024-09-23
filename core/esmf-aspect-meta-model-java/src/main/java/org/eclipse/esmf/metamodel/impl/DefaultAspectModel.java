@@ -14,9 +14,9 @@
 package org.eclipse.esmf.metamodel.impl;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Namespace;
@@ -24,23 +24,27 @@ import org.eclipse.esmf.metamodel.Namespace;
 import org.apache.jena.rdf.model.Model;
 
 public class DefaultAspectModel implements AspectModel {
-   private final Model mergedModel;
-   private final List<ModelElement> elements;
+   private Model mergedModel;
+   private List<ModelElement> elements;
+   private List<AspectModelFile> files;
 
-   public DefaultAspectModel( final Model mergedModel, final List<ModelElement> elements ) {
+   public DefaultAspectModel( final List<AspectModelFile> files, final Model mergedModel, final List<ModelElement> elements ) {
+      this.files = files;
       this.mergedModel = mergedModel;
       this.elements = elements;
    }
 
    @Override
    public List<Namespace> namespaces() {
-      return elements().stream()
-            .filter( element -> !Namespace.ANONYMOUS.equals( element.urn().getUrnPrefix() ) )
-            .collect( Collectors.groupingBy( element -> element.urn().getUrnPrefix() ) )
-            .entrySet()
-            .stream()
-            .<Namespace> map( entry -> new DefaultNamespace( entry.getKey(), entry.getValue(), Optional.empty() ) )
-            .toList();
+      return files().stream()
+            .map( AspectModelFile::namespace )
+            .collect( Collectors.toSet() )
+            .stream().toList();
+   }
+
+   @Override
+   public List<AspectModelFile> files() {
+      return files;
    }
 
    @Override
@@ -51,5 +55,17 @@ public class DefaultAspectModel implements AspectModel {
    @Override
    public Model mergedModel() {
       return mergedModel;
+   }
+
+   public void setFiles( final List<AspectModelFile> files ) {
+      this.files = files;
+   }
+
+   public void setMergedModel( final Model mergedModel ) {
+      this.mergedModel = mergedModel;
+   }
+
+   public void setElements( final List<ModelElement> elements ) {
+      this.elements = elements;
    }
 }

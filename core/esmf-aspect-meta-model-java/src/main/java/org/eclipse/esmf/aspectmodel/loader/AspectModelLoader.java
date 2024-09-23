@@ -13,41 +13,53 @@
 
 package org.eclipse.esmf.aspectmodel.loader;
 
-import static java.util.stream.Collectors.toSet;
-
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelFileLoader;
 import org.eclipse.esmf.aspectmodel.resolver.EitherStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ModelResolutionException;
+import org.eclipse.esmf.aspectmodel.resolver.ModelSource;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategySupport;
 import org.eclipse.esmf.aspectmodel.resolver.fs.FlatModelsRoot;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.DefaultAspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.MetaModelFile;
+import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFile;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.urn.ElementType;
 import org.eclipse.esmf.aspectmodel.urn.UrnSyntaxException;
 import org.eclipse.esmf.aspectmodel.versionupdate.MetaModelVersionMigrator;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.ModelElement;
+import org.eclipse.esmf.metamodel.Namespace;
 import org.eclipse.esmf.metamodel.impl.DefaultAspectModel;
+import org.eclipse.esmf.metamodel.impl.DefaultNamespace;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import com.google.common.collect.Streams;
@@ -62,10 +74,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The core class to load an {@link AspectModel}.
+ * The core class to load an {@link AspectModel}. The AspectModelLoader is also a {@link ModelSource} and allows to list the
+ * contents of its configured {@link ResolutionStrategy}s.
  */
-public class AspectModelLoader implements ResolutionStrategySupport {
+public class AspectModelLoader implements ModelSource, ResolutionStrategySupport {
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelLoader.class );
+   private static final String ASPECT_MODELS_FOLDER = "aspect-models";
 
    public static final Supplier<ResolutionStrategy> DEFAULT_STRATEGY = () -> {
       final Path currentDirectory = Path.of( System.getProperty( "user.dir" ) );
@@ -131,7 +145,7 @@ public class AspectModelLoader implements ResolutionStrategySupport {
             .toList();
       final LoaderContext loaderContext = new LoaderContext();
       resolve( migratedFiles, loaderContext );
-      return buildAspectModel( loaderContext.loadedFiles() );
+      return loadAspectModelFiles( loaderContext.loadedFiles() );
    }
 
    /**
@@ -156,7 +170,22 @@ public class AspectModelLoader implements ResolutionStrategySupport {
          loaderContext.unresolvedUrns().add( inputUrn.toString() );
       }
       resolve( List.of(), loaderContext );
-      return buildAspectModel( loaderContext.loadedFiles() );
+      return loadAspectModelFiles( loaderContext.loadedFiles() );
+   }
+
+   /**
+    * Load an Aspect Model from an input stream and optionally set the source location for this input
+    *
+    * @param inputStream the input stream
+    * @param sourceLocation the source location for the model
+    * @return the Aspect Model
+    */
+   public AspectModel load( final InputStream inputStream, final Optional<URI> sourceLocation ) {
+      final AspectModelFile rawFile = AspectModelFileLoader.load( inputStream, sourceLocation );
+      final AspectModelFile migratedModel = migrate( rawFile );
+      final LoaderContext loaderContext = new LoaderContext();
+      resolve( List.of( migratedModel ), loaderContext );
+      return loadAspectModelFiles( loaderContext.loadedFiles() );
    }
 
    /**
@@ -166,11 +195,86 @@ public class AspectModelLoader implements ResolutionStrategySupport {
     * @return the Aspect Model
     */
    public AspectModel load( final InputStream inputStream ) {
-      final AspectModelFile rawFile = AspectModelFileLoader.load( inputStream );
-      final AspectModelFile migratedModel = migrate( rawFile );
+      return load( inputStream, Optional.empty() );
+   }
+
+   /**
+    * Load a Namespace Package (Archive) from a File
+    *
+    * @param namespacePackage the archive file
+    * @return the Aspect Model
+    */
+   public AspectModel loadNamespacePackage( final File namespacePackage ) {
+      if ( !namespacePackage.exists() || !namespacePackage.isFile() ) {
+         throw new RuntimeException( new FileNotFoundException( "The specified file does not exist or is not a file." ) );
+      }
+
+      try ( final InputStream inputStream = new FileInputStream( namespacePackage ) ) {
+         return loadNamespacePackage( inputStream );
+      } catch ( final IOException e ) {
+         LOG.error( "Error reading the file: {}", namespacePackage.getAbsolutePath(), e );
+         throw new RuntimeException( "Error reading the file: " + namespacePackage.getAbsolutePath(), e );
+      }
+   }
+
+   /**
+    * Load a Namespace Package (Archive) from an InputStream
+    *
+    * @param inputStream the input stream
+    * @return the Aspect Model
+    */
+   public AspectModel loadNamespacePackage( final InputStream inputStream ) {
+      final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      try {
+         inputStream.transferTo( baos );
+      } catch ( final IOException e ) {
+         throw new RuntimeException( e );
+      }
+      final boolean hasAspectModelsFolder = containsFolderInNamespacePackage( new ByteArrayInputStream( baos.toByteArray() ) );
+      return loadNamespacePackageFromStream( new ByteArrayInputStream( baos.toByteArray() ), hasAspectModelsFolder );
+   }
+
+   private AspectModel loadNamespacePackageFromStream( final InputStream inputStream, final boolean hasAspectModelsFolder ) {
+      final List<AspectModelFile> aspectModelFiles = new ArrayList<>();
+
+      try ( final ZipInputStream zis = new ZipInputStream( inputStream ) ) {
+         ZipEntry entry;
+
+         while ( ( entry = zis.getNextEntry() ) != null ) {
+            final boolean isRelevantEntry =
+                  ( hasAspectModelsFolder && entry.getName().contains( String.format( "%s/", ASPECT_MODELS_FOLDER ) ) && entry.getName()
+                        .endsWith( ".ttl" ) )
+                        || ( !hasAspectModelsFolder && entry.getName().endsWith( ".ttl" ) );
+
+            if ( isRelevantEntry ) {
+               final AspectModelFile aspectModelFile = migrate( AspectModelFileLoader.load( zis ) );
+               aspectModelFiles.add( aspectModelFile );
+            }
+         }
+
+         zis.closeEntry();
+      } catch ( final IOException e ) {
+         LOG.error( "Error reading the Archive input stream", e );
+         throw new RuntimeException( "Error reading the Archive input stream", e );
+      }
+
       final LoaderContext loaderContext = new LoaderContext();
-      resolve( List.of( migratedModel ), loaderContext );
-      return buildAspectModel( loaderContext.loadedFiles() );
+      resolve( aspectModelFiles, loaderContext );
+      return loadAspectModelFiles( loaderContext.loadedFiles() );
+   }
+
+   private boolean containsFolderInNamespacePackage( final InputStream inputStream ) {
+      try ( final ZipInputStream zis = new ZipInputStream( inputStream ) ) {
+         ZipEntry entry;
+         while ( ( entry = zis.getNextEntry() ) != null ) {
+            if ( entry.isDirectory() && entry.getName().contains( String.format( "%s/", ASPECT_MODELS_FOLDER ) ) ) {
+               return true;
+            }
+         }
+      } catch ( final IOException e ) {
+         throw new RuntimeException( e );
+      }
+      return false;
    }
 
    private AspectModelFile migrate( final AspectModelFile file ) {
@@ -186,23 +290,6 @@ public class AspectModelLoader implements ResolutionStrategySupport {
       private LoaderContext() {
          this( new HashSet<>(), new HashSet<>(), new ArrayDeque<>(), new ArrayDeque<>() );
       }
-   }
-
-   private Set<String> getAllUrnsInModel( final Model model ) {
-      return Streams.stream( model.listStatements().mapWith( statement -> {
-         final Stream<String> subjectUri = statement.getSubject().isURIResource()
-               ? Stream.of( statement.getSubject().getURI() )
-               : Stream.empty();
-         final Stream<String> propertyUri = Stream.of( statement.getPredicate().getURI() );
-         final Stream<String> objectUri = statement.getObject().isURIResource()
-               ? Stream.of( statement.getObject().asResource().getURI() )
-               : Stream.empty();
-
-         return Stream.of( subjectUri, propertyUri, objectUri )
-               .flatMap( Function.identity() )
-               .flatMap( urn -> AspectModelUrn.from( urn ).toJavaOptional().stream() )
-               .map( AspectModelUrn::toString );
-      } ) ).flatMap( Function.identity() ).collect( toSet() );
    }
 
    /**
@@ -267,7 +354,8 @@ public class AspectModelLoader implements ResolutionStrategySupport {
             .filter( uri -> uri.startsWith( "urn:samm:" ) )
             .forEach( urn -> context.resolvedUrns().add( urn ) );
 
-      getAllUrnsInModel( modelFile.sourceModel() ).stream()
+      RdfUtil.getAllUrnsInModel( modelFile.sourceModel() ).stream()
+            .map( AspectModelUrn::toString )
             .filter( urn -> !context.resolvedUrns().contains( urn ) )
             .filter( urn -> !urn.startsWith( XSD.NS ) )
             .filter( urn -> !urn.startsWith( RDF.uri ) )
@@ -307,31 +395,6 @@ public class AspectModelLoader implements ResolutionStrategySupport {
       }
    }
 
-   private AspectModel buildAspectModel( final Collection<AspectModelFile> inputFiles ) {
-      final Model mergedModel = ModelFactory.createDefaultModel();
-      mergedModel.add( MetaModelFile.metaModelDefinitions() );
-      for ( final AspectModelFile file : inputFiles ) {
-         mergedModel.add( file.sourceModel() );
-      }
-
-      final List<ModelElement> elements = new ArrayList<>();
-      for ( final AspectModelFile file : inputFiles ) {
-         final DefaultAspectModelFile aspectModelFile = new DefaultAspectModelFile( file.sourceModel(), file.headerComment(),
-               file.sourceLocation() );
-         final Model model = file.sourceModel();
-         final ModelElementFactory modelElementFactory = new ModelElementFactory( mergedModel, Map.of(), element -> aspectModelFile );
-         final List<ModelElement> fileElements = model.listStatements( null, RDF.type, (RDFNode) null ).toList().stream()
-               .map( Statement::getSubject )
-               .filter( RDFNode::isURIResource )
-               .map( resource -> mergedModel.createResource( resource.getURI() ) )
-               .map( resource -> modelElementFactory.create( ModelElement.class, resource ) )
-               .toList();
-         aspectModelFile.setElements( fileElements );
-         elements.addAll( fileElements );
-      }
-      return new DefaultAspectModel( mergedModel, elements );
-   }
-
    /**
     * Checks if a given model contains the definition of a model element.
     *
@@ -351,5 +414,160 @@ public class AspectModelLoader implements ResolutionStrategySupport {
       final boolean result = model.contains( model.createResource( urn.toString() ), RDF.type, (RDFNode) null );
       LOG.debug( "Checking if model contains {}: {}", urn, result );
       return result;
+   }
+
+   /**
+    * Creates a new empty Aspect Model.
+    *
+    * @return A new empty Aspect Model
+    */
+   public AspectModel emptyModel() {
+      return new DefaultAspectModel( new ArrayList<>(), ModelFactory.createDefaultModel(), new ArrayList<>() );
+   }
+
+   /**
+    * Creates a new Aspect Model from a collection of {@link AspectModelFile}s. The AspectModelFiles can be {@link RawAspectModelFile}
+    * (i.e., not contain {@link ModelElement} instances yet); this method takes care of instantiating the model elements.
+    *
+    * @param inputFiles the list of input files
+    * @return the Aspect Model
+    */
+   public AspectModel loadAspectModelFiles( final Collection<AspectModelFile> inputFiles ) {
+      final Model mergedModel = ModelFactory.createDefaultModel();
+      mergedModel.add( MetaModelFile.metaModelDefinitions() );
+      for ( final AspectModelFile file : inputFiles ) {
+         mergedModel.add( file.sourceModel() );
+      }
+
+      final List<ModelElement> elements = new ArrayList<>();
+      final List<AspectModelFile> files = new ArrayList<>();
+      final Map<AspectModelFile, MetaModelBaseAttributes> namespaceDefinitions = new HashMap<>();
+      for ( final AspectModelFile file : inputFiles ) {
+         final DefaultAspectModelFile aspectModelFile = new DefaultAspectModelFile( file.sourceModel(), file.headerComment(),
+               file.sourceLocation() );
+         files.add( aspectModelFile );
+         final Model model = file.sourceModel();
+         final ModelElementFactory modelElementFactory = new ModelElementFactory( mergedModel, Map.of(), element -> aspectModelFile );
+         final List<ModelElement> fileElements = model.listStatements( null, RDF.type, (RDFNode) null ).toList().stream()
+               .filter( statement -> !statement.getObject().isURIResource() || !statement.getResource().equals( SammNs.SAMM.Namespace() ) )
+               .map( Statement::getSubject )
+               .filter( RDFNode::isURIResource )
+               .map( resource -> mergedModel.createResource( resource.getURI() ) )
+               .map( resource -> modelElementFactory.create( ModelElement.class, resource ) )
+               .toList();
+         aspectModelFile.setElements( fileElements );
+         elements.addAll( fileElements );
+      }
+
+      setNamespaces( files, elements );
+      return new DefaultAspectModel( files, mergedModel, elements );
+   }
+
+   /**
+    * Sets up the namespace references in the collection of newly created AspectModelFiles
+    *
+    * @param files the files
+    * @param elements the collection of all model elements across all files
+    */
+   private void setNamespaces( final Collection<AspectModelFile> files, final Collection<ModelElement> elements ) {
+      final Map<String, List<ModelElement>> elementsGroupedByNamespaceUrn = elements.stream()
+            .filter( element -> !element.isAnonymous() )
+            .collect( Collectors.groupingBy( element -> element.urn().getNamespaceIdentifier() ) );
+      for ( final AspectModelFile file : files ) {
+         final Optional<String> optionalNamespaceUrn =
+               Optional.ofNullable( file.sourceModel().getNsPrefixURI( "" ) )
+                     .map( urnPrefix -> urnPrefix.split( "#" )[0] )
+                     .or( () -> file.elements().stream()
+                           .filter( element -> !element.isAnonymous() )
+                           .map( element -> element.urn().getNamespaceIdentifier() )
+                           .findAny() );
+         if ( optionalNamespaceUrn.isEmpty() ) {
+            continue;
+         }
+
+         final String namespaceUrn = optionalNamespaceUrn.get();
+         MetaModelBaseAttributes namespaceDefinition = null;
+         AspectModelFile fileContainingNamespaceDefinition = null;
+         final List<ModelElement> elementsForUrn = elementsGroupedByNamespaceUrn.get( namespaceUrn );
+         if ( elementsForUrn != null ) {
+            for ( final ModelElement element : elementsForUrn ) {
+               final AspectModelFile elementFile = element.getSourceFile();
+               if ( elementFile.sourceModel().contains( null, RDF.type, SammNs.SAMM.Namespace() ) ) {
+                  final Model model = elementFile.sourceModel();
+                  final ModelElementFactory modelElementFactory = new ModelElementFactory( model, Map.of(), r -> null );
+                  final Resource namespaceResource = model.listStatements( null, RDF.type, SammNs.SAMM.Namespace() )
+                        .mapWith( Statement::getSubject )
+                        .toList().iterator().next();
+                  namespaceDefinition = modelElementFactory.createBaseAttributes( namespaceResource );
+                  fileContainingNamespaceDefinition = elementFile;
+                  break;
+               }
+            }
+         }
+
+         final Namespace namespace = new DefaultNamespace( namespaceUrn, elementsGroupedByNamespaceUrn.get( namespaceUrn ),
+               Optional.ofNullable( fileContainingNamespaceDefinition ), Optional.ofNullable( namespaceDefinition ) );
+         ( (DefaultAspectModelFile) file ).setNamespace( namespace );
+      }
+   }
+
+   /**
+    * Creates a new Aspect Model that contains the closure of two input Aspect Models
+    *
+    * @param aspectModel1 the first input Aspect Model
+    * @param aspectModel2 the second input Aspect Model
+    * @return the merged Aspect Model
+    */
+   public AspectModel merge( final AspectModel aspectModel1, final AspectModel aspectModel2 ) {
+      final List<AspectModelFile> files = new ArrayList<>( aspectModel1.files() );
+      final Set<URI> locations = aspectModel1.files().stream()
+            .flatMap( f -> f.sourceLocation().stream() )
+            .collect( Collectors.toSet() );
+      for ( final AspectModelFile file : aspectModel2.files() ) {
+         file.sourceLocation().filter( uri -> !locations.contains( uri ) ).ifPresent( uri -> files.add( file ) );
+      }
+      return loadAspectModelFiles( files );
+   }
+
+   /**
+    * Lists the URIs of all Aspect Model files for all configured resolution strategies
+    *
+    * @return the URIs
+    */
+   @Override
+   public Stream<URI> listContents() {
+      return resolutionStrategy.listContents();
+   }
+
+   /**
+    * Lists the URIs of all Aspect Model files for a given namespace for all configured resolution strategies
+    *
+    * @param namespace the namespace
+    * @return the URIs
+    */
+   @Override
+   public Stream<URI> listContentsForNamespace( final AspectModelUrn namespace ) {
+      return resolutionStrategy.listContentsForNamespace( namespace );
+   }
+
+   /**
+    * Returns all loadable Aspect Model files from all configured resolution strategies
+    *
+    * @return the Aspect Model files
+    */
+   @Override
+   public Stream<AspectModelFile> loadContents() {
+      return resolutionStrategy.loadContents();
+   }
+
+   /**
+    * Returns all loadable Aspect Model files for a given namespace from all configured resolution strategies
+    *
+    * @param namespace the namespace
+    * @return the Aspect Model files
+    */
+   @Override
+   public Stream<AspectModelFile> loadContentsForNamespace( final AspectModelUrn namespace ) {
+      return resolutionStrategy.loadContentsForNamespace( namespace );
    }
 }

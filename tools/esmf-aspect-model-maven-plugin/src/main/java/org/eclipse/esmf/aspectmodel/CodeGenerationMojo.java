@@ -55,12 +55,12 @@ public abstract class CodeGenerationMojo extends AspectModelMojo {
 
    protected String determinePackageName( final Aspect aspect ) {
       if ( packageName == null || packageName.isEmpty() ) {
-         return aspect.urn().getNamespace();
+         return aspect.urn().getNamespaceMainPart();
       }
 
       final AspectModelUrn urn = aspect.urn();
       final VersionNumber versionNumber = VersionNumber.parse( urn.getVersion() );
-      final String interpolated = packageName.replace( "{{namespace}}", urn.getNamespace() )
+      final String interpolated = packageName.replace( "{{namespace}}", urn.getNamespaceMainPart() )
             .replace( "{{majorVersion}}", "" + versionNumber.getMajor() )
             .replace( "{{minorVersion}}", "" + versionNumber.getMinor() )
             .replace( "{{microVersion}}", "" + versionNumber.getMicro() );

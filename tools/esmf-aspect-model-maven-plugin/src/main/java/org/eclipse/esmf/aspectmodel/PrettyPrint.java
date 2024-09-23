@@ -33,12 +33,12 @@ public class PrettyPrint extends AspectModelMojo {
    private static final Logger LOG = LoggerFactory.getLogger( PrettyPrint.class );
 
    @Override
-   public void execute() throws MojoExecutionException, MojoFailureException {
+   public void executeGeneration() throws MojoExecutionException, MojoFailureException {
       validateParameters();
 
       for ( final AspectModel aspectModel : loadModels() ) {
          final Aspect aspect = aspectModel.aspect();
-         final String formatted = AspectSerializer.INSTANCE.apply( aspect );
+         final String formatted = AspectSerializer.INSTANCE.aspectToString( aspect );
          final String aspectModelFileName = String.format( "%s.ttl", aspect.getName() );
          try ( final FileOutputStream streamForFile = getOutputStreamForFile( aspectModelFileName, outputDirectory );
                final PrintWriter writer = new PrintWriter( streamForFile ) ) {

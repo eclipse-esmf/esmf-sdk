@@ -18,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 // tag::imports[]
 import java.io.File;
 
+import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.metamodel.AspectModel;
@@ -31,15 +32,25 @@ public class SerializeAspectModel {
       // tag::serialize[]
       // AspectModel as returned by the AspectModelLoader
       final AspectModel aspectModel = // ...
-            // end::generate[]
+            // end::serialize[]
             new AspectModelLoader().load(
                   new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) );
       // tag::serialize[]
 
       // A String that contains the pretty printed Aspect Model
       final String aspectString =
-          AspectSerializer.INSTANCE.apply( aspectModel.aspect() );
+            AspectSerializer.INSTANCE.aspectToString( aspectModel.aspect() );
       // end::serialize[]
+
+      // tag::serializeFile[]
+      AspectModelFile aspectModelFile = // ...
+            // end::serializeFile[]
+            aspectModel.aspect().getSourceFile();
+      // tag::serializeFile[]
+      final String fileString =
+            AspectSerializer.INSTANCE.aspectModelFileToString( aspectModelFile );
+
+      // end::serializeFile[]
       assertThat( aspectString ).contains( ":Movement a samm:Aspect" );
       assertThat( aspectString ).contains( ":isMoving a samm:Property" );
    }

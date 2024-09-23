@@ -18,8 +18,8 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 import org.eclipse.esmf.AbstractCommand;
-import org.eclipse.esmf.ExternalResolverMixin;
 import org.eclipse.esmf.LoggingMixin;
+import org.eclipse.esmf.ResolverConfigurationMixin;
 import org.eclipse.esmf.aspect.AspectToCommand;
 import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfig;
 import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfigBuilder;
@@ -34,8 +34,7 @@ import picocli.CommandLine;
       description = "Generate Java domain classes for an Aspect Model",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n",
-      mixinStandardHelpOptions = true
+      optionListHeading = "%n@|bold Options|@:%n"
 )
 public class AspectToJavaCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "java";
@@ -68,11 +67,11 @@ public class AspectToJavaCommand extends AbstractCommand {
    private LoggingMixin loggingMixin;
 
    @CommandLine.Mixin
-   private ExternalResolverMixin customResolver;
+   private ResolverConfigurationMixin resolverConfiguration;
 
    @Override
    public void run() {
-      final Aspect aspect = loadAspectOrFail( parentCommand.parentCommand.getInput(), customResolver );
+      final Aspect aspect = loadAspectOrFail( parentCommand.parentCommand.getInput(), resolverConfiguration );
       final JavaGenerator javaGenerator = generateStaticMetaModelJavaClasses
             ? getStaticModelGenerator( aspect )
             : getModelGenerator( aspect );
@@ -87,7 +86,7 @@ public class AspectToJavaCommand extends AbstractCommand {
       final File templateLibFile = Path.of( templateLib ).toFile();
       final String pkgName = Optional.ofNullable( packageName )
             .flatMap( pkg -> pkg.isBlank() ? Optional.empty() : Optional.of( pkg ) )
-            .orElseGet( () -> aspect.urn().getNamespace() );
+            .orElseGet( () -> aspect.urn().getNamespaceMainPart() );
       return JavaCodeGenerationConfigBuilder.builder()
             .executeLibraryMacros( executeLibraryMacros )
             .templateLibFile( templateLibFile )

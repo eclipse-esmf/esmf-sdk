@@ -1,0 +1,10 @@
+paths:
+  __DEFAULT_QUERIES_TEMPLATE__:
+    get:
+      responses:
+        '400':
+          $ref: "core-api.yaml#/components/responses/ClientError"
+        '401':
+          $ref: "core-api.yaml#/components/responses/Unauthorized"
+        '403':
+          $ref: "core-api.yaml#/components/responses/Forbidden"

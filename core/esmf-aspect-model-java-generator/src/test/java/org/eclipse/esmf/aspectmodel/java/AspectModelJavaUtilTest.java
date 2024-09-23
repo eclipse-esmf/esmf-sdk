@@ -13,7 +13,10 @@
 
 package org.eclipse.esmf.aspectmodel.java;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Value;
@@ -22,6 +25,9 @@ import org.eclipse.esmf.test.shared.arbitraries.PropertyBasedTest;
 import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
 import net.jqwik.api.Tuple;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class AspectModelJavaUtilTest extends PropertyBasedTest {
    private boolean isValidJavaIdentifier( final String value ) {
@@ -43,4 +49,25 @@ public class AspectModelJavaUtilTest extends PropertyBasedTest {
       final String result = AspectModelJavaUtil.generateEnumKey( tuple.get2() );
       return isValidJavaIdentifier( result );
    }
+
+   @ParameterizedTest
+   @MethodSource
+   void generatedEnumKeysAreExpectedEnumNames( final String enumValueName, final String expectedEnumValueName ) {
+      final String result = AspectModelJavaUtil.toConstant( enumValueName );
+      assertThat( result ).isEqualTo( expectedEnumValueName );
+   }
+
+   static Stream<Arguments> generatedEnumKeysAreExpectedEnumNames() {
+      return Stream.of(
+            Arguments.arguments( "ABC", "ABC" ),
+            Arguments.arguments( "abc", "ABC" ),
+            Arguments.arguments( "someEnum", "SOME_ENUM" ),
+            Arguments.arguments( "SOME_ENUM", "SOME_ENUM" ),
+            Arguments.arguments( "SomeEnum", "SOME_ENUM" ),
+            Arguments.arguments( "aB", "A_B" ),
+            Arguments.arguments( "aBc", "A_BC" ),
+            Arguments.arguments( "a_b_c", "A_B_C" )
+      );
+   }
+
 }
