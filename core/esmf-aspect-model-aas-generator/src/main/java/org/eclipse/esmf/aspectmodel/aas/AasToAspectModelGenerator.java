@@ -173,15 +173,8 @@ public class AasToAspectModelGenerator {
             .collect( Collectors.toList() );
    }
 
-   private <T> Collector<T, ArrayDeque<T>, ArrayDeque<T>> reverseOrder() {
-      return Collector.of( ArrayDeque::new, ArrayDeque::addFirst, ( deque1, deque2 ) -> {
-         deque2.addAll( deque1 );
-         return deque2;
-      } );
-   }
-
    private String iriToReversedHostNameNotation( final IRI iri ) {
-      URI uri;
+      final URI uri;
       try {
          uri = URI.create( iri.toString().contains( "://" ) ? iri.toString() : "https://" + iri );
       } catch ( IllegalArgumentException e ) {
