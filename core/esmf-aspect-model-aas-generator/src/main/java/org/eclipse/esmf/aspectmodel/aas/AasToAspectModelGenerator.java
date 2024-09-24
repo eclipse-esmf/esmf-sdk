@@ -195,7 +195,7 @@ public class AasToAspectModelGenerator {
             .filter( StringUtils::isNotBlank )
             .collect( Collectors.joining( "." ) );
 
-      return reversedHost + "." + path;
+      return reversedHost + ( path.isEmpty() ? "" : "." + path );
    }
 
    private Optional<IRI> iri( final String lexicalRepresentation ) {
