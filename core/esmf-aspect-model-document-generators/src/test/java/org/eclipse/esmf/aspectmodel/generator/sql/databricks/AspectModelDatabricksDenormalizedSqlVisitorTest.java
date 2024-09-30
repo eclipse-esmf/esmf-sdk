@@ -24,7 +24,7 @@ import org.eclipse.esmf.test.TestAspect;
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings( "checkstyle:LineLength" )
-public class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase {
+class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase {
    @Test
    void testAspectWithAbstractEntity() {
       assertThat( sql( TestAspect.ASPECT_WITH_ABSTRACT_ENTITY ) ).isEqualTo( """
@@ -319,7 +319,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksT
    void testAspectWithNestedEntityList() {
       assertThat( sql( TestAspect.ASPECT_WITH_NESTED_ENTITY_LIST ) ).isEqualTo( """
             CREATE TABLE IF NOT EXISTS aspect_with_nested_entity_list (
-              test_list ARRAY<STRUCT<test_string: STRING NOT NULL, test_int: INT NOT NULL, test_float: FLOAT NOT NULL, test_second_list: STRUCT<test_local_date_time: TIMESTAMP NOT NULL, random_value: STRING NOT NULL> NOT NULL>> NOT NULL
+              test_list ARRAY<STRUCT<test_string: STRING NOT NULL, test_int: INT NOT NULL, test_float: FLOAT NOT NULL, test_second_list: STRUCT<test_local_date_time: TIMESTAMP, random_value: STRING> NOT NULL>> NOT NULL
             )
             TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithNestedEntityList');
             """ );
