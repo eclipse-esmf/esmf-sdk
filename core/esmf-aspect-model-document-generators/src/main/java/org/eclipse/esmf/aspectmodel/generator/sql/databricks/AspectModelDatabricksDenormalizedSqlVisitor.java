@@ -257,13 +257,13 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
             .getDescription( config.commentLanguage() ) )
             : Optional.empty();
       final String typeDef = type.isComplexType()
-            ? entityToStruct( type.as( ComplexType.class ) ).toString()
+            ? entityToStruct( type.as( ComplexType.class ), false ).toString()
             : type.accept( this, context );
       return column( context.prefix(), "ARRAY<" + typeDef + ">", property.isOptional() || context.forceOptional(),
             comment );
    }
 
-   private DatabricksType.DatabricksStruct entityToStruct( final ComplexType entity ) {
+   private DatabricksType.DatabricksStruct entityToStruct( final ComplexType entity, final boolean isInsideNestedType ) {
       return new DatabricksType.DatabricksStruct( entity.getAllProperties().stream()
             .flatMap( property -> {
                if ( property.getDataType().isEmpty() || property.isNotInPayload() ) {
@@ -274,12 +274,15 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
                if ( type instanceof final Scalar scalar ) {
                   databricksType = databricksTypeMap.get( scalar.getUrn() );
                } else if ( type instanceof final Entity entityType ) {
-                  databricksType = entityToStruct( entityType );
+                  databricksType = entityToStruct( entityType, true );
                } else {
                   return Stream.empty();
                }
+
+               boolean isOptional = isInsideNestedType || property.isOptional();
+
                return Stream.of( new DatabricksType.DatabricksStructEntry( columnName( property ), databricksType,
-                     property.isOptional(), Optional.ofNullable( property.getDescription( config.commentLanguage() ) ) ) );
+                     isOptional, Optional.ofNullable( property.getDescription( config.commentLanguage() ) ) ) );
             } )
             .toList() );
    }
