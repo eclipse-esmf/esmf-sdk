@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -172,28 +173,29 @@ public class AasToAspectModelGenerator {
             .collect( Collectors.toList() );
    }
 
-   protected String escapeUrnNamespacePart( final String namespacePart ) {
-      if ( namespacePart.matches( AspectModelUrn.NAMESPACE_REGEX_PART ) ) {
-         return namespacePart;
-      }
-      throw new AspectModelGenerationException( "Encountered URI with invalid namespace part: " + namespacePart );
-   }
-
-   private <T> Collector<T, ArrayDeque<T>, ArrayDeque<T>> reverseOrder() {
-      return Collector.of( ArrayDeque::new, ArrayDeque::addFirst, ( deque1, deque2 ) -> {
-         deque2.addAll( deque1 );
-         return deque2;
-      } );
-   }
-
    private String iriToReversedHostNameNotation( final IRI iri ) {
-      final URI uri = URI.create( iri.toString().contains( "://" ) ? iri.toString() : "https://" + iri );
-      return Stream.concat(
-                  Arrays.stream( uri.getHost().split( "\\." ) ).collect( reverseOrder() ).stream(),
-                  Arrays.stream( uri.getPath().split( "/" ) ) )
+      final URI uri;
+      try {
+         uri = URI.create( iri.toString().contains( "://" ) ? iri.toString() : "https://" + iri );
+      } catch ( IllegalArgumentException e ) {
+         throw new IllegalArgumentException( "Incorrect IRI: " + iri, e );
+      }
+
+      if ( uri.getHost() == null ) {
+         throw new IllegalArgumentException( "URI doesn't contain host: " + uri );
+      }
+
+      final String[] hostParts = uri.getHost().split( "\\." );
+      final List<String> hostPartsList = Arrays.asList( hostParts );
+      Collections.reverse( hostPartsList );
+      final String reversedHost = String.join( ".", hostPartsList );
+
+      final String[] pathParts = uri.getPath().split( "/" );
+      final String path = Arrays.stream( pathParts )
             .filter( StringUtils::isNotBlank )
-            .map( this::escapeUrnNamespacePart )
             .collect( Collectors.joining( "." ) );
+
+      return reversedHost + ( path.isEmpty() ? "" : "." + path );
    }
 
    private Optional<IRI> iri( final String lexicalRepresentation ) {
