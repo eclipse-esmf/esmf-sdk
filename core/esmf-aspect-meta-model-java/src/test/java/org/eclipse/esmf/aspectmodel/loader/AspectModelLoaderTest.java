@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolverTest;
 import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
 import org.eclipse.esmf.metamodel.AbstractEntity;
@@ -44,8 +45,8 @@ class AspectModelLoaderTest {
 
    @Test
    void loadAspectModelWithoutCharacteristicDatatype() {
-      assertThatThrownBy( () -> new AspectModelLoader().load( AspectModelLoaderTest.class.getResourceAsStream(
-            String.format( "/%s/invalid_characteristic_datatype.ttl", KnownVersion.SAMM_2_1_0 ) ) ) )
+      assertThatThrownBy( () -> new AspectModelLoader().load( AspectModelResolverTest.class.getResourceAsStream(
+            String.format( "/%s/invalid_characteristic_datatype.ttl", KnownVersion.SAMM_2_1_0.toString().toLowerCase() ) ) ) )
             .isInstanceOf( IllegalStateException.class )
             .hasMessage( "No datatype is defined on the Characteristic instance 'Characteristic1: '." );
    }
