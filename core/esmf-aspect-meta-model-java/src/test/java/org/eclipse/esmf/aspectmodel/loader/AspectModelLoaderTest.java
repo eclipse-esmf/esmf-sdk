@@ -14,6 +14,7 @@
 package org.eclipse.esmf.aspectmodel.loader;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,6 +41,15 @@ import org.eclipse.esmf.test.TestResources;
 import org.junit.jupiter.api.Test;
 
 class AspectModelLoaderTest {
+
+   @Test
+   void loadAspectModelWithoutCharacteristicDatatype() {
+      assertThatThrownBy( () -> new AspectModelLoader().load( AspectModelLoaderTest.class.getResourceAsStream(
+            String.format( "/%s/invalid_characteristic_datatype.ttl", KnownVersion.SAMM_2_1_0 ) ) ) )
+            .isInstanceOf( IllegalStateException.class )
+            .hasMessage( "No datatype is defined on the Characteristic instance 'Characteristic1: '." );
+   }
+
    @Test
    void testOfAbstractEntityCyclomaticCreation() {
       final Map<String, ComplexType> entities =

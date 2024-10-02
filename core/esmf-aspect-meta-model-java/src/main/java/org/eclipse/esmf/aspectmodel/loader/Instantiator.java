@@ -116,7 +116,14 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
    private Statement getDataType( final Resource resource ) {
       return Optional.ofNullable( resource.getPropertyResourceValue( SammNs.SAMMC.baseCharacteristic() ) )
             .map( this::getDataType )
-            .orElseGet( () -> resource.getProperty( SammNs.SAMM.dataType() ) );
+            .orElseGet( () -> {
+               final Statement dataType = resource.getProperty( SammNs.SAMM.dataType() );
+               if ( dataType == null ) {
+                  throw new IllegalStateException(
+                        String.format( "No datatype is defined on the Characteristic instance '%s: '.", resource.getLocalName() ) );
+               }
+               return dataType;
+            } );
    }
 
    protected Optional<Characteristic> getElementCharacteristic( final Resource collection ) {
