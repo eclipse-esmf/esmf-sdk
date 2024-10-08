@@ -27,7 +27,6 @@ import org.apache.jena.riot.tokens.TokenizerText;
 import org.apache.jena.sparql.util.Context;
 
 public class ReaderRiotTurtle implements ReaderRIOT {
-
    public static ReaderRIOTFactory factory = ReaderRiotTurtle::new;
 
    private final Lang lang;

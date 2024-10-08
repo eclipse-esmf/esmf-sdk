@@ -19,19 +19,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
+
 import javax.annotation.Nullable;
 
 import org.eclipse.esmf.aspectmodel.resolver.parser.PlainTextFormatter;
 import org.eclipse.esmf.aspectmodel.resolver.parser.RdfTextFormatter;
 import org.eclipse.esmf.aspectmodel.resolver.parser.SmartToken;
+import org.eclipse.esmf.aspectmodel.resolver.parser.TokenRegistry;
 
 import com.google.common.collect.Ordering;
-import org.apache.jena.graph.AnyNode;
-import org.apache.jena.graph.BlankNode;
-import org.apache.jena.graph.LiteralNode;
-import org.apache.jena.graph.Node;
-import org.apache.jena.graph.UriNode;
-import org.apache.jena.graph.VariableNode;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFList;
 import org.apache.jena.rdf.model.RDFNode;
@@ -355,19 +351,6 @@ public class RustLikeFormatter {
    }
 
    private static SmartToken extractToken( final RDFNode rdfNode ) {
-      final Node node = rdfNode.asNode();
-      if ( node instanceof final AnyNode an ) {
-         return an.getToken();
-      } else if ( node instanceof final BlankNode bn ) {
-         return bn.getToken();
-      } else if ( node instanceof final LiteralNode ln ) {
-         return ln.getToken();
-      } else if ( node instanceof final UriNode un ) {
-         return un.getToken();
-      } else if ( node instanceof final VariableNode vn ) {
-         return vn.getToken();
-      } else {
-         return null;
-      }
+      return TokenRegistry.getToken( rdfNode.asNode() ).orElse( null );
    }
 }

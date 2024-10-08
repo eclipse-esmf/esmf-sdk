@@ -21,6 +21,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
 import javax.annotation.Nullable;
 
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
@@ -29,11 +30,11 @@ import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 
 import io.vavr.control.Try;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.Lang;
-import org.apache.jena.riot.RDFLanguages;
+import org.apache.jena.riot.RDFParser;
 import org.apache.jena.riot.RDFParserRegistry;
 import org.apache.jena.riot.RiotException;
+import org.apache.jena.riot.system.FactoryRDFStd;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,10 +87,15 @@ public final class TurtleLoader {
    public static Try<Model> loadTurtle( @Nullable final String modelContent ) {
       Objects.requireNonNull( modelContent, "Model content must not be null." );
       SammXsdType.setupTypeMapping();
-      final Model streamModel = ModelFactory.createDefaultModel();
       registerTurtle();
       try ( final InputStream turtleInputStream = new ByteArrayInputStream( modelContent.getBytes( StandardCharsets.UTF_8 ) ) ) {
-         streamModel.read( turtleInputStream, "", RDFLanguages.TURTLE.getName() );
+         final Model streamModel = RDFParser.create()
+               // Make sure to NOT use FactoryRDFCaching because it will return the same objects for nodes appearing
+               // in different places of a source document, which would break functionality of the TokenRegistry.
+               .factory( new FactoryRDFStd() )
+               .source( turtleInputStream )
+               .lang( Lang.TURTLE )
+               .toModel();
          return Try.success( streamModel );
       } catch ( final IllegalArgumentException exception ) {
          LOG.error( "Invalid value encountered in Aspect Model.", exception );
