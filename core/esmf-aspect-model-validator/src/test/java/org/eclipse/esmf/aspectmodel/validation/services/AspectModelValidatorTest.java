@@ -18,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.MetaModelFile;
 import org.eclipse.esmf.aspectmodel.shacl.fix.Fix;
@@ -33,7 +34,7 @@ import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestProperty;
 import org.eclipse.esmf.test.TestResources;
 
-import com.github.jsonldjava.shaded.com.google.common.base.Supplier;
+import io.vavr.control.Either;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
@@ -192,6 +193,18 @@ class AspectModelValidatorTest {
       final AspectModel aspectModel = TestResources.load( TestAspect.MODEL_WITH_BROKEN_CYCLES );
       final List<Violation> report = service.validateModel( aspectModel );
       assertThat( report ).isEmpty();
+   }
+
+   @Test
+   void testLoadWithValidation() {
+      final Supplier<AspectModel> versionedModel = () -> TestResources.load( TestAspect.ASPECT_WITH_ENTITY );
+      final Either<List<Violation>, AspectModel> model = service.loadModel( versionedModel );
+      if ( model.isLeft() ) {
+         final List<Violation> violations = model.getLeft();
+         final String report = new DetailedViolationFormatter().apply( violations );
+         System.out.println( report );
+      }
+      assertThat( model.isRight() ).isTrue();
    }
 
    private List<Violation> cycles( final String... cycles ) {
