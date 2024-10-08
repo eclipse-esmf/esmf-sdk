@@ -30,13 +30,14 @@ import java.util.stream.Collectors;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.RdfUtil;
+import org.eclipse.esmf.aspectmodel.resolver.parser.SmartToken;
+import org.eclipse.esmf.aspectmodel.resolver.parser.TokenRegistry;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.jena.datatypes.RDFDatatype;
-import org.apache.jena.graph.BlankNodeId;
 import org.apache.jena.graph.Graph;
 import org.apache.jena.graph.NodeVisitor;
 import org.apache.jena.graph.Node_ANY;
@@ -47,8 +48,6 @@ import org.apache.jena.graph.Node_Triple;
 import org.apache.jena.graph.Node_URI;
 import org.apache.jena.graph.Node_Variable;
 import org.apache.jena.graph.Triple;
-import org.apache.jena.graph.UriNode;
-import org.apache.jena.graph.impl.LiteralLabel;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -108,17 +107,16 @@ public class PrettyPrinter {
          final StmtIterator iterator = resource.getModel().listStatements( resource, RDF.type, (RDFNode) null );
          if ( iterator.hasNext() ) {
             final Statement statement = iterator.next();
-            if ( statement.getSubject().asNode() instanceof final UriNode uriNode ) {
-               return uriNode.getToken().line();
-            } else {
-               // This happens when the model was not loaded using the esmf-sdk customized RDF parser, e.g.
-               // for programmatically created models.
-               // Fall back to inherent RDF order (i.e. no order). At least try to keep samm:Aspect on the top.
-               if ( statement.getObject().isURIResource() && statement.getResource().equals( SammNs.SAMM.Aspect() ) ) {
-                  return 0;
-               }
-               return 1;
-            }
+            return TokenRegistry.getToken( statement.getSubject().asNode() )
+                  .map( SmartToken::line )
+                  .orElseGet( () -> {
+                     // This happens when the model was not loaded using the esmf-sdk customized RDF parser, e.g.
+                     // for programmatically created models.
+                     // Fall back to inherent RDF order (i.e. no order). At least try to keep samm:Aspect on the top.
+                     return statement.getObject().isURIResource() && statement.getResource().equals( SammNs.SAMM.Aspect() )
+                           ? 0
+                           : 1;
+                  } );
          }
          return Integer.MAX_VALUE;
       } );
@@ -464,13 +462,13 @@ public class PrettyPrinter {
       }
 
       @Override
-      public Object visitBlank( final Node_Blank it, final BlankNodeId id ) {
+      public Object visitBlank( final Node_Blank it, final String id ) {
          return it.toString();
       }
 
       @Override
-      public Object visitLiteral( final Node_Literal it, final LiteralLabel lit ) {
-         String lf = it.getLiteralLexicalForm();
+      public Object visitLiteral( final Node_Literal it, final String lex, final String lang, final RDFDatatype dtype ) {
+         String lf = lex;
          final String singleQuote = "'";
          if ( lf.contains( singleQuote ) ) {
             lf = lf.replace( singleQuote, "\\'" );

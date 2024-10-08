@@ -18,6 +18,7 @@ import static org.graalvm.nativeimage.hosted.RuntimeClassInitialization.initiali
 import java.util.List;
 
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.internal.util.ReflectionHelper;
+import org.eclipse.digitaltwin.aas4j.v3.model.LangStringTextType;
 import org.graalvm.nativeimage.Platform;
 import org.graalvm.nativeimage.Platforms;
 import org.graalvm.nativeimage.hosted.Feature;
@@ -35,6 +36,8 @@ public class AasReflection extends AbstractSammCliFeature {
       registerClassesInPackage( ReflectionHelper.DEFAULT_IMPLEMENTATION_PACKAGE_NAME );
       registerClassesInPackage( ReflectionHelper.JSON_MIXINS_PACKAGE_NAME );
       registerClassesInPackage( ReflectionHelper.XML_MIXINS_PACKAGE_NAME );
+
+      register( LangStringTextType[].class );
    }
 
    @Override
