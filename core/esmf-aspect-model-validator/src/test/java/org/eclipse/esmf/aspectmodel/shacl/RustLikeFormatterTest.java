@@ -31,7 +31,7 @@ public class RustLikeFormatterTest {
    void testMiddleStatement() {
       final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
-
+            
             :Foo a :TestClass ;
               :firstProperty 1 ;
               :secondProperty 2 .
@@ -47,7 +47,7 @@ public class RustLikeFormatterTest {
    void testLastStatement() {
       final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
-
+            
             :Foo a :TestClass ;
               :firstProperty 1 ;
               :secondProperty 2 .
@@ -63,7 +63,7 @@ public class RustLikeFormatterTest {
    void testMultipleStatementsSameLine() {
       final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
-
+            
             :Foo a :TestClass ;
               :firstProperty 1 ; :secondProperty 2 .
             """ );
@@ -78,7 +78,7 @@ public class RustLikeFormatterTest {
    void testMultiSubjectSameLine() {
       final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
-
+            
             :Foo a :TestClass ; :property 1 . :Bar a :TestClass ; :property 2 .
             """ );
 
@@ -92,7 +92,7 @@ public class RustLikeFormatterTest {
    void testAnonymousNodes() {
       final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
-
+            
             :Foo a :TestClass ;
               :testProperty [ a :MyType ] .
             """ );
@@ -107,7 +107,7 @@ public class RustLikeFormatterTest {
    void testMultilineAnonymousNode() {
       final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
-
+            
             :Foo a :TestClass ;
               :prop1 [
                 :prop2 23 ;
@@ -124,7 +124,7 @@ public class RustLikeFormatterTest {
    void testMultilineAnonymousNodeMiddlePart() {
       final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
-
+            
             :Foo a :TestClass ;
               :prop1 [
                 :prop2 23 ;
@@ -141,7 +141,7 @@ public class RustLikeFormatterTest {
    void testEmptyList() {
       final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
-
+            
             :Foo a :TestClass ;
               :listProperty () .
             """ );
@@ -156,7 +156,7 @@ public class RustLikeFormatterTest {
    void testList() {
       final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
-
+            
             :Foo a :TestClass ;
               :listProperty ( :firstValue :secondValue ) .
             """ );
@@ -171,7 +171,7 @@ public class RustLikeFormatterTest {
    void testMultilineListStarted() {
       final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
-
+            
             :Foo a :TestClass ;
               :listProperty ( :firstValue
               :secondValue ) .
@@ -187,7 +187,7 @@ public class RustLikeFormatterTest {
    void testMultilineListFinished() {
       final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
-
+            
             :Foo a :TestClass ;
               :listProperty ( :firstValue
               :secondValue :thirdValue ) .
@@ -203,7 +203,7 @@ public class RustLikeFormatterTest {
    void testListWithAnonymousNodes() {
       final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
-
+            
             :Foo a :TestClass ;
               :listProperty ( :firstValue [ :property :prop2; :name "givenName"; ] ) .
             """ );
@@ -218,7 +218,7 @@ public class RustLikeFormatterTest {
    void testDenseFormatting() {
       final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
-
+            
             :Foo a :TestClass;:property 1.:Bar a :TestClass;:property 2.
             """ );
 
