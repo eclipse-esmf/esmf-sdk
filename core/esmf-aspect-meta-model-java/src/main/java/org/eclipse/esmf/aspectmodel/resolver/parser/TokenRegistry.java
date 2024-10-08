@@ -35,13 +35,13 @@ public class TokenRegistry {
     * For this reason, Guava MapMaker with weakKeys() is used for the map implementation, is it defaults to object
     * identity for comparison.
     */
-   private final static Map<Node, SmartToken> tokens = new MapMaker().weakKeys().makeMap();
+   private static final Map<Node, SmartToken> TOKENS = new MapMaker().weakKeys().makeMap();
 
    public static void put( final Node node, final SmartToken token ) {
-      tokens.put( node, token );
+      TOKENS.put( node, token );
    }
 
    public static Optional<SmartToken> getToken( final Node node ) {
-      return Optional.ofNullable( tokens.get( node ) );
+      return Optional.ofNullable( TOKENS.get( node ) );
    }
 }
