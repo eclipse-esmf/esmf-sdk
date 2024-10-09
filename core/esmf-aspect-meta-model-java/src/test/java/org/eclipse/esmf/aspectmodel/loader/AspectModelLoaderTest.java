@@ -28,7 +28,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolverTest;
+import org.eclipse.esmf.aspectmodel.AspectLoadingException;
 import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
 import org.eclipse.esmf.metamodel.AbstractEntity;
@@ -36,6 +36,7 @@ import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.HasDescription;
 import org.eclipse.esmf.samm.KnownVersion;
+import org.eclipse.esmf.test.InvalidTestAspect;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
@@ -45,9 +46,8 @@ class AspectModelLoaderTest {
 
    @Test
    void loadAspectModelWithoutCharacteristicDatatype() {
-      assertThatThrownBy( () -> new AspectModelLoader().load( AspectModelResolverTest.class.getResourceAsStream(
-            String.format( "/%s/invalid_characteristic_datatype.ttl", KnownVersion.SAMM_2_1_0.toString().toLowerCase() ) ) ) )
-            .isInstanceOf( IllegalStateException.class )
+      assertThatThrownBy( () -> TestResources.load( InvalidTestAspect.INVALID_CHARACTERISTIC_DATATYPE ) )
+            .isInstanceOf( AspectLoadingException.class )
             .hasMessage( "No datatype is defined on the Characteristic instance 'Characteristic1: '." );
    }
 

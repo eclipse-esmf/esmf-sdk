@@ -119,7 +119,7 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
             .orElseGet( () -> {
                final Statement dataType = resource.getProperty( SammNs.SAMM.dataType() );
                if ( dataType == null ) {
-                  throw new IllegalStateException(
+                  throw new AspectLoadingException(
                         String.format( "No datatype is defined on the Characteristic instance '%s: '.", resource.getLocalName() ) );
                }
                return dataType;

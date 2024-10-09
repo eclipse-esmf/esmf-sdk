@@ -33,4 +33,14 @@ public class TestResources {
             "valid/" + metaModelVersion.toString().toLowerCase() );
       return new AspectModelLoader( testModelsResolutionStrategy ).load( inputStream, Optional.of( URI.create( "testmodel:" + path ) ) );
    }
+
+   public static AspectModel load( final InvalidTestAspect model ) {
+      final KnownVersion metaModelVersion = KnownVersion.getLatest();
+      final String path = String.format( "invalid/%s/%s/%s.ttl", model.getUrn().getNamespaceMainPart(), model.getUrn().getVersion(),
+            model.getName() );
+      final InputStream inputStream = TestResources.class.getClassLoader().getResourceAsStream( path );
+      final ResolutionStrategy testModelsResolutionStrategy = new ClasspathStrategy(
+            "invalid/" + metaModelVersion.toString().toLowerCase() );
+      return new AspectModelLoader( testModelsResolutionStrategy ).load( inputStream, Optional.of( URI.create( "testmodel:" + path ) ) );
+   }
 }
