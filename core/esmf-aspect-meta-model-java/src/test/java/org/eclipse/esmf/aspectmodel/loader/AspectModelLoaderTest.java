@@ -14,6 +14,7 @@
 package org.eclipse.esmf.aspectmodel.loader;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,6 +28,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.eclipse.esmf.aspectmodel.AspectLoadingException;
 import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
 import org.eclipse.esmf.metamodel.AbstractEntity;
@@ -34,12 +36,21 @@ import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.HasDescription;
 import org.eclipse.esmf.samm.KnownVersion;
+import org.eclipse.esmf.test.InvalidTestAspect;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
 import org.junit.jupiter.api.Test;
 
 class AspectModelLoaderTest {
+
+   @Test
+   void loadAspectModelWithoutCharacteristicDatatype() {
+      assertThatThrownBy( () -> TestResources.load( InvalidTestAspect.INVALID_CHARACTERISTIC_DATATYPE ) )
+            .isInstanceOf( AspectLoadingException.class )
+            .hasMessage( "No datatype is defined on the Characteristic instance 'Characteristic1: '." );
+   }
+
    @Test
    void testOfAbstractEntityCyclomaticCreation() {
       final Map<String, ComplexType> entities =
