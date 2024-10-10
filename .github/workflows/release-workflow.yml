@@ -26,20 +26,20 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
 
-      # - name: Sanity check version
-      #   if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
-      #   run: |
-      #     current_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-      #     release_version=${{ github.event.inputs.release_version }}
+      - name: Sanity check version
+        if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
+        run: |
+          current_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          release_version=${{ github.event.inputs.release_version }}
 
-      #     if [[ $release_version =~ ^[0-9]+.[0-9]+.[0-9]+$ ]]
-      #     then
-      #       echo version is valid
-      #     else
-      #       echo release version $release_version is invalid
-      #       exit 1
-      #     fi
-      #   shell: bash
+          if [[ $release_version =~ ^[0-9]+.[0-9]+.[0-9]+$ ]]
+          then
+            echo version is valid
+          else
+            echo release version $release_version is invalid
+            exit 1
+          fi
+        shell: bash
 
   # The Linux build will upload the local Nexus deployment repository
   # (i.e., what will be deployed to OSSRH/Maven Central)
