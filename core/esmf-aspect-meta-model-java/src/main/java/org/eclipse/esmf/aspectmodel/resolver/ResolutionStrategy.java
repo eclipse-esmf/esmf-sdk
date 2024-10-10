@@ -21,5 +21,5 @@ import org.eclipse.esmf.functions.ThrowingBiFunction;
  * Represents one way to load and resolve an Aspect Model File from a given source.
  */
 public interface ResolutionStrategy
-      extends ThrowingBiFunction<AspectModelUrn, ResolutionStrategySupport, AspectModelFile, ModelResolutionException> {
+      extends ThrowingBiFunction<AspectModelUrn, ResolutionStrategySupport, AspectModelFile, ModelResolutionException>, ModelSource {
 }

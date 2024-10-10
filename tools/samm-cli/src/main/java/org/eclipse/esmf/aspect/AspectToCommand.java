@@ -20,6 +20,7 @@ import org.eclipse.esmf.aspect.to.AspectToAsyncapiCommand;
 import org.eclipse.esmf.aspect.to.AspectToHtmlCommand;
 import org.eclipse.esmf.aspect.to.AspectToJavaCommand;
 import org.eclipse.esmf.aspect.to.AspectToJsonCommand;
+import org.eclipse.esmf.aspect.to.AspectToJsonLdCommand;
 import org.eclipse.esmf.aspect.to.AspectToJsonSchemaCommand;
 import org.eclipse.esmf.aspect.to.AspectToOpenapiCommand;
 import org.eclipse.esmf.aspect.to.AspectToPngCommand;
@@ -36,6 +37,7 @@ import picocli.CommandLine;
             AspectToHtmlCommand.class,
             AspectToJavaCommand.class,
             AspectToJsonCommand.class,
+            AspectToJsonLdCommand.class,
             AspectToOpenapiCommand.class,
             AspectToAsyncapiCommand.class,
             AspectToPngCommand.class,

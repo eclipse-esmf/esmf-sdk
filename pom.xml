@@ -18,7 +18,7 @@
    <parent>
       <groupId>org.eclipse.esmf</groupId>
       <artifactId>esmf-parent</artifactId>
-      <version>14</version>
+      <version>16</version>
    </parent>
 
    <artifactId>esmf-sdk-parent</artifactId>
@@ -54,6 +54,7 @@
       <module>core/esmf-aspect-model-aas-generator</module>
       <module>core/esmf-aspect-model-document-generators</module>
       <module>core/esmf-aspect-model-generator</module>
+      <module>core/esmf-aspect-model-github-resolver</module>
       <module>core/esmf-aspect-model-jackson</module>
       <module>core/esmf-aspect-model-java-core</module>
       <module>core/esmf-aspect-model-java-generator</module>
@@ -82,11 +83,6 @@
       <dependencies>
          <dependency>
             <groupId>org.eclipse.esmf</groupId>
-            <artifactId>esmf-aspect-model-urn</artifactId>
-            <version>${project.version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.eclipse.esmf</groupId>
             <artifactId>esmf-aspect-meta-model-interface</artifactId>
             <version>${project.version}</version>
          </dependency>
@@ -97,7 +93,7 @@
          </dependency>
          <dependency>
             <groupId>org.eclipse.esmf</groupId>
-            <artifactId>esmf-aspect-model-generator</artifactId>
+            <artifactId>esmf-aspect-model-aas-generator</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
@@ -107,22 +103,17 @@
          </dependency>
          <dependency>
             <groupId>org.eclipse.esmf</groupId>
-            <artifactId>esmf-aspect-model-validator</artifactId>
+            <artifactId>esmf-aspect-model-generator</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
             <groupId>org.eclipse.esmf</groupId>
-            <artifactId>esmf-aspect-model-java-generator</artifactId>
+            <artifactId>esmf-aspect-model-github-resolver</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
             <groupId>org.eclipse.esmf</groupId>
-            <artifactId>esmf-aspect-model-starter</artifactId>
-            <version>${project.version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.eclipse.esmf</groupId>
-            <artifactId>esmf-aspect-static-meta-model-java</artifactId>
+            <artifactId>esmf-aspect-model-jackson</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
@@ -132,12 +123,32 @@
          </dependency>
          <dependency>
             <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-model-java-generator</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.eclipse.esmf</groupId>
             <artifactId>esmf-aspect-model-serializer</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
             <groupId>org.eclipse.esmf</groupId>
-            <artifactId>esmf-aspect-model-jackson</artifactId>
+            <artifactId>esmf-aspect-model-starter</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-model-urn</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-model-validator</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-static-meta-model-java</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
@@ -152,12 +163,12 @@
          </dependency>
          <dependency>
             <groupId>org.eclipse.esmf</groupId>
-            <artifactId>samm-cli</artifactId>
+            <artifactId>esmf-aspect-model-maven-plugin</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
             <groupId>org.eclipse.esmf</groupId>
-            <artifactId>esmf-aspect-model-aas-generator</artifactId>
+            <artifactId>samm-cli</artifactId>
             <version>${project.version}</version>
          </dependency>
 
@@ -169,11 +180,6 @@
             <version>${spring-boot-version}</version>
             <type>pom</type>
             <scope>import</scope>
-         </dependency>
-         <dependency>
-            <groupId>org.graalvm.js</groupId>
-            <artifactId>js</artifactId>
-            <version>${graalvm-version}</version>
          </dependency>
          <dependency>
             <groupId>org.apache.logging.log4j</groupId>
