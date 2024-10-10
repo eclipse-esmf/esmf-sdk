@@ -39,6 +39,7 @@ jobs:
             echo release version $release_version is invalid
             exit 1
           fi
+        shell: bash
 
   # The Linux build will upload the local Nexus deployment repository
   # (i.e., what will be deployed to OSSRH/Maven Central)
