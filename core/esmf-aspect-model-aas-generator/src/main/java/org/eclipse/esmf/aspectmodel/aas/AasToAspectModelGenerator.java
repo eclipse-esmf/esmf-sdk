@@ -17,7 +17,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,7 +26,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -195,7 +193,7 @@ public class AasToAspectModelGenerator {
             .filter( StringUtils::isNotBlank )
             .collect( Collectors.joining( "." ) );
 
-      return reversedHost + ( path.isEmpty() ? "" : "." + path );
+      return reversedHost + (path.isEmpty() ? "" : "." + path);
    }
 
    private Optional<IRI> iri( final String lexicalRepresentation ) {
@@ -361,7 +359,12 @@ public class AasToAspectModelGenerator {
             .filter( key -> key.getType() == KeyTypes.CONCEPT_DESCRIPTION || key.getType() == KeyTypes.GLOBAL_REFERENCE )
             .map( Key::getValue )
             .flatMap( value -> validIrdiOrUri( value ).stream() )
+            .map( this::sanitizeValue )
             .toList();
+   }
+
+   private String sanitizeValue( String value ) {
+      return value.replace( "/ ", "/" );
    }
 
    private List<String> seeReferences( final Submodel submodel ) {
