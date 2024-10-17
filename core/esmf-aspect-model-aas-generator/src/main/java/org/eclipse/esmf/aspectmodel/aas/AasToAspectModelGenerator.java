@@ -363,7 +363,7 @@ public class AasToAspectModelGenerator {
             .toList();
    }
 
-   private String sanitizeValue( String value ) {
+   private String sanitizeValue( final String value ) {
       return value.replace( "/ ", "/" );
    }
 
