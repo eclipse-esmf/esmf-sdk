@@ -147,6 +147,7 @@ public class DiagramFeature implements Feature {
       Native.forClass( "sun.java2d.pipe.ShapeSpanIterator" )
             .registerFieldsForJni( "pData" );
       Native.forClass( "sun.java2d.xr.XRSurfaceData" )
+            .registerEverythingForReflection()
             .registerFieldsForJni( "picture", "xid" );
    }
 
