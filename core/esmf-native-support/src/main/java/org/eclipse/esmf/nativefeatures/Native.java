@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Locale;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
 import javax.annotation.Nonnull;
 
 import org.eclipse.esmf.substitution.IsLinux;
@@ -63,7 +62,7 @@ public class Native {
          RESOURCES_REGISTRY = DummyResourcesRegistry::new;
          RUNTIME_CLASS_INITIALIZATION_SUPPORT = DummyRuntimeClassInitializationSupport::new;
          RUNTIME_REFLECTION_SUPPORT = DummyRuntimeReflectionSupport::new;
-         RUNTIME_JNI_ACCESS_SUPPORT = DummyRuntimeJNIAccessSupport::new;
+         RUNTIME_JNI_ACCESS_SUPPORT = DummyRuntimeJniAccessSupport::new;
       }
    }
 
@@ -307,22 +306,22 @@ public class Native {
       }
 
       @Override
-      public void initializeAtRunTime( final Class<?> aClass, final String reason ) {
+      public void initializeAtRunTime( final Class<?> clazz, final String reason ) {
          // nothing
       }
 
       @Override
-      public void rerunInitialization( final Class<?> aClass, final String reason ) {
+      public void rerunInitialization( final Class<?> clazz, final String reason ) {
          // nothing
       }
 
       @Override
-      public void initializeAtBuildTime( final Class<?> aClass, final String reason ) {
+      public void initializeAtBuildTime( final Class<?> clazz, final String reason ) {
          // nothing
       }
    }
 
-   private static class DummyRuntimeJNIAccessSupport implements RuntimeJNIAccessSupport {
+   private static class DummyRuntimeJniAccessSupport implements RuntimeJNIAccessSupport {
       @Override
       public void register( final ConfigurationCondition condition, final boolean unsafeAllocated, final Class<?> clazz ) {
          // nothing

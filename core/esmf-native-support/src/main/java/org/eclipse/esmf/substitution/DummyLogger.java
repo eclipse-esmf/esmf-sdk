@@ -825,7 +825,7 @@ public class DummyLogger implements Logger {
    }
 
    @Override
-   public <MF extends MessageFactory> MF getMessageFactory() {
+   public <M extends MessageFactory> M getMessageFactory() {
       return null;
    }
 

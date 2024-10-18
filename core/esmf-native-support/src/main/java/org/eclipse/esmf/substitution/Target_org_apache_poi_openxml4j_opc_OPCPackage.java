@@ -31,6 +31,7 @@ import org.apache.poi.openxml4j.opc.OPCPackage;
       "squid:S00101", // Class name uses GraalVM substitution class naming schema, see
       // https://github.com/oracle/graal/tree/master/substratevm/src/com.oracle.svm.core/src/com/oracle/svm/core/jdk
       "checkstyle:TypeName",
+      "checkstyle:AbbreviationAsWordInName",
       "NewClassNamingConvention" } )
 public final class Target_org_apache_poi_openxml4j_opc_OPCPackage {
    @SuppressWarnings( { "NonConstantLogger", "NonConstantFieldWithUpperCaseName" } )
