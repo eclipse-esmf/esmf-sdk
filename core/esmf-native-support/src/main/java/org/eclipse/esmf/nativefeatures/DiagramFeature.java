@@ -49,6 +49,10 @@ public class DiagramFeature implements Feature {
                .registerMethodForJni( "run" );
          Native.forClass( "sun.java2d.windows.WindowsFlags" )
                .registerFieldsForJni( "d3dEnabled", "d3dSet", "offscreenSharingEnabled", "setHighDPIAware" );
+      } else if ( isLinux() ) {
+         Native.forClass( "sun.java2d.xr.XRSurfaceData" )
+               .registerEverythingForReflection()
+               .registerFieldsForJni( "picture", "xid" );
       }
 
       Native.forClass( "sun.java2d.marlin.DMarlinRenderingEngine" )
@@ -146,9 +150,6 @@ public class DiagramFeature implements Feature {
             .registerFieldsForJni( "curIndex", "numXbands", "region" );
       Native.forClass( "sun.java2d.pipe.ShapeSpanIterator" )
             .registerFieldsForJni( "pData" );
-      Native.forClass( "sun.java2d.xr.XRSurfaceData" )
-            .registerEverythingForReflection()
-            .registerFieldsForJni( "picture", "xid" );
    }
 
    private void setupAwt() {
