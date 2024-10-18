@@ -278,7 +278,7 @@ public class DiagramFeature implements Feature {
                   "supportsAlpha", "transparency" )
             .registerMethodForJni( "getRGBdefault" );
       Native.forClass( java.awt.image.IndexColorModel.class )
-            .registerFieldsForJni( "allgrayopaque", "map_size", "rgb", "transparent_index" );
+            .registerFieldsForJni( "allgrayopaque", "map_size", "rgb", "transparent_index", "colorData" );
       Native.forClass( "sun.awt.AWTAutoShutdown" )
             .registerMethodForJni( "notifyToolkitThreadBusy" )
             .registerMethodForJni( "notifyToolkitThreadFree" );
