@@ -341,28 +341,28 @@ public class DiagramFeature implements Feature {
    }
 
    private void setupFontConfiguration() {
-      Native.forClass( "sun.font.FontConfigManager$FontConfigInfo" )
-            .registerAllFieldsForReflection();
-      Native.forClass( "sun.font.FontConfigManager$FcCompFont" )
-            .registerAllFieldsForReflection();
-      Native.forClass( "sun.font.FontConfigManager$FontConfigFont" )
-            .registerEverythingForReflection();
+      if ( isLinux() ) {
+         Native.forClass( "sun.font.FontConfigManager" )
+               .registerAllFieldsForReflection()
+               .registerAllFieldsForJni()
+               .registerAllMethodsForJni();
+         Native.forClass( "sun.font.FontConfigManager$FontConfigInfo" )
+               .registerAllFieldsForReflection()
+               .registerAllFieldsForJni()
+               .registerAllMethodsForJni();
+         Native.forClass( "sun.font.FontConfigManager$FcCompFont" )
+               .registerAllFieldsForReflection()
+               .registerAllFieldsForJni()
+               .registerAllMethodsForJni();
+         Native.forClass( "sun.font.FontConfigManager$FontConfigFont" )
+               .registerEverythingForReflection()
+               .registerEverythingForJni();
+      }
       Native.forClass( "sun.font.CompositeFontDescriptor" )
             .registerEverythingForReflection();
       Native.forClass( "sun.font.FontDesignMetrics" )
             .registerEverythingForReflection();
       Native.forClass( "sun.font.FontDesignMetrics" )
-            .registerEverythingForJni();
-      Native.forClass( "sun.font.FontConfigManager" )
-            .registerAllFieldsForJni()
-            .registerAllMethodsForJni();
-      Native.forClass( "sun.font.FontConfigManager$FontConfigInfo" )
-            .registerAllFieldsForJni()
-            .registerAllMethodsForJni();
-      Native.forClass( "sun.font.FontConfigManager$FcCompFont" )
-            .registerAllFieldsForJni()
-            .registerAllMethodsForJni();
-      Native.forClass( "sun.font.FontConfigManager$FontConfigFont" )
             .registerEverythingForJni();
       Native.forClass( java.awt.FontMetrics.class )
             .registerFieldsForJni( "font" )
