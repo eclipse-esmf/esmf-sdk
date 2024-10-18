@@ -13,11 +13,15 @@
 
 package org.eclipse.esmf.substitution;
 
+import org.eclipse.esmf.nativefeatures.LogbackFeature;
+
 import com.oracle.svm.core.annotate.Alias;
 import com.oracle.svm.core.annotate.RecomputeFieldValue;
 import com.oracle.svm.core.annotate.TargetClass;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.spi.LoggerContextFactory;
+import org.graalvm.nativeimage.hosted.FieldValueTransformer;
 
 /**
  * This is a <a href="https://build-native-java-apps.cc/developer-guide/substitution/">GraalVM substitution class</a>
@@ -36,4 +40,15 @@ public final class Target_org_apache_logging_log4j_LogManager {
    @Alias
    @RecomputeFieldValue( kind = RecomputeFieldValue.Kind.FromAlias )
    private static LoggerContextFactory factory = new DummyLoggerContextFactory();
+
+   @Alias
+   @RecomputeFieldValue( kind = RecomputeFieldValue.Kind.Custom, declClass = StatusLoggerInjector.class )
+   private static Logger LOGGER;
+
+   public static final class StatusLoggerInjector implements FieldValueTransformer {
+      @Override
+      public Object transform( final Object receiver, final Object originalValue ) {
+         return new DummyLogger();
+      }
+   }
 }
