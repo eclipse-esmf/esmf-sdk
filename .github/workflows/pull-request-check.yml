@@ -68,17 +68,13 @@ jobs:
           export MAVEN_OPTS="-Xmx4096m"
           export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
           mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
-          cd tools/samm-cli
-          unset JAVA_TOOL_OPTIONS
-          mvn -B clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
         shell: bash
 
       - name: Build native image
         if: matrix.os != 'macos-13'
         run: |
           export MAVEN_OPTS="-Xmx4096m"
-          cd tools/samm-cli
-          mvn -B package -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+          mvn -B -pl tools/samm-cli clean verify -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
         shell: bash
 
       - name: Build native image (Mac)
