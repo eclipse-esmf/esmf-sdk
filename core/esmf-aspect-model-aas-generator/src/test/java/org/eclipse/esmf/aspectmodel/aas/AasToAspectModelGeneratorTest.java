@@ -40,18 +40,20 @@ class AasToAspectModelGeneratorTest {
 
    @Test
    void testTranslateDigitalNameplate() {
-      final InputStream aasx = getIdtaModel(
-            "ZVEI_Digital_Nameplate/1/0/Sample_ZVEI_Digital_Nameplate_V10.aasx" );
+      final InputStream aasx = AasToAspectModelGeneratorTest.class.getClassLoader()
+            .getResourceAsStream( "idta/Sample_ZVEI_Digital_Nameplate_V10.aasx" );
       final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromAasx( aasx );
       assertThatCode( aspectModelGenerator::generateAspects ).doesNotThrowAnyException();
    }
 
    @Test
    void testSeeReferences() {
-      final InputStream inputStream = getIdtaModel(
-            "Wireless Communication/1/0/IDTA 02022-1-0_Template_Wireless Communication.aasx" );
+      final InputStream inputStream = AasToAspectModelGeneratorTest.class.getClassLoader().getResourceAsStream(
+            "idta/IDTA 02022-1-0_Template_Wireless Communication.aasx" );
       final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromAasx( inputStream );
       final List<Aspect> aspects = aspectModelGenerator.generateAspects();
+
+      assertThatCode( aspectModelGenerator::generateAspects ).doesNotThrowAnyException();
 
       aspects.stream()
             .flatMap( aspect -> aspect.getProperties().stream() )
@@ -151,7 +153,8 @@ class AasToAspectModelGeneratorTest {
 
    private InputStream getIdtaModel( final String path ) {
       try {
-         final URL url = new URL( "https://github.com/admin-shell-io/submodel-templates/raw/refs/heads/main/published/" + path.replaceAll( " ", "%20" ) );
+         final URL url = new URL(
+               "https://github.com/admin-shell-io/submodel-templates/raw/refs/heads/main/published/" + path.replaceAll( " ", "%20" ) );
          return url.openStream();
       } catch ( Exception e ) {
          e.printStackTrace();
