@@ -24,7 +24,7 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.VersionNumber;
-import org.eclipse.esmf.aspectmodel.resolver.ModelResolutionException;
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 /**
