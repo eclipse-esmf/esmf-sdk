@@ -56,6 +56,7 @@ import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.urn.ElementType;
 import org.eclipse.esmf.aspectmodel.urn.UrnSyntaxException;
 import org.eclipse.esmf.aspectmodel.versionupdate.MetaModelVersionMigrator;
+import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Namespace;
@@ -462,6 +463,10 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
       }
 
       setNamespaces( files, elements );
+      elements.stream()
+            .filter( modelElement -> modelElement.is( Aspect.class ) )
+            .findFirst()
+            .ifPresent( aspect -> mergedModel.setNsPrefix( "", aspect.urn().getUrnPrefix() ) );
       return new DefaultAspectModel( files, mergedModel, elements );
    }
 
