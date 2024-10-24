@@ -39,13 +39,7 @@ public class ResolverConfigurationMixin {
       @CommandLine.Option(
             names = { "--github", "-gh" },
             required = true,
-            description = "Enable loading Aspect Models from GitHub" )
-      public boolean enableGitHubResolution = false;
-
-      @CommandLine.Option(
-            names = { "--github-name", "-ghn" },
-            required = true,
-            description = "Set the GitHub repository name. Example: eclipse-esmf/esmf-sdk." )
+            description = "Enable loading Aspect Models from GitHub and set the GitHub repository name. Example: eclipse-esmf/esmf-sdk." )
       public String gitHubName;
 
       @CommandLine.Option(
@@ -57,5 +51,10 @@ public class ResolverConfigurationMixin {
             names = { "--github-branch", "-ghb" },
             description = "Set the GitHub branch (default: ${DEFAULT-VALUE}" )
       public String gitHubBranch = "main";
+
+      @CommandLine.Option(
+            names = { "--github-tag", "-ght" },
+            description = "Set the GitHub tag (default: ${DEFAULT-VALUE}" )
+      public String gitHubTag = null;
    }
 }

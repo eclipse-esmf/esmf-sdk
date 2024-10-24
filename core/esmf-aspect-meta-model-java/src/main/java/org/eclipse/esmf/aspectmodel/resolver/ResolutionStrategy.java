@@ -14,6 +14,7 @@
 package org.eclipse.esmf.aspectmodel.resolver;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.functions.ThrowingBiFunction;
 

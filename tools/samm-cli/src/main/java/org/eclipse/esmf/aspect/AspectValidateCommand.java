@@ -51,12 +51,17 @@ public class AspectValidateCommand extends AbstractCommand {
    private ResolverConfigurationMixin resolverConfiguration;
 
    @SuppressWarnings( "FieldCanBeLocal" )
-   @CommandLine.Option( names = { "--details", "-d" }, description = "Print detailed reports about violations" )
+   @CommandLine.Option(
+         names = { "--details" },
+         description = "Print detailed reports about errors and violations" )
    private boolean details = false;
 
    @Override
    public void run() {
-      final AspectModel aspectModel = loadAspectModelOrFail( parentCommand.getInput(), resolverConfiguration, details );
+      setDetails( details );
+      setResolverConfig( resolverConfiguration );
+
+      final AspectModel aspectModel = getInputHandler( parentCommand.getInput() ).loadAspectModel();
       final AspectModelValidator validator = new AspectModelValidator();
 
       final List<Violation> violations = validator.validateModel( aspectModel );

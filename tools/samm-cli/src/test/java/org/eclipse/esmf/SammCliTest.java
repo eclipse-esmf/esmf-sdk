@@ -40,6 +40,7 @@ import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.InvalidTestAspect;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
+import org.eclipse.esmf.test.TestSharedModel;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.tika.config.TikaConfig;
@@ -56,6 +57,7 @@ import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * The tests for the CLI that are executed by Maven Surefire. They work using the {@link MainClassProcessLauncher}, i.e. directly call
@@ -67,6 +69,8 @@ class SammCliTest {
    protected ProcessLauncher sammCli;
    private final TestModel testModel = TestAspect.ASPECT_WITH_ENTITY;
    private final String defaultInputFile = inputFile( testModel ).getAbsolutePath();
+   private final String defaultInputUrn = testModel.getUrn().toString();
+   private final String defaultModelsRoot = inputFile( testModel ).toPath().getParent().getParent().getParent().toFile().getAbsolutePath();
 
    Path outputDirectory = null;
 
@@ -90,8 +94,8 @@ class SammCliTest {
                            System.err.println( "Could not delete file " + file );
                         }
                      } );
-            } catch ( final IOException e ) {
-               throw new RuntimeException( e );
+            } catch ( final IOException exception ) {
+               throw new RuntimeException( exception );
             }
          }
       }
@@ -169,6 +173,27 @@ class SammCliTest {
    }
 
    @Test
+   void testAspectFromUrnPrettyPrintToStdout() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputUrn, "prettyprint",
+            "--models-root", defaultModelsRoot );
+      assertThat( result.stdout() ).contains( "@prefix" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   /**
+    * This test makes sure that also files without a samm:Aspect declaration can be pretty printed.
+    */
+   @ParameterizedTest
+   @ValueSource( strings = { "TestEntityWithCollection", "testCollectionProperty", "TestCollection" } )
+   void testSharedFileFromUrnPrettyPrintToStdout( final String elementName ) {
+      final String urn = TestSharedModel.TEST_NAMESPACE + elementName;
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", urn, "prettyprint",
+            "--models-root", defaultModelsRoot );
+      assertThat( result.stdout() ).contains( "@prefix" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
    void testAspectPrettyPrintOverwrite() throws IOException {
       final File targetFile = outputFile( "output.ttl" );
       FileUtils.copyFile( new File( defaultInputFile ), targetFile );
@@ -187,6 +212,32 @@ class SammCliTest {
    @Test
    void testAspectValidateValidModel() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "validate" );
+      assertThat( result.stdout() ).contains( "Input model is valid" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectFromUrnValidateValidModel() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputUrn, "validate", "--models-root",
+            defaultModelsRoot );
+      assertThat( result.stdout() ).contains( "Input model is valid" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectFromGitHubWithFullUrlValidateModel() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect",
+            "https://github.com/eclipse-esmf/esmf-sdk/blob/main/core/esmf-test-aspect-models/src/main/resources/valid/org.eclipse.esmf"
+                  + ".test/1.0.0/AspectWithEntity.ttl", "validate" );
+      assertThat( result.stdout() ).contains( "Input model is valid" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectFromGitHubWithExplicitRepoValidateModel() {
+      final String remoteModelsDirectory = "core/esmf-test-aspect-models/src/main/resources/valid";
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect",
+            defaultInputUrn, "validate", "--github", "eclipse-esmf/esmf-sdk", "--github-directory", remoteModelsDirectory );
       assertThat( result.stdout() ).contains( "Input model is valid" );
       assertThat( result.stderr() ).isEmpty();
    }
@@ -1389,15 +1440,12 @@ class SammCliTest {
       assertThat( result.stdout() ).contains( TestModel.TEST_NAMESPACE + "testProperty" );
    }
 
-   // Running this test from within the regular JUnit test harness yields a java.lang.SecurityException for
-   // java.net.URLPermission, therefore it is executed only in the native build
    @Test
-   @EnabledIfSystemProperty( named = "packaging-type", matches = "native" )
    void testAspectUsageWithGitHubResolution() {
       final String remoteModelsDirectory = "core/esmf-test-aspect-models/src/main/resources/valid";
       final String urnToCheck = TestModel.TEST_NAMESPACE + "testProperty";
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", urnToCheck, "usage",
-            "--github", "--github-name", "eclipse-esmf/esmf-sdk", "--github-directory", remoteModelsDirectory );
+            "--github", "eclipse-esmf/esmf-sdk", "--github-directory", remoteModelsDirectory );
       assertThat( result.stderr() ).isEmpty();
       assertThat( result.stdout() ).contains( TestModel.TEST_NAMESPACE + "testProperty" );
    }
@@ -1406,7 +1454,7 @@ class SammCliTest {
     * Returns the File object for a test model file
     */
    private File inputFile( final TestModel testModel ) {
-      final boolean isValid = !(testModel instanceof InvalidTestAspect);
+      final boolean isValid = !( testModel instanceof InvalidTestAspect );
       final String resourcePath = String.format(
             "%s/../../core/esmf-test-aspect-models/src/main/resources/%s/org.eclipse.esmf.test/1.0.0/%s.ttl",
             System.getProperty( "user.dir" ), isValid ? "valid" : "invalid", testModel.getName() );
@@ -1457,8 +1505,8 @@ class SammCliTest {
       // are not resolved to the file system but to the jar)
       try {
          final String resolverScript = new File(
-               System.getProperty( "user.dir" ) + "/target/test-classes/model_resolver" + (OS.WINDOWS.isCurrentOs()
-                     ? ".bat" : ".sh") ).getCanonicalPath();
+               System.getProperty( "user.dir" ) + "/target/test-classes/model_resolver" + ( OS.WINDOWS.isCurrentOs()
+                     ? ".bat" : ".sh" ) ).getCanonicalPath();
          final String modelsRoot = new File( System.getProperty( "user.dir" ) + "/target/classes/valid" ).getCanonicalPath();
          final String metaModelVersion = KnownVersion.getLatest().toString().toLowerCase();
          return resolverScript + " " + modelsRoot + " " + metaModelVersion;

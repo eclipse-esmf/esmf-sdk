@@ -33,6 +33,7 @@ import java.util.jar.JarFile;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 import org.apache.commons.io.IOUtils;

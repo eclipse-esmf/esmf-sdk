@@ -43,18 +43,20 @@ import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelFileLoader;
 import org.eclipse.esmf.aspectmodel.resolver.EitherStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
-import org.eclipse.esmf.aspectmodel.resolver.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.resolver.ModelSource;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategySupport;
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.resolver.fs.FlatModelsRoot;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.DefaultAspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.MetaModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFile;
+import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.urn.ElementType;
 import org.eclipse.esmf.aspectmodel.urn.UrnSyntaxException;
 import org.eclipse.esmf.aspectmodel.versionupdate.MetaModelVersionMigrator;
+import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Namespace;
@@ -113,6 +115,7 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
     * @param resolutionStrategies the strategies
     */
    public AspectModelLoader( final List<ResolutionStrategy> resolutionStrategies ) {
+      TurtleLoader.init();
       if ( resolutionStrategies.size() == 1 ) {
          resolutionStrategy = resolutionStrategies.get( 0 );
       } else if ( resolutionStrategies.isEmpty() ) {
@@ -434,10 +437,10 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
     */
    public AspectModel loadAspectModelFiles( final Collection<AspectModelFile> inputFiles ) {
       final Model mergedModel = ModelFactory.createDefaultModel();
-      mergedModel.add( MetaModelFile.metaModelDefinitions() );
       for ( final AspectModelFile file : inputFiles ) {
-         mergedModel.add( file.sourceModel() );
+         RdfUtil.mergeModel( mergedModel, file.sourceModel() );
       }
+      mergedModel.add( MetaModelFile.metaModelDefinitions() );
 
       final List<ModelElement> elements = new ArrayList<>();
       final List<AspectModelFile> files = new ArrayList<>();
@@ -460,6 +463,10 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
       }
 
       setNamespaces( files, elements );
+      elements.stream()
+            .filter( modelElement -> modelElement.is( Aspect.class ) )
+            .findFirst()
+            .ifPresent( aspect -> mergedModel.setNsPrefix( "", aspect.urn().getUrnPrefix() ) );
       return new DefaultAspectModel( files, mergedModel, elements );
    }
 

@@ -28,7 +28,6 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import org.eclipse.esmf.aspectmodel.edit.AspectChangeManager;
 import org.eclipse.esmf.aspectmodel.edit.AspectChangeManagerConfig;
@@ -37,113 +36,52 @@ import org.eclipse.esmf.aspectmodel.edit.ChangeReport;
 import org.eclipse.esmf.aspectmodel.edit.ChangeReportFormatter;
 import org.eclipse.esmf.aspectmodel.generator.LanguageCollector;
 import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
-import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
-import org.eclipse.esmf.aspectmodel.resolver.ExternalResolverStrategy;
-import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
-import org.eclipse.esmf.aspectmodel.resolver.ModelResolutionException;
-import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
-import org.eclipse.esmf.aspectmodel.resolver.fs.StructuredModelsRoot;
-import org.eclipse.esmf.aspectmodel.resolver.github.GitHubStrategy;
 import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
-import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
-import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
-import org.eclipse.esmf.aspectmodel.validation.services.DetailedViolationFormatter;
-import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectModel;
 
-import io.vavr.control.Either;
-import org.apache.commons.io.FilenameUtils;
-
 @SuppressWarnings( "UseOfSystemOutOrSystemErr" )
 public abstract class AbstractCommand implements Runnable {
-   protected Path modelsRootForFile( final File file ) {
-      return file.toPath().getParent().getParent().getParent();
+   private boolean details;
+   private ResolverConfigurationMixin resolverConfig;
+
+   protected void setDetails( final boolean details ) {
+      this.details = details;
    }
 
-   protected AspectModel loadAspectModelOrFail( final String input, final ResolverConfigurationMixin resolverConfig ) {
-      return loadAspectModelOrFail( input, resolverConfig, false );
+   protected void setResolverConfig( final ResolverConfigurationMixin resolverConfig ) {
+      this.resolverConfig = resolverConfig;
    }
 
-   protected File getInputFile( final String modelFileName ) {
-      final File inputFile = new File( modelFileName );
+   protected boolean inputIsFile( final String input ) {
+      return new File( input ).exists();
+   }
+
+   protected File absoluteFile( final File inputFile ) {
       return inputFile.isAbsolute()
             ? inputFile
             : Path.of( System.getProperty( "user.dir" ) ).resolve( inputFile.toPath() ).toFile().getAbsoluteFile();
    }
 
-   protected AspectModelLoader getAspectModelLoader( final Optional<File> modelFile, final ResolverConfigurationMixin resolverConfig ) {
-      final List<ResolutionStrategy> strategies = new ArrayList<>();
-      if ( modelFile.isPresent() ) {
-         strategies.add( new FileSystemStrategy( modelsRootForFile( modelFile.get().getAbsoluteFile() ) ) );
-      } else {
-         strategies.add( AspectModelLoader.DEFAULT_STRATEGY.get() );
-      }
-      for ( final String modelsRoot : resolverConfig.modelsRoots ) {
-         strategies.add( new FileSystemStrategy( new StructuredModelsRoot( Path.of( modelsRoot ) ) ) );
-      }
-      if ( !resolverConfig.commandLine.isBlank() ) {
-         strategies.add( new ExternalResolverStrategy( resolverConfig.commandLine ) );
-      }
-      if ( resolverConfig.gitHubResolutionOptions != null && resolverConfig.gitHubResolutionOptions.enableGitHubResolution ) {
-         strategies.add( new GitHubStrategy(
-               resolverConfig.gitHubResolutionOptions.gitHubName,
-               resolverConfig.gitHubResolutionOptions.gitHubBranch,
-               resolverConfig.gitHubResolutionOptions.gitHubDirectory ) );
-      }
-      return new AspectModelLoader( strategies );
+   protected InputHandler getInputHandler( final File input ) {
+      return new FileInputHandler( input.getAbsolutePath(), resolverConfig, details );
    }
 
-   protected AspectModel loadAspectModelOrFail( final File modelFile, final ResolverConfigurationMixin resolverConfig,
-         final boolean details ) {
-      final File absoluteFile = modelFile.getAbsoluteFile();
-
-      final Either<List<Violation>, AspectModel> validModelOrViolations = new AspectModelValidator().loadModel( () ->
-            getAspectModelLoader( Optional.of( modelFile ), resolverConfig ).load( absoluteFile ) );
-      if ( validModelOrViolations.isLeft() ) {
-         final List<Violation> violations = validModelOrViolations.getLeft();
-         if ( details ) {
-            System.out.println( new DetailedViolationFormatter().apply( violations ) );
-         } else {
-            System.out.println( new ViolationFormatter().apply( violations ) );
-         }
-         System.exit( 1 );
-         return null;
+   protected InputHandler getInputHandler( final String input ) {
+      if ( FileInputHandler.appliesToInput( input ) ) {
+         return new FileInputHandler( input, resolverConfig, details );
+      } else if ( AspectModelUrnInputHandler.appliesToInput( input ) ) {
+         return new AspectModelUrnInputHandler( input, resolverConfig, details );
+      } else if ( GitHubUrlInputHandler.appliesToInput( input ) ) {
+         return new GitHubUrlInputHandler( input, resolverConfig, details );
       }
-
-      return validModelOrViolations.get();
+      throw new CommandException( "Can not find file: " + input );
    }
 
-   protected AspectModel loadAspectModelOrFail( final String modelFileName, final ResolverConfigurationMixin resolverConfig,
-         final boolean details ) {
-      return loadAspectModelOrFail( getInputFile( modelFileName ), resolverConfig, details );
-   }
-
-   protected Aspect loadAspectOrFail( final String modelFileName, final ResolverConfigurationMixin resolverConfig ) {
-      final File inputFile = new File( modelFileName );
-      final AspectModel aspectModel = loadAspectModelOrFail( modelFileName, resolverConfig );
-      final List<Aspect> aspects = aspectModel.aspects();
-      if ( aspects.isEmpty() ) {
-         throw new CommandException( new ModelResolutionException( "No Aspects were found in the model" ) );
-      }
-      if ( aspects.size() == 1 ) {
-         return aspectModel.aspect();
-      }
-      final String expectedAspectName = FilenameUtils.removeExtension( inputFile.getName() );
-      return aspectModel.aspects().stream()
-            .filter( aspect -> aspect.getName().equals( expectedAspectName ) )
-            .findFirst()
-            .orElseThrow( () -> new ModelResolutionException(
-                  "Found multiple Aspects in the file " + inputFile.getAbsolutePath() + ", but none is called '"
-                        + expectedAspectName + "': " + aspects.stream().map( Aspect::getName )
-                        .collect( Collectors.joining( ", " ) ) ) );
-   }
-
-   protected void generateDiagram( final String inputFileName, final AspectModelDiagramGenerator.Format targetFormat,
-         final String outputFileName,
-         final String languageTag, final ResolverConfigurationMixin resolverConfig ) throws IOException {
-      final Aspect aspect = loadAspectOrFail( inputFileName, resolverConfig );
+   protected void generateDiagram( final String input, final AspectModelDiagramGenerator.Format targetFormat,
+         final String outputFileName, final String languageTag ) throws IOException {
+      final Aspect aspect = getInputHandler( input ).loadAspect();
       final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( aspect );
       final Set<AspectModelDiagramGenerator.Format> targetFormats = new HashSet<>();
       targetFormats.add( targetFormat );
@@ -173,8 +111,8 @@ public abstract class AbstractCommand implements Runnable {
          ensureDirectoryExists( outputFileName );
          try {
             return new FileOutputStream( outputFileName );
-         } catch ( final FileNotFoundException e ) {
-            throw new CommandException( e );
+         } catch ( final FileNotFoundException exception ) {
+            throw new CommandException( exception );
          }
       } else {
          return new ProtectedOutputStream( System.out );

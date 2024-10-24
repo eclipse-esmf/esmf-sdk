@@ -13,6 +13,8 @@
 
 package org.eclipse.esmf.aspect.edit;
 
+import static org.eclipse.esmf.FileInputHandler.modelsRootForFile;
+
 import java.io.File;
 import java.net.URI;
 import java.nio.file.Paths;
@@ -112,21 +114,27 @@ public class AspectEditMoveCommand extends AbstractCommand {
 
    @Override
    public void run() {
+      setDetails( details );
+      setResolverConfig( resolverConfiguration );
+
       final String input = parentCommand.parentCommand.getInput();
+      if ( !inputIsFile( input ) ) {
+         throw new CommandException( "The edit command only works with local files." );
+      }
+      final File inputFile = absoluteFile( new File( input ) );
 
       // Move to other/new file in same namespace
       if ( targetNamespace == null ) {
-         final File targetFileRelativeToInput = getInputFile( input ).toPath().getParent().resolve( targetFile ).toFile();
+         final File targetFileRelativeToInput = inputFile.toPath().getParent().resolve( targetFile ).toFile();
          if ( targetFileRelativeToInput.exists() ) {
             moveElementToExistingFile( targetFileRelativeToInput );
          } else {
-            moveElementToNewFile();
+            moveElementToNewFile( inputFile );
          }
          return;
       }
 
       // Move to other/new file in other namespace
-      final File inputFile = getInputFile( input );
       final AspectModelUrn targetNamespaceUrn = AspectModelUrn.from( targetNamespace )
             .getOrElseThrow( () -> new CommandException( "Target namespace is invalid: " + targetNamespace ) );
       final File targetFileInOtherNamespace = modelsRootForFile( inputFile )
@@ -144,16 +152,16 @@ public class AspectEditMoveCommand extends AbstractCommand {
    /**
     * Supports the case {@code samm aspect Aspect.ttl edit move MyAspect newFile.ttl}
     */
-   private void moveElementToNewFile() {
+   private void moveElementToNewFile( final File inputFile ) {
       final String input = parentCommand.parentCommand.getInput();
-      final AspectModel aspectModel = loadAspectModelOrFail( input, resolverConfiguration );
+      final AspectModel aspectModel = getInputHandler( input ).loadAspectModel();
 
       // Do refactoring
       final ModelElement modelElement = determineModelElementToMove( aspectModel );
       if ( targetFile.contains( File.separator ) ) {
          throw new CommandException( "The target file name should not contain a path; only a file name." );
       }
-      final URI targetFileUri = getInputFile( input ).toPath().getParent().resolve( targetFile ).toUri();
+      final URI targetFileUri = inputFile.toPath().getParent().resolve( targetFile ).toUri();
       final List<String> headerCommentForNewFile = copyHeader
             ? modelElement.getSourceFile().headerComment()
             : List.of();
@@ -173,7 +181,7 @@ public class AspectEditMoveCommand extends AbstractCommand {
     */
    private void moveElementToOtherNamespaceNewFile( final AspectModelUrn targetNamespaceUrn, final File targetFileInNewNamespace ) {
       final String input = parentCommand.parentCommand.getInput();
-      final AspectModel aspectModel = loadAspectModelOrFail( input, resolverConfiguration );
+      final AspectModel aspectModel = getInputHandler( input ).loadAspectModel();
 
       // Do refactoring
       final ModelElement modelElement = determineModelElementToMove( aspectModel );
@@ -202,8 +210,8 @@ public class AspectEditMoveCommand extends AbstractCommand {
     * Support the case {@code samm aspect Aspect.ttl edit move MyAspect existingFile.ttl}
     */
    private void moveElementToExistingFile( final File targetFileRelativeToInput ) {
-      final AspectModel sourceAspectModel = loadAspectModelOrFail( parentCommand.parentCommand.getInput(), resolverConfiguration );
-      final AspectModel targetAspectModel = loadAspectModelOrFail( targetFileRelativeToInput, resolverConfiguration, false );
+      final AspectModel sourceAspectModel = getInputHandler( parentCommand.parentCommand.getInput() ).loadAspectModel();
+      final AspectModel targetAspectModel = getInputHandler( targetFileRelativeToInput ).loadAspectModel();
 
       // Create a consistent in-memory representation of both the source and target models.
       // On this Aspect Model we can perform the refactoring operation
@@ -229,8 +237,8 @@ public class AspectEditMoveCommand extends AbstractCommand {
     * Supports the case {@code samm aspect Aspect.ttl edit move MyAspect existingFile.ttl urn:samm:com.example.othernamespace:1.0.0}
     */
    private void moveElementToOtherNamespaceExistingFile( final AspectModelUrn targetNamespaceUrn, final File targetFileInOtherNamespace ) {
-      final AspectModel sourceAspectModel = loadAspectModelOrFail( parentCommand.parentCommand.getInput(), resolverConfiguration );
-      final AspectModel targetAspectModel = loadAspectModelOrFail( targetFileInOtherNamespace, resolverConfiguration, false );
+      final AspectModel sourceAspectModel = getInputHandler( parentCommand.parentCommand.getInput() ).loadAspectModel();
+      final AspectModel targetAspectModel = getInputHandler( targetFileInOtherNamespace ).loadAspectModel();
 
       // Create a consistent in-memory representation of both the source and target models.
       // On this Aspect Model we can perform the refactoring operation

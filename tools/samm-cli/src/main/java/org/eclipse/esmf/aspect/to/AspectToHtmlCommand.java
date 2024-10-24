@@ -38,19 +38,30 @@ import picocli.CommandLine;
 public class AspectToHtmlCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "html";
 
-   @CommandLine.Option( names = { "--output", "-o" }, description = "Output file path (default: stdout)" )
+   @CommandLine.Option(
+         names = { "--output", "-o" },
+         description = "Output file path (default: stdout)" )
    private String outputFilePath = "-";
 
-   @CommandLine.Option( names = { "--css",
-         "-c" }, description = "CSS file with custom styles to be included in the generated HTML documentation" )
+   @CommandLine.Option(
+         names = { "--css", "-c" },
+         description = "CSS file with custom styles to be included in the generated HTML documentation" )
    private String customCssFile;
 
-   @CommandLine.Option( names = { "--language",
-         "-l" }, description = "The language from the model for which the html should be generated (default: en)" )
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--language", "-l" },
+         description = "The language from the model for which the html should be generated (default: en)" )
    private String language = "en";
 
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
+
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--details" },
+         description = "Print detailed reports on errors" )
+   private boolean details = false;
 
    @CommandLine.Mixin
    private LoggingMixin loggingMixin;
@@ -60,8 +71,11 @@ public class AspectToHtmlCommand extends AbstractCommand {
 
    @Override
    public void run() {
+      setDetails( details );
+      setResolverConfig( resolverConfiguration );
+
       try {
-         final Aspect aspect = loadAspectOrFail( parentCommand.parentCommand.getInput(), resolverConfiguration );
+         final Aspect aspect = getInputHandler( parentCommand.parentCommand.getInput() ).loadAspect();
          final AspectModelDocumentationGenerator generator = new AspectModelDocumentationGenerator( aspect );
          final Map<AspectModelDocumentationGenerator.HtmlGenerationOption, String> generationArgs = new HashMap<>();
          generationArgs.put( AspectModelDocumentationGenerator.HtmlGenerationOption.STYLESHEET, "" );

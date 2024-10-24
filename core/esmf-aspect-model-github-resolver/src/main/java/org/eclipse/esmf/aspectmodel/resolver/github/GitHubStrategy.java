@@ -14,46 +14,54 @@
 package org.eclipse.esmf.aspectmodel.resolver.github;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
-import org.eclipse.esmf.aspectmodel.resolver.ModelResolutionException;
+import org.eclipse.esmf.aspectmodel.resolver.GithubRepository;
+import org.eclipse.esmf.aspectmodel.resolver.ProxyConfig;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategySupport;
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A resolution strategy to retrieve files from a remote GitHub repository
  */
 public class GitHubStrategy extends GitHubModelSource implements ResolutionStrategy {
+   private static final Logger LOG = LoggerFactory.getLogger( GitHubStrategy.class );
+
    /**
     * Constructor.
     *
-    * @param repositoryName the repository name in the form 'org/reponame'
-    * @param branchName the branch name
-    * @param directory the directory in the repository in the form 'some/directory', empty for root
-    * @param config sets proxy configuration
+    * @param repository the GitHub repository
+    * @param directory the relative directory inside the repository
+    * @param proxyConfig the proxy configuration
     */
-   public GitHubStrategy( final String repositoryName, final String branchName, final String directory, final Config config ) {
-      super( repositoryName, branchName, directory, config );
+   public GitHubStrategy( final GithubRepository repository, final String directory, final ProxyConfig proxyConfig ) {
+      super( repository, directory, proxyConfig );
    }
 
    /**
     * Constructor. Proxy settings are automatically detected.
     *
-    * @param repositoryName the repository name in the form 'org/reponame'
-    * @param branchName the branch name
-    * @param directory the directory in the repository in the form 'some/directory', empty for root
+    * @param repository the GitHub repository
+    * @param directory the relative directory inside the repository
     */
-   public GitHubStrategy( final String repositoryName, final String branchName, final String directory ) {
-      super( repositoryName, branchName, directory );
+   public GitHubStrategy( final GithubRepository repository, final String directory ) {
+      super( repository, directory );
    }
 
    @Override
    public AspectModelFile apply( final AspectModelUrn aspectModelUrn, final ResolutionStrategySupport resolutionStrategySupport )
          throws ModelResolutionException {
       return loadContentsForNamespace( aspectModelUrn )
+            .peek( aspectModelFile -> {
+               LOG.debug( "Found aspect model file at {} ", aspectModelFile.sourceLocation() );
+            } )
             .filter( file -> resolutionStrategySupport.containsDefinition( file, aspectModelUrn ) )
             .findFirst()
             .orElseThrow( () -> new ModelResolutionException( "No model file containing " + aspectModelUrn
-                  + " could be found in GitHub repository: " + orgName + "/" + repositoryName
-                  + " in branch " + branchName ) );
+                  + " could be found in GitHub repository: " + repository.owner() + "/" + repository.repository()
+                  + " in branch/tag " + repository.branchOrTag().name() ) );
    }
 }

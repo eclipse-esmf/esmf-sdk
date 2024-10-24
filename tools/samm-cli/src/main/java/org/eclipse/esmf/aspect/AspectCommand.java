@@ -40,7 +40,11 @@ public class AspectCommand extends AbstractCommand {
    @CommandLine.Mixin
    private LoggingMixin loggingMixin;
 
-   @CommandLine.Parameters( paramLabel = "INPUT", description = "Input file name of the Aspect Model .ttl file", arity = "1", index = "0" )
+   @CommandLine.Parameters(
+         paramLabel = "INPUT",
+         description = "Input Aspect Model file, URN or URL",
+         arity = "1",
+         index = "0" )
    private String input;
 
    public String getInput() {

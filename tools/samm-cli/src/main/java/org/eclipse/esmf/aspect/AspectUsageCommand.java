@@ -13,14 +13,13 @@
 
 package org.eclipse.esmf.aspect;
 
-import java.io.File;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 import org.eclipse.esmf.AbstractCommand;
+import org.eclipse.esmf.InputHandler;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.ResolverConfigurationMixin;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
@@ -48,6 +47,12 @@ public class AspectUsageCommand extends AbstractCommand {
    @CommandLine.ParentCommand
    public AspectCommand parentCommand;
 
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--details" },
+         description = "Print detailed reports on errors" )
+   private boolean details = false;
+
    @CommandLine.Mixin
    private LoggingMixin loggingMixin;
 
@@ -56,15 +61,18 @@ public class AspectUsageCommand extends AbstractCommand {
 
    @Override
    public void run() {
+      setDetails( details );
+      setResolverConfig( resolverConfiguration );
+
       final String input = parentCommand.getInput();
-      final Optional<File> inputFile = Optional.of( new File( input ) ).filter( File::exists );
-      final AspectModelLoader aspectModelLoader = getAspectModelLoader( inputFile, resolverConfiguration );
+      final InputHandler inputHandler = getInputHandler( input );
+      final AspectModelLoader aspectModelLoader = inputHandler.aspectModelLoader();
       final Usage usage = new Usage( aspectModelLoader );
 
       final Try<AspectModelUrn> inputAspectModelUrn = AspectModelUrn.from( input );
       final List<Reference> references = inputAspectModelUrn.map( usage::referencesTo )
             .getOrElse( () -> {
-               final URI targetUri = inputFile.map( File::toURI ).orElse( URI.create( input.replace( "\\", "/" ) ) );
+               final URI targetUri = inputHandler.inputUri();
                final AspectModelFile fileToCheck = aspectModelLoader.loadContents()
                      .filter( file -> file.sourceLocation().map( targetUri::equals ).orElse( false ) )
                      .findFirst()
@@ -78,7 +86,7 @@ public class AspectUsageCommand extends AbstractCommand {
                && resolverConfiguration != null
                && resolverConfiguration.modelsRoots.isEmpty()
                && ( resolverConfiguration.gitHubResolutionOptions == null
-               || !resolverConfiguration.gitHubResolutionOptions.enableGitHubResolution ) ) {
+               || resolverConfiguration.gitHubResolutionOptions.gitHubName == null ) ) {
             System.out.println( "Did you forget to set a models root or GitHub resolution?" );
          }
          System.exit( 0 );

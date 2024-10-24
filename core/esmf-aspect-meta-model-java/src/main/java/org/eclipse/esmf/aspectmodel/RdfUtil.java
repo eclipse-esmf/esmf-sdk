@@ -36,6 +36,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
@@ -163,6 +164,34 @@ public class RdfUtil {
                   ? Stream.of( subject.asResource() )
                   : Stream.empty();
          } ).toList();
+      }
+   }
+
+   /**
+    * Merges an RDF-model into another on a per-element basis instead of a per-statement basis. This means only those model element
+    * definitions from the model to merge are merged into the target model that are not already present in the target model.
+    * This prevents duplicate assertions of statements where the object is a blank node.
+    *
+    * @param target the model to merge into
+    * @param modelToMerge the source model of model element definitions to merge
+    */
+   public static void mergeModel( final Model target, final Model modelToMerge ) {
+      final Set<String> targetSubjects = Streams.stream( target.listSubjects() )
+            .filter( Resource::isURIResource )
+            .map( Resource::getURI )
+            .collect( toSet() );
+      for ( final ResIterator it = modelToMerge.listSubjects(); it.hasNext(); ) {
+         final Resource resource = it.next();
+         if ( resource.isAnon() ) {
+            continue;
+         }
+         if ( !targetSubjects.contains( resource.getURI() ) ) {
+            final Model modelElementDefinition = getModelElementDefinition( resource );
+            target.add( modelElementDefinition );
+         }
+      }
+      for ( final Map.Entry<String, String> prefixEntry : modelToMerge.getNsPrefixMap().entrySet() ) {
+         target.setNsPrefix( prefixEntry.getKey(), prefixEntry.getValue() );
       }
    }
 }

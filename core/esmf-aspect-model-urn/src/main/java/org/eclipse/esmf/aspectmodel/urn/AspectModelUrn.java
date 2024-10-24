@@ -131,8 +131,7 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
       checkUrn( numberOfUrnParts >= 5, UrnSyntaxException.URN_IS_MISSING_SECTIONS_MESSAGE );
 
       final String protocol = urnParts.get( 0 );
-      checkUrn( protocol.equalsIgnoreCase( VALID_PROTOCOL ), UrnSyntaxException.URN_INVALID_PROTOCOL_MESSAGE,
-            VALID_PROTOCOL );
+      checkUrn( protocol.equalsIgnoreCase( VALID_PROTOCOL ), UrnSyntaxException.URN_INVALID_PROTOCOL_MESSAGE, VALID_PROTOCOL );
 
       String namespaceIdentifier = urnParts.get( 1 );
       // This is no public constant, because it's an implementation detail
@@ -144,8 +143,7 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
             UrnSyntaxException.URN_INVALID_NAMESPACE_IDENTIFIER_MESSAGE, VALID_NAMESPACE_IDENTIFIER );
 
       final String namespace = urnParts.get( NAMESPACE_INDEX );
-      checkUrn( NAMESPACE_PATTERN.matcher( namespace ).matches(),
-            UrnSyntaxException.URN_INVALID_NAMESPACE_MESSAGE, NAMESPACE_REGEX );
+      checkUrn( NAMESPACE_PATTERN.matcher( namespace ).matches(), UrnSyntaxException.URN_INVALID_NAMESPACE_MESSAGE, NAMESPACE_REGEX );
 
       final ElementType elementType = getElementType( urnParts );
       final boolean isSammUrn = isSammUrn( urn, urnParts, elementType );

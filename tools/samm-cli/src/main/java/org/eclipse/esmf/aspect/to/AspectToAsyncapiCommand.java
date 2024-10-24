@@ -56,30 +56,49 @@ public class AspectToAsyncapiCommand extends AbstractCommand {
    private static final ObjectMapper YAML_MAPPER = new YAMLMapper().enable( YAMLGenerator.Feature.MINIMIZE_QUOTES );
    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-   @CommandLine.Option( names = { "--json", "-j" },
+   @CommandLine.Option(
+         names = { "--json", "-j" },
          description = "Generate AsyncAPI JSON specification for an Aspect Model (when not given, YAML is generated as default format)" )
    private boolean generateJsonAsyncApiSpec = false;
 
-   @CommandLine.Option( names = { "--separate-files", "-sf" },
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--separate-files", "-sf" },
          description = "Write separate files for the root document and referenced schemas." )
    private boolean writeSeparateFiles = false;
 
-   @CommandLine.Option( names = { "--output", "-o" }, description = "Output path; if --separate-files is given, this must be a directory." )
+   @CommandLine.Option(
+         names = { "--output", "-o" },
+         description = "Output path; if --separate-files is given, this must be a directory." )
    private String outputFilePath = "-";
 
-   @CommandLine.Option( names = { "--application-id", "-ai" }, description = "Use this param for provide application id." )
+   @CommandLine.Option(
+         names = { "--application-id", "-ai" },
+         description = "Use this param for provide application id." )
    private String applicationId;
 
-   @CommandLine.Option( names = { "--channel-address", "-ca" }, description = "Use this param make possible provide channel address." )
+   @CommandLine.Option(
+         names = { "--channel-address", "-ca" },
+         description = "Use this param make possible provide channel address." )
    private String channelAddress;
 
-   @CommandLine.Option( names = { "--semantic-version", "-sv" },
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--semantic-version", "-sv" },
          description = "Use the full semantic version from the Aspect Model as the version for the Aspect API." )
    private boolean useSemanticApiVersion = false;
 
-   @CommandLine.Option( names = { "--language", "-l" },
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--language", "-l" },
          description = "The language from the model for which the AsyncAPI specification should be generated (default: en)" )
    private String language = "en";
+
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--details" },
+         description = "Print detailed reports on errors" )
+   private boolean details = false;
 
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
@@ -92,9 +111,12 @@ public class AspectToAsyncapiCommand extends AbstractCommand {
 
    @Override
    public void run() {
+      setDetails( details );
+      setResolverConfig( resolverConfiguration );
+
       final Locale locale = Optional.ofNullable( language ).map( Locale::forLanguageTag ).orElse( Locale.ENGLISH );
       final AspectModelAsyncApiGenerator generator = new AspectModelAsyncApiGenerator();
-      final Aspect aspect = loadAspectOrFail( parentCommand.parentCommand.getInput(), resolverConfiguration );
+      final Aspect aspect = getInputHandler( parentCommand.parentCommand.getInput() ).loadAspect();
       final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( useSemanticApiVersion )
             .applicationId( applicationId )

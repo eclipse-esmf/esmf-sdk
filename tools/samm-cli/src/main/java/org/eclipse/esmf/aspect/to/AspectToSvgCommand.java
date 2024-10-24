@@ -33,12 +33,23 @@ import picocli.CommandLine;
 public class AspectToSvgCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "svg";
 
-   @CommandLine.Option( names = { "--output", "-o" }, description = "Output file path" )
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--output", "-o" },
+         description = "Output file path" )
    private String outputFilePath = "-";
 
-   @CommandLine.Option( names = { "--language", "-l" },
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--language", "-l" },
          description = "The language from the model for which the diagram should be generated (default: en)" )
    private String language = "en";
+
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--details" },
+         description = "Print detailed reports on errors" )
+   private boolean details = false;
 
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
@@ -51,9 +62,11 @@ public class AspectToSvgCommand extends AbstractCommand {
 
    @Override
    public void run() {
+      setResolverConfig( resolverConfiguration );
+      setResolverConfig( resolverConfiguration );
+
       try {
-         generateDiagram( parentCommand.parentCommand.getInput(), AspectModelDiagramGenerator.Format.SVG, outputFilePath, language,
-               resolverConfiguration );
+         generateDiagram( parentCommand.parentCommand.getInput(), AspectModelDiagramGenerator.Format.SVG, outputFilePath, language );
       } catch ( final IOException e ) {
          throw new CommandException( e );
       }

@@ -29,17 +29,22 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.eclipse.esmf.aspectmodel.AspectLoadingException;
+import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.HasDescription;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.InvalidTestAspect;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
 import org.junit.jupiter.api.Test;
 
 class AspectModelLoaderTest {
@@ -197,6 +202,17 @@ class AspectModelLoaderTest {
       final AspectModel merged = new AspectModelLoader().merge( a1, a2 );
       assertThat( merged.aspects() ).hasSize( 2 );
       assertThat( merged.elements().size() ).isEqualTo( a1.elements().size() + a2.elements().size() );
+   }
+
+   @Test
+   void testLoadMultipleFilesWithOverlappingRdfStatements() {
+      final AspectModelFile file1 = TestResources.load( TestAspect.ASPECT_WITH_PROPERTY ).files().iterator().next();
+      final AspectModelFile file2 = TestResources.load( TestAspect.ASPECT_WITH_PROPERTY ).files().iterator().next();
+      final AspectModel aspectModel = new AspectModelLoader().loadAspectModelFiles( List.of( file1, file2 ) );
+      final Resource aspect = aspectModel.mergedModel().createResource( TestAspect.ASPECT_WITH_PROPERTY.getUrn().toString() );
+      final List<Statement> propertiesAssertions = aspectModel.mergedModel()
+            .listStatements( aspect, SammNs.SAMM.properties(), (RDFNode) null ).toList();
+      assertThat( propertiesAssertions ).hasSize( 1 );
    }
 
    /**
