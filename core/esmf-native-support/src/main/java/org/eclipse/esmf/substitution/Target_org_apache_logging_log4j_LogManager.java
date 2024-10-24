@@ -13,8 +13,6 @@
 
 package org.eclipse.esmf.substitution;
 
-import org.eclipse.esmf.nativefeatures.LogbackFeature;
-
 import com.oracle.svm.core.annotate.Alias;
 import com.oracle.svm.core.annotate.RecomputeFieldValue;
 import com.oracle.svm.core.annotate.TargetClass;

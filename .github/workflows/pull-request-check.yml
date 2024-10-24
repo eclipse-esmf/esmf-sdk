@@ -67,7 +67,7 @@ jobs:
           java --version
           export MAVEN_OPTS="-Xmx4096m"
           export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
-          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
         shell: bash
 
       - name: Build native image

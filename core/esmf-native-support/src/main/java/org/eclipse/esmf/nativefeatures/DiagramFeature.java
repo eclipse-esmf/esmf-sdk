@@ -323,7 +323,7 @@ public class DiagramFeature implements Feature {
       Native.forClass( "org.apache.batik.css.parser.Parser" )
             .registerEverythingForReflection();
       Native.forClass( "org.apache.batik.ext.awt.image.codec.png.PNGTranscoderInternalCodecWriteAdapter" )
-            .registerConstructorForReflection();
+            .registerEverythingForReflection();
 
       Native.addResource( "org/apache/batik/anim/dom/resources/UserAgentStyleSheet.css" );
       Native.addResource( "org/apache/batik/bridge/resources/help.gif" );

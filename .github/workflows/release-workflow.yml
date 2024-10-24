@@ -99,7 +99,7 @@ jobs:
           release_version=${{ github.event.inputs.release_version }}
 
           # Actual build of core SDK
-          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean deploy -Dmaven.wagon.httpconnectionManager.ttlSeconds=60 -DaltDeploymentRepository=local::default::file://nexus-staging -Psign
+          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean deploy -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60 -DaltDeploymentRepository=local::default::file://nexus-staging -Psign
           # Build of CLI
           unset JAVA_TOOL_OPTIONS
           mvn -B -pl tools/samm-cli clean verify -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
@@ -171,7 +171,7 @@ jobs:
           mvn versions:set -DnewVersion=${{ github.event.inputs.release_version }}
           mvn versions:commit
           # Actual build of core SDK
-          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
           # Build of CLI
           unset JAVA_TOOL_OPTIONS
           mvn -B -pl tools/samm-cli clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
@@ -257,7 +257,7 @@ jobs:
           mvn versions:commit
 
           # Actual build of core SDK
-          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
           # Build of CLI
           unset JAVA_TOOL_OPTIONS
           mvn -B -pl tools/samm-cli clean verify -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60

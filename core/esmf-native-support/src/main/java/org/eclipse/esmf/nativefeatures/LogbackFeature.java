@@ -55,6 +55,37 @@ public class LogbackFeature implements Feature {
             .initializeAtBuildTime()
             .registerEverythingForReflection();
 
+      Native.forClass( org.apache.logging.log4j.spi.Provider.class )
+            .initializeAtBuildTime();
+      Native.forClass( org.apache.logging.log4j.util.ProviderUtil.class )
+            .initializeAtBuildTime();
+      Native.forClass( org.apache.logging.log4j.util.Strings.class )
+            .initializeAtBuildTime();
+      Native.forClass( org.apache.logging.log4j.util.Constants.class )
+            .initializeAtBuildTime();
+      Native.forClass( org.apache.logging.log4j.spi.AbstractLogger.class )
+            .initializeAtBuildTime();
+      Native.forClass( org.apache.logging.log4j.message.ReusableMessageFactory.class )
+            .initializeAtBuildTime();
+      Native.forClass( org.apache.logging.log4j.util.OsgiServiceLocator.class )
+            .initializeAtBuildTime();
+      Native.forClass( org.apache.logging.log4j.status.StatusLogger.class )
+            .initializeAtBuildTime();
+      Native.forClass( org.apache.logging.log4j.Level.class )
+            .initializeAtBuildTime();
+      Native.forClass( org.apache.logging.log4j.util.PropertiesUtil.class )
+            .initializeAtBuildTime();
+      Native.forClass( org.apache.logging.log4j.util.LoaderUtil.class )
+            .initializeAtBuildTime();
+      Native.forClass( org.apache.logging.log4j.util.PropertySource.Util.class )
+            .initializeAtBuildTime();
+      Native.forClass( org.apache.logging.log4j.spi.StandardLevel.class )
+            .initializeAtBuildTime();
+      Native.forClass( org.apache.logging.log4j.spi.LoggerRegistry.class )
+            .initializeAtBuildTime();
+      Native.forClass( org.apache.logging.log4j.simple.SimpleLogger.class )
+            .initializeAtBuildTime();
+
       Native.forClass( org.slf4j.LoggerFactory.class )
             .initializeAtBuildTime()
             .registerEverythingForReflection();
