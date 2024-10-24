@@ -14,19 +14,16 @@
 package org.eclipse.esmf.aspect;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.net.URI;
+import java.nio.charset.StandardCharsets;
 
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.ResolverConfigurationMixin;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
-import org.eclipse.esmf.aspectmodel.serializer.PrettyPrinter;
+import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
 import org.eclipse.esmf.exception.CommandException;
-import org.eclipse.esmf.metamodel.AspectModel;
 
 import picocli.CommandLine;
 
@@ -46,41 +43,51 @@ public class AspectPrettyPrintCommand extends AbstractCommand {
    @CommandLine.Mixin
    private ResolverConfigurationMixin resolverConfiguration;
 
-   @CommandLine.Option( names = { "--output", "-o" }, description = "Output file path (default: stdout)" )
+   @CommandLine.Option(
+         names = { "--output", "-o" },
+         description = "Output file path (default: stdout)" )
    String outputFilePath = "-";
 
-   @CommandLine.Option( names = { "--overwrite", "-w" }, description = "Overwrite the input file" )
+   @CommandLine.Option(
+         names = { "--overwrite", "-w" },
+         description = "Overwrite the input file" )
    boolean overwrite;
+
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--details" },
+         description = "Print detailed reports on errors" )
+   private boolean details = false;
 
    @CommandLine.ParentCommand
    private AspectCommand parentCommand;
 
+   @SuppressWarnings( "UseOfSystemOutOrSystemErr" )
    @Override
    public void run() {
-      final File inputFile = new File( parentCommand.getInput() ).getAbsoluteFile();
-      final AspectModel aspectModel = loadAspectModelOrFail( parentCommand.getInput(), resolverConfiguration );
+      setDetails( details );
+      setResolverConfig( resolverConfiguration );
 
-      for ( final AspectModelFile sourceFile : aspectModel.files() ) {
-         if ( !sourceFile.sourceLocation().map( uri -> uri.equals( inputFile.toURI() ) ).orElse( false ) ) {
-            continue;
+      final String input = parentCommand.getInput();
+      final AspectModelFile aspectModelFile = getInputHandler( input ).loadAspectModelFile();
+
+      if ( outputFilePath.equals( "-" ) && !overwrite ) {
+         final String formattedModel = AspectSerializer.INSTANCE.aspectModelFileToString( aspectModelFile );
+         System.out.println( formattedModel );
+      } else if ( overwrite ) {
+         AspectSerializer.INSTANCE.write( aspectModelFile );
+      } else {
+         final File inputFile = absoluteFile( new File( aspectModelFile.sourceLocation().orElseThrow() ) );
+         final File outputFile = absoluteFile( new File( outputFilePath ) );
+         if ( inputFile.equals( outputFile ) ) {
+            throw new CommandException( "Can't overwrite existing file. To force overwrite, use --overwrite." );
          }
 
-         OutputStream outputStream = null;
-         if ( overwrite ) {
-            final URI fileUri = sourceFile.sourceLocation().orElseThrow();
-            try {
-               outputStream = new FileOutputStream( new File( fileUri ) );
-            } catch ( final FileNotFoundException exception ) {
-               throw new CommandException( "Can not write to " + fileUri );
-            }
-         }
-         if ( outputStream == null ) {
-            outputStream = getStreamForFile( outputFilePath );
-         }
-
-         try ( final PrintWriter printWriter = new PrintWriter( outputStream ) ) {
-            new PrettyPrinter( sourceFile, printWriter ).print();
-            printWriter.flush();
+         final String formattedModel = AspectSerializer.INSTANCE.aspectModelFileToString( aspectModelFile );
+         try ( final OutputStream out = getStreamForFile( outputFilePath ) ) {
+            out.write( formattedModel.getBytes( StandardCharsets.UTF_8 ) );
+         } catch ( final IOException exception ) {
+            throw new CommandException( "Could not write to output file" );
          }
       }
    }

@@ -39,26 +39,46 @@ import picocli.CommandLine;
 public class AspectToJavaCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "java";
 
-   @CommandLine.Option( names = { "--no-jackson",
-         "-nj" }, description = "Disable Jackson annotation generation in generated Java classes." )
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--no-jackson", "-nj" },
+         description = "Disable Jackson annotation generation in generated Java classes." )
    private boolean disableJacksonAnnotations = false;
 
-   @CommandLine.Option( names = { "--template-library-file", "-tlf" },
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--template-library-file", "-tlf" },
          description = "The path and name of the Velocity template file containing the macro library." )
    private String templateLib = "";
 
-   @CommandLine.Option( names = { "--package-name", "-pn" }, description = "Package to use for generated Java classes" )
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--package-name", "-pn" },
+         description = "Package to use for generated Java classes" )
    private String packageName = "";
 
-   @CommandLine.Option( names = { "--execute-library-macros",
-         "-elm" }, description = "Execute the macros provided in the Velocity macro library." )
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--execute-library-macros", "-elm" },
+         description = "Execute the macros provided in the Velocity macro library." )
    private boolean executeLibraryMacros = false;
 
-   @CommandLine.Option( names = { "--output-directory", "-d" }, description = "Output directory to write files to" )
+   @CommandLine.Option(
+         names = { "--output-directory", "-d" },
+         description = "Output directory to write files to" )
    private String outputPath = ".";
 
-   @CommandLine.Option( names = { "--static", "-s" }, description = "Generate Java domain classes for a Static Meta Model" )
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--static", "-s" },
+         description = "Generate Java domain classes for a Static Meta Model" )
    private boolean generateStaticMetaModelJavaClasses = false;
+
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--details" },
+         description = "Print detailed reports on errors" )
+   private boolean details = false;
 
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
@@ -71,7 +91,10 @@ public class AspectToJavaCommand extends AbstractCommand {
 
    @Override
    public void run() {
-      final Aspect aspect = loadAspectOrFail( parentCommand.parentCommand.getInput(), resolverConfiguration );
+      setDetails( details );
+      setResolverConfig( resolverConfiguration );
+
+      final Aspect aspect = getInputHandler( parentCommand.parentCommand.getInput() ).loadAspect();
       final JavaGenerator javaGenerator = generateStaticMetaModelJavaClasses
             ? getStaticModelGenerator( aspect )
             : getModelGenerator( aspect );

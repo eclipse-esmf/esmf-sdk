@@ -43,34 +43,48 @@ import picocli.CommandLine;
 public class AspectToSqlCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "sql";
 
-   @CommandLine.Option( names = { "--output", "-o" }, description = "Output file path" )
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--output", "-o" },
+         description = "Output file path" )
    private String outputFilePath = "-";
 
-   @CommandLine.Option( names = { "--dialect", "-d" },
+   @CommandLine.Option(
+         names = { "--dialect", "-d" },
          description = "The SQL dialect to generate for (default: ${DEFAULT-VALUE}" )
    private SqlGenerationConfig.Dialect dialect = SqlGenerationConfig.Dialect.DATABRICKS;
 
-   @CommandLine.Option( names = { "--mapping-strategy", "-s" },
+   @CommandLine.Option(
+         names = { "--mapping-strategy", "-s" },
          description = "The mapping strategy to use (default: ${DEFAULT-VALUE}" )
    private SqlGenerationConfig.MappingStrategy strategy = SqlGenerationConfig.MappingStrategy.DENORMALIZED;
 
-   @CommandLine.Option( names = { "--language", "-l" },
+   @CommandLine.Option(
+         names = { "--language", "-l" },
          description = "The language from the model for which comments should be generated (default: ${DEFAULT-VALUE})" )
    private String language = DatabricksSqlGenerationConfig.DEFAULT_COMMENT_LANGUAGE.getLanguage();
 
-   @CommandLine.Option( names = { "--include-table-comment", "-tc" },
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--include-table-comment", "-tc" },
          description = "Include table comment in the generated SQL script (default: ${DEFAULT-VALUE})" )
    private boolean includeTableComment = DatabricksSqlGenerationConfig.DEFAULT_INCLUDE_TABLE_COMMENT;
 
-   @CommandLine.Option( names = { "--include-column-comments", "-cc" },
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--include-column-comments", "-cc" },
          description = "Include column comments in the generated SQL script (default: ${DEFAULT-VALUE})" )
    private boolean includeColumnComments = DatabricksSqlGenerationConfig.DEFAULT_INCLUDE_COLUMN_COMMENTS;
 
-   @CommandLine.Option( names = { "--table-command-prefix", "-tcp" },
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--table-command-prefix", "-tcp" },
          description = "The prefix to use for Databricks table creation commands (default: ${DEFAULT-VALUE})" )
    private String tableCommandPrefix = DatabricksSqlGenerationConfig.DEFAULT_TABLE_COMMAND_PREFIX;
 
-   @CommandLine.Option( names = { "--decimal-precision", "-dp" },
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--decimal-precision", "-dp" },
          description = "The precision to use for Databricks decimal columns, between 1 and 38. (default: ${DEFAULT-VALUE})" )
    private int decimalPrecision = DatabricksSqlGenerationConfig.DECIMAL_DEFAULT_PRECISION;
 
@@ -79,6 +93,12 @@ public class AspectToSqlCommand extends AbstractCommand {
          description = "Custom column to add to the table, can be repeated for multiple columns",
          converter = DatabricksColumnDefinitionTypeConverter.class )
    private List<DatabricksColumnDefinition> customColumns;
+
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--details" },
+         description = "Print detailed reports on errors" )
+   private boolean details = false;
 
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
@@ -98,7 +118,10 @@ public class AspectToSqlCommand extends AbstractCommand {
 
    @Override
    public void run() {
-      final Aspect aspect = loadAspectOrFail( parentCommand.parentCommand.getInput(), resolverConfiguration );
+      setDetails( details );
+      setResolverConfig( resolverConfiguration );
+
+      final Aspect aspect = getInputHandler( parentCommand.parentCommand.getInput() ).loadAspect();
       final DatabricksSqlGenerationConfig generatorConfig =
             DatabricksSqlGenerationConfigBuilder.builder()
                   .commentLanguage( Locale.forLanguageTag( language ) )

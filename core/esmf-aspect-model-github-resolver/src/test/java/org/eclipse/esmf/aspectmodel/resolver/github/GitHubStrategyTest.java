@@ -142,7 +142,7 @@ public class GitHubStrategyTest {
    }
 
    @Test
-   void testLoadCatenaXBatteryPass() {
+   void testLoadCatenaxBatteryPass() {
       final AspectModelUrn batteryPassUrn = AspectModelUrn.fromUrn( "urn:samm:io.catenax.battery.battery_pass:6.0.0#BatteryPass" );
       final GithubRepository sldt = new GithubRepository( "eclipse-tractusx", "sldt-semantic-models",
             new GithubRepository.Branch( "main" ) );
