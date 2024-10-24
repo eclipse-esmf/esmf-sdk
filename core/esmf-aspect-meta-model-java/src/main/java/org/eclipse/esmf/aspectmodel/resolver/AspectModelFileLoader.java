@@ -16,6 +16,7 @@ package org.eclipse.esmf.aspectmodel.resolver;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -97,6 +98,10 @@ public class AspectModelFileLoader {
       return new RawAspectModelFile( model, List.of(), Optional.empty() );
    }
 
+   public static RawAspectModelFile load( final byte[] content ) {
+      return load( new ByteArrayInputStream( content ) );
+   }
+
    public static RawAspectModelFile load( final URL url ) {
       if ( url.getProtocol().equals( "file" ) ) {
          try {
@@ -104,8 +109,13 @@ public class AspectModelFileLoader {
          } catch ( final URISyntaxException exception ) {
             throw new ModelResolutionException( "Can not load model from file URL", exception );
          }
+      } else if ( url.getProtocol().equals( "http" ) || url.getProtocol().equals( "https" ) ) {
+         // Downloading from http(s) should take proxy settings into consideration, so we don't just .openStream() here
+         final byte[] fileContent = new Download().downloadFile( url );
+         return load( fileContent );
       }
       try {
+         // Other URLs (e.g. resource://) we just load using openStream()
          return load( url.openStream(), Optional.of( url.toURI() ) );
       } catch ( final IOException | URISyntaxException exception ) {
          throw new ModelResolutionException( "Can not load model from URL", exception );

@@ -19,12 +19,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
@@ -35,7 +30,6 @@ import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestModel;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;

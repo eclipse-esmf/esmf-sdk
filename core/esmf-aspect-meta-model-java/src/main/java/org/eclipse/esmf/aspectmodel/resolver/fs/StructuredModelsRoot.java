@@ -67,6 +67,7 @@ public class StructuredModelsRoot extends ModelsRoot {
                         .flatMap( versionNumber -> AspectModelUrn.from( String.format( "urn:samm:%s:%s",
                               file.getParentFile().getParentFile().getName(), versionNumber ) ) ).isSuccess() )
                   .sorted( Comparator.comparing( File::getName ) )
+                  .map( File::getAbsoluteFile )
                   .map( File::toURI )
                   .toList()
                   .stream();
@@ -78,8 +79,12 @@ public class StructuredModelsRoot extends ModelsRoot {
 
    @Override
    public Stream<URI> namespaceContents( final AspectModelUrn namespace ) {
-      final File namespaceDirectory = rootPath().resolve( namespace.getNamespaceMainPart() ).resolve( namespace.getVersion() ).toFile();
-      return Arrays.stream( Objects.requireNonNull( namespaceDirectory.listFiles( file -> file.getName().endsWith( ".ttl" ) ) ) )
+      final File namespaceDirectory = rootPath()
+            .resolve( namespace.getNamespaceMainPart() )
+            .resolve( namespace.getVersion() )
+            .toFile();
+      return Arrays.stream( Objects.requireNonNull( namespaceDirectory.listFiles( file ->
+                  file.getName().endsWith( ".ttl" ) ) ) )
             .map( File::toURI );
    }
 }
