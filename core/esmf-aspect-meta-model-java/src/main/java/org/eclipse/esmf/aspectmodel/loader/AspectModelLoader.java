@@ -434,10 +434,10 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
     */
    public AspectModel loadAspectModelFiles( final Collection<AspectModelFile> inputFiles ) {
       final Model mergedModel = ModelFactory.createDefaultModel();
-      mergedModel.add( MetaModelFile.metaModelDefinitions() );
       for ( final AspectModelFile file : inputFiles ) {
-         mergedModel.add( file.sourceModel() );
+         RdfUtil.mergeModel( mergedModel, file.sourceModel() );
       }
+      mergedModel.add( MetaModelFile.metaModelDefinitions() );
 
       final List<ModelElement> elements = new ArrayList<>();
       final List<AspectModelFile> files = new ArrayList<>();
