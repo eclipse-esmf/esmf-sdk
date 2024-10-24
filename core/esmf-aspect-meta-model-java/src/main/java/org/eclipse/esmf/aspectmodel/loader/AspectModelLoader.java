@@ -51,6 +51,7 @@ import org.eclipse.esmf.aspectmodel.resolver.fs.FlatModelsRoot;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.DefaultAspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.MetaModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFile;
+import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.urn.ElementType;
 import org.eclipse.esmf.aspectmodel.urn.UrnSyntaxException;
@@ -113,6 +114,7 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
     * @param resolutionStrategies the strategies
     */
    public AspectModelLoader( final List<ResolutionStrategy> resolutionStrategies ) {
+      TurtleLoader.init();
       if ( resolutionStrategies.size() == 1 ) {
          resolutionStrategy = resolutionStrategies.get( 0 );
       } else if ( resolutionStrategies.isEmpty() ) {

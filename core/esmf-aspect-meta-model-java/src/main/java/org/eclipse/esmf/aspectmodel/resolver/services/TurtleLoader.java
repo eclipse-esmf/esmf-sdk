@@ -21,6 +21,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
 import javax.annotation.Nullable;
 
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
@@ -43,6 +44,11 @@ public final class TurtleLoader {
    private static volatile boolean isTurtleRegistered = false;
 
    private TurtleLoader() {
+   }
+
+   public static void init() {
+      SammXsdType.setupTypeMapping();
+      registerTurtle();
    }
 
    /**
@@ -85,8 +91,7 @@ public final class TurtleLoader {
     */
    public static Try<Model> loadTurtle( @Nullable final String modelContent ) {
       Objects.requireNonNull( modelContent, "Model content must not be null." );
-      SammXsdType.setupTypeMapping();
-      registerTurtle();
+      init();
       try ( final InputStream turtleInputStream = new ByteArrayInputStream( modelContent.getBytes( StandardCharsets.UTF_8 ) ) ) {
          final Model streamModel = RDFParser.create()
                // Make sure to NOT use FactoryRDFCaching because it will return the same objects for nodes appearing
