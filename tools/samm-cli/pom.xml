@@ -31,11 +31,11 @@
       <packaging-type>jar</packaging-type>
       <main-class>org.eclipse.esmf.SammCli</main-class>
       <binary-name>samm</binary-name>
-      <graalvm-config-path>${project.build.directory}/classes/META-INF/native-image/${project.groupId}/${project.artifactId}</graalvm-config-path>
       <!-- The separate jar that is built without GraalVM-internal dependencies which trip up the GraalVM compiler,
            which is exclusive used to pass on to native-image -->
       <native-image-jar>${project.artifactId}-${project.version}-for-native</native-image-jar>
       <skip.maven.surefire>false</skip.maven.surefire>
+      <skip.maven.failsafe>true</skip.maven.failsafe>
       <skip.maven.surefire.report.plugin>false</skip.maven.surefire.report.plugin>
       <skip.maven.shade>false</skip.maven.shade>
    </properties>
@@ -52,6 +52,10 @@
       <dependency>
          <groupId>org.eclipse.esmf</groupId>
          <artifactId>esmf-aspect-model-github-resolver</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-native-support</artifactId>
       </dependency>
       <dependency>
          <groupId>com.fasterxml.jackson.core</groupId>
@@ -84,12 +88,6 @@
       <dependency>
          <groupId>org.fusesource.jansi</groupId>
          <artifactId>jansi</artifactId>
-      </dependency>
-      <!-- Required for GraalVM build: Annotations for substitution classes -->
-      <dependency>
-         <groupId>org.graalvm.nativeimage</groupId>
-         <artifactId>svm</artifactId>
-         <scope>provided</scope>
       </dependency>
       <dependency>
          <groupId>org.graalvm.sdk</groupId>
@@ -144,10 +142,6 @@
             <filtering>true</filtering>
             <includes>
                <include>**/*.properties</include>
-               <include>**/*.html</include>
-               <include>**/*.js</include>
-               <include>**/*.txt</include>
-               <include>**/*.xml</include>
                <include>**/*.json</include>
             </includes>
          </resource>
@@ -164,8 +158,7 @@
                   <mainClass>${main-class}</mainClass>
                   <buildArgs>
                      <buildArg>--no-fallback</buildArg>
-                     <buildArg>-cp ${project.build.directory}/${project.artifactId}-${project.version}.jar
-                     </buildArg>
+                     <buildArg>-cp ${project.build.directory}/${project.artifactId}-${project.version}.jar</buildArg>
                      <buildArg>-Djava.awt.headless=true</buildArg>
                   </buildArgs>
                </configuration>
@@ -182,10 +175,8 @@
             <configuration>
                <systemPropertyVariables>
                   <packaging-type>${packaging-type}</packaging-type>
-                  <executableJar>${project.build.directory}/${project.artifactId}-${project.version}.jar
-                  </executableJar>
+                  <executableJar>${project.build.directory}/${project.artifactId}-${project.version}.jar</executableJar>
                   <binary>${project.build.directory}/${binary-name}</binary>
-                  <graalVmConfigPath>${graalvm-config-path}</graalVmConfigPath>
                </systemPropertyVariables>
                <forkCount>1</forkCount>
                <reuseForks>false</reuseForks>
@@ -221,44 +212,6 @@
             <configuration>
                <skip>true</skip>
             </configuration>
-         </plugin>
-
-         <!-- Executes build-time-only code -->
-         <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <executions>
-               <!-- Generate admin-shell reflection config -->
-               <execution>
-                  <id>generate-admin-shell-reflection-config</id>
-                  <phase>process-classes</phase>
-                  <goals>
-                     <goal>java</goal>
-                  </goals>
-                  <configuration>
-                     <!-- The main class of your build-time scanning code -->
-                     <mainClass>org.eclipse.esmf.buildtime.Aas4jClassSetup</mainClass>
-                     <!-- Pass the properties file as a commandline param -->
-                     <commandlineArgs>${project.build.outputDirectory}/adminshell.properties</commandlineArgs>
-                     <cleanupDaemonThreads>false</cleanupDaemonThreads>
-                  </configuration>
-               </execution>
-               <!-- Execute adjustments of native configs that were generated during the previous maven build -->
-               <execution>
-                  <id>customize-resource-config</id>
-                  <phase>prepare-package</phase>
-                  <goals>
-                     <goal>java</goal>
-                  </goals>
-                  <configuration>
-                     <!-- The main class of your build-time scanning code -->
-                     <mainClass>org.eclipse.esmf.buildtime.CustomizeGraalVmConfigs</mainClass>
-                     <!-- Pass the build target file as a commandline param -->
-                     <commandlineArgs>${project.build.outputDirectory}/META-INF/native-image/${project.groupId}/${project.artifactId}</commandlineArgs>
-                     <cleanupDaemonThreads>false</cleanupDaemonThreads>
-                  </configuration>
-               </execution>
-            </executions>
          </plugin>
 
          <!-- Build fat jar -->
@@ -495,9 +448,7 @@
                            <artifactId>esmf-test-aspect-models</artifactId>
                            <type>jar</type>
                            <overWrite>true</overWrite>
-                           <outputDirectory>
-                              ${project.build.outputDirectory}
-                           </outputDirectory>
+                           <outputDirectory>${project.build.outputDirectory}</outputDirectory>
                            <includes>**/*.ttl</includes>
                         </artifactItem>
                      </artifactItems>
@@ -517,16 +468,8 @@
                      <version>${picocli-version}</version>
                   </path>
                </annotationProcessorPaths>
-               <compilerArgs>
-                  <arg>-Aproject=${project.groupId}/${project.artifactId}</arg>
-                  <arg>--add-exports</arg>
-                  <arg>java.desktop/sun.awt=ALL-UNNAMED</arg>
-                  <arg>--add-exports</arg>
-                  <arg>java.desktop/sun.font=ALL-UNNAMED</arg>
-                  <arg>--add-exports</arg>
-                  <arg>org.graalvm.sdk/org.graalvm.nativeimage.impl=ALL-UNNAMED</arg>
-               </compilerArgs>
-               <forceJavacCompilerUse>true</forceJavacCompilerUse>
+               <forceLegacyJavacApi>true</forceLegacyJavacApi>
+               <showDeprecation>false</showDeprecation>
             </configuration>
          </plugin>
 
@@ -544,12 +487,12 @@
                </execution>
             </executions>
             <configuration>
+               <skipITs>${skip.maven.failsafe}</skipITs>
                <systemPropertyVariables>
                   <packaging-type>${packaging-type}</packaging-type>
                   <executableJar>${project.build.directory}/${project.artifactId}-${project.version}.jar
                   </executableJar>
                   <binary>${project.build.directory}/${binary-name}</binary>
-                  <graalVmConfigPath>${graalvm-config-path}</graalVmConfigPath>
                   <forkCount>1</forkCount>
                   <reuseForks>true</reuseForks>
                   <argLine>-Xmx4096m</argLine>
@@ -583,14 +526,6 @@
                </execution>
             </executions>
          </plugin>
-
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <configuration>
-               <excludePackageNames>org.eclipse.esmf.substitution</excludePackageNames>
-            </configuration>
-         </plugin>
       </plugins>
    </build>
 
@@ -608,7 +543,7 @@
                <plugin>
                   <groupId>org.codehaus.mojo</groupId>
                   <artifactId>wagon-maven-plugin</artifactId>
-                  <version>1.0</version>
+                  <version>${wagon-maven-plugin-version}</version>
                   <executions>
                      <execution>
                         <id>copy-fontconfig-bfc</id>
@@ -633,6 +568,7 @@
          <properties>
             <packaging-type>native</packaging-type>
             <skip.maven.surefire>true</skip.maven.surefire>
+            <skip.maven.failsafe>false</skip.maven.failsafe>
             <maven.resources.skip>true</maven.resources.skip>
             <maven.source.skip>true</maven.source.skip>
          </properties>
@@ -662,12 +598,8 @@
                         <arg>--enable-https</arg>
                         <arg>--no-fallback</arg>
                         <arg>--report-unsupported-elements-at-runtime</arg>
-                        <arg>--features=org.eclipse.esmf.nativefeatures.SammCliFeatures</arg>
+                        <arg>--features=org.eclipse.esmf.nativefeatures.SammCliFeature</arg>
                         <arg>--language:js</arg>
-                        <arg>-H:JNIConfigurationFiles=src/main/resources/META-INF/native-image/${project.groupId}/${project.artifactId}/jni-config.json</arg>
-                        <arg>-H:DynamicProxyConfigurationFiles=src/main/resources/META-INF/native-image/${project.groupId}/${project.artifactId}/proxy-config.json</arg>
-                        <arg>-H:ReflectionConfigurationFiles=src/main/resources/META-INF/native-image/${project.groupId}/${project.artifactId}/reflect-config.json</arg>
-                        <arg>-H:ResourceConfigurationFiles=src/main/resources/META-INF/native-image/${project.groupId}/${project.artifactId}/resource-config.json</arg>
                         <arg>-H:-DeadlockWatchdogExitOnTimeout</arg>
                         <arg>-H:DeadlockWatchdogInterval=0</arg>
                         <arg>-H:+AddAllCharsets</arg>
@@ -679,6 +611,8 @@
                         <arg>-J--add-exports=java.desktop/sun.font=ALL-UNNAMED</arg>
                         <arg>-J--add-exports=org.graalvm.sdk/org.graalvm.nativeimage.impl=ALL-UNNAMED</arg>
                         <arg>-J--add-exports=org.graalvm.nativeimage.builder/com.oracle.svm.core.configure=ALL-UNNAMED</arg>
+                        <arg>-J--add-exports=org.graalvm.nativeimage.builder/com.oracle.svm.core.jni=ALL-UNNAMED</arg>
+                        <arg>--initialize-at-build-time=org.eclipse.esmf.nativefeatures.Native</arg>
                      </buildArgs>
                      <quickBuild>true</quickBuild>
                      <classpath>

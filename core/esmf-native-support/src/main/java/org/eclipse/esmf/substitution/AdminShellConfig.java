@@ -42,6 +42,10 @@ public class AdminShellConfig {
    public Set<Class> interfaces;
    public List<Class<Enum>> enums;
    public Set<Class<?>> interfacesWithoutDefaultImplementation;
+   public Set<Class<?>> classesInModelPackage;
+   public Set<Class<?>> classesInDefaultImplementationPackage;
+   public Set<Class<?>> classesInJsonMixinsPackage;
+   public Set<Class<?>> classesInXmlMixinsPackage;
 
    private static final String PREFIX = AdminShellConfig.class.getPackageName() + ".adminshell.";
    private static final String TYPES_WITH_MODEL_TYPE = PREFIX + "typesWithModelTypes";
@@ -52,13 +56,17 @@ public class AdminShellConfig {
    private static final String INTERFACES = PREFIX + "interfaces";
    private static final String ENUMS = PREFIX + "enums";
    private static final String INTERFACES_WITHOUT_DEFAULT_IMPLEMENTATION = PREFIX + "interfacesWithoutDefaultImplementation";
+   private static final String CLASSES_IN_MODEL_PACKAGE = PREFIX + "classesInModelPackage";
+   private static final String CLASSES_IN_DEFAULT_IMPLEMENTATIONP_PACKAGE = PREFIX + "classesInDefaultImplementationPackage";
+   private static final String CLASSES_IN_JSON_MIXINS_PACKAGE = PREFIX + "classesInJsonMixinsPackage";
+   private static final String CLASSES_IN_XML_MIXINS_PACKAGE = PREFIX + "classesInXmlMixinsPackage";
 
    private String serialize( final Class<?> clazz ) {
       return clazz.getName();
    }
 
    private <T, C extends Collection<T>> String serialize( final C collection, final Function<T, String> mapper ) {
-      return collection.stream().map( mapper::apply ).collect( Collectors.joining( "," ) );
+      return collection.stream().map( mapper ).collect( Collectors.joining( "," ) );
    }
 
    private <K, V> String serialize( final Map<K, V> map, final Function<K, String> keyMapper, final Function<V, String> valueMapper ) {
@@ -82,6 +90,11 @@ public class AdminShellConfig {
       properties.setProperty( ENUMS, serialize( enums, this::serialize ) );
       properties.setProperty( INTERFACES_WITHOUT_DEFAULT_IMPLEMENTATION,
             serialize( interfacesWithoutDefaultImplementation, this::serialize ) );
+      properties.setProperty( CLASSES_IN_MODEL_PACKAGE, serialize( classesInModelPackage, this::serialize ) );
+      properties.setProperty( CLASSES_IN_DEFAULT_IMPLEMENTATIONP_PACKAGE,
+            serialize( classesInDefaultImplementationPackage, this::serialize ) );
+      properties.setProperty( CLASSES_IN_JSON_MIXINS_PACKAGE, serialize( classesInJsonMixinsPackage, this::serialize ) );
+      properties.setProperty( CLASSES_IN_XML_MIXINS_PACKAGE, serialize( classesInXmlMixinsPackage, this::serialize ) );
       return properties;
    }
 
@@ -138,6 +151,14 @@ public class AdminShellConfig {
       config.interfacesWithoutDefaultImplementation = deserializeCollection(
             properties.getProperty( INTERFACES_WITHOUT_DEFAULT_IMPLEMENTATION ),
             AdminShellConfig::deserializeClass, Collectors.toSet() );
+      config.classesInModelPackage = deserializeCollection( properties.getProperty( CLASSES_IN_MODEL_PACKAGE ),
+            AdminShellConfig::deserializeClass, Collectors.toSet() );
+      config.classesInDefaultImplementationPackage = deserializeCollection(
+            properties.getProperty( CLASSES_IN_DEFAULT_IMPLEMENTATIONP_PACKAGE ), AdminShellConfig::deserializeClass, Collectors.toSet() );
+      config.classesInJsonMixinsPackage = deserializeCollection(
+            properties.getProperty( CLASSES_IN_JSON_MIXINS_PACKAGE ), AdminShellConfig::deserializeClass, Collectors.toSet() );
+      config.classesInXmlMixinsPackage = deserializeCollection(
+            properties.getProperty( CLASSES_IN_XML_MIXINS_PACKAGE ), AdminShellConfig::deserializeClass, Collectors.toSet() );
       return config;
    }
 
