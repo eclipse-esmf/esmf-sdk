@@ -60,6 +60,12 @@ public class AspectToJavaCommand extends AbstractCommand {
    @CommandLine.Option( names = { "--static", "-s" }, description = "Generate Java domain classes for a Static Meta Model" )
    private boolean generateStaticMetaModelJavaClasses = false;
 
+   @CommandLine.Option( names = { "--aspect-prefix", "-prefix" }, description = "Aspect prefix for generated Java class of Aspect" )
+   private String aspectPrefix = "";
+
+   @CommandLine.Option( names = { "--aspect-postfix", "-postfix" }, description = "Aspect postfix for generated Java class of Aspect" )
+   private String aspectPostfix = "";
+
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
 
@@ -92,6 +98,8 @@ public class AspectToJavaCommand extends AbstractCommand {
             .templateLibFile( templateLibFile )
             .enableJacksonAnnotations( !disableJacksonAnnotations )
             .packageName( pkgName )
+            .aspectPrefix( aspectPrefix )
+            .aspectPostfix( aspectPostfix )
             .build();
    }
 

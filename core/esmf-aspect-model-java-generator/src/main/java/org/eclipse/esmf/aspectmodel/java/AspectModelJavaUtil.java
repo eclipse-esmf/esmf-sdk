@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
 import org.eclipse.esmf.aspectmodel.visitor.AspectStreamTraversalVisitor;
 import org.eclipse.esmf.metamodel.AbstractEntity;
+import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Entity;
@@ -557,6 +558,13 @@ public class AspectModelJavaUtil {
             .mapToObj( i -> "T" + i + " /* type of " + properties.get( i ).getName() + " */" )
             .collect( Collectors.joining( "," ) );
       return generics.isEmpty() ? "" : "<" + generics + ">";
+   }
+
+   public static String generateClassName( final StructureElement element, final JavaCodeGenerationConfig config ) {
+      if ( ( !config.aspectPrefix().isBlank() || !config.aspectPostfix().isBlank() ) && element instanceof Aspect ) {
+         return config.aspectPrefix() + element.getName() + config.aspectPostfix();
+      }
+      return element.getName();
    }
 
    /**

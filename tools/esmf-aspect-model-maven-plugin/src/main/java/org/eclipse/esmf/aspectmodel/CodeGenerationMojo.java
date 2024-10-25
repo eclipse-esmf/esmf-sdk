@@ -38,6 +38,12 @@ public abstract class CodeGenerationMojo extends AspectModelMojo {
    @Parameter
    protected String stripNamespace = "";
 
+   @Parameter
+   protected String aspectPrefix = "";
+
+   @Parameter
+   protected String aspectPostfix = "";
+
    protected void validateParameters( final File templateLibFile ) throws MojoExecutionException {
       if ( executeLibraryMacros && !templateLibFile.exists() ) {
          throw new MojoExecutionException( "Missing configuration. Valid path to velocity template library file must be provided." );

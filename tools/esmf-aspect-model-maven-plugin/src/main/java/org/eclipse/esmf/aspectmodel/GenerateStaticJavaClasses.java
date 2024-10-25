@@ -42,6 +42,8 @@ public class GenerateStaticJavaClasses extends CodeGenerationMojo {
                .packageName( determinePackageName( aspect ) )
                .executeLibraryMacros( executeLibraryMacros )
                .templateLibFile( templateLibFile )
+               .aspectPrefix( aspectPrefix )
+               .aspectPostfix( aspectPostfix )
                .build();
          new StaticMetaModelJavaGenerator( aspect, config ).generate( nameMapper );
       }
