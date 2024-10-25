@@ -363,8 +363,7 @@ public class DiagramFeature implements Feature {
       Native.forClass( "sun.font.CompositeFontDescriptor" )
             .registerEverythingForReflection();
       Native.forClass( "sun.font.FontDesignMetrics" )
-            .registerEverythingForReflection();
-      Native.forClass( "sun.font.FontDesignMetrics" )
+            .registerEverythingForReflection()
             .registerEverythingForJni();
       Native.forClass( java.awt.FontMetrics.class )
             .registerFieldsForJni( "font" )
@@ -400,6 +399,8 @@ public class DiagramFeature implements Feature {
             .registerMethodForJni( "readFile", java.nio.ByteBuffer.class );
 
       if ( isWindows() ) {
+         Native.forClass( "sun.awt.FontConfiguration" )
+               .registerEverythingForReflection();
          Native.addResource( "fontconfig.bfc" );
       }
    }
