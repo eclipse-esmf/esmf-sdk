@@ -40,7 +40,7 @@ import com.oracle.svm.core.annotate.TargetClass;
 public final class Target_sun_awt_FontConfiguration {
    @Substitute
    private void readFontConfigFile( final File f ) {
-      try ( final InputStream inputStream = getClass().getResourceAsStream( "/fontconfig.bfc" ) ) {
+      try ( final InputStream inputStream = getClass().getResourceAsStream( "fontconfig.bfc" ) ) {
          loadBinary( inputStream );
       } catch ( final IOException exception ) {
          throw new RuntimeException( exception );
