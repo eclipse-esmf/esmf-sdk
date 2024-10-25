@@ -73,7 +73,12 @@ public class FileInputHandler extends AbstractInputHandler {
    }
 
    public static boolean appliesToInput( final String input ) {
-      return absoluteFile( new File( input ) ).exists();
+      try {
+         return absoluteFile( new File( input ) ).exists();
+      } catch ( final Exception exception ) {
+         // This could file with e.g. a InvalidPathException or with platform-specific exceptions when the input is indeed not a valid file
+         return false;
+      }
    }
 
    @Override
