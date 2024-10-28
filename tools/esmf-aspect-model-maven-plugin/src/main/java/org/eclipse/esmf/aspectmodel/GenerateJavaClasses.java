@@ -47,8 +47,8 @@ public class GenerateJavaClasses extends CodeGenerationMojo {
                .packageName( determinePackageName( aspect ) )
                .executeLibraryMacros( executeLibraryMacros )
                .templateLibFile( templateLibFile )
-               .aspectPrefix( aspectPrefix )
-               .aspectPostfix( aspectPostfix )
+               .namePrefix( namePrefix )
+               .namePostfix( namePostfix )
                .build();
          new AspectModelJavaGenerator( aspect, config ).generate( nameMapper );
       }

@@ -33,8 +33,8 @@
                </includes>
                <outputDirectory>${basedir}/target/test-artifacts</outputDirectory>
                <packageName>example.com</packageName>
-               <aspectPrefix>Base</aspectPrefix>
-               <aspectPostfix>Postfix</aspectPostfix>
+               <namePrefix>Base</namePrefix>
+               <namePostfix>Postfix</namePostfix>
             </configuration>
          </plugin>
       </plugins>

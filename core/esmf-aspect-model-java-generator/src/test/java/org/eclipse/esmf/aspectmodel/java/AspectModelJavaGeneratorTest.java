@@ -99,14 +99,14 @@ public class AspectModelJavaGeneratorTest {
       return List.of( new AspectModelJavaGenerator( aspectModel.aspect(), config ) );
    }
 
-   private Collection<JavaGenerator> getGenerators( final TestAspect testAspect, final String aspectPrefix, final String aspectPostfix ) {
+   private Collection<JavaGenerator> getGenerators( final TestAspect testAspect, final String namePrefix, final String namePostfix ) {
       final AspectModel aspectModel = TestResources.load( testAspect );
       final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
             .enableJacksonAnnotations( true )
             .executeLibraryMacros( false )
             .packageName( aspectModel.aspect().urn().getNamespaceMainPart() )
-            .aspectPrefix( aspectPrefix )
-            .aspectPostfix( aspectPostfix )
+            .namePrefix( namePrefix )
+            .namePostfix( namePostfix )
             .build();
       return List.of( new AspectModelJavaGenerator( aspectModel.aspect(), config ) );
    }

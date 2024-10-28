@@ -39,10 +39,10 @@ public abstract class CodeGenerationMojo extends AspectModelMojo {
    protected String stripNamespace = "";
 
    @Parameter
-   protected String aspectPrefix = "";
+   protected String namePrefix = "";
 
    @Parameter
-   protected String aspectPostfix = "";
+   protected String namePostfix = "";
 
    protected void validateParameters( final File templateLibFile ) throws MojoExecutionException {
       if ( executeLibraryMacros && !templateLibFile.exists() ) {
