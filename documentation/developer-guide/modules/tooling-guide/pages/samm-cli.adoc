@@ -78,7 +78,7 @@ The available options and their meaning can also be seen in the help text of the
                                    | _--language, -l_ : the language from the model for which the diagram should be
                                        generated (default: en)                                                               |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements | `samm aspect AspectModel.ttl to svg --custom-resolver "java -jar resolver.jar"`
-.8+| [[asepct-to-java]] aspect <model> to java | Generate Java classes from an Aspect Model                                  | `samm aspect AspectModel.ttl to java`
+.10+| [[asepct-to-java]] aspect <model> to java | Generate Java classes from an Aspect Model                                  | `samm aspect AspectModel.ttl to java`
                                    | _--output-directory, -d_ : output directory to write files to (default:
                                        current directory)                                                                    |
                                    | _--package-name, -pn_ : package to use for generated Java classes                       | `samm aspect AspectModel.ttl to java -pn org.company.product`
@@ -90,6 +90,8 @@ The available options and their meaning can also be seen in the help text of the
                                        https://velocity.apache.org/[Velocity] macro library                                  |
                                    | _--static, -s_ : generate Java domain classes for a Static Meta Model                   |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
+                                   | _--name-prefix, -namePrefix_ : name prefix for generated Aspect, Entity Java classes    | `samm aspect AspectModel.ttl to java -namePrefix "Prefix"`
+                                   | _--name-postfix, -namePostfix_ : name postfix for generated Aspect, Entity Java classes | `samm aspect AspectModel.ttl to java -namePostfix "Postfix"`
 .21+| [[aspect-to-openapi]] aspect <model> to openapi | Generate https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification
                                      for an Aspect Model                                                                     | `samm aspect AspectModel.ttl to openapi -j`
                                    | _--output, -o_ : output file path (default: stdout)                                     |

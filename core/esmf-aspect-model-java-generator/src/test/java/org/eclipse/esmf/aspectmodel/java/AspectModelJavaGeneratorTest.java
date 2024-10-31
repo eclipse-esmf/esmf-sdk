@@ -1136,4 +1136,18 @@ public class AspectModelJavaGeneratorTest {
       result.assertFields( "BaseAspectWithPropertyPostfix", expectedFieldsForAspectClass, new HashMap<>() );
       assertConstructor( result, "BaseAspectWithPropertyPostfix", expectedFieldsForAspectClass );
    }
+
+   @Test
+   void testGenerateEntityWithPrefixAndPostfix() throws IOException {
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+            .put( "testProperty", "BaseTestEntityPostfix" )
+            .build();
+
+      final TestAspect aspect = TestAspect.ASPECT_WITH_ENTITY;
+      final GenerationResult result = TestContext.generateAspectCode()
+            .apply( getGenerators( aspect, "Base", "Postfix" ) );
+      result.assertNumberOfFiles( 2 );
+      result.assertFields( "BaseAspectWithEntityPostfix", expectedFieldsForAspectClass, new HashMap<>() );
+      assertConstructor( result, "BaseAspectWithEntityPostfix", expectedFieldsForAspectClass );
+   }
 }
