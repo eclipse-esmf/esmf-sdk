@@ -265,20 +265,24 @@ public class AspectModelJavaUtil {
 
       if ( collection.isAllowDuplicates() && collection.isOrdered() ) {
          codeGenerationConfig.importTracker().importExplicit( List.class );
-         return containerType( List.class, getDataType( dataType, codeGenerationConfig.importTracker(), codeGenerationConfig ), elementConstraint );
+         return containerType( List.class, getDataType( dataType, codeGenerationConfig.importTracker(), codeGenerationConfig ),
+               elementConstraint );
       }
       if ( !collection.isAllowDuplicates() && collection.isOrdered() ) {
          codeGenerationConfig.importTracker().importExplicit( LinkedHashSet.class );
-         return containerType( LinkedHashSet.class, getDataType( dataType, codeGenerationConfig.importTracker(), codeGenerationConfig ), elementConstraint );
+         return containerType( LinkedHashSet.class, getDataType( dataType, codeGenerationConfig.importTracker(), codeGenerationConfig ),
+               elementConstraint );
       }
       if ( collection.isAllowDuplicates() && !collection.isOrdered() ) {
          codeGenerationConfig.importTracker().importExplicit( java.util.Collection.class );
-         return containerType( java.util.Collection.class, getDataType( dataType, codeGenerationConfig.importTracker(), codeGenerationConfig ),
+         return containerType( java.util.Collection.class,
+               getDataType( dataType, codeGenerationConfig.importTracker(), codeGenerationConfig ),
                elementConstraint );
       }
       if ( !collection.isAllowDuplicates() && !collection.isOrdered() ) {
          codeGenerationConfig.importTracker().importExplicit( Set.class );
-         return containerType( Set.class, getDataType( dataType, codeGenerationConfig.importTracker(), codeGenerationConfig ), elementConstraint );
+         return containerType( Set.class, getDataType( dataType, codeGenerationConfig.importTracker(), codeGenerationConfig ),
+               elementConstraint );
       }
       throw new CodeGenerationException( "Could not determine Java collection type for " + collection.getName() );
    }
@@ -304,12 +308,13 @@ public class AspectModelJavaUtil {
     * @param importTracker the import tracker
     * @return a {@link String} containing the definition of the Java Data Type
     */
-   public static String getDataType( final Optional<Type> dataType, final ImportTracker importTracker, final JavaCodeGenerationConfig codeGenerationConfig ) {
+   public static String getDataType( final Optional<Type> dataType, final ImportTracker importTracker,
+         final JavaCodeGenerationConfig codeGenerationConfig ) {
       return dataType.map( type -> {
          final Type actualDataType = dataType.get();
          if ( actualDataType instanceof ComplexType ) {
             final String complexDataType = ((ComplexType) actualDataType).getName();
-            if ( ( !codeGenerationConfig.namePrefix().isBlank() || !codeGenerationConfig.namePostfix().isBlank() ) ) {
+            if ( (!codeGenerationConfig.namePrefix().isBlank() || !codeGenerationConfig.namePostfix().isBlank()) ) {
                return codeGenerationConfig.namePrefix() + complexDataType + codeGenerationConfig.namePostfix();
             }
             return complexDataType;
@@ -491,7 +496,8 @@ public class AspectModelJavaUtil {
    public static String getCharacteristicJavaType( final Property property, final JavaCodeGenerationConfig codeGenerationConfig ) {
       final Supplier<RuntimeException> error = () -> new CodeGenerationException( "No data type found for Property " + property.getName() );
       if ( hasContainerType( property ) ) {
-         return getDataType( property.getCharacteristic().orElseThrow( error ).getDataType(), codeGenerationConfig.importTracker(), codeGenerationConfig );
+         return getDataType( property.getCharacteristic().orElseThrow( error ).getDataType(), codeGenerationConfig.importTracker(),
+               codeGenerationConfig );
       }
 
       return property.getEffectiveCharacteristic().flatMap( Characteristic::getDataType ).map( type -> {
@@ -564,7 +570,7 @@ public class AspectModelJavaUtil {
    }
 
    public static String generateClassName( final StructureElement element, final JavaCodeGenerationConfig config ) {
-      if ( ( !config.namePrefix().isBlank() || !config.namePostfix().isBlank() ) && element.is( StructureElement.class ) ) {
+      if ( (!config.namePrefix().isBlank() || !config.namePostfix().isBlank()) && element.is( StructureElement.class ) ) {
          return config.namePrefix() + element.getName() + config.namePostfix();
       }
       return element.getName();
