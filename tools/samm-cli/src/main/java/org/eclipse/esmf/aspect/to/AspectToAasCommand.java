@@ -46,14 +46,22 @@ public class AspectToAasCommand extends AbstractCommand {
          description = "Output file path" )
    private String outputFilePath = "-";
 
-   @CommandLine.Option( names = { "--format", "-f" },
+   @CommandLine.Option(
+         names = { "--format", "-f" },
          description = "The file format the AAS is to be generated in. Valid options are \"${COMPLETION-CANDIDATES}\". Default is "
                + "\"${DEFAULT-VALUE}\"." )
    private AasFileFormat format = AasFileFormat.XML;
 
-   @CommandLine.Option( names = { "--aspect-data", "-a" },
+   @CommandLine.Option(
+         names = { "--aspect-data", "-a" },
          description = "A file containing Aspect JSON data." )
    private File aspectData = null;
+
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--details" },
+         description = "Print detailed reports on errors" )
+   private boolean details = false;
 
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
@@ -80,7 +88,10 @@ public class AspectToAasCommand extends AbstractCommand {
 
    @Override
    public void run() {
-      final Aspect aspect = loadAspectOrFail( parentCommand.parentCommand.getInput(), resolverConfiguration );
+      setDetails( details );
+      setResolverConfig( resolverConfiguration );
+
+      final Aspect aspect = getInputHandler( parentCommand.parentCommand.getInput() ).loadAspect();
       final JsonNode loadedAspectData = loadAspectData();
       // we intentionally override the name of the generated artifact here to the name explicitly
       // desired by the user (outputFilePath), as opposed to what the model thinks it should be

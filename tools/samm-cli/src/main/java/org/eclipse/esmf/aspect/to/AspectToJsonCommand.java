@@ -33,8 +33,16 @@ import picocli.CommandLine;
 public class AspectToJsonCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "json";
 
-   @CommandLine.Option( names = { "--output", "-o" }, description = "Output file path" )
+   @CommandLine.Option(
+         names = { "--output", "-o" },
+         description = "Output file path" )
    private String outputFilePath = "-";
+
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--details" },
+         description = "Print detailed reports on errors" )
+   private boolean details = false;
 
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
@@ -47,8 +55,11 @@ public class AspectToJsonCommand extends AbstractCommand {
 
    @Override
    public void run() {
+      setDetails( details );
+      setResolverConfig( resolverConfiguration );
+
       final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator(
-            loadAspectOrFail( parentCommand.parentCommand.getInput(), resolverConfiguration ) );
+            getInputHandler( parentCommand.parentCommand.getInput() ).loadAspect() );
       try {
          // we intentionally override the name of the generated artifact here to the name explicitly desired by the user (outputFilePath),
          // as opposed to what the model thinks it should be called (name)
