@@ -17,6 +17,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.eclipse.esmf.nativefeatures.Native;
+
 import com.oracle.svm.core.annotate.Alias;
 import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
@@ -40,7 +42,7 @@ import com.oracle.svm.core.annotate.TargetClass;
 public final class Target_sun_awt_FontConfiguration {
    @Substitute
    private void readFontConfigFile( final File f ) {
-      try ( final InputStream inputStream = getClass().getResourceAsStream( "fontconfig.bfc" ) ) {
+      try ( final InputStream inputStream = Native.class.getResourceAsStream( "/fontconfig.bfc" ) ) {
          loadBinary( inputStream );
       } catch ( final IOException exception ) {
          throw new RuntimeException( exception );
