@@ -28,11 +28,6 @@
    <name>ESMF Aspect Meta Model Java</name>
    <packaging>jar</packaging>
 
-   <properties>
-      <generated-sources>${project.basedir}/src-gen</generated-sources>
-      <build-time-sources>${project.basedir}/src-buildtime</build-time-sources>
-   </properties>
-
    <dependencies>
       <dependency>
          <groupId>org.eclipse.esmf</groupId>

@@ -51,6 +51,15 @@ Aspect Model validation component require embedded JavaScript execution:
   building the native image; for more information see
   https://www.graalvm.org/22.3/reference-manual/polyglot-programming/[polyglot programming].
 
+[TIP]
+=====
+When using esmf-sdk with a GraalVM JDK and you target `native-image` compilation, add a
+dependency to the `esmf-native-support` module. This will add the necessary configuration for
+esmf-sdk resources, reflection and initialization that is required by the compiler:
+
+include::esmf-developer-guide:ROOT:partial$esmf-aspect-model-starter-artifact.adoc[]
+=====
+
 [[parsing-aspect-model-urns]]
 == Parsing Aspect Model URNs
 

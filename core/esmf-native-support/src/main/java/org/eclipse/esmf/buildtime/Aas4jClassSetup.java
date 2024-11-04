@@ -20,17 +20,17 @@ import static org.eclipse.digitaltwin.aas4j.v3.dataformat.core.internal.util.Ref
 import static org.eclipse.digitaltwin.aas4j.v3.dataformat.core.internal.util.ReflectionHelper.MODEL_PACKAGE_NAME;
 import static org.eclipse.digitaltwin.aas4j.v3.dataformat.core.internal.util.ReflectionHelper.MODEL_TYPE_SUPERCLASSES;
 import static org.eclipse.digitaltwin.aas4j.v3.dataformat.core.internal.util.ReflectionHelper.XML_MIXINS_PACKAGE_NAME;
+import static org.eclipse.esmf.nativefeatures.AssetAdministrationShellFeature.ADMINSHELL_PROPERTIES;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -70,14 +70,22 @@ public class Aas4jClassSetup {
       config.interfaces = scanAasInterfaces();
       config.enums = modelScan.getAllEnums().loadClasses( Enum.class );
       config.interfacesWithoutDefaultImplementation = getInterfacesWithoutDefaultImplementation( modelScan );
+      config.classesInModelPackage = classesInPackage( MODEL_PACKAGE_NAME );
+      config.classesInDefaultImplementationPackage = classesInPackage( DEFAULT_IMPLEMENTATION_PACKAGE_NAME );
+      config.classesInJsonMixinsPackage = classesInPackage( JSON_MIXINS_PACKAGE_NAME );
+      config.classesInXmlMixinsPackage = classesInPackage( XML_MIXINS_PACKAGE_NAME );
    }
 
    public static void main( final String[] args ) throws IOException {
-      final AdminShellConfig config = new Aas4jClassSetup().config;
-      final Properties p = config.toProperties();
-      final File out = new File( args[0] );
-      final FileOutputStream outputStream = new FileOutputStream( out );
-      p.store( outputStream, null );
+      try ( final FileOutputStream outputStream = new FileOutputStream( Path.of( args[0] ).resolve( ADMINSHELL_PROPERTIES ).toFile() ) ) {
+         new Aas4jClassSetup().config.toProperties().store( outputStream, null );
+      }
+   }
+
+   private Set<Class<?>> classesInPackage( final String packageName ) {
+      try ( final ScanResult scanResult = new ClassGraph().enableAllInfo().acceptPackages( packageName ).scan() ) {
+         return new HashSet<>( scanResult.getAllClasses().loadClasses() );
+      }
    }
 
    /**
