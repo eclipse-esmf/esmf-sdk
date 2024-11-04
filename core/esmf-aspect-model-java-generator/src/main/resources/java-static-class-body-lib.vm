@@ -13,11 +13,12 @@
 #parse( "java-static-class-property-lib.vm" )
 
 #macro( javaStaticClassBody )
-$codeGenerationConfig.importTracker().importExplicit( "${codeGenerationConfig.packageName()}.${element.getName()}" )
+#set( $className = ${util.generateClassName( $element, $codeGenerationConfig )} )
+$codeGenerationConfig.importTracker().importExplicit( "${codeGenerationConfig.packageName()}.${className}" )
 /**
-* Generated class {@link Meta${element.getName()}}.
+* Generated class {@link Meta${className}}.
 */
-public class Meta${element.getName()} implements StaticMetaClass<${element.getName()}>, PropertyContainer {
+public class Meta${className} implements StaticMetaClass<${className}>, PropertyContainer {
 public static final String NAMESPACE = "${modelUrnPrefix}";
 public static final String MODEL_ELEMENT_URN = NAMESPACE + "${element.getName()}";
 
@@ -49,8 +50,8 @@ static {
     #end
 #end
 
-    public Class<${element.getName()}> getModelClass() {
-        return ${element.getName()}.class;
+    public Class<${className}> getModelClass() {
+        return ${className}.class;
     }
 
     @Override
@@ -65,13 +66,13 @@ static {
 
     @Override
     public String getName() {
-        return "${element.getName()}";
+        return "${className}";
     }
 
     #if( $element.getExtends().isPresent() )
-        #set( $propertyTypeParameter = "? super ${element.getName()}" )
+        #set( $propertyTypeParameter = "? super ${className}" )
     #else
-        #set( $propertyTypeParameter = ${element.getName()} )
+        #set( $propertyTypeParameter = ${className} )
     #end
     @Override
     public List<StaticProperty<$propertyTypeParameter, ?>> getProperties() {

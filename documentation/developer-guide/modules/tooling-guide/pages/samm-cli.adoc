@@ -11,8 +11,9 @@ latest release [on GitHub](https://github.com/eclipse-esmf/esmf-sdk/releases/lat
 [[samm-cli-getting-started]]
 == Running the SAMM CLI
 
-For the executable jar, call `java -jar samm-cli-{esmf-sdk-version}.jar` followed by one of the following subcommands (e.g., `java -jar samm-cli-{esmf-sdk-version}.jar help`).
-In the following sections, `samm` will be used as the command name.
+For the executable jar, call `java -jar samm-cli-{esmf-sdk-version}.jar` followed by one of the
+following subcommands (e.g., `java -jar samm-cli-{esmf-sdk-version}.jar help`). In the following
+sections, `samm` will be used as the command name.
 
 [TIP]
 ====
@@ -26,27 +27,53 @@ alias samm='java -jar /location/to/samm-cli-{esmf-sdk-version}.jar'
 ====
 
 . *For the Windows native executable:*
-* *Download*: Download via above link or visit the repository of the Java SDK which contains the SAMM CLI at the Github https://github.com/eclipse-esmf/esmf-sdk/releases[releases page] and download executable file for Windows.
+* *Download*: Download via above link or visit the repository of the Java SDK which contains the
+   SAMM CLI at the Github https://github.com/eclipse-esmf/esmf-sdk/releases[releases page] and
+   download executable file for Windows.
 * *Extract*: extract it to a location of your choice.
 * *Open* `samm.exe`: This will open a command prompt in this directory, where you can enter further `samm` commands.
 * *Input*: Make sure to read the below documentation and provide model files in the correct xref:models-directory-structure[directory structure].
 
 . *For the Linux native executable:*
-* *Download*: Download via above link or visit the repository of the Java SDK which contains the SAMM CLI at the Github https://github.com/eclipse-esmf/esmf-sdk/releases[releases page] and download executable file for Linux.
+* *Download*: Download via above link or visit the repository of the Java SDK which contains the
+   SAMM CLI at the Github https://github.com/eclipse-esmf/esmf-sdk/releases[releases page] and
+   download executable file for Linux.
 * *Extract*: Unpack the archive to your preferred directory.
 * *Open Terminal*: Open the Terminal and navigate to the directory with the application.
-* *Input*: Make sure to read the below documentation and provide model files in the correct xref:models-directory-structure[directory structure].
+* *Input*: Make sure to read the below documentation and provide model files in the correct
+   xref:models-directory-structure[directory structure].
+
 * *Execute*: Run the application using the command `./samm`.
 
-Successful execution of a command is signaled by returning 0. In case of a logical or other internal error the error code 1 is being returned.
-Missing or wrong command parameters result in error code 2 being returned.
+Successful execution of a command is signaled by returning 0. In case of a logical or other internal
+error the error code 1 is being returned. Missing or wrong command parameters result in error code 2
+being returned.
 
-To get an overview of all commands and subcommands, use `samm help`.
-To get help for a certain subcommand, use `help` before the subcommand name, e.g., `samm help aspect`, `samm help aspect validate` or `samm help aas to aspect`.
-Each subcommand can have its own set of options which allow the user to further fine-tune the execution of the command.
-The available options and their meaning can also be seen in the help text of the individual subcommands.
+To get an overview of all commands and subcommands, use `samm help`. To get help for a certain
+subcommand, use `help` before the subcommand name, e.g., `samm help aspect`, `samm help aspect
+validate` or `samm help aas to aspect`. Each subcommand can have its own set of options which allow
+the user to further fine-tune the execution of the command. The available options and their meaning
+can also be seen in the help text of the individual subcommands.
 
 === List of commands
+
+[TIP]
+====
+In place of `<model>` in the command descriptions below, you can provide either one of:
+
+* a relative file name, such as `AspectModel.ttl` or `./somewhere/AspectModel.ttl` (on Linux and
+MacOS) or `.\somewhere\AspectModel.ttl` (on Windows),
+* an absolut file name, such as
+`/home/me/aspect-models/org.eclipse.esmf.example/1.0.0/AspectModel.ttl` (on Linux and MacOS) or
+`C:\Users\me\aspect-models\org.eclipse.esmf.example\1.0.0\AspectModel.ttl` (on Windows),
+* a URL pointing to a .ttl file in a publically accessible GitHub repository, such as
+`\https://github.com/eclipse-tractusx/sldt-semantic-models/blob/main/io.catenax.battery.battery_pass/6.0.0/BatteryPass.ttl`
+or `\https://github.com/eclipse-esmf/esmf-aspect-model-editor/blob/main/core/apps/ame/src/assets/aspect-models/org.eclipse.examples/1.0.0/Movement.ttl`,
+* an Aspect Model URN, such as `urn:samm:org.eclipse.esmf.example:1.0.0#Aspect`, however note that
+this also requires setting a models source, see xref:configuration-of-model-resolution[configuration
+of model resolution] for more information.
+====
+
 [width="100%",options="header",cols="20,50,30"]
 |===
 | Command | Description/Options | Examples
@@ -78,7 +105,7 @@ The available options and their meaning can also be seen in the help text of the
                                    | _--language, -l_ : the language from the model for which the diagram should be
                                        generated (default: en)                                                               |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements | `samm aspect AspectModel.ttl to svg --custom-resolver "java -jar resolver.jar"`
-.8+| [[asepct-to-java]] aspect <model> to java | Generate Java classes from an Aspect Model                                  | `samm aspect AspectModel.ttl to java`
+.10+| [[asepct-to-java]] aspect <model> to java | Generate Java classes from an Aspect Model                                  | `samm aspect AspectModel.ttl to java`
                                    | _--output-directory, -d_ : output directory to write files to (default:
                                        current directory)                                                                    |
                                    | _--package-name, -pn_ : package to use for generated Java classes                       | `samm aspect AspectModel.ttl to java -pn org.company.product`
@@ -90,6 +117,8 @@ The available options and their meaning can also be seen in the help text of the
                                        https://velocity.apache.org/[Velocity] macro library                                  |
                                    | _--static, -s_ : generate Java domain classes for a Static Meta Model                   |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
+                                   | _--name-prefix, -namePrefix_ : name prefix for generated Aspect, Entity Java classes    | `samm aspect AspectModel.ttl to java -namePrefix "Prefix"`
+                                   | _--name-postfix, -namePostfix_ : name postfix for generated Aspect, Entity Java classes | `samm aspect AspectModel.ttl to java -namePostfix "Postfix"`
 .21+| [[aspect-to-openapi]] aspect <model> to openapi | Generate https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification
                                      for an Aspect Model                                                                     | `samm aspect AspectModel.ttl to openapi -j`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
@@ -209,6 +238,7 @@ The available options and their meaning can also be seen in the help text of the
 
 |===
 
+[[configuration-of-model-resolution]]
 === Configuration of model resolution
 
 When a loaded file refers to model elements defined elsewhere, the model resolver looks up the files
@@ -228,10 +258,14 @@ to load. You can configure where such lookup should be done:
   language/script language, including complex logic if necessary.
 
 * Using the `--github` switch, you can configure a location in a remote GitHub repository as models
-  root. Using the switch requires the additional switch `--github-name` to set the remote
-  repository (e.g., `eclipse-esmf/esmf-sdk`). Optionally, you can also provide `--github-directory`
-  to set the remote directory and `--github-branch` to set the branch name.
+  root, e.g., `eclipse-esmf/esmf-sdk`. Optionally, you can also provide `--github-directory`
+  to set the remote directory and `--github-branch` or `--github-tag` to set the branch name or tag,
+  respectively.
 
+NOTE: When using an Aspect Model URN as input to a command (such as
+`urn:samm:org.eclipse.esmf.example:1.0.0#Aspect`), you must also provide at least one of the
+switches mentioned above (`--models-root`, `--custom-resolver` or `--github`), otherwise samm-cli
+will not know where to find the corresonding file(s).
 
 [[using-the-cli-to-create-a-json-openapi-specification]]
 == Using the CLI to create a JSON OpenAPI Specification

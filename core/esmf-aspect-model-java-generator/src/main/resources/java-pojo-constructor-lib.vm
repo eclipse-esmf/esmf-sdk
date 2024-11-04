@@ -18,7 +18,7 @@
         $codeGenerationConfig.importTracker().importExplicit( $JsonCreator )
         @JsonCreator
     #end
-    public ${element.name}(
+    public ${util.generateClassName( $element, $codeGenerationConfig )}(
     $util.constructorArguments( $allProperties, $codeGenerationConfig, $enableJacksonAnnotations )
     ) #if( $needInitializer ) throws DatatypeConfigurationException #end {
     super(

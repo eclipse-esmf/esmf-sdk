@@ -40,12 +40,23 @@ import picocli.CommandLine;
 public class AspectToJsonSchemaCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "schema";
 
-   @CommandLine.Option( names = { "--output", "-o" }, description = "Output file path (default: stdout)" )
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--output", "-o" },
+         description = "Output file path (default: stdout)" )
    private String outputFilePath = "-";
 
-   @CommandLine.Option( names = { "--language", "-l" },
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--language", "-l" },
          description = "The language from the model for which the OpenAPI specification should be generated (default: en)" )
    private String language = "en";
+
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--details" },
+         description = "Print detailed reports on errors" )
+   private boolean details = false;
 
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
@@ -58,7 +69,10 @@ public class AspectToJsonSchemaCommand extends AbstractCommand {
 
    @Override
    public void run() {
-      final Aspect aspect = loadAspectOrFail( parentCommand.parentCommand.getInput(), resolverConfiguration );
+      setDetails( details );
+      setResolverConfig( resolverConfiguration );
+
+      final Aspect aspect = getInputHandler( parentCommand.parentCommand.getInput() ).loadAspect();
       final Locale locale = Optional.ofNullable( language ).map( Locale::forLanguageTag ).orElse( Locale.ENGLISH );
       final JsonSchemaGenerationConfig config = JsonSchemaGenerationConfigBuilder.builder()
             .locale( locale )

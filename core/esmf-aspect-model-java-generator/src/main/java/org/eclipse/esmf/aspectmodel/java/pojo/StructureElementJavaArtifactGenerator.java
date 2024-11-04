@@ -131,7 +131,7 @@ public class StructureElementJavaArtifactGenerator<E extends StructureElement> i
 
       final String generatedSource = new TemplateEngine( context, engineConfiguration ).apply( "java-pojo" );
       try {
-         return new JavaArtifact( Roaster.format( generatedSource ), element.getName(),
+         return new JavaArtifact( Roaster.format( generatedSource ), AspectModelJavaUtil.generateClassName( element, config ),
                config.packageName() );
       } catch ( final Exception exception ) {
          throw new CodeGenerationException( generatedSource, exception );

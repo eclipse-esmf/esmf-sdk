@@ -31,8 +31,9 @@ if (o == null || getClass() != o.getClass()) {
     #if( $element.getProperties().isEmpty() ) return true
     #else
         #set( $objectEqualsExpression = $util.objectEqualsExpression( $element ) )
+        #set( $className = ${util.generateClassName( $element, $codeGenerationConfig )} )
         #if( $objectEqualsExpression && !$objectEqualsExpression.empty )
-            final $element.getName() that = ($element.getName())o;
+            final $className that = ($className)o;
             return $objectEqualsExpression
         #else
             return true
