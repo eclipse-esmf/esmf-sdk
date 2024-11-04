@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URLPermission;
 import java.nio.charset.StandardCharsets;
 import java.security.Permission;
 import java.util.stream.Collectors;
@@ -122,6 +123,17 @@ public class MainClassProcessLauncher extends ProcessLauncher {
       public void checkPermission( final Permission permission ) {
          if ( delegateSecurityManager != null ) {
             delegateSecurityManager.checkPermission( permission );
+         }
+      }
+
+      @Override
+      public void checkPermission( final Permission permission, final Object context ) {
+         // Unblock HTTP GETs from unit tests
+         if ( permission instanceof URLPermission ) {
+            return;
+         }
+         if ( delegateSecurityManager != null ) {
+            delegateSecurityManager.checkPermission( permission, context );
          }
       }
 

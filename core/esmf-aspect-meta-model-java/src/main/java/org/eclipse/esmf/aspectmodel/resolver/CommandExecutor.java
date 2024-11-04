@@ -18,6 +18,8 @@ import java.io.InputStream;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
+
 /**
  * Executes an external resolver via the underlying OS command and returns the stdout from the command as result.
  */

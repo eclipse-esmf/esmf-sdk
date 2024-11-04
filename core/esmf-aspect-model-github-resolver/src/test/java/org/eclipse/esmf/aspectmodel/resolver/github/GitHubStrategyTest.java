@@ -29,8 +29,11 @@ import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.resolver.GithubRepository;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
+import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
 import org.eclipse.esmf.metamodel.AspectModel;
 
 import org.apache.commons.io.IOUtils;
@@ -40,6 +43,7 @@ import org.junit.jupiter.api.Test;
 
 public class GitHubStrategyTest {
    Path outputDirectory = null;
+   private final GithubRepository esmfSdk = new GithubRepository( "eclipse-esmf", "esmf-sdk", new GithubRepository.Branch( "main" ) );
 
    @BeforeEach
    void beforeEach() throws IOException {
@@ -69,8 +73,7 @@ public class GitHubStrategyTest {
 
    @Test
    void testParseGitHubZipExport() throws IOException {
-      final GitHubModelSource modelSource = new GitHubModelSource( "eclipse-esmf/esmf-sdk", "main",
-            "core/esmf-test-aspect-models/src/main/resources/valid/" );
+      final GitHubModelSource modelSource = new GitHubModelSource( esmfSdk, "core/esmf-test-aspect-models/src/main/resources/valid/" );
 
       final File tempFile = outputDirectory.resolve( "temp.zip" ).toFile();
       final InputStream testZipFileInputStream = getClass().getClassLoader().getResourceAsStream( "github-export.zip" );
@@ -86,8 +89,7 @@ public class GitHubStrategyTest {
 
    @Test
    void testDownloadAndLoadZip() {
-      final GitHubModelSource modelSource = new GitHubModelSource( "eclipse-esmf/esmf-sdk", "main",
-            "core/esmf-test-aspect-models/src/main/resources/valid/" );
+      final GitHubModelSource modelSource = new GitHubModelSource( esmfSdk, "core/esmf-test-aspect-models/src/main/resources/valid/" );
       final List<AspectModelFile> files = modelSource.loadContents().toList();
       assertThat( files ).isNotEmpty();
       assertThat( files ).allMatch( file -> file.sourceLocation().isPresent()
@@ -102,7 +104,7 @@ public class GitHubStrategyTest {
 
    @Test
    void testResolveFromZipFile() throws IOException {
-      final ResolutionStrategy gitHubStrategy = new GitHubStrategy( "eclipse-esmf/esmf-sdk", "main",
+      final ResolutionStrategy gitHubStrategy = new GitHubStrategy( esmfSdk,
             "core/esmf-test-aspect-models/src/main/resources/valid" );
 
       final File tempFile = outputDirectory.resolve( "temp.zip" ).toFile();
@@ -124,7 +126,7 @@ public class GitHubStrategyTest {
    void testGithubStrategy() {
       final AspectModelUrn testUrn = AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.test:1.0.0#Aspect" );
 
-      final ResolutionStrategy gitHubStrategy = new GitHubStrategy( "eclipse-esmf/esmf-sdk", "main",
+      final ResolutionStrategy gitHubStrategy = new GitHubStrategy( esmfSdk,
             "core/esmf-test-aspect-models/src/main/resources/valid" );
 
       final AspectModel result = new AspectModelLoader( gitHubStrategy ).load( testUrn );
@@ -137,5 +139,18 @@ public class GitHubStrategyTest {
    private void inject( final GitHubModelSource gitHubModelSource, final File tempFile ) {
       gitHubModelSource.repositoryZipFile = tempFile;
       gitHubModelSource.loadFilesFromZip();
+   }
+
+   @Test
+   void testLoadCatenaxBatteryPass() {
+      final AspectModelUrn batteryPassUrn = AspectModelUrn.fromUrn( "urn:samm:io.catenax.battery.battery_pass:6.0.0#BatteryPass" );
+      final GithubRepository sldt = new GithubRepository( "eclipse-tractusx", "sldt-semantic-models",
+            new GithubRepository.Branch( "main" ) );
+      final ResolutionStrategy gitHubStrategy = new GitHubStrategy( sldt, "/" );
+      final AspectModel batteryPass = new AspectModelLoader( gitHubStrategy ).load( batteryPassUrn );
+
+      final AspectModelValidator validator = new AspectModelValidator();
+      final List<Violation> violations = validator.validateModel( batteryPass );
+      assertThat( violations ).isEmpty();
    }
 }
