@@ -29,7 +29,10 @@ public record JavaCodeGenerationConfig(
       String packageName,
       ImportTracker importTracker,
       boolean executeLibraryMacros,
-      File templateLibFile
+      File templateLibFile,
+      String namePrefix,
+      String namePostfix
+
 ) implements GenerationConfig {
    public JavaCodeGenerationConfig {
       if ( packageName == null ) {
@@ -43,6 +46,12 @@ public record JavaCodeGenerationConfig(
       }
       if ( executeLibraryMacros && !templateLibFile.exists() ) {
          throw new CodeGenerationException( "Incorrect configuration. Please provide a valid path to the velocity template library file." );
+      }
+      if ( namePrefix == null ) {
+         namePrefix = "";
+      }
+      if ( namePostfix == null ) {
+         namePostfix = "";
       }
    }
 }

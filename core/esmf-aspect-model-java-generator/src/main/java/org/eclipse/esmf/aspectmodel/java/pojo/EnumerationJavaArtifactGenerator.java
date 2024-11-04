@@ -56,7 +56,7 @@ public class EnumerationJavaArtifactGenerator<E extends Enumeration> implements 
             .put( "className", element.getName() )
             .put( "codeGenerationConfig", config )
             .put( "currentYear", Year.now() )
-            .put( "dataType", AspectModelJavaUtil.getDataType( element.getDataType(), config.importTracker() ) )
+            .put( "dataType", AspectModelJavaUtil.getDataType( element.getDataType(), config.importTracker(), config ) )
             .put( "Entity", Entity.class )
             .put( "enumeration", element )
             .put( "importTracker", importTracker )

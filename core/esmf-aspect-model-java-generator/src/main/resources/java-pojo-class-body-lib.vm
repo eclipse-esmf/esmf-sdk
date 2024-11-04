@@ -28,7 +28,7 @@ ${util.determineCollectionAspectClassDefinition( $element, $codeGenerationConfig
 ${util.generateAbstractEntityClassAnnotations( $complexElement, $codeGenerationConfig, $extendingEntities )}
 ${util.determineComplexTypeClassDefinition( $complexElement, $codeGenerationConfig )}
 #else
-public class $element.getName()${util.genericClassSignature( $element )} {
+public class ${util.generateClassName( $element, $codeGenerationConfig )}${util.genericClassSignature( $element )} {
 #end
 #foreach( $property in $element.properties )
     #javaPojoProperty( $property )

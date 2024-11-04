@@ -36,6 +36,8 @@ public class JavaCodeGenerationConfigurationTest {
                   .packageName( "" )
                   .executeLibraryMacros( true )
                   .templateLibFile( templateLibFile )
+                  .namePrefix( "" )
+                  .namePostfix( "" )
                   .build()
       ).doesNotThrowAnyException();
 
@@ -45,6 +47,8 @@ public class JavaCodeGenerationConfigurationTest {
                   .packageName( "" )
                   .executeLibraryMacros( false )
                   .templateLibFile( emptyTemplateLibFile )
+                  .namePrefix( "" )
+                  .namePostfix( "" )
                   .build()
       ).doesNotThrowAnyException();
    }
