@@ -99,6 +99,9 @@ public class AspectEditNewVersionCommand extends AbstractCommand {
 
    @Override
    public void run() {
+      setDetails( details );
+      setResolverConfig( resolverConfiguration );
+
       final IncreaseVersion increaseVersion;
       if ( versionPart.increaseMajor ) {
          increaseVersion = IncreaseVersion.MAJOR;
@@ -110,7 +113,7 @@ public class AspectEditNewVersionCommand extends AbstractCommand {
 
       final String input = parentCommand.parentCommand.getInput();
       final Optional<File> inputFile = Optional.of( new File( input ) ).filter( File::exists );
-      final AspectModelLoader aspectModelLoader = getAspectModelLoader( inputFile, resolverConfiguration );
+      final AspectModelLoader aspectModelLoader = getInputHandler( input ).aspectModelLoader();
 
       final AspectModel aspectModel = inputFile.map( aspectModelLoader::load ).orElseGet( () -> {
          final AspectModelUrn urn = AspectModelUrn.from( input ).getOrElseThrow( () ->
