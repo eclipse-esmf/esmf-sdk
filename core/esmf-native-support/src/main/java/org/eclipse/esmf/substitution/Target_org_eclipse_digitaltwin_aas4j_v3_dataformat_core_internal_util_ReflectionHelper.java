@@ -13,6 +13,8 @@
 
 package org.eclipse.esmf.substitution;
 
+import static org.eclipse.esmf.nativefeatures.AssetAdministrationShellFeature.ADMINSHELL_PROPERTIES;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -138,7 +140,7 @@ public final class Target_org_eclipse_digitaltwin_aas4j_v3_dataformat_core_inter
    static {
       try ( final InputStream input =
             Target_org_eclipse_digitaltwin_aas4j_v3_dataformat_core_internal_util_ReflectionHelper.class.getResourceAsStream(
-                  "/adminshell.properties" ) ) {
+                  "/" + ADMINSHELL_PROPERTIES ) ) {
          final Properties properties = new Properties();
          properties.load( input );
          final AdminShellConfig config = AdminShellConfig.fromProperties( properties );

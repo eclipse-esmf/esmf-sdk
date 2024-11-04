@@ -63,6 +63,7 @@
       <module>core/esmf-aspect-model-urn</module>
       <module>core/esmf-aspect-model-validator</module>
       <module>core/esmf-aspect-static-meta-model-java</module>
+      <module>core/esmf-native-support</module>
       <module>core/esmf-test-aspect-models</module>
       <module>core/esmf-test-resources</module>
       <module>tools/esmf-aspect-model-maven-plugin</module>
@@ -73,9 +74,15 @@
    <properties>
       <!-- General settings -->
       <skip.gpg.skip>true</skip.gpg.skip>
+      <build-time-sources>${project.basedir}/src-buildtime</build-time-sources>
+      <generated-sources>${project.basedir}/src-gen</generated-sources>
+      <relative-native-config-path>core/esmf-native-support/src-gen/main/resources/META-INF/native-image/${project.groupId}/esmf-native-support</relative-native-config-path>
+      <!-- The path to the native configs as it is reachable from the submodules -->
+      <native-config-path>${project.basedir}/../../${relative-native-config-path}</native-config-path>
 
       <!-- Dependency version overrides -->
       <log4j-version>2.22.1</log4j-version>
+      <wagon-maven-plugin-version>1.0</wagon-maven-plugin-version>
    </properties>
 
    <dependencyManagement>
@@ -149,6 +156,11 @@
          <dependency>
             <groupId>org.eclipse.esmf</groupId>
             <artifactId>esmf-aspect-static-meta-model-java</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-native-support</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
@@ -252,6 +264,59 @@
                </execution>
             </executions>
          </plugin>
+
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+               <skip>false</skip>
+               <argLine>-agentlib:native-image-agent=config-merge-dir=${native-config-path}</argLine>
+            </configuration>
+         </plugin>
+
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-clean-plugin</artifactId>
+            <inherited>false</inherited>
+            <configuration>
+               <filesets>
+                  <fileset>
+                     <directory>${relative-native-config-path}</directory>
+                  </fileset>
+               </filesets>
+            </configuration>
+         </plugin>
       </plugins>
    </build>
+
+   <profiles>
+      <profile>
+         <id>native</id>
+         <build>
+            <plugins>
+               <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-surefire-plugin</artifactId>
+                  <configuration>
+                     <skip>false</skip>
+                     <argLine>-agentlib:native-image-agent=config-merge-dir=${native-config-path}</argLine>
+                  </configuration>
+               </plugin>
+
+               <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-clean-plugin</artifactId>
+                  <inherited>false</inherited>
+                  <configuration>
+                     <filesets>
+                        <fileset>
+                           <directory>${relative-native-config-path}</directory>
+                        </fileset>
+                     </filesets>
+                  </configuration>
+               </plugin>
+            </plugins>
+         </build>
+      </profile>
+   </profiles>
 </project>

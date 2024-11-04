@@ -67,23 +67,21 @@ jobs:
           java --version
           export MAVEN_OPTS="-Xmx4096m"
           export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
-          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
-          cd tools/samm-cli
-          unset JAVA_TOOL_OPTIONS
-          mvn -B clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
         shell: bash
 
       - name: Build native image
         if: matrix.os != 'macos-13'
         run: |
           export MAVEN_OPTS="-Xmx4096m"
-          cd tools/samm-cli
-          mvn -B package -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+          mvn -B -pl tools/samm-cli clean verify -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
         shell: bash
 
       - name: Build native image (Mac)
         if: matrix.os == 'macos-13'
         run: |
+          export MAVEN_OPTS="-Xmx4096m"
+          mvn -B -pl tools/samm-cli clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
           bundle="samm-bundle-DEV-SNAPSHOT-$(date +%s)"
           mkdir ${bundle}
           curl -Lo jre.tar.gz https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.3%2B9/OpenJDK21U-jre_x64_mac_hotspot_21.0.3_9.tar.gz

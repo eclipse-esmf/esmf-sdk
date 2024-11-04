@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
+  ~
+  ~ See the AUTHORS file(s) distributed with this work for additional
+  ~ information regarding authorship.
+  ~
+  ~ This Source Code Form is subject to the terms of the Mozilla Public
+  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~ file, You can obtain one at https://mozilla.org/MPL/2.0/.
+  ~
+  ~ SPDX-License-Identifier: MPL-2.0
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+
+   <parent>
+      <groupId>org.eclipse.esmf</groupId>
+      <artifactId>esmf-sdk-parent</artifactId>
+      <version>DEV-SNAPSHOT</version>
+      <relativePath>../../pom.xml</relativePath>
+   </parent>
+
+   <artifactId>esmf-native-support</artifactId>
+   <name>ESMF Native Support</name>
+
+   <properties>
+      <skip.maven.shade>false</skip.maven.shade>
+   </properties>
+
+   <dependencies>
+      <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-model-starter</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>ch.qos.logback</groupId>
+         <artifactId>logback-classic</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.graalvm.nativeimage</groupId>
+         <artifactId>svm</artifactId>
+         <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.junit.jupiter</groupId>
+         <artifactId>junit-jupiter</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.assertj</groupId>
+         <artifactId>assertj-core</artifactId>
+         <scope>test</scope>
+      </dependency>
+   </dependencies>
+
+   <build>
+      <plugins>
+         <plugin>
+            <artifactId>maven-resources-plugin</artifactId>
+            <executions>
+               <execution>
+                  <id>copy-resources</id>
+                  <!-- This needs to take place after the customize-resource-config exec-maven-plugin goal runs and before the package phase -->
+                  <phase>prepare-package</phase>
+                  <goals>
+                     <goal>copy-resources</goal>
+                  </goals>
+                  <configuration>
+                     <outputDirectory>${project.build.outputDirectory}/META-INF</outputDirectory>
+                     <resources>
+                        <resource>
+                           <directory>${generated-sources}/main/resources/META-INF</directory>
+                           <filtering>false</filtering>
+                        </resource>
+                     </resources>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+               <compilerArgs>
+                  <arg>-Aproject=${project.groupId}/${project.artifactId}</arg>
+                  <arg>--add-exports</arg>
+                  <arg>java.desktop/sun.awt=ALL-UNNAMED</arg>
+                  <arg>--add-exports</arg>
+                  <arg>java.desktop/sun.font=ALL-UNNAMED</arg>
+                  <arg>--add-exports</arg>
+                  <arg>org.graalvm.sdk/org.graalvm.nativeimage.impl=ALL-UNNAMED</arg>
+               </compilerArgs>
+               <showWarnings>false</showWarnings>
+               <showDeprecation>false</showDeprecation>
+            </configuration>
+         </plugin>
+
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <configuration>
+               <excludePackageNames>org.eclipse.esmf.substitution,org.eclipse.esmf.buildtime</excludePackageNames>
+            </configuration>
+         </plugin>
+
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+               <forkCount>1</forkCount>
+               <reuseForks>false</reuseForks>
+               <argLine>--add-exports org.graalvm.sdk/org.graalvm.nativeimage.impl=ALL-UNNAMED</argLine>
+            </configuration>
+         </plugin>
+
+         <!-- Executes build-time-only code -->
+         <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <executions>
+               <!-- Generate admin-shell reflection config -->
+               <execution>
+                  <id>generate-admin-shell-reflection-config</id>
+                  <phase>process-classes</phase>
+                  <goals>
+                     <goal>java</goal>
+                  </goals>
+                  <configuration>
+                     <!-- The main class of your build-time scanning code -->
+                     <mainClass>org.eclipse.esmf.buildtime.Aas4jClassSetup</mainClass>
+                     <!-- Pass the directory where to write the properties file -->
+                     <commandlineArgs>${project.build.outputDirectory}</commandlineArgs>
+                     <cleanupDaemonThreads>false</cleanupDaemonThreads>
+                  </configuration>
+               </execution>
+               <!-- Execute adjustments of native configs that were generated during the tests -->
+               <execution>
+                  <id>customize-resource-config</id>
+                  <phase>process-classes</phase>
+                  <goals>
+                     <goal>java</goal>
+                  </goals>
+                  <configuration>
+                     <!-- The main class of your build-time scanning code -->
+                     <mainClass>org.eclipse.esmf.buildtime.CustomizeGraalVmConfigs</mainClass>
+                     <!-- Pass the native image configs directory as a commandline param -->
+                     <commandlineArgs>${native-config-path}</commandlineArgs>
+                     <cleanupDaemonThreads>false</cleanupDaemonThreads>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <configuration>
+               <!-- Exclude build-time-only code from jar -->
+               <excludes>
+                  <exclude>org/eclipse/esmf/buildtime/**</exclude>
+               </excludes>
+            </configuration>
+         </plugin>
+      </plugins>
+   </build>
+</project>
