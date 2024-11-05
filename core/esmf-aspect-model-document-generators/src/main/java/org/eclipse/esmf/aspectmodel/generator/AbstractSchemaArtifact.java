@@ -13,6 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.generator;
 
+import java.io.Serial;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.Map;
@@ -40,10 +41,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The result of a schema generation where the schema is represented as a JSON document
+ * The result of a schema generation where the schema is represented as a JSON document.
+ *
+ * @param <T> the concrete type of node of this artifact
  */
-public abstract class AbstractSchemaArtifact<T extends JsonNode> implements Artifact<String, T> {
+public abstract class AbstractSchemaArtifact<T extends JsonNode> extends JsonArtifact<T> {
    private static final Logger LOG = LoggerFactory.getLogger( AbstractSchemaArtifact.class );
+
+   public AbstractSchemaArtifact( final String id, final T content ) {
+      super( id, content );
+   }
 
    /**
     * Returns the OpenAPI schema with separate files for schemas. In the resulting map, the key is the path
@@ -138,26 +145,13 @@ public abstract class AbstractSchemaArtifact<T extends JsonNode> implements Arti
             Map.Entry::getKey, entry -> jsonToYaml( entry.getValue() ) ) );
    }
 
-   protected String jsonToYaml( final JsonNode json ) {
-      try {
-         final YAMLFactory yamlFactory = YAMLFactory.builder()
-               .stringQuotingChecker( new OpenApiStringQuotingChecker() ).build();
-         return new YAMLMapper( yamlFactory ).enable( YAMLGenerator.Feature.MINIMIZE_QUOTES )
-               .writeValueAsString( json );
-      } catch ( final JsonProcessingException exception ) {
-         LOG.error( "JSON could not be converted to YAML", exception );
-         return json.toString();
-      }
-   }
-
    public static class OpenApiStringQuotingChecker extends StringQuotingChecker.Default {
+      @Serial
+      private static final long serialVersionUID = 6044974890325771572L;
 
       @Override
       protected boolean valueHasQuotableChar( final String inputStr ) {
-         if ( inputStr.contains( "#" ) ) {
-            return true;
-         }
-         return super.valueHasQuotableChar( inputStr );
+         return inputStr.contains( "#" ) || super.valueHasQuotableChar( inputStr );
       }
    }
 }

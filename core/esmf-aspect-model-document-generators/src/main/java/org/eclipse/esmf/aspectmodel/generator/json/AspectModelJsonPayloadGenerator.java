@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -13,8 +13,6 @@
 
 package org.eclipse.esmf.aspectmodel.generator.json;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
@@ -36,16 +34,16 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.eclipse.esmf.aspectmodel.generator.AbstractGenerator;
+import org.eclipse.esmf.aspectmodel.generator.ArtifactGenerator;
+import org.eclipse.esmf.aspectmodel.generator.JsonGenerator;
 import org.eclipse.esmf.aspectmodel.generator.NumericTypeTraits;
-import org.eclipse.esmf.aspectmodel.jackson.AspectModelJacksonModule;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.BoundDefinition;
@@ -69,9 +67,8 @@ import org.eclipse.esmf.metamodel.constraint.RegularExpressionConstraint;
 import org.eclipse.esmf.metamodel.datatype.Curie;
 import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.curiousoddman.rgxgen.RgxGen;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -82,330 +79,321 @@ import org.apache.jena.vocabulary.XSD;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
 
-public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
-   /**
-    * Constant for the either left property.
-    * For example JSON payloads the left type will be used.
-    */
-   private static final String EITHER_LEFT = "left";
-   private static final double THRESHOLD = .0001;
-
-   private final List<Transformer> transformers;
-   private final ExampleValueGenerator exampleValueGenerator;
-   private final ObjectMapper objectMapper;
-   private final List<Property> recursiveProperty;
-   private final ValueToPayloadStructure valueToPayloadStructure = new ValueToPayloadStructure();
-
-   private final Aspect aspect;
+public class AspectModelJsonPayloadGenerator extends JsonGenerator<JsonPayloadGenerationConfig, JsonNode, JsonPayloadArtifact> {
+   public static final JsonPayloadGenerationConfig DEFAULT_CONFIG = JsonPayloadGenerationConfigBuilder.builder().build();
 
    public AspectModelJsonPayloadGenerator( final Aspect aspect ) {
-      this( aspect, new Random() );
+      this( aspect, DEFAULT_CONFIG );
    }
 
-   public AspectModelJsonPayloadGenerator( final Aspect aspect, final Random randomStrategy ) {
-      this.aspect = aspect;
-      exampleValueGenerator = new ExampleValueGenerator( randomStrategy );
-      objectMapper = AspectModelJsonPayloadGenerator.createObjectMapper();
-      objectMapper.configure( SerializationFeature.FAIL_ON_EMPTY_BEANS, false );
-      transformers = Arrays.asList( this::transformCollectionProperty, this::transformEnumeration, this::transformEntityProperty,
-            this::transformAbstractEntityProperty, this::transformEitherProperty, this::transformSimpleProperty );
-      recursiveProperty = new LinkedList<>();
+   public AspectModelJsonPayloadGenerator( final Aspect aspect, final JsonPayloadGenerationConfig config ) {
+      super( aspect, config );
    }
 
    /**
-    * Generates a sample JSON payload. The example values in Aspect Models, which are passed in the constructor, are extracted and used to
-    * create the JSON payload as a {@link String}. In case an example value has not been given in the Model, a random value is generated and
-    * used instead.
+    * Constructor for backwards compatibility.
     *
-    * @param nameMapper The callback function that maps the Aspect name to an OutputStream
+    * @param aspect the Aspect to generate JSON payload for
+    * @param random the random generator
+    * @deprecated Use {@link #AspectModelJsonPayloadGenerator(Aspect, JsonPayloadGenerationConfig)} instead
     */
-   public void generateJson( final Function<String, OutputStream> nameMapper ) throws IOException {
-      try ( final OutputStream output = nameMapper.apply( aspect.getName() ) ) {
-         output.write( generateJson().getBytes() );
+   @Deprecated( forRemoval = true )
+   public AspectModelJsonPayloadGenerator( final Aspect aspect, final Random random ) {
+      super( aspect, JsonPayloadGenerationConfigBuilder.builder().randomStrategy( random ).build() );
+   }
+
+   @Override
+   public Stream<JsonPayloadArtifact> generate() {
+      return Stream.of( new PayloadGenerator( objectMapper ).apply( aspect, config ) );
+   }
+
+   private static class PayloadGenerator
+         implements ArtifactGenerator<String, JsonNode, Aspect, JsonPayloadGenerationConfig, JsonPayloadArtifact> {
+      /**
+       * Constant for the either left property.
+       * For example JSON payloads the left type will be used.
+       */
+      private static final String EITHER_LEFT = "left";
+
+      private final ObjectMapper objectMapper;
+      private final List<Transformer> transformers;
+      private final List<Property> recursiveProperty;
+      private final ValueToPayloadStructure valueToPayloadStructure = new ValueToPayloadStructure();
+      private ExampleValueGenerator exampleValueGenerator = null;
+      private Aspect aspect;
+
+      private PayloadGenerator( final ObjectMapper objectMapper ) {
+         this.objectMapper = objectMapper;
+         transformers = Arrays.asList( this::transformCollectionProperty, this::transformEnumeration, this::transformEntityProperty,
+               this::transformAbstractEntityProperty, this::transformEitherProperty, this::transformSimpleProperty );
+         recursiveProperty = new LinkedList<>();
       }
-   }
 
-   /**
-    * Generates a pretty formatted JSON payload.
-    *
-    * @see #generateJson(Function)
-    */
-   public void generateJsonPretty( final Function<String, OutputStream> nameMapper ) throws IOException {
-      try ( final OutputStream output = nameMapper.apply( aspect.getName() ) ) {
-         output.write( generateJsonPretty().getBytes() );
+      @Override
+      public JsonPayloadArtifact apply( final Aspect aspect, final JsonPayloadGenerationConfig config ) {
+         this.aspect = aspect;
+         exampleValueGenerator = new ExampleValueGenerator( config.randomStrategy() );
+         final JsonNode jsonNode = objectMapper.valueToTree( transformAspectProperties() );
+         return new JsonPayloadArtifact( aspect.getName() + ".json", jsonNode );
       }
-   }
 
-   public String generateJson() throws IOException {
-      return objectMapper.writer().writeValueAsString( transformAspectProperties() );
-   }
-
-   private String generateJsonPretty() throws IOException {
-      return objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString( transformAspectProperties() );
-   }
-
-   private static ObjectMapper createObjectMapper() {
-      final ObjectMapper mapper = new ObjectMapper();
-      mapper.registerModule( new JavaTimeModule() );
-      mapper.registerModule( new AspectModelJacksonModule() );
-      mapper.configure( SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false );
-      return mapper;
-   }
-
-   private Map<String, Object> transformAspectProperties() {
-      return transformProperties( aspect.getProperties(), true );
-   }
-
-   /**
-    * @param properties the meta model properties to transform
-    * @return a map representing the given properties
-    */
-   @SuppressWarnings( "squid:S2250" )
-   // Amount of elements in list is in regard to amount of properties in Aspect Model. Even in bigger aspects this
-   // should not lead to performance issues
-   private Map<String, Object> transformProperties( final List<Property> properties, final boolean useModelExampleValue ) {
-      return Stream.concat(
-            properties.stream().filter( recursiveProperty::contains ).map( this::recursiveProperty ),
-            properties.stream()
-                  .filter( property -> !recursiveProperty.contains( property ) )
-                  .filter( property -> !property.isAbstract() )
-                  .map( property -> {
-                     recursiveProperty.add( property );
-                     final Map<String, Object> result = transformProperty( new BasicProperty( property ), useModelExampleValue );
-                     recursiveProperty.remove( property );
-                     return result;
-                  } )
-      ).collect( HashMap::new, HashMap::putAll, HashMap::putAll );
-   }
-
-   private Map<String, Object> recursiveProperty( final Property property ) {
-      if ( !property.isNotInPayload() && !property.isOptional() ) {
-         throw new IllegalArgumentException(
-               String.format( "Having a recursive Property: %s which is not Optional nor marked as NotInPayload is not valid.",
-                     property ) );
+      private Map<String, Object> transformAspectProperties() {
+         return transformProperties( aspect.getProperties(), true );
       }
-      return Map.of();
-   }
 
-   /**
-    * A meta model {@link Property#getCharacteristic()} can represent different types.
-    * This method recursively transforms the types to corresponding data structures or primitives each having the
-    * {@link Property#getName()} as key. A {@link Collection} will be represented as a {@link List}. {@link Entity} and {@link Either} will
-    * be represented as {@link Map}. As such the returned map can contain 1 to n entries.
-    *
-    * @param property the property to transform
-    * @return a map representing the property names as key and the property values as value
-    */
-   private Map<String, Object> transformProperty( final BasicProperty property, final boolean useModelExampleValue ) {
-      return transformers.stream()
-            .map( transformer -> transformer.apply( property, useModelExampleValue ) )
-            .filter( propertiesMap -> !propertiesMap.isEmpty() )
-            .findFirst()
-            .orElseThrow( () -> new IllegalArgumentException( "No transformer for " + property.getName() + " available." ) );
-   }
-
-   private Map<String, Object> transformCollectionProperty( final BasicProperty property, final boolean useModelExampleValue ) {
-      final Characteristic characteristic = property.getCharacteristic();
-      if ( characteristic.is( Collection.class ) ) {
-         final List<Object> collectionValues = getCollectionValues( property, (Collection) characteristic );
-         return toMap( property.getName(), collectionValues );
-      } else if ( isConstrainedCollection( characteristic ) ) {
-
-         final Collection collection = characteristic.as( Trait.class ).getBaseCharacteristic().as( Collection.class );
-
-         final List<Constraint> constraints = characteristic.as( Trait.class ).getConstraints().stream()
-               .filter( trait -> trait.is( LengthConstraint.class ) )
-               .toList();
-
-         return !constraints.isEmpty()
-               ? toMap( property.getName(), getCollectionValues( property, collection,
-               (LengthConstraint) characteristic.as( Trait.class ).getConstraints().get( 0 ) ) )
-               : toMap( property.getName(), getCollectionValues( property, collection ) );
+      /**
+       * @param properties the meta model properties to transform
+       * @return a map representing the given properties
+       */
+      @SuppressWarnings( "squid:S2250" )
+      // Amount of elements in list is in regard to amount of properties in Aspect Model. Even in bigger aspects this
+      // should not lead to performance issues
+      private Map<String, Object> transformProperties( final List<Property> properties, final boolean useModelExampleValue ) {
+         return Stream.concat(
+               properties.stream().filter( recursiveProperty::contains ).map( this::recursiveProperty ),
+               properties.stream()
+                     .filter( property -> !recursiveProperty.contains( property ) )
+                     .filter( property -> !property.isAbstract() )
+                     .map( property -> {
+                        recursiveProperty.add( property );
+                        final Map<String, Object> result = transformProperty( new BasicProperty( property ), useModelExampleValue );
+                        recursiveProperty.remove( property );
+                        return result;
+                     } )
+         ).collect( HashMap::new, HashMap::putAll, HashMap::putAll );
       }
-      return ImmutableMap.of();
-   }
 
-   private boolean isConstrainedCollection( final Characteristic characteristic ) {
-      if ( !characteristic.is( Trait.class ) ) {
-         return false;
-      }
-      final Trait trait = characteristic.as( Trait.class );
-      return trait.getBaseCharacteristic().is( Collection.class ) && (!trait.getConstraints().isEmpty());
-   }
-
-   private Map<String, Object> transformAbstractEntityProperty( final BasicProperty property, final boolean useModelExampleValue ) {
-      final Optional<AbstractEntity> dataType = getForCharacteristic( property.getCharacteristic(), AbstractEntity.class );
-      if ( dataType.isPresent() ) {
-         final AbstractEntity abstractEntity = dataType.get();
-         final ComplexType extendingComplexType = abstractEntity.getExtendingElements().get( 0 );
-         final Map<String, Object> generatedProperties = transformProperties( extendingComplexType.getAllProperties(),
-               useModelExampleValue );
-         generatedProperties.put( "@type", extendingComplexType.getName() );
-         return toMap( property.getName(), generatedProperties );
-      }
-      return ImmutableMap.of();
-   }
-
-   private Map<String, Object> transformEntityProperty( final BasicProperty property, final boolean useModelExmplevalue ) {
-      final Optional<Entity> dataType = getForCharacteristic( property.getCharacteristic(), Entity.class );
-      if ( dataType.isPresent() ) {
-         final Entity entity = dataType.get();
-         final Map<String, Object> generatedProperties = transformProperties( entity.getAllProperties(), useModelExmplevalue );
-         if ( entity.getExtends().isPresent() ) {
-            generatedProperties.put( "@type", entity.getName() );
+      private Map<String, Object> recursiveProperty( final Property property ) {
+         if ( !property.isNotInPayload() && !property.isOptional() ) {
+            throw new IllegalArgumentException(
+                  String.format( "Having a recursive Property: %s which is not Optional nor marked as NotInPayload is not valid.",
+                        property ) );
          }
-         return toMap( property.getName(), generatedProperties );
-      }
-      return ImmutableMap.of();
-   }
-
-   private Map<String, Object> transformEnumeration( final BasicProperty property, final boolean useModelExampleValue ) {
-      return getForCharacteristic( property.getCharacteristic(), Enumeration.class )
-            .map( enumeration -> extractEnumerationValues( property, enumeration ) )
-            .orElseGet( ImmutableMap::of );
-   }
-
-   private Map<String, Object> extractEnumerationValues( final BasicProperty property, final Enumeration enumeration ) {
-      final Value firstValue = enumeration.getValues().get( 0 );
-      return toMap( property.getName(), firstValue.accept( valueToPayloadStructure, null ) );
-   }
-
-   private Map<String, Object> transformEitherProperty( final BasicProperty property, final boolean useModelExampleValue ) {
-      final Characteristic characteristic = property.getCharacteristic();
-      return getForCharacteristic( characteristic, Either.class )
-            .map( value -> transformProperty(
-                  new BasicProperty( AspectModelJsonPayloadGenerator.EITHER_LEFT, value.getLeft(), Optional.empty() ),
-                  useModelExampleValue ) )
-            .map( value -> toMap( property.getName(), value ) )
-            .orElseGet( ImmutableMap::of );
-   }
-
-   private Map<String, Object> transformSimpleProperty( final BasicProperty basicProperty, final boolean useModelExampleValue ) {
-      return toMap( basicProperty.getName(), getExampleValueOrElseRandom( basicProperty, useModelExampleValue ) );
-   }
-
-   /**
-    * @param property the property to transform
-    * @return the {@link Property#getExampleValue()} or if absent a random value.
-    */
-   private Object getExampleValueOrElseRandom( final BasicProperty property, final boolean useModelExampleValue ) {
-      final Characteristic characteristic = property.getCharacteristic();
-      if ( characteristic.is( State.class ) ) {
-         return characteristic.as( State.class ).getDefaultValue();
-      }
-      if ( characteristic.is( Enumeration.class ) ) {
-         return characteristic.as( Enumeration.class ).getValues().get( 0 );
+         return Map.of();
       }
 
-      Optional<Characteristic> elementCharacteristics = Optional.empty();
-      if ( characteristic.is( Collection.class ) ) {
-         elementCharacteristics = ((Collection) characteristic).getElementCharacteristic();
-      }
-      final Characteristic effectiveCharacteristics = elementCharacteristics.orElse( characteristic );
-
-      if ( !useModelExampleValue ) {
-         return generateExampleValue( effectiveCharacteristics );
-      }
-
-      return property.getExampleValue()
-            .map( exampleValue -> exampleValue.as( ScalarValue.class ).getValue() )
-            .map( value -> value instanceof Curie ? ((Curie) value).value() : value )
-            .orElseGet( () -> generateExampleValue( effectiveCharacteristics ) );
-   }
-
-   private Map<String, Object> toMap( final String key, final Object value ) {
-      return ImmutableMap.of( key, value );
-   }
-
-   private List<Object> getCollectionValues( final BasicProperty property, final Collection collection ) {
-      return getCollectionValues( property, collection, null );
-   }
-
-   private List<Object> getCollectionValues( final BasicProperty property, final Collection collection,
-         final LengthConstraint lengthConstraint ) {
-      final Type dataType = collection.getDataType()
-            .orElseThrow( () -> new IllegalArgumentException( "DataType for collection is required." ) );
-
-      if ( dataType.is( Scalar.class ) ) {
-         final Object payload = getExampleValueOrElseRandom( property, lengthConstraint == null );
-         return payload instanceof List ? (List) payload : ImmutableList.of( payload );
+      /**
+       * A meta model {@link Property#getCharacteristic()} can represent different types.
+       * This method recursively transforms the types to corresponding data structures or primitives each having the
+       * {@link Property#getName()} as key. A {@link Collection} will be represented as a {@link List}. {@link Entity} and {@link Either}
+       * will
+       * be represented as {@link Map}. As such the returned map can contain 1 to n entries.
+       *
+       * @param property the property to transform
+       * @return a map representing the property names as key and the property values as value
+       */
+      private Map<String, Object> transformProperty( final BasicProperty property, final boolean useModelExampleValue ) {
+         return transformers.stream()
+               .map( transformer -> transformer.apply( property, useModelExampleValue ) )
+               .filter( propertiesMap -> !propertiesMap.isEmpty() )
+               .findFirst()
+               .orElseThrow( () -> new IllegalArgumentException( "No transformer for " + property.getName() + " available." ) );
       }
 
-      final BigInteger minLength = lengthConstraint == null ? BigInteger.ONE : lengthConstraint.getMinValue().orElse( BigInteger.ONE );
-      final List<Object> returnValues = new ArrayList<>();
-      // Fill in minLength elements
-      for ( int i = 0; i < minLength.intValue(); i++ ) {
-         returnValues.add( generateCollectionValue( dataType, minLength.intValue() ) );
-      }
-      return returnValues;
-   }
+      private Map<String, Object> transformCollectionProperty( final BasicProperty property, final boolean useModelExampleValue ) {
+         final Characteristic characteristic = property.getCharacteristic();
+         if ( characteristic.is( Collection.class ) ) {
+            final List<Object> collectionValues = getCollectionValues( property, (Collection) characteristic );
+            return toMap( property.getName(), collectionValues );
+         } else if ( isConstrainedCollection( characteristic ) ) {
 
-   private Object generateCollectionValue( final Type dataType, final int minCount ) {
-      if ( dataType.is( AbstractEntity.class ) ) {
-         final AbstractEntity abstractEntity = dataType.as( AbstractEntity.class );
-         final ComplexType extendingComplexType = abstractEntity.getExtendingElements().get( 0 );
-         final Map<String, Object> propertyValueMap = transformProperties( extendingComplexType.getAllProperties(), minCount < 2 );
-         propertyValueMap.put( "@type", extendingComplexType.getName() );
-         return propertyValueMap;
-      }
-      if ( dataType.is( Entity.class ) ) {
-         final Entity entity = dataType.as( Entity.class );
-         return transformProperties( entity.getAllProperties(), minCount < 2 );
-      }
-      throw new IllegalArgumentException( String.format( "DataType %s is unknown", dataType ) );
-   }
+            final Collection collection = characteristic.as( Trait.class ).getBaseCharacteristic().as( Collection.class );
 
-   private <T> Optional<T> getForCharacteristic( final Characteristic characteristic, final Class<T> type ) {
-      if ( type.isAssignableFrom( characteristic.getClass() ) ) {
-         return Optional.of( type.cast( characteristic ) );
-      }
-      return characteristic.getDataType()
-            .filter( dataType -> type.isAssignableFrom( dataType.getClass() ) )
-            .map( type::cast );
-   }
+            final List<Constraint> constraints = characteristic.as( Trait.class ).getConstraints().stream()
+                  .filter( trait -> trait.is( LengthConstraint.class ) )
+                  .toList();
 
-   private Object generateExampleValue( final Characteristic characteristic ) {
-      return exampleValueGenerator.generateExampleValue( characteristic );
-   }
-
-   /**
-    * Transforms an {@link BasicProperty} to a map.
-    * If no transformation can be applied, an empty map will returned.
-    */
-   private interface Transformer extends BiFunction<BasicProperty, Boolean, Map<String, Object>> {
-   }
-
-   private static class BasicProperty {
-      private final String name;
-      private final Characteristic characteristic;
-      private final Optional<ScalarValue> exampleValue;
-
-      BasicProperty( final Property property ) {
-         this( property.getPayloadName(), property.getCharacteristic().orElseThrow( () ->
-               new IllegalArgumentException( "Could not process Property " + property )
-         ), property.getExampleValue() );
+            return !constraints.isEmpty()
+                  ? toMap( property.getName(), getCollectionValues( property, collection,
+                  (LengthConstraint) characteristic.as( Trait.class ).getConstraints().get( 0 ) ) )
+                  : toMap( property.getName(), getCollectionValues( property, collection ) );
+         }
+         return ImmutableMap.of();
       }
 
-      BasicProperty( final String name, final Characteristic characteristic, final Optional<ScalarValue> exampleValue ) {
-         this.name = name;
-         this.characteristic = characteristic;
-         this.exampleValue = exampleValue;
+      private boolean isConstrainedCollection( final Characteristic characteristic ) {
+         if ( !characteristic.is( Trait.class ) ) {
+            return false;
+         }
+         final Trait trait = characteristic.as( Trait.class );
+         return trait.getBaseCharacteristic().is( Collection.class ) && ( !trait.getConstraints().isEmpty() );
       }
 
-      public String getName() {
-         return name;
+      private Map<String, Object> transformAbstractEntityProperty( final BasicProperty property, final boolean useModelExampleValue ) {
+         final Optional<AbstractEntity> dataType = getForCharacteristic( property.getCharacteristic(), AbstractEntity.class );
+         if ( dataType.isPresent() ) {
+            final AbstractEntity abstractEntity = dataType.get();
+            final ComplexType extendingComplexType = abstractEntity.getExtendingElements().get( 0 );
+            final Map<String, Object> generatedProperties = transformProperties( extendingComplexType.getAllProperties(),
+                  useModelExampleValue );
+            generatedProperties.put( "@type", extendingComplexType.getName() );
+            return toMap( property.getName(), generatedProperties );
+         }
+         return ImmutableMap.of();
       }
 
-      public Characteristic getCharacteristic() {
-         return characteristic;
+      private Map<String, Object> transformEntityProperty( final BasicProperty property, final boolean useModelExmplevalue ) {
+         final Optional<Entity> dataType = getForCharacteristic( property.getCharacteristic(), Entity.class );
+         if ( dataType.isPresent() ) {
+            final Entity entity = dataType.get();
+            final Map<String, Object> generatedProperties = transformProperties( entity.getAllProperties(), useModelExmplevalue );
+            if ( entity.getExtends().isPresent() ) {
+               generatedProperties.put( "@type", entity.getName() );
+            }
+            return toMap( property.getName(), generatedProperties );
+         }
+         return ImmutableMap.of();
       }
 
-      public Optional<ScalarValue> getExampleValue() {
-         return exampleValue;
+      private Map<String, Object> transformEnumeration( final BasicProperty property, final boolean useModelExampleValue ) {
+         return getForCharacteristic( property.getCharacteristic(), Enumeration.class )
+               .map( enumeration -> extractEnumerationValues( property, enumeration ) )
+               .orElseGet( ImmutableMap::of );
+      }
+
+      private Map<String, Object> extractEnumerationValues( final BasicProperty property, final Enumeration enumeration ) {
+         final Value firstValue = enumeration.getValues().get( 0 );
+         return toMap( property.getName(), firstValue.accept( valueToPayloadStructure, null ) );
+      }
+
+      private Map<String, Object> transformEitherProperty( final BasicProperty property, final boolean useModelExampleValue ) {
+         final Characteristic characteristic = property.getCharacteristic();
+         return getForCharacteristic( characteristic, Either.class )
+               .map( value -> transformProperty(
+                     new BasicProperty( PayloadGenerator.EITHER_LEFT, value.getLeft(), Optional.empty() ),
+                     useModelExampleValue ) )
+               .map( value -> toMap( property.getName(), value ) )
+               .orElseGet( ImmutableMap::of );
+      }
+
+      private Map<String, Object> transformSimpleProperty( final BasicProperty basicProperty, final boolean useModelExampleValue ) {
+         return toMap( basicProperty.getName(), getExampleValueOrElseRandom( basicProperty, useModelExampleValue ) );
+      }
+
+      /**
+       * @param property the property to transform
+       * @return the {@link Property#getExampleValue()} or if absent a random value.
+       */
+      private Object getExampleValueOrElseRandom( final BasicProperty property, final boolean useModelExampleValue ) {
+         final Characteristic characteristic = property.getCharacteristic();
+         if ( characteristic.is( State.class ) ) {
+            return characteristic.as( State.class ).getDefaultValue();
+         }
+         if ( characteristic.is( Enumeration.class ) ) {
+            return characteristic.as( Enumeration.class ).getValues().get( 0 );
+         }
+
+         Optional<Characteristic> elementCharacteristics = Optional.empty();
+         if ( characteristic.is( Collection.class ) ) {
+            elementCharacteristics = ( (Collection) characteristic ).getElementCharacteristic();
+         }
+         final Characteristic effectiveCharacteristics = elementCharacteristics.orElse( characteristic );
+
+         if ( !useModelExampleValue ) {
+            return generateExampleValue( effectiveCharacteristics );
+         }
+
+         return property.getExampleValue()
+               .map( exampleValue -> exampleValue.as( ScalarValue.class ).getValue() )
+               .map( value -> value instanceof Curie ? ( (Curie) value ).value() : value )
+               .orElseGet( () -> generateExampleValue( effectiveCharacteristics ) );
+      }
+
+      private Map<String, Object> toMap( final String key, final Object value ) {
+         return ImmutableMap.of( key, value );
+      }
+
+      private List<Object> getCollectionValues( final BasicProperty property, final Collection collection ) {
+         return getCollectionValues( property, collection, null );
+      }
+
+      private List<Object> getCollectionValues( final BasicProperty property, final Collection collection,
+            final LengthConstraint lengthConstraint ) {
+         final Type dataType = collection.getDataType()
+               .orElseThrow( () -> new IllegalArgumentException( "DataType for collection is required." ) );
+
+         if ( dataType.is( Scalar.class ) ) {
+            final Object payload = getExampleValueOrElseRandom( property, lengthConstraint == null );
+            return payload instanceof List ? (List) payload : ImmutableList.of( payload );
+         }
+
+         final BigInteger minLength = lengthConstraint == null ? BigInteger.ONE : lengthConstraint.getMinValue().orElse( BigInteger.ONE );
+         final List<Object> returnValues = new ArrayList<>();
+         // Fill in minLength elements
+         for ( int i = 0; i < minLength.intValue(); i++ ) {
+            returnValues.add( generateCollectionValue( dataType, minLength.intValue() ) );
+         }
+         return returnValues;
+      }
+
+      private Object generateCollectionValue( final Type dataType, final int minCount ) {
+         if ( dataType.is( AbstractEntity.class ) ) {
+            final AbstractEntity abstractEntity = dataType.as( AbstractEntity.class );
+            final ComplexType extendingComplexType = abstractEntity.getExtendingElements().get( 0 );
+            final Map<String, Object> propertyValueMap = transformProperties( extendingComplexType.getAllProperties(), minCount < 2 );
+            propertyValueMap.put( "@type", extendingComplexType.getName() );
+            return propertyValueMap;
+         }
+         if ( dataType.is( Entity.class ) ) {
+            final Entity entity = dataType.as( Entity.class );
+            return transformProperties( entity.getAllProperties(), minCount < 2 );
+         }
+         throw new IllegalArgumentException( String.format( "DataType %s is unknown", dataType ) );
+      }
+
+      private <T> Optional<T> getForCharacteristic( final Characteristic characteristic, final Class<T> type ) {
+         if ( type.isAssignableFrom( characteristic.getClass() ) ) {
+            return Optional.of( type.cast( characteristic ) );
+         }
+         return characteristic.getDataType()
+               .filter( dataType -> type.isAssignableFrom( dataType.getClass() ) )
+               .map( type::cast );
+      }
+
+      private Object generateExampleValue( final Characteristic characteristic ) {
+         return exampleValueGenerator.generateExampleValue( characteristic );
+      }
+
+      /**
+       * Transforms an {@link BasicProperty} to a map.
+       * If no transformation can be applied, an empty map will returned.
+       */
+      private interface Transformer extends BiFunction<BasicProperty, Boolean, Map<String, Object>> {
+      }
+
+      private static class BasicProperty {
+         private final String name;
+         private final Characteristic characteristic;
+         private final Optional<ScalarValue> exampleValue;
+
+         BasicProperty( final Property property ) {
+            this( property.getPayloadName(), property.getCharacteristic().orElseThrow( () ->
+                  new IllegalArgumentException( "Could not process Property " + property )
+            ), property.getExampleValue() );
+         }
+
+         BasicProperty( final String name, final Characteristic characteristic, final Optional<ScalarValue> exampleValue ) {
+            this.name = name;
+            this.characteristic = characteristic;
+            this.exampleValue = exampleValue;
+         }
+
+         public String getName() {
+            return name;
+         }
+
+         public Characteristic getCharacteristic() {
+            return characteristic;
+         }
+
+         public Optional<ScalarValue> getExampleValue() {
+            return exampleValue;
+         }
       }
    }
 
    private static class ExampleValueGenerator {
+      private static final double THRESHOLD = .0001;
       private final EasyRandom defaultEasyRandom = new EasyRandom();
       private final Random random;
 
@@ -435,7 +423,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
       private Object generateExampleValue( final Characteristic characteristic ) {
          final Type dataType = getDataType( characteristic );
 
-         if ( !(dataType.is( Scalar.class )) ) {
+         if ( !( dataType.is( Scalar.class ) ) ) {
             throw new IllegalArgumentException( "Example values can only be generated for scalar types." );
          }
 
@@ -553,8 +541,11 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
 
       public List<Object> getRandomValues( final LengthConstraint lengthConstraint, final Supplier<Object> valueGenerator ) {
          final BigInteger maxLength =
-               lengthConstraint == null ? BigInteger.ONE : lengthConstraint.getMaxValue().orElse( BigInteger.valueOf( Integer.MAX_VALUE ) );
-         final BigInteger minLength = lengthConstraint == null ? BigInteger.ONE : lengthConstraint.getMinValue().orElse( BigInteger.ZERO );
+               lengthConstraint == null
+                     ? BigInteger.ONE
+                     : lengthConstraint.getMaxValue().orElse( BigInteger.valueOf( Integer.MAX_VALUE ) );
+         final BigInteger minLength =
+               lengthConstraint == null ? BigInteger.ONE : lengthConstraint.getMinValue().orElse( BigInteger.ZERO );
 
          final List<Object> returnValues = new ArrayList<>();
          // Fill in minLength elements
@@ -587,7 +578,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
 
       // narrowing conversion from BigDecimal to double
       private double safelyNarrowDown( final Number bound ) {
-         if ( !(BigDecimal.class.equals( bound.getClass() )) ) {
+         if ( !( BigDecimal.class.equals( bound.getClass() ) ) ) {
             return bound.doubleValue();
          }
 
@@ -596,7 +587,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
          // Example: xsd:unsignedLong has a max. value of 18446744073709551615; when converting it to double
          // it will get represented as 1.8446744073709552E16, thereby exceeding the upper bound.
          // Therefore we need to take care of always rounding down when narrowing to double.
-         final BigDecimal narrowed = ((BigDecimal) bound).round( new MathContext( 15, RoundingMode.DOWN ) );
+         final BigDecimal narrowed = ( (BigDecimal) bound ).round( new MathContext( 15, RoundingMode.DOWN ) );
          return narrowed.doubleValue();
       }
 

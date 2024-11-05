@@ -26,17 +26,17 @@ public class AspectModelNamespacePackageCreator implements TriConsumer<AspectMod
 
    @Override
    public void accept( final AspectModel aspectModel, final OutputStream outputStream, final String rootPath ) {
-      try ( FileOutputStream fos = (FileOutputStream) outputStream;
-            BufferedOutputStream bos = new BufferedOutputStream( fos );
-            ZipOutputStream zos = new ZipOutputStream( bos ) ) {
+      try ( final FileOutputStream fos = (FileOutputStream) outputStream;
+            final BufferedOutputStream bos = new BufferedOutputStream( fos );
+            final ZipOutputStream zos = new ZipOutputStream( bos ) ) {
 
          for ( final AspectModelFile aspectModelFile : aspectModel.files() ) {
             addFileToArchive( aspectModelFile, zos, rootPath );
          }
-      } catch ( IOException e ) {
+      } catch ( final IOException e ) {
          try {
             throw new IOException( "Error creating zip archive!", e );
-         } catch ( IOException ex ) {
+         } catch ( final IOException ex ) {
             throw new RuntimeException( ex );
          }
       }
@@ -53,7 +53,7 @@ public class AspectModelNamespacePackageCreator implements TriConsumer<AspectMod
       final ZipEntry zipEntry = new ZipEntry( fileName );
       zos.putNextEntry( zipEntry );
 
-      Writer writer = new OutputStreamWriter( zos );
+      final Writer writer = new OutputStreamWriter( zos );
       writer.write( aspectString );
       writer.flush();
 

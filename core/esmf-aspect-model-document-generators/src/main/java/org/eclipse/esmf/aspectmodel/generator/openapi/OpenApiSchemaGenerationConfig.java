@@ -18,6 +18,7 @@ import static org.eclipse.esmf.aspectmodel.generator.openapi.AspectModelOpenApiG
 import java.util.Locale;
 
 import org.eclipse.esmf.aspectmodel.generator.GenerationConfig;
+import org.eclipse.esmf.aspectmodel.generator.JsonGenerationConfig;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.soabase.recordbuilder.core.RecordBuilder;
@@ -48,15 +49,11 @@ public record OpenApiSchemaGenerationConfig(
       PagingOption pagingOption,
       boolean includeQueryApi,
       boolean includeCrud,
-
       boolean includePost,
-
       boolean includePut,
-
       boolean includePatch,
       ObjectNode template
-) implements GenerationConfig {
-
+) implements JsonGenerationConfig {
    private static final String QUERIES_TEMPLATE_PATH = "__DEFAULT_QUERIES_TEMPLATE__";
 
    public OpenApiSchemaGenerationConfig {

@@ -11,10 +11,9 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.aspectmodel.generator.jsonschema;
+package org.eclipse.esmf.aspectmodel.generator.json;
 
-import java.util.List;
-import java.util.Locale;
+import java.util.Random;
 
 import org.eclipse.esmf.aspectmodel.generator.GenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.JsonGenerationConfig;
@@ -22,22 +21,15 @@ import org.eclipse.esmf.aspectmodel.generator.JsonGenerationConfig;
 import io.soabase.recordbuilder.core.RecordBuilder;
 
 /**
- * A {@link GenerationConfig} for JSON schema
+ * A {@link GenerationConfig} for JSON sample payload generation
  */
 @RecordBuilder
-public record JsonSchemaGenerationConfig(
-      Locale locale,
-      boolean generateForOpenApi,
-      boolean generateCommentForSeeAttributes,
-      boolean useExtendedTypes,
-      List<String> reservedSchemaNames
+public record JsonPayloadGenerationConfig(
+      Random randomStrategy
 ) implements JsonGenerationConfig {
-   public JsonSchemaGenerationConfig {
-      if ( locale == null ) {
-         locale = Locale.ENGLISH;
-      }
-      if ( reservedSchemaNames == null ) {
-         reservedSchemaNames = List.of();
+   public JsonPayloadGenerationConfig {
+      if ( randomStrategy == null ) {
+         randomStrategy = new Random();
       }
    }
 }

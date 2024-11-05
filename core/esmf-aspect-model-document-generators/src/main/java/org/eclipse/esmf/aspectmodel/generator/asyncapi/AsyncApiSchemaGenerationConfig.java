@@ -16,6 +16,7 @@ package org.eclipse.esmf.aspectmodel.generator.asyncapi;
 import java.util.Locale;
 
 import org.eclipse.esmf.aspectmodel.generator.GenerationConfig;
+import org.eclipse.esmf.aspectmodel.generator.JsonGenerationConfig;
 
 import io.soabase.recordbuilder.core.RecordBuilder;
 
@@ -33,7 +34,7 @@ public record AsyncApiSchemaGenerationConfig(
       boolean useSemanticVersion,
       String applicationId,
       String channelAddress
-) implements GenerationConfig {
+) implements JsonGenerationConfig {
    public AsyncApiSchemaGenerationConfig {
       if ( locale == null ) {
          locale = Locale.ENGLISH;

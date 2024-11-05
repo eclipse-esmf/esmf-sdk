@@ -58,8 +58,6 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
    private static final ObjectMapper YAML_MAPPER = new YAMLMapper().enable( YAMLGenerator.Feature.MINIMIZE_QUOTES );
    private static final Logger LOG = LoggerFactory.getLogger( GenerateOpenApiSpec.class );
 
-   private final AspectModelOpenApiGenerator generator = new AspectModelOpenApiGenerator();
-
    @Parameter( required = true )
    private String aspectApiBaseUrl = "";
 
@@ -135,7 +133,7 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
             .build();
 
       for ( final Aspect aspect : aspects ) {
-         final OpenApiSchemaArtifact openApiSpec = generator.apply( aspect, config );
+         final OpenApiSchemaArtifact openApiSpec = new AspectModelOpenApiGenerator( aspect, config ).singleResult();
          try {
             if ( separateFiles ) {
                writeSchemaWithSeparateFiles( format, openApiSpec );

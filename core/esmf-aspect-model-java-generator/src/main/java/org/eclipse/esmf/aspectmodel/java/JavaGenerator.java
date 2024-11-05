@@ -27,15 +27,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Base class for all generators that want to create java sourcecode.
+ * Base class for all generators that want to create Java source code.
  */
-public abstract class JavaGenerator extends Generator<QualifiedName, String> {
+public abstract class JavaGenerator extends Generator<QualifiedName, String, JavaCodeGenerationConfig, Artifact<QualifiedName, String>> {
    private static final Logger LOG = LoggerFactory.getLogger( JavaGenerator.class );
-   protected final JavaCodeGenerationConfig config;
 
    public JavaGenerator( final Aspect aspect, final JavaCodeGenerationConfig config ) {
-      super( aspect );
-      this.config = config;
+      super( aspect, config );
    }
 
    @Override
@@ -54,9 +52,5 @@ public abstract class JavaGenerator extends Generator<QualifiedName, String> {
       } catch ( final IOException e ) {
          LOG.error( "Failure during writing of generated code.", e );
       }
-   }
-
-   public JavaCodeGenerationConfig getConfig() {
-      return config;
    }
 }

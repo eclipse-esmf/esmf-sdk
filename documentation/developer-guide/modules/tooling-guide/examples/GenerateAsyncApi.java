@@ -55,8 +55,8 @@ public class GenerateAsyncApi {
             .build();
 
       // Generate pretty-printed YAML
-      final AspectModelAsyncApiGenerator generator = new AspectModelAsyncApiGenerator();
-      final JsonNode json = generator.apply( aspectModel.aspect(), config ).getContent();
+      final AspectModelAsyncApiGenerator generator = new AspectModelAsyncApiGenerator( aspectModel.aspect(), config );
+      final JsonNode json = generator.getContent();
       final String yaml = yamlMapper.writeValueAsString( json );
 
       final ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -86,8 +86,8 @@ public class GenerateAsyncApi {
             .build();
 
       // Generate the JSON
-      final AspectModelAsyncApiGenerator generator = new AspectModelAsyncApiGenerator();
-      final JsonNode json = generator.apply( aspectModel.aspect(), config ).getContent();
+      final AspectModelAsyncApiGenerator generator = new AspectModelAsyncApiGenerator( aspectModel.aspect(), config );
+      final JsonNode json = generator.getContent();
 
       // If needed, print or pretty print it into a string
       final ByteArrayOutputStream out = new ByteArrayOutputStream();

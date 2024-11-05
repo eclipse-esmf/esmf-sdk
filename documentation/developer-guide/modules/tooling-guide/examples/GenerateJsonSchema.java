@@ -43,7 +43,7 @@ public class GenerateJsonSchema {
       final JsonSchemaGenerationConfig config = JsonSchemaGenerationConfigBuilder.builder()
             .locale( Locale.ENGLISH )
             .build();
-      final JsonNode jsonSchema = AspectModelJsonSchemaGenerator.INSTANCE.apply( aspectModel.aspect(), config ).getContent();
+      final JsonNode jsonSchema = new AspectModelJsonSchemaGenerator( aspectModel.aspect(), config ).getContent();
 
       // If needed, print or pretty print it into a string
       final ByteArrayOutputStream out = new ByteArrayOutputStream();

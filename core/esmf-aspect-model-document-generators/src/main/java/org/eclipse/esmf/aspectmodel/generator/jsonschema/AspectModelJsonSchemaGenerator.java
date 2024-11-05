@@ -13,7 +13,9 @@
 
 package org.eclipse.esmf.aspectmodel.generator.jsonschema;
 
-import org.eclipse.esmf.aspectmodel.generator.ArtifactGenerator;
+import java.util.stream.Stream;
+
+import org.eclipse.esmf.aspectmodel.generator.JsonGenerator;
 import org.eclipse.esmf.metamodel.Aspect;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -21,14 +23,21 @@ import com.fasterxml.jackson.databind.JsonNode;
 /**
  * Generator that generates a JSON Schema for payloads corresponding to a given Aspect model.
  */
-public class AspectModelJsonSchemaGenerator implements
-      ArtifactGenerator<String, JsonNode, Aspect, JsonSchemaGenerationConfig, JsonSchemaArtifact> {
-   public static final AspectModelJsonSchemaGenerator INSTANCE = new AspectModelJsonSchemaGenerator();
+public class AspectModelJsonSchemaGenerator extends JsonGenerator<JsonSchemaGenerationConfig, JsonNode, JsonSchemaArtifact> {
+   public static final JsonSchemaGenerationConfig DEFAULT_CONFIG = JsonSchemaGenerationConfigBuilder.builder().build();
+
+   public AspectModelJsonSchemaGenerator( final Aspect aspect ) {
+      this( aspect, DEFAULT_CONFIG );
+   }
+
+   public AspectModelJsonSchemaGenerator( final Aspect aspect, final JsonSchemaGenerationConfig config ) {
+      super( aspect, config );
+   }
 
    @Override
-   public JsonSchemaArtifact apply( final Aspect aspect, final JsonSchemaGenerationConfig config ) {
+   public Stream<JsonSchemaArtifact> generate() {
       final AspectModelJsonSchemaVisitor visitor = new AspectModelJsonSchemaVisitor( config );
       final JsonNode result = aspect.accept( visitor, null );
-      return new JsonSchemaArtifact( aspect.getName(), result );
+      return Stream.of( new JsonSchemaArtifact( aspect.getName(), result ) );
    }
 }

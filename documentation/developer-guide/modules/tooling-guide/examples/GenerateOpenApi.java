@@ -73,8 +73,8 @@ public class GenerateOpenApi {
             .build();
 
       // Generate pretty-printed YAML
-      final AspectModelOpenApiGenerator generator = new AspectModelOpenApiGenerator();
-      final String yaml = generator.apply( aspectModel.aspect(), config ).getContentAsYaml();
+      final AspectModelOpenApiGenerator generator = new AspectModelOpenApiGenerator( aspectModel.aspect(), config );
+      final String yaml = generator.generateYaml();
       // end::generateYaml[]
    }
 
@@ -121,8 +121,8 @@ public class GenerateOpenApi {
             .build();
 
       // Generate the JSON
-      final AspectModelOpenApiGenerator generator = new AspectModelOpenApiGenerator();
-      final JsonNode json = generator.apply( aspectModel.aspect(), config ).getContent();
+      final AspectModelOpenApiGenerator generator = new AspectModelOpenApiGenerator( aspectModel.aspect(), config );
+      final JsonNode json = generator.getContent();
 
       // If needed, print or pretty print it into a string
       final ByteArrayOutputStream out = new ByteArrayOutputStream();

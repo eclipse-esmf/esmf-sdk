@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -13,14 +13,17 @@
 
 package org.eclipse.esmf.aspectmodel.generator;
 
-public class DocumentGenerationException extends GenerationException {
-   private static final long serialVersionUID = -3592685602580476530L;
+import java.io.Serial;
 
-   public DocumentGenerationException( final String message ) {
+public class GenerationException extends RuntimeException {
+   @Serial
+   private static final long serialVersionUID = 7194543268532703573L;
+
+   public GenerationException( final String message ) {
       super( message );
    }
 
-   public DocumentGenerationException( final Throwable cause ) {
+   public GenerationException( final Throwable cause ) {
       super( cause );
    }
 }

@@ -77,7 +77,7 @@ public class AspectToJsonSchemaCommand extends AbstractCommand {
       final JsonSchemaGenerationConfig config = JsonSchemaGenerationConfigBuilder.builder()
             .locale( locale )
             .build();
-      final JsonNode schema = AspectModelJsonSchemaGenerator.INSTANCE.apply( aspect, config ).getContent();
+      final JsonNode schema = new AspectModelJsonSchemaGenerator( aspect, config ).getContent();
 
       withOutputStream( outputFilePath, outputStream -> {
          final ObjectMapper objectMapper = new ObjectMapper();

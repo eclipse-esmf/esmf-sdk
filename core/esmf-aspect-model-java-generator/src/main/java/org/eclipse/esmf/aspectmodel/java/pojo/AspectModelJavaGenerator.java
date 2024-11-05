@@ -35,7 +35,7 @@ public class AspectModelJavaGenerator extends JavaGenerator {
    }
 
    @Override
-   protected Stream<Artifact<QualifiedName, String>> generateArtifacts() {
+   public Stream<Artifact<QualifiedName, String>> generate() {
       final Set<ComplexType> structureElements = elements( ComplexType.class ).filter( element ->
             element.getExtends().isPresent() ).collect( Collectors.toSet() );
       return Stream.of(

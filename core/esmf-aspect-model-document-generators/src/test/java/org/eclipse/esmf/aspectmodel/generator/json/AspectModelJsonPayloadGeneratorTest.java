@@ -37,6 +37,7 @@ import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
+
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
@@ -654,11 +655,7 @@ public class AspectModelJsonPayloadGeneratorTest {
    private String generateJsonForModel( final TestAspect testAspect ) {
       final Aspect aspect = TestResources.load( testAspect ).aspect();
       final AspectModelJsonPayloadGenerator jsonGenerator = new AspectModelJsonPayloadGenerator( aspect );
-      try {
-         return jsonGenerator.generateJson();
-      } catch ( final IOException e ) {
-         throw new RuntimeException( e );
-      }
+      return jsonGenerator.generateJson();
    }
 
    private void assertTestEntityWithSimpleTypes( final TestEntityWithSimpleTypes testEntityWithSimpleTypes ) {

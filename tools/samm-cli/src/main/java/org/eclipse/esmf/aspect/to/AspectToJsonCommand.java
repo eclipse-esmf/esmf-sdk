@@ -13,14 +13,11 @@
 
 package org.eclipse.esmf.aspect.to;
 
-import java.io.IOException;
-
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.ResolverConfigurationMixin;
 import org.eclipse.esmf.aspect.AspectToCommand;
 import org.eclipse.esmf.aspectmodel.generator.json.AspectModelJsonPayloadGenerator;
-import org.eclipse.esmf.exception.CommandException;
 
 import picocli.CommandLine;
 
@@ -60,12 +57,8 @@ public class AspectToJsonCommand extends AbstractCommand {
 
       final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator(
             getInputHandler( parentCommand.parentCommand.getInput() ).loadAspect() );
-      try {
-         // we intentionally override the name of the generated artifact here to the name explicitly desired by the user (outputFilePath),
-         // as opposed to what the model thinks it should be called (name)
-         generator.generateJsonPretty( name -> getStreamForFile( outputFilePath ) );
-      } catch ( final IOException e ) {
-         throw new CommandException( e );
-      }
+      // we intentionally override the name of the generated artifact here to the name explicitly desired by the user (outputFilePath),
+      // as opposed to what the model thinks it should be called (name)
+      generator.generate( name -> getStreamForFile( outputFilePath ) );
    }
 }

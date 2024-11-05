@@ -30,8 +30,7 @@ import org.eclipse.esmf.test.TestResources;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class AspectModelZipGeneratorTest {
-
+class AspectModelNamespacePackageCreatorTest {
    Path outputDirectory = null;
 
    @BeforeEach
@@ -44,8 +43,7 @@ class AspectModelZipGeneratorTest {
       final AspectModel aspectModel = TestResources.load( TestAspect.ASPECT_WITH_PROPERTY );
       final String outputFileName = String.format( "%s/%s", outputDirectory.toString(), "/test_zip.zip" );
 
-      AspectModelNamespacePackageCreator.INSTANCE.accept( aspectModel, new FileOutputStream( Paths.get( outputFileName ).toFile() ),
-            "" );
+      AspectModelNamespacePackageCreator.INSTANCE.accept( aspectModel, new FileOutputStream( Paths.get( outputFileName ).toFile() ), "" );
 
       assertThat( new File( outputFileName ) ).exists();
 

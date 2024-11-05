@@ -34,9 +34,10 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.generator.AbstractGenerator;
-import org.eclipse.esmf.aspectmodel.generator.ArtifactGenerator;
+import org.eclipse.esmf.aspectmodel.generator.JsonGenerator;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaVisitor;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.JsonSchemaGenerationConfig;
@@ -51,7 +52,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.base.CaseFormat;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.io.IOUtils;
@@ -60,8 +60,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @SuppressWarnings( "OptionalUsedAsFieldOrParameterType" )
-public class AspectModelOpenApiGenerator
-      implements ArtifactGenerator<String, ObjectNode, Aspect, OpenApiSchemaGenerationConfig, OpenApiSchemaArtifact> {
+public class AspectModelOpenApiGenerator extends JsonGenerator<OpenApiSchemaGenerationConfig, ObjectNode, OpenApiSchemaArtifact> {
+   public static final OpenApiSchemaGenerationConfig DEFAULT_CONFIG = OpenApiSchemaGenerationConfigBuilder.builder().build();
+
    private static final String APPLICATION_JSON = "application/json";
    private static final String CLIENT_ERROR = "ClientError";
    private static final String COMPONENTS_RESPONSES = "#/components/responses/";
@@ -114,18 +115,22 @@ public class AspectModelOpenApiGenerator
    private static final AspectModelPagingGenerator PAGING_GENERATOR = new AspectModelPagingGenerator();
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelOpenApiGenerator.class );
 
-   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-   private static final ObjectMapper YAML_MAPPER = new ObjectMapper( new YAMLFactory() );
+   public AspectModelOpenApiGenerator( final Aspect aspect ) {
+      this( aspect, DEFAULT_CONFIG );
+   }
+
+   public AspectModelOpenApiGenerator( final Aspect aspect, final OpenApiSchemaGenerationConfig config ) {
+      super( aspect, config );
+   }
 
    /**
     * Generates an OpenAPI specification for the given Aspect Model.
     *
-    * @param aspect the Aspect Model for which the OpenAPI specification will be generated.
-    * @param config the configuration for the generation process
     * @return the OpenAPI specification
     */
    @Override
-   public OpenApiSchemaArtifact apply( final Aspect aspect, final OpenApiSchemaGenerationConfig config ) {
+   public Stream<OpenApiSchemaArtifact> generate() {
+      OpenApiSchemaArtifact artifact;
       try {
          final ObjectNode rootNode = getRootJsonNode( config.generateCommentForSeeAttributes() );
          final String apiVersion = getApiVersion( aspect, config.useSemanticVersion() );
@@ -141,11 +146,12 @@ public class AspectModelOpenApiGenerator
          setRequestBodies( aspect, config, rootNode );
          setResponseBodies( aspect, rootNode, includePaging );
          rootNode.set( "paths", getPathsNode( aspect, config, apiVersion, config.properties(), config.queriesTemplate() ) );
-         return new OpenApiSchemaArtifact( aspect.getName(), merge( rootNode, config.documentTemplate() ) );
+         artifact = new OpenApiSchemaArtifact( aspect.getName(), merge( rootNode, config.documentTemplate() ) );
       } catch ( final Exception exception ) {
          LOG.error( "There was an exception during the read of the root or the validation.", exception );
+         artifact = new OpenApiSchemaArtifact( aspect.getName(), FACTORY.objectNode() );
       }
-      return new OpenApiSchemaArtifact( aspect.getName(), FACTORY.objectNode() );
+      return Stream.of( artifact );
    }
 
    private void setServers( final ObjectNode objectNode, final String baseUrl, final String apiVersion, final String endPointPath ) {
@@ -212,7 +218,7 @@ public class AspectModelOpenApiGenerator
          try ( final InputStream inputStream = getClass().getResourceAsStream( "/openapi/Filter.json" ) ) {
             Objects.requireNonNull( inputStream, "Filter.json not found" );
             final String string = IOUtils.toString( inputStream, StandardCharsets.UTF_8 );
-            final ObjectNode filterNode = (ObjectNode) OBJECT_MAPPER.readTree( string );
+            final ObjectNode filterNode = (ObjectNode) objectMapper.readTree( string );
             schemas.set( FIELD_FILTER, filterNode );
          }
       }
@@ -220,7 +226,7 @@ public class AspectModelOpenApiGenerator
          try ( final InputStream inputStream = getClass().getResourceAsStream( "/openapi/JsonRPC.json" ) ) {
             Objects.requireNonNull( inputStream, "JsonRPC.json not found" );
             final String string = IOUtils.toString( inputStream, StandardCharsets.UTF_8 );
-            final ObjectNode filterNode = (ObjectNode) OBJECT_MAPPER.readTree( string );
+            final ObjectNode filterNode = (ObjectNode) objectMapper.readTree( string );
             schemas.set( FIELD_RPC, filterNode );
          }
       }
@@ -325,7 +331,7 @@ public class AspectModelOpenApiGenerator
          Objects.requireNonNull( inputStream, "OpenApiRootJson.json not found" );
          final String string = IOUtils.toString( inputStream, StandardCharsets.UTF_8 )
                .replace( "${OpenApiVer}", generateCommentForSeeAttributes ? V31 : V30 );
-         return (ObjectNode) OBJECT_MAPPER.readTree( string );
+         return (ObjectNode) objectMapper.readTree( string );
       }
    }
 
@@ -555,7 +561,7 @@ public class AspectModelOpenApiGenerator
             .useExtendedTypes( false )
             .generateForOpenApi( true )
             .build();
-      return AspectModelJsonSchemaGenerator.INSTANCE.apply( aspect, config ).getContent();
+      return new AspectModelJsonSchemaGenerator( aspect, config ).getContent();
    }
 
    private void setAspectSchemaNode( final ObjectNode schemas, final Aspect aspect, final Locale locale,
