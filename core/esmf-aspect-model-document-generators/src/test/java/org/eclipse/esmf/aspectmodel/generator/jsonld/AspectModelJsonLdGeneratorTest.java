@@ -10,12 +10,11 @@ import org.eclipse.esmf.test.TestResources;
 import org.junit.jupiter.api.Test;
 
 class AspectModelJsonLdGeneratorTest {
-
    @Test
    void generateTest() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_ENTITY_LIST ).aspect();
       final AspectModelToJsonLdGenerator jsonGenerator = new AspectModelToJsonLdGenerator( aspect );
-      final String generatedJsonLd = jsonGenerator.generateJsonLd();
+      final String generatedJsonLd = jsonGenerator.generateJson();
 
       assertJsonLdMeta( generatedJsonLd, aspect.urn() );
    }

@@ -35,13 +35,9 @@ public class GenerateJsonLd extends AspectModelMojo {
       validateParameters();
 
       final Set<Aspect> aspects = loadAspects();
-      try {
-         for ( final Aspect context : aspects ) {
-            final AspectModelToJsonLdGenerator generator = new AspectModelToJsonLdGenerator( context );
-            generator.generateJsonLd( name -> getOutputStreamForFile( name + ".jsonld", outputDirectory ) );
-         }
-      } catch ( final IOException exception ) {
-         throw new MojoExecutionException( "Could not generate JSON-LD.", exception );
+      for ( final Aspect context : aspects ) {
+         final AspectModelToJsonLdGenerator generator = new AspectModelToJsonLdGenerator( context );
+         generator.generate( name -> getOutputStreamForFile( name + ".jsonld", outputDirectory ) );
       }
       LOG.info( "Successfully generated JSON-LD for Aspect Models." );
    }
