@@ -97,7 +97,14 @@
       <dependency>
          <groupId>org.graalvm.js</groupId>
          <artifactId>js</artifactId>
-         <type>pom</type>
+         <type>jar</type>
+         <version>${graalvm-version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.graalvm.js</groupId>
+         <artifactId>js-scriptengine</artifactId>
+         <type>jar</type>
+         <version>${graalvm-version}</version>
       </dependency>
 
       <!-- Test dependencies -->
