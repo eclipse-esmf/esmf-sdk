@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class AspectModelToJsonLdGenerator extends JsonGenerator<JsonLdGenerationConfig, JsonNode, JsonLdArtifact> {
-   public static final JsonLdGenerationConfig DEFAULT_CONFIG = null;
+   public static final JsonLdGenerationConfig DEFAULT_CONFIG = JsonLdGenerationConfigBuilder.builder().build();
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelToJsonLdGenerator.class );
 
    public AspectModelToJsonLdGenerator( final Aspect aspect ) {

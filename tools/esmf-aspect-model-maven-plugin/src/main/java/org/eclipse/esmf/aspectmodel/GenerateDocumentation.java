@@ -15,11 +15,10 @@ package org.eclipse.esmf.aspectmodel;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.esmf.aspectmodel.generator.docu.AspectModelDocumentationGenerator;
+import org.eclipse.esmf.aspectmodel.generator.docu.DocumentationGenerationConfigBuilder;
 import org.eclipse.esmf.metamodel.Aspect;
 
 import org.apache.commons.io.FileUtils;
@@ -44,15 +43,12 @@ public class GenerateDocumentation extends AspectModelMojo {
       try {
          final Set<Aspect> aspects = loadAspects();
          for ( final Aspect model : aspects ) {
-            final AspectModelDocumentationGenerator generator = new AspectModelDocumentationGenerator( model );
-            final Map<AspectModelDocumentationGenerator.HtmlGenerationOption, String> generationArgs = new HashMap<>();
-            generationArgs.put( AspectModelDocumentationGenerator.HtmlGenerationOption.STYLESHEET, "" );
-            //noinspection ConstantValue
+            final DocumentationGenerationConfigBuilder configBuilder = DocumentationGenerationConfigBuilder.builder();
             if ( !htmlCustomCssFilePath.isEmpty() ) {
                final String css = FileUtils.readFileToString( new File( htmlCustomCssFilePath ), "UTF-8" );
-               generationArgs.put( AspectModelDocumentationGenerator.HtmlGenerationOption.STYLESHEET, css );
+               configBuilder.stylesheet( css );
             }
-            generator.generate( artifact -> getOutputStreamForFile( artifact, outputDirectory ), generationArgs );
+            new AspectModelDocumentationGenerator( model, configBuilder.build() ).generate();
          }
       } catch ( final IOException exception ) {
          throw new MojoExecutionException( "Could not load custom CSS file.", exception );

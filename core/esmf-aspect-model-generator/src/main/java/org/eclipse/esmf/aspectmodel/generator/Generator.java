@@ -19,7 +19,6 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
-import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -27,14 +26,19 @@ import org.eclipse.esmf.aspectmodel.visitor.AspectStreamTraversalVisitor;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.ModelElement;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Base class for the generation of {@link Artifact}s.
  *
  * @param <I> the type that uniquely identifies the artifact in the scope of the generation process
  * @param <T> the artifact's content type, e.g. String or byte[]
  * @param <C> the config object for the genererator
+ * @param <A> the type of the artifact that is generated
  */
 public abstract class Generator<I, T, C extends GenerationConfig, A extends Artifact<I, T>> {
+   private static final Logger LOG = LoggerFactory.getLogger( Generator.class );
    protected final C config;
    protected final Aspect aspect;
    protected final Comparator<ModelElement> uniqueByModelElementIdentifier = ( modelElementOne, modelElementTwo ) -> {
@@ -83,8 +87,7 @@ public abstract class Generator<I, T, C extends GenerationConfig, A extends Arti
     * @param nameMapper the callback function that maps artifact identifiers to OutputStreams
     */
    public void generate( final Function<I, OutputStream> nameMapper ) {
-      final List<A> artifacts = generate().toList();
-      artifacts.forEach( generationResult -> write( generationResult, nameMapper ) );
+      generate().toList().forEach( generationResult -> write( generationResult, nameMapper ) );
    }
 
    /**
@@ -120,5 +123,12 @@ public abstract class Generator<I, T, C extends GenerationConfig, A extends Arti
     * @param artifact the artifact
     * @param nameMapper the function that provides the output stream for the artifact
     */
-   protected abstract void write( final Artifact<I, T> artifact, final Function<I, OutputStream> nameMapper );
+   protected void write( final Artifact<I, T> artifact, final Function<I, OutputStream> nameMapper ) {
+      try ( final OutputStream output = nameMapper.apply( artifact.getId() ) ) {
+         output.write( artifact.serialize() );
+         output.flush();
+      } catch ( final IOException exception ) {
+         LOG.error( "Failure during writing of generated artifact", exception );
+      }
+   }
 }

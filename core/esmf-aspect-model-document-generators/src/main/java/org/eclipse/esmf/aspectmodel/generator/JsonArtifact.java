@@ -13,6 +13,8 @@
 
 package org.eclipse.esmf.aspectmodel.generator;
 
+import java.nio.charset.StandardCharsets;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -44,6 +46,11 @@ public class JsonArtifact<T extends JsonNode> implements Artifact<String, T> {
 
    public String getContentAsYaml() {
       return jsonToYaml( getContent() );
+   }
+
+   @Override
+   public byte[] serialize() {
+      return getContent().toPrettyString().getBytes( StandardCharsets.UTF_8 );
    }
 
    protected String jsonToYaml( final JsonNode json ) {

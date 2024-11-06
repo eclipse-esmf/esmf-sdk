@@ -389,9 +389,9 @@ include::example$GenerateHtml.java[tags=imports]
 include::example$GenerateHtml.java[tags=generate]
 ----
 
-<1> The HTML generator is initialized with the context consisting of the loaded RDF model and the
+<1> HTML generation can be controlled via options.
+<2> The HTML generator is initialized with the context consisting of the loaded RDF model and the
 selected Aspect.
-<2> HTML generation can be controlled via a map of options; using an empty map implies default values.
 
 [[generating-sample-json-payload]]
 === Generating Sample JSON Payload

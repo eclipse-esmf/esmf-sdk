@@ -100,9 +100,10 @@ public abstract class JsonGenerator<C extends JsonGenerationConfig, R extends Js
    @Override
    protected void write( final Artifact<String, R> artifact, final Function<String, OutputStream> nameMapper ) {
       try ( final OutputStream output = nameMapper.apply( aspect.getName() ) ) {
-         output.write( artifact.getContent().toPrettyString().getBytes() );
+         output.write( artifact.serialize() );
+         output.flush();
       } catch ( final IOException exception ) {
-         throw new RuntimeException( exception );
+         throw new DocumentGenerationException( exception );
       }
    }
 }
