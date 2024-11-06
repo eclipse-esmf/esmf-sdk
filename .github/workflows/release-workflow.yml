@@ -67,7 +67,7 @@ jobs:
       - name: Setup JDK
         uses: graalvm/setup-graalvm@2f25c0caae5b220866f732832d5e3e29ff493338 # v1.2.1
         with:
-          java-version: '17.0.8'
+          java-version: '17.0.10'
           distribution: 'graalvm'
           components: 'native-image,js'
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -100,13 +100,10 @@ jobs:
           release_version=${{ github.event.inputs.release_version }}
 
           # Actual build of core SDK
-          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean deploy -Dmaven.wagon.httpconnectionManager.ttlSeconds=60 -DaltDeploymentRepository=local::default::file://nexus-staging -Psign
+          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean deploy -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60 -DaltDeploymentRepository=local::default::file://nexus-staging -Psign
           # Build of CLI
-          pushd tools/samm-cli
           unset JAVA_TOOL_OPTIONS
-          mvn -B clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
-          mvn -B verify -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
-          popd
+          mvn -B -pl tools/samm-cli clean verify -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
 
           # Create .tar.gz of samm-cli
           pushd tools/samm-cli/target
@@ -153,7 +150,7 @@ jobs:
       - name: Setup JDK
         uses: graalvm/setup-graalvm@2f25c0caae5b220866f732832d5e3e29ff493338 # v1.2.1
         with:
-          java-version: '17.0.8'
+          java-version: '17.0.10'
           distribution: 'graalvm'
           components: 'native-image,js'
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -175,11 +172,10 @@ jobs:
           mvn versions:set -DnewVersion=${{ github.event.inputs.release_version }}
           mvn versions:commit
           # Actual build of core SDK
-          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
           # Build of CLI
-          cd tools/samm-cli
           unset JAVA_TOOL_OPTIONS
-          mvn -B clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+          mvn -B -pl tools/samm-cli clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
         shell: bash
 
       - name: Build native executable
@@ -227,7 +223,7 @@ jobs:
       - name: Setup JDK
         uses: graalvm/setup-graalvm@2f25c0caae5b220866f732832d5e3e29ff493338 # v1.2.1
         with:
-          java-version: '17.0.8'
+          java-version: '17.0.10'
           distribution: 'graalvm'
           components: 'native-image,js'
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -262,12 +258,10 @@ jobs:
           mvn versions:commit
 
           # Actual build of core SDK
-          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
           # Build of CLI
-          cd tools/samm-cli
           unset JAVA_TOOL_OPTIONS
-          mvn -B clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
-          mvn -B verify -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+          mvn -B -pl tools/samm-cli clean verify -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
         shell: bash
 
       - name: Upload Windows binary

@@ -45,6 +45,11 @@ public final class TurtleLoader {
    private TurtleLoader() {
    }
 
+   public static void init() {
+      SammXsdType.setupTypeMapping();
+      registerTurtle();
+   }
+
    /**
     * Loads a Turtle model from an input stream
     *
@@ -85,8 +90,7 @@ public final class TurtleLoader {
     */
    public static Try<Model> loadTurtle( @Nullable final String modelContent ) {
       Objects.requireNonNull( modelContent, "Model content must not be null." );
-      SammXsdType.setupTypeMapping();
-      registerTurtle();
+      init();
       try ( final InputStream turtleInputStream = new ByteArrayInputStream( modelContent.getBytes( StandardCharsets.UTF_8 ) ) ) {
          final Model streamModel = RDFParser.create()
                // Make sure to NOT use FactoryRDFCaching because it will return the same objects for nodes appearing

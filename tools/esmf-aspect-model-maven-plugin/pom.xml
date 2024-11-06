@@ -100,6 +100,16 @@
                <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
             </configuration>
          </plugin>
+
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+               <skip>false</skip>
+               <!-- Override argLine to remove the native-image agent inherited from parent pom -->
+               <argLine></argLine>
+            </configuration>
+         </plugin>
       </plugins>
    </build>
 </project>

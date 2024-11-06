@@ -27,10 +27,7 @@ import org.apache.commons.lang3.SystemUtils;
 
 /**
  * A {@link ProcessLauncher} that executes an executable jar. The absolute path of the jar must be set using the system property
- * "executableJar". Additionally, if GraalVM's native-binary tool is found on the PATH and the system property "graalVmConfigPath" is set,
- * the execution of the executable jar will use GraalVM's <a
- * href="https://www.graalvm.org/22.3/reference-manual/native-image/metadata/AutomaticMetadataCollection/">Tracing Agent</a>
- * and write corresponding config files to the directory given in graalVmConfigPath.
+ * "executableJar".
  */
 public class ExecutableJarLauncher extends OsProcessLauncher {
    public ExecutableJarLauncher() {
@@ -45,22 +42,9 @@ public class ExecutableJarLauncher extends OsProcessLauncher {
 
       final List<String> commandWithArguments = new ArrayList<>();
       commandWithArguments.add( ProcessHandle.current().info().command().orElse( "java" ) );
-      String configPath = System.getProperty( "graalVmConfigPath" );
-      if ( isNativeImageBinaryOnPath() && configPath != null ) {
-         if ( SystemUtils.OS_NAME.startsWith( "Windows" ) ) {
-            configPath = configPath.replace( "/", "\\" );
-         }
-         commandWithArguments.add( "-agentlib:native-image-agent=config-merge-dir=" + configPath );
-      }
       commandWithArguments.add( "-Djava.awt.headless=true" );
       commandWithArguments.add( "-jar" );
       commandWithArguments.add( jarFile );
       return commandWithArguments;
-   }
-
-   private static boolean isNativeImageBinaryOnPath() {
-      return Stream.of( System.getenv( "PATH" ).split( Pattern.quote( File.pathSeparator ) ) )
-            .map( Paths::get )
-            .anyMatch( path -> Files.exists( path.resolve( "native-image" ) ) || Files.exists( path.resolve( "native-image.cmd" ) ) );
    }
 }

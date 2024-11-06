@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -31,7 +32,6 @@ import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.DeserializationException
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.json.JsonDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.xml.XmlDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -39,12 +39,28 @@ import org.junit.jupiter.params.provider.EnumSource;
 class AasToAspectModelGeneratorTest {
 
    @Test
-   @Disabled( "IDTA-provided sample files can currently not be read with AAS4J" )
    void testTranslateDigitalNameplate() {
       final InputStream aasx = AasToAspectModelGeneratorTest.class.getClassLoader()
-            .getResourceAsStream( "Sample_ZVEI_Digital_Nameplate_V10.aasx" );
+            .getResourceAsStream( "idta/Sample_ZVEI_Digital_Nameplate_V10.aasx" );
       final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromAasx( aasx );
       assertThatCode( aspectModelGenerator::generateAspects ).doesNotThrowAnyException();
+   }
+
+   @Test
+   void testSeeReferences() {
+      final InputStream inputStream = AasToAspectModelGeneratorTest.class.getClassLoader().getResourceAsStream(
+            "idta/IDTA 02022-1-0_Template_Wireless Communication.aasx" );
+      final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromAasx( inputStream );
+      final List<Aspect> aspects = aspectModelGenerator.generateAspects();
+
+      assertThatCode( aspectModelGenerator::generateAspects ).doesNotThrowAnyException();
+
+      aspects.stream()
+            .flatMap( aspect -> aspect.getProperties().stream() )
+            .flatMap( property -> property.getSee().stream() )
+            .forEach( see -> {
+               assertThat( see ).doesNotContain( "/ " );
+            } );
    }
 
    @ParameterizedTest
@@ -133,5 +149,16 @@ class AasToAspectModelGeneratorTest {
          fail( exception );
       }
       return null;
+   }
+
+   private InputStream getIdtaModel( final String path ) {
+      try {
+         final URL url = new URL(
+               "https://github.com/admin-shell-io/submodel-templates/raw/refs/heads/main/published/" + path.replaceAll( " ", "%20" ) );
+         return url.openStream();
+      } catch ( Exception e ) {
+         e.printStackTrace();
+         return null;
+      }
    }
 }

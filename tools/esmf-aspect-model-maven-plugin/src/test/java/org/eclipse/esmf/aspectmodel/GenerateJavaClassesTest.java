@@ -64,4 +64,21 @@ public class GenerateJavaClassesTest extends AspectModelMojoTest {
       assertThatCode( generateJavaClasses::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "org", "eclipse", "esmf", "test", "Aspect.java" ) ).doesNotExist();
    }
+
+   @Test
+   public void testGenerateJavaClassesAspectWithPrefixAndPostfix() throws Exception {
+      final File testPom = getTestFile( "src/test/resources/generate-java-classes-pom-with-prefix-and-postfix.xml" );
+      final Mojo generateJavaClasses = lookupMojo( "generateJavaClasses", testPom );
+      assertThatCode( generateJavaClasses::execute ).doesNotThrowAnyException();
+      assertThat( generatedFilePath( "example", "com", "BaseAspectPostfix.java" ) ).exists();
+   }
+
+   @Test
+   public void testGenerateJavaClassesEntityWithPrefixAndPostfix() throws Exception {
+      final File testPom = getTestFile( "src/test/resources/generate-java-classes-pom-entity-with-prefix-and-postfix.xml" );
+      final Mojo generateJavaClasses = lookupMojo( "generateJavaClasses", testPom );
+      assertThatCode( generateJavaClasses::execute ).doesNotThrowAnyException();
+      assertThat( generatedFilePath( "example", "com", "BaseAspectWithEntityPostfix.java" ) ).exists();
+      assertThat( generatedFilePath( "example", "com", "BaseTestEntityPostfix.java" ) ).exists();
+   }
 }

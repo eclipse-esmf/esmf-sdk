@@ -33,14 +33,24 @@ import picocli.CommandLine;
 public class AspectToPngCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "png";
 
-   @CommandLine.Option( names = { "--output", "-o" },
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--output", "-o" },
          description = "Output file path (default: stdout; as PNG is a binary format, it is strongly recommended to output the result to "
                + "a file by using the -o option or the console redirection operator '>')" )
    private String outputFilePath = "-";
 
-   @CommandLine.Option( names = { "--language",
-         "-l" }, description = "The language from the model for which the diagram should be generated (default: en)" )
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--language", "-l" },
+         description = "The language from the model for which the diagram should be generated (default: en)" )
    private String language = "en";
+
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--details" },
+         description = "Print detailed reports on errors" )
+   private boolean details = false;
 
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
@@ -53,9 +63,11 @@ public class AspectToPngCommand extends AbstractCommand {
 
    @Override
    public void run() {
+      setDetails( details );
+      setResolverConfig( resolverConfiguration );
+
       try {
-         generateDiagram( parentCommand.parentCommand.getInput(), AspectModelDiagramGenerator.Format.PNG, outputFilePath, language,
-               resolverConfiguration );
+         generateDiagram( parentCommand.parentCommand.getInput(), AspectModelDiagramGenerator.Format.PNG, outputFilePath, language );
       } catch ( final IOException e ) {
          throw new CommandException( e );
       }
