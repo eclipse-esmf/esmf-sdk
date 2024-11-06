@@ -14,16 +14,14 @@
 package examples;
 
 // tag::imports[]
-import java.io.ByteArrayOutputStream;
-import java.util.Locale;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.JsonSchemaGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.JsonSchemaGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.metamodel.AspectModel;
 
+import java.util.Locale;
+import com.fasterxml.jackson.databind.JsonNode;
 // end::imports[]
 import java.io.File;
 import java.io.IOException;
@@ -43,14 +41,11 @@ public class GenerateJsonSchema {
       final JsonSchemaGenerationConfig config = JsonSchemaGenerationConfigBuilder.builder()
             .locale( Locale.ENGLISH )
             .build();
-      final JsonNode jsonSchema = new AspectModelJsonSchemaGenerator( aspectModel.aspect(), config ).getContent();
-
-      // If needed, print or pretty print it into a string
-      final ByteArrayOutputStream out = new ByteArrayOutputStream();
-      final ObjectMapper objectMapper = new ObjectMapper();
-
-      objectMapper.writerWithDefaultPrettyPrinter().writeValue( out, jsonSchema );
-      final String result = out.toString();
+      final AspectModelJsonSchemaGenerator generator = new AspectModelJsonSchemaGenerator( aspectModel.aspect(), config );
+      // Get result as type-safe JSON object
+      final JsonNode jsonNode = generator.getContent();
+      // Or as pretty-printed JSON String:
+      final String json = generator.generateJson();
       // end::generate[]
    }
 }

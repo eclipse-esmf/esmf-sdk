@@ -19,10 +19,10 @@ import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.java.pojo.AspectModelJavaGenerator;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.metamodel.AspectModel;
+// end::imports[]
 
 import java.io.File;
 import org.apache.commons.io.output.NullOutputStream;
-// end::imports[]
 import org.junit.jupiter.api.Test;
 
 public class GenerateJavaPojo {
