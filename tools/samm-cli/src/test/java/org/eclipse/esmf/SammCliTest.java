@@ -110,7 +110,7 @@ class SammCliTest {
 
    @Test
    void testVersion() {
-      final ExecutionResult result = sammCli.runAndExpectSuccess( "--version" );
+       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "--version" );
       assertThat( result.stdout() ).contains( "Version:" );
       assertThat( result.stderr() ).isEmpty();
    }
