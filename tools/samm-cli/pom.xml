@@ -576,7 +576,6 @@
             <packaging-type>native</packaging-type>
             <skip.maven.surefire>true</skip.maven.surefire>
             <skip.maven.failsafe>false</skip.maven.failsafe>
-            <maven.resources.skip>true</maven.resources.skip>
             <maven.source.skip>true</maven.source.skip>
          </properties>
 

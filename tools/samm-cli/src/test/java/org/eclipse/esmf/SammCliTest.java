@@ -109,6 +109,13 @@ class SammCliTest {
    }
 
    @Test
+   void testVersion() {
+      final ExecutionResult result = sammCli.apply( "--disable-color", "--version" );
+      assertThat( result.stdout() ).contains( "Version:" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
    void testAspectWithoutSubcommand() {
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect" );
       assertThat( result.exitStatus() ).isEqualTo( 2 );
