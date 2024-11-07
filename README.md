@@ -47,7 +47,7 @@ To build the documentation locally, please check out and follow the instructions
 Are you having trouble with ESMF SDK? We want to help!
 
 * Check the [ESMF SDK developer documentation](https://eclipse-esmf.github.io/esmf-developer-guide/index.html)
-* Ask a question the [community forum](https://www.eclipse.org/forums/index.php/f/617/).
+* Ask a question in the [ESMF Chat ](https://chat.eclipse.org/#/room/#eclipse-semantic-modeling-framework:matrix.eclipse.org).
 * Check the SAMM [specification](https://eclipse-esmf.github.io/samm-specification/snapshot/index.html)
 * Having issues with the ESMF SDK? Open a [GitHub issue](https://github.com/eclipse-esmf/esmf-sdk/issues).
 
