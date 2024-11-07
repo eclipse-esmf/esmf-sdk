@@ -63,7 +63,7 @@ public class GenerateSql extends AbstractGenerator {
                   .mappingStrategy( SqlGenerationConfig.MappingStrategy.DENORMALIZED )
                   .dialectSpecificConfig( databricksSqlGenerationConfig )
                   .build();
-      final String result = AspectModelSqlGenerator.INSTANCE.apply( aspectModel.aspect(), sqlGenerationConfig ).getContent();
+      final String result = new AspectModelSqlGenerator( aspectModel.aspect(), sqlGenerationConfig ).getContent();
       // end::generate[]
    }
 }

@@ -46,22 +46,22 @@ public class GenerateSql extends AspectModelMojo {
    private boolean includeColumnComments;
 
    @Parameter( defaultValue = DatabricksSqlGenerationConfig.DEFAULT_TABLE_COMMAND_PREFIX )
-   private String tableCommandPrefix = DatabricksSqlGenerationConfig.DEFAULT_TABLE_COMMAND_PREFIX;
+   private final String tableCommandPrefix = DatabricksSqlGenerationConfig.DEFAULT_TABLE_COMMAND_PREFIX;
 
    @Parameter( defaultValue = "" + DatabricksSqlGenerationConfig.DECIMAL_DEFAULT_PRECISION )
-   private int decimalPrecision = DatabricksSqlGenerationConfig.DECIMAL_DEFAULT_PRECISION;
+   private final int decimalPrecision = DatabricksSqlGenerationConfig.DECIMAL_DEFAULT_PRECISION;
 
    @Parameter( defaultValue = "en" )
-   private String language = DatabricksSqlGenerationConfig.DEFAULT_COMMENT_LANGUAGE.getLanguage();
+   private final String language = DatabricksSqlGenerationConfig.DEFAULT_COMMENT_LANGUAGE.getLanguage();
 
    @Parameter( defaultValue = "databricks" )
-   private String dialect = SqlGenerationConfig.Dialect.DATABRICKS.toString().toLowerCase();
+   private final String dialect = SqlGenerationConfig.Dialect.DATABRICKS.toString().toLowerCase();
 
    @Parameter( defaultValue = "denormalized" )
-   private String strategy = SqlGenerationConfig.MappingStrategy.DENORMALIZED.toString().toLowerCase();
+   private final String strategy = SqlGenerationConfig.MappingStrategy.DENORMALIZED.toString().toLowerCase();
 
    @Parameter( property = "column" )
-   private List<String> customColumns = List.of();
+   private final List<String> customColumns = List.of();
 
    @Override
    public void executeGeneration() throws MojoExecutionException {
@@ -84,7 +84,7 @@ public class GenerateSql extends AspectModelMojo {
                      .build();
          final SqlGenerationConfig sqlConfig = new SqlGenerationConfig( SqlGenerationConfig.Dialect.valueOf( dialect.toUpperCase() ),
                SqlGenerationConfig.MappingStrategy.valueOf( strategy.toUpperCase() ), generatorConfig );
-         final SqlArtifact result = AspectModelSqlGenerator.INSTANCE.apply( aspect, sqlConfig );
+         final SqlArtifact result = new AspectModelSqlGenerator( aspect, sqlConfig ).singleResult();
 
          try ( final OutputStream out = getOutputStreamForFile( aspect.getName() + ".sql", outputDirectory ) ) {
             out.write( result.getContent().getBytes() );

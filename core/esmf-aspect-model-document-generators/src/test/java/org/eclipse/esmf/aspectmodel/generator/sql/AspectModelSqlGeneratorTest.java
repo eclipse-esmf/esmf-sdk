@@ -38,10 +38,10 @@ public class AspectModelSqlGeneratorTest {
                .includeColumnComments( true )
                .commentLanguage( Locale.ENGLISH )
                .build();
-         final SqlArtifact sqlArtifact = AspectModelSqlGenerator.INSTANCE.apply( aspect, SqlGenerationConfigBuilder.builder()
+         final SqlArtifact sqlArtifact = new AspectModelSqlGenerator( aspect, SqlGenerationConfigBuilder.builder()
                .dialect( SqlGenerationConfig.Dialect.DATABRICKS )
                .dialectSpecificConfig( dialectSpecificConfig )
-               .build() );
+               .build() ).singleResult();
          final String result = sqlArtifact.getContent();
 
          assertThat( result ).contains( "TBLPROPERTIES ('x-samm-aspect-model-urn'='" );
