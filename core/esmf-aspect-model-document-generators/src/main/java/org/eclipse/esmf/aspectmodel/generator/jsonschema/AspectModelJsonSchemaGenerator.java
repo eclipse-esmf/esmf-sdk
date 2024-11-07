@@ -26,12 +26,26 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class AspectModelJsonSchemaGenerator extends JsonGenerator<JsonSchemaGenerationConfig, JsonNode, JsonSchemaArtifact> {
    public static final JsonSchemaGenerationConfig DEFAULT_CONFIG = JsonSchemaGenerationConfigBuilder.builder().build();
 
+   /**
+    * Kept for backwards compatibility
+    */
+   @Deprecated( forRemoval = true )
+   public static final AspectModelJsonSchemaGenerator INSTANCE = new AspectModelJsonSchemaGenerator( null );
+
    public AspectModelJsonSchemaGenerator( final Aspect aspect ) {
       this( aspect, DEFAULT_CONFIG );
    }
 
    public AspectModelJsonSchemaGenerator( final Aspect aspect, final JsonSchemaGenerationConfig config ) {
       super( aspect, config );
+   }
+
+   /**
+    * @deprecated Use {@link #AspectModelJsonSchemaGenerator(Aspect, JsonSchemaGenerationConfig)} and {@link #singleResult()} instead
+    */
+   @Deprecated( forRemoval = true )
+   public JsonSchemaArtifact apply( final Aspect aspect, final JsonSchemaGenerationConfig config ) {
+      return new AspectModelJsonSchemaGenerator( aspect, config ).singleResult();
    }
 
    @Override

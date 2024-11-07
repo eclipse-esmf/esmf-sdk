@@ -71,7 +71,7 @@ public abstract class JsonGenerator<C extends JsonGenerationConfig, R extends Js
     * @deprecated Use {@link #generateJson()} instead
     */
    @Deprecated( forRemoval = true )
-   public String generateJsonPretty() {
+   public String generateJsonPretty() throws IOException {
       return generateJson();
    }
 
@@ -82,7 +82,7 @@ public abstract class JsonGenerator<C extends JsonGenerationConfig, R extends Js
     * @deprecated Use {@link #generate(Function)} instead
     */
    @Deprecated( forRemoval = true )
-   public void generateJsonPretty( final Function<String, OutputStream> nameMapper ) {
+   public void generateJsonPretty( final Function<String, OutputStream> nameMapper ) throws IOException {
       generate( nameMapper );
    }
 
@@ -93,13 +93,13 @@ public abstract class JsonGenerator<C extends JsonGenerationConfig, R extends Js
     * @deprecated Use {@link #generate(Function)} instead
     */
    @Deprecated( forRemoval = true )
-   public void generateJson( final Function<String, OutputStream> nameMapper ) {
+   public void generateJson( final Function<String, OutputStream> nameMapper ) throws IOException {
       generate( nameMapper );
    }
 
    @Override
    protected void write( final Artifact<String, R> artifact, final Function<String, OutputStream> nameMapper ) {
-      try ( final OutputStream output = nameMapper.apply( aspect.getName() ) ) {
+      try ( final OutputStream output = nameMapper.apply( aspect().getName() ) ) {
          output.write( artifact.serialize() );
          output.flush();
       } catch ( final IOException exception ) {

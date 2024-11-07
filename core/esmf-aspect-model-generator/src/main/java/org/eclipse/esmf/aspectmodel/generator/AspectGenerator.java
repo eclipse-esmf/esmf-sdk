@@ -69,16 +69,6 @@ public abstract class Generator<I, T, C extends GenerationConfig, A extends Arti
       return elements( clazz ).map( element -> artifactGenerator.apply( element, config ) );
    }
 
-   protected void writeCharSequenceToOutputStream( final CharSequence charSequence, final OutputStream outputStream )
-         throws IOException {
-      try ( final Writer writer = new OutputStreamWriter( outputStream, StandardCharsets.UTF_8 ) ) {
-         for ( int i = 0; i < charSequence.length(); i++ ) {
-            writer.write( charSequence.charAt( i ) );
-         }
-         writer.flush();
-      }
-   }
-
    /**
     * Generates artifacts from the given Aspect model. As this generation may produce multiple artifacts, the generator
     * provides the caller with the identifer of the respective artifact via the callback function. The caller needs to
