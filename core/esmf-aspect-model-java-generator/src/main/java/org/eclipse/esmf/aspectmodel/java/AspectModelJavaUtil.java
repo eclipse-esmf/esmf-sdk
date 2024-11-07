@@ -223,7 +223,9 @@ public class AspectModelJavaUtil {
          codeGenerationConfig.importTracker().importExplicit( JsonTypeInfo.class );
          codeGenerationConfig.importTracker().importExplicit( JsonSubTypes.class );
 
-         classAnnotationBuilder.append( "@JsonTypeInfo(use = JsonTypeInfo.Id.NAME)" );
+         classAnnotationBuilder.append( "@JsonTypeInfo(use = JsonTypeInfo.Id." );
+         classAnnotationBuilder.append( codeGenerationConfig.jsonTypeInfo().toString() );
+         classAnnotationBuilder.append( ")" );
          classAnnotationBuilder.append( "@JsonSubTypes({" );
          final Iterator<ComplexType> extendingComplexTypeIterator = getExtendingClosure( element, extendingEntities ).iterator();
          while ( extendingComplexTypeIterator.hasNext() ) {
@@ -240,7 +242,9 @@ public class AspectModelJavaUtil {
          classAnnotationBuilder.append( "})" );
       } else if ( element.getExtends().isPresent() ) {
          codeGenerationConfig.importTracker().importExplicit( JsonTypeInfo.class );
-         classAnnotationBuilder.append( "@JsonTypeInfo(use = JsonTypeInfo.Id.NAME," );
+         classAnnotationBuilder.append( "@JsonTypeInfo(use = JsonTypeInfo.Id." );
+         classAnnotationBuilder.append( codeGenerationConfig.jsonTypeInfo().toString() );
+         classAnnotationBuilder.append( "," );
          classAnnotationBuilder.append( "              defaultImpl = " );
          classAnnotationBuilder.append( element.getName() );
          classAnnotationBuilder.append( ".class)" );
