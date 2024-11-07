@@ -36,21 +36,29 @@ public class GenerateJavaClasses extends CodeGenerationMojo {
    @Parameter( defaultValue = "false" )
    private boolean disableJacksonAnnotations;
 
+   @Parameter( defaultValue = "deduction" )
+   protected String jsonTypeInfo;
+
    @Override
    public void executeGeneration() throws MojoExecutionException {
-      final Set<Aspect> aspects = loadAspects();
-      for ( final Aspect aspect : aspects ) {
-         final File templateLibFile = Path.of( templateFile ).toFile();
-         validateParameters( templateLibFile );
-         final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
-               .enableJacksonAnnotations( !disableJacksonAnnotations )
-               .packageName( determinePackageName( aspect ) )
-               .executeLibraryMacros( executeLibraryMacros )
-               .templateLibFile( templateLibFile )
-               .namePrefix( namePrefix )
-               .namePostfix( namePostfix )
-               .build();
-         new AspectModelJavaGenerator( aspect, config ).generate( nameMapper );
+      try {
+         final Set<Aspect> aspects = loadAspects();
+         for ( final Aspect aspect : aspects ) {
+            final File templateLibFile = Path.of( templateFile ).toFile();
+            validateParameters( templateLibFile );
+            final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
+                  .enableJacksonAnnotations( !disableJacksonAnnotations )
+                  .jsonTypeInfo( JavaCodeGenerationConfig.JsonTypeInfoType.valueOf( jsonTypeInfo.toUpperCase() ) )
+                  .packageName( determinePackageName( aspect ) )
+                  .executeLibraryMacros( executeLibraryMacros )
+                  .templateLibFile( templateLibFile )
+                  .namePrefix( namePrefix )
+                  .namePostfix( namePostfix )
+                  .build();
+            new AspectModelJavaGenerator( aspect, config ).generate( nameMapper );
+         }
+      } catch ( final Exception exception ) {
+         throw new MojoExecutionException( "Could not generate Java classes for Aspect Models", exception );
       }
       LOG.info( "Successfully generated Java classes for Aspect Models." );
    }
