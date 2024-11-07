@@ -28,8 +28,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.eclipse.esmf.aspectmodel.generator.AbstractGenerator;
 import org.eclipse.esmf.aspectmodel.generator.AbstractSchemaArtifact;
+import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.test.TestAspect;
@@ -92,8 +92,8 @@ public class AspectModelOpenApiGeneratorTest {
       final OpenApiSchemaArtifact result = new AspectModelOpenApiGenerator( aspect, config ).singleResult();
       final JsonNode json = result.getContent();
       assertSpecificationIsValid( json, json.toString(), aspect );
-      assertThat( json.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ) ).isNotNull();
-      assertThat( json.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ).asText() ).isEqualTo( aspect.urn().toString() );
+      assertThat( json.get( "info" ).get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION ) ).isNotNull();
+      assertThat( json.get( "info" ).get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION ).asText() ).isEqualTo( aspect.urn().toString() );
 
       // Check that the map containing separate schema files contains the same information as the
       // all-in-one JSON document
@@ -141,8 +141,8 @@ public class AspectModelOpenApiGeneratorTest {
       final OpenAPI openApi = result.getOpenAPI();
 
       assertThat( openApi.getInfo().getVersion() ).isEqualTo( "v1.0.0" );
-      assertThat( json.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ) ).isNotNull();
-      assertThat( json.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ).asText() ).isEqualTo( aspect.urn().toString() );
+      assertThat( json.get( "info" ).get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION ) ).isNotNull();
+      assertThat( json.get( "info" ).get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION ).asText() ).isEqualTo( aspect.urn().toString() );
 
       openApi.getServers().forEach( server -> assertThat( server.getUrl() ).contains( "v1.0.0" ) );
    }
@@ -679,13 +679,13 @@ public class AspectModelOpenApiGeneratorTest {
       final DocumentContext context = JsonPath.parse( json );
       assertThat( context.<Object> read( "$['components']['schemas']['" + aspect.getName() + "']" ) ).isNotNull();
       assertThat( context.<String> read(
-            "$['components']['schemas']['" + aspect.getName() + "']['" + AbstractGenerator.SAMM_EXTENSION + "']" ) ).isEqualTo(
+            "$['components']['schemas']['" + aspect.getName() + "']['" + AspectModelJsonSchemaGenerator.SAMM_EXTENSION + "']" ) ).isEqualTo(
             aspect.urn().toString() );
 
       for ( final Property property : aspect.getProperties() ) {
          assertThat( context.<String> read( "$['components']['schemas']"
                + "['" + aspect.getName() + "']['properties']['" + property.getPayloadName() + "']['"
-               + AbstractGenerator.SAMM_EXTENSION
+               + AspectModelJsonSchemaGenerator.SAMM_EXTENSION
                + "']" ) ).isEqualTo( property.urn().toString() );
       }
 
@@ -706,8 +706,8 @@ public class AspectModelOpenApiGeneratorTest {
       final String expectedApiVersion = getExpectedApiVersion( aspect );
       assertThat( openApi.getInfo().getVersion() ).isEqualTo( expectedApiVersion );
 
-      assertThat( node.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ) ).isNotNull();
-      assertThat( node.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ).asText() ).isEqualTo( aspect.urn().toString() );
+      assertThat( node.get( "info" ).get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION ) ).isNotNull();
+      assertThat( node.get( "info" ).get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION ).asText() ).isEqualTo( aspect.urn().toString() );
 
       assertThat( openApi.getServers() ).hasSize( 1 );
       assertThat( openApi.getServers().get( 0 ).getUrl() ).isEqualTo( TEST_BASE_URL + "/api/" + expectedApiVersion );
@@ -724,10 +724,10 @@ public class AspectModelOpenApiGeneratorTest {
       assertThat( openApi.getComponents().getResponses() ).containsKey( aspect.getName() );
       assertThat( openApi.getComponents().getRequestBodies() ).containsKey( aspect.getName() );
       assertThat( openApi.getComponents().getSchemas().get( aspect.getName() ).getExtensions()
-            .get( AbstractGenerator.SAMM_EXTENSION ) ).isNotNull();
+            .get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION ) ).isNotNull();
       assertThat(
             openApi.getComponents().getSchemas().get( aspect.getName() ).getExtensions()
-                  .get( AbstractGenerator.SAMM_EXTENSION )
+                  .get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION )
                   .toString() ).contains( aspect.urn().toString() );
 
       validateReferences( node );

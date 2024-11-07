@@ -24,6 +24,8 @@ import com.fasterxml.jackson.databind.JsonNode;
  * Generator that generates a JSON Schema for payloads corresponding to a given Aspect model.
  */
 public class AspectModelJsonSchemaGenerator extends JsonGenerator<JsonSchemaGenerationConfig, JsonNode, JsonSchemaArtifact> {
+   public static final String SAMM_EXTENSION = "x-samm-aspect-model-urn";
+
    public static final JsonSchemaGenerationConfig DEFAULT_CONFIG = JsonSchemaGenerationConfigBuilder.builder().build();
 
    /**

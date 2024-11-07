@@ -21,18 +21,15 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.fasterxml.jackson.dataformat.yaml.util.StringQuotingChecker;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Streams;
@@ -133,14 +130,14 @@ public abstract class AbstractSchemaArtifact<T extends JsonNode> extends JsonArt
    protected Map<Path, JsonNode> getContentWithSeparateSchemasAsJson( final Optional<String> mainSpec ) {
       final JsonNode jsonContent = getContent();
       final String aspectName = AspectModelUrn.fromUrn(
-            jsonContent.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ).asText() ).getName();
+            jsonContent.get( "info" ).get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION ).asText() ).getName();
       return getSeparateSchemas( aspectName, "json", mainSpec );
    }
 
    protected Map<Path, String> getContentWithSeparateSchemasAsYaml( final Optional<String> mainSpec ) {
       final JsonNode jsonContent = getContent();
       final String aspectName = AspectModelUrn.fromUrn(
-            jsonContent.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ).asText() ).getName();
+            jsonContent.get( "info" ).get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION ).asText() ).getName();
       return getSeparateSchemas( aspectName, "yaml", mainSpec ).entrySet().stream().collect( Collectors.toMap(
             Map.Entry::getKey, entry -> jsonToYaml( entry.getValue() ) ) );
    }
