@@ -18,6 +18,8 @@ import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.ResolverConfigurationMixin;
 import org.eclipse.esmf.aspect.AspectToCommand;
 import org.eclipse.esmf.aspectmodel.generator.json.AspectModelJsonPayloadGenerator;
+import org.eclipse.esmf.aspectmodel.generator.json.JsonPayloadGenerationConfig;
+import org.eclipse.esmf.aspectmodel.generator.json.JsonPayloadGenerationConfigBuilder;
 
 import picocli.CommandLine;
 
@@ -34,6 +36,12 @@ public class AspectToJsonCommand extends AbstractCommand {
          names = { "--output", "-o" },
          description = "Output file path" )
    private String outputFilePath = "-";
+
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--add-type-attribute", "-ta" },
+         description = "Add @type attribute for inherited Entities" )
+   private boolean addTypeAttribute = false;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
@@ -55,8 +63,11 @@ public class AspectToJsonCommand extends AbstractCommand {
       setDetails( details );
       setResolverConfig( resolverConfiguration );
 
+      final JsonPayloadGenerationConfig config = JsonPayloadGenerationConfigBuilder.builder()
+            .addTypeAttributeForEntityInheritance( addTypeAttribute )
+            .build();
       final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator(
-            getInputHandler( parentCommand.parentCommand.getInput() ).loadAspect() );
+            getInputHandler( parentCommand.parentCommand.getInput() ).loadAspect(), config );
       // we intentionally override the name of the generated artifact here to the name explicitly desired by the user (outputFilePath),
       // as opposed to what the model thinks it should be called (name)
       generator.generate( name -> getStreamForFile( outputFilePath ) );

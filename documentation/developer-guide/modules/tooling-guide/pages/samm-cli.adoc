@@ -166,9 +166,10 @@ of model resolution] for more information.
                                        be generated (default: en)                                                            | `samm aspect AspectModel.ttl to asyncapi -l de`
                                    | _--separate-files, -sf_ : Create separate files for each schema                         |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
-.3+| [[aspect-to-json]] aspect <model> to json | Generate example JSON payload data for an Aspect Model                      | `samm aspect AspectModel.ttl to json`
+.4+| [[aspect-to-json]] aspect <model> to json | Generate example JSON payload data for an Aspect Model                      | `samm aspect AspectModel.ttl to json`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
+                                   | _--add-type-attribute_, _-ta_ : Add `@type` attribute for inherited Entities            |
 .3+| [[aspect-to-jsonld]] aspect <model> to jsonld | Generate JSON-LD representation of an Aspect Model                      | `samm aspect AspectModel.ttl to jsonld`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
