@@ -13,27 +13,13 @@
 
 package org.eclipse.esmf.aspectmodel.generator.sql;
 
-import org.eclipse.esmf.aspectmodel.generator.Artifact;
+import org.eclipse.esmf.aspectmodel.generator.StringArtifact;
 
 /**
  * Represents a generated SQL script.
  */
-public class SqlArtifact implements Artifact<String, String> {
-   private final String id;
-   private final String content;
-
+public class SqlArtifact extends StringArtifact {
    public SqlArtifact( final String id, final String content ) {
-      this.id = id;
-      this.content = content;
-   }
-
-   @Override
-   public String getId() {
-      return id;
-   }
-
-   @Override
-   public String getContent() {
-      return content;
+      super( id, content );
    }
 }

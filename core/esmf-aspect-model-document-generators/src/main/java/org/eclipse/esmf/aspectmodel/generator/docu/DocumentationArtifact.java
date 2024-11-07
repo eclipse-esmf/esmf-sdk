@@ -13,24 +13,10 @@
 
 package org.eclipse.esmf.aspectmodel.generator.docu;
 
-import org.eclipse.esmf.aspectmodel.generator.Artifact;
+import org.eclipse.esmf.aspectmodel.generator.StringArtifact;
 
-public class DocumentationArtifact implements Artifact<String, String> {
-   private final String id;
-   private final String content;
-
+public class DocumentationArtifact extends StringArtifact {
    public DocumentationArtifact( final String id, final String content ) {
-      this.id = id;
-      this.content = content;
-   }
-
-   @Override
-   public String getId() {
-      return "";
-   }
-
-   @Override
-   public String getContent() {
-      return "";
+      super( id, content );
    }
 }

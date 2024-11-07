@@ -114,7 +114,7 @@ public class AspectModelJavaUtil {
     */
    public static boolean hasContainerType( final Property property ) {
       return property.isOptional()
-            || (property.getEffectiveCharacteristic().map( characteristic -> characteristic.is( Collection.class ) ).orElse( false ));
+            || ( property.getEffectiveCharacteristic().map( characteristic -> characteristic.is( Collection.class ) ).orElse( false ) );
    }
 
    /**
@@ -313,8 +313,8 @@ public class AspectModelJavaUtil {
       return dataType.map( type -> {
          final Type actualDataType = dataType.get();
          if ( actualDataType instanceof ComplexType ) {
-            final String complexDataType = ((ComplexType) actualDataType).getName();
-            if ( (!codeGenerationConfig.namePrefix().isBlank() || !codeGenerationConfig.namePostfix().isBlank()) ) {
+            final String complexDataType = ( (ComplexType) actualDataType ).getName();
+            if ( ( !codeGenerationConfig.namePrefix().isBlank() || !codeGenerationConfig.namePostfix().isBlank() ) ) {
                return codeGenerationConfig.namePrefix() + complexDataType + codeGenerationConfig.namePostfix();
             }
             return complexDataType;
@@ -338,7 +338,7 @@ public class AspectModelJavaUtil {
 
    public static Class<?> getDataTypeClass( final Type dataType ) {
       if ( dataType instanceof ComplexType ) {
-         return ((ComplexType) dataType).getClass();
+         return ( (ComplexType) dataType ).getClass();
       }
 
       final Resource typeResource = ResourceFactory.createResource( dataType.getUrn() );
@@ -515,7 +515,7 @@ public class AspectModelJavaUtil {
       if ( object instanceof String ) {
          return createLiteral( object.toString() );
       }
-      return toConstant( ((Property) object).getName() );
+      return toConstant( ( (Property) object ).getName() );
    }
 
    public static boolean isXmlDatatypeFactoryRequired( final StructureElement element ) {
@@ -570,7 +570,7 @@ public class AspectModelJavaUtil {
    }
 
    public static String generateClassName( final StructureElement element, final JavaCodeGenerationConfig config ) {
-      if ( (!config.namePrefix().isBlank() || !config.namePostfix().isBlank()) && element.is( StructureElement.class ) ) {
+      if ( ( !config.namePrefix().isBlank() || !config.namePostfix().isBlank() ) && element.is( StructureElement.class ) ) {
          return config.namePrefix() + element.getName() + config.namePostfix();
       }
       return element.getName();
@@ -666,6 +666,6 @@ public class AspectModelJavaUtil {
             .filter( Type::isScalar )
             .map( type -> XSD.xboolean.getURI().equals( type.getUrn() ) )
             .orElse( false );
-      return (isBooleanType ? "is" : "get") + StringUtils.capitalize( property.getPayloadName() );
+      return ( isBooleanType ? "is" : "get" ) + StringUtils.capitalize( property.getPayloadName() );
    }
 }

@@ -16,9 +16,17 @@ import org.eclipse.esmf.aspectmodel.generator.Generator;
 import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
 import org.eclipse.esmf.metamodel.AspectModel;
 
+/**
+ * Generator for Namespace Packages as described in <a
+ * href="https://github.com/eclipse-esmf/esmf-semantic-aspect-meta-model/blob/main/documentation/decisions/0009-namespace-packages.md">
+ * ADR-0009</a>.
+ */
 public class AspectModelNamespacePackageCreator
       extends Generator<AspectModel, String, byte[], NamespacePackageGenerationConfig, NamespacePackageArtifact> {
    public static final NamespacePackageGenerationConfig DEFAULT_CONFIG = NamespacePackageGenerationConfigBuilder.builder().build();
+   /**
+    * @deprecated Use {@link #AspectModelNamespacePackageCreator(AspectModel, NamespacePackageGenerationConfig)} instead
+    */
    @Deprecated( forRemoval = true )
    public static final AspectModelNamespacePackageCreator INSTANCE = new AspectModelNamespacePackageCreator( null );
    private static final String BASE_ARCHIVE_FORMAT_PATH = "aspect-models/";

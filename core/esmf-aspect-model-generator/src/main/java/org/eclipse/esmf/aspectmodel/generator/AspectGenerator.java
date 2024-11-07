@@ -24,12 +24,11 @@ import org.eclipse.esmf.metamodel.ModelElement;
  *
  * @param <I> the type that uniquely identifies the artifact in the scope of the generation process
  * @param <T> the artifact's content type, e.g. String or byte[]
- * @param <C> the config object for the genererator
+ * @param <C> the config object for the generator
  * @param <A> the type of the artifact that is generated
  */
 public abstract class AspectGenerator<I, T, C extends GenerationConfig, A extends Artifact<I, T>>
       extends Generator<Aspect, I, T, C, A> {
-
    protected AspectGenerator( final Aspect aspect, final C config ) {
       super( aspect, config );
    }
@@ -46,7 +45,7 @@ public abstract class AspectGenerator<I, T, C extends GenerationConfig, A extend
             .distinct();
    }
 
-   protected <E extends ModelElement> Stream<A> applyTemplate(
+   protected <E extends ModelElement> Stream<A> applyArtifactGenerator(
          final Class<E> clazz, final ArtifactGenerator<I, T, E, C, A> artifactGenerator, final C config ) {
       return elements( clazz ).map( element -> artifactGenerator.apply( element, config ) );
    }

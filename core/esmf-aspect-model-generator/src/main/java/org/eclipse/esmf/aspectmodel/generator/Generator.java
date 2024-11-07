@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  * @param <F> the focus type, e.g. Aspect or AspectModel
  * @param <I> the type that uniquely identifies the artifact in the scope of the generation process
  * @param <T> the artifact's content type, e.g. String or byte[]
- * @param <C> the config object for the genererator
+ * @param <C> the config object for the generator
  * @param <A> the type of the artifact that is generated
  */
 public abstract class Generator<F, I, T, C extends GenerationConfig, A extends Artifact<I, T>> {

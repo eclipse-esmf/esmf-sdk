@@ -4,6 +4,9 @@
 
 package org.eclipse.esmf.aspectmodel.generator;
 
+/**
+ * Abstract base class for {@link Artifact}s that have content represented as byte[]
+ */
 public abstract class BinaryArtifact implements Artifact<String, byte[]> {
    private final String id;
    private final byte[] content;
