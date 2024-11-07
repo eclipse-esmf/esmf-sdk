@@ -416,8 +416,8 @@ public class AspectModelJsonSchemaGeneratorTest {
             .isEqualTo( "This is a test collection." );
       assertThat( context.<String> read( "$['components']['schemas']['TestCollection']['items']['type']" ) )
             .isEqualTo( "number" );
-      assertThat(
-            context.<String> read( "$['components']['schemas']['TestCollection']['" + AspectModelJsonSchemaGenerator.SAMM_EXTENSION + "']" ) )
+      assertThat( context.<String> read(
+            "$['components']['schemas']['TestCollection']['" + AspectModelJsonSchemaGenerator.SAMM_EXTENSION + "']" ) )
             .isEqualTo( TestModel.TEST_NAMESPACE + "TestCollection" );
       assertThat( context.<Double> read( "$['components']['schemas']['TestCollection']['items']['minimum']" ) )
             .isCloseTo( 2.3d, Percentage.withPercentage( 1.0d ) );
@@ -633,7 +633,8 @@ public class AspectModelJsonSchemaGeneratorTest {
 
       assertThat( context.<String> read( "$['properties']['intProp']['$ref']" ) )
             .isEqualTo( "#/components/schemas/IntRange" );
-      assertThat( context.<String> read( "$['components']['schemas']['IntRange']['" + AspectModelJsonSchemaGenerator.SAMM_EXTENSION + "']" ) )
+      assertThat(
+            context.<String> read( "$['components']['schemas']['IntRange']['" + AspectModelJsonSchemaGenerator.SAMM_EXTENSION + "']" ) )
             .isEqualTo( TestModel.TEST_NAMESPACE + "IntRange" );
       assertThat( context.<String> read( "$['components']['schemas']['IntRange']['type']" ) ).isEqualTo( "number" );
       assertThat( context.<Integer> read( "$['components']['schemas']['IntRange']['minimum']" ) ).isEqualTo( 12 );
@@ -669,7 +670,8 @@ public class AspectModelJsonSchemaGeneratorTest {
       assertThat( context.<String> read( "$['properties']['testProperty']['description']" ) ).isEqualTo( "This is a test property." );
       assertThat( context.<String> read( "$['properties']['testProperty']['$ref']" ) ).isEqualTo( "#/components/schemas/TestSet" );
       assertThat( context.<String> read( "$['components']['schemas']['TestSet']['type']" ) ).isEqualTo( "array" );
-      assertThat( context.<String> read( "$['components']['schemas']['TestSet']['" + AspectModelJsonSchemaGenerator.SAMM_EXTENSION + "']" ) )
+      assertThat(
+            context.<String> read( "$['components']['schemas']['TestSet']['" + AspectModelJsonSchemaGenerator.SAMM_EXTENSION + "']" ) )
             .isEqualTo( TestModel.TEST_NAMESPACE + "TestSet" );
       assertThat( context.<String> read( "$['components']['schemas']['TestSet']['description']" ) ).isEqualTo( "This is a test set." );
       assertThat( context.<Boolean> read( "$['components']['schemas']['TestSet']['uniqueItems']" ) ).isTrue();
@@ -689,7 +691,8 @@ public class AspectModelJsonSchemaGeneratorTest {
             .isEqualTo( "#/components/schemas/TestSortedSet" );
       assertThat( context.<String> read( "$['components']['schemas']['TestSortedSet']['type']" ) ).isEqualTo( "array" );
       assertThat(
-            context.<String> read( "$['components']['schemas']['TestSortedSet']['" + AspectModelJsonSchemaGenerator.SAMM_EXTENSION + "']" ) )
+            context.<String> read(
+                  "$['components']['schemas']['TestSortedSet']['" + AspectModelJsonSchemaGenerator.SAMM_EXTENSION + "']" ) )
             .isEqualTo( TestModel.TEST_NAMESPACE + "TestSortedSet" );
       assertThat( context.<String> read( "$['components']['schemas']['TestSortedSet']['description']" ) )
             .isEqualTo( "This is a test sorted set." );
@@ -874,7 +877,8 @@ public class AspectModelJsonSchemaGeneratorTest {
             .isEqualTo( "#/components/schemas/TestRegularExpressionConstraint" );
       assertThat(
             context.<String> read(
-                  "$['components']['schemas']['TestRegularExpressionConstraint']['" + AspectModelJsonSchemaGenerator.SAMM_EXTENSION + "']" ) )
+                  "$['components']['schemas']['TestRegularExpressionConstraint']['" + AspectModelJsonSchemaGenerator.SAMM_EXTENSION
+                        + "']" ) )
             .isEqualTo( TestModel.TEST_NAMESPACE + "TestRegularExpressionConstraint" );
       assertThat( context.<String> read( "$['components']['schemas']['TestRegularExpressionConstraint']['description']" ) )
             .isEqualTo( "This is a test regular expression constraint." );

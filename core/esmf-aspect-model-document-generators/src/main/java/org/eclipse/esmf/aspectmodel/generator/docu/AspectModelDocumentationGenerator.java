@@ -134,9 +134,9 @@ public class AspectModelDocumentationGenerator extends
     * for the respective artifact, e.g. a suitable FileOutputStream.
     *
     * @param nameMapper The callback function that maps documentation artifact names to OutputStreams
-    * @param generationOptions Additional optional options that control the document generation. See {@link
+    * @param generationOptions Additional optional options that control the document generation. See {@link HtmlGenerationOption} for the
+    * usable keys.
     * @param language The language for which a document should be generated
-    * HtmlGenerationOption} for the usable keys.
     * @deprecated Use {@link #AspectModelDocumentationGenerator(Aspect, DocumentationGenerationConfig)} and {@link #generate()} instead
     */
    @Deprecated( forRemoval = true )
