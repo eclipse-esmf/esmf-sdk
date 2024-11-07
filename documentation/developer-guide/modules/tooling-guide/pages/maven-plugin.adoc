@@ -524,6 +524,7 @@ Configuration Properties:
 | `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated JSON payload will be written to. | `String` | none | {ok}
+| `addTypeAttribute` | Adds a `@type` attribute for inherited Entities | `Boolean` | `false` | {ok}
 |===
 
 === Generating JSON-LD representation of an Aspect Model
