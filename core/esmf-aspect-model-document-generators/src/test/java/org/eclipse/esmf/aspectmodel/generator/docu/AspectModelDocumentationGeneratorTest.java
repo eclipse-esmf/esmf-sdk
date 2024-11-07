@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.test.TestAspect;
@@ -183,10 +182,6 @@ public class AspectModelDocumentationGeneratorTest {
    private String generateHtmlDocumentation( final TestAspect testAspect ) throws IOException {
       final Aspect aspect = TestResources.load( testAspect ).aspect();
       final AspectModelDocumentationGenerator aspectModelDocumentationGenerator = new AspectModelDocumentationGenerator( aspect );
-
-      try ( final ByteArrayOutputStream result = new ByteArrayOutputStream() ) {
-         aspectModelDocumentationGenerator.generate();
-         return result.toString( StandardCharsets.UTF_8 );
-      }
+      return aspectModelDocumentationGenerator.getContent();
    }
 }

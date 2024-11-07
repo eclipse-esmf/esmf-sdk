@@ -13,7 +13,6 @@
 
 package org.eclipse.esmf.aspectmodel.generator.docu;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -34,6 +33,8 @@ import org.eclipse.esmf.aspectmodel.generator.I18nLanguageBundle;
 import org.eclipse.esmf.aspectmodel.generator.LanguageCollector;
 import org.eclipse.esmf.aspectmodel.generator.TemplateEngine;
 import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
+import org.eclipse.esmf.aspectmodel.generator.diagram.DiagramGenerationConfig;
+import org.eclipse.esmf.aspectmodel.generator.diagram.DiagramGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.visitor.AspectStreamTraversalVisitor;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Scalar;
@@ -153,10 +154,13 @@ public class AspectModelDocumentationGenerator extends
    }
 
    private String insertAspectModelDiagram( final String html, final Locale language ) {
-      final AspectModelDiagramGenerator diagramGenerator = new AspectModelDiagramGenerator( aspect() );
-      final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-      diagramGenerator.generateDiagram( AspectModelDiagramGenerator.Format.SVG, language, buffer );
-      final String encodedImage = "data:image/svg+xml;base64," + Base64.getEncoder().encodeToString( buffer.toByteArray() );
+      final DiagramGenerationConfig config = DiagramGenerationConfigBuilder.builder()
+            .format( DiagramGenerationConfig.Format.SVG )
+            .language( language )
+            .build();
+      final AspectModelDiagramGenerator diagramGenerator = new AspectModelDiagramGenerator( aspect(), config );
+      final byte[] diagram = diagramGenerator.getContent();
+      final String encodedImage = "data:image/svg+xml;base64," + Base64.getEncoder().encodeToString( diagram );
       return html.replace( "diagram_svg_placeholder", encodedImage );
    }
 
