@@ -21,11 +21,15 @@ import org.eclipse.esmf.aspectmodel.generator.JsonGenerationConfig;
 import io.soabase.recordbuilder.core.RecordBuilder;
 
 /**
- * A {@link GenerationConfig} for JSON sample payload generation
+ * A {@link GenerationConfig} for JSON sample payload generation.
+ *
+ * @param randomStrategy the Random instance to use for random value generation
+ * @param addTypeAttributeForEntityInheritance if set to true, adds "@type" attribute in payloads for inherited entities
  */
 @RecordBuilder
 public record JsonPayloadGenerationConfig(
-      Random randomStrategy
+      Random randomStrategy,
+      boolean addTypeAttributeForEntityInheritance
 ) implements JsonGenerationConfig {
    public JsonPayloadGenerationConfig {
       if ( randomStrategy == null ) {

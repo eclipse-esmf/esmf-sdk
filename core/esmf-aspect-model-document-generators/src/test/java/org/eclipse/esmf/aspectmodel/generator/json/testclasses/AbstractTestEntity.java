@@ -22,11 +22,11 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.validation.constraints.NotNull;
 
-@JsonTypeInfo( use = JsonTypeInfo.Id.NAME )
+@JsonTypeInfo( use = JsonTypeInfo.Id.DEDUCTION )
 @JsonSubTypes( {
       @JsonSubTypes.Type( value = ExtendingTestEntity.class, name = "ExtendingTestEntity" )
 } )
-public abstract class AbstractTestEntity {
+public class AbstractTestEntity {
 
    @NotNull
    private final BigInteger abstractTestProperty;

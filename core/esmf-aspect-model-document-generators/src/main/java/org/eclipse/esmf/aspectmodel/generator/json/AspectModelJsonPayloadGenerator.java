@@ -107,8 +107,7 @@ public class AspectModelJsonPayloadGenerator extends JsonGenerator<JsonPayloadGe
       return Stream.of( new PayloadGenerator( objectMapper ).apply( aspect(), config ) );
    }
 
-   private static class PayloadGenerator
-         implements ArtifactGenerator<String, JsonNode, Aspect, JsonPayloadGenerationConfig, JsonPayloadArtifact> {
+   private class PayloadGenerator implements ArtifactGenerator<String, JsonNode, Aspect, JsonPayloadGenerationConfig, JsonPayloadArtifact> {
       /**
        * Constant for the either left property.
        * For example JSON payloads the left type will be used.
@@ -226,7 +225,9 @@ public class AspectModelJsonPayloadGenerator extends JsonGenerator<JsonPayloadGe
             final ComplexType extendingComplexType = abstractEntity.getExtendingElements().get( 0 );
             final Map<String, Object> generatedProperties = transformProperties( extendingComplexType.getAllProperties(),
                   useModelExampleValue );
-            generatedProperties.put( "@type", extendingComplexType.getName() );
+            if ( config.addTypeAttributeForEntityInheritance() ) {
+               generatedProperties.put( "@type", extendingComplexType.getName() );
+            }
             return toMap( property.getName(), generatedProperties );
          }
          return ImmutableMap.of();
@@ -237,7 +238,7 @@ public class AspectModelJsonPayloadGenerator extends JsonGenerator<JsonPayloadGe
          if ( dataType.isPresent() ) {
             final Entity entity = dataType.get();
             final Map<String, Object> generatedProperties = transformProperties( entity.getAllProperties(), useModelExmplevalue );
-            if ( entity.getExtends().isPresent() ) {
+            if ( entity.getExtends().isPresent() && config.addTypeAttributeForEntityInheritance() ) {
                generatedProperties.put( "@type", entity.getName() );
             }
             return toMap( property.getName(), generatedProperties );
@@ -331,7 +332,9 @@ public class AspectModelJsonPayloadGenerator extends JsonGenerator<JsonPayloadGe
             final AbstractEntity abstractEntity = dataType.as( AbstractEntity.class );
             final ComplexType extendingComplexType = abstractEntity.getExtendingElements().get( 0 );
             final Map<String, Object> propertyValueMap = transformProperties( extendingComplexType.getAllProperties(), minCount < 2 );
-            propertyValueMap.put( "@type", extendingComplexType.getName() );
+            if ( config.addTypeAttributeForEntityInheritance() ) {
+               propertyValueMap.put( "@type", extendingComplexType.getName() );
+            }
             return propertyValueMap;
          }
          if ( dataType.is( Entity.class ) ) {
