@@ -42,8 +42,10 @@ class AspectModelNamespacePackageCreatorTest {
    void testAspectModelArchiveGeneration() throws IOException {
       final AspectModel aspectModel = TestResources.load( TestAspect.ASPECT_WITH_PROPERTY );
       final String outputFileName = String.format( "%s/%s", outputDirectory.toString(), "/test_zip.zip" );
-
-      AspectModelNamespacePackageCreator.INSTANCE.accept( aspectModel, new FileOutputStream( Paths.get( outputFileName ).toFile() ), "" );
+      try ( final FileOutputStream fileOutputStream = new FileOutputStream( Paths.get( outputFileName ).toFile() ) ) {
+         new AspectModelNamespacePackageCreator( aspectModel, AspectModelNamespacePackageCreator.DEFAULT_CONFIG )
+               .generate( x -> fileOutputStream );
+      }
 
       assertThat( new File( outputFileName ) ).exists();
 
