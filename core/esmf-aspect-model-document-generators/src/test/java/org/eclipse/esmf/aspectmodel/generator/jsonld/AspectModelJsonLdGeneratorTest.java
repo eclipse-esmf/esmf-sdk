@@ -20,18 +20,11 @@ class AspectModelJsonLdGeneratorTest {
    }
 
    private void assertJsonLdMeta( final String generatedJsonLd, final AspectModelUrn aspectModelUrn ) {
-      final String context = """
-            "@context": {
-                    "xsd": "http://www.w3.org/2001/XMLSchema#",
-                    "samm-c": "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#",
-                    "samm": "urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#",
-                    "@vocab": "urn:samm:org.eclipse.esmf.test:1.0.0#"
-                }
-            """;
-
-      assertThat( generatedJsonLd ).contains( "\"@graph\": [" );
-      assertThat( generatedJsonLd ).contains( context );
-      assertThat( generatedJsonLd ).contains( "\"xsd\": \"http://www.w3.org/2001/XMLSchema#\"," );
-      assertThat( generatedJsonLd ).contains( String.format( "\"@id\": \"%s\"", aspectModelUrn.toString() ) );
+      assertThat( generatedJsonLd ).contains( "\"@graph\" : [" );
+      assertThat( generatedJsonLd ).contains( "\"xsd\" : \"http://www.w3.org/2001/XMLSchema#\"," );
+      assertThat( generatedJsonLd ).contains( "\"samm-c\" : \"urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#\"" );
+      assertThat( generatedJsonLd ).contains( "\"samm\" : \"urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#\"" );
+      assertThat( generatedJsonLd ).contains( "\"@vocab\" : \"urn:samm:org.eclipse.esmf.test:1.0.0#\"" );
+      assertThat( generatedJsonLd ).contains( String.format( "\"@id\" : \"%s\"", aspectModelUrn.toString() ) );
    }
 }

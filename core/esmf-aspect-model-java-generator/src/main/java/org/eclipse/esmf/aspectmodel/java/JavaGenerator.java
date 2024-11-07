@@ -13,13 +13,14 @@
 package org.eclipse.esmf.aspectmodel.java;
 
 import org.eclipse.esmf.aspectmodel.generator.Artifact;
-import org.eclipse.esmf.aspectmodel.generator.Generator;
+import org.eclipse.esmf.aspectmodel.generator.AspectGenerator;
 import org.eclipse.esmf.metamodel.Aspect;
 
 /**
  * Base class for all generators that want to create Java source code.
  */
-public abstract class JavaGenerator extends Generator<QualifiedName, String, JavaCodeGenerationConfig, Artifact<QualifiedName, String>> {
+public abstract class JavaGenerator extends
+      AspectGenerator<QualifiedName, String, JavaCodeGenerationConfig, Artifact<QualifiedName, String>> {
    public JavaGenerator( final Aspect aspect, final JavaCodeGenerationConfig config ) {
       super( aspect, config );
    }

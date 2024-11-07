@@ -33,7 +33,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
  * @param <A> the corresponding artifact type
  */
 public abstract class JsonGenerator<C extends JsonGenerationConfig, R extends JsonNode, A extends JsonArtifact<R>>
-      extends Generator<String, R, C, A> {
+      extends AspectGenerator<String, R, C, A> {
    protected final ObjectMapper objectMapper;
 
    public JsonGenerator( final Aspect aspect, final C config ) {

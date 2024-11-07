@@ -51,7 +51,7 @@ public class AspectModelJsonSchemaGenerator extends JsonGenerator<JsonSchemaGene
    @Override
    public Stream<JsonSchemaArtifact> generate() {
       final AspectModelJsonSchemaVisitor visitor = new AspectModelJsonSchemaVisitor( config );
-      final JsonNode result = aspect.accept( visitor, null );
-      return Stream.of( new JsonSchemaArtifact( aspect.getName(), result ) );
+      final JsonNode result = aspect().accept( visitor, null );
+      return Stream.of( new JsonSchemaArtifact( aspect().getName(), result ) );
    }
 }

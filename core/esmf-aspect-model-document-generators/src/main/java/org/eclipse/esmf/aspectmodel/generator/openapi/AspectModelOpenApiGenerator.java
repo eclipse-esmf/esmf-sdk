@@ -48,7 +48,6 @@ import org.eclipse.esmf.metamodel.Operation;
 import org.eclipse.esmf.metamodel.Property;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -133,23 +132,23 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<OpenApiSchemaGene
       OpenApiSchemaArtifact artifact;
       try {
          final ObjectNode rootNode = getRootJsonNode( config.generateCommentForSeeAttributes() );
-         final String apiVersion = getApiVersion( aspect, config.useSemanticVersion() );
+         final String apiVersion = getApiVersion( aspect(), config.useSemanticVersion() );
 
          ( (ObjectNode) rootNode.get( "info" ) )
-               .put( "title", aspect.getPreferredName( config.locale() ) )
+               .put( "title", aspect().getPreferredName( config.locale() ) )
                .put( "version", apiVersion )
-               .put( AbstractGenerator.SAMM_EXTENSION, aspect.urn().toString() );
+               .put( AbstractGenerator.SAMM_EXTENSION, aspect().urn().toString() );
          setServers( rootNode, config.baseUrl(), apiVersion, READ_SERVER_PATH );
-         final boolean includePaging = includePaging( aspect, config.pagingOption() );
-         setOptionalSchemas( aspect, config, includePaging, rootNode );
-         setAspectSchemas( aspect, config, rootNode );
-         setRequestBodies( aspect, config, rootNode );
-         setResponseBodies( aspect, rootNode, includePaging );
-         rootNode.set( "paths", getPathsNode( aspect, config, apiVersion, config.properties(), config.queriesTemplate() ) );
-         artifact = new OpenApiSchemaArtifact( aspect.getName(), merge( rootNode, config.documentTemplate() ) );
+         final boolean includePaging = includePaging( aspect(), config.pagingOption() );
+         setOptionalSchemas( aspect(), config, includePaging, rootNode );
+         setAspectSchemas( aspect(), config, rootNode );
+         setRequestBodies( aspect(), config, rootNode );
+         setResponseBodies( aspect(), rootNode, includePaging );
+         rootNode.set( "paths", getPathsNode( aspect(), config, apiVersion, config.properties(), config.queriesTemplate() ) );
+         artifact = new OpenApiSchemaArtifact( aspect().getName(), merge( rootNode, config.documentTemplate() ) );
       } catch ( final Exception exception ) {
          LOG.error( "There was an exception during the read of the root or the validation.", exception );
-         artifact = new OpenApiSchemaArtifact( aspect.getName(), FACTORY.objectNode() );
+         artifact = new OpenApiSchemaArtifact( aspect().getName(), FACTORY.objectNode() );
       }
       return Stream.of( artifact );
    }

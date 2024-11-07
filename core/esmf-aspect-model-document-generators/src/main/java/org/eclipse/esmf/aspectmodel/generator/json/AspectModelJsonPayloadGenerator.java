@@ -104,7 +104,7 @@ public class AspectModelJsonPayloadGenerator extends JsonGenerator<JsonPayloadGe
 
    @Override
    public Stream<JsonPayloadArtifact> generate() {
-      return Stream.of( new PayloadGenerator( objectMapper ).apply( aspect, config ) );
+      return Stream.of( new PayloadGenerator( objectMapper ).apply( aspect(), config ) );
    }
 
    private static class PayloadGenerator

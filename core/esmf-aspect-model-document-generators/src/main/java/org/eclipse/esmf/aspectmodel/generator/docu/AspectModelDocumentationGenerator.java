@@ -27,9 +27,9 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import org.eclipse.esmf.aspectmodel.generator.AspectGenerator;
 import org.eclipse.esmf.aspectmodel.generator.AspectModelHelper;
 import org.eclipse.esmf.aspectmodel.generator.DocumentGenerationException;
-import org.eclipse.esmf.aspectmodel.generator.Generator;
 import org.eclipse.esmf.aspectmodel.generator.I18nLanguageBundle;
 import org.eclipse.esmf.aspectmodel.generator.LanguageCollector;
 import org.eclipse.esmf.aspectmodel.generator.TemplateEngine;
@@ -46,7 +46,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Asciidoc generator for a aspect model.
  */
-public class AspectModelDocumentationGenerator extends Generator<String, String, DocumentationGenerationConfig, DocumentationArtifact> {
+public class AspectModelDocumentationGenerator extends
+      AspectGenerator<String, String, DocumentationGenerationConfig, DocumentationArtifact> {
    public static final DocumentationGenerationConfig DEFAULT_CONFIG = DocumentationGenerationConfigBuilder.builder().build();
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelDocumentationGenerator.class );
    private static final String DOCU_ROOT_DIR = "/docu";
@@ -86,18 +87,18 @@ public class AspectModelDocumentationGenerator extends Generator<String, String,
    @Override
    public Stream<DocumentationArtifact> generate() {
       final Map<String, Object> templateContext = new HashMap<>();
-      templateContext.put( "aspectModel", aspect );
+      templateContext.put( "aspectModel", aspect() );
       templateContext.put( "aspectModelHelper", new AspectModelHelper() );
       templateContext.put( "Scalar", Scalar.class );
 
       final Set<Locale> targetLanguages = config.locale() == null
-            ? LanguageCollector.collectUsedLanguages( aspect )
+            ? LanguageCollector.collectUsedLanguages( aspect() )
             : Set.of( Locale.ENGLISH );
       return targetLanguages.stream().map( language -> {
-         logMissingTranslations( aspect, language );
+         logMissingTranslations( aspect(), language );
          templateContext.put( "i18n", new I18nLanguageBundle( language ) );
          final TemplateEngine templateEngine = new TemplateEngine( templateContext, engineConfiguration );
-         final String artifactName = getArtifactName( aspect, language );
+         final String artifactName = getArtifactName( aspect(), language );
          String source = templateEngine.apply( DOCU_ROOT_DIR + "/templates/html/aspect-model-documentation" );
          source = insertAspectModelDiagram( source, language );
          source = insertStaticPlaceholders( source );
@@ -122,7 +123,7 @@ public class AspectModelDocumentationGenerator extends Generator<String, String,
       final DocumentationGenerationConfig config = DocumentationGenerationConfigBuilder.builder()
             .stylesheet( generationOptions.get( HtmlGenerationOption.STYLESHEET ) )
             .build();
-      new AspectModelDocumentationGenerator( aspect, config ).generate( nameMapper );
+      new AspectModelDocumentationGenerator( aspect(), config ).generate( nameMapper );
    }
 
    /**
@@ -144,7 +145,7 @@ public class AspectModelDocumentationGenerator extends Generator<String, String,
             .stylesheet( generationOptions.get( HtmlGenerationOption.STYLESHEET ) )
             .locale( language )
             .build();
-      new AspectModelDocumentationGenerator( aspect, config ).generate( nameMapper );
+      new AspectModelDocumentationGenerator( aspect(), config ).generate( nameMapper );
    }
 
    private String getArtifactName( final Aspect aspectModel, final Locale locale ) {
@@ -152,7 +153,7 @@ public class AspectModelDocumentationGenerator extends Generator<String, String,
    }
 
    private String insertAspectModelDiagram( final String html, final Locale language ) {
-      final AspectModelDiagramGenerator diagramGenerator = new AspectModelDiagramGenerator( aspect );
+      final AspectModelDiagramGenerator diagramGenerator = new AspectModelDiagramGenerator( aspect() );
       final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
       diagramGenerator.generateDiagram( AspectModelDiagramGenerator.Format.SVG, language, buffer );
       final String encodedImage = "data:image/svg+xml;base64," + Base64.getEncoder().encodeToString( buffer.toByteArray() );

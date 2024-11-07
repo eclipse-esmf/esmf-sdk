@@ -43,12 +43,12 @@ public class AspectModelToJsonLdGenerator extends JsonGenerator<JsonLdGeneration
    @Override
    public Stream<JsonLdArtifact> generate() {
       final StringWriter stringWriter = new StringWriter();
-      aspect.getSourceFile().sourceModel().write( stringWriter, RDFLanguages.strLangJSONLD );
+      aspect().getSourceFile().sourceModel().write( stringWriter, RDFLanguages.strLangJSONLD );
       final String content = stringWriter.toString();
       try {
-         return Stream.of( new JsonLdArtifact( aspect.getName() + ".json", objectMapper.readTree( content ) ) );
+         return Stream.of( new JsonLdArtifact( aspect().getName() + ".json", objectMapper.readTree( content ) ) );
       } catch ( final JsonProcessingException exception ) {
-         LOG.error( "Could not parse JSON-LD for {}", aspect.getName() );
+         LOG.error( "Could not parse JSON-LD for {}", aspect().getName() );
       }
       return Stream.empty();
    }

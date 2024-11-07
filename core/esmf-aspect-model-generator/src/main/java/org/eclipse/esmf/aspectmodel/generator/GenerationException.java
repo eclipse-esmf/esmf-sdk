@@ -26,4 +26,8 @@ public class GenerationException extends RuntimeException {
    public GenerationException( final Throwable cause ) {
       super( cause );
    }
+
+   public GenerationException( final String message, final Throwable cause ) {
+      super( message, cause );
+   }
 }

@@ -57,27 +57,27 @@ public class AspectModelAsyncApiGenerator extends JsonGenerator<AsyncApiSchemaGe
       AsyncApiSchemaArtifact result;
       try {
          final ObjectNode rootNode = getRootJsonNode();
-         final String apiVersion = getApiVersion( aspect, config.useSemanticVersion() );
+         final String apiVersion = getApiVersion( aspect(), config.useSemanticVersion() );
 
          if ( StringUtils.isNotBlank( config.applicationId() ) ) {
             rootNode.put( "id", config.applicationId() );
          }
 
          final ObjectNode info = (ObjectNode) rootNode.get( "info" );
-         info.put( TITLE_FIELD, aspect.getPreferredName( config.locale() ) + " MQTT API" );
+         info.put( TITLE_FIELD, aspect().getPreferredName( config.locale() ) + " MQTT API" );
          info.put( "version", apiVersion );
-         info.put( DESCRIPTION_FIELD, getDescription( aspect.getDescription( config.locale() ) ) );
-         info.put( AbstractGenerator.SAMM_EXTENSION, aspect.urn().toString() );
+         info.put( DESCRIPTION_FIELD, getDescription( aspect().getDescription( config.locale() ) ) );
+         info.put( AbstractGenerator.SAMM_EXTENSION, aspect().urn().toString() );
 
-         rootNode.set( "channels", getChannelNode( aspect, config ) );
-         if ( !aspect.getEvents().isEmpty() || !aspect.getOperations().isEmpty() ) {
-            setOperations( aspect, rootNode );
-            setComponents( aspect, rootNode, config.locale() );
+         rootNode.set( "channels", getChannelNode( aspect(), config ) );
+         if ( !aspect().getEvents().isEmpty() || !aspect().getOperations().isEmpty() ) {
+            setOperations( aspect(), rootNode );
+            setComponents( aspect(), rootNode, config.locale() );
          }
-         result = new AsyncApiSchemaArtifact( aspect.getName(), rootNode );
+         result = new AsyncApiSchemaArtifact( aspect().getName(), rootNode );
       } catch ( final Exception exception ) {
          LOG.error( "There was an exception during the read of the root or the validation.", exception );
-         result = new AsyncApiSchemaArtifact( aspect.getName(), FACTORY.objectNode() );
+         result = new AsyncApiSchemaArtifact( aspect().getName(), FACTORY.objectNode() );
       }
       return Stream.of( result );
    }
