@@ -754,8 +754,8 @@ class SammCliTest {
             .exists()
             .content()
             .contains( "\"@context\"" )
-            .contains( "\"@graph\": [" )
-            .contains( "\"xsd\": \"http://www.w3.org/2001/XMLSchema#\"," );
+            .contains( "\"@graph\" : [" )
+            .contains( "\"xsd\" : \"http://www.w3.org/2001/XMLSchema#\"," );
    }
 
    @Test
@@ -763,8 +763,8 @@ class SammCliTest {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "jsonld" );
       assertThat( result.stdout() )
             .contains( "\"@context\"" )
-            .contains( "\"@graph\": [" )
-            .contains( "\"xsd\": \"http://www.w3.org/2001/XMLSchema#\"," );
+            .contains( "\"@graph\" : [" )
+            .contains( "\"xsd\" : \"http://www.w3.org/2001/XMLSchema#\"," );
       assertThat( result.stderr() ).isEmpty();
    }
 
@@ -774,8 +774,8 @@ class SammCliTest {
             "--custom-resolver", resolverCommand() );
       assertThat( result.stdout() )
             .contains( "\"@context\"" )
-            .contains( "\"@graph\": [" )
-            .contains( "\"xsd\": \"http://www.w3.org/2001/XMLSchema#\"," );
+            .contains( "\"@graph\" : [" )
+            .contains( "\"xsd\" : \"http://www.w3.org/2001/XMLSchema#\"," );
       assertThat( result.stderr() ).isEmpty();
    }
 

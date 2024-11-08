@@ -34,7 +34,7 @@ public class GenerateDocumentation extends AspectModelMojo {
    private static final Logger LOG = LoggerFactory.getLogger( GenerateDocumentation.class );
 
    @Parameter
-   private final String htmlCustomCssFilePath = "";
+   private String htmlCustomCssFilePath = "";
 
    @Override
    public void executeGeneration() throws MojoExecutionException {
@@ -48,7 +48,8 @@ public class GenerateDocumentation extends AspectModelMojo {
                final String css = FileUtils.readFileToString( new File( htmlCustomCssFilePath ), "UTF-8" );
                configBuilder.stylesheet( css );
             }
-            new AspectModelDocumentationGenerator( model, configBuilder.build() ).generate();
+            new AspectModelDocumentationGenerator( model, configBuilder.build() )
+                  .generate( artifact -> getOutputStreamForFile( artifact, outputDirectory ) );
          }
       } catch ( final IOException exception ) {
          throw new MojoExecutionException( "Could not load custom CSS file.", exception );

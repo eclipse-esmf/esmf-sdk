@@ -46,22 +46,22 @@ public class GenerateSql extends AspectModelMojo {
    private boolean includeColumnComments;
 
    @Parameter( defaultValue = DatabricksSqlGenerationConfig.DEFAULT_TABLE_COMMAND_PREFIX )
-   private final String tableCommandPrefix = DatabricksSqlGenerationConfig.DEFAULT_TABLE_COMMAND_PREFIX;
+   private String tableCommandPrefix = DatabricksSqlGenerationConfig.DEFAULT_TABLE_COMMAND_PREFIX;
 
    @Parameter( defaultValue = "" + DatabricksSqlGenerationConfig.DECIMAL_DEFAULT_PRECISION )
-   private final int decimalPrecision = DatabricksSqlGenerationConfig.DECIMAL_DEFAULT_PRECISION;
+   private int decimalPrecision = DatabricksSqlGenerationConfig.DECIMAL_DEFAULT_PRECISION;
 
    @Parameter( defaultValue = "en" )
-   private final String language = DatabricksSqlGenerationConfig.DEFAULT_COMMENT_LANGUAGE.getLanguage();
+   private String language = DatabricksSqlGenerationConfig.DEFAULT_COMMENT_LANGUAGE.getLanguage();
 
    @Parameter( defaultValue = "databricks" )
-   private final String dialect = SqlGenerationConfig.Dialect.DATABRICKS.toString().toLowerCase();
+   private String dialect = SqlGenerationConfig.Dialect.DATABRICKS.toString().toLowerCase();
 
    @Parameter( defaultValue = "denormalized" )
-   private final String strategy = SqlGenerationConfig.MappingStrategy.DENORMALIZED.toString().toLowerCase();
+   private String strategy = SqlGenerationConfig.MappingStrategy.DENORMALIZED.toString().toLowerCase();
 
    @Parameter( property = "column" )
-   private final List<String> customColumns = List.of();
+   private List<String> customColumns = List.of();
 
    @Override
    public void executeGeneration() throws MojoExecutionException {

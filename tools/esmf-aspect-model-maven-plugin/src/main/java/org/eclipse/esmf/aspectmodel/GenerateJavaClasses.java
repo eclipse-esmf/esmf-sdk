@@ -15,6 +15,7 @@ package org.eclipse.esmf.aspectmodel;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfig;
@@ -41,14 +42,15 @@ public class GenerateJavaClasses extends CodeGenerationMojo {
 
    @Override
    public void executeGeneration() throws MojoExecutionException {
-      try {
-         final Set<Aspect> aspects = loadAspects();
-         for ( final Aspect aspect : aspects ) {
-            final File templateLibFile = Path.of( templateFile ).toFile();
-            validateParameters( templateLibFile );
+      final Set<Aspect> aspects = loadAspects();
+      for ( final Aspect aspect : aspects ) {
+         final File templateLibFile = Path.of( templateFile ).toFile();
+         validateParameters( templateLibFile );
+         try {
             final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
                   .enableJacksonAnnotations( !disableJacksonAnnotations )
-                  .jsonTypeInfo( JavaCodeGenerationConfig.JsonTypeInfoType.valueOf( jsonTypeInfo.toUpperCase() ) )
+                  .jsonTypeInfo( JavaCodeGenerationConfig.JsonTypeInfoType.valueOf(
+                        Optional.ofNullable( jsonTypeInfo ).map( String::toUpperCase ).orElse( "DEDUCTION" ) ) )
                   .packageName( determinePackageName( aspect ) )
                   .executeLibraryMacros( executeLibraryMacros )
                   .templateLibFile( templateLibFile )
@@ -56,9 +58,9 @@ public class GenerateJavaClasses extends CodeGenerationMojo {
                   .namePostfix( namePostfix )
                   .build();
             new AspectModelJavaGenerator( aspect, config ).generate( nameMapper );
+         } catch ( final Exception exception ) {
+            throw new MojoExecutionException( "Could not generate Java classes for Aspect Models", exception );
          }
-      } catch ( final Exception exception ) {
-         throw new MojoExecutionException( "Could not generate Java classes for Aspect Models", exception );
       }
       LOG.info( "Successfully generated Java classes for Aspect Models." );
    }

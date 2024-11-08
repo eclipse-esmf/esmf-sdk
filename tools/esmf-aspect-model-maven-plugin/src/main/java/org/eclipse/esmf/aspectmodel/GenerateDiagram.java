@@ -50,7 +50,8 @@ public class GenerateDiagram extends AspectModelMojo {
          for ( final Aspect aspect : aspects ) {
             for ( final DiagramGenerationConfig.Format format : formats ) {
                final DiagramGenerationConfig config = DiagramGenerationConfigBuilder.builder().format( format ).build();
-               new AspectModelDiagramGenerator( aspect, config ).generate( name -> getOutputStreamForFile( name, outputDirectory ) );
+               new AspectModelDiagramGenerator( aspect, config )
+                     .generate( name -> getOutputStreamForFile( name, outputDirectory ) );
             }
          }
       } catch ( final DocumentGenerationException exception ) {
@@ -67,7 +68,7 @@ public class GenerateDiagram extends AspectModelMojo {
 
       for ( final String targetFormat : targetFormats ) {
          if ( Arrays.stream( DiagramGenerationConfig.Format.values() )
-               .noneMatch( x -> x.toString().equals( targetFormat.toLowerCase() ) ) ) {
+               .noneMatch( x -> x.toString().equals( targetFormat.toUpperCase() ) ) ) {
             throw new MojoExecutionException( "Invalid target format: " + targetFormat + ". Valid formats are "
                   + DiagramGenerationConfig.Format.allValues() + "." );
          }

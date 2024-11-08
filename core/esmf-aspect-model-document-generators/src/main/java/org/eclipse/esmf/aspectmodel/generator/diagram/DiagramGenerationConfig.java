@@ -20,7 +20,7 @@ public record DiagramGenerationConfig(
       SVG, PNG;
 
       public static String allValues() {
-         return String.join( ", ", Stream.of( values() ).map( Format::toString ).toList() );
+         return String.join( ", ", Stream.of( values() ).map( Format::toString ).map( String::toUpperCase ).toList() );
       }
    }
 
