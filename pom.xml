@@ -281,27 +281,8 @@
    </build>
 
    <profiles>
-      <!--
-      This profile is active by default and will disable the generation of the source jar.
-      When the native profile (see below) is active, the source jar will be generated.
-      If we don't do it like this, the source jar is created and attached twice, which
-      trips up Maven: "We have duplicated artifacts attached."
-      -->
-      <profile>
-         <id>non-native</id>
-         <activation>
-            <activeByDefault>true</activeByDefault>
-         </activation>
-         <properties>
-            <maven.source.skip>true</maven.source.skip>
-         </properties>
-      </profile>
-
       <profile>
          <id>native</id>
-         <properties>
-            <maven.source.skip>false</maven.source.skip>
-         </properties>
          <build>
             <plugins>
                <plugin>
