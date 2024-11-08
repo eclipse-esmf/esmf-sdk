@@ -42,7 +42,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 public abstract class AspectModelMojo extends AbstractMojo {
    @Parameter( defaultValue = "${basedir}/src/main/resources/aspects" )
-   private final String modelsRootDirectory = System.getProperty( "user.dir" ) + "/src/main/resources/aspects";
+   private String modelsRootDirectory = System.getProperty( "user.dir" ) + "/src/main/resources/aspects";
 
    @Parameter( required = true, property = "include" )
    protected Set<String> includes;

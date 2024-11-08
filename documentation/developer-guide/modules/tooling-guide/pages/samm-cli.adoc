@@ -105,12 +105,14 @@ of model resolution] for more information.
                                    | _--language, -l_ : the language from the model for which the diagram should be
                                        generated (default: en)                                                               |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements | `samm aspect AspectModel.ttl to svg --custom-resolver "java -jar resolver.jar"`
-.10+| [[aspect-to-java]] aspect <model> to java | Generate Java classes from an Aspect Model                                  | `samm aspect AspectModel.ttl to java`
+.11+| [[aspect-to-java]] aspect <model> to java | Generate Java classes from an Aspect Model                                 | `samm aspect AspectModel.ttl to java`
                                    | _--output-directory, -d_ : output directory to write files to (default:
                                        current directory)                                                                    |
                                    | _--package-name, -pn_ : package to use for generated Java classes                       | `samm aspect AspectModel.ttl to java -pn org.company.product`
                                    | _--no-jackson, -nj_ : disable https://github.com/FasterXML/jackson[Jackson] annotation
                                        generation in generated Java classes                                                  |
+                                   | _--json-type-info_, _-jti_ : If Jackson annotations are enabled, determines the value
+                                       of JsonTypeInfo.Id. Default: DEDUCTION                                                |
                                    | _--template-library-file, -tlf_ : the path and name of the
                                        https://velocity.apache.org/[Velocity] template file containing the macro library     |
                                    | _--execute-library-macros, -elm_ : Execute the macros provided in the
@@ -164,9 +166,10 @@ of model resolution] for more information.
                                        be generated (default: en)                                                            | `samm aspect AspectModel.ttl to asyncapi -l de`
                                    | _--separate-files, -sf_ : Create separate files for each schema                         |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
-.3+| [[aspect-to-json]] aspect <model> to json | Generate example JSON payload data for an Aspect Model                      | `samm aspect AspectModel.ttl to json`
+.4+| [[aspect-to-json]] aspect <model> to json | Generate example JSON payload data for an Aspect Model                      | `samm aspect AspectModel.ttl to json`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
+                                   | _--add-type-attribute_, _-ta_ : Add `@type` attribute for inherited Entities            |
 .3+| [[aspect-to-jsonld]] aspect <model> to jsonld | Generate JSON-LD representation of an Aspect Model                      | `samm aspect AspectModel.ttl to jsonld`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |

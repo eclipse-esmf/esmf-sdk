@@ -25,7 +25,6 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import org.eclipse.esmf.aspectmodel.generator.AbstractGenerator;
 import org.eclipse.esmf.aspectmodel.generator.DocumentGenerationException;
 import org.eclipse.esmf.aspectmodel.generator.XsdToJsonTypeMapping;
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
@@ -650,7 +649,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
 
    private void addSammExtensionAttribute( final ObjectNode node, final ModelElement describedElement ) {
       if ( !describedElement.isAnonymous() ) {
-         node.put( AbstractGenerator.SAMM_EXTENSION, describedElement.urn().toString() );
+         node.put( AspectModelJsonSchemaGenerator.SAMM_EXTENSION, describedElement.urn().toString() );
       }
    }
 }

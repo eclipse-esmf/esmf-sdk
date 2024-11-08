@@ -4,11 +4,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
+import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.VersionNumber;
-import org.eclipse.esmf.aspectmodel.generator.AbstractGenerator;
-import org.eclipse.esmf.aspectmodel.generator.ArtifactGenerator;
+import org.eclipse.esmf.aspectmodel.generator.JsonGenerator;
 import org.eclipse.esmf.aspectmodel.generator.XsdToJsonTypeMapping;
+import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Event;
@@ -16,7 +17,6 @@ import org.eclipse.esmf.metamodel.Property;
 
 import com.apicatalog.jsonld.StringUtils;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -26,8 +26,8 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AspectModelAsyncApiGenerator
-      implements ArtifactGenerator<String, JsonNode, Aspect, AsyncApiSchemaGenerationConfig, AsyncApiSchemaArtifact> {
+public class AspectModelAsyncApiGenerator extends JsonGenerator<AsyncApiSchemaGenerationConfig, JsonNode, AsyncApiSchemaArtifact> {
+   public static final AsyncApiSchemaGenerationConfig DEFAULT_CONFIG = AsyncApiSchemaGenerationConfigBuilder.builder().build();
 
    private static final String APPLICATION_JSON = "application/json";
    private static final String CHANNELS = "#/channels";
@@ -43,34 +43,43 @@ public class AspectModelAsyncApiGenerator
 
    private static final JsonNodeFactory FACTORY = JsonNodeFactory.instance;
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelAsyncApiGenerator.class );
-   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+   public AspectModelAsyncApiGenerator( final Aspect aspect ) {
+      this( aspect, DEFAULT_CONFIG );
+   }
+
+   public AspectModelAsyncApiGenerator( final Aspect aspect, final AsyncApiSchemaGenerationConfig config ) {
+      super( aspect, config );
+   }
 
    @Override
-   public AsyncApiSchemaArtifact apply( final Aspect aspect, final AsyncApiSchemaGenerationConfig config ) {
+   public Stream<AsyncApiSchemaArtifact> generate() {
+      AsyncApiSchemaArtifact result;
       try {
          final ObjectNode rootNode = getRootJsonNode();
-         final String apiVersion = getApiVersion( aspect, config.useSemanticVersion() );
+         final String apiVersion = getApiVersion( aspect(), config.useSemanticVersion() );
 
          if ( StringUtils.isNotBlank( config.applicationId() ) ) {
             rootNode.put( "id", config.applicationId() );
          }
 
          final ObjectNode info = (ObjectNode) rootNode.get( "info" );
-         info.put( TITLE_FIELD, aspect.getPreferredName( config.locale() ) + " MQTT API" );
+         info.put( TITLE_FIELD, aspect().getPreferredName( config.locale() ) + " MQTT API" );
          info.put( "version", apiVersion );
-         info.put( DESCRIPTION_FIELD, getDescription( aspect.getDescription( config.locale() ) ) );
-         info.put( AbstractGenerator.SAMM_EXTENSION, aspect.urn().toString() );
+         info.put( DESCRIPTION_FIELD, getDescription( aspect().getDescription( config.locale() ) ) );
+         info.put( AspectModelJsonSchemaGenerator.SAMM_EXTENSION, aspect().urn().toString() );
 
-         rootNode.set( "channels", getChannelNode( aspect, config ) );
-         if ( !aspect.getEvents().isEmpty() || !aspect.getOperations().isEmpty() ) {
-            setOperations( aspect, rootNode );
-            setComponents( aspect, rootNode, config.locale() );
+         rootNode.set( "channels", getChannelNode( aspect(), config ) );
+         if ( !aspect().getEvents().isEmpty() || !aspect().getOperations().isEmpty() ) {
+            setOperations( aspect(), rootNode );
+            setComponents( aspect(), rootNode, config.locale() );
          }
-         return new AsyncApiSchemaArtifact( aspect.getName(), rootNode );
-      } catch ( final Exception e ) {
-         LOG.error( "There was an exception during the read of the root or the validation.", e );
+         result = new AsyncApiSchemaArtifact( aspect().getName(), rootNode );
+      } catch ( final Exception exception ) {
+         LOG.error( "There was an exception during the read of the root or the validation.", exception );
+         result = new AsyncApiSchemaArtifact( aspect().getName(), FACTORY.objectNode() );
       }
-      return new AsyncApiSchemaArtifact( aspect.getName(), FACTORY.objectNode() );
+      return Stream.of( result );
    }
 
    private void setComponents( final Aspect aspect, final ObjectNode rootNode, final Locale locale ) {
@@ -254,7 +263,7 @@ public class AspectModelAsyncApiGenerator
       final InputStream inputStream = getClass().getResourceAsStream( "/asyncapi/AsyncApiRootJson.json" );
       final String string = IOUtils.toString( inputStream, StandardCharsets.UTF_8 )
             .replace( "${AsyncApiVer}", V30 );
-      return (ObjectNode) OBJECT_MAPPER.readTree( string );
+      return (ObjectNode) objectMapper.readTree( string );
    }
 
    private XsdToJsonTypeMapping.JsonType getType( final Resource type ) {

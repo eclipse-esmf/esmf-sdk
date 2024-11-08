@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -947,11 +946,11 @@ public class AspectModelJavaGeneratorTest {
       result.assertClassDeclaration( "AspectWithAbstractEntity", Collections.emptyList(), Collections.emptyList(),
             Collections.emptyList(), Collections.emptyList() );
       result.assertClassDeclaration( "AbstractTestEntity", Collections.singletonList( Modifier.abstractModifier() ),
-            Collections.emptyList(), Collections.emptyList(), List.of( "@JsonTypeInfo(use = JsonTypeInfo.Id.NAME)",
+            Collections.emptyList(), Collections.emptyList(), List.of( "@JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION)",
                   "@JsonSubTypes({ @JsonSubTypes.Type(value = ExtendingTestEntity.class, name = \"ExtendingTestEntity\") })" ) );
       result.assertClassDeclaration( "ExtendingTestEntity", Collections.emptyList(),
             Collections.singletonList( "AbstractTestEntity" ), Collections.emptyList(),
-            List.of( "@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, defaultImpl = ExtendingTestEntity.class)" ) );
+            List.of( "@JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION, defaultImpl = ExtendingTestEntity.class)" ) );
    }
 
    @Test
@@ -990,11 +989,11 @@ public class AspectModelJavaGeneratorTest {
             Collections.emptyList() );
       result.assertClassDeclaration( "AbstractTestEntity", Collections.singletonList( Modifier.abstractModifier() ),
             Collections.emptyList(), Collections.emptyList(),
-            List.of( "@JsonTypeInfo(use = JsonTypeInfo.Id.NAME)",
+            List.of( "@JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION)",
                   "@JsonSubTypes({ @JsonSubTypes.Type(value = ExtendingTestEntity.class, name = \"ExtendingTestEntity\") })" ) );
       result.assertClassDeclaration( "ExtendingTestEntity", Collections.emptyList(),
             Collections.singletonList( "AbstractTestEntity" ), Collections.emptyList(),
-            List.of( "@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, defaultImpl = ExtendingTestEntity.class)" ) );
+            List.of( "@JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION, defaultImpl = ExtendingTestEntity.class)" ) );
    }
 
    @Test
@@ -1113,13 +1112,13 @@ public class AspectModelJavaGeneratorTest {
       final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect ) );
       result.assertNumberOfFiles( 4 );
       result.assertClassDeclaration( "ParentOfParentEntity", Collections.singletonList( Modifier.abstractModifier() ),
-            Collections.emptyList(), Collections.emptyList(), List.of( "@JsonTypeInfo(use = JsonTypeInfo.Id.NAME)",
+            Collections.emptyList(), Collections.emptyList(), List.of( "@JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION)",
                   "@JsonSubTypes({ @JsonSubTypes.Type(value = ParentTestEntity.class, name = \"ParentTestEntity\"), @JsonSubTypes.Type"
                         + "(value = TestEntity"
                         + ".class, name = \"TestEntity\") })" ) );
       result.assertClassDeclaration( "ParentTestEntity", Collections.singletonList( Modifier.abstractModifier() ),
             Collections.singletonList( "ParentOfParentEntity" ), Collections.emptyList(),
-            List.of( "@JsonTypeInfo(use = JsonTypeInfo.Id.NAME)",
+            List.of( "@JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION)",
                   "@JsonSubTypes({ @JsonSubTypes.Type(value = TestEntity.class, name = \"TestEntity\") })" ) );
    }
 

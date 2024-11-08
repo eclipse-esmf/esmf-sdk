@@ -28,8 +28,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.eclipse.esmf.aspectmodel.generator.AbstractGenerator;
 import org.eclipse.esmf.aspectmodel.generator.AbstractSchemaArtifact;
+import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.test.TestAspect;
@@ -78,7 +78,6 @@ public class AspectModelOpenApiGeneratorTest {
          JsonNodeFactory.instance.objectNode().put( "unitId", "unitId" );
    private static final List<String> UNSUPPORTED_KEYWORDS = List.of( "$schema", "additionalItems", "cost", "contains", "dependencies",
          "$id", "patternProperties", "propertyNames" );
-   private final AspectModelOpenApiGenerator apiJsonGenerator = new AspectModelOpenApiGenerator();
    private final Configuration config = Configuration.defaultConfiguration().addOptions( Option.SUPPRESS_EXCEPTIONS );
 
    @ParameterizedTest
@@ -90,11 +89,11 @@ public class AspectModelOpenApiGeneratorTest {
             .baseUrl( TEST_BASE_URL )
             .resourcePath( TEST_RESOURCE_PATH )
             .build();
-      final OpenApiSchemaArtifact result = apiJsonGenerator.apply( aspect, config );
+      final OpenApiSchemaArtifact result = new AspectModelOpenApiGenerator( aspect, config ).singleResult();
       final JsonNode json = result.getContent();
       assertSpecificationIsValid( json, json.toString(), aspect );
-      assertThat( json.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ) ).isNotNull();
-      assertThat( json.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ).asText() ).isEqualTo( aspect.urn().toString() );
+      assertThat( json.get( "info" ).get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION ) ).isNotNull();
+      assertThat( json.get( "info" ).get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION ).asText() ).isEqualTo( aspect.urn().toString() );
 
       // Check that the map containing separate schema files contains the same information as the
       // all-in-one JSON document
@@ -137,13 +136,13 @@ public class AspectModelOpenApiGeneratorTest {
             .baseUrl( TEST_BASE_URL )
             .resourcePath( TEST_RESOURCE_PATH )
             .build();
-      final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
 
       assertThat( openApi.getInfo().getVersion() ).isEqualTo( "v1.0.0" );
-      assertThat( json.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ) ).isNotNull();
-      assertThat( json.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ).asText() ).isEqualTo( aspect.urn().toString() );
+      assertThat( json.get( "info" ).get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION ) ).isNotNull();
+      assertThat( json.get( "info" ).get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION ).asText() ).isEqualTo( aspect.urn().toString() );
 
       openApi.getServers().forEach( server -> assertThat( server.getUrl() ).contains( "v1.0.0" ) );
    }
@@ -157,7 +156,7 @@ public class AspectModelOpenApiGeneratorTest {
             .resourcePath( TEST_RESOURCE_PATH )
             .includeQueryApi( true )
             .build();
-      final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
       assertThat( openApi.getPaths().get( "/query-api/v1.0.0/" + TEST_RESOURCE_PATH ).getPost().getServers()
@@ -173,7 +172,7 @@ public class AspectModelOpenApiGeneratorTest {
             .baseUrl( TEST_BASE_URL )
             .includeQueryApi( true )
             .build();
-      final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
 
@@ -196,7 +195,7 @@ public class AspectModelOpenApiGeneratorTest {
             .resourcePath( TEST_RESOURCE_PATH_WITH_PARAMETER )
             .includeQueryApi( true )
             .build();
-      final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
       assertThat( json ).isEmpty();
    }
 
@@ -209,7 +208,7 @@ public class AspectModelOpenApiGeneratorTest {
             .resourcePath( TEST_RESOURCE_PATH )
             .includeQueryApi( true )
             .build();
-      final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
 
@@ -228,7 +227,7 @@ public class AspectModelOpenApiGeneratorTest {
             .properties( TEST_INVALID_PARAMETER )
             .includeQueryApi( true )
             .build();
-      final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
       assertThat( json ).isEmpty();
    }
 
@@ -241,7 +240,7 @@ public class AspectModelOpenApiGeneratorTest {
             .resourcePath( TEST_RESOURCE_PATH_WITH_PARAMETER )
             .properties( getTestParameter() )
             .build();
-      final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       assertThat( result.getMessages() ).isEmpty();
 
@@ -265,7 +264,7 @@ public class AspectModelOpenApiGeneratorTest {
             .resourcePath( TEST_RESOURCE_PATH )
             .template( getTemplateParameter() )
             .build();
-      final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       assertThat( result.getMessages() ).isEmpty();
 
@@ -291,7 +290,7 @@ public class AspectModelOpenApiGeneratorTest {
             .resourcePath( TEST_RESOURCE_PATH_WITH_INVALID_PARAMETER )
             .properties( getTestParameter() )
             .build();
-      final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       logAppender.stop();
       assertThat( result.getMessages().size() ).isNotZero();
@@ -314,14 +313,14 @@ public class AspectModelOpenApiGeneratorTest {
             .resourcePath( TEST_RESOURCE_PATH_WITH_PARAMETER )
             .properties( getTestParameter() )
             .build();
-      final String yaml = apiJsonGenerator.apply( aspect, yamlConfig ).getContentAsYaml();
+      final String yaml = new AspectModelOpenApiGenerator( aspect, yamlConfig ).generateYaml();
       final OpenApiSchemaGenerationConfig jsonConfig = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
             .resourcePath( TEST_RESOURCE_PATH_WITH_PARAMETER )
             .properties( getTestParameter() )
             .build();
-      final JsonNode json = apiJsonGenerator.apply( aspect, jsonConfig ).getContent();
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, jsonConfig ).getContent();
       assertThat( yaml ).isEqualTo( yamlMapper.writeValueAsString( json ) );
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       assertThat( result.getMessages().size() ).isZero();
@@ -335,7 +334,7 @@ public class AspectModelOpenApiGeneratorTest {
             .baseUrl( TEST_BASE_URL )
             .includeQueryApi( true )
             .build();
-      final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
 
@@ -350,7 +349,7 @@ public class AspectModelOpenApiGeneratorTest {
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
             .build();
-      final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
 
@@ -366,7 +365,7 @@ public class AspectModelOpenApiGeneratorTest {
             .baseUrl( TEST_BASE_URL )
             .pagingOption( PagingOption.OFFSET_BASED_PAGING )
             .build();
-      final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
       assertThat( openApi.getPaths() ).containsKey( "/{tenant-id}/aspect-with-collection" );
@@ -393,7 +392,7 @@ public class AspectModelOpenApiGeneratorTest {
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
             .build();
-      final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
       assertThat( openApi.getPaths() ).containsKey( "/{tenant-id}/aspect-with-time-series" );
@@ -419,7 +418,7 @@ public class AspectModelOpenApiGeneratorTest {
             .baseUrl( TEST_BASE_URL )
             .pagingOption( PagingOption.CURSOR_BASED_PAGING )
             .build();
-      final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
       assertThat( openApi.getPaths() ).containsKey( "/{tenant-id}/aspect-with-collection" );
@@ -451,7 +450,7 @@ public class AspectModelOpenApiGeneratorTest {
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
             .build();
-      final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
       assertThat( openApi.getPaths() ).containsKey( "/{tenant-id}/aspect-with-collection" );
@@ -477,7 +476,7 @@ public class AspectModelOpenApiGeneratorTest {
             .baseUrl( TEST_BASE_URL )
             .pagingOption( PagingOption.NO_PAGING )
             .build();
-      final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
       assertThat( openApi.getPaths() ).containsKey( "/{tenant-id}/aspect-with-collection" );
@@ -495,7 +494,7 @@ public class AspectModelOpenApiGeneratorTest {
             .baseUrl( TEST_BASE_URL )
             .resourcePath( TEST_RESOURCE_PATH )
             .build();
-      final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
       assertThat( openApi.getComponents().getSchemas() ).containsKey( "AspectWithOperation" );
@@ -517,7 +516,7 @@ public class AspectModelOpenApiGeneratorTest {
             .baseUrl( TEST_BASE_URL )
             .resourcePath( TEST_RESOURCE_PATH )
             .build();
-      final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
       assertThat(
@@ -537,7 +536,7 @@ public class AspectModelOpenApiGeneratorTest {
             .includeQueryApi( true )
             .includeCrud( true )
             .build();
-      final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
 
@@ -560,7 +559,7 @@ public class AspectModelOpenApiGeneratorTest {
             .includeQueryApi( true )
             .includePost( true )
             .build();
-      final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
 
@@ -583,7 +582,7 @@ public class AspectModelOpenApiGeneratorTest {
             .includeQueryApi( true )
             .includePut( true )
             .build();
-      final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
 
@@ -606,7 +605,7 @@ public class AspectModelOpenApiGeneratorTest {
             .includeQueryApi( true )
             .includePatch( true )
             .build();
-      final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
 
@@ -630,7 +629,7 @@ public class AspectModelOpenApiGeneratorTest {
             .includePatch( true )
             .includePost( true )
             .build();
-      final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
 
@@ -654,7 +653,7 @@ public class AspectModelOpenApiGeneratorTest {
             .locale( Locale.ENGLISH )
             .generateCommentForSeeAttributes( true )
             .build();
-      final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
       // $comment keyword is an OpenAPI 3.1 feature
@@ -680,13 +679,13 @@ public class AspectModelOpenApiGeneratorTest {
       final DocumentContext context = JsonPath.parse( json );
       assertThat( context.<Object> read( "$['components']['schemas']['" + aspect.getName() + "']" ) ).isNotNull();
       assertThat( context.<String> read(
-            "$['components']['schemas']['" + aspect.getName() + "']['" + AbstractGenerator.SAMM_EXTENSION + "']" ) ).isEqualTo(
+            "$['components']['schemas']['" + aspect.getName() + "']['" + AspectModelJsonSchemaGenerator.SAMM_EXTENSION + "']" ) ).isEqualTo(
             aspect.urn().toString() );
 
       for ( final Property property : aspect.getProperties() ) {
          assertThat( context.<String> read( "$['components']['schemas']"
                + "['" + aspect.getName() + "']['properties']['" + property.getPayloadName() + "']['"
-               + AbstractGenerator.SAMM_EXTENSION
+               + AspectModelJsonSchemaGenerator.SAMM_EXTENSION
                + "']" ) ).isEqualTo( property.urn().toString() );
       }
 
@@ -707,8 +706,8 @@ public class AspectModelOpenApiGeneratorTest {
       final String expectedApiVersion = getExpectedApiVersion( aspect );
       assertThat( openApi.getInfo().getVersion() ).isEqualTo( expectedApiVersion );
 
-      assertThat( node.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ) ).isNotNull();
-      assertThat( node.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ).asText() ).isEqualTo( aspect.urn().toString() );
+      assertThat( node.get( "info" ).get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION ) ).isNotNull();
+      assertThat( node.get( "info" ).get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION ).asText() ).isEqualTo( aspect.urn().toString() );
 
       assertThat( openApi.getServers() ).hasSize( 1 );
       assertThat( openApi.getServers().get( 0 ).getUrl() ).isEqualTo( TEST_BASE_URL + "/api/" + expectedApiVersion );
@@ -725,10 +724,10 @@ public class AspectModelOpenApiGeneratorTest {
       assertThat( openApi.getComponents().getResponses() ).containsKey( aspect.getName() );
       assertThat( openApi.getComponents().getRequestBodies() ).containsKey( aspect.getName() );
       assertThat( openApi.getComponents().getSchemas().get( aspect.getName() ).getExtensions()
-            .get( AbstractGenerator.SAMM_EXTENSION ) ).isNotNull();
+            .get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION ) ).isNotNull();
       assertThat(
             openApi.getComponents().getSchemas().get( aspect.getName() ).getExtensions()
-                  .get( AbstractGenerator.SAMM_EXTENSION )
+                  .get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION )
                   .toString() ).contains( aspect.urn().toString() );
 
       validateReferences( node );
@@ -777,13 +776,12 @@ public class AspectModelOpenApiGeneratorTest {
    }
 
    private void validateYaml( final Aspect aspect ) {
-      final AspectModelOpenApiGenerator apiJsonGenerator = new AspectModelOpenApiGenerator();
       assertThatCode( () -> {
          final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
                .baseUrl( TEST_BASE_URL )
                .resourcePath( TEST_RESOURCE_PATH )
                .build();
-         apiJsonGenerator.apply( aspect, config ).getContentAsYaml();
+         new AspectModelOpenApiGenerator( aspect, config ).generateYaml();
       } ).doesNotThrowAnyException();
    }
 

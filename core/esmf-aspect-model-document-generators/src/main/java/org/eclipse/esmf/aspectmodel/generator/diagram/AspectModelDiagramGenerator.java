@@ -38,6 +38,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.esmf.aspectmodel.generator.AspectGenerator;
 import org.eclipse.esmf.aspectmodel.generator.DocumentGenerationException;
 import org.eclipse.esmf.aspectmodel.generator.LanguageCollector;
 import org.eclipse.esmf.metamodel.Aspect;
@@ -59,11 +60,20 @@ import org.graphper.draw.ExecuteException;
 /**
  * Generate SVG and PNG diagrams from Aspect Models
  */
-public class AspectModelDiagramGenerator {
+public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[], DiagramGenerationConfig, DiagramArtifact> {
+   public static final DiagramGenerationConfig DEFAULT_CONFIG = DiagramGenerationConfigBuilder.builder().build();
+   private static final String FONT_NAME = "Roboto Condensed";
+   private static final String FONT_FILE = "diagram/RobotoCondensed-Regular.ttf";
+
+   /**
+    * @deprecated Replaced by {@link DiagramGenerationConfig.Format}
+    */
+   @Deprecated( forRemoval = true )
    public enum Format {
       PNG,
       SVG;
 
+      @Deprecated( forRemoval = true )
       public String getArtifactFilename( final String aspectName, final Locale language ) {
          return String.format( "%s_%s.%s", aspectName, language.toLanguageTag(), toString().toLowerCase() );
       }
@@ -76,47 +86,33 @@ public class AspectModelDiagramGenerator {
          };
       }
 
+      @Deprecated( forRemoval = true )
       public static String allValues() {
          return String.join( ", ", Stream.of( values() ).map( Format::toString ).toList() );
       }
    }
 
-   private static final String FONT_NAME = "Roboto Condensed";
-   private static final String FONT_FILE = "diagram/RobotoCondensed-Regular.ttf";
-
-   private final Aspect aspect;
-
    public AspectModelDiagramGenerator( final Aspect aspect ) {
-      this.aspect = aspect;
+      this( aspect, DEFAULT_CONFIG );
    }
 
-   InputStream getInputStream( final String resource ) {
+   public AspectModelDiagramGenerator( final Aspect aspect, final DiagramGenerationConfig config ) {
+      super( aspect, config );
+   }
+
+   @Override
+   public Stream<DiagramArtifact> generate() {
+      final String artifactName = "%s_%s.%s".formatted( aspect().getName(), config.language().toLanguageTag(),
+            config.format().toString().toLowerCase() );
+      final String svg = generateSvg();
+      final byte[] content = config.format() == DiagramGenerationConfig.Format.SVG
+            ? svg.getBytes( StandardCharsets.UTF_8 )
+            : generatePng( svg );
+      return Stream.of( new DiagramArtifact( artifactName, content ) );
+   }
+
+   private InputStream getInputStream( final String resource ) {
       return getClass().getClassLoader().getResourceAsStream( resource );
-   }
-
-   private void generatePng( final String svgInput, final OutputStream output ) {
-      // To make the font available during PNG generation, it needs to be registered
-      // in Java Runtime's graphics environment
-      try {
-         final File tmpFontFile = generateTmpFontFile();
-         final Font f = Font.createFont( Font.TRUETYPE_FONT, tmpFontFile );
-         final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-         ge.registerFont( f );
-
-         final String input = svgInput.replaceAll(
-               "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">", "" );
-
-         final TranscoderInput inputSvgImage = new TranscoderInput( new StringReader( input ) );
-         final TranscoderOutput outputPngImage = new TranscoderOutput( output );
-         final PNGTranscoder pngTranscoder = new PNGTranscoder();
-         pngTranscoder.transcode( inputSvgImage, outputPngImage );
-         output.flush();
-         output.close();
-      } catch ( final FontFormatException exception ) {
-         // Will only happen if the loaded .ttf file is invalid
-      } catch ( final IOException | TranscoderException exception ) {
-         throw new DocumentGenerationException( exception );
-      }
    }
 
    private File generateTmpFontFile() throws IOException {
@@ -141,17 +137,9 @@ public class AspectModelDiagramGenerator {
       }
    }
 
-   /**
-    * Generates an SVG diagram for the Aspect in the given target language and write it to the given output stream.
-    * Note that the document will always be encoded in UTF-8, regardless of the platform's encoding.
-    *
-    * @param language the language
-    * @param out the output stream
-    * @throws IOException if writing to the output stream fails
-    */
-   public void generateSvg( final Locale language, final OutputStream out ) throws IOException {
-      final DiagramVisitor diagramVisitor = new DiagramVisitor( language );
-      final Diagram diagram = aspect.accept( diagramVisitor, Optional.empty() );
+   private String generateSvg() {
+      final DiagramVisitor diagramVisitor = new DiagramVisitor( config.language() );
+      final Diagram diagram = aspect().accept( diagramVisitor, Optional.empty() );
       final Graphviz graphviz = render( diagram );
 
       try ( final InputStream fontStream = getInputStream( FONT_FILE ) ) {
@@ -169,12 +157,54 @@ public class AspectModelDiagramGenerator {
                + "\");\n"
                + "}\n"
                + "</style>";
-         final String result = svgDocument
-               .replaceFirst( ">", ">" + css );
-         out.write( result.getBytes( StandardCharsets.UTF_8 ) );
-      } catch ( final ExecuteException exception ) {
+         return svgDocument.replaceFirst( ">", ">" + css );
+      } catch ( final ExecuteException | IOException exception ) {
          throw new DocumentGenerationException( exception );
       }
+   }
+
+   private byte[] generatePng( final String svg ) {
+      // To make the font available during PNG generation, it needs to be registered
+      // in Java Runtime's graphics environment
+      try {
+         final File tmpFontFile = generateTmpFontFile();
+         final Font f = Font.createFont( Font.TRUETYPE_FONT, tmpFontFile );
+         final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+         ge.registerFont( f );
+
+         final String input = svg.replaceAll(
+               "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">", "" );
+
+         final TranscoderInput inputSvgImage = new TranscoderInput( new StringReader( input ) );
+         final ByteArrayOutputStream output = new ByteArrayOutputStream();
+         final TranscoderOutput outputPngImage = new TranscoderOutput( output );
+         final PNGTranscoder pngTranscoder = new PNGTranscoder();
+         pngTranscoder.transcode( inputSvgImage, outputPngImage );
+         output.flush();
+         output.close();
+         return output.toByteArray();
+      } catch ( final FontFormatException exception ) {
+         // Will only happen if the loaded .ttf file is invalid
+         throw new DocumentGenerationException( exception );
+      } catch ( final IOException | TranscoderException exception ) {
+         throw new DocumentGenerationException( exception );
+      }
+   }
+
+   /**
+    * Generates an SVG diagram for the Aspect in the given target language and write it to the given output stream.
+    * Note that the document will always be encoded in UTF-8, regardless of the platform's encoding.
+    *
+    * @param language the language
+    * @param out the output stream
+    * @throws IOException if writing to the output stream fails
+    * @deprecated Use {@link #AspectModelDiagramGenerator(Aspect, DiagramGenerationConfig)} and {@link #generate()} instead
+    */
+   @Deprecated( forRemoval = true )
+   public void generateSvg( final Locale language, final OutputStream out ) throws IOException {
+      final DiagramGenerationConfig config = DiagramGenerationConfigBuilder.builder().language( language ).build();
+      final byte[] content = new AspectModelDiagramGenerator( aspect(), config ).getContent();
+      IOUtils.copy( new ByteArrayInputStream( content ), out );
    }
 
    /**
@@ -185,17 +215,17 @@ public class AspectModelDiagramGenerator {
     * @param language The language for which the diagram should be generated
     * @param out The output stream the diagram is written to
     * @throws DocumentGenerationException if diagram generation fails
+    * @deprecated Use {@link #AspectModelDiagramGenerator(Aspect, DiagramGenerationConfig)} and {@link #generate()} instead
     */
+   @Deprecated( forRemoval = true )
    public void generateDiagram( final Format outputFormat, final Locale language, final OutputStream out ) {
-      final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+      final DiagramGenerationConfig config = DiagramGenerationConfigBuilder.builder()
+            .language( language )
+            .format( outputFormat == Format.PNG ? DiagramGenerationConfig.Format.PNG : DiagramGenerationConfig.Format.SVG )
+            .build();
+      final byte[] content = new AspectModelDiagramGenerator( aspect(), config ).getContent();
       try {
-         generateSvg( language, buffer );
-         final String svgResult = buffer.toString( StandardCharsets.UTF_8 );
-
-         switch ( outputFormat ) {
-            case PNG -> generatePng( svgResult, out );
-            default -> IOUtils.copy( new ByteArrayInputStream( svgResult.getBytes( StandardCharsets.UTF_8 ) ), out );
-         }
+         IOUtils.copy( new ByteArrayInputStream( content ), out );
       } catch ( final IOException exception ) {
          throw new DocumentGenerationException( exception );
       }
@@ -211,14 +241,18 @@ public class AspectModelDiagramGenerator {
     * @param outputFormat One of SVG or PNG
     * @param nameMapper The callback function that maps diagram artifact names to OutputStreams
     * @throws IOException if a write error occurs
+    * @deprecated Use {@link #AspectModelDiagramGenerator(Aspect, DiagramGenerationConfig)} and {@link #generate(Function)} instead
     */
+   @Deprecated( forRemoval = true )
    public void generateDiagrams( final Format outputFormat, final Function<String, OutputStream> nameMapper )
          throws IOException {
-      for ( final Locale language : LanguageCollector.collectUsedLanguages( aspect ) ) {
-         try ( final OutputStream outputStream = nameMapper
-               .apply( outputFormat.getArtifactFilename( aspect.getName(), language ) ) ) {
-            generateDiagram( outputFormat, language, outputStream );
-         }
+      for ( final Locale language : LanguageCollector.collectUsedLanguages( aspect() ) ) {
+         final DiagramGenerationConfig config = DiagramGenerationConfigBuilder.builder()
+               .language( language )
+               .format( outputFormat == Format.PNG ? DiagramGenerationConfig.Format.PNG : DiagramGenerationConfig.Format.SVG )
+               .build();
+         final DiagramArtifact diagramArtifact = new AspectModelDiagramGenerator( aspect(), config ).singleResult();
+         IOUtils.copy( new ByteArrayInputStream( diagramArtifact.getContent() ), nameMapper.apply( diagramArtifact.getId() ) );
       }
    }
 
@@ -233,21 +267,18 @@ public class AspectModelDiagramGenerator {
     * @param language The language for which the diagram should be generated
     * @param nameMapper The callback function that maps diagram artifact names to OutputStreams
     * @throws IOException if a write error occurs
+    * @deprecated Use {@link #AspectModelDiagramGenerator(Aspect, DiagramGenerationConfig)} and {@link #generate(Function)} instead
     */
+   @Deprecated( forRemoval = true )
    public void generateDiagrams( final Set<Format> targetFormats, final Locale language,
          final Function<String, OutputStream> nameMapper ) throws IOException {
-      final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-      generateSvg( language, buffer );
-      final String svgDocument = buffer.toString( StandardCharsets.UTF_8 );
-      final String aspectName = aspect.getName();
-
-      for ( final Format format : targetFormats ) {
-         try ( final OutputStream outputStream = nameMapper.apply( format.getArtifactFilename( aspectName, language ) ) ) {
-            switch ( format ) {
-               case PNG -> generatePng( svgDocument, outputStream );
-               default -> outputStream.write( svgDocument.getBytes( StandardCharsets.UTF_8 ) );
-            }
-         }
+      for ( final Format outputFormat : targetFormats ) {
+         final DiagramGenerationConfig config = DiagramGenerationConfigBuilder.builder()
+               .language( language )
+               .format( outputFormat == Format.PNG ? DiagramGenerationConfig.Format.PNG : DiagramGenerationConfig.Format.SVG )
+               .build();
+         final DiagramArtifact diagramArtifact = new AspectModelDiagramGenerator( aspect(), config ).singleResult();
+         IOUtils.copy( new ByteArrayInputStream( diagramArtifact.getContent() ), nameMapper.apply( diagramArtifact.getId() ) );
       }
    }
 
@@ -261,9 +292,11 @@ public class AspectModelDiagramGenerator {
     * @param targetFormats The set of formats in which diagrams should be generated
     * @param nameMapper The callback function that maps diagram artifact names to OutputStreams
     * @throws IOException if a write error occurs
+    * @deprecated Use {@link #AspectModelDiagramGenerator(Aspect, DiagramGenerationConfig)} and {@link #generate(Function)} instead
     */
+   @Deprecated( forRemoval = true )
    public void generateDiagrams( final Set<Format> targetFormats, final Function<String, OutputStream> nameMapper ) throws IOException {
-      for ( final Locale language : LanguageCollector.collectUsedLanguages( aspect ) ) {
+      for ( final Locale language : LanguageCollector.collectUsedLanguages( aspect() ) ) {
          generateDiagrams( targetFormats, language, nameMapper );
       }
    }

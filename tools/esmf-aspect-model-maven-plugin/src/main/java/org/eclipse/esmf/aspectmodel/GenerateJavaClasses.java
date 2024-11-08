@@ -15,6 +15,7 @@ package org.eclipse.esmf.aspectmodel;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfig;
@@ -36,21 +37,30 @@ public class GenerateJavaClasses extends CodeGenerationMojo {
    @Parameter( defaultValue = "false" )
    private boolean disableJacksonAnnotations;
 
+   @Parameter( defaultValue = "deduction" )
+   protected String jsonTypeInfo;
+
    @Override
    public void executeGeneration() throws MojoExecutionException {
       final Set<Aspect> aspects = loadAspects();
       for ( final Aspect aspect : aspects ) {
          final File templateLibFile = Path.of( templateFile ).toFile();
          validateParameters( templateLibFile );
-         final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
-               .enableJacksonAnnotations( !disableJacksonAnnotations )
-               .packageName( determinePackageName( aspect ) )
-               .executeLibraryMacros( executeLibraryMacros )
-               .templateLibFile( templateLibFile )
-               .namePrefix( namePrefix )
-               .namePostfix( namePostfix )
-               .build();
-         new AspectModelJavaGenerator( aspect, config ).generate( nameMapper );
+         try {
+            final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
+                  .enableJacksonAnnotations( !disableJacksonAnnotations )
+                  .jsonTypeInfo( JavaCodeGenerationConfig.JsonTypeInfoType.valueOf(
+                        Optional.ofNullable( jsonTypeInfo ).map( String::toUpperCase ).orElse( "DEDUCTION" ) ) )
+                  .packageName( determinePackageName( aspect ) )
+                  .executeLibraryMacros( executeLibraryMacros )
+                  .templateLibFile( templateLibFile )
+                  .namePrefix( namePrefix )
+                  .namePostfix( namePostfix )
+                  .build();
+            new AspectModelJavaGenerator( aspect, config ).generate( nameMapper );
+         } catch ( final Exception exception ) {
+            throw new MojoExecutionException( "Could not generate Java classes for Aspect Models", exception );
+         }
       }
       LOG.info( "Successfully generated Java classes for Aspect Models." );
    }

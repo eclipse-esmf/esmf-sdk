@@ -60,12 +60,8 @@ public class AspectToJsonLdCommand extends AbstractCommand {
 
       final AspectModelToJsonLdGenerator generator = new AspectModelToJsonLdGenerator(
             getInputHandler( parentCommand.parentCommand.getInput() ).loadAspect() );
-      try {
-         // we intentionally override the name of the generated artifact here to the name explicitly desired by the user (outputFilePath),
-         // as opposed to what the model thinks it should be called (name)
-         generator.generateJsonLd( name -> getStreamForFile( outputFilePath ) );
-      } catch ( final IOException e ) {
-         throw new CommandException( e );
-      }
+      // we intentionally override the name of the generated artifact here to the name explicitly desired by the user (outputFilePath),
+      // as opposed to what the model thinks it should be called (name)
+      generator.generate( name -> getStreamForFile( outputFilePath ) );
    }
 }

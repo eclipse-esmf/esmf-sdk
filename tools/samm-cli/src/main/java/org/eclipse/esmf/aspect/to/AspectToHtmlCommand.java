@@ -14,15 +14,13 @@
 package org.eclipse.esmf.aspect.to;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
 
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.ResolverConfigurationMixin;
 import org.eclipse.esmf.aspect.AspectToCommand;
 import org.eclipse.esmf.aspectmodel.generator.docu.AspectModelDocumentationGenerator;
+import org.eclipse.esmf.aspectmodel.generator.docu.DocumentationGenerationConfigBuilder;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.Aspect;
 
@@ -76,16 +74,14 @@ public class AspectToHtmlCommand extends AbstractCommand {
 
       try {
          final Aspect aspect = getInputHandler( parentCommand.parentCommand.getInput() ).loadAspect();
-         final AspectModelDocumentationGenerator generator = new AspectModelDocumentationGenerator( aspect );
-         final Map<AspectModelDocumentationGenerator.HtmlGenerationOption, String> generationArgs = new HashMap<>();
-         generationArgs.put( AspectModelDocumentationGenerator.HtmlGenerationOption.STYLESHEET, "" );
+         final DocumentationGenerationConfigBuilder configBuilder = DocumentationGenerationConfigBuilder.builder();
          if ( customCssFile != null ) {
             final String css = FileUtils.readFileToString( new File( customCssFile ), "UTF-8" );
-            generationArgs.put( AspectModelDocumentationGenerator.HtmlGenerationOption.STYLESHEET, css );
+            configBuilder.stylesheet( css );
          }
-         generator.generate( artifact -> getStreamForFile( outputFilePath ), generationArgs, Locale.forLanguageTag( language ) );
-      } catch ( final Exception e ) {
-         throw new CommandException( e );
+         new AspectModelDocumentationGenerator( aspect, configBuilder.build() ).generate( artifact -> getStreamForFile( outputFilePath ) );
+      } catch ( final Exception exception ) {
+         throw new CommandException( exception );
       }
    }
 }

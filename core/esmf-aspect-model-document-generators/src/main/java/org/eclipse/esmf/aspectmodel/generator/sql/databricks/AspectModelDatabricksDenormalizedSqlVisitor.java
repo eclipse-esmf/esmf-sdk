@@ -21,7 +21,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import org.eclipse.esmf.aspectmodel.generator.AbstractGenerator;
+import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Characteristic;
@@ -181,7 +181,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
             columnDeclarations,
             columnDeclarations.isEmpty() ? "" : "\n",
             comment,
-            AbstractGenerator.SAMM_EXTENSION,
+            AspectModelJsonSchemaGenerator.SAMM_EXTENSION,
             aspect.urn()
       );
    }

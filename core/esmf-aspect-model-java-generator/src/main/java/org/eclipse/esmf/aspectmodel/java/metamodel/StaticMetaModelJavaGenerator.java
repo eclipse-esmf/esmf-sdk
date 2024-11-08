@@ -31,9 +31,9 @@ public class StaticMetaModelJavaGenerator extends JavaGenerator {
    }
 
    @Override
-   protected Stream<Artifact<QualifiedName, String>> generateArtifacts() {
+   public Stream<Artifact<QualifiedName, String>> generate() {
       final StaticMetaModelJavaArtifactGenerator<StructureElement> template = new StaticMetaModelJavaArtifactGenerator<>();
-      return applyTemplate( StructureElement.class, template, config )
+      return applyArtifactGenerator( StructureElement.class, template, config )
             .collect( Collectors.toSet() )
             .stream();
    }

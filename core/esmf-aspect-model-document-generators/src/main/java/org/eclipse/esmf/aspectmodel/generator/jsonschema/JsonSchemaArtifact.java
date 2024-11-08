@@ -22,22 +22,8 @@ import org.eclipse.esmf.aspectmodel.generator.AbstractSchemaArtifact;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class JsonSchemaArtifact extends AbstractSchemaArtifact<JsonNode> {
-   private final String id;
-   private final JsonNode content;
-
    public JsonSchemaArtifact( final String id, final JsonNode content ) {
-      this.id = id;
-      this.content = content;
-   }
-
-   @Override
-   public String getId() {
-      return id;
-   }
-
-   @Override
-   public JsonNode getContent() {
-      return content;
+      super( id, content );
    }
 
    @Override

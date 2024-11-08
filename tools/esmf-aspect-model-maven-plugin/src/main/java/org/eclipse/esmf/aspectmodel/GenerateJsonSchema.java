@@ -52,7 +52,7 @@ public class GenerateJsonSchema extends AspectModelMojo {
             final JsonSchemaGenerationConfig config = JsonSchemaGenerationConfigBuilder.builder()
                   .locale( locale )
                   .build();
-            final JsonNode schema = AspectModelJsonSchemaGenerator.INSTANCE.apply( aspect, config ).getContent();
+            final JsonNode schema = new AspectModelJsonSchemaGenerator( aspect, config ).getContent();
             final OutputStream out = getOutputStreamForFile( aspect.getName() + ".schema.json", outputDirectory );
             final ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.writerWithDefaultPrettyPrinter().writeValue( out, schema );

@@ -14,21 +14,19 @@
 package examples;
 
 // tag::imports[]
-import java.io.File;
-import java.io.IOException;
-import java.util.Map;
-
 import org.eclipse.esmf.aspectmodel.generator.docu.AspectModelDocumentationGenerator;
-import org.eclipse.esmf.aspectmodel.generator.docu.AspectModelDocumentationGenerator.HtmlGenerationOption;
+import org.eclipse.esmf.aspectmodel.generator.docu.DocumentationGenerationConfig;
+import org.eclipse.esmf.aspectmodel.generator.docu.DocumentationGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.metamodel.AspectModel;
-// end:imports[]
+// end::imports[]
 
+import java.io.File;
 import org.junit.jupiter.api.Test;
 
 public class GenerateHtml extends AbstractGenerator {
    @Test
-   public void generate() throws IOException {
+   public void generate() {
       // tag::generate[]
       // AspectModel as returned by the AspectModelLoader
       final AspectModel aspectModel = // ...
@@ -36,11 +34,12 @@ public class GenerateHtml extends AbstractGenerator {
             new AspectModelLoader().load(
                   new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) );
       // tag::generate[]
-      final AspectModelDocumentationGenerator generator = // <1>
-            new AspectModelDocumentationGenerator( aspectModel.aspect() );
-
-      final Map<HtmlGenerationOption, String> options = Map.of(); // <2>
-      generator.generate( this::outputStreamForName, options );
+      final DocumentationGenerationConfig config = DocumentationGenerationConfigBuilder.builder() // <1>
+            /* .stylesheet( customCss ) if required */
+            .build();
+      final AspectModelDocumentationGenerator generator = // <2>
+            new AspectModelDocumentationGenerator( aspectModel.aspect(), config );
+      generator.generate( this::outputStreamForName );
       // end::generate[]
    }
 }

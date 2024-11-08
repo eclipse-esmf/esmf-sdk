@@ -26,27 +26,8 @@ import com.fasterxml.jackson.databind.JsonNode;
  * format as self-contained schemas.
  */
 public class AsyncApiSchemaArtifact extends AbstractSchemaArtifact<JsonNode> {
-   private final String id;
-   private final JsonNode content;
-
    protected AsyncApiSchemaArtifact( final String id, final JsonNode content ) {
-      this.id = id;
-      this.content = content;
-   }
-
-   @Override
-   public String getId() {
-      return id;
-   }
-
-   /**
-    * Returns the AsyncAPI schema as a single JSON object
-    *
-    * @return the AsyncAPI schema
-    */
-   @Override
-   public JsonNode getContent() {
-      return content;
+      super( id, content );
    }
 
    /**
@@ -54,6 +35,7 @@ public class AsyncApiSchemaArtifact extends AbstractSchemaArtifact<JsonNode> {
     *
     * @return the AsyncAPI schema
     */
+   @Override
    public String getContentAsYaml() {
       return jsonToYaml( getContent() );
    }

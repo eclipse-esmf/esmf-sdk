@@ -43,8 +43,8 @@ public class FontMeasurement implements MeasureText {
       final AffineTransform affineTransform = font.getTransform();
       final FontRenderContext fontRenderContext = new FontRenderContext( affineTransform, true, true );
       final Rectangle2D stringBounds = font.getStringBounds( text, fontRenderContext );
-      final int width = (int) (stringBounds.getWidth()) + 10;
-      final int height = (int) (stringBounds.getHeight());
+      final int width = (int) ( stringBounds.getWidth() ) + 10;
+      final int height = (int) ( stringBounds.getHeight() );
       return new FlatPoint( height, width );
    }
 }

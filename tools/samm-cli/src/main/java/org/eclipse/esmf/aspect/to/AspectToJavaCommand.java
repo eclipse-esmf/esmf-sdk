@@ -45,6 +45,13 @@ public class AspectToJavaCommand extends AbstractCommand {
          description = "Disable Jackson annotation generation in generated Java classes." )
    private boolean disableJacksonAnnotations = false;
 
+   @CommandLine.Option(
+         names = { "--json-type-info", "-jti" },
+         description = "If Jackson annotations are enabled, determines the value of JsonTypeInfo.Id. Default: DEDUCTION",
+         converter = JsonTypeInfoConverter.class
+   )
+   private JavaCodeGenerationConfig.JsonTypeInfoType jsonTypeInfo;
+
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
          names = { "--template-library-file", "-tlf" },
@@ -74,14 +81,16 @@ public class AspectToJavaCommand extends AbstractCommand {
          description = "Generate Java domain classes for a Static Meta Model" )
    private boolean generateStaticMetaModelJavaClasses = false;
 
+   @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option( names = { "--name-prefix", "-namePrefix" },
          description = "Name prefix for generated Aspect, Entity Java classes" )
    private String namePrefix = "";
 
+   @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option( names = { "--name-postfix", "-namePostfix" },
          description = "Name postfix for generated Aspect, Entity Java classes" )
    private String namePostfix = "";
-  
+
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
          names = { "--details" },
@@ -96,6 +105,15 @@ public class AspectToJavaCommand extends AbstractCommand {
 
    @CommandLine.Mixin
    private ResolverConfigurationMixin resolverConfiguration;
+
+   static class JsonTypeInfoConverter implements CommandLine.ITypeConverter<JavaCodeGenerationConfig.JsonTypeInfoType> {
+      @Override
+      public JavaCodeGenerationConfig.JsonTypeInfoType convert( final String value ) throws Exception {
+         return value == null
+               ? JavaCodeGenerationConfig.JsonTypeInfoType.DEDUCTION
+               : JavaCodeGenerationConfig.JsonTypeInfoType.valueOf( value.toUpperCase() );
+      }
+   }
 
    @Override
    public void run() {
@@ -120,6 +138,7 @@ public class AspectToJavaCommand extends AbstractCommand {
             .orElseGet( () -> aspect.urn().getNamespaceMainPart() );
       return JavaCodeGenerationConfigBuilder.builder()
             .executeLibraryMacros( executeLibraryMacros )
+            .jsonTypeInfo( jsonTypeInfo )
             .templateLibFile( templateLibFile )
             .enableJacksonAnnotations( !disableJacksonAnnotations )
             .packageName( pkgName )

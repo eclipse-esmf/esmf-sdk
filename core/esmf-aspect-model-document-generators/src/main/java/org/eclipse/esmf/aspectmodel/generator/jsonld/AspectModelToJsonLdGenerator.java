@@ -13,43 +13,43 @@
 
 package org.eclipse.esmf.aspectmodel.generator.jsonld;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.io.StringWriter;
-import java.util.function.Function;
+import java.util.stream.Stream;
 
-import org.eclipse.esmf.aspectmodel.generator.AbstractGenerator;
+import org.eclipse.esmf.aspectmodel.generator.JsonGenerator;
 import org.eclipse.esmf.metamodel.Aspect;
 
-public class AspectModelToJsonLdGenerator extends AbstractGenerator {
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import org.apache.jena.riot.RDFLanguages;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-   private static final String JSON_LD_FORMAT = "JSON-LD";
-   private final Aspect aspect;
+public class AspectModelToJsonLdGenerator extends JsonGenerator<JsonLdGenerationConfig, JsonNode, JsonLdArtifact> {
+   public static final JsonLdGenerationConfig DEFAULT_CONFIG = JsonLdGenerationConfigBuilder.builder().build();
+   private static final Logger LOG = LoggerFactory.getLogger( AspectModelToJsonLdGenerator.class );
 
    public AspectModelToJsonLdGenerator( final Aspect aspect ) {
-      this.aspect = aspect;
+      this( aspect, DEFAULT_CONFIG );
+   }
+
+   public AspectModelToJsonLdGenerator( final Aspect aspect, final JsonLdGenerationConfig config ) {
+      super( aspect, config );
    }
 
    /**
     * Generates a JSON-LD representation of the aspect's source model and writes it to an output stream.
-    *
-    * <p>This method takes a function (nameMapper) that maps the name of the aspect to an output stream,
-    * then writes the aspect's source model in JSON-LD format to that stream. The function is expected
-    * to accept the aspect's name as a parameter and return an appropriate OutputStream where the JSON-LD
-    * will be written. The OutputStream is closed automatically when the operation is complete.</p>
-    *
-    * @param nameMapper a function that maps the aspect name to an OutputStream for writing the JSON-LD.
-    * @throws IOException if an I/O error occurs while writing to the output stream.
     */
-   public void generateJsonLd( final Function<String, OutputStream> nameMapper ) throws IOException {
-      try ( final OutputStream output = nameMapper.apply( aspect.getName() ) ) {
-         aspect.getSourceFile().sourceModel().write( output, JSON_LD_FORMAT );
+   @Override
+   public Stream<JsonLdArtifact> generate() {
+      final StringWriter stringWriter = new StringWriter();
+      aspect().getSourceFile().sourceModel().write( stringWriter, RDFLanguages.strLangJSONLD );
+      final String content = stringWriter.toString();
+      try {
+         return Stream.of( new JsonLdArtifact( aspect().getName() + ".json", objectMapper.readTree( content ) ) );
+      } catch ( final JsonProcessingException exception ) {
+         LOG.error( "Could not parse JSON-LD for {}", aspect().getName() );
       }
-   }
-
-   public String generateJsonLd() {
-      StringWriter stringWriter = new StringWriter();
-      aspect.getSourceFile().sourceModel().write( stringWriter, JSON_LD_FORMAT );
-      return stringWriter.toString();
+      return Stream.empty();
    }
 }

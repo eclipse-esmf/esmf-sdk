@@ -14,7 +14,6 @@
 package examples;
 
 // tag::imports[]
-import java.io.File;
 import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -33,6 +32,7 @@ import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.metamodel.AspectModel;
 // end::imports[]
 
+import java.io.File;
 import org.junit.jupiter.api.Test;
 
 public class EditAspectModel {

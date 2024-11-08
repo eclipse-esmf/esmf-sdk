@@ -13,6 +13,8 @@
 
 package org.eclipse.esmf.aspectmodel.generator;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * Represents an artifact during generation, for example a single generated class.
  *
@@ -23,4 +25,8 @@ public interface Artifact<I, T> {
    I getId();
 
    T getContent();
+
+   default byte[] serialize() {
+      return getContent().toString().getBytes( StandardCharsets.UTF_8 );
+   }
 }

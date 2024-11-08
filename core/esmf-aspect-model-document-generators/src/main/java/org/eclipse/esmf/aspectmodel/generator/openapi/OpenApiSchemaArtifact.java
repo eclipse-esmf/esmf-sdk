@@ -28,27 +28,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * {@link #getContentWithSeparateSchemasAsYaml()} as a map with that contains separate schema documents.
  */
 public class OpenApiSchemaArtifact extends AbstractSchemaArtifact<ObjectNode> {
-   private final String id;
-   private final ObjectNode content;
-
    protected OpenApiSchemaArtifact( final String id, final ObjectNode content ) {
-      this.id = id;
-      this.content = content;
-   }
-
-   @Override
-   public String getId() {
-      return id;
-   }
-
-   /**
-    * Returns the OpenAPI schema as a single JSON object
-    *
-    * @return the OpenAPI schema
-    */
-   @Override
-   public ObjectNode getContent() {
-      return content;
+      super( id, content );
    }
 
    /**
@@ -56,6 +37,7 @@ public class OpenApiSchemaArtifact extends AbstractSchemaArtifact<ObjectNode> {
     *
     * @return the OpenAPI schema
     */
+   @Override
    public String getContentAsYaml() {
       return jsonToYaml( getContent() );
    }

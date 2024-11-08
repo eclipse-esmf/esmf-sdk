@@ -84,7 +84,7 @@ public class GenerateSql extends AspectModelMojo {
                      .build();
          final SqlGenerationConfig sqlConfig = new SqlGenerationConfig( SqlGenerationConfig.Dialect.valueOf( dialect.toUpperCase() ),
                SqlGenerationConfig.MappingStrategy.valueOf( strategy.toUpperCase() ), generatorConfig );
-         final SqlArtifact result = AspectModelSqlGenerator.INSTANCE.apply( aspect, sqlConfig );
+         final SqlArtifact result = new AspectModelSqlGenerator( aspect, sqlConfig ).singleResult();
 
          try ( final OutputStream out = getOutputStreamForFile( aspect.getName() + ".sql", outputDirectory ) ) {
             out.write( result.getContent().getBytes() );

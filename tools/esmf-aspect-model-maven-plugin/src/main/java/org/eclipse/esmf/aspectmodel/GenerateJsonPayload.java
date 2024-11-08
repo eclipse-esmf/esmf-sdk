@@ -13,16 +13,18 @@
 
 package org.eclipse.esmf.aspectmodel;
 
-import java.io.IOException;
 import java.util.Set;
 
 import org.eclipse.esmf.aspectmodel.generator.json.AspectModelJsonPayloadGenerator;
+import org.eclipse.esmf.aspectmodel.generator.json.JsonPayloadGenerationConfig;
+import org.eclipse.esmf.aspectmodel.generator.json.JsonPayloadGenerationConfigBuilder;
 import org.eclipse.esmf.metamodel.Aspect;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,18 +32,20 @@ import org.slf4j.LoggerFactory;
 public class GenerateJsonPayload extends AspectModelMojo {
    private static final Logger LOG = LoggerFactory.getLogger( GenerateJsonPayload.class );
 
+   @Parameter( defaultValue = "false" )
+   private boolean addTypeAttribute;
+
    @Override
    public void executeGeneration() throws MojoExecutionException, MojoFailureException {
       validateParameters();
 
       final Set<Aspect> aspects = loadAspects();
-      try {
-         for ( final Aspect context : aspects ) {
-            final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator( context );
-            generator.generateJsonPretty( name -> getOutputStreamForFile( name + ".json", outputDirectory ) );
-         }
-      } catch ( final IOException exception ) {
-         throw new MojoExecutionException( "Could not generate JSON payload.", exception );
+      for ( final Aspect context : aspects ) {
+         final JsonPayloadGenerationConfig config = JsonPayloadGenerationConfigBuilder.builder()
+               .addTypeAttributeForEntityInheritance( addTypeAttribute )
+               .build();
+         final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator( context, config );
+         generator.generate( name -> getOutputStreamForFile( name + ".json", outputDirectory ) );
       }
       LOG.info( "Successfully generated example JSON payloads for Aspect Models." );
    }

@@ -1,45 +1,86 @@
 package org.eclipse.esmf.aspectmodel.generator.zip;
 
 import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.generator.GenerationException;
+import org.eclipse.esmf.aspectmodel.generator.Generator;
 import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
 import org.eclipse.esmf.metamodel.AspectModel;
 
-import org.apache.commons.lang3.function.TriConsumer;
-
-public class AspectModelNamespacePackageCreator implements TriConsumer<AspectModel, OutputStream, String> {
-
+/**
+ * Generator for Namespace Packages as described in <a
+ * href="https://github.com/eclipse-esmf/esmf-semantic-aspect-meta-model/blob/main/documentation/decisions/0009-namespace-packages.md">
+ * ADR-0009</a>.
+ */
+public class AspectModelNamespacePackageCreator
+      extends Generator<AspectModel, String, byte[], NamespacePackageGenerationConfig, NamespacePackageArtifact> {
+   public static final NamespacePackageGenerationConfig DEFAULT_CONFIG = NamespacePackageGenerationConfigBuilder.builder().build();
+   /**
+    * @deprecated Use {@link #AspectModelNamespacePackageCreator(AspectModel, NamespacePackageGenerationConfig)} instead
+    */
+   @Deprecated( forRemoval = true )
+   public static final AspectModelNamespacePackageCreator INSTANCE = new AspectModelNamespacePackageCreator( null );
    private static final String BASE_ARCHIVE_FORMAT_PATH = "aspect-models/";
 
-   public static final AspectModelNamespacePackageCreator INSTANCE = new AspectModelNamespacePackageCreator();
+   public AspectModelNamespacePackageCreator( final AspectModel aspectModel ) {
+      this( aspectModel, DEFAULT_CONFIG );
+   }
 
-   private AspectModelNamespacePackageCreator() {
+   public AspectModelNamespacePackageCreator( final AspectModel aspectModel, final NamespacePackageGenerationConfig config ) {
+      super( aspectModel, config );
+   }
+
+   private AspectModel aspectModel() {
+      return focus;
+   }
+
+   /**
+    * @deprecated Use {@link #AspectModelNamespacePackageCreator(AspectModel, NamespacePackageGenerationConfig)} instead
+    */
+   @Deprecated( forRemoval = true )
+   public void accept( final AspectModel aspectModel, final OutputStream outputStream, final String rootPath ) {
+      final NamespacePackageGenerationConfig config = NamespacePackageGenerationConfigBuilder.builder()
+            .rootPath( rootPath )
+            .build();
+      final NamespacePackageArtifact artifact = new AspectModelNamespacePackageCreator( aspectModel, config ).singleResult();
+      write( artifact, x -> outputStream );
+   }
+
+   /**
+    * Figures out a fitting name for the generated namespace package
+    *
+    * @return a name for the generated namespace package
+    */
+   private String packageName() {
+      if ( aspectModel().aspects().size() == 1 ) {
+         return aspectModel().aspect().getName() + ".zip";
+      }
+      return "package" + aspectModel().hashCode() + ".zip"; // 🤷
    }
 
    @Override
-   public void accept( final AspectModel aspectModel, final OutputStream outputStream, final String rootPath ) {
-      try ( FileOutputStream fos = (FileOutputStream) outputStream;
-            BufferedOutputStream bos = new BufferedOutputStream( fos );
-            ZipOutputStream zos = new ZipOutputStream( bos ) ) {
-
-         for ( final AspectModelFile aspectModelFile : aspectModel.files() ) {
-            addFileToArchive( aspectModelFile, zos, rootPath );
+   public Stream<NamespacePackageArtifact> generate() {
+      final ByteArrayOutputStream out = new ByteArrayOutputStream();
+      try ( final BufferedOutputStream bos = new BufferedOutputStream( out );
+            final ZipOutputStream zos = new ZipOutputStream( bos ) ) {
+         for ( final AspectModelFile aspectModelFile : aspectModel().files() ) {
+            addFileToArchive( aspectModelFile, zos, config.rootPath() );
          }
-      } catch ( IOException e ) {
-         try {
-            throw new IOException( "Error creating zip archive!", e );
-         } catch ( IOException ex ) {
-            throw new RuntimeException( ex );
-         }
+         out.close();
+      } catch ( final IOException exception ) {
+         throw new GenerationException( "Could not creat namespace package for Aspect Model", exception );
       }
+
+      return Stream.of( new NamespacePackageArtifact( packageName(), out.toByteArray() ) );
    }
 
    private static void addFileToArchive( final AspectModelFile file, final ZipOutputStream zos, final String rootPath )
@@ -53,7 +94,7 @@ public class AspectModelNamespacePackageCreator implements TriConsumer<AspectMod
       final ZipEntry zipEntry = new ZipEntry( fileName );
       zos.putNextEntry( zipEntry );
 
-      Writer writer = new OutputStreamWriter( zos );
+      final Writer writer = new OutputStreamWriter( zos );
       writer.write( aspectString );
       writer.flush();
 

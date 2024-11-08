@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.eclipse.esmf.aspectmodel.generator.GenerationConfig;
+import org.eclipse.esmf.aspectmodel.generator.JsonGenerationConfig;
 
 import io.soabase.recordbuilder.core.RecordBuilder;
 
@@ -30,7 +31,7 @@ public record JsonSchemaGenerationConfig(
       boolean generateCommentForSeeAttributes,
       boolean useExtendedTypes,
       List<String> reservedSchemaNames
-) implements GenerationConfig {
+) implements JsonGenerationConfig {
    public JsonSchemaGenerationConfig {
       if ( locale == null ) {
          locale = Locale.ENGLISH;

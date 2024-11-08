@@ -36,9 +36,9 @@ public class TermFactory {
    public JsLiteral literal( final String value, final Object langOrDatatype ) {
       if ( langOrDatatype instanceof JsNamedNode ) {
          return new JsLiteral(
-               NodeFactory.createLiteral( value, TypeMapper.getInstance().getTypeByName( ((JsNamedNode) langOrDatatype).uri ) ) );
+               NodeFactory.createLiteralDT( value, TypeMapper.getInstance().getTypeByName( ( (JsNamedNode) langOrDatatype ).uri ) ) );
       } else if ( langOrDatatype instanceof String ) {
-         return new JsLiteral( NodeFactory.createLiteral( value, (String) langOrDatatype ) );
+         return new JsLiteral( NodeFactory.createLiteralLang( value, (String) langOrDatatype ) );
       } else {
          throw new IllegalArgumentException( "Invalid type of langOrDatatype argument" );
       }

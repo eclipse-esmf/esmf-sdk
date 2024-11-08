@@ -36,8 +36,6 @@ public class GenerateAsyncApiSpec extends AspectModelMojo {
    private static final ObjectMapper YAML_MAPPER = new YAMLMapper().enable( YAMLGenerator.Feature.MINIMIZE_QUOTES );
    private static final Logger LOG = LoggerFactory.getLogger( GenerateAsyncApiSpec.class );
 
-   private final AspectModelAsyncApiGenerator generator = new AspectModelAsyncApiGenerator();
-
    @Parameter( required = true )
    private String outputFormat = "";
 
@@ -70,7 +68,7 @@ public class GenerateAsyncApiSpec extends AspectModelMojo {
                .locale( locale )
                .build();
 
-         final AsyncApiSchemaArtifact asyncApiSpec = generator.apply( aspect, config );
+         final AsyncApiSchemaArtifact asyncApiSpec = new AspectModelAsyncApiGenerator( aspect, config ).singleResult();
          try {
             if ( separateFiles ) {
                writeSchemaWithSeparateFiles( format, asyncApiSpec );

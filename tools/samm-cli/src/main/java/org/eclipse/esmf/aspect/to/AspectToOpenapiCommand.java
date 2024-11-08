@@ -195,7 +195,6 @@ public class AspectToOpenapiCommand extends AbstractCommand {
       setResolverConfig( resolverConfiguration );
 
       final Locale locale = Optional.ofNullable( language ).map( Locale::forLanguageTag ).orElse( Locale.ENGLISH );
-      final AspectModelOpenApiGenerator generator = new AspectModelOpenApiGenerator();
       final Aspect aspect = getInputHandler( parentCommand.parentCommand.getInput() ).loadAspect();
       final ObjectMapper objectMapper = new ObjectMapper();
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
@@ -213,7 +212,7 @@ public class AspectToOpenapiCommand extends AbstractCommand {
             .locale( locale )
             .generateCommentForSeeAttributes( generateCommentForSeeAttributes )
             .build();
-      final OpenApiSchemaArtifact openApiSpec = generator.apply( aspect, config );
+      final OpenApiSchemaArtifact openApiSpec = new AspectModelOpenApiGenerator( aspect, config ).singleResult();
 
       try {
          if ( writeSeparateFiles ) {

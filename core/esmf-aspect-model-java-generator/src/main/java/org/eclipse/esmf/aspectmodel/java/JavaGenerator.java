@@ -12,51 +12,16 @@
  */
 package org.eclipse.esmf.aspectmodel.java;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
-import java.util.function.Function;
-
 import org.eclipse.esmf.aspectmodel.generator.Artifact;
-import org.eclipse.esmf.aspectmodel.generator.Generator;
+import org.eclipse.esmf.aspectmodel.generator.AspectGenerator;
 import org.eclipse.esmf.metamodel.Aspect;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
- * Base class for all generators that want to create java sourcecode.
+ * Base class for all generators that want to create Java source code.
  */
-public abstract class JavaGenerator extends Generator<QualifiedName, String> {
-   private static final Logger LOG = LoggerFactory.getLogger( JavaGenerator.class );
-   protected final JavaCodeGenerationConfig config;
-
+public abstract class JavaGenerator extends
+      AspectGenerator<QualifiedName, String, JavaCodeGenerationConfig, Artifact<QualifiedName, String>> {
    public JavaGenerator( final Aspect aspect, final JavaCodeGenerationConfig config ) {
-      super( aspect );
-      this.config = config;
-   }
-
-   @Override
-   public void write( final Artifact<QualifiedName, String> artifact, final Function<QualifiedName, OutputStream> nameMapper ) {
-      final QualifiedName qualifiedName = artifact.getId();
-      final OutputStream outputStream = nameMapper.apply( qualifiedName );
-      final String content = artifact.getContent();
-
-      try {
-         try ( final Writer writer = new OutputStreamWriter( outputStream, StandardCharsets.UTF_8 ) ) {
-            for ( int i = 0; i < content.length(); i++ ) {
-               writer.write( content.charAt( i ) );
-            }
-            writer.flush();
-         }
-      } catch ( final IOException e ) {
-         LOG.error( "Failure during writing of generated code.", e );
-      }
-   }
-
-   public JavaCodeGenerationConfig getConfig() {
-      return config;
+      super( aspect, config );
    }
 }

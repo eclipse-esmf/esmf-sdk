@@ -21,11 +21,21 @@ import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
 import io.soabase.recordbuilder.core.RecordBuilder;
 
 /**
- * A {@link GenerationConfig} for Java code
+ * A {@link GenerationConfig} for Java code.
+ *
+ * @param enableJacksonAnnotations Controls whether Jackson annotations should be added to the generated Java classes
+ * @param jsonTypeInfo Corresponds to com.fasterxml.jackson.annotation.JsonTypeInfo.Id and selects which JsonTypeInfo kind is used
+ * @param packageName the package name that classes should be created in
+ * @param importTracker the instance of the tracker that tracks imports during code generation
+ * @param executeLibraryMacros determines whether template macros given in templateLibFile should be evaluatated
+ * @param templateLibFile a file containing velocity macros overriding sections in the default code templates
+ * @param namePrefix custom class name prefix
+ * @param namePostfix custom class name postfix
  */
 @RecordBuilder
 public record JavaCodeGenerationConfig(
       boolean enableJacksonAnnotations,
+      JsonTypeInfoType jsonTypeInfo,
       String packageName,
       ImportTracker importTracker,
       boolean executeLibraryMacros,
@@ -34,7 +44,14 @@ public record JavaCodeGenerationConfig(
       String namePostfix
 
 ) implements GenerationConfig {
+   public enum JsonTypeInfoType {
+      NONE, CLASS, MINIMAL_CLASS, NAME, SIMPLE_NAME, DEDUCTION, CUSTOM
+   }
+
    public JavaCodeGenerationConfig {
+      if ( jsonTypeInfo == null ) {
+         jsonTypeInfo = JsonTypeInfoType.DEDUCTION;
+      }
       if ( packageName == null ) {
          packageName = "";
       }
