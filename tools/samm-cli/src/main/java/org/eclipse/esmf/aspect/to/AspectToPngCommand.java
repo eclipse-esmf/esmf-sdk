@@ -20,6 +20,7 @@ import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.ResolverConfigurationMixin;
 import org.eclipse.esmf.aspect.AspectToCommand;
 import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
+import org.eclipse.esmf.aspectmodel.generator.diagram.DiagramGenerationConfig;
 import org.eclipse.esmf.exception.CommandException;
 
 import picocli.CommandLine;
@@ -67,7 +68,7 @@ public class AspectToPngCommand extends AbstractCommand {
       setResolverConfig( resolverConfiguration );
 
       try {
-         generateDiagram( parentCommand.parentCommand.getInput(), AspectModelDiagramGenerator.Format.PNG, outputFilePath, language );
+         generateDiagram( parentCommand.parentCommand.getInput(), DiagramGenerationConfig.Format.PNG, outputFilePath, language );
       } catch ( final IOException e ) {
          throw new CommandException( e );
       }

@@ -51,12 +51,12 @@ public class AspectToSqlCommand extends AbstractCommand {
 
    @CommandLine.Option(
          names = { "--dialect", "-d" },
-         description = "The SQL dialect to generate for (default: ${DEFAULT-VALUE}" )
+         description = "The SQL dialect to generate for (default: ${DEFAULT-VALUE})" )
    private SqlGenerationConfig.Dialect dialect = SqlGenerationConfig.Dialect.DATABRICKS;
 
    @CommandLine.Option(
          names = { "--mapping-strategy", "-s" },
-         description = "The mapping strategy to use (default: ${DEFAULT-VALUE}" )
+         description = "The mapping strategy to use (default: ${DEFAULT-VALUE})" )
    private SqlGenerationConfig.MappingStrategy strategy = SqlGenerationConfig.MappingStrategy.DENORMALIZED;
 
    @CommandLine.Option(
