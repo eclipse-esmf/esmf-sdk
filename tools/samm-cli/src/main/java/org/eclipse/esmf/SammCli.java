@@ -169,6 +169,7 @@ public class SammCli extends AbstractCommand {
       for ( final String arg : argv ) {
          if ( arg.equals( "--disable-color" ) || arg.equals( "-D" ) ) {
             disableColor = true;
+            break;
          }
       }
 

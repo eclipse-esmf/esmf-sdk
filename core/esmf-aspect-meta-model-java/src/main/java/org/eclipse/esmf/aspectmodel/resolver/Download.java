@@ -22,7 +22,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
 
@@ -48,9 +50,10 @@ public class Download {
     * Download the file and return the contents as byte array
     *
     * @param fileUrl the URL
+    * @param headers list of additional headers to set
     * @return the file contents
     */
-   public byte[] downloadFile( final URL fileUrl ) {
+   public byte[] downloadFile( final URL fileUrl, final Map<String, String> headers ) {
       try {
          final HttpClient.Builder clientBuilder = HttpClient.newBuilder()
                .version( HttpClient.Version.HTTP_1_1 )
@@ -59,12 +62,29 @@ public class Download {
          Optional.ofNullable( proxyConfig.proxy() ).ifPresent( clientBuilder::proxy );
          Optional.ofNullable( proxyConfig.authenticator() ).ifPresent( clientBuilder::authenticator );
          final HttpClient client = clientBuilder.build();
-         final HttpRequest request = HttpRequest.newBuilder().uri( fileUrl.toURI() ).build();
+         final String[] headersArray = headers.entrySet().stream()
+               .flatMap( entry -> Stream.of( entry.getKey(), entry.getValue() ) )
+               .toList()
+               .toArray( new String[0] );
+         final HttpRequest request = HttpRequest.newBuilder()
+               .uri( fileUrl.toURI() )
+               .headers( headersArray )
+               .build();
          final HttpResponse<byte[]> response = client.send( request, HttpResponse.BodyHandlers.ofByteArray() );
          return response.body();
       } catch ( final InterruptedException | URISyntaxException | IOException exception ) {
          throw new ModelResolutionException( "Could not retrieve " + fileUrl, exception );
       }
+   }
+
+   /**
+    * Download the file and return the contents as byte array
+    *
+    * @param fileUrl the URL
+    * @return the file contents
+    */
+   public byte[] downloadFile( final URL fileUrl ) {
+      return downloadFile( fileUrl, Map.of() );
    }
 
    /**
@@ -75,8 +95,12 @@ public class Download {
     * @return the file written
     */
    public File downloadFile( final URL fileUrl, final File outputFile ) {
+      return downloadFile( fileUrl, Map.of(), outputFile );
+   }
+
+   public File downloadFile( final URL fileUrl, final Map<String, String> headers, final File outputFile ) {
       try ( final FileOutputStream outputStream = new FileOutputStream( outputFile ) ) {
-         final byte[] fileContent = downloadFile( fileUrl );
+         final byte[] fileContent = downloadFile( fileUrl, headers );
          outputStream.write( fileContent );
       } catch ( final IOException exception ) {
          throw new ModelResolutionException( "Could not write file " + outputFile, exception );

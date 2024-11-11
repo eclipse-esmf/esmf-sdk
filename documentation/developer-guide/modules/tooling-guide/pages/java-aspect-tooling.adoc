@@ -181,6 +181,7 @@ model element definitions:
 * The `EitherStrategy` can be used to chain two or more different `ResolutionStrategy`&#8203;s.
 * The `ExternalResolverStrategy` delegates resolution to an external command such as a script; it is used in
   the implementation of the `--custom-resolver` option of the xref:tooling-guide:samm-cli.adoc[samm-cli].
+* The `GitHubStrategy` resolves model elements from repositories hosted on GitHub.
 
 In addition, custom resolution strategies can be provided by implementing the `ResolutionStrategy` interface.
 

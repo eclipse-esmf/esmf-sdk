@@ -44,17 +44,22 @@ public class ResolverConfigurationMixin {
 
       @CommandLine.Option(
             names = { "--github-directory", "-ghd" },
-            description = "Set the GitHub directory (default: ${DEFAULT-VALUE}" )
+            description = "Set the GitHub directory (default: ${DEFAULT-VALUE})" )
       public String gitHubDirectory = "/";
 
       @CommandLine.Option(
             names = { "--github-branch", "-ghb" },
-            description = "Set the GitHub branch (default: ${DEFAULT-VALUE}" )
+            description = "Set the GitHub branch (default: ${DEFAULT-VALUE})" )
       public String gitHubBranch = "main";
 
       @CommandLine.Option(
             names = { "--github-tag", "-ght" },
-            description = "Set the GitHub tag (default: ${DEFAULT-VALUE}" )
+            description = "Set the GitHub tag" )
       public String gitHubTag = null;
+
+      @CommandLine.Option(
+            names = { "--github-token", "-token" },
+            description = "Set the GitHub token" )
+      public String gitHubToken = null;
    }
 }

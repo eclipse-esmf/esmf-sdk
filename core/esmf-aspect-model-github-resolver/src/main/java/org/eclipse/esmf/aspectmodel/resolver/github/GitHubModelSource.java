@@ -21,7 +21,9 @@ import java.nio.file.Path;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.zip.ZipFile;
@@ -31,7 +33,7 @@ import org.eclipse.esmf.aspectmodel.resolver.AspectModelFileLoader;
 import org.eclipse.esmf.aspectmodel.resolver.Download;
 import org.eclipse.esmf.aspectmodel.resolver.GithubRepository;
 import org.eclipse.esmf.aspectmodel.resolver.ModelSource;
-import org.eclipse.esmf.aspectmodel.resolver.ProxyConfig;
+import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFile;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 import com.google.common.collect.Streams;
@@ -44,39 +46,34 @@ import org.slf4j.LoggerFactory;
  */
 public class GitHubModelSource implements ModelSource {
    private static final Logger LOG = LoggerFactory.getLogger( GitHubModelSource.class );
-   private final ProxyConfig proxyConfig;
    File repositoryZipFile = null;
    private List<AspectModelFile> files = null;
-   protected final GithubRepository repository;
-   protected final String directory;
+   GithubModelSourceConfig config;
 
-   /**
-    * Constructor.
-    *
-    * @param repository the repository this model sources refers to
-    * @param directory the relative directory inside the repository
-    * @param proxyConfig the proxy configuration
-    */
-   public GitHubModelSource( final GithubRepository repository, final String directory, final ProxyConfig proxyConfig ) {
-      this.repository = repository;
-      this.directory = Optional.ofNullable( directory ).map( d ->
-            d.endsWith( "/" ) ? d.substring( 0, d.length() - 1 ) : d ).orElse( "" );
-      this.proxyConfig = proxyConfig;
+   public GitHubModelSource( final GithubModelSourceConfig config ) {
+      this.config = config;
    }
 
    /**
-    * Constructor. Proxy settings are automatically detected.
+    * Convenience constructor for public repositories. Proxy settings are automatically detected, no authentication is used.
     *
     * @param repository the repository this model sources refers to
     * @param directory the relative directory inside the repository
     */
    public GitHubModelSource( final GithubRepository repository, final String directory ) {
-      this( repository, directory, ProxyConfig.detectProxySettings() );
+      this( GithubModelSourceConfigBuilder.builder()
+            .repository( repository )
+            .directory( directory )
+            .build() );
    }
 
    private String sourceUrl( final String filename ) {
-      return "https://%s/%s/%s/blob/%s/%s".formatted( repository.host(), repository.owner(), repository.repository(),
-            repository.branchOrTag().name(), filename );
+      return "https://%s/%s/%s/blob/%s/%s".formatted(
+            config.repository().host().equals( "api.github.com" ) ? "github.com" : config.repository().host(),
+            config.repository().owner(),
+            config.repository().repository(),
+            config.repository().branchOrTag().name(),
+            filename );
    }
 
    private void init() {
@@ -84,11 +81,18 @@ public class GitHubModelSource implements ModelSource {
          final Path tempDirectory = Files.createTempDirectory( "esmf" );
          final File outputZipFile = tempDirectory.resolve( ZonedDateTime.now( ZoneId.systemDefault() )
                .format( DateTimeFormatter.ofPattern( "uuuu-MM-dd.HH.mm.ss" ) ) + ".zip" ).toFile();
-         repositoryZipFile = new Download( proxyConfig ).downloadFile( repository.zipLocation(), outputZipFile );
+         final Map<String, String> headers = new HashMap<>();
+         headers.put( "Accept", "application/vnd.github+json" );
+         headers.put( "X-GitHub-Api-Version", "2022-11-28" );
+         if ( config.token() != null ) {
+            headers.put( "Authorization", "Bearer " + config.token() );
+         }
+         repositoryZipFile = new Download( config.proxyConfig() )
+               .downloadFile( config.repository().zipLocation(), headers, outputZipFile );
          loadFilesFromZip();
          final boolean packageIsDeleted = outputZipFile.delete() && tempDirectory.toFile().delete();
          if ( packageIsDeleted ) {
-            LOG.debug( String.format( "Temporary package file %s was deleted", outputZipFile.getName() ) );
+            LOG.debug( "Temporary package file {} was deleted", outputZipFile.getName() );
          }
       } catch ( final IOException exception ) {
          throw new GitHubResolverException( exception );
@@ -102,21 +106,23 @@ public class GitHubModelSource implements ModelSource {
       try ( final ZipFile zipFile = new ZipFile( repositoryZipFile ) ) {
          LOG.debug( "Loading Aspect Model files from {}", repositoryZipFile );
          files = Streams.stream( zipFile.entries().asIterator() ).flatMap( zipEntry -> {
-            final String pathPrefix = repository.repository() + "-" + repository.branchOrTag().name() + "/" + directory;
-            if ( !zipEntry.getName().startsWith( pathPrefix ) || !zipEntry.getName().endsWith( ".ttl" ) ) {
+            final String path = zipEntry.getName().substring( zipEntry.getName().indexOf( '/' ) + 1 );
+            if ( !zipEntry.getName().endsWith( ".ttl" ) ) {
                return Stream.empty();
             }
-            final int offset = pathPrefix.endsWith( "/" ) ? 0 : 1;
-            final String path = zipEntry.getName().substring( pathPrefix.length() + offset );
-            // Path should now look like org.eclipse.esmf.example/1.0.0/File.ttl
             final String[] parts = path.split( "/" );
-            if ( parts.length != 3 || AspectModelUrn.from( "urn:samm:" + parts[0] + ":" + parts[1] ).isFailure() ) {
+            if ( parts.length < 3 ||
+                  AspectModelUrn.from( "urn:samm:" + parts[parts.length - 3] + ":" + parts[parts.length - 2] ).isFailure() ) {
                LOG.debug( "Tried to load file {} but the path contains no valid URN structure", zipEntry.getName() );
                return Stream.<AspectModelFile> empty();
             }
-            final String relativeFilePath = zipEntry.getName().substring( zipEntry.getName().indexOf( "/" ) + 1 );
-            return Try.of( () -> zipFile.getInputStream( zipEntry ) ).toJavaStream().map( inputStream ->
-                  AspectModelFileLoader.load( inputStream, Optional.of( URI.create( sourceUrl( relativeFilePath ) ) ) ) );
+            final URI uri = URI.create( sourceUrl( path ) );
+            final Try<RawAspectModelFile> file = Try.of( () -> zipFile.getInputStream( zipEntry ) )
+                  .map( inputStream -> AspectModelFileLoader.load( inputStream, Optional.of( uri ) ) );
+            if ( file.isFailure() ) {
+               LOG.debug( "Tried to load {}, but it failed", uri );
+            }
+            return file.toJavaStream();
          } ).toList();
       } catch ( final IOException exception ) {
          throw new GitHubResolverException( exception );
