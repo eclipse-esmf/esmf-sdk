@@ -27,6 +27,9 @@ import org.eclipse.esmf.aspectmodel.VersionNumber;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Represents the root directory of the directory hierarchy in which Aspect Models are organized.
  * The directory is assumed to contain a file system hierarchy as follows: {@code N/V/X.ttl} where N is the namespace,
@@ -43,6 +46,8 @@ import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
  * </pre>
  */
 public class StructuredModelsRoot extends ModelsRoot {
+   private static final Logger LOG = LoggerFactory.getLogger( StructuredModelsRoot.class );
+
    public StructuredModelsRoot( final Path path ) {
       super( path );
    }
@@ -83,8 +88,11 @@ public class StructuredModelsRoot extends ModelsRoot {
             .resolve( namespace.getNamespaceMainPart() )
             .resolve( namespace.getVersion() )
             .toFile();
-      return Arrays.stream( Objects.requireNonNull( namespaceDirectory.listFiles( file ->
-                  file.getName().endsWith( ".ttl" ) ) ) )
-            .map( File::toURI );
+      final File[] files = namespaceDirectory.listFiles( file -> file.getName().endsWith( ".ttl" ) );
+      if ( files == null ) {
+         LOG.debug( "Supposed models root {} does not contain any .ttl files", namespaceDirectory );
+         return Stream.empty();
+      }
+      return Arrays.stream( Objects.requireNonNull( files ) ).map( File::toURI );
    }
 }

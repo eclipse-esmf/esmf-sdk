@@ -16,25 +16,22 @@ package org.eclipse.esmf.aspectmodel;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-import java.io.File;
-
 import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.Test;
 
+@SuppressWarnings( "JUnitMixedFramework" )
 public class GenerateDocumentationTest extends AspectModelMojoTest {
    @Test
    public void testGenerateDocumentation() throws Exception {
-      final File testPom = getTestFile( "src/test/resources/test-pom-valid-aspect-model-output-directory.xml" );
-      final Mojo generateDocumentation = lookupMojo( "generateDocumentation", testPom );
+      final Mojo generateDocumentation = getMojo( "test-pom-valid-aspect-model-output-directory", "generateDocumentation" );
       assertThatCode( generateDocumentation::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "Aspect_en.html" ) ).exists();
    }
 
    @Test
    public void testGenerateDocumentationInvalidAspectModel() throws Exception {
-      final File testPom = getTestFile( "src/test/resources/generate-documentation-pom-invalid-aspect-model.xml" );
-      final Mojo generateDocumentation = lookupMojo( "generateDocumentation", testPom );
+      final Mojo generateDocumentation = getMojo( "generate-documentation-pom-invalid-aspect-model", "generateDocumentation" );
       assertThatCode( generateDocumentation::execute )
             .isInstanceOf( MojoExecutionException.class )
             .hasMessageContaining( "Syntax error in line 17, column 2" );

@@ -17,19 +17,34 @@
    <modelVersion>4.0.0</modelVersion>
 
    <groupId>org.eclipse.esmf</groupId>
-   <artifactId>test-aspect-model-mojo</artifactId>
+   <artifactId>test-mojos</artifactId>
    <version>1.0</version>
    <packaging>jar</packaging>
-   <name>Test Aspect Model Mojo</name>
+   <name>Test Mojos</name>
 
    <build>
       <plugins>
          <plugin>
             <artifactId>esmf-aspect-model-maven-plugin</artifactId>
             <configuration>
+               <modelsRootDirectory>${basedir}/../../core/esmf-test-aspect-models/src/main/resources/valid</modelsRootDirectory>
                <includes>
                   <include>urn:samm:org.eclipse.esmf.test:1.0.0#Aspect</include>
                </includes>
+               <outputDirectory>${basedir}/target/test-artifacts</outputDirectory>
+               <!--
+               This implies having a <server> entry in ~/.m2/settings.xml that looks like this:
+               <server>
+                  <id>test-github-config</id>
+                     <configuration>
+                     <repository>somegithuborg/somegithub-repo</repository>
+                     <directory>some/directory</directory>
+                     <branch>main</branch>
+                     <token>some_github_token</token>
+                  </configuration>
+               </server>
+               -->
+               <githubServerId>test-github-config</githubServerId>
             </configuration>
          </plugin>
       </plugins>

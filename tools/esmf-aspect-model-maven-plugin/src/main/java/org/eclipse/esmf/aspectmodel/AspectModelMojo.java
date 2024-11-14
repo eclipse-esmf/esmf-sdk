@@ -17,15 +17,23 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
+import org.eclipse.esmf.aspectmodel.resolver.GithubRepository;
+import org.eclipse.esmf.aspectmodel.resolver.ProxyConfig;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
+import org.eclipse.esmf.aspectmodel.resolver.github.GitHubStrategy;
+import org.eclipse.esmf.aspectmodel.resolver.github.GithubModelSourceConfig;
+import org.eclipse.esmf.aspectmodel.resolver.github.GithubModelSourceConfigBuilder;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
@@ -35,14 +43,21 @@ import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectModel;
 
 import io.vavr.control.Either;
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.settings.Proxy;
+import org.apache.maven.settings.Server;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
 
 public abstract class AspectModelMojo extends AbstractMojo {
-   @Parameter( defaultValue = "${basedir}/src/main/resources/aspects" )
-   private String modelsRootDirectory = System.getProperty( "user.dir" ) + "/src/main/resources/aspects";
+   @Parameter( defaultValue = "${basedir}" )
+   private String basedir;
+
+   @Parameter
+   private String modelsRootDirectory;
 
    @Parameter( required = true, property = "include" )
    protected Set<String> includes;
@@ -52,6 +67,14 @@ public abstract class AspectModelMojo extends AbstractMojo {
 
    @Parameter( defaultValue = "false" )
    protected boolean detailedValidationMessages;
+
+   @Parameter
+   protected String githubServerId;
+
+   @Parameter( defaultValue = "${session}", readonly = true )
+   private MavenSession session;
+
+   protected GithubModelSourceConfig gitHubConfig;
 
    /**
     * Skip the execution.
@@ -74,14 +97,26 @@ public abstract class AspectModelMojo extends AbstractMojo {
    }
 
    private Map<AspectModel, Aspect> loadAspectModels() throws MojoExecutionException {
-      final Path modelsRoot = Path.of( modelsRootDirectory );
-      final ResolutionStrategy fileSystemStrategy = new FileSystemStrategy( modelsRoot );
+      final List<ResolutionStrategy> strategies = new ArrayList<>();
+      if ( modelsRootDirectory != null ) {
+         final Path modelsRoot = Path.of( modelsRootDirectory );
+         strategies.add( new FileSystemStrategy( modelsRoot ) );
+      }
+      if ( gitHubConfig != null ) {
+         strategies.add( new GitHubStrategy( gitHubConfig ) );
+      }
+      if ( strategies.isEmpty() ) {
+         throw new MojoExecutionException(
+               "Neither modelsRootDirectory nor gitHubServerId were configured, don't know how to resolve Aspect Models" );
+      }
+
       final Map<AspectModel, Aspect> result = new HashMap<>();
 
+      final AspectModelLoader aspectModelLoader = new AspectModelLoader( strategies );
       for ( final String inputUrn : includes ) {
          final AspectModelUrn urn = AspectModelUrn.fromUrn( inputUrn );
          final Either<List<Violation>, AspectModel> loadingResult = new AspectModelValidator().loadModel( () ->
-               new AspectModelLoader( fileSystemStrategy ).load( urn ) );
+               aspectModelLoader.load( urn ) );
          if ( loadingResult.isLeft() ) {
             final List<Violation> violations = loadingResult.getLeft();
             final String errorMessage = detailedValidationMessages
@@ -104,7 +139,7 @@ public abstract class AspectModelMojo extends AbstractMojo {
          final Path outputPath = Path.of( outputDirectory );
          Files.createDirectories( outputPath );
          return new FileOutputStream( outputPath.resolve( artifactName ).toFile() );
-      } catch ( final IOException e ) {
+      } catch ( final IOException exception ) {
          throw new RuntimeException( "Could not write to output " + outputDirectory );
       }
    }
@@ -115,6 +150,55 @@ public abstract class AspectModelMojo extends AbstractMojo {
          getLog().info( "Generation is skipped." );
          return;
       }
+
+      if ( githubServerId != null ) {
+         if ( session == null ) {
+            getLog().warn( "Could not read Maven session, ignoring GitHub server configuration." );
+         } else {
+            final Server server = session.getSettings().getServer( githubServerId );
+            if ( server != null ) {
+               final Xpp3Dom dom = (Xpp3Dom) server.getConfiguration();
+               final String[] repositoryParts = Optional.ofNullable( dom.getChild( "repository" ) )
+                     .map( Xpp3Dom::getValue )
+                     .map( repository -> repository.split( "/" ) )
+                     .orElseThrow( () -> new MojoExecutionException( "Expected <repository> in settings.xml is missing" ) );
+               final String directory = Optional.ofNullable( dom.getChild( "directory" ) )
+                     .map( Xpp3Dom::getValue )
+                     .orElse( "" );
+               final String token = Optional.ofNullable( dom.getChild( "token" ) )
+                     .map( Xpp3Dom::getValue )
+                     .orElse( null );
+
+               final GithubRepository.Ref ref = Optional.ofNullable( dom.getChild( "branch" ) )
+                     .map( Xpp3Dom::getValue )
+                     .<GithubRepository.Ref> map( GithubRepository.Branch::new )
+                     .or( () -> Optional.ofNullable( dom.getChild( "tag" ) )
+                           .map( Xpp3Dom::getValue )
+                           .map( GithubRepository.Tag::new ) )
+                     .orElse( new GithubRepository.Branch( "main" ) );
+
+               final List<Proxy> proxies = session.getSettings().getProxies();
+               final ProxyConfig proxyConfig = Optional.ofNullable( proxies ).stream().flatMap( Collection::stream )
+                     .filter( proxy -> proxy.getProtocol().equals( "https" ) )
+                     .findFirst()
+                     .or( () -> Optional.ofNullable( proxies ).stream().flatMap( Collection::stream )
+                           .filter( proxy -> proxy.getProtocol().equals( "http" ) )
+                           .findFirst() )
+                     .filter( Proxy::isActive )
+                     .map( proxy -> ProxyConfig.from( proxy.getHost(), proxy.getPort() ) )
+                     .orElse( ProxyConfig.detectProxySettings() );
+
+               final GithubRepository repository = new GithubRepository( repositoryParts[0], repositoryParts[1], ref );
+               gitHubConfig = GithubModelSourceConfigBuilder.builder()
+                     .proxyConfig( proxyConfig )
+                     .repository( repository )
+                     .directory( directory )
+                     .token( token )
+                     .build();
+            }
+         }
+      }
+
       executeGeneration();
    }
 

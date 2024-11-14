@@ -56,6 +56,10 @@
          <groupId>org.eclipse.esmf</groupId>
          <artifactId>esmf-aspect-model-starter</artifactId>
       </dependency>
+      <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-model-github-resolver</artifactId>
+      </dependency>
 
       <dependency>
          <groupId>org.apache.maven.plugin-testing</groupId>

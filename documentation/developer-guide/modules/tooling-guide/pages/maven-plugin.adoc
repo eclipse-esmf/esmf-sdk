@@ -18,10 +18,44 @@ To include the plugin, use the following dependency:
 </dependency>
 ----
 
-NOTE: The current implementation of the `esmf-aspect-model-maven-plugin` uses the
-`FileSystemStrategy` to resolve Aspect Models. See
+[NOTE]
+====
+The current implementation of the `esmf-aspect-model-maven-plugin` uses the
+`FileSystemStrategy` or the `GitHubStrategy`, or combination of both, to resolve Aspect Models. See
 xref:java-aspect-tooling.adoc#understanding-model-resolution[Understanding Model Resolution] for
-more information.
+more information. Generally, the configuration for every Maven goal described here must be
+configured using either the `modelsRootDirectory` or the `githubServerId` attribute, or both.
+
+The `modelsRootDirectory` points to a (relative or absolute) local file system directory path.
+
+The `githubServerId` points to the `<id>` of a `<server>` configuration in the Maven settings. For
+example, if the configuration for the esmf-aspect-model-maven-plugin contains
+`<githubServerId>my-gh-repo</githubServerId>`, your https://maven.apache.org/settings.html[Maven
+Settings] should contain a corresonding `<server>` entry:
+
+[source,xml,subs=attributes+]
+----
+<settings>
+  <!-- ... -->
+  <servers>
+    <!-- ... -->
+    <server>
+      <id>my-gh-repo</id>
+      <configuration>
+        <!-- Which repository on GitHub does this server refer to -->
+        <repository>ownername/repositoryname</repository>
+        <!-- Which directory inside the repository is the models root -->
+        <directory>src/main/resources/aspects</directory>
+        <!-- branch (or tag) -->
+        <branch>main</branch>
+        <!-- Only required for private repositories: GitHub access token -->
+        <token>...</token>
+      </configuration>
+    </server>
+  </servers>
+</settings>
+----
+====
 
 == Validating an Aspect Model
 
@@ -45,6 +79,7 @@ Usage:
         </executions>
         <configuration>
            <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
+           <githubServerId>my-github-repo</githubServerId>
            <includes>
               <include>$\{urn-of-aspect-model-to-be-included}</include>
            </includes>
@@ -61,6 +96,7 @@ Configuration Properties:
 | Property | Description | Type | Default Value | Required
 | `detailedValidationMessages` | Print detailed validation messages | `Boolean` | `false` | {nok}
 | `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
+| `githubServerId` | The id of the `<server>` entry describing the GitHub repository to resolve models from. | `String` | none | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 |===
 
@@ -106,6 +142,7 @@ Configuration Properties:
 | Property | Description | Type | Default Value | Required
 | `detailedValidationMessages` | Detailed validation messages if the model can not be loaded | `Boolean` | `false` | {nok}
 | `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
+| `githubServerId` | The id of the `<server>` entry describing the GitHub repository to resolve models from. | `String` | none | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated Java files will be written to. | `String` | none | {ok}
 | `packageName` | The package name for the generated Java files. This may also
@@ -164,6 +201,7 @@ Configuration Properties:
 | Property | Description | Type | Default Value | Required
 | `detailedValidationMessages` | Detailed validation messages if the model can not be loaded | `Boolean` | `false` | {nok}
 | `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
+| `githubServerId` | The id of the `<server>` entry describing the GitHub repository to resolve models from. | `String` | none | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated Java files will be written to. | `String` | none | {ok}
 | `packageName` | The package name for the generated Java files. This may also
@@ -217,6 +255,7 @@ Configuration Properties:
 | Property | Description | Type | Default Value | Required
 | `detailedValidationMessages` | Detailed validation messages if the model can not be loaded | `Boolean` | `false` | {nok}
 | `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
+| `githubServerId` | The id of the `<server>` entry describing the GitHub repository to resolve models from. | `String` | none | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated JSON Schema will be written to. | `String` | none | {ok}
 | `language` | The language from the model for which a JSON Schema should be generated. | `String` | en | {nok}
@@ -264,6 +303,7 @@ Configuration Properties:
 | Property | Description | Type | Default Value | Required
 | `detailedValidationMessages` | Detailed validation messages if the model can not be loaded | `Boolean` | `false` | {nok}
 | `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
+| `githubServerId` | The id of the `<server>` entry describing the GitHub repository to resolve models from. | `String` | none | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated OpenAPI Specification will be written to. | `String` | none | {ok}
 | `aspectApiBaseUrl` | The base URL for the Aspect API OpenAPI specification. | `String` | none | {ok}
@@ -325,6 +365,7 @@ Configuration Properties:
 |===
 | Property | Description | Type | Default Value | Required
 | `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
+| `githubServerId` | The id of the `<server>` entry describing the GitHub repository to resolve models from. | `String` | none | {nok}
 | `outputDirectory` | The path to the directory where the generated AsyncAPI Specification will be written to. | `String` | none | {ok}
 | `applicationId` | Sets the application id, e.g. an identifying URL | `String` | none | {nok}
 | `channelAddress` | Sets the channel address (i.e., for MQTT, the topic's name) | `String` | none | {nok}
@@ -373,6 +414,7 @@ Configuration Properties:
 |===
 | Property | Description | Type | Default Value | Required
 | `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
+| `githubServerId` | The id of the `<server>` entry describing the GitHub repository to resolve models from. | `String` | none | {nok}
 | `outputDirectory` | The path to the directory where the generated SQL script will be written to. | `String` | none | {ok}
 | `dialect` | The SQL dialect to generate for. | `String` | `databricks` | {nok}
 | `strategy` | The mapping strategy to use. | `String` | `denormalized` | {nok}
@@ -427,6 +469,7 @@ Configuration Properties:
 | Property | Description | Type | Default Value | Required
 | `detailedValidationMessages` | Detailed validation messages if the model can not be loaded | `Boolean` | `false` | {nok}
 | `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
+| `githubServerId` | The id of the `<server>` entry describing the GitHub repository to resolve models from. | `String` | none | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated HTML document will be written to. | `String` | none | {ok}
 | `htmlCustomCSSFilePath` | Path to a CSS file with custom styles to be included in the generated HTML documentation. | `String` | none | {nok}
@@ -476,6 +519,7 @@ Configuration Properties:
 | Property | Description | Type | Default Value | Required
 | `detailedValidationMessages` | Detailed validation messages if the model can not be loaded | `Boolean` | `false` | {nok}
 | `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
+| `githubServerId` | The id of the `<server>` entry describing the GitHub repository to resolve models from. | `String` | none | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated diagrams will be written to. | `String` | none | {ok}
 | `targetFormats` | A list formats in which the diagram(s) will be created. A diagram will be generated for each specified format. | `String` | none | {ok}
@@ -522,6 +566,7 @@ Configuration Properties:
 | Property | Description | Type | Default Value | Required
 | `detailedValidationMessages` | Detailed validation messages if the model can not be loaded | `Boolean` | `false` | {nok}
 | `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
+| `githubServerId` | The id of the `<server>` entry describing the GitHub repository to resolve models from. | `String` | none | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated JSON payload will be written to. | `String` | none | {ok}
 | `addTypeAttribute` | Adds a `@type` attribute for inherited Entities | `Boolean` | `false` | {ok}
@@ -566,6 +611,7 @@ Configuration Properties:
 | Property | Description | Type | Default Value | Required
 | `detailedValidationMessages` | Detailed validation messages if the model can not be loaded | `Boolean` | `false` | {nok}
 | `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
+| `githubServerId` | The id of the `<server>` entry describing the GitHub repository to resolve models from. | `String` | none | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated JSON-LD will be written to. | `String` | none | {ok}
 |===
@@ -614,6 +660,7 @@ Configuration Properties:
 | Property | Description | Type | Default Value | Required
 | `detailedValidationMessages` | Detailed validation messages if the model can not be loaded | `Boolean` | `false` | {nok}
 | `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
+| `githubServerId` | The id of the `<server>` entry describing the GitHub repository to resolve models from. | `String` | none | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory containing the pretty printed Aspect Model. | `String` | none | {ok}
 |===
@@ -663,6 +710,7 @@ Configuration Properties:
 | Property | Description | Type | Default Value | Required
 | `detailedValidationMessages` | Detailed validation messages if the model can not be loaded | `Boolean` | `false` | {nok}
 | `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
+| `githubServerId` | The id of the `<server>` entry describing the GitHub repository to resolve models from. | `String` | none | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated AAS file will be written to. | `String` | none | {ok}
 | `targetFormat` | The format to write, one of `aasx`, `xml` or `json`. | `String` | none | {ok}

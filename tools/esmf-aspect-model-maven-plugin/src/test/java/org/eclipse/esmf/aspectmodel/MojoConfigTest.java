@@ -13,37 +13,28 @@
 
 package org.eclipse.esmf.aspectmodel;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-import java.io.File;
+import org.eclipse.esmf.aspectmodel.resolver.github.GithubModelSourceConfig;
 
 import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.junit.Test;
 
+@SuppressWarnings( "JUnitMixedFramework" )
 public class MojoConfigTest extends AspectModelMojoTest {
-
    @Test
    public void testInvalidModelsRoot() throws Exception {
-      final File testPom = getTestFile( "src/test/resources/test-pom-invalid-models-root.xml" );
-      final Mojo validate = lookupMojo( "validate", testPom );
+      final Mojo validate = getMojo( "test-pom-invalid-models-root", "validate" );
       assertThatCode( validate::execute )
             .isInstanceOf( MojoExecutionException.class )
             .hasMessageContaining( "Validation failed" );
    }
 
    @Test
-   public void testDefaultModelsRoot() throws Exception {
-      final File testPom = getTestFile( "src/test/resources/test-pom-default-models-root.xml" );
-      final Mojo validate = lookupMojo( "validate", testPom );
-      assertThatCode( validate::execute ).doesNotThrowAnyException();
-   }
-
-   @Test
    public void testMissingIncludes() throws Exception {
-      final File testPom = getTestFile( "src/test/resources/test-pom-missing-includes.xml" );
-      final Mojo validate = lookupMojo( "validate", testPom );
+      final Mojo validate = getMojo( "test-pom-missing-includes", "validate" );
       assertThatCode( validate::execute )
             .isInstanceOf( MojoExecutionException.class )
             .hasMessage( "Missing configuration. Please provide Aspect Models to be included." );
@@ -51,11 +42,29 @@ public class MojoConfigTest extends AspectModelMojoTest {
 
    @Test
    public void testMissingInclude() throws Exception {
-      final File testPom = getTestFile( "src/test/resources/test-pom-missing-include.xml" );
-      final Mojo validate = lookupMojo( "validate", testPom );
+      final Mojo validate = getMojo( "test-pom-missing-include", "validate" );
       assertThatCode( validate::execute )
             .isInstanceOf( MojoExecutionException.class )
             .hasMessage( "Missing configuration. Please provide Aspect Models to be included." );
    }
 
+   @Test
+   public void testGitHubServerConfig() throws Exception {
+      final String serverConfig = """
+            <configuration>
+                <repository>test-org/test-repository</repository>
+                <directory>src/main/resources/aspects</directory>
+                <branch>main</branch>
+                <token>THE_TOKEN</token>
+            </configuration>
+            """;
+      final AspectModelMojo validate = (AspectModelMojo) getMojo( "test-pom-github-server-config", "validate", serverConfig );
+      validate.execute();
+      final GithubModelSourceConfig config = validate.gitHubConfig;
+      assertThat( config.repository().owner() ).isEqualTo( "test-org" );
+      assertThat( config.repository().repository() ).isEqualTo( "test-repository" );
+      assertThat( config.directory() ).isEqualTo( "src/main/resources/aspects" );
+      assertThat( config.repository().branchOrTag().name() ).isEqualTo( "main" );
+      assertThat( config.token() ).isEqualTo( "THE_TOKEN" );
+   }
 }
