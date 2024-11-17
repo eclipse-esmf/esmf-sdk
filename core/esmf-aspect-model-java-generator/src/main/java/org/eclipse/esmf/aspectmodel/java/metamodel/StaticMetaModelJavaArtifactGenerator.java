@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
@@ -90,6 +91,7 @@ import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;
 import org.eclipse.esmf.metamodel.impl.DefaultComplexType;
 import org.eclipse.esmf.metamodel.impl.DefaultEntity;
 import org.eclipse.esmf.metamodel.impl.DefaultScalar;
+import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.staticmetamodel.PropertyContainer;
@@ -170,6 +172,7 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
             .put( "DefaultRangeConstraint", DefaultRangeConstraint.class )
             .put( "DefaultRegularExpressionConstraint", DefaultRegularExpressionConstraint.class )
             .put( "DefaultScalar", DefaultScalar.class )
+            .put( "DefaultScalarValue", DefaultScalarValue.class )
             .put( "DefaultSet", DefaultSet.class )
             .put( "DefaultSingleEntity", DefaultSingleEntity.class )
             .put( "DefaultSortedSet", DefaultSortedSet.class )

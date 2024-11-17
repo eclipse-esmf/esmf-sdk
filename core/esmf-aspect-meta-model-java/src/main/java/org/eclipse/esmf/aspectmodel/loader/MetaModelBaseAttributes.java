@@ -25,7 +25,10 @@ import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.HasDescription;
 import org.eclipse.esmf.metamodel.ModelElement;
+import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.datatype.LangString;
+import org.eclipse.esmf.metamodel.impl.DefaultScalar;
+import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
 
 /**
  * Wrapper class for the attributes all Aspect Meta Model elements have.
@@ -38,13 +41,16 @@ public class MetaModelBaseAttributes implements HasDescription {
    private final boolean isAnonymous;
    private final AspectModelFile sourceFile;
 
+   private final ScalarValue exampleValue;
+
    private MetaModelBaseAttributes(
          final AspectModelUrn urn,
          final Set<LangString> preferredNames,
          final Set<LangString> descriptions,
          final List<String> see,
          final boolean isAnonymous,
-         final AspectModelFile sourceFile
+         final AspectModelFile sourceFile,
+         final ScalarValue exampleValue
    ) {
       this.urn = urn;
       this.preferredNames = preferredNames;
@@ -52,6 +58,7 @@ public class MetaModelBaseAttributes implements HasDescription {
       this.see = see;
       this.isAnonymous = isAnonymous;
       this.sourceFile = sourceFile;
+      this.exampleValue = exampleValue;
    }
 
    public AspectModelUrn urn() {
@@ -86,6 +93,10 @@ public class MetaModelBaseAttributes implements HasDescription {
       return sourceFile;
    }
 
+   public ScalarValue getExampleValue() {
+      return exampleValue;
+   }
+
    public static Builder builder() {
       return new Builder();
    }
@@ -105,7 +116,7 @@ public class MetaModelBaseAttributes implements HasDescription {
 
    @Override
    public int hashCode() {
-      return Objects.hash( urn, preferredNames, descriptions, see, isAnonymous );
+      return Objects.hash( urn, preferredNames, descriptions, see, isAnonymous, exampleValue );
    }
 
    /**
@@ -116,7 +127,8 @@ public class MetaModelBaseAttributes implements HasDescription {
     */
    public static MetaModelBaseAttributes fromModelElement( final ModelElement modelElement ) {
       return new MetaModelBaseAttributes( modelElement.urn(), modelElement.getPreferredNames(),
-            modelElement.getDescriptions(), modelElement.getSee(), modelElement.isAnonymous(), modelElement.getSourceFile() );
+            modelElement.getDescriptions(), modelElement.getSee(), modelElement.isAnonymous(), modelElement.getSourceFile(),
+            new DefaultScalarValue( "", new DefaultScalar( "http://www.w3.org/2001/XMLSchema#string" ) ) );
    }
 
    public static class Builder {
@@ -126,6 +138,8 @@ public class MetaModelBaseAttributes implements HasDescription {
       private final List<String> see = new ArrayList<>();
       private boolean isAnonymous = true;
       private AspectModelFile sourceFile;
+
+      private ScalarValue exampleValue;
 
       public Builder withUrn( final String urn ) {
          return withUrn( AspectModelUrn.fromUrn( urn ) );
@@ -190,8 +204,13 @@ public class MetaModelBaseAttributes implements HasDescription {
          return this;
       }
 
+      public Builder withExampleValue( final ScalarValue exampleValue ) {
+         this.exampleValue = exampleValue;
+         return this;
+      }
+
       public MetaModelBaseAttributes build() {
-         return new MetaModelBaseAttributes( urn, preferredNames, descriptions, see, isAnonymous, sourceFile );
+         return new MetaModelBaseAttributes( urn, preferredNames, descriptions, see, isAnonymous, sourceFile, exampleValue );
       }
    }
 }
