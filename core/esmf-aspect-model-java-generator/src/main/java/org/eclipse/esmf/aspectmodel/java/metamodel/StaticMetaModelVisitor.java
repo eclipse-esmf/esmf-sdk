@@ -547,7 +547,7 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
    public String exampleValue( final Property property, final StaticCodeGenerationContext context ) {
       return property.getExampleValue()
             .map( exampleValue -> "Optional.of(" + this.visitScalarValue( exampleValue, context ) + ")" )
-            .orElse("Optional.empty()");
+            .orElse( "Optional.empty()" );
    }
 
    /*
