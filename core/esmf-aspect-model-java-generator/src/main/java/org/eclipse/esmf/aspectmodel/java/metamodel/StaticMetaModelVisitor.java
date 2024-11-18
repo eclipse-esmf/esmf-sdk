@@ -544,6 +544,12 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
       return "Optional.of(" + valueInitializer.apply( xsdType, valueExpression ) + ")";
    }
 
+   public String exampleValue(final Property property, final StaticCodeGenerationContext context) {
+      return property.getExampleValue()
+            .map(exampleValue -> "Optional.of(" + this.visitScalarValue(exampleValue, context) + ")")
+            .orElse("Optional.empty()");
+   }
+
    /*
     * This method is a crutch because velocity is not able to call the parameterized actual method
     */
@@ -574,14 +580,6 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
       } );
       element.getSee().stream().sorted()
             .forEach( see -> builder.append( ".withSee(" ).append( AspectModelJavaUtil.createLiteral( see ) ).append( ")" ) );
-
-      if ( element instanceof final Property property ) {
-         property.getExampleValue().ifPresent( exampleValue ->
-               builder.append( ".withExampleValue(" )
-                     .append( this.visitScalarValue( property.getExampleValue().get(), context ) )
-                     .append( ")" )
-         );
-      }
 
       builder.append( ".build()" );
       return builder.toString();

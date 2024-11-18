@@ -514,11 +514,19 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
             "withPreferredName(Locale.forLanguageTag(\"en\"), \"Test Property\")",
             "withDescription(Locale.forLanguageTag(\"en\"), \"This is a test property.\")",
             "withSee(\"http://example.com/\")",
-            "withSee(\"http://example.com/me\")",
-            "withExampleValue(new DefaultScalarValue(\"Example Value\", new DefaultScalar(\"http://www.w3.org/2001/XMLSchema#string\")))"
+            "withSee(\"http://example.com/me\")"
       ) );
 
       result.assertMetaModelBaseAttributesForProperties( "MetaAspectWithCollection", expectedBaseAttributes );
+
+      final String expectedTestPropertyCharacteristicConstructorCall =
+            "new DefaultCollection(MetaModelBaseAttributes.builder().withUrn(AspectModelUrn.fromUrn(NAMESPACE + \"TestCollection\"))"
+                  + ".withPreferredName(Locale.forLanguageTag(\"en\"), \"Test Collection\").withDescription(Locale.forLanguageTag(\"en\")"
+                  + ", \"This is a test collection.\").withSee(\"http://example.com/\").build(), Optional.of(new DefaultScalar"
+                  + "(\"http://www.w3.org/2001/XMLSchema#string\")), Optional.empty())";
+
+      result.assertConstructorArgumentForProperties( "MetaAspectWithCollection",
+            ImmutableMap.<String, String> builder().put( "TEST_PROPERTY", expectedTestPropertyCharacteristicConstructorCall ).build(), 1 );
    }
 
    @Test
