@@ -25,10 +25,7 @@ import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.HasDescription;
 import org.eclipse.esmf.metamodel.ModelElement;
-import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.datatype.LangString;
-import org.eclipse.esmf.metamodel.impl.DefaultScalar;
-import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
 
 /**
  * Wrapper class for the attributes all Aspect Meta Model elements have.
