@@ -131,7 +131,7 @@
     ## $arg1, $arg2, ... ) {
     $modelVisitor.metaModelBaseAttributes( $property, $context ),
     #propertyCharacteristic( $property.getCharacteristic().get(), $propertyType ),
-Optional.empty(),
+    $modelVisitor.exampleValue( $property, $context ),
     $property.isOptional(),
     $property.isNotInPayload(),
 Optional.of("$property.getPayloadName()"),
