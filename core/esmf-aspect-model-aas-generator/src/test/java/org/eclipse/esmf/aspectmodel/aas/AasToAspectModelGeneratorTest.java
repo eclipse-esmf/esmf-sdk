@@ -37,7 +37,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 class AasToAspectModelGeneratorTest {
-
    @Test
    void testTranslateDigitalNameplate() {
       final InputStream aasx = AasToAspectModelGeneratorTest.class.getClassLoader()
@@ -75,11 +74,13 @@ class AasToAspectModelGeneratorTest {
             } ).doesNotThrowAnyException();
 
       final Environment aasEnvironmentFromXml = new XmlDeserializer().read(
-            new ByteArrayInputStream( new AspectModelAasGenerator().generateAsByteArray( AasFileFormat.XML, aspect ) ) );
+            new ByteArrayInputStream( new AspectModelAasGenerator( aspect,
+                  AasGenerationConfigBuilder.builder().format( AasFileFormat.XML ).build() ).getContent() ) );
       assertForValidator.accept( AasToAspectModelGenerator.fromEnvironment( aasEnvironmentFromXml ) );
 
       final Environment aasEnvironmentFromJson = new JsonDeserializer().read(
-            new ByteArrayInputStream( new AspectModelAasGenerator().generateAsByteArray( AasFileFormat.JSON, aspect ) ),
+            new ByteArrayInputStream( new AspectModelAasGenerator( aspect,
+                  AasGenerationConfigBuilder.builder().format( AasFileFormat.JSON ).build() ).getContent() ),
             Environment.class );
       assertForValidator.accept( AasToAspectModelGenerator.fromEnvironment( aasEnvironmentFromJson ) );
    }
@@ -156,7 +157,7 @@ class AasToAspectModelGeneratorTest {
          final URL url = new URL(
                "https://github.com/admin-shell-io/submodel-templates/raw/refs/heads/main/published/" + path.replaceAll( " ", "%20" ) );
          return url.openStream();
-      } catch ( Exception e ) {
+      } catch ( final Exception e ) {
          e.printStackTrace();
          return null;
       }

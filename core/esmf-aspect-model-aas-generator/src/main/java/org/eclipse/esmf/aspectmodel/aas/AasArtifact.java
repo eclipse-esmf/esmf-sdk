@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -13,15 +13,10 @@
 
 package org.eclipse.esmf.aspectmodel.aas;
 
-import java.io.Serial;
+import org.eclipse.esmf.aspectmodel.generator.BinaryArtifact;
 
-import org.eclipse.esmf.aspectmodel.generator.GenerationException;
-
-public class AasGenerationException extends GenerationException {
-   @Serial
-   private static final long serialVersionUID = 6578531471799897531L;
-
-   public AasGenerationException( final Throwable cause ) {
-      super( cause );
+public class AasArtifact extends BinaryArtifact {
+   public AasArtifact( final String id, final byte[] content ) {
+      super( id, content );
    }
 }

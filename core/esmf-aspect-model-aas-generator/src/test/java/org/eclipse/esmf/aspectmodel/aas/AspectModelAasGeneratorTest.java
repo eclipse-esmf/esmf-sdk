@@ -12,7 +12,6 @@
  */
 package org.eclipse.esmf.aspectmodel.aas;
 
-import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.InstanceOfAssertFactories.type;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -22,6 +21,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
+
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -66,8 +66,6 @@ class AspectModelAasGeneratorTest {
    // The AAS XML Schema is also present in the AAS4j library for testing purposes. So we can read
    // the file from the classpath
    public static final String XML_XSD_AAS_SCHEMA_LOCATION = "/AAS.xsd";
-
-   AspectModelAasGenerator generator = new AspectModelAasGenerator();
 
    @Test
    void generateAasxWithAspectDataForMultilanguageText() throws DeserializationException {
@@ -122,7 +120,7 @@ class AspectModelAasGeneratorTest {
                                                    assertThat( property ).asInstanceOf( type( Property.class ) )
                                                          .extracting( Property::getValue )
                                                          .isEqualTo( "2.25" ) ) );
-                           assertThat( ( ( SubmodelElementList ) sme ).getOrderRelevant() ).isFalse();
+                           assertThat( ( (SubmodelElementList) sme ).getOrderRelevant() ).isFalse();
                         }
                   ) );
    }
@@ -146,9 +144,8 @@ class AspectModelAasGeneratorTest {
 
    @Test
    void generateAasxWithAspectDataForCollectionPropertyWithCustomMapper() throws DeserializationException {
-      final AspectModelAasGenerator customGenerator = new AspectModelAasGenerator( List.of( new IntegerCollectionMapper() ) );
       final Environment env = getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_COLLECTION_OF_SIMPLE_TYPE,
-            customGenerator );
+            List.of( new IntegerCollectionMapper() ) );
       assertThat( env.getSubmodels() )
             .singleElement()
             .satisfies( subModel -> assertThat( subModel.getSubmodelElements() )
@@ -258,7 +255,7 @@ class AspectModelAasGeneratorTest {
       assertThat( env.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
       final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
       assertThat( submodelElement ).as( "SubmodelElement is not a SubmodelElementList" ).isInstanceOf( SubmodelElementList.class );
-      assertThat( ( ( ( SubmodelElementList ) submodelElement ) ).getOrderRelevant() ).isFalse();
+      assertThat( ( ( (SubmodelElementList) submodelElement ) ).getOrderRelevant() ).isFalse();
       assertThat( submodelElement.getIdShort() ).isEqualTo( "testProperty" );
       assertThat( submodelElement.getSemanticId().getKeys().get( 0 ).getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
 
@@ -449,24 +446,35 @@ class AspectModelAasGeneratorTest {
 
    private Environment getAssetAdministrationShellFromAspect( final TestAspect testAspect ) throws DeserializationException {
       final Aspect aspect = TestResources.load( testAspect ).aspect();
-      return loadAasx( generator.generateAsByteArray( AasFileFormat.XML, aspect ) );
+      final AasGenerationConfig config = AasGenerationConfigBuilder.builder()
+            .format( AasFileFormat.XML )
+            .build();
+      return loadAasx( new AspectModelAasGenerator( aspect, config ).getContent() );
    }
 
    private Environment getAssetAdministrationShellFromAspectWithData( final TestAspect testAspect ) throws DeserializationException {
-      return getAssetAdministrationShellFromAspectWithData( testAspect, generator );
+      return getAssetAdministrationShellFromAspectWithData( testAspect, List.of() );
    }
 
-   private Environment getAssetAdministrationShellFromAspectWithData( final TestAspect testAspect, final AspectModelAasGenerator generator )
-         throws DeserializationException {
+   private Environment getAssetAdministrationShellFromAspectWithData( final TestAspect testAspect,
+         final List<PropertyMapper<?>> propertyMappers ) throws DeserializationException {
       final Aspect aspect = TestResources.load( testAspect ).aspect();
       final Try<JsonNode> payload = TestResources.loadPayload( testAspect );
       final JsonNode aspectData = payload.getOrElseThrow( () -> new RuntimeException( payload.getCause() ) );
-      return loadAasx( generator.generateAsByteArray( AasFileFormat.XML, aspect, aspectData ) );
+      final AasGenerationConfig config = AasGenerationConfigBuilder.builder()
+            .format( AasFileFormat.XML )
+            .propertyMappers( propertyMappers )
+            .aspectData( aspectData )
+            .build();
+      return loadAasx( new AspectModelAasGenerator( aspect, config ).getContent() );
    }
 
    private String aspectToAasXml( final TestAspect testAspect ) {
       final Aspect aspect = TestResources.load( testAspect ).aspect();
-      return new String( generator.generateAsByteArray( AasFileFormat.XML, aspect ), StandardCharsets.UTF_8 );
+      final AasGenerationConfig config = AasGenerationConfigBuilder.builder()
+            .format( AasFileFormat.XML )
+            .build();
+      return new String( new AspectModelAasGenerator( aspect, config ).getContent(), StandardCharsets.UTF_8 );
    }
 
    private void validate( final ByteArrayInputStream xmlStream ) {
