@@ -51,6 +51,15 @@
          <version>${maven-plugin-dependencies-version}</version>
          <scope>provided</scope>
       </dependency>
+      <dependency>
+         <groupId>org.twdata.maven</groupId>
+         <artifactId>mojo-executor</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>io.soabase.record-builder</groupId>
+         <artifactId>record-builder-processor</artifactId>
+         <scope>provided</scope>
+      </dependency>
 
       <dependency>
          <groupId>org.eclipse.esmf</groupId>
@@ -88,6 +97,20 @@
 
    <build>
       <plugins>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+               <annotationProcessorPaths>
+                  <path>
+                     <groupId>io.soabase.record-builder</groupId>
+                     <artifactId>record-builder-processor</artifactId>
+                     <version>${record-builder-version}</version>
+                  </path>
+               </annotationProcessorPaths>
+            </configuration>
+         </plugin>
+
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-plugin-plugin</artifactId>

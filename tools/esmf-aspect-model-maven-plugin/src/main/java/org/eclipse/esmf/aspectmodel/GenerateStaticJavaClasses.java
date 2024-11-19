@@ -28,8 +28,9 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Mojo( name = "generateStaticJavaClasses", defaultPhase = LifecyclePhase.GENERATE_SOURCES )
+@Mojo( name = GenerateStaticJavaClasses.MAVEN_GOAL, defaultPhase = LifecyclePhase.GENERATE_SOURCES )
 public class GenerateStaticJavaClasses extends CodeGenerationMojo {
+   public static final String MAVEN_GOAL = "generateStaticJavaClasses";
    private static final Logger LOG = LoggerFactory.getLogger( GenerateStaticJavaClasses.class );
 
    @Override
@@ -45,7 +46,7 @@ public class GenerateStaticJavaClasses extends CodeGenerationMojo {
                .namePrefix( namePrefix )
                .namePostfix( namePostfix )
                .build();
-         new StaticMetaModelJavaGenerator( aspect, config ).generate( nameMapper );
+         new StaticMetaModelJavaGenerator( aspect, config ).generateThrowing( javaFileNameMapper( outputDirectory ) );
       }
       LOG.info( "Successfully generated static Java classes for Aspect Models." );
    }

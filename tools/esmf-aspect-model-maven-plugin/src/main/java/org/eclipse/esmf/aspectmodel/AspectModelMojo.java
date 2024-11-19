@@ -13,8 +13,14 @@
 
 package org.eclipse.esmf.aspectmodel;
 
+import static java.lang.String.format;
+
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -42,7 +48,15 @@ import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectModel;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import io.vavr.control.Either;
+import io.vavr.control.Try;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -53,17 +67,20 @@ import org.apache.maven.settings.Server;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 
 public abstract class AspectModelMojo extends AbstractMojo {
-   @Parameter( defaultValue = "${basedir}" )
-   private String basedir;
+   protected static final ObjectMapper YAML_MAPPER = new YAMLMapper().enable( YAMLGenerator.Feature.MINIMIZE_QUOTES );
+   protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
    @Parameter
-   private String modelsRootDirectory;
+   protected String modelsRootDirectory;
 
    @Parameter( required = true, property = "include" )
    protected Set<String> includes;
 
    @Parameter
    protected String outputDirectory = "";
+
+   @Parameter
+   protected String generatedSourcesDirectory = "";
 
    @Parameter( defaultValue = "false" )
    protected boolean detailedValidationMessages;
@@ -72,9 +89,18 @@ public abstract class AspectModelMojo extends AbstractMojo {
    protected String githubServerId;
 
    @Parameter( defaultValue = "${session}", readonly = true )
-   private MavenSession session;
+   protected MavenSession mavenSession;
 
    protected GithubModelSourceConfig gitHubConfig;
+
+   private Map<AspectModel, Aspect> aspects;
+
+   public AspectModelMojo() {
+   }
+
+   protected AspectModelMojo( final Map<AspectModel, Aspect> aspects ) {
+      this.aspects = aspects;
+   }
 
    /**
     * Skip the execution.
@@ -97,6 +123,9 @@ public abstract class AspectModelMojo extends AbstractMojo {
    }
 
    private Map<AspectModel, Aspect> loadAspectModels() throws MojoExecutionException {
+      if ( aspects != null ) {
+         return aspects;
+      }
       final List<ResolutionStrategy> strategies = new ArrayList<>();
       if ( modelsRootDirectory != null ) {
          final Path modelsRoot = Path.of( modelsRootDirectory );
@@ -110,7 +139,7 @@ public abstract class AspectModelMojo extends AbstractMojo {
                "Neither modelsRootDirectory nor gitHubServerId were configured, don't know how to resolve Aspect Models" );
       }
 
-      final Map<AspectModel, Aspect> result = new HashMap<>();
+      aspects = new HashMap<>();
 
       final AspectModelLoader aspectModelLoader = new AspectModelLoader( strategies );
       for ( final String inputUrn : includes ) {
@@ -129,18 +158,27 @@ public abstract class AspectModelMojo extends AbstractMojo {
                .filter( theAspect -> theAspect.urn().equals( urn ) )
                .findFirst()
                .orElseThrow( () -> new MojoExecutionException( "Loaded Aspect Model does not contain Aspect " + urn ) );
-         result.put( aspectModel, aspect );
+         aspects.put( aspectModel, aspect );
       }
-      return result;
+      return aspects;
    }
 
-   protected FileOutputStream getOutputStreamForFile( final String artifactName, final String outputDirectory ) {
+   protected File getOutFile( final String artifactName, final String outputDirectory ) throws MojoExecutionException {
       try {
          final Path outputPath = Path.of( outputDirectory );
          Files.createDirectories( outputPath );
-         return new FileOutputStream( outputPath.resolve( artifactName ).toFile() );
+         return outputPath.resolve( artifactName ).toFile();
       } catch ( final IOException exception ) {
-         throw new RuntimeException( "Could not write to output " + outputDirectory );
+         throw new MojoExecutionException( "Could not create missing directories for path " + outputDirectory );
+      }
+   }
+
+   protected FileOutputStream getOutputStreamForFile( final String artifactName, final String outputDirectory )
+         throws MojoExecutionException {
+      try {
+         return new FileOutputStream( getOutFile( artifactName, outputDirectory ) );
+      } catch ( final IOException exception ) {
+         throw new MojoExecutionException( "Could not write to output " + outputDirectory );
       }
    }
 
@@ -152,10 +190,10 @@ public abstract class AspectModelMojo extends AbstractMojo {
       }
 
       if ( githubServerId != null ) {
-         if ( session == null ) {
+         if ( mavenSession == null ) {
             getLog().warn( "Could not read Maven session, ignoring GitHub server configuration." );
          } else {
-            final Server server = session.getSettings().getServer( githubServerId );
+            final Server server = mavenSession.getSettings().getServer( githubServerId );
             if ( server != null ) {
                final Xpp3Dom dom = (Xpp3Dom) server.getConfiguration();
                final String[] repositoryParts = Optional.ofNullable( dom.getChild( "repository" ) )
@@ -177,7 +215,7 @@ public abstract class AspectModelMojo extends AbstractMojo {
                            .map( GithubRepository.Tag::new ) )
                      .orElse( new GithubRepository.Branch( "main" ) );
 
-               final List<Proxy> proxies = session.getSettings().getProxies();
+               final List<Proxy> proxies = mavenSession.getSettings().getProxies();
                final ProxyConfig proxyConfig = Optional.ofNullable( proxies ).stream().flatMap( Collection::stream )
                      .filter( proxy -> proxy.getProtocol().equals( "https" ) )
                      .findFirst()
@@ -203,4 +241,38 @@ public abstract class AspectModelMojo extends AbstractMojo {
    }
 
    abstract void executeGeneration() throws MojoExecutionException, MojoFailureException;
+
+   protected ObjectNode readFile( final String file ) throws MojoExecutionException {
+      if ( StringUtils.isBlank( file ) ) {
+         return null;
+      }
+      final String extension = FilenameUtils.getExtension( file ).toUpperCase();
+      final Try<String> fileData = Try.of( () -> getFileAsString( file ) ).mapTry( Optional::get );
+      return switch ( extension ) {
+         case "YAML", "YML" -> (ObjectNode) fileData
+               .mapTry( data -> YAML_MAPPER.readValue( data, Object.class ) )
+               .mapTry( OBJECT_MAPPER::writeValueAsString )
+               .mapTry( OBJECT_MAPPER::readTree )
+               .get();
+         case "JSON" -> (ObjectNode) fileData
+               .mapTry( OBJECT_MAPPER::readTree )
+               .get();
+         default -> throw new MojoExecutionException( format( "File extension [%s] not supported.", extension ) );
+      };
+   }
+
+   private static Optional<String> getFileAsString( final String filePath ) throws MojoExecutionException {
+      if ( filePath == null || filePath.isEmpty() ) {
+         return Optional.empty();
+      }
+      final File f = new File( filePath );
+      if ( f.exists() && !f.isDirectory() ) {
+         try ( final InputStream inputStream = new FileInputStream( filePath ) ) {
+            return Optional.of( IOUtils.toString( inputStream, StandardCharsets.UTF_8 ) );
+         } catch ( final IOException e ) {
+            throw new MojoExecutionException( format( "Could not load file %s.", filePath ), e );
+         }
+      }
+      throw new MojoExecutionException( format( "File does not exist %s.", filePath ) );
+   }
 }

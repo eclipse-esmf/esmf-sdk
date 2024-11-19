@@ -13,7 +13,6 @@
 
 package org.eclipse.esmf.aspectmodel;
 
-import java.io.IOException;
 import java.util.Set;
 
 import org.eclipse.esmf.aspectmodel.generator.jsonld.AspectModelToJsonLdGenerator;
@@ -26,8 +25,9 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Mojo( name = "generateJsonLd", defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
+@Mojo( name = GenerateJsonLd.MAVEN_GOAL, defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateJsonLd extends AspectModelMojo {
+   public static final String MAVEN_GOAL = "generateJsonLd";
    private static final Logger LOG = LoggerFactory.getLogger( GenerateJsonLd.class );
 
    @Override
@@ -37,7 +37,7 @@ public class GenerateJsonLd extends AspectModelMojo {
       final Set<Aspect> aspects = loadAspects();
       for ( final Aspect context : aspects ) {
          final AspectModelToJsonLdGenerator generator = new AspectModelToJsonLdGenerator( context );
-         generator.generate( name -> getOutputStreamForFile( name + ".jsonld", outputDirectory ) );
+         generator.generateThrowing( name -> getOutputStreamForFile( name, outputDirectory ) );
       }
       LOG.info( "Successfully generated JSON-LD for Aspect Models." );
    }

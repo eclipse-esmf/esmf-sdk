@@ -25,6 +25,6 @@ public class GenerateJsonLdTest extends AspectModelMojoTest {
    public void testGenerateJsonLdValidAspectModel() throws Exception {
       final Mojo generateJsonLd = getMojo( "generate-jsonld-spec-json-pom-to-file", "generateJsonLd" );
       assertThatCode( generateJsonLd::execute ).doesNotThrowAnyException();
-      assertThat( generatedFilePath( "AspectWithEvent.jsonld" ) ).exists();
+      assertThat( generatedFilePath( "AspectWithEvent.json" ) ).exists();
    }
 }

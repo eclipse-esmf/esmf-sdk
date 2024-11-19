@@ -28,8 +28,9 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Mojo( name = "generateJsonPayload", defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
+@Mojo( name = GenerateJsonPayload.MAVEN_GOAL, defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateJsonPayload extends AspectModelMojo {
+   public static final String MAVEN_GOAL = "generateJsonPayload";
    private static final Logger LOG = LoggerFactory.getLogger( GenerateJsonPayload.class );
 
    @Parameter( defaultValue = "false" )
@@ -45,7 +46,7 @@ public class GenerateJsonPayload extends AspectModelMojo {
                .addTypeAttributeForEntityInheritance( addTypeAttribute )
                .build();
          final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator( context, config );
-         generator.generate( name -> getOutputStreamForFile( name + ".json", outputDirectory ) );
+         generator.generateThrowing( name -> getOutputStreamForFile( name, outputDirectory ) );
       }
       LOG.info( "Successfully generated example JSON payloads for Aspect Models." );
    }

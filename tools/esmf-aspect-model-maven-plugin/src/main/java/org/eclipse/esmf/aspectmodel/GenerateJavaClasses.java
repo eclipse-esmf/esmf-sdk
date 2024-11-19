@@ -30,8 +30,9 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Mojo( name = "generateJavaClasses", defaultPhase = LifecyclePhase.GENERATE_SOURCES )
+@Mojo( name = GenerateJavaClasses.MAVEN_GOAL, defaultPhase = LifecyclePhase.GENERATE_SOURCES )
 public class GenerateJavaClasses extends CodeGenerationMojo {
+   public static final String MAVEN_GOAL = "generateJavaClasses";
    private static final Logger LOG = LoggerFactory.getLogger( GenerateJavaClasses.class );
 
    @Parameter( defaultValue = "false" )
@@ -39,6 +40,32 @@ public class GenerateJavaClasses extends CodeGenerationMojo {
 
    @Parameter( defaultValue = "deduction" )
    protected String jsonTypeInfo;
+
+   /**
+    * Default constructor used by Maven plugin instantiation
+    */
+   public GenerateJavaClasses() {
+   }
+
+   public GenerateJavaClasses(
+         final boolean disableJacksonAnnotations,
+         final String jsonTypeInfo,
+         final String packageName,
+         final String templateFile,
+         final boolean executeLibraryMacros,
+         final String stripNamespace,
+         final String namePrefix,
+         final String namePostfix
+   ) {
+      this.disableJacksonAnnotations = disableJacksonAnnotations;
+      this.jsonTypeInfo = jsonTypeInfo;
+      this.packageName = packageName;
+      this.templateFile = templateFile;
+      this.executeLibraryMacros = executeLibraryMacros;
+      this.stripNamespace = stripNamespace;
+      this.namePrefix = namePrefix;
+      this.namePostfix = namePostfix;
+   }
 
    @Override
    public void executeGeneration() throws MojoExecutionException {
@@ -57,7 +84,7 @@ public class GenerateJavaClasses extends CodeGenerationMojo {
                   .namePrefix( namePrefix )
                   .namePostfix( namePostfix )
                   .build();
-            new AspectModelJavaGenerator( aspect, config ).generate( nameMapper );
+            new AspectModelJavaGenerator( aspect, config ).generateThrowing( javaFileNameMapper( outputDirectory ) );
          } catch ( final Exception exception ) {
             throw new MojoExecutionException( "Could not generate Java classes for Aspect Models", exception );
          }

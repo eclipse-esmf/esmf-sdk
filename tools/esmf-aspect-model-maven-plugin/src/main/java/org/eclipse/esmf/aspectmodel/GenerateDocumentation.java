@@ -29,8 +29,9 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Mojo( name = "generateDocumentation", defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
+@Mojo( name = GenerateDocumentation.MAVEN_GOAL, defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateDocumentation extends AspectModelMojo {
+   public static final String MAVEN_GOAL = "generateDocumentation";
    private static final Logger LOG = LoggerFactory.getLogger( GenerateDocumentation.class );
 
    @Parameter
@@ -49,7 +50,7 @@ public class GenerateDocumentation extends AspectModelMojo {
                configBuilder.stylesheet( css );
             }
             new AspectModelDocumentationGenerator( model, configBuilder.build() )
-                  .generate( artifact -> getOutputStreamForFile( artifact, outputDirectory ) );
+                  .generateThrowing( artifact -> getOutputStreamForFile( artifact, outputDirectory ) );
          }
       } catch ( final IOException exception ) {
          throw new MojoExecutionException( "Could not load custom CSS file.", exception );
