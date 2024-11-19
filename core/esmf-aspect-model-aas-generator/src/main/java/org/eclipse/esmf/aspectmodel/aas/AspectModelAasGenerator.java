@@ -18,7 +18,6 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
-
 import javax.annotation.Nullable;
 
 import org.eclipse.esmf.aspectmodel.generator.AspectGenerator;

@@ -847,6 +847,9 @@ public class AspectModelJsonPayloadGeneratorTest {
     * as the first item in the generated sequence.
     */
    private static class MinValueRandomStrategy extends Random {
+      @Serial
+      private static final long serialVersionUID = 4032598470646521142L;
+
       @Override
       public IntStream ints( final long streamSize, final int randomNumberOrigin, final int randomNumberBound ) {
          return IntStream.concat( IntStream.of( randomNumberOrigin ),
@@ -864,9 +867,6 @@ public class AspectModelJsonPayloadGeneratorTest {
          return DoubleStream.concat( DoubleStream.of( randomNumberOrigin ),
                super.doubles( streamSize, randomNumberOrigin, randomNumberBound ).skip( 1 ) );
       }
-
-      @Serial
-      private static final long serialVersionUID = 4032598470646521142L;
    }
 
    /**
@@ -874,6 +874,9 @@ public class AspectModelJsonPayloadGeneratorTest {
     * as the first item in the generated sequence.
     */
    private static class MaxValueRandomStrategy extends Random {
+      @Serial
+      private static final long serialVersionUID = -4713706160081659886L;
+
       @Override
       public IntStream ints( final long streamSize, final int randomNumberOrigin, final int randomNumberBound ) {
          return IntStream.concat( IntStream.of( randomNumberBound ),
@@ -891,8 +894,5 @@ public class AspectModelJsonPayloadGeneratorTest {
          return DoubleStream.concat( DoubleStream.of( randomNumberBound ),
                super.doubles( streamSize, randomNumberOrigin, randomNumberBound ).skip( 1 ) );
       }
-
-      @Serial
-      private static final long serialVersionUID = -4713706160081659886L;
    }
 }

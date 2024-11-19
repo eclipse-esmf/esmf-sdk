@@ -111,8 +111,8 @@ public class GitHubModelSource implements ModelSource {
                return Stream.empty();
             }
             final String[] parts = path.split( "/" );
-            if ( parts.length < 3 ||
-                  AspectModelUrn.from( "urn:samm:" + parts[parts.length - 3] + ":" + parts[parts.length - 2] ).isFailure() ) {
+            if ( parts.length < 3
+                  || AspectModelUrn.from( "urn:samm:" + parts[parts.length - 3] + ":" + parts[parts.length - 2] ).isFailure() ) {
                LOG.debug( "Tried to load file {} but the path contains no valid URN structure", zipEntry.getName() );
                return Stream.<AspectModelFile> empty();
             }
