@@ -102,6 +102,7 @@ Configuration Properties:
 
 == Generate Java Code for an Aspect Model
 
+[[generate-domain-classes]]
 === Generate Domain Classes
 
 The `generateJavaClasses` goal generates Java domain classes (POJOs) for a given Aspect Model. The
@@ -161,6 +162,7 @@ are replaced using `packageName` | `String` | none | {nok}
 | `namePostfix` | Name postfix for generated Aspect, Entity Java classes | `String` | none | {nok}
 |===
 
+[[generate-static-meta-classes]]
 === Generate Static Meta Classes
 
 The `generateStaticJavaClasses` goal generates static meta classes for a given Aspect Model. The
@@ -261,6 +263,7 @@ Configuration Properties:
 | `language` | The language from the model for which a JSON Schema should be generated. | `String` | en | {nok}
 |===
 
+[[generate-openapi-specification]]
 == Generate an OpenAPI Specification from an Aspect Model
 
 The `generateOpenApiSpec` goal generates an OpenAPI Specification for a given Aspect Model. The
@@ -373,6 +376,122 @@ Configuration Properties:
 | `outputFormat` | The format of the resulting AsyncAPI Specification. May be either JSON or YAML. | `String` | none | {ok}
 | `separateFiles` | Create separate files for each schema. | `Boolean` | `false` | {nok}
 | `language` | The language from the model for which an AsyncAPI specification should be generated. | `String` | en | {nok}
+|===
+
+[[generate-api-implementation-skeleton]]
+== Generate an API implementation skeleton from an Aspect Model
+
+The `generateAspectImplementationStub` goal generates an implementation skeleton for a given Aspect
+Model. It combines functionality from the xref:maven-plugin.adoc#generate-domain-classes[Java domain
+classes generation], the xref:maven-plugin.adoc#generate-static-meta-classes[Java static meta
+classes generation] and the xref:maven-plugin.adoc#generate-openapi-specification[OpenAPI
+specification generation]. Additionally, this goal executes the
+https://github.com/OpenAPITools/openapi-generator[OpenAPI generator] for the generated API
+description, taking into account custom configuration.
+
+Usage:
+
+[source,xml,subs=attributes+]
+----
+<build>
+  <plugins>
+     <plugin>
+        <artifactId>esmf-aspect-model-maven-plugin</artifactId>
+        <executions>
+           <execution>
+              <id>generate-openapi-spec</id>
+              <goals>
+                 <goal>generateAspectImplementationStub</goal>
+              </goals>
+           </execution>
+        </executions>
+        <configuration>
+           <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
+           <includes>
+              <include>$\{urn-of-aspect-model-to-be-included}</include>
+           </includes>
+           <aspectApiBaseUrl>http://example.com</aspectApiBaseUrl>
+           <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
+           <outputFormat>yaml</outputFormat>
+        </configuration>
+     </plugin>
+
+     <plugin>
+        <artifactId>esmf-aspect-model-maven-plugin</artifactId>
+        <executions>
+           <execution>
+              <id>generate-aspect-implementation</id>
+              <goals>
+                 <goal>generateAspectImplementationStub</goal>
+              </goals>
+              <configuration>
+                 <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
+                 <includes>
+                    <include>$\{urn-of-aspect-model-to-be-included}</include>
+                 </includes>
+                 <!-- this is recommended to be set to 'src-gen' -->
+                 <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
+                 <detailedValidationMessages>true</detailedValidationMessages>
+                 <packageName>com.example</packageName>
+                 <aspectApiBaseUrl>http://example.com</aspectApiBaseUrl>
+                 <aspectResourcePath>/my-api</aspectResourcePath>
+                 <!-- optional: override the default openapi-generator version -->
+                 <openApiGeneratorVersion>${openapi-generator-maven-plugin.version}</openApiGeneratorVersion>
+                 <!-- the following configuration is only an example, using the 'spring' template -->
+                 <openApiGeneratorName>spring</openApiGeneratorName>
+                 <openApiGeneratorConfigOptions>
+                    <!-- this should match the `packageName` attribute -->
+                    <modelPackage>com.example</modelPackage>
+                    <apiPackage>com.example.api</apiPackage>
+                    <configPackage>com.example.config</configPackage>
+                    <sourceFolder>main/java</sourceFolder>
+                    <resourceFolder>main/resources</resourceFolder>
+                    <library>spring-cloud</library>
+                    <useSpringBoot3>true</useSpringBoot3>
+                    <dateLibrary>java8</dateLibrary>
+                    <useOptional>true</useOptional>
+                    <useSwaggerUI>false</useSwaggerUI>
+                    <useTags>true</useTags>
+                    <documentationProvider>none</documentationProvider>
+                    <title>MyAspect</title>
+                 </openApiGeneratorConfigOptions>
+              </configuration>
+           </execution>
+        </executions>
+     </plugin>
+  </plugins>
+</build>
+----
+
+Configuration Properties:
+
+[width="100%", options="header", cols="20,50,10,10,10"]
+|===
+| Property | Description | Type | Default Value | Required
+| `detailedValidationMessages` | Detailed validation messages if the model can not be loaded | `Boolean` | `false` | {nok}
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
+| `githubServerId` | The id of the `<server>` entry describing the GitHub repository to resolve models from. | `String` | none | {nok}
+| `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
+| `outputDirectory` | The path to the directory where the generated OpenAPI Specification will be written to. | `String` | none | {ok}
+| `aspectApiBaseUrl` | The base URL for the Aspect API OpenAPI specification. | `String` | none | {ok}
+| `aspectParameterFile` | The path to a file including the schema description for the resource. For JSON the description has to be in json, for YAML it has to be in YAML. | `String` | none | {nok}
+| `useSemanticApiVersion` | Use the complete semantic version of the Aspect Model as the version of the Aspect API. | `Boolean` | `false` | {nok}
+| `aspectResourcePath` | The `resource-path` for the Aspect API endpoints. | `String` | none | {nok}
+| `includeQueryApi` | Include the path for the Query Aspect API Endpoint in the OpenAPI specification. | `Boolean` | `false` | {nok}
+| `includeFullCrud` | Include the POST/PUT/PATCH methods in the OpenAPI specification. | `Boolean` | `false` | {nok}
+| `includePost` | Include the POST method in the OpenAPI specification. | `Boolean` | `false` | {nok}
+| `includePut` | Include the PUT method in the OpenAPI specification. | `Boolean` | `false` | {nok}
+| `includePatch` | Include the PATCH method in the OpenAPI specification. | `Boolean` | `false` | {nok}
+| `excludePaging` | Exclude paging information for the Aspect API Endpoint in the OpenAPI specification. | `Boolean` | `false` | {nok}
+| `aspectCursorBasedPaging` | Set the used paging strategy as cursor-based paging. | `Boolean` | `false` | {nok}
+| `aspectOffsetBasedPaging` | Set the used paging strategy as offset-based paging. | `Boolean` | `false` | {nok}
+| `aspectTimeBasedPaging` | Set the used paging strategy as time-based paging. | `Boolean` | `false` | {nok}
+| `language` | The language from the model for which an OpenAPI specification should be generated. | `String` | en | {nok}
+| `templateFilePath` | The path to the file with a template for the resulting specification, including values undefined by the aspect's OpenAPI specification. The template can be in JSON or YAML format. | `String` | none | {nok}
+| `openApiGeneratorVersion` | The version to use for the openapi-generator-maven-plugin | `String` | 7.9.0 | {nok}
+| `openApiGeneratorName` | The openapi-generator template to use | `String` | none | `java` | {nok}
+| `openApiGeneratorConfigOptions` | The additional parameters to pass to the openapi-generator, similar to the `configOptions` attribute for openapi-generator-maven-plugin | `String` | none | {nok}
+| `schemaMappings` | Add additional mappings from OpenAPI schema name (i.e., Aspect Model element local name) to fully qualified Java class, in the format `Name=com.example.Name` | `String` | none | {nok}
 |===
 
 == Generate an SQL script from an Aspect Model
