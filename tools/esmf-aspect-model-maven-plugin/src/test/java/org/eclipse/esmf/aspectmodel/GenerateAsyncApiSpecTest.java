@@ -16,17 +16,15 @@ package org.eclipse.esmf.aspectmodel;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-import java.io.File;
-
 import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.Test;
 
+@SuppressWarnings( "JUnitMixedFramework" )
 public class GenerateAsyncApiSpecTest extends AspectModelMojoTest {
    @Test
    public void testGenerateAsyncApiSpecJsonValidAspectModel() throws Exception {
-      final File testPom = getTestFile( "src/test/resources/generate-asyncapi-spec-json-pom-valid-aspect-model.xml" );
-      final Mojo generateAsyncApiSpec = lookupMojo( "generateAsyncApiSpec", testPom );
+      final Mojo generateAsyncApiSpec = getMojo( "generate-asyncapi-spec-json-pom-valid-aspect-model", "generateAsyncApiSpec" );
       assertThatCode( generateAsyncApiSpec::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "Aspect.aai.json" ) ).exists();
    }
@@ -38,16 +36,14 @@ public class GenerateAsyncApiSpecTest extends AspectModelMojoTest {
     */
    @Test
    public void testGenerateAsyncApiSpecJsonValidAspectModelWithLanguageParameter() throws Exception {
-      final File testPom = getTestFile( "src/test/resources/generate-asyncapi-spec-json-pom-valid-aspect-model-language.xml" );
-      final Mojo generateAsyncApiSpec = lookupMojo( "generateAsyncApiSpec", testPom );
+      final Mojo generateAsyncApiSpec = getMojo( "generate-asyncapi-spec-json-pom-valid-aspect-model-language", "generateAsyncApiSpec" );
       assertThatCode( generateAsyncApiSpec::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "AspectWithEnglishAndGermanDescription.aai.json" ) ).exists();
    }
 
    @Test
    public void testGenerateAsyncApiSpecJsonWithSeparateSchemaFiles() throws Exception {
-      final File testPom = getTestFile( "src/test/resources/generate-asyncapi-spec-json-pom-separate-schema-files.xml" );
-      final Mojo generateAsyncApiSpec = lookupMojo( "generateAsyncApiSpec", testPom );
+      final Mojo generateAsyncApiSpec = getMojo( "generate-asyncapi-spec-json-pom-separate-schema-files", "generateAsyncApiSpec" );
       assertThatCode( generateAsyncApiSpec::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "AspectWithEvent.aai.json" ) ).exists();
       assertThat( generatedFilePath( "SomeEvent.json" ) ).exists();
@@ -55,8 +51,7 @@ public class GenerateAsyncApiSpecTest extends AspectModelMojoTest {
 
    @Test
    public void testGenerateAsyncApiSpecInvalidOutputFormat() throws Exception {
-      final File testPom = getTestFile( "src/test/resources/generate-asyncapi-spec-pom-invalid-format.xml" );
-      final Mojo generateAsyncApiSpec = lookupMojo( "generateAsyncApiSpec", testPom );
+      final Mojo generateAsyncApiSpec = getMojo( "generate-asyncapi-spec-pom-invalid-format", "generateAsyncApiSpec" );
       assertThatCode( generateAsyncApiSpec::execute )
             .isInstanceOf( MojoExecutionException.class )
             .hasMessage( "Invalid output format." );

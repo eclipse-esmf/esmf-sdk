@@ -30,8 +30,9 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Mojo( name = "generateDiagram", defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
+@Mojo( name = GenerateDiagram.MAVEN_GOAL, defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateDiagram extends AspectModelMojo {
+   public static final String MAVEN_GOAL = "generateDiagram";
    private static final Logger LOG = LoggerFactory.getLogger( GenerateDiagram.class );
 
    @Parameter( required = true, property = "targetFormat" )
@@ -51,7 +52,7 @@ public class GenerateDiagram extends AspectModelMojo {
             for ( final DiagramGenerationConfig.Format format : formats ) {
                final DiagramGenerationConfig config = DiagramGenerationConfigBuilder.builder().format( format ).build();
                new AspectModelDiagramGenerator( aspect, config )
-                     .generate( name -> getOutputStreamForFile( name, outputDirectory ) );
+                     .generateThrowing( name -> getOutputStreamForFile( name, outputDirectory ) );
             }
          }
       } catch ( final DocumentGenerationException exception ) {

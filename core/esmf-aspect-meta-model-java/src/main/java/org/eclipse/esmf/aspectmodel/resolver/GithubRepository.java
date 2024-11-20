@@ -49,8 +49,10 @@ public record GithubRepository(
    }
 
    public URL zipLocation() {
-      final String url = "https://%s/%s/%s/archive/refs/%s/%s.zip".formatted(
-            host(), owner(), repository(), branchOrTag().refType(), branchOrTag().name() );
+      // See https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#download-a-repository-archive-zip
+      // General URL structure: https://api.github.com/repos/OWNER/REPO/zipball/REF
+      final String theHost = host().equals( "github.com" ) ? "api.github.com" : host();
+      final String url = "https://%s/repos/%s/%s/zipball/%s".formatted( theHost, owner(), repository(), branchOrTag().name() );
       try {
          return new URL( url );
       } catch ( final MalformedURLException exception ) {

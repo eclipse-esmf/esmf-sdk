@@ -15,25 +15,22 @@ package org.eclipse.esmf.aspectmodel;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-import java.io.File;
-
 import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.Test;
 
+@SuppressWarnings( "JUnitMixedFramework" )
 public class ValidateTest extends AspectModelMojoTest {
    @Test
    public void testValidateValidAspectModel() throws Exception {
-      final File testPom = getTestFile( "src/test/resources/validate-pom-valid-aspect-model.xml" );
-      final Mojo validate = lookupMojo( "validate", testPom );
+      final Mojo validate = getMojo( "validate-pom-valid-aspect-model", "validate" );
       assertThatCode( validate::execute )
             .doesNotThrowAnyException();
    }
 
    @Test
    public void testValidateInvalidAspectModel() throws Exception {
-      final File testPom = getTestFile( "src/test/resources/validate-pom-invalid-aspect-model.xml" );
-      final Mojo validate = lookupMojo( "validate", testPom );
+      final Mojo validate = getMojo( "validate-pom-invalid-aspect-model", "validate" );
       assertThatCode( validate::execute )
             .isInstanceOf( MojoExecutionException.class )
             .hasMessageContaining( "Syntax error in line 17, column 2" );
@@ -41,8 +38,21 @@ public class ValidateTest extends AspectModelMojoTest {
 
    @Test
    public void testValidateMultipleAspectModels() throws Exception {
-      final File testPom = getTestFile( "src/test/resources/validate-pom-multiple-aspect-models.xml" );
-      final Mojo validate = lookupMojo( "validate", testPom );
+      final Mojo validate = getMojo( "validate-pom-multiple-aspect-models", "validate" );
+      assertThatCode( validate::execute )
+            .doesNotThrowAnyException();
+   }
+
+   @Test
+   public void testValidateWithResolutionFromGitHub() throws Exception {
+      final String serverConfig = """
+            <configuration>
+                <repository>eclipse-esmf/esmf-sdk</repository>
+                <directory>core/esmf-test-aspect-models/src/main/resources/valid</directory>
+                <branch>main</branch>
+            </configuration>
+            """;
+      final Mojo validate = getMojo( "validate-pom-resolve-from-github", "validate", serverConfig );
       assertThatCode( validate::execute )
             .doesNotThrowAnyException();
    }

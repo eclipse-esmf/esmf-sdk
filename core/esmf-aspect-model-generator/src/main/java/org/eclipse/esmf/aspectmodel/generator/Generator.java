@@ -1,5 +1,14 @@
 /*
- * Copyright (c) 2024 Bosch Software Innovations GmbH. All rights reserved.
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
+ *
+ * See the AUTHORS file(s) distributed with this work for additional
+ * information regarding authorship.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * SPDX-License-Identifier: MPL-2.0
  */
 
 package org.eclipse.esmf.aspectmodel.generator;
@@ -10,6 +19,7 @@ import java.util.Comparator;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import org.eclipse.esmf.functions.ThrowingFunction;
 import org.eclipse.esmf.metamodel.ModelElement;
 
 import lombok.Getter;
@@ -54,6 +64,16 @@ public abstract class Generator<F, I, T, C extends GenerationConfig, A extends A
    }
 
    /**
+    * Similar to {@link #generate(Function)}, except the name mapper function can also write an exception
+    *
+    * @param nameMapper the callback function that maps artifact identifiers to OutputStreams
+    * @param <E> the type of exception that can be thrown by the name mapper
+    */
+   public <E extends Throwable> void generateThrowing( final ThrowingFunction<I, OutputStream, E> nameMapper ) {
+      generate().toList().forEach( generationResult -> writeThrowing( generationResult, nameMapper ) );
+   }
+
+   /**
     * Generates artifacts for the given Aspect model
     *
     * @return the stream of artifacts
@@ -91,6 +111,22 @@ public abstract class Generator<F, I, T, C extends GenerationConfig, A extends A
          output.write( artifact.serialize() );
          output.flush();
       } catch ( final IOException exception ) {
+         LOG.error( "Failure during writing of generated artifact", exception );
+      }
+   }
+
+   /**
+    * Writes an artifact to the corresponding output stream
+    *
+    * @param artifact the artifact
+    * @param nameMapper the function that provides the output stream for the artifact
+    */
+   protected <E extends Throwable> void writeThrowing( final Artifact<I, T> artifact,
+         final ThrowingFunction<I, OutputStream, E> nameMapper ) {
+      try ( final OutputStream output = nameMapper.apply( artifact.getId() ) ) {
+         output.write( artifact.serialize() );
+         output.flush();
+      } catch ( final Throwable exception ) {
          LOG.error( "Failure during writing of generated artifact", exception );
       }
    }

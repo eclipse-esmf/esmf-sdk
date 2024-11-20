@@ -32,6 +32,10 @@ public record ProxyConfig(
 
    public static final ProxyConfig NO_PROXY = new ProxyConfig( null, null );
 
+   public static ProxyConfig from( final String host, final int port ) {
+      return new ProxyConfig( ProxySelector.of( new InetSocketAddress( host, port ) ), null );
+   }
+
    public static ProxyConfig detectProxySettings() {
       final String envProxy = System.getenv( "http_proxy" );
       if ( envProxy != null && System.getProperty( "http.proxyHost" ) == null ) {

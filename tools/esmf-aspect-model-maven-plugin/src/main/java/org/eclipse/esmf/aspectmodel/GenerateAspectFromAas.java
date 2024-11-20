@@ -29,8 +29,10 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 
-@Mojo( name = "generateAspectFromAas", defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
+@Mojo( name = GenerateAspectFromAas.MAVEN_GOAL, defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateAspectFromAas extends AspectModelMojo {
+   public static final String MAVEN_GOAL = "generateAspectFromAas";
+
    @Override
    public void executeGeneration() throws MojoExecutionException, MojoFailureException {
       validateParameters();

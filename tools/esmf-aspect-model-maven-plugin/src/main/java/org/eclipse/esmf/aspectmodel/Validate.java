@@ -28,8 +28,9 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Mojo( name = "validate", defaultPhase = LifecyclePhase.VALIDATE )
+@Mojo( name = Validate.MAVEN_GOAL, defaultPhase = LifecyclePhase.VALIDATE )
 public class Validate extends AspectModelMojo {
+   public static final String MAVEN_GOAL = "validate";
    private static final Logger LOG = LoggerFactory.getLogger( Validate.class );
    private final AspectModelValidator validator = new AspectModelValidator();
 

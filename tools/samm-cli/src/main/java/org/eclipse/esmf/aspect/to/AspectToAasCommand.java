@@ -21,6 +21,8 @@ import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.ResolverConfigurationMixin;
 import org.eclipse.esmf.aspect.AspectToCommand;
 import org.eclipse.esmf.aspectmodel.aas.AasFileFormat;
+import org.eclipse.esmf.aspectmodel.aas.AasGenerationConfig;
+import org.eclipse.esmf.aspectmodel.aas.AasGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.aas.AspectModelAasGenerator;
 import org.eclipse.esmf.metamodel.Aspect;
 
@@ -92,10 +94,13 @@ public class AspectToAasCommand extends AbstractCommand {
       setResolverConfig( resolverConfiguration );
 
       final Aspect aspect = getInputHandler( parentCommand.parentCommand.getInput() ).loadAspect();
-      final JsonNode loadedAspectData = loadAspectData();
       // we intentionally override the name of the generated artifact here to the name explicitly
       // desired by the user (outputFilePath), as opposed to what the model thinks it should be
       // called (name)
-      new AspectModelAasGenerator().generate( format, aspect, loadedAspectData, name -> getStreamForFile( outputFilePath ) );
+      final AasGenerationConfig config = AasGenerationConfigBuilder.builder()
+            .format( format )
+            .aspectData( loadAspectData() )
+            .build();
+      new AspectModelAasGenerator( aspect, config ).generate( name -> getStreamForFile( outputFilePath ) );
    }
 }

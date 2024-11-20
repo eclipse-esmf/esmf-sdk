@@ -36,7 +36,7 @@ public class JsLibrary {
             code.append( new String( inputStream.readAllBytes(), StandardCharsets.UTF_8 ) );
             code.append( "\n" );
          } catch ( final IOException exception ) {
-            throw new RuntimeException( exception );
+            throw new ShaclValidationException( "Could not resolve JsLibrary " + uri, exception );
          }
       }
 

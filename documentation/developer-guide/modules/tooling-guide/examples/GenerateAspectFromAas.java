@@ -18,6 +18,7 @@ import java.io.File;
 import java.util.List;
 
 import org.eclipse.esmf.aspectmodel.aas.AasFileFormat;
+import org.eclipse.esmf.aspectmodel.aas.AasGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.aas.AasToAspectModelGenerator;
 import org.eclipse.esmf.aspectmodel.aas.AspectModelAasGenerator;
 import org.eclipse.esmf.metamodel.Aspect;
@@ -37,7 +38,7 @@ import org.junit.jupiter.api.Test;
 public class GenerateAspectFromAas extends AbstractGenerator {
    private OutputStream outputStream( final Path directory, final String aspectName ) {
       try {
-         return new FileOutputStream( directory.resolve( aspectName + ".aasx" ).toFile() );
+         return new FileOutputStream( directory.resolve( aspectName ).toFile() );
       } catch ( final FileNotFoundException exception ) {
          throw new RuntimeException( exception );
       }
@@ -48,8 +49,8 @@ public class GenerateAspectFromAas extends AbstractGenerator {
       final Path outputDirectory = Files.createTempDirectory( "junit" );
       final AspectModel aspectModel = new AspectModelLoader().load(
             new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) );
-      new AspectModelAasGenerator().generate( AasFileFormat.AASX, aspectModel.aspect(),
-            name -> outputStream( outputDirectory, name ) );
+      new AspectModelAasGenerator( aspectModel.aspect(), AasGenerationConfigBuilder.builder()
+            .format( AasFileFormat.AASX ).build() ).generate( name -> outputStream( outputDirectory, name ) );
 
       // tag::generate[]
       final File file = // an AAS file that ends in .aasx, .xml or .json

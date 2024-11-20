@@ -13,13 +13,8 @@
 
 package org.eclipse.esmf.aspectmodel;
 
-import static java.lang.String.format;
-
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -36,14 +31,7 @@ import org.eclipse.esmf.aspectmodel.generator.openapi.PagingOption;
 import org.eclipse.esmf.metamodel.Aspect;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import io.vavr.control.Try;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -52,10 +40,9 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Mojo( name = "generateOpenApiSpec", defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
+@Mojo( name = GenerateOpenApiSpec.MAVEN_GOAL, defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateOpenApiSpec extends AspectModelMojo {
-   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-   private static final ObjectMapper YAML_MAPPER = new YAMLMapper().enable( YAMLGenerator.Feature.MINIMIZE_QUOTES );
+   public static final String MAVEN_GOAL = "generateOpenApiSpec";
    private static final Logger LOG = LoggerFactory.getLogger( GenerateOpenApiSpec.class );
 
    @Parameter( required = true )
@@ -134,42 +121,45 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
 
       for ( final Aspect aspect : aspects ) {
          final OpenApiSchemaArtifact openApiSpec = new AspectModelOpenApiGenerator( aspect, config ).singleResult();
-         try {
-            if ( separateFiles ) {
-               writeSchemaWithSeparateFiles( format, openApiSpec );
-            } else {
-               writeSchemaWithInOneFile( aspect.getName() + ".oai." + format.toString().toLowerCase(), format, openApiSpec );
-            }
-         } catch ( final IOException exception ) {
-            throw new MojoExecutionException( "Could not generate OpenAPI specification.", exception );
+         if ( separateFiles ) {
+            writeSchemaWithSeparateFiles( format, openApiSpec );
+         } else {
+            writeSchemaWithInOneFile( aspect.getName() + ".oai." + format.toString().toLowerCase(), format, openApiSpec );
          }
       }
       LOG.info( "Successfully generated OpenAPI specification for Aspect Models." );
    }
 
    private void writeSchemaWithInOneFile( final String schemaFileName, final ApiFormat format, final OpenApiSchemaArtifact openApiSpec )
-         throws IOException {
+         throws MojoExecutionException {
       try ( final OutputStream out = getOutputStreamForFile( schemaFileName, outputDirectory ) ) {
          if ( format == ApiFormat.JSON ) {
             OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValue( out, openApiSpec.getContent() );
          } else {
             out.write( openApiSpec.getContentAsYaml().getBytes( StandardCharsets.UTF_8 ) );
          }
+      } catch ( final IOException exception ) {
+         throw new MojoExecutionException( "Could not write OpenAPI schema", exception );
       }
    }
 
-   private void writeSchemaWithSeparateFiles( final ApiFormat format, final OpenApiSchemaArtifact openApiSpec ) throws IOException {
+   private void writeSchemaWithSeparateFiles( final ApiFormat format, final OpenApiSchemaArtifact openApiSpec )
+         throws MojoExecutionException {
       final Path root = Path.of( outputDirectory );
       if ( format == ApiFormat.JSON ) {
          for ( final Map.Entry<Path, JsonNode> entry : openApiSpec.getContentWithSeparateSchemasAsJson().entrySet() ) {
             try ( final OutputStream out = new FileOutputStream( root.resolve( entry.getKey() ).toFile() ) ) {
                OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValue( out, entry.getValue() );
+            } catch ( final IOException exception ) {
+               throw new MojoExecutionException( "Could not write OpenAPI schema", exception );
             }
          }
       } else {
          for ( final Map.Entry<Path, String> entry : openApiSpec.getContentWithSeparateSchemasAsYaml().entrySet() ) {
             try ( final OutputStream out = new FileOutputStream( root.resolve( entry.getKey() ).toFile() ) ) {
                out.write( entry.getValue().getBytes( StandardCharsets.UTF_8 ) );
+            } catch ( final IOException exception ) {
+               throw new MojoExecutionException( "Could not write OpenAPI schema", exception );
             }
          }
       }
@@ -184,40 +174,6 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
          throw new MojoExecutionException( "Missing configuration. Please provide an output format." );
       }
       super.validateParameters();
-   }
-
-   private ObjectNode readFile( final String file ) throws MojoExecutionException {
-      if ( StringUtils.isBlank( file ) ) {
-         return null;
-      }
-      final String extension = FilenameUtils.getExtension( file ).toUpperCase();
-      final Try<String> fileData = Try.of( () -> getFileAsString( file ) ).mapTry( Optional::get );
-      return switch ( extension ) {
-         case "YAML", "YML" -> (ObjectNode) fileData
-               .mapTry( data -> YAML_MAPPER.readValue( data, Object.class ) )
-               .mapTry( OBJECT_MAPPER::writeValueAsString )
-               .mapTry( OBJECT_MAPPER::readTree )
-               .get();
-         case "JSON" -> (ObjectNode) fileData
-               .mapTry( OBJECT_MAPPER::readTree )
-               .get();
-         default -> throw new MojoExecutionException( format( "File extension [%s] not supported.", extension ) );
-      };
-   }
-
-   private static Optional<String> getFileAsString( final String filePath ) throws MojoExecutionException {
-      if ( filePath == null || filePath.isEmpty() ) {
-         return Optional.empty();
-      }
-      final File f = new File( filePath );
-      if ( f.exists() && !f.isDirectory() ) {
-         try ( final InputStream inputStream = new FileInputStream( filePath ) ) {
-            return Optional.of( IOUtils.toString( inputStream, StandardCharsets.UTF_8 ) );
-         } catch ( final IOException e ) {
-            throw new MojoExecutionException( format( "Could not load file %s.", filePath ), e );
-         }
-      }
-      throw new MojoExecutionException( format( "File does not exist %s.", filePath ) );
    }
 
    private PagingOption getPagingFromArgs() {

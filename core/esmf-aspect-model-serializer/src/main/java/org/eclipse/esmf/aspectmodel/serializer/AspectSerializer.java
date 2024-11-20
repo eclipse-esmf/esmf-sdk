@@ -140,7 +140,7 @@ public class AspectSerializer {
       }
 
       // The Aspect has no source file, it was probably created programmatically.
-      // Construct a virtual AspectModelFile with an RDF representation that be serialized.
+      // Construct a virtual AspectModelFile with an RDF representation that can be serialized.
 
       final RdfNamespace namespace = new SimpleRdfNamespace( "", aspect.urn().getUrnPrefix() );
       final Model rdfModel = new RdfModelCreatorVisitor( namespace ).visitAspect( aspect, null ).model();

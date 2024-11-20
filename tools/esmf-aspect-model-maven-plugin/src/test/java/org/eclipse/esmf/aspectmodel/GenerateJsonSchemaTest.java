@@ -16,16 +16,14 @@ package org.eclipse.esmf.aspectmodel;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-import java.io.File;
-
 import org.apache.maven.plugin.Mojo;
 import org.junit.Test;
 
+@SuppressWarnings( "JUnitMixedFramework" )
 public class GenerateJsonSchemaTest extends AspectModelMojoTest {
    @Test
    public void testGenerateJsonSchemaTest() throws Exception {
-      final File testPom = getTestFile( "src/test/resources/test-pom-valid-aspect-model-output-directory.xml" );
-      final Mojo generateJsonSchema = lookupMojo( "generateJsonSchema", testPom );
+      final Mojo generateJsonSchema = getMojo( "test-pom-valid-aspect-model-output-directory", "generateJsonSchema" );
       assertThatCode( generateJsonSchema::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "Aspect.schema.json" ) ).exists();
    }
@@ -37,9 +35,8 @@ public class GenerateJsonSchemaTest extends AspectModelMojoTest {
     */
    @Test
    public void testGenerateOpenApiSpecJsonValidAspectModelWithLanguageParameter() throws Exception {
-      final File testPom = getTestFile( "src/test/resources/generate-schema-json-pom-valid-aspect-model-language.xml" );
-      final Mojo generateOpenApiSpec = lookupMojo( "generateJsonSchema", testPom );
-      assertThatCode( generateOpenApiSpec::execute ).doesNotThrowAnyException();
+      final Mojo generateJsonSchema = getMojo( "generate-schema-json-pom-valid-aspect-model-language", "generateJsonSchema" );
+      assertThatCode( generateJsonSchema::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "AspectWithEnglishAndGermanDescription.schema.json" ) ).exists();
    }
 }

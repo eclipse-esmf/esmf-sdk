@@ -83,6 +83,10 @@ import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 
+/**
+ * Used as part of the loading process in the {@link AspectModelLoader}, it creates instance for the the {@link ModelElement}s
+ * in an AspectModel.
+ */
 public class ModelElementFactory extends AttributeValueRetriever {
    private final Model model;
    private final Map<Resource, Instantiator<?>> instantiators = new HashMap<>();
@@ -351,7 +355,7 @@ public class ModelElementFactory extends AttributeValueRetriever {
       return getModelElementType( superElement );
    }
 
-   public AspectModelFile getSourceLocation( Resource modelElement ) {
+   public AspectModelFile getSourceLocation( final Resource modelElement ) {
       return sourceLocator.apply( modelElement );
    }
 }
