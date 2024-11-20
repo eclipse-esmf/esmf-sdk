@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
 public class GenerateAspectFromAas extends AbstractGenerator {
    private OutputStream outputStream( final Path directory, final String aspectName ) {
       try {
-         return new FileOutputStream( directory.resolve( aspectName + ".aasx" ).toFile() );
+         return new FileOutputStream( directory.resolve( aspectName ).toFile() );
       } catch ( final FileNotFoundException exception ) {
          throw new RuntimeException( exception );
       }
