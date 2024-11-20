@@ -26,6 +26,7 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import org.eclipse.esmf.aspectmodel.shacl.JsLibrary;
+import org.eclipse.esmf.aspectmodel.shacl.ShaclValidationException;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.js.JsFactory;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.js.JsGraph;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.js.JsTerm;
@@ -82,7 +83,7 @@ public class JsConstraint implements Constraint {
       try {
          engine.eval( jsLibrary.javaScriptCode() );
       } catch ( final ScriptException exception ) {
-         throw new RuntimeException( exception );
+         throw new ShaclValidationException( "Could not evaluate JavaScript constraint", exception );
       }
    }
 

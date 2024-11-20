@@ -17,7 +17,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -209,14 +208,14 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
     */
    public AspectModel loadNamespacePackage( final File namespacePackage ) {
       if ( !namespacePackage.exists() || !namespacePackage.isFile() ) {
-         throw new RuntimeException( new FileNotFoundException( "The specified file does not exist or is not a file." ) );
+         throw new ModelResolutionException( "The specified file does not exist or is not a file." );
       }
 
       try ( final InputStream inputStream = new FileInputStream( namespacePackage ) ) {
          return loadNamespacePackage( inputStream );
-      } catch ( final IOException e ) {
-         LOG.error( "Error reading the file: {}", namespacePackage.getAbsolutePath(), e );
-         throw new RuntimeException( "Error reading the file: " + namespacePackage.getAbsolutePath(), e );
+      } catch ( final IOException exception ) {
+         LOG.error( "Error reading the file: {}", namespacePackage.getAbsolutePath(), exception );
+         throw new ModelResolutionException( "Error reading the file: " + namespacePackage.getAbsolutePath(), exception );
       }
    }
 
@@ -228,12 +227,13 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
     */
    public AspectModel loadNamespacePackage( final InputStream inputStream ) {
       final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      final boolean hasAspectModelsFolder;
       try {
          inputStream.transferTo( baos );
-      } catch ( final IOException e ) {
-         throw new RuntimeException( e );
+         hasAspectModelsFolder = containsFolderInNamespacePackage( new ByteArrayInputStream( baos.toByteArray() ) );
+      } catch ( final IOException exception ) {
+         throw new ModelResolutionException( "Could not read from input", exception );
       }
-      final boolean hasAspectModelsFolder = containsFolderInNamespacePackage( new ByteArrayInputStream( baos.toByteArray() ) );
       return loadNamespacePackageFromStream( new ByteArrayInputStream( baos.toByteArray() ), hasAspectModelsFolder );
    }
 
@@ -245,8 +245,8 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
 
          while ( ( entry = zis.getNextEntry() ) != null ) {
             final boolean isRelevantEntry =
-                  ( hasAspectModelsFolder && entry.getName().contains( String.format( "%s/", ASPECT_MODELS_FOLDER ) ) && entry.getName()
-                        .endsWith( ".ttl" ) )
+                  ( hasAspectModelsFolder && entry.getName().contains( String.format( "%s/", ASPECT_MODELS_FOLDER ) )
+                        && entry.getName().endsWith( ".ttl" ) )
                         || ( !hasAspectModelsFolder && entry.getName().endsWith( ".ttl" ) );
 
             if ( isRelevantEntry ) {
@@ -256,9 +256,9 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
          }
 
          zis.closeEntry();
-      } catch ( final IOException e ) {
-         LOG.error( "Error reading the Archive input stream", e );
-         throw new RuntimeException( "Error reading the Archive input stream", e );
+      } catch ( final IOException exception ) {
+         LOG.error( "Error reading the Archive input stream", exception );
+         throw new ModelResolutionException( "Error reading the Archive input stream", exception );
       }
 
       final LoaderContext loaderContext = new LoaderContext();
@@ -266,7 +266,7 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
       return loadAspectModelFiles( loaderContext.loadedFiles() );
    }
 
-   private boolean containsFolderInNamespacePackage( final InputStream inputStream ) {
+   private boolean containsFolderInNamespacePackage( final InputStream inputStream ) throws IOException {
       try ( final ZipInputStream zis = new ZipInputStream( inputStream ) ) {
          ZipEntry entry;
          while ( ( entry = zis.getNextEntry() ) != null ) {
@@ -274,8 +274,6 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
                return true;
             }
          }
-      } catch ( final IOException e ) {
-         throw new RuntimeException( e );
       }
       return false;
    }

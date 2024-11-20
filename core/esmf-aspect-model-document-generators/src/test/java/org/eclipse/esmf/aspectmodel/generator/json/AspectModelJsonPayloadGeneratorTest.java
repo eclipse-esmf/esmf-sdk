@@ -37,6 +37,7 @@ import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
+
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
@@ -566,8 +567,8 @@ public class AspectModelJsonPayloadGeneratorTest {
          assertNumberInRange( validator.getTestNumber(), randomRange, boundKind.orElse( null ) );
          assertMinValue( minValidator.getTestNumber(), randomRange.getLeft(), boundKind.orElse( null ) );
          assertMaxValue( maxValidator.getTestNumber(), randomRange.getRight(), boundKind.orElse( null ) );
-      } catch ( final IOException e ) {
-         throw new RuntimeException( e );
+      } catch ( final IOException exception ) {
+         throw new RuntimeException( exception );
       }
    }
 
