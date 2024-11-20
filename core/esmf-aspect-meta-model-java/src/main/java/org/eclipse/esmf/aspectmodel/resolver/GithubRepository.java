@@ -25,7 +25,7 @@ public record GithubRepository(
       Ref branchOrTag
 ) {
    public GithubRepository( final String owner, final String repository, final Ref branchOrTag ) {
-      this( "api.github.com", owner, repository, branchOrTag );
+      this( "github.com", owner, repository, branchOrTag );
    }
 
    public sealed interface Ref {
@@ -51,7 +51,8 @@ public record GithubRepository(
    public URL zipLocation() {
       // See https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#download-a-repository-archive-zip
       // General URL structure: https://api.github.com/repos/OWNER/REPO/zipball/REF
-      final String url = "https://%s/repos/%s/%s/zipball/%s".formatted( host(), owner(), repository(), branchOrTag().name() );
+      final String theHost = host().equals( "github.com" ) ? "api.github.com" : host();
+      final String url = "https://%s/repos/%s/%s/zipball/%s".formatted( theHost, owner(), repository(), branchOrTag().name() );
       try {
          return new URL( url );
       } catch ( final MalformedURLException exception ) {
