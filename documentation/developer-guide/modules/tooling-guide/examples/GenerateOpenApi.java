@@ -14,8 +14,6 @@
 package examples;
 
 // tag::imports[]
-import java.io.ByteArrayOutputStream;
-
 import org.eclipse.esmf.aspectmodel.generator.openapi.AspectModelOpenApiGenerator;
 import org.eclipse.esmf.aspectmodel.generator.openapi.OpenApiSchemaGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.openapi.OpenApiSchemaGenerationConfigBuilder;
@@ -23,12 +21,11 @@ import org.eclipse.esmf.aspectmodel.generator.openapi.PagingOption;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.metamodel.AspectModel;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+// end::imports[]
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-// end::imports[]
 
 import java.io.File;
 import java.io.IOException;
@@ -73,8 +70,8 @@ public class GenerateOpenApi {
             .build();
 
       // Generate pretty-printed YAML
-      final AspectModelOpenApiGenerator generator = new AspectModelOpenApiGenerator();
-      final String yaml = generator.apply( aspectModel.aspect(), config ).getContentAsYaml();
+      final AspectModelOpenApiGenerator generator = new AspectModelOpenApiGenerator( aspectModel.aspect(), config );
+      final String yaml = generator.generateYaml();
       // end::generateYaml[]
    }
 
@@ -88,7 +85,6 @@ public class GenerateOpenApi {
                   new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) );
       // tag::generateJson[]
 
-      final ObjectMapper objectMapper = new ObjectMapper();
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             // Server URL
             .baseUrl( "http://www.example.com" )
@@ -121,14 +117,11 @@ public class GenerateOpenApi {
             .build();
 
       // Generate the JSON
-      final AspectModelOpenApiGenerator generator = new AspectModelOpenApiGenerator();
-      final JsonNode json = generator.apply( aspectModel.aspect(), config ).getContent();
-
-      // If needed, print or pretty print it into a string
-      final ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-      objectMapper.writerWithDefaultPrettyPrinter().writeValue( out, json );
-      final String result = out.toString();
+      final AspectModelOpenApiGenerator generator = new AspectModelOpenApiGenerator( aspectModel.aspect(), config );
+      // Get result as type-safe JSON object
+      final JsonNode jsonNode = generator.getContent();
+      // Or as pretty-printed JSON String:
+      final String json = generator.generateJson();
       // end::generateJson[]
    }
 

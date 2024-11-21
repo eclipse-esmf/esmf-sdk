@@ -15,7 +15,6 @@ package org.eclipse.esmf.aspectmodel.resolver.github;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.GithubRepository;
-import org.eclipse.esmf.aspectmodel.resolver.ProxyConfig;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategySupport;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
@@ -33,16 +32,14 @@ public class GitHubStrategy extends GitHubModelSource implements ResolutionStrat
    /**
     * Constructor.
     *
-    * @param repository the GitHub repository
-    * @param directory the relative directory inside the repository
-    * @param proxyConfig the proxy configuration
+    * @param sourceConfig the configuration for the model source
     */
-   public GitHubStrategy( final GithubRepository repository, final String directory, final ProxyConfig proxyConfig ) {
-      super( repository, directory, proxyConfig );
+   public GitHubStrategy( final GithubModelSourceConfig sourceConfig ) {
+      super( sourceConfig );
    }
 
    /**
-    * Constructor. Proxy settings are automatically detected.
+    * Convenience constructor. Proxy settings are automatically detected, no authentication is used.
     *
     * @param repository the GitHub repository
     * @param directory the relative directory inside the repository
@@ -60,8 +57,11 @@ public class GitHubStrategy extends GitHubModelSource implements ResolutionStrat
             } )
             .filter( file -> resolutionStrategySupport.containsDefinition( file, aspectModelUrn ) )
             .findFirst()
-            .orElseThrow( () -> new ModelResolutionException( "No model file containing " + aspectModelUrn
-                  + " could be found in GitHub repository: " + repository.owner() + "/" + repository.repository()
-                  + " in branch/tag " + repository.branchOrTag().name() ) );
+            .orElseThrow( () -> new ModelResolutionException(
+                  "No model file containing %s could be found in GitHub repository: %s/%s in branch/tag %s".formatted(
+                        aspectModelUrn,
+                        config.repository().owner(),
+                        config.repository().repository(),
+                        config.repository().branchOrTag().name() ) ) );
    }
 }

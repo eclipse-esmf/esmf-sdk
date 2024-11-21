@@ -24,7 +24,9 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Pattern;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -496,6 +498,36 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
 
       result.assertConstructorArgumentForProperties( "MetaAspectWithQuantifiableWithoutUnit",
             ImmutableMap.<String, String> builder().put( "TEST_PROPERTY", expectedTestPropertyCharacteristicConstructorCall ).build(), 1 );
+   }
+
+   @Test
+   void testCharacteristicInstantiationForPropertyWithExampleValue() throws IOException {
+      final TestAspect aspect = TestAspect.ASPECT_WITH_COLLECTION;
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
+
+      result.assertNumberOfFiles( 2 );
+
+      Map<String, Set<String>> expectedBaseAttributes = new HashMap<>();
+      expectedBaseAttributes.put( "TEST_PROPERTY", Set.of(
+            "withUrn(AspectModelUrn.fromUrn(NAMESPACE + \"testProperty\"))",
+            "withPreferredName(Locale.forLanguageTag(\"en\"), \"Test Property\")",
+            "withDescription(Locale.forLanguageTag(\"en\"), \"This is a test property.\")",
+            "withSee(\"http://example.com/\")",
+            "withSee(\"http://example.com/me\")"
+      ) );
+
+      result.assertMetaModelBaseAttributesForProperties( "MetaAspectWithCollection", expectedBaseAttributes );
+
+      final String expectedExampleValue = "Optional.of(new DefaultScalarValue(\"Example Value\", new DefaultScalar(\"http://www.w3"
+            + ".org/2001/XMLSchema#string\")))";
+
+      result.assertConstructorArgumentForProperties(
+            "MetaAspectWithCollection",
+            ImmutableMap.<String, String> builder()
+                  .put( "TEST_PROPERTY", expectedExampleValue )
+                  .build(),
+            2
+      );
    }
 
    @Test

@@ -25,4 +25,8 @@ public class ShaclValidationException extends RuntimeException {
    public ShaclValidationException( final String message ) {
       super( message );
    }
+
+   public ShaclValidationException( final String message, final Throwable cause ) {
+      super( message, cause );
+   }
 }

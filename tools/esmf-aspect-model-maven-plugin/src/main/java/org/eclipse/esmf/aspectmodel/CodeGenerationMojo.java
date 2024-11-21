@@ -15,17 +15,16 @@ package org.eclipse.esmf.aspectmodel;
 
 import java.io.File;
 import java.io.OutputStream;
-import java.util.function.Function;
 
 import org.eclipse.esmf.aspectmodel.java.QualifiedName;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.functions.ThrowingFunction;
 import org.eclipse.esmf.metamodel.Aspect;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Parameter;
 
 public abstract class CodeGenerationMojo extends AspectModelMojo {
-
    @Parameter
    protected String packageName = "";
 
@@ -51,13 +50,15 @@ public abstract class CodeGenerationMojo extends AspectModelMojo {
       super.validateParameters();
    }
 
-   protected final Function<QualifiedName, OutputStream> nameMapper = artifact -> {
-      final String path = artifact.getPackageName();
-      final String fileName = artifact.getClassName();
-      final String outputDirectoryForArtifact = outputDirectory + File.separator + path.replace( '.', File.separatorChar );
-      final String artifactName = fileName + ".java";
-      return getOutputStreamForFile( artifactName, outputDirectoryForArtifact );
-   };
+   protected ThrowingFunction<QualifiedName, OutputStream, MojoExecutionException> javaFileNameMapper( final String outputPath ) {
+      return artifact -> {
+         final String path = artifact.getPackageName();
+         final String fileName = artifact.getClassName();
+         final String outputDirectoryForArtifact = outputPath + File.separator + path.replace( '.', File.separatorChar );
+         final String artifactName = fileName + ".java";
+         return getOutputStreamForFile( artifactName, outputDirectoryForArtifact );
+      };
+   }
 
    protected String determinePackageName( final Aspect aspect ) {
       if ( packageName == null || packageName.isEmpty() ) {

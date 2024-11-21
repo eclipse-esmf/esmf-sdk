@@ -16,18 +16,15 @@ package org.eclipse.esmf.aspectmodel;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-import java.io.File;
-
 import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.Test;
 
+@SuppressWarnings( "JUnitMixedFramework" )
 public class GenerateStaticJavaClassesTest extends AspectModelMojoTest {
-
    @Test
    public void testGenerateJavaClassesValidAspectModel() throws Exception {
-      final File testPom = getTestFile( "src/test/resources/test-pom-valid-aspect-model-output-directory.xml" );
-      final Mojo generateStaticJavaClasses = lookupMojo( "generateStaticJavaClasses", testPom );
+      final Mojo generateStaticJavaClasses = getMojo( "test-pom-valid-aspect-model-output-directory", "generateStaticJavaClasses" );
       assertThatCode( generateStaticJavaClasses::execute ).doesNotThrowAnyException();
 
       final String packagePath = "org/eclipse/esmf/test";
@@ -36,8 +33,7 @@ public class GenerateStaticJavaClassesTest extends AspectModelMojoTest {
 
    @Test
    public void testGenerateJavaClassesCustomPackageName() throws Exception {
-      final File testPom = getTestFile( "src/test/resources/generate-static-java-classes-pom-custom-package-name.xml" );
-      final Mojo generateStaticJavaClasses = lookupMojo( "generateStaticJavaClasses", testPom );
+      final Mojo generateStaticJavaClasses = getMojo( "generate-static-java-classes-pom-custom-package-name", "generateStaticJavaClasses" );
       assertThatCode( generateStaticJavaClasses::execute ).doesNotThrowAnyException();
 
       final String packagePath = "example/com";
@@ -46,8 +42,8 @@ public class GenerateStaticJavaClassesTest extends AspectModelMojoTest {
 
    @Test
    public void testGenerateJavaClassesPackageInterpolation() throws Exception {
-      final File testPom = getTestFile( "src/test/resources/generate-static-java-classes-pom-package-interpolation.xml" );
-      final Mojo generateStaticJavaClasses = lookupMojo( "generateStaticJavaClasses", testPom );
+      final Mojo generateStaticJavaClasses = getMojo( "generate-static-java-classes-pom-package-interpolation",
+            "generateStaticJavaClasses" );
       assertThatCode( generateStaticJavaClasses::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "com", "example", "shared", "v1", "v0", "v0", "MetaAspectWithExtendedEntity.java" ) ).exists();
       assertThat( generatedFilePath( "com", "example", "v1", "v0", "v0", "MetaAspect.java" ) ).exists();
@@ -55,8 +51,8 @@ public class GenerateStaticJavaClassesTest extends AspectModelMojoTest {
 
    @Test
    public void testGenerateJavaClassesInvalidTemplateLibFile() throws Exception {
-      final File testPom = getTestFile( "src/test/resources/generate-static-java-classes-pom-invalid-template-lib-file.xml" );
-      final Mojo generateStaticJavaClasses = lookupMojo( "generateStaticJavaClasses", testPom );
+      final Mojo generateStaticJavaClasses = getMojo( "generate-static-java-classes-pom-invalid-template-lib-file",
+            "generateStaticJavaClasses" );
       assertThatCode( generateStaticJavaClasses::execute )
             .isInstanceOf( MojoExecutionException.class )
             .hasMessage( "Missing configuration. Valid path to velocity template library file must be provided." );

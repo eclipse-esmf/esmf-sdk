@@ -17,6 +17,8 @@ import java.util.Arrays;
 import java.util.Set;
 
 import org.eclipse.esmf.aspectmodel.aas.AasFileFormat;
+import org.eclipse.esmf.aspectmodel.aas.AasGenerationConfig;
+import org.eclipse.esmf.aspectmodel.aas.AasGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.aas.AspectModelAasGenerator;
 import org.eclipse.esmf.metamodel.Aspect;
 
@@ -26,8 +28,10 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
-@Mojo( name = "generateAas", defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
+@Mojo( name = GenerateAas.MAVEN_GOAL, defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateAas extends AspectModelMojo {
+   public static final String MAVEN_GOAL = "generateAas";
+
    @Parameter( required = true, property = "targetFormat" )
    private String targetFormat;
 
@@ -35,10 +39,12 @@ public class GenerateAas extends AspectModelMojo {
    public void executeGeneration() throws MojoExecutionException, MojoFailureException {
       validateParameters();
       final Set<Aspect> aspects = loadAspects();
-      final AspectModelAasGenerator generator = new AspectModelAasGenerator();
+      final AasGenerationConfig config = AasGenerationConfigBuilder.builder()
+            .format( AasFileFormat.valueOf( targetFormat.toUpperCase() ) )
+            .build();
       for ( final Aspect aspect : aspects ) {
-         generator.generate( AasFileFormat.valueOf( targetFormat.toUpperCase() ), aspect,
-               name -> getOutputStreamForFile( name + "." + targetFormat, outputDirectory ) );
+         new AspectModelAasGenerator( aspect, config ).generateThrowing(
+               name -> getOutputStreamForFile( name, outputDirectory ) );
       }
    }
 

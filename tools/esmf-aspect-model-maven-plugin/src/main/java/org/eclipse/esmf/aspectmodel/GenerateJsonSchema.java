@@ -34,8 +34,9 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Mojo( name = "generateJsonSchema", defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
+@Mojo( name = GenerateJsonSchema.MAVEN_GOAL, defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateJsonSchema extends AspectModelMojo {
+   public static final String MAVEN_GOAL = "generateJsonSchema";
    private static final Logger LOG = LoggerFactory.getLogger( GenerateJsonSchema.class );
 
    @Parameter( defaultValue = "en" )
@@ -52,7 +53,7 @@ public class GenerateJsonSchema extends AspectModelMojo {
             final JsonSchemaGenerationConfig config = JsonSchemaGenerationConfigBuilder.builder()
                   .locale( locale )
                   .build();
-            final JsonNode schema = AspectModelJsonSchemaGenerator.INSTANCE.apply( aspect, config ).getContent();
+            final JsonNode schema = new AspectModelJsonSchemaGenerator( aspect, config ).getContent();
             final OutputStream out = getOutputStreamForFile( aspect.getName() + ".schema.json", outputDirectory );
             final ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.writerWithDefaultPrettyPrinter().writeValue( out, schema );

@@ -27,6 +27,8 @@ import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.resolver.fs.StructuredModelsRoot;
 import org.eclipse.esmf.aspectmodel.resolver.github.GitHubStrategy;
+import org.eclipse.esmf.aspectmodel.resolver.github.GithubModelSourceConfig;
+import org.eclipse.esmf.aspectmodel.resolver.github.GithubModelSourceConfigBuilder;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
 import org.eclipse.esmf.aspectmodel.validation.services.DetailedViolationFormatter;
@@ -88,7 +90,12 @@ public abstract class AbstractInputHandler implements InputHandler {
                ? new GithubRepository.Tag( resolverConfig.gitHubResolutionOptions.gitHubTag )
                : new GithubRepository.Branch( resolverConfig.gitHubResolutionOptions.gitHubBranch );
          final GithubRepository repository = new GithubRepository( owner, repositoryName, branchOrTag );
-         strategies.add( new GitHubStrategy( repository, resolverConfig.gitHubResolutionOptions.gitHubDirectory ) );
+         final GithubModelSourceConfig modelSourceConfig = GithubModelSourceConfigBuilder.builder()
+               .repository( repository )
+               .directory( resolverConfig.gitHubResolutionOptions.gitHubDirectory )
+               .token( resolverConfig.gitHubResolutionOptions.gitHubToken )
+               .build();
+         strategies.add( new GitHubStrategy( modelSourceConfig ) );
       }
       return strategies;
    }

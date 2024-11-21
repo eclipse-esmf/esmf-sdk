@@ -16,9 +16,7 @@ package org.eclipse.esmf.aspectmodel.generator.diagram;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Locale;
 
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.test.TestAspect;
@@ -35,8 +33,7 @@ public class AspectModelDiagramGeneratorTest {
       final Aspect aspect = TestResources.load( testAspect ).aspect();
       final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( aspect );
       assertThatCode( () -> {
-         final ByteArrayOutputStream out = new ByteArrayOutputStream();
-         generator.generateDiagram( AspectModelDiagramGenerator.Format.SVG, Locale.ENGLISH, out );
+         assertThat( generator.getContent() ).isNotEmpty();
       } ).doesNotThrowAnyException();
    }
 
@@ -50,11 +47,10 @@ public class AspectModelDiagramGeneratorTest {
          final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( aspect );
 
          assertThatCode( () -> {
-            final ByteArrayOutputStream out = new ByteArrayOutputStream();
-            generator.generateDiagram( AspectModelDiagramGenerator.Format.SVG, Locale.ENGLISH, out );
-            final String svg = out.toString( StandardCharsets.UTF_8 );
+            final byte[] out = generator.getContent();
+            final String svg = new String( out, StandardCharsets.UTF_8 );
             assertThat( svg ).contains( "«Aspect»" );
-            assertThat( out.toByteArray() ).containsSubsequence( "«Aspect»".getBytes( StandardCharsets.UTF_8 ) );
+            assertThat( out ).containsSubsequence( "«Aspect»".getBytes( StandardCharsets.UTF_8 ) );
          } ).doesNotThrowAnyException();
       } finally {
          System.setProperty( "file.encoding", platformEncoding );

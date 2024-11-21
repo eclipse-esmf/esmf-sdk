@@ -13,12 +13,14 @@
 
 package org.eclipse.esmf.aspectmodel;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.eclipse.esmf.aspectmodel.generator.DocumentGenerationException;
 import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
+import org.eclipse.esmf.aspectmodel.generator.diagram.DiagramGenerationConfig;
+import org.eclipse.esmf.aspectmodel.generator.diagram.DiagramGenerationConfigBuilder;
 import org.eclipse.esmf.metamodel.Aspect;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -28,8 +30,9 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Mojo( name = "generateDiagram", defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
+@Mojo( name = GenerateDiagram.MAVEN_GOAL, defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateDiagram extends AspectModelMojo {
+   public static final String MAVEN_GOAL = "generateDiagram";
    private static final Logger LOG = LoggerFactory.getLogger( GenerateDiagram.class );
 
    @Parameter( required = true, property = "targetFormat" )
@@ -41,15 +44,18 @@ public class GenerateDiagram extends AspectModelMojo {
 
       final Set<Aspect> aspects = loadAspects();
       try {
-         final Set<AspectModelDiagramGenerator.Format> formats = targetFormats.stream()
-               .map( targetFormat -> AspectModelDiagramGenerator.Format.valueOf( targetFormat.toUpperCase() ) )
+         final Set<DiagramGenerationConfig.Format> formats = targetFormats.stream()
+               .map( targetFormat -> DiagramGenerationConfig.Format.valueOf( targetFormat.toUpperCase() ) )
                .collect( Collectors.toSet() );
 
          for ( final Aspect aspect : aspects ) {
-            final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( aspect );
-            generator.generateDiagrams( formats, name -> getOutputStreamForFile( name, outputDirectory ) );
+            for ( final DiagramGenerationConfig.Format format : formats ) {
+               final DiagramGenerationConfig config = DiagramGenerationConfigBuilder.builder().format( format ).build();
+               new AspectModelDiagramGenerator( aspect, config )
+                     .generateThrowing( name -> getOutputStreamForFile( name, outputDirectory ) );
+            }
          }
-      } catch ( final IOException exception ) {
+      } catch ( final DocumentGenerationException exception ) {
          throw new MojoExecutionException( "Could not generate diagram.", exception );
       }
       LOG.info( "Successfully generated Aspect Model diagram(s)." );
@@ -62,10 +68,10 @@ public class GenerateDiagram extends AspectModelMojo {
       }
 
       for ( final String targetFormat : targetFormats ) {
-         if ( Arrays.stream( AspectModelDiagramGenerator.Format.values() )
-               .noneMatch( x -> x.toString().equals( targetFormat.toLowerCase() ) ) ) {
+         if ( Arrays.stream( DiagramGenerationConfig.Format.values() )
+               .noneMatch( x -> x.toString().equals( targetFormat.toUpperCase() ) ) ) {
             throw new MojoExecutionException( "Invalid target format: " + targetFormat + ". Valid formats are "
-                  + AspectModelDiagramGenerator.Format.allValues() + "." );
+                  + DiagramGenerationConfig.Format.allValues() + "." );
          }
       }
       super.validateParameters();

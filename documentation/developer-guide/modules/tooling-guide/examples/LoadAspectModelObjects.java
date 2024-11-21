@@ -14,12 +14,11 @@
 package examples;
 
 // tag::imports[]
-import java.io.File;
-
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.ModelElement;
 // end::imports[]
+import java.io.File;
 
 import org.junit.jupiter.api.Test;
 

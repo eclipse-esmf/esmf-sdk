@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
  * plus some useful operations.
  */
 public class NumericTypeTraits {
-
    private static final Logger LOG = LoggerFactory.getLogger( NumericTypeTraits.class );
 
    private static final List<Class<?>> FLOATING_POINT_TYPES = List.of( Float.class, Double.class, BigDecimal.class );

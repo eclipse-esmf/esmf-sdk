@@ -26,6 +26,7 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import org.eclipse.esmf.aspectmodel.shacl.JsLibrary;
+import org.eclipse.esmf.aspectmodel.shacl.ShaclValidationException;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.js.JsFactory;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.js.JsGraph;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.js.JsTerm;
@@ -74,6 +75,10 @@ public class JsConstraint implements Constraint {
       // See https://www.graalvm.org/22.3/reference-manual/js/FAQ/#warning-implementation-does-not-support-runtime-compilation
       System.setProperty( "polyglot.engine.WarnInterpreterOnly", "false" );
       engine = new ScriptEngineManager().getEngineByName( "JavaScript" );
+      if ( engine == null ) {
+         throw new ShaclValidationException( "Could not initialize JavaScript engine. Please make sure org.graalvm.js:js is "
+               + "in the list of dependencies and/or the 'js' component is installed in you GraalVM runtime." );
+      }
       final Bindings bindings = engine.getBindings( ScriptContext.ENGINE_SCOPE );
       // The following settings are required to allow the script to access methods and fields on the injected objects
       bindings.put( "polyglot.js.allowHostAccess", true );
@@ -82,7 +87,7 @@ public class JsConstraint implements Constraint {
       try {
          engine.eval( jsLibrary.javaScriptCode() );
       } catch ( final ScriptException exception ) {
-         throw new RuntimeException( exception );
+         throw new ShaclValidationException( "Could not evaluate JavaScript constraint", exception );
       }
    }
 
@@ -110,7 +115,7 @@ public class JsConstraint implements Constraint {
       try {
          final Object this_ = JsFactory.asJsTerm( context.element().asNode() );
          final Object value = JsFactory.asJsTerm( rdfNode.asNode() );
-         final Object result = ((Invocable) engine).invokeFunction( jsFunctionName, this_, value );
+         final Object result = ( (Invocable) engine ).invokeFunction( jsFunctionName, this_, value );
          if ( result == null ) {
             return List.of( new JsConstraintViolation( context, "JavaScript evaluation of " + jsFunctionName() + " returned null",
                   jsLibrary(), jsFunctionName(), Collections.emptyMap() ) );

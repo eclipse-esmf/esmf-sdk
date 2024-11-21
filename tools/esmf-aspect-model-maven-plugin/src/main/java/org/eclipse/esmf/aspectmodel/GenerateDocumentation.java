@@ -15,11 +15,10 @@ package org.eclipse.esmf.aspectmodel;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.esmf.aspectmodel.generator.docu.AspectModelDocumentationGenerator;
+import org.eclipse.esmf.aspectmodel.generator.docu.DocumentationGenerationConfigBuilder;
 import org.eclipse.esmf.metamodel.Aspect;
 
 import org.apache.commons.io.FileUtils;
@@ -30,12 +29,13 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Mojo( name = "generateDocumentation", defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
+@Mojo( name = GenerateDocumentation.MAVEN_GOAL, defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateDocumentation extends AspectModelMojo {
+   public static final String MAVEN_GOAL = "generateDocumentation";
    private static final Logger LOG = LoggerFactory.getLogger( GenerateDocumentation.class );
 
    @Parameter
-   private final String htmlCustomCssFilePath = "";
+   private String htmlCustomCssFilePath = "";
 
    @Override
    public void executeGeneration() throws MojoExecutionException {
@@ -44,15 +44,13 @@ public class GenerateDocumentation extends AspectModelMojo {
       try {
          final Set<Aspect> aspects = loadAspects();
          for ( final Aspect model : aspects ) {
-            final AspectModelDocumentationGenerator generator = new AspectModelDocumentationGenerator( model );
-            final Map<AspectModelDocumentationGenerator.HtmlGenerationOption, String> generationArgs = new HashMap<>();
-            generationArgs.put( AspectModelDocumentationGenerator.HtmlGenerationOption.STYLESHEET, "" );
-            //noinspection ConstantValue
+            final DocumentationGenerationConfigBuilder configBuilder = DocumentationGenerationConfigBuilder.builder();
             if ( !htmlCustomCssFilePath.isEmpty() ) {
                final String css = FileUtils.readFileToString( new File( htmlCustomCssFilePath ), "UTF-8" );
-               generationArgs.put( AspectModelDocumentationGenerator.HtmlGenerationOption.STYLESHEET, css );
+               configBuilder.stylesheet( css );
             }
-            generator.generate( artifact -> getOutputStreamForFile( artifact, outputDirectory ), generationArgs );
+            new AspectModelDocumentationGenerator( model, configBuilder.build() )
+                  .generateThrowing( artifact -> getOutputStreamForFile( artifact, outputDirectory ) );
          }
       } catch ( final IOException exception ) {
          throw new MojoExecutionException( "Could not load custom CSS file.", exception );

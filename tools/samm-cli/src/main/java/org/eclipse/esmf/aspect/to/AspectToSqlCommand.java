@@ -51,12 +51,12 @@ public class AspectToSqlCommand extends AbstractCommand {
 
    @CommandLine.Option(
          names = { "--dialect", "-d" },
-         description = "The SQL dialect to generate for (default: ${DEFAULT-VALUE}" )
+         description = "The SQL dialect to generate for (default: ${DEFAULT-VALUE})" )
    private SqlGenerationConfig.Dialect dialect = SqlGenerationConfig.Dialect.DATABRICKS;
 
    @CommandLine.Option(
          names = { "--mapping-strategy", "-s" },
-         description = "The mapping strategy to use (default: ${DEFAULT-VALUE}" )
+         description = "The mapping strategy to use (default: ${DEFAULT-VALUE})" )
    private SqlGenerationConfig.MappingStrategy strategy = SqlGenerationConfig.MappingStrategy.DENORMALIZED;
 
    @CommandLine.Option(
@@ -132,12 +132,12 @@ public class AspectToSqlCommand extends AbstractCommand {
                   .customColumns( customColumns )
                   .build();
       final SqlGenerationConfig sqlConfig = new SqlGenerationConfig( dialect, strategy, generatorConfig );
-      final SqlArtifact result = AspectModelSqlGenerator.INSTANCE.apply( aspect, sqlConfig );
+      final SqlArtifact result = new AspectModelSqlGenerator( aspect, sqlConfig ).singleResult();
 
       try ( final OutputStream out = getStreamForFile( outputFilePath ) ) {
          out.write( result.getContent().getBytes() );
-      } catch ( final IOException e ) {
-         throw new CommandException( e );
+      } catch ( final IOException exception ) {
+         throw new CommandException( exception );
       }
    }
 }

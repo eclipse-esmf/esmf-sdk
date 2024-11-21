@@ -14,6 +14,8 @@
 package examples;
 
 // tag::imports[]
+import org.eclipse.esmf.aspectmodel.aas.AasGenerationConfig;
+import org.eclipse.esmf.aspectmodel.aas.AasGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.aas.AspectModelAasGenerator;
 import org.eclipse.esmf.aspectmodel.aas.AasFileFormat;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
@@ -22,6 +24,8 @@ import org.eclipse.esmf.metamodel.AspectModel;
 // end::imports[]
 
 import java.io.File;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 public class GenerateAas extends AbstractGenerator {
@@ -36,14 +40,12 @@ public class GenerateAas extends AbstractGenerator {
       final Aspect aspect = aspectModel.aspect();
       // tag::generate[]
 
-      final AspectModelAasGenerator generator = new AspectModelAasGenerator();
-
-      // Generate AAS .aasx for input Aspect
-      generator.generate( AasFileFormat.AASX, aspect, this::outputStreamForName );
-      // Generate AAS .xml for input Aspect
-      generator.generate( AasFileFormat.XML, aspect, this::outputStreamForName );
-      // Generate AAS .json for input Aspect
-      generator.generate( AasFileFormat.JSON, aspect, this::outputStreamForName );
+      final AasGenerationConfig config = AasGenerationConfigBuilder.builder()
+            .format( AasFileFormat.AASX )
+            .aspectData( null ) // Optional: Provide a JsonNode representing Aspect data
+            .propertyMappers( List.of() ) // Optional: Customize SAMM->AAS property mapping
+            .build();
+      new AspectModelAasGenerator( aspect, config ).generate( this::outputStreamForName );
       // end::generate[]
    }
 }

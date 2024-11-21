@@ -115,7 +115,6 @@ public class AspectToAsyncapiCommand extends AbstractCommand {
       setResolverConfig( resolverConfiguration );
 
       final Locale locale = Optional.ofNullable( language ).map( Locale::forLanguageTag ).orElse( Locale.ENGLISH );
-      final AspectModelAsyncApiGenerator generator = new AspectModelAsyncApiGenerator();
       final Aspect aspect = getInputHandler( parentCommand.parentCommand.getInput() ).loadAspect();
       final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( useSemanticApiVersion )
@@ -123,7 +122,7 @@ public class AspectToAsyncapiCommand extends AbstractCommand {
             .channelAddress( channelAddress )
             .locale( locale )
             .build();
-      final AsyncApiSchemaArtifact asyncApiSpec = generator.apply( aspect, config );
+      final AsyncApiSchemaArtifact asyncApiSpec = new AspectModelAsyncApiGenerator( aspect, config ).singleResult();
 
       try {
          if ( writeSeparateFiles ) {

@@ -16,18 +16,17 @@ package org.eclipse.esmf.aspectmodel;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.apache.maven.plugin.Mojo;
 import org.junit.Test;
 
+@SuppressWarnings( "JUnitMixedFramework" )
 public class GenerateSqlTest extends AspectModelMojoTest {
    @Test
    public void testGenerateSqlWithDefaultSettings() throws Exception {
-      final File testPom = getTestFile( "src/test/resources/generate-sql-pom-valid-aspect-model-default-settings.xml" );
-      final Mojo generateSql = lookupMojo( "generateSql", testPom );
+      final Mojo generateSql = getMojo( "generate-sql-pom-valid-aspect-model-default-settings", "generateSql" );
       assertThatCode( generateSql::execute ).doesNotThrowAnyException();
       final Path generatedFile = generatedFilePath( "AspectWithSimpleTypes.sql" );
       assertThat( generatedFile ).exists();
@@ -38,8 +37,7 @@ public class GenerateSqlTest extends AspectModelMojoTest {
 
    @Test
    public void testGenerateSqlWithAdjustedSettings() throws Exception {
-      final File testPom = getTestFile( "src/test/resources/generate-sql-pom-valid-aspect-model-adjusted-settings.xml" );
-      final Mojo generateSql = lookupMojo( "generateSql", testPom );
+      final Mojo generateSql = getMojo( "generate-sql-pom-valid-aspect-model-adjusted-settings", "generateSql" );
       assertThatCode( generateSql::execute ).doesNotThrowAnyException();
       final Path generatedFile = generatedFilePath( "AspectWithSimpleTypes.sql" );
       assertThat( generatedFile ).exists();

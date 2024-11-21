@@ -58,7 +58,7 @@ public interface Shape {
          if ( node.isAnon() ) {
             return Shape.NodeKind.BlankNode;
          }
-         throw new RuntimeException( "Invalid nodekind: " + node );
+         throw new ShaclValidationException( "Invalid nodekind: " + node );
       }
 
       public String humanReadable() {

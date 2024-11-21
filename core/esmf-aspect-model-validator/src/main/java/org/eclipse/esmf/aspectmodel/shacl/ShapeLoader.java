@@ -135,7 +135,7 @@ public class ShapeLoader implements Function<Model, List<Shape.Node>> {
          .put( SHACL.or(), context -> new OrConstraint( nestedShapesList( context.statement() ) ) )
          .put( SHACL.xone(), context -> new XoneConstraint( nestedShapesList( context.statement() ) ) )
          .put( SHACL.node(), context -> {
-            // Since sh:node can recursively refer to the same NodeShape is used in when shapes define recursive structures,
+            // Since sh:node can recursively refer to the same NodeShape it is used in when shapes define recursive structures,
             // the NodeConstraint is built using a Supplier for the actual NodeShape. Only if the NodeShape has not yet been
             // seen (i.e., it could be in the process of being built right now), create it now.
             final Resource resource = context.statement().getObject().asResource();
@@ -148,7 +148,7 @@ public class ShapeLoader implements Function<Model, List<Shape.Node>> {
          .put( SHACL.closed(), context -> {
             boolean closed = context.statement().getBoolean();
             if ( !closed ) {
-               throw new RuntimeException();
+               throw new ShaclValidationException( "Value of sh:closed may only be true" );
             }
             Set<Property> ignoredProperties = Optional.ofNullable(
                         context.statement().getSubject().getProperty( SHACL.ignoredProperties() ) )
@@ -335,11 +335,11 @@ public class ShapeLoader implements Function<Model, List<Shape.Node>> {
       if ( zeroOrOneStatement != null ) {
          return new ZeroOrOnePath( path( zeroOrOneStatement.getResource() ) );
       }
-      throw new RuntimeException( "Invalid path: " + PrintUtil.print( pathNode ) );
+      throw new ShaclValidationException( "Invalid path: " + PrintUtil.print( pathNode ) );
    }
 
    private boolean isRdfList( final Resource resource ) {
-      return (resource.isURIResource() && resource.getURI().equals( RDF.nil.getURI() ))
+      return ( resource.isURIResource() && resource.getURI().equals( RDF.nil.getURI() ) )
             || resource.hasProperty( RDF.rest ) || resource.hasProperty( RDF.first );
    }
 
@@ -351,7 +351,7 @@ public class ShapeLoader implements Function<Model, List<Shape.Node>> {
                   return Streams.stream( valueNode.listProperties( entry.getKey() ) )
                         .map( statement -> entry.getValue().apply( new ShapeContext( statement, path ) ) );
                } catch ( final Exception exception ) {
-                  throw new RuntimeException( "Could not load SHACL shape: Invalid use of " + entry.getKey() + " on " + valueNode );
+                  throw new ShaclValidationException( "Could not load SHACL shape: Invalid use of " + entry.getKey() + " on " + valueNode );
                }
             } )
             .collect( Collectors.toList() );

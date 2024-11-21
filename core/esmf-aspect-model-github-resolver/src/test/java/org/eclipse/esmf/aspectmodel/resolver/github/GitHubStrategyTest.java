@@ -64,8 +64,8 @@ public class GitHubStrategyTest {
                            System.err.println( "Could not delete file " + file );
                         }
                      } );
-            } catch ( final IOException e ) {
-               throw new RuntimeException( e );
+            } catch ( final IOException exception ) {
+               throw new RuntimeException( exception );
             }
          }
       }

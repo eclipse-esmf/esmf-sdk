@@ -22,7 +22,6 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -36,6 +35,8 @@ import org.eclipse.esmf.aspectmodel.edit.ChangeReport;
 import org.eclipse.esmf.aspectmodel.edit.ChangeReportFormatter;
 import org.eclipse.esmf.aspectmodel.generator.LanguageCollector;
 import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
+import org.eclipse.esmf.aspectmodel.generator.diagram.DiagramGenerationConfig;
+import org.eclipse.esmf.aspectmodel.generator.diagram.DiagramGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.Aspect;
@@ -79,19 +80,21 @@ public abstract class AbstractCommand implements Runnable {
       throw new CommandException( "Can not find file: " + input );
    }
 
-   protected void generateDiagram( final String input, final AspectModelDiagramGenerator.Format targetFormat,
+   protected void generateDiagram( final String input, final DiagramGenerationConfig.Format targetFormat,
          final String outputFileName, final String languageTag ) throws IOException {
       final Aspect aspect = getInputHandler( input ).loadAspect();
-      final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( aspect );
-      final Set<AspectModelDiagramGenerator.Format> targetFormats = new HashSet<>();
-      targetFormats.add( targetFormat );
       final Set<Locale> languagesUsedInModel = LanguageCollector.collectUsedLanguages( aspect );
       if ( !languagesUsedInModel.contains( Locale.forLanguageTag( languageTag ) ) ) {
          throw new CommandException( String.format( "The model does not contain the desired language: %s.", languageTag ) );
       }
       // we intentionally override the name of the generated artifact here to the name explicitly desired by the user (outputFileName),
       // as opposed to what the model thinks it should be called (name)
-      generator.generateDiagrams( targetFormats, Locale.forLanguageTag( languageTag ), name -> getStreamForFile( outputFileName ) );
+      final DiagramGenerationConfig config = DiagramGenerationConfigBuilder.builder()
+            .format( targetFormat )
+            .language( Locale.forLanguageTag( languageTag ) )
+            .build();
+      final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( aspect, config );
+      generator.generate( name -> getStreamForFile( outputFileName ) );
    }
 
    protected FileOutputStream getStreamForFile( final String artifactPath, final String artifactName, final String baseOutputPath ) {

@@ -23,6 +23,10 @@
          <artifactId>esmf-aspect-meta-model-java</artifactId>
       </dependency>
       <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-model-generator</artifactId>
+      </dependency>
+      <dependency>
          <groupId>org.eclipse.digitaltwin.aas4j</groupId>
          <artifactId>aas4j-model</artifactId>
       </dependency>
@@ -42,6 +46,11 @@
          <groupId>org.apache.poi</groupId>
          <artifactId>poi</artifactId>
       </dependency>
+      <dependency>
+         <groupId>io.soabase.record-builder</groupId>
+         <artifactId>record-builder-processor</artifactId>
+         <scope>provided</scope>
+      </dependency>
 
       <dependency>
          <groupId>org.eclipse.esmf</groupId>
@@ -59,4 +68,22 @@
          <scope>test</scope>
       </dependency>
    </dependencies>
+
+   <build>
+      <plugins>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+               <annotationProcessorPaths>
+                  <path>
+                     <groupId>io.soabase.record-builder</groupId>
+                     <artifactId>record-builder-processor</artifactId>
+                     <version>${record-builder-version}</version>
+                  </path>
+               </annotationProcessorPaths>
+            </configuration>
+         </plugin>
+      </plugins>
+   </build>
 </project>

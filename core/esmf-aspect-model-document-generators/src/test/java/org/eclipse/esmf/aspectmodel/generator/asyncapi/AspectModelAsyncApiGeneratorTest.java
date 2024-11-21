@@ -15,8 +15,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
 class AspectModelAsyncApiGeneratorTest {
-   private final AspectModelAsyncApiGenerator asyncApiGenerator = new AspectModelAsyncApiGenerator();
-
    private static final String APPLICATION_ID = "urn:samm:test:test:serve";
    private static final String CHANNEL_ADDRESS = "123/456/test/1.0.0/TestAspect";
    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -30,7 +28,7 @@ class AspectModelAsyncApiGeneratorTest {
             .channelAddress( CHANNEL_ADDRESS )
             .locale( Locale.ENGLISH )
             .build();
-      final AsyncApiSchemaArtifact asyncSpec = asyncApiGenerator.apply( aspect, config );
+      final AsyncApiSchemaArtifact asyncSpec = new AspectModelAsyncApiGenerator( aspect, config ).singleResult();
       final JsonNode json = asyncSpec.getContent();
 
       final JsonNode expectedJson = OBJECT_MAPPER.readTree(
@@ -78,7 +76,7 @@ class AspectModelAsyncApiGeneratorTest {
             .locale( Locale.ENGLISH )
             .build();
 
-      final AsyncApiSchemaArtifact asyncSpec = asyncApiGenerator.apply( aspect, config );
+      final AsyncApiSchemaArtifact asyncSpec = new AspectModelAsyncApiGenerator( aspect, config ).singleResult();
       final JsonNode json = asyncSpec.getContent();
       final String result = OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString( json );
       assertThat( result ).doesNotContain( "\"id\" : \"\"" );
@@ -94,7 +92,7 @@ class AspectModelAsyncApiGeneratorTest {
             .channelAddress( CHANNEL_ADDRESS )
             .locale( Locale.ENGLISH )
             .build();
-      final AsyncApiSchemaArtifact asyncSpec = asyncApiGenerator.apply( aspect, config );
+      final AsyncApiSchemaArtifact asyncSpec = new AspectModelAsyncApiGenerator( aspect, config ).singleResult();
       final JsonNode json = asyncSpec.getContent();
 
       final JsonNode expectedChannels = OBJECT_MAPPER.readTree(
@@ -161,7 +159,7 @@ class AspectModelAsyncApiGeneratorTest {
             .channelAddress( CHANNEL_ADDRESS )
             .locale( Locale.ENGLISH )
             .build();
-      final AsyncApiSchemaArtifact asyncSpec = asyncApiGenerator.apply( aspect, config );
+      final AsyncApiSchemaArtifact asyncSpec = new AspectModelAsyncApiGenerator( aspect, config ).singleResult();
       final JsonNode json = asyncSpec.getContent();
 
       final JsonNode expectedChannels = OBJECT_MAPPER.readTree(

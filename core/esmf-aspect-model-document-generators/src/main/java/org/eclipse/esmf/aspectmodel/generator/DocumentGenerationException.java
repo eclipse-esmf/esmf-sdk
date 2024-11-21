@@ -13,7 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.generator;
 
-public class DocumentGenerationException extends RuntimeException {
+public class DocumentGenerationException extends GenerationException {
    private static final long serialVersionUID = -3592685602580476530L;
 
    public DocumentGenerationException( final String message ) {

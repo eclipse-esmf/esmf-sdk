@@ -30,13 +30,12 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Mojo( name = "generateAsyncApiSpec", defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
+@Mojo( name = GenerateAsyncApiSpec.MAVEN_GOAL, defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateAsyncApiSpec extends AspectModelMojo {
+   public static final String MAVEN_GOAL = "generateAsyncApiSpec";
    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
    private static final ObjectMapper YAML_MAPPER = new YAMLMapper().enable( YAMLGenerator.Feature.MINIMIZE_QUOTES );
    private static final Logger LOG = LoggerFactory.getLogger( GenerateAsyncApiSpec.class );
-
-   private final AspectModelAsyncApiGenerator generator = new AspectModelAsyncApiGenerator();
 
    @Parameter( required = true )
    private String outputFormat = "";
@@ -70,7 +69,7 @@ public class GenerateAsyncApiSpec extends AspectModelMojo {
                .locale( locale )
                .build();
 
-         final AsyncApiSchemaArtifact asyncApiSpec = generator.apply( aspect, config );
+         final AsyncApiSchemaArtifact asyncApiSpec = new AspectModelAsyncApiGenerator( aspect, config ).singleResult();
          try {
             if ( separateFiles ) {
                writeSchemaWithSeparateFiles( format, asyncApiSpec );
@@ -84,13 +83,15 @@ public class GenerateAsyncApiSpec extends AspectModelMojo {
    }
 
    private void writeSchemaWithInOneFile( final String schemaFileName, final ApiFormat format, final AsyncApiSchemaArtifact asyncApiSpec )
-         throws IOException {
+         throws MojoExecutionException {
       try ( final OutputStream out = getOutputStreamForFile( schemaFileName, outputDirectory ) ) {
          if ( format == ApiFormat.JSON ) {
             OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValue( out, asyncApiSpec.getContent() );
          } else {
             out.write( jsonToYaml( asyncApiSpec.getContent() ).getBytes( StandardCharsets.UTF_8 ) );
          }
+      } catch ( final IOException exception ) {
+         throw new MojoExecutionException( "Could not write AsyncAPI schema", exception );
       }
    }
 

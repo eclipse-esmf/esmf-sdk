@@ -15,11 +15,13 @@ package org.eclipse.esmf.aspectmodel.aas;
 
 import java.io.Serial;
 
-public class AasGenerationException extends RuntimeException {
+import org.eclipse.esmf.aspectmodel.generator.GenerationException;
+
+public class AasGenerationException extends GenerationException {
+   @Serial
+   private static final long serialVersionUID = 6578531471799897531L;
+
    public AasGenerationException( final Throwable cause ) {
       super( cause );
    }
-
-   @Serial
-   private static final long serialVersionUID = 6578531471799897531L;
 }

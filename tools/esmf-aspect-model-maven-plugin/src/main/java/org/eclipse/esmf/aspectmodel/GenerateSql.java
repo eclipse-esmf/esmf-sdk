@@ -35,8 +35,9 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Mojo( name = "generateSql", defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
+@Mojo( name = GenerateSql.MAVEN_GOAL, defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateSql extends AspectModelMojo {
+   public static final String MAVEN_GOAL = "generateSql";
    private static final Logger LOG = LoggerFactory.getLogger( GenerateSql.class );
 
    @Parameter( defaultValue = "" + DatabricksSqlGenerationConfig.DEFAULT_INCLUDE_TABLE_COMMENT )
@@ -84,7 +85,7 @@ public class GenerateSql extends AspectModelMojo {
                      .build();
          final SqlGenerationConfig sqlConfig = new SqlGenerationConfig( SqlGenerationConfig.Dialect.valueOf( dialect.toUpperCase() ),
                SqlGenerationConfig.MappingStrategy.valueOf( strategy.toUpperCase() ), generatorConfig );
-         final SqlArtifact result = AspectModelSqlGenerator.INSTANCE.apply( aspect, sqlConfig );
+         final SqlArtifact result = new AspectModelSqlGenerator( aspect, sqlConfig ).singleResult();
 
          try ( final OutputStream out = getOutputStreamForFile( aspect.getName() + ".sql", outputDirectory ) ) {
             out.write( result.getContent().getBytes() );

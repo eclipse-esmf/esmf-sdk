@@ -40,7 +40,7 @@ public class GenerateJsonPayload extends AbstractGenerator {
       final String jsonString = generator.generateJson();
 
       // Variant 2: Generate using mapping function
-      generator.generateJson( this::outputStreamForName );
+      generator.generate( this::outputStreamForName );
       // end::generate[]
    }
 }
