@@ -167,7 +167,8 @@ public class ClasspathStrategy implements ResolutionStrategy {
       final Try<RawAspectModelFile> tryFile = Try.of( () -> AspectModelFileLoader.load( namedResourceFile ) );
       if ( tryFile.isFailure() ) {
          checkedLocations.add(
-               new ModelResolutionException.LoadingFailure( aspectModelUrn, "Class path file " + namedResourceFile.toString(),
+               new ModelResolutionException.LoadingFailure( aspectModelUrn, "Class path file "
+                     + Optional.ofNullable( namedResourceFile ).map( URL::toString ).orElse( aspectModelUrn.getName() + ".ttl" ),
                      tryFile.getCause().getMessage(), tryFile.getCause() ) );
       } else {
          return tryFile.get();
