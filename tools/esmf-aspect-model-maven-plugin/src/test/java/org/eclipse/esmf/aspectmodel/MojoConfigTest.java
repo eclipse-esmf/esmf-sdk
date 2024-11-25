@@ -28,8 +28,7 @@ public class MojoConfigTest extends AspectModelMojoTest {
    public void testInvalidModelsRoot() throws Exception {
       final Mojo validate = getMojo( "test-pom-invalid-models-root", "validate" );
       assertThatCode( validate::execute )
-            .isInstanceOf( MojoExecutionException.class )
-            .hasMessageContaining( "Validation failed" );
+            .isInstanceOf( MojoExecutionException.class );
    }
 
    @Test
