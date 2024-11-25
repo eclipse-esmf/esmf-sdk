@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.shacl.Shape;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.AllowedLanguagesConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.AllowedValuesConstraint;
@@ -100,7 +101,8 @@ public class DetailedViolationFormatter extends ViolationFormatter {
       for ( final Violation violation : violations ) {
          builder.append( String.format( "- violation-type: %s%n", violation.getClass().getSimpleName() ) );
          builder.append( String.format( "  error-code: %s%n", violation.errorCode() ) );
-         builder.append( String.format( "  description: %s%n", violation.message() ) );
+         Optional.ofNullable( violation.message() )
+               .ifPresent( message -> builder.append( String.format( "  description: %s%n", message ) ) );
          for ( final String line : violation.accept( this ).split( "\n" ) ) {
             builder.append( String.format( "  %s%n", line ) );
          }
@@ -221,13 +223,34 @@ public class DetailedViolationFormatter extends ViolationFormatter {
    @Override
    public String visitProcessingViolation( final ProcessingViolation violation ) {
       final StringBuilder builder = new StringBuilder();
-      builder.append( String.format( "cause: |%n" ) );
-      final StringWriter stringWriter = new StringWriter();
-      final PrintWriter printWriter = new PrintWriter( stringWriter );
-      violation.cause().printStackTrace( printWriter );
-      for ( final String line : stringWriter.toString().split( "\n" ) ) {
-         builder.append( String.format( "  %s%n", line ) );
+      if ( violation.cause() != null
+            && violation.cause() instanceof final ModelResolutionException modelResolutionException
+            && !modelResolutionException.getCheckedLocations().isEmpty() ) {
+
+         modelResolutionException.getCheckedLocations()
+               .stream()
+               .collect( Collectors.groupingBy( ModelResolutionException.LoadingFailure::element ) )
+               .entrySet()
+               .stream()
+               .sorted( Map.Entry.comparingByKey() )
+               .forEach( entry -> {
+                  entry.getValue().forEach( failure -> {
+                     builder.append( "could-not-resolve: " );
+                     builder.append( failure.element() ).append( "\n" );
+                     builder.append( "  - checked-location: " ).append( failure.location() ).append( "\n" );
+                     builder.append( "  - reason: " ).append( failure.description() ).append( "\n" );
+                  } );
+               } );
+      } else {
+         builder.append( String.format( "cause: |%n" ) );
+         final StringWriter stringWriter = new StringWriter();
+         final PrintWriter printWriter = new PrintWriter( stringWriter );
+         violation.cause().printStackTrace( printWriter );
+         for ( final String line : stringWriter.toString().split( "\n" ) ) {
+            builder.append( String.format( "  %s%n", line ) );
+         }
       }
+
       return builder.toString();
    }
 

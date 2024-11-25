@@ -33,11 +33,14 @@ public class FromLoadedFileStrategy implements ResolutionStrategy {
    @Override
    public AspectModelFile apply( final AspectModelUrn aspectModelUrn, final ResolutionStrategySupport resolutionStrategySupport )
          throws ModelResolutionException {
-
       if ( resolutionStrategySupport.containsDefinition( aspectModelFile, aspectModelUrn ) ) {
          return aspectModelFile;
       }
-      throw new ModelResolutionException( "File " + aspectModelFile + " should contain defintion, but does not: " + aspectModelUrn );
+      final ModelResolutionException.LoadingFailure failure = new ModelResolutionException.LoadingFailure(
+            aspectModelUrn,
+            aspectModelFile.sourceLocation().map( uri -> "In-memory file " + uri ).orElse( "Anonymous in-memory file" ),
+            "File does not contain element definition" );
+      throw new ModelResolutionException( failure );
    }
 
    @Override

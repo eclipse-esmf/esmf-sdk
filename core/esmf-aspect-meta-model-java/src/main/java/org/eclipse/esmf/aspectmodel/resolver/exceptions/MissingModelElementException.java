@@ -13,6 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.resolver.exceptions;
 
+@Deprecated( forRemoval = true )
 public class MissingModelElementException extends RuntimeException {
    private static final long serialVersionUID = 3564348052165487489L;
 

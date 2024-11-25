@@ -17,11 +17,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.AspectLoadingException;
 import org.eclipse.esmf.aspectmodel.loader.DefaultPropertyWrapper;
 import org.eclipse.esmf.aspectmodel.loader.Instantiator;
 import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.loader.ModelElementFactory;
-import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidModelException;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.Scalar;
@@ -81,7 +81,7 @@ public class PropertyInstantiator extends Instantiator<Property> {
                .flatMap( statement -> characteristic.getDataType()
                      .map( type -> {
                         if ( !type.is( Scalar.class ) ) {
-                           throw new InvalidModelException( "Type of example value on Property " + property + " has incorrect type" );
+                           throw new AspectLoadingException( "Type of example value on Property " + property + " has incorrect type" );
                         }
                         return type.as( Scalar.class );
                      } )

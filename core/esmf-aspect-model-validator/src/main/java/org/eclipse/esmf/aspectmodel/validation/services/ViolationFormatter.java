@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.shacl.fix.Fix;
 import org.eclipse.esmf.aspectmodel.shacl.violation.InvalidSyntaxViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.ProcessingViolation;
@@ -90,6 +91,21 @@ public class ViolationFormatter implements Function<List<Violation>, String>, Vi
     */
    @Override
    public String visitProcessingViolation( final ProcessingViolation violation ) {
+      if ( violation.cause() != null
+            && violation.cause() instanceof final ModelResolutionException modelResolutionException
+            && !modelResolutionException.getCheckedLocations().isEmpty() ) {
+         return modelResolutionException.getCheckedLocations()
+               .stream()
+               .collect( Collectors.groupingBy( ModelResolutionException.LoadingFailure::element ) )
+               .entrySet()
+               .stream()
+               .map( entry ->
+                     entry.getValue().stream()
+                           .map( failure -> "  - %s (%s)".formatted( failure.location(), failure.description() ) )
+                           .collect( Collectors.joining( "\n", "- " + entry.getKey() + "\n", "" ) ) )
+               .collect( Collectors.joining( "\n", "There were references in the model that could not be resolved. Checked locations:\n",
+                     "" ) );
+      }
       return String.format( "Validation failed:%n%s%n", violation.message() );
    }
 

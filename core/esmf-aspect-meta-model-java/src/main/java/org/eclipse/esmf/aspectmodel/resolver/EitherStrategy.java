@@ -14,9 +14,9 @@
 package org.eclipse.esmf.aspectmodel.resolver;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
@@ -45,14 +45,18 @@ public class EitherStrategy implements ResolutionStrategy {
 
    @Override
    public AspectModelFile apply( final AspectModelUrn input, final ResolutionStrategySupport resolutionStrategySupport ) {
-      return strategies.stream()
-            .map( strategy -> Try.of( () -> strategy.apply( input, resolutionStrategySupport ) ) )
-            .filter( Try::isSuccess )
-            .findFirst()
-            .map( Try::get )
-            .orElseThrow( () ->
-                  new ModelResolutionException( "No strategy could resolve the input: " + strategies.stream().map( Object::toString )
-                        .collect( Collectors.joining() ) ) );
+      final List<ModelResolutionException.LoadingFailure> checkedLocations = new ArrayList<>();
+      for ( final ResolutionStrategy strategy : strategies ) {
+         final Try<AspectModelFile> tryFile = Try.of( () -> strategy.apply( input, resolutionStrategySupport ) );
+         if ( tryFile.isFailure() ) {
+            if ( tryFile.getCause() instanceof final ModelResolutionException modelResolutionException ) {
+               checkedLocations.addAll( modelResolutionException.getCheckedLocations() );
+            }
+            continue;
+         }
+         return tryFile.get();
+      }
+      throw new ModelResolutionException( checkedLocations );
    }
 
    @Override

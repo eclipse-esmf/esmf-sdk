@@ -37,8 +37,8 @@ public class CommandExecutor {
             throw new ModelResolutionException( getOutputFrom( p.getErrorStream() ) );
          }
          return getOutputFrom( p.getInputStream() );
-      } catch ( final IOException | InterruptedException e ) {
-         throw new ModelResolutionException( "The attempt to execute external resolver failed with the error:", e );
+      } catch ( final IOException | InterruptedException exception ) {
+         throw new ModelResolutionException( "The attempt to execute external resolver failed with the error:", exception );
       }
    }
 
@@ -51,7 +51,8 @@ public class CommandExecutor {
    }
 
    private static String getOutputFrom( final InputStream stream ) {
-      final Scanner s = new Scanner( stream ).useDelimiter( "\\A" );
-      return s.hasNext() ? s.next() : "";
+      try ( final Scanner s = new Scanner( stream ).useDelimiter( "\\A" ) ) {
+         return s.hasNext() ? s.next() : "";
+      }
    }
 }

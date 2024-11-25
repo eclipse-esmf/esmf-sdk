@@ -13,6 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel;
 
+@Deprecated( forRemoval = true )
 public class MissingMetaModelVersionException extends RuntimeException {
    private static final long serialVersionUID = -6978063564517733205L;
 }
