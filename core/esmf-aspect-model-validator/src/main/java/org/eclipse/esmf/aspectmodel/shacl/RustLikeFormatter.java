@@ -47,7 +47,6 @@ import org.apache.jena.vocabulary.RDF;
  * </pre>
  */
 public class RustLikeFormatter {
-
    private SmartToken highlightToken;
    private int currentColumn;
    private final RdfTextFormatter textFormatter;
@@ -88,6 +87,10 @@ public class RustLikeFormatter {
             .filterKeep( statement -> spansLine( statement, highlightToken.line() ) )
             .toList();
       return formatError( message );
+   }
+
+   public RdfTextFormatter getFormatter() {
+      return textFormatter;
    }
 
    private boolean spansLine( final Statement statement, final int lineNumber ) {

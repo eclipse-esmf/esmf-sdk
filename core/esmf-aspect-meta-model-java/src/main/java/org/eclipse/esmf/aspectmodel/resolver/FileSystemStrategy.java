@@ -19,12 +19,16 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.resolver.fs.ModelsRoot;
 import org.eclipse.esmf.aspectmodel.resolver.fs.StructuredModelsRoot;
+import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFile;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 import io.vavr.control.Try;
@@ -80,22 +84,41 @@ public class FileSystemStrategy implements ResolutionStrategy {
     */
    @Override
    public AspectModelFile apply( final AspectModelUrn aspectModelUrn, final ResolutionStrategySupport resolutionStrategySupport ) {
+      final List<ModelResolutionException.LoadingFailure> checkedLocations = new ArrayList<>();
+
       final File namedResourceFile = modelsRoot.determineAspectModelFile( aspectModelUrn );
       if ( namedResourceFile.exists() ) {
-         return AspectModelFileLoader.load( namedResourceFile );
+         final Try<RawAspectModelFile> tryFile = Try.of( () -> AspectModelFileLoader.load( namedResourceFile ) );
+         if ( tryFile.isFailure() ) {
+            checkedLocations.add(
+                  new ModelResolutionException.LoadingFailure( aspectModelUrn, namedResourceFile.getAbsolutePath(),
+                        tryFile.getCause().getMessage(), tryFile.getCause() ) );
+         }
+         return tryFile.get();
+      } else {
+         checkedLocations.add( new ModelResolutionException.LoadingFailure( aspectModelUrn, namedResourceFile.getAbsolutePath(),
+               "File does not exist" ) );
       }
-      return modelsRoot.namespaceContents( aspectModelUrn )
-            .map( Paths::get )
-            .map( Path::toFile )
-            .flatMap( file ->
-                  Try.of( () -> AspectModelFileLoader.load( file ) )
-                        .toJavaStream()
-                        .flatMap( aspectModelFile -> resolutionStrategySupport.containsDefinition( aspectModelFile, aspectModelUrn )
-                              ? Stream.of( aspectModelFile )
-                              : Stream.of() ) )
-            .findFirst()
-            .orElseThrow( () -> new ModelResolutionException(
-                  "No model file containing " + aspectModelUrn + " could be found in models root: " + modelsRoot.rootPath() ) );
+
+      for ( final Iterator<URI> it = modelsRoot.namespaceContents( aspectModelUrn ).iterator(); it.hasNext(); ) {
+         final URI uri = it.next();
+         final File file = Paths.get( uri ).toFile();
+         final Try<RawAspectModelFile> tryFile = Try.of( () -> AspectModelFileLoader.load( file ) );
+         if ( tryFile.isFailure() ) {
+            checkedLocations.add( new ModelResolutionException.LoadingFailure( aspectModelUrn, file.getAbsolutePath(),
+                  "Could not load file", tryFile.getCause() ) );
+            continue;
+         }
+         final AspectModelFile result = tryFile.get();
+         if ( resolutionStrategySupport.containsDefinition( result, aspectModelUrn ) ) {
+            return result;
+         }
+         checkedLocations.add(
+               new ModelResolutionException.LoadingFailure( aspectModelUrn, file.getAbsolutePath(),
+                     "File does not contain the element definition" ) );
+      }
+
+      throw new ModelResolutionException( checkedLocations );
    }
 
    @Override

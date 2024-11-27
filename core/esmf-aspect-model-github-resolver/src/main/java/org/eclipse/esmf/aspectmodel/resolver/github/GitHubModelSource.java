@@ -48,7 +48,7 @@ public class GitHubModelSource implements ModelSource {
    private static final Logger LOG = LoggerFactory.getLogger( GitHubModelSource.class );
    File repositoryZipFile = null;
    private List<AspectModelFile> files = null;
-   GithubModelSourceConfig config;
+   protected final GithubModelSourceConfig config;
 
    public GitHubModelSource( final GithubModelSourceConfig config ) {
       this.config = config;
@@ -95,7 +95,7 @@ public class GitHubModelSource implements ModelSource {
             LOG.debug( "Temporary package file {} was deleted", outputZipFile.getName() );
          }
       } catch ( final IOException exception ) {
-         throw new GitHubResolverException( exception );
+         throw new GitHubResolverException( "Could not create temporary directory", exception );
       }
    }
 
@@ -125,7 +125,7 @@ public class GitHubModelSource implements ModelSource {
             return file.toJavaStream();
          } ).toList();
       } catch ( final IOException exception ) {
-         throw new GitHubResolverException( exception );
+         throw new GitHubResolverException( "Unable to load files from temporary file", exception );
       }
    }
 

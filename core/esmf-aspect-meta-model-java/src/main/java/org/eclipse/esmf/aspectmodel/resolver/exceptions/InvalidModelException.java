@@ -13,6 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.resolver.exceptions;
 
+@Deprecated( forRemoval = true )
 public class InvalidModelException extends RuntimeException {
    private static final long serialVersionUID = 1329417418672113895L;
 

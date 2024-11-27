@@ -17,6 +17,7 @@ import java.io.Serial;
 /**
  * An exception indicating that usage of the given namespace is invalid.
  */
+@Deprecated( forRemoval = true )
 public final class InvalidNamespaceException extends RuntimeException {
 
    @Serial

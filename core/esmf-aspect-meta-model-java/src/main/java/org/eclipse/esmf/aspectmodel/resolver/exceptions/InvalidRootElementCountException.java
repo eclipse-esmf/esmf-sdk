@@ -13,6 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.resolver.exceptions;
 
+@Deprecated( forRemoval = true )
 public class InvalidRootElementCountException extends RuntimeException {
    private static final long serialVersionUID = 5199212935274840329L;
 

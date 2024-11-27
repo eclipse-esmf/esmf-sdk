@@ -47,13 +47,24 @@ public class Download {
    }
 
    /**
+    * Download the file and return the HTTP response
+    *
+    * @param fileUrl the URL
+    * @param headers list of additional headers to set
+    * @return the response
+    */
+   public byte[] downloadFileContent( final URL fileUrl, final Map<String, String> headers ) {
+      return downloadFileAsResponse( fileUrl, headers ).body();
+   }
+
+   /**
     * Download the file and return the contents as byte array
     *
     * @param fileUrl the URL
     * @param headers list of additional headers to set
     * @return the file contents
     */
-   public byte[] downloadFile( final URL fileUrl, final Map<String, String> headers ) {
+   public HttpResponse<byte[]> downloadFileAsResponse( final URL fileUrl, final Map<String, String> headers ) {
       try {
          final HttpClient.Builder clientBuilder = HttpClient.newBuilder()
                .version( HttpClient.Version.HTTP_1_1 )
@@ -70,8 +81,7 @@ public class Download {
                .uri( fileUrl.toURI() )
                .headers( headersArray )
                .build();
-         final HttpResponse<byte[]> response = client.send( request, HttpResponse.BodyHandlers.ofByteArray() );
-         return response.body();
+         return client.send( request, HttpResponse.BodyHandlers.ofByteArray() );
       } catch ( final InterruptedException | URISyntaxException | IOException exception ) {
          throw new ModelResolutionException( "Could not retrieve " + fileUrl, exception );
       }
@@ -84,7 +94,7 @@ public class Download {
     * @return the file contents
     */
    public byte[] downloadFile( final URL fileUrl ) {
-      return downloadFile( fileUrl, Map.of() );
+      return downloadFileContent( fileUrl, Map.of() );
    }
 
    /**
@@ -100,8 +110,12 @@ public class Download {
 
    public File downloadFile( final URL fileUrl, final Map<String, String> headers, final File outputFile ) {
       try ( final FileOutputStream outputStream = new FileOutputStream( outputFile ) ) {
-         final byte[] fileContent = downloadFile( fileUrl, headers );
-         outputStream.write( fileContent );
+         final HttpResponse<byte[]> httpResponse = downloadFileAsResponse( fileUrl, headers );
+         if ( httpResponse.statusCode() >= 200 && httpResponse.statusCode() < 300 ) {
+            outputStream.write( httpResponse.body() );
+         } else {
+            throw new ModelResolutionException( "Could not download file (status code: " + httpResponse.statusCode() + ")" );
+         }
       } catch ( final IOException exception ) {
          throw new ModelResolutionException( "Could not write file " + outputFile, exception );
       }

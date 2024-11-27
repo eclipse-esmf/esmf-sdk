@@ -17,7 +17,6 @@ package org.eclipse.esmf.aspectmodel.resolver.parser;
  * Interface to allow interested parties to do structured formatting of RDF documents (for example syntax highlighting)
  */
 public interface RdfTextFormatter {
-
    void reset();
 
    String getResult();

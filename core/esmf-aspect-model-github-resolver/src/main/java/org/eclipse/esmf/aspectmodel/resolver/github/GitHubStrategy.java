@@ -13,6 +13,9 @@
 
 package org.eclipse.esmf.aspectmodel.resolver.github;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.GithubRepository;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
@@ -51,17 +54,39 @@ public class GitHubStrategy extends GitHubModelSource implements ResolutionStrat
    @Override
    public AspectModelFile apply( final AspectModelUrn aspectModelUrn, final ResolutionStrategySupport resolutionStrategySupport )
          throws ModelResolutionException {
-      return loadContentsForNamespace( aspectModelUrn )
-            .peek( aspectModelFile -> {
-               LOG.debug( "Found aspect model file at {} ", aspectModelFile.sourceLocation() );
-            } )
-            .filter( file -> resolutionStrategySupport.containsDefinition( file, aspectModelUrn ) )
-            .findFirst()
-            .orElseThrow( () -> new ModelResolutionException(
-                  "No model file containing %s could be found in GitHub repository: %s/%s in branch/tag %s".formatted(
-                        aspectModelUrn,
-                        config.repository().owner(),
-                        config.repository().repository(),
-                        config.repository().branchOrTag().name() ) ) );
+
+      final String directory = config.directory().isEmpty() ? "/" : config.directory();
+      final String repositoryLocation = "GitHub repository %s/%s (%s %s, directory %s)".formatted(
+            config.repository().owner(),
+            config.repository().repository(),
+            config.repository().branchOrTag().refTypeName(),
+            config.repository().branchOrTag().name(),
+            directory );
+      final List<AspectModelFile> files;
+      try {
+         files = loadContentsForNamespace( aspectModelUrn ).toList();
+      } catch ( final Exception exception ) {
+         final ModelResolutionException.LoadingFailure failure = new ModelResolutionException.LoadingFailure( aspectModelUrn,
+               repositoryLocation, exception.getMessage(), exception );
+         throw new ModelResolutionException( failure );
+      }
+
+      final List<ModelResolutionException.LoadingFailure> checkedLocations = new ArrayList<>();
+      for ( final AspectModelFile file : files ) {
+         if ( resolutionStrategySupport.containsDefinition( file, aspectModelUrn ) ) {
+            return file;
+         }
+         file.sourceLocation().map( sourceLocation -> new ModelResolutionException.LoadingFailure( aspectModelUrn,
+                     sourceLocation.toString(), "File does not contain the element definition" ) )
+               .ifPresent( checkedLocations::add );
+      }
+
+      if ( checkedLocations.isEmpty() ) {
+         final ModelResolutionException.LoadingFailure failure = new ModelResolutionException.LoadingFailure( aspectModelUrn,
+               repositoryLocation, "Repository does not contain any file that contains the element definition" );
+         checkedLocations.add( failure );
+      }
+
+      throw new ModelResolutionException( checkedLocations );
    }
 }
