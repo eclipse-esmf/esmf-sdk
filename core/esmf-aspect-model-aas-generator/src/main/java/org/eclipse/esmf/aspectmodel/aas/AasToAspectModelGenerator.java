@@ -30,6 +30,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.VersionNumber;
+import org.eclipse.esmf.aspectmodel.generator.AspectArtifact;
+import org.eclipse.esmf.aspectmodel.generator.Generator;
 import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.loader.ValueInstantiator;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
@@ -98,17 +100,19 @@ import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElementList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AasToAspectModelGenerator {
+public class AasToAspectModelGenerator extends Generator<Environment, AspectModelUrn, Aspect, AspectGenerationConfig, AspectArtifact> {
+   public static final AspectGenerationConfig DEFAULT_CONFIG = AspectGenerationConfigBuilder.builder().build();
    private static final Logger LOG = LoggerFactory.getLogger( AasToAspectModelGenerator.class );
    private final Environment aasEnvironment;
-   private final Map<org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement, Property> properties = new HashMap<>();
+   private final Map<SubmodelElement, Property> properties = new HashMap<>();
    private final ValueInstantiator valueInstantiator = new ValueInstantiator();
    private AspectModelUrn aspectUrn;
 
    private record ElementName( String name, boolean isSynthetic ) {}
 
    private AasToAspectModelGenerator( final Environment aasEnvironment ) {
-      this.aasEnvironment = aasEnvironment;
+      super( aasEnvironment, DEFAULT_CONFIG );
+      this.aasEnvironment = focus;
    }
 
    public static AasToAspectModelGenerator fromAasXml( final InputStream inputStream ) {
@@ -155,14 +159,33 @@ public class AasToAspectModelGenerator {
       }
    }
 
-   public List<Aspect> generateAspects() {
+   @Override
+   public Stream<AspectArtifact> generate() {
       return aasEnvironment.getSubmodels()
             .stream()
             .filter( submodel -> submodel.getKind().equals( ModellingKind.TEMPLATE ) )
             .map( this::submodelToAspect )
-            .toList();
+            .map( aspect -> new AspectArtifact( aspect.urn(), aspect ) );
    }
 
+   /**
+    * Generates the list of Aspects for the input AAS environment
+    *
+    * @return the list of Aspects
+    * @deprecated Use {@link #generate()} instead
+    */
+   @Deprecated( forRemoval = true )
+   public List<Aspect> generateAspects() {
+      return generate().map( AspectArtifact::getContent ).toList();
+   }
+
+   /**
+    * Lists the names of submodel templates contained in the input AAS environment
+    *
+    * @return the idShorts of the submodel templates
+    * @deprecated Will be removed without replacement; this is out-of-the-box functionality of AAS4J.
+    */
+   @Deprecated( forRemoval = true )
    public List<String> getSubmodelNames() {
       return aasEnvironment.getSubmodels()
             .stream()
@@ -175,12 +198,12 @@ public class AasToAspectModelGenerator {
       final URI uri;
       try {
          uri = URI.create( iri.toString().contains( "://" ) ? iri.toString() : "https://" + iri );
-      } catch ( IllegalArgumentException e ) {
-         throw new IllegalArgumentException( "Incorrect IRI: " + iri, e );
+      } catch ( final IllegalArgumentException exception ) {
+         throw new AspectModelGenerationException( "Incorrect IRI: " + iri, exception );
       }
 
       if ( uri.getHost() == null ) {
-         throw new IllegalArgumentException( "URI doesn't contain host: " + uri );
+         throw new AspectModelGenerationException( "URI doesn't contain host: " + uri );
       }
 
       final String[] hostParts = uri.getHost().split( "\\." );
@@ -193,7 +216,7 @@ public class AasToAspectModelGenerator {
             .filter( StringUtils::isNotBlank )
             .collect( Collectors.joining( "." ) );
 
-      return reversedHost + (path.isEmpty() ? "" : "." + path);
+      return reversedHost + ( path.isEmpty() ? "" : "." + path );
    }
 
    private Optional<IRI> iri( final String lexicalRepresentation ) {
@@ -327,8 +350,8 @@ public class AasToAspectModelGenerator {
 
    private List<Event> createEvents( final Submodel submodel ) {
       return submodel.getSubmodelElements().stream()
-            .filter( org.eclipse.digitaltwin.aas4j.v3.model.EventElement.class::isInstance )
-            .map( org.eclipse.digitaltwin.aas4j.v3.model.EventElement.class::cast )
+            .filter( EventElement.class::isInstance )
+            .map( EventElement.class::cast )
             .map( this::createEvent )
             .toList();
    }
