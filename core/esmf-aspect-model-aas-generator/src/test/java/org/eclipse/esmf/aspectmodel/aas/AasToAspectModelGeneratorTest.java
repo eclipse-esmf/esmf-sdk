@@ -39,6 +39,9 @@ import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
 import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectModel;
+import org.eclipse.esmf.metamodel.Operation;
+import org.eclipse.esmf.metamodel.Property;
+import org.eclipse.esmf.metamodel.Unit;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
@@ -65,6 +68,19 @@ class AasToAspectModelGeneratorTest {
          }
          final String result = AspectSerializer.INSTANCE.aspectToString( aspects.iterator().next() );
          final AspectModel aspectModel = new AspectModelLoader().load( new ByteArrayInputStream( result.getBytes() ) );
+
+         aspectModel.elements().forEach( element -> {
+            if ( element instanceof Property || element instanceof Operation || element instanceof Unit ) {
+               assertThat( element.getName().charAt( 0 ) )
+                     .describedAs( element.getName() + " is a " + element.getClass().getSimpleName() + " and must be lower case" )
+                     .isLowerCase();
+            } else {
+               assertThat( element.getName().charAt( 0 ) )
+                     .describedAs( element.getName() + " is a " + element.getClass().getSimpleName() + " and must be upper case" )
+                     .isUpperCase();
+            }
+         } );
+
          final List<Violation> violations = new AspectModelValidator().validateModel( aspectModel );
          if ( !violations.isEmpty() ) {
             final String report = new ViolationFormatter().apply( violations );
