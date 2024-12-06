@@ -3,6 +3,7 @@ package org.eclipse.esmf.aas;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.LoggingMixin;
@@ -11,6 +12,8 @@ import org.eclipse.esmf.aspectmodel.aas.AasToAspectModelGenerator;
 import org.eclipse.esmf.exception.CommandException;
 
 import org.apache.commons.io.FilenameUtils;
+import org.eclipse.digitaltwin.aas4j.v3.model.ModellingKind;
+import org.eclipse.digitaltwin.aas4j.v3.model.Referable;
 import picocli.CommandLine;
 
 @CommandLine.Command( name = AasListSubmodelsCommand.COMMAND_NAME, description = "Get list of submodel templates of AAS input",
@@ -37,7 +40,13 @@ public class AasListSubmodelsCommand extends AbstractCommand {
          throw new CommandException( "Input file name must be one of " + AasFileFormat.allValues() );
       }
 
-      final List<String> submodelNames = AasToAspectModelGenerator.fromFile( new File( path ) ).getSubmodelNames();
+      final List<String> submodelNames = AasToAspectModelGenerator.fromFile( new File( path ) )
+            .getFocus()
+            .getSubmodels()
+            .stream()
+            .filter( submodel -> submodel.getKind().equals( ModellingKind.TEMPLATE ) )
+            .map( Referable::getIdShort )
+            .toList();
 
       for ( final String submodelName : submodelNames ) {
          final int index = submodelNames.indexOf( submodelName );

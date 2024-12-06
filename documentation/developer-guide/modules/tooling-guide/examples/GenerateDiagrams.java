@@ -13,24 +13,23 @@
 
 package examples;
 
-// tag::imports[]
-import java.io.OutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.Locale;
-import java.util.Set;
 
+// tag::imports[]
 import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
-import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator.Format;
+import org.eclipse.esmf.aspectmodel.generator.diagram.DiagramGenerationConfig;
+import org.eclipse.esmf.aspectmodel.generator.diagram.DiagramGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.metamodel.AspectModel;
 // end::imports[]
 
-import java.io.File;
-import java.io.IOException;
 import org.junit.jupiter.api.Test;
 
 public class GenerateDiagrams extends AbstractGenerator {
    @Test
-   public void generateDiagram() throws IOException {
+   public void generateDiagram() {
       // tag::generate[]
       // AspectModel as returned by the AspectModelLoader
       final AspectModel aspectModel = // ...
@@ -39,15 +38,12 @@ public class GenerateDiagrams extends AbstractGenerator {
                   new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) );
       // tag::generate[]
 
-      final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( aspectModel.aspect() ); // <1>
-
-      // Variant 1: Generate a diagram in SVG format using @en descriptions and preferredNames from the model
-      final OutputStream output = outputStreamForName( "diagram.svg" );
-      generator.generateDiagram( Format.SVG, Locale.ENGLISH, output ); // <2>
-      output.close();
-
-      // Variant 2: Generate diagrams in multiple formats, for all languages that are present in the model.
-      generator.generateDiagrams( Set.of( Format.PNG, Format.SVG ), this::outputStreamForName ); // <3>
+      final DiagramGenerationConfig config = DiagramGenerationConfigBuilder.builder()
+            .format( DiagramGenerationConfig.Format.SVG )
+            .language( Locale.ENGLISH )
+            .build();
+      new AspectModelDiagramGenerator( aspectModel.aspect(), config ) // <1>
+            .generate( this::outputStreamForName ); // <2>
       // end::generate[]
    }
 }

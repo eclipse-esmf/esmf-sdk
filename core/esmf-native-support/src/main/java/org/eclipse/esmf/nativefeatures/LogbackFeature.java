@@ -48,6 +48,7 @@ public class LogbackFeature implements Feature {
       Native.forClass( ch.qos.logback.core.util.Loader.class )
             .initializeAtBuildTime()
             .registerEverythingForReflection();
+      //noinspection deprecation
       Native.forClass( ch.qos.logback.core.util.StatusPrinter.class )
             .initializeAtBuildTime()
             .registerEverythingForReflection();

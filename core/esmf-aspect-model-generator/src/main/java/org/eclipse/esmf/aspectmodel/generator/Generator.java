@@ -37,6 +37,11 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class Generator<F, I, T, C extends GenerationConfig, A extends Artifact<I, T>> {
    private static final Logger LOG = LoggerFactory.getLogger( Generator.class );
+
+   /**
+    * The "focus" element, i.e., the main "input" for the generation process
+    */
+   @Getter
    protected final F focus;
 
    @Getter

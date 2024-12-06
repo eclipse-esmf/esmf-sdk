@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       # Required for Maven
       - name: Set up JDK 17
@@ -50,6 +52,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       # Even though the build itself is done using the GraalVM JDK
       # (see below), we use the setup-java action to have GPG configured
@@ -145,6 +149,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: Setup JDK
         uses: graalvm/setup-graalvm@2f25c0caae5b220866f732832d5e3e29ff493338 # v1.2.1
@@ -218,6 +224,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: Setup JDK
         uses: graalvm/setup-graalvm@2f25c0caae5b220866f732832d5e3e29ff493338 # v1.2.1
@@ -362,7 +370,7 @@ jobs:
           comment-template: |
             Release {release_link} addresses this.
 
-      # Sign SAML-CLI Windows executable
+      # Sign SAMM-CLI Windows executable
       - name: Get Artifact ID (Windows)
         shell: bash
         run: |

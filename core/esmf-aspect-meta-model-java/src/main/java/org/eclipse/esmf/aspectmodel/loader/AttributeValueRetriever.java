@@ -71,7 +71,7 @@ public class AttributeValueRetriever {
 
    /**
     * Returns the values of n-ary attributes on a model element (or its super elements), or if a given attribute is an rdf:List, the list
-    * elements. The list will be ordered by precedence, e.g., if a Property is present on both the current element and it's superelement,
+    * elements. The list will be ordered by precedence, e.g., if a Property is present on both the current element and its superelement,
     * the assertion on the current element will be on a lower list index. Duplicate attribute assertions are removed and only the assertion
     * with the highest precedence will be returned (bottom-most in the inheritance tree), this includes multiple assertions for the same
     * attribute with rdf:langString values with the same language tag. For example:
