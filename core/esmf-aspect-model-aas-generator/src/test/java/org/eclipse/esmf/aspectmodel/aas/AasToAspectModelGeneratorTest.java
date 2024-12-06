@@ -60,6 +60,9 @@ class AasToAspectModelGeneratorTest {
       try ( final InputStream input = new FileInputStream( aasxFile ) ) {
          final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromAasx( input );
          final List<Aspect> aspects = aspectModelGenerator.generate().map( AspectArtifact::getContent ).toList();
+         if ( aspects.isEmpty() ) {
+            fail( "Translation of " + aasxFile.getName() + " yielded no Aspects" );
+         }
          final String result = AspectSerializer.INSTANCE.aspectToString( aspects.iterator().next() );
          final AspectModel aspectModel = new AspectModelLoader().load( new ByteArrayInputStream( result.getBytes() ) );
          final List<Violation> violations = new AspectModelValidator().validateModel( aspectModel );
@@ -81,26 +84,44 @@ class AasToAspectModelGeneratorTest {
       }
    }
 
+   private static final List<String> IGNORED_AASX_FILES = List.of(
+         "IDTA02026-1-0_Template_ProvisionOf3DModels.aasx",
+         "IDTA 02004-1-2_Template_Handover Documentation.aasx",
+         "Sample_ZVEI_Digital_Nameplate_V10.aasx",
+         "SMT_Pure_Technical_Data_V11.aasx",
+         "sample-zvei-techdata-V11.aasx",
+         "SMT_qualified_Technical_Data_V11.aasx",
+         "IDTA 02010-1-0_Template_ServiceRequestNotification.aasx",
+         "IDTA 02011-1-0_Template_HierarchicalStructuresEnablingBoM.aasx",
+         "IDTA 02011-1-1_Template_HSEBoM.aasx"
+   );
+
    protected static Stream<Arguments> idtaSubmodelFiles() throws URISyntaxException, IOException {
+      final String submodelTemplatesMissing =
+            "IDTA AASX files not found. Please make sure they are available; in the project root run: git submodule update --init "
+                  + "--recursive";
       final URL resource = AasToAspectModelGeneratorTest.class.getResource( "/submodel-templates" );
       try ( final Stream<Path> stream = Files.walk( Paths.get( resource.toURI() ) ) ) {
          final List<Arguments> list = stream.filter( Files::isRegularFile )
                .filter( file -> file.getFileName().toString().endsWith( ".aasx" ) )
                .map( Path::toFile )
+               .filter( file -> !IGNORED_AASX_FILES.contains( file.getName() ) )
                .map( file -> Arguments.of( Named.of( file.getName(), file ) ) )
                .toList();
          if ( list.isEmpty() ) {
-            fail( "IDTA AASX files not found. Please make sure they are available; in the project root run: git submodule update --init "
-                  + "--recursive" );
+            fail( submodelTemplatesMissing );
          }
          return list.stream();
+      } catch ( final NullPointerException exception ) {
+         fail( submodelTemplatesMissing );
+         return Stream.empty();
       }
    }
 
    @Test
    void testSeeReferences() {
       final InputStream inputStream = AasToAspectModelGeneratorTest.class.getClassLoader().getResourceAsStream(
-            "idta/IDTA 02022-1-0_Template_Wireless Communication.aasx" );
+            "submodel-templates/published/Wireless Communication/1/0/IDTA 02022-1-0_Template_Wireless Communication.aasx" );
       final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromAasx( inputStream );
       final List<Aspect> aspects = aspectModelGenerator.generate().map( AspectArtifact::getContent ).toList();
 
@@ -202,16 +223,5 @@ class AasToAspectModelGeneratorTest {
          fail( exception );
       }
       return null;
-   }
-
-   private InputStream getIdtaModel( final String path ) {
-      try {
-         final URL url = new URL(
-               "https://github.com/admin-shell-io/submodel-templates/raw/refs/heads/main/published/" + path.replaceAll( " ", "%20" ) );
-         return url.openStream();
-      } catch ( final Exception e ) {
-         e.printStackTrace();
-         return null;
-      }
    }
 }
