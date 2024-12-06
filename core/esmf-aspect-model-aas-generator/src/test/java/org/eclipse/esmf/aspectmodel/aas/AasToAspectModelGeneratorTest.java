@@ -146,9 +146,7 @@ class AasToAspectModelGeneratorTest {
       aspects.stream()
             .flatMap( aspect -> aspect.getProperties().stream() )
             .flatMap( property -> property.getSee().stream() )
-            .forEach( see -> {
-               assertThat( see ).doesNotContain( "/ " );
-            } );
+            .forEach( see -> assertThat( see ).doesNotContain( "/ " ) );
    }
 
    @ParameterizedTest
@@ -162,9 +160,11 @@ class AasToAspectModelGeneratorTest {
                      assertThat( generatedAspect.urn() ).isEqualTo( aspect.urn() ) );
             } ).doesNotThrowAnyException();
 
+      final byte[] content = new AspectModelAasGenerator( aspect,
+            AasGenerationConfigBuilder.builder().format( AasFileFormat.XML ).build() ).getContent();
+      assertThat( new String( content ) ).doesNotContain( "Optional[" );
       final Environment aasEnvironmentFromXml = new XmlDeserializer().read(
-            new ByteArrayInputStream( new AspectModelAasGenerator( aspect,
-                  AasGenerationConfigBuilder.builder().format( AasFileFormat.XML ).build() ).getContent() ) );
+            new ByteArrayInputStream( content ) );
       assertForValidator.accept( AasToAspectModelGenerator.fromEnvironment( aasEnvironmentFromXml ) );
 
       final Environment aasEnvironmentFromJson = new JsonDeserializer().read(
