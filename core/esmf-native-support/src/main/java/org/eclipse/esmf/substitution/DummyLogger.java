@@ -23,6 +23,7 @@ import org.apache.logging.log4j.message.MessageFactory;
 import org.apache.logging.log4j.util.MessageSupplier;
 import org.apache.logging.log4j.util.Supplier;
 
+@SuppressWarnings( "deprecation" ) // Used by original Logger interface
 public class DummyLogger implements Logger {
    @Override
    public void catching( final Level level, final Throwable throwable ) {

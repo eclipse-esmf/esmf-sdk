@@ -548,11 +548,16 @@ public class AspectModelJsonPayloadGeneratorTest {
 
       final Aspect dynamicAspect = createAspectWithDynamicNumericProperty( numericType, boundKind.orElse( null ),
             randomRange );
+
       final AspectModelJsonPayloadGenerator randomGenerator = new AspectModelJsonPayloadGenerator( dynamicAspect );
       final AspectModelJsonPayloadGenerator minGenerator = new AspectModelJsonPayloadGenerator( dynamicAspect,
-            new MinValueRandomStrategy() );
+            JsonPayloadGenerationConfigBuilder.builder()
+                  .randomStrategy( new MinValueRandomStrategy() )
+                  .build() );
       final AspectModelJsonPayloadGenerator maxGenerator = new AspectModelJsonPayloadGenerator( dynamicAspect,
-            new MaxValueRandomStrategy() );
+            JsonPayloadGenerationConfigBuilder.builder()
+                  .randomStrategy( new MaxValueRandomStrategy() )
+                  .build() );
       try {
          final String generatedJson = randomGenerator.generateJson();
          final String minValue = minGenerator.generateJson();

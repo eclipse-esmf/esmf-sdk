@@ -359,11 +359,10 @@ include::example$GenerateDiagrams.java[tags=imports]
 include::example$GenerateDiagrams.java[tags=generate]
 ----
 
-<1> The diagram generator is initialized with the loaded model.
-<2> The simple call for one output format and one language (i.e., descriptions and preferredNames of one locale) takes
-one output stream to write the image to.
-<3> It is also possible to generate multiple diagrams, one for each combination of output format and language. For that,
-the set of target formats is given as well as a mapping function.
+<1> The diagram generator is initialized with the loaded model and the
+generation configuration.
+<2> The generation takes the output stream for the output file name as input and
+writes the generated diagram to the output stream.
 
 [[generating-html-documentation]]
 === Generating HTML Documentation

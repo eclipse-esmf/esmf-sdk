@@ -82,6 +82,7 @@ public class GenerateAspectImplementationStub extends CodeGenerationMojo {
    private MavenProject mavenProject;
 
    @Component
+   @SuppressWarnings( "deprecation" ) // @Component annotation is required for successful injection of dependency with no alternative
    private BuildPluginManager pluginManager;
 
    @Parameter( required = true )
