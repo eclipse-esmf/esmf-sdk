@@ -299,7 +299,7 @@ public class PrettyPrinter {
    private String quoteValue( final String value ) {
       final int approximateSize = value.length() <= 50 ? 64 : 256;
       final StringBuilder buffer = new StringBuilder( approximateSize );
-      if ( value.contains( System.lineSeparator() ) ) {
+      if ( value.contains( "\n" ) ) {
          buffer.append( TRIPLE_QUOTE );
          final String[] lines = value.split( LINE_BREAK );
          for ( int i = 0; i < lines.length; i++ ) {
