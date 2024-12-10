@@ -99,7 +99,7 @@ public class AspectModelDocumentationGenerator extends
          logMissingTranslations( aspect(), language );
          templateContext.put( "i18n", new I18nLanguageBundle( language ) );
          final TemplateEngine templateEngine = new TemplateEngine( templateContext, engineConfiguration );
-         final String artifactName = "%s_%s.html".formatted( aspect().getName(), config.locale().toLanguageTag() );
+         final String artifactName = "%s_%s.html".formatted( aspect().getName(), language.toLanguageTag() );
          String source = templateEngine.apply( DOCU_ROOT_DIR + "/templates/html/aspect-model-documentation" );
          source = insertAspectModelDiagram( source, language );
          source = insertStaticPlaceholders( source );
