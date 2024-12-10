@@ -47,6 +47,18 @@ public interface AspectModelFile extends ModelElementGroup {
    }
 
    /**
+    * Returns the SPDX license identifier for this file, if one exists
+    *
+    * @return the SPDX identifier
+    */
+   default Optional<String> spdxLicenseIdentifier() {
+      return headerComment().stream()
+            .filter( line -> line.startsWith( "SPDX-License-Identifier:" ) )
+            .map( line -> line.split( ":" )[1].trim() )
+            .findFirst();
+   }
+
+   /**
     * The URI that denominates the source location, if present. It can be a file:// or https:// URL, but it
     * could for example also be an Aspect Model URN, if it refers to a file that is part of the SAMM specification.
     * Generally, this should be the physical location, not a logical identifier, in other words, where was this
