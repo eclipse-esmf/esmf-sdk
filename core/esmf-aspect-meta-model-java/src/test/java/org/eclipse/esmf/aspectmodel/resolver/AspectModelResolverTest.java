@@ -53,6 +53,7 @@ public class AspectModelResolverTest {
          assertThat( result.files().get( 0 ).headerComment() ).isNotNull();
          assertThat( result.files().get( 0 ).headerComment().get( 0 ) ).contains(
                "Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH" );
+         assertThat( result.files().get( 0 ).spdxLicenseIdentifier() ).contains( "MPL-2.0" );
       } ).doesNotThrowAnyException();
    }
 
