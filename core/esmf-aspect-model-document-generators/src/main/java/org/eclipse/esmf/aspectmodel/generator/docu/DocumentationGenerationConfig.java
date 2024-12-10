@@ -28,9 +28,4 @@ public record DocumentationGenerationConfig(
       Locale locale,
       String stylesheet
 ) implements GenerationConfig {
-   public DocumentationGenerationConfig {
-      if ( locale == null ) {
-         locale = Locale.ENGLISH;
-      }
-   }
 }
