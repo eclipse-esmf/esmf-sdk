@@ -15,13 +15,11 @@ package org.eclipse.esmf.aspectmodel.validation.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
-import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.MetaModelFile;
 import org.eclipse.esmf.aspectmodel.shacl.fix.Fix;
 import org.eclipse.esmf.aspectmodel.shacl.violation.DatatypeViolation;

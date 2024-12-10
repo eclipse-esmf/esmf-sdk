@@ -15,23 +15,25 @@ package org.eclipse.esmf.aspectmodel.resolver;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.MalformedInputException;
 import java.nio.charset.StandardCharsets;
+import java.nio.charset.UnmappableCharacterException;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
@@ -53,6 +55,11 @@ public class AspectModelFileLoader {
       try {
          final RawAspectModelFile fromString = load( content( new FileInputStream( file ) ) );
          return new RawAspectModelFile( fromString.sourceModel(), fromString.headerComment(), Optional.of( file.toURI() ) );
+      } catch ( final ModelResolutionException exception ) {
+         if ( exception.getMessage().startsWith( "Encountered invalid encoding" ) ) {
+            throw new ModelResolutionException( "Encountered invalid encoding in input file " + file, exception.getCause() );
+         }
+         throw exception;
       } catch ( final FileNotFoundException exception ) {
          throw new ModelResolutionException( "File not found: " + file, exception );
       }
@@ -70,8 +77,16 @@ public class AspectModelFileLoader {
    }
 
    private static String content( final InputStream inputStream ) {
-      return new BufferedReader( new InputStreamReader( inputStream, StandardCharsets.UTF_8 ) ).lines()
-            .collect( Collectors.joining( "\n" ) );
+      try {
+         final byte[] bytes = inputStream.readAllBytes();
+         final CharsetDecoder charsetDecoder = StandardCharsets.UTF_8.newDecoder();
+         final CharBuffer decodedCharBuffer = charsetDecoder.decode( ByteBuffer.wrap( bytes ) );
+         return new String( bytes, StandardCharsets.UTF_8 );
+      } catch ( final MalformedInputException | UnmappableCharacterException exception ) {
+         throw new ModelResolutionException( "Encountered invalid encoding in input" );
+      } catch ( final IOException exception ) {
+         throw new RuntimeException( exception );
+      }
    }
 
    private static List<String> headerComment( final String content ) {

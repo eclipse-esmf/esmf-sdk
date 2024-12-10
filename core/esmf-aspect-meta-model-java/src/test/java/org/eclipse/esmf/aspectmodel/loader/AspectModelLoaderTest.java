@@ -32,6 +32,7 @@ import org.eclipse.esmf.aspectmodel.AspectLoadingException;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.ComplexType;
@@ -54,6 +55,13 @@ class AspectModelLoaderTest {
       assertThatThrownBy( () -> TestResources.load( InvalidTestAspect.INVALID_CHARACTERISTIC_DATATYPE ) )
             .isInstanceOf( AspectLoadingException.class )
             .hasMessage( "No datatype is defined on the Characteristic instance 'Characteristic1: '." );
+   }
+
+   @Test
+   void testFileWithInvalidEncoding() {
+      assertThatThrownBy( () -> TestResources.load( InvalidTestAspect.INVALID_ENCODING ) )
+            .isInstanceOf( ModelResolutionException.class )
+            .hasMessageContaining( "Encountered invalid encoding" );
    }
 
    @Test
