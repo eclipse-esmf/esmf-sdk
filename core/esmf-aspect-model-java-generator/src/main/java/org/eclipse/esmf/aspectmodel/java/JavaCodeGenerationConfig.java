@@ -35,6 +35,7 @@ import io.soabase.recordbuilder.core.RecordBuilder;
 @RecordBuilder
 public record JavaCodeGenerationConfig(
       boolean enableJacksonAnnotations,
+      boolean disableJsonFormatJacksonAnnotation,
       JsonTypeInfoType jsonTypeInfo,
       String packageName,
       ImportTracker importTracker,

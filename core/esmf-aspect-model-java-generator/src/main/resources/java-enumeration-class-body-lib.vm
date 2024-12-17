@@ -22,7 +22,7 @@ $codeGenerationConfig.importTracker().importExplicit( $Arrays )
 /**
 * Generated class {@link ${enumeration.name}}.
 */
-#if( $codeGenerationConfig.enableJacksonAnnotations() )@JsonFormat(shape = JsonFormat.Shape.OBJECT) #end
+#if( !$codeGenerationConfig.disableJsonFormatJacksonAnnotation() && $codeGenerationConfig.enableJacksonAnnotations() )@JsonFormat(shape = JsonFormat.Shape.OBJECT) #end
 public enum ${enumeration.name} {
 #foreach( $value in $enumeration.values )
     $util.generateEnumKey($value)($util.generateEnumValue($value, $codeGenerationConfig))
