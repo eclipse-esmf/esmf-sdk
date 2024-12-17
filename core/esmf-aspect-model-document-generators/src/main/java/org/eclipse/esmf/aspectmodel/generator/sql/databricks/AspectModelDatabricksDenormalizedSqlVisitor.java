@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
@@ -170,6 +171,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
 
    @Override
    public String visitAspect( final Aspect aspect, final Context context ) {
+
       final String columnDeclarations = visitStructureElement( aspect, context );
       final String comment = config.includeTableComment()
             ? Optional.ofNullable( aspect.getDescription( config.commentLanguage() ) ).map( description ->
@@ -194,7 +196,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
       }
 
       return property.getCharacteristic().get().accept( this, context.copy()
-            .prefix( ( context.prefix().isEmpty() ? "" : context.prefix() + LEVEL_DELIMITER ) + columnName( property ) )
+            .prefix( (context.prefix().isEmpty() ? "" : context.prefix() + LEVEL_DELIMITER) + columnName( property ) )
             .currentProperty( property )
             .build() );
    }
@@ -211,7 +213,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
             .forceOptional( true )
             .forceDescriptionFromElement( either.getRight() )
             .build() );
-      return leftResult + "\n" + ( rightResult.startsWith( "  " ) ? "" : "  " ) + rightResult;
+      return leftResult + "\n" + (rightResult.startsWith( "  " ) ? "" : "  ") + rightResult;
    }
 
    @Override
@@ -252,15 +254,55 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
    public String visitCollection( final Collection collection, final Context context ) {
       final Property property = context.currentProperty();
       final Type type = collection.getDataType().orElseThrow();
+
+      if ( type.isComplexType() ) {
+         final ComplexType complexType = type.as( ComplexType.class );
+         return processComplexType( complexType, context.prefix() + columnName( property ), context );
+      }
+
       final Optional<String> comment = config.includeColumnComments()
-            ? Optional.ofNullable( Optional.ofNullable( context.forceDescriptionFromElement() ).orElse( property )
-            .getDescription( config.commentLanguage() ) )
+            ? Optional.ofNullable( property.getDescription( config.commentLanguage() ) )
             : Optional.empty();
-      final String typeDef = type.isComplexType()
-            ? entityToStruct( type.as( ComplexType.class ), false ).toString()
-            : type.accept( this, context );
-      return column( context.prefix(), "ARRAY<" + typeDef + ">", property.isOptional() || context.forceOptional(),
-            comment );
+
+      final String typeDef = type.accept( this, context );
+
+      return column(
+            context.prefix(),
+            "ARRAY<" + typeDef + ">",
+            property.isOptional(),
+            comment
+      );
+   }
+
+   private String processComplexType( final ComplexType complexType, final String prefix, final Context context ) {
+      return complexType.getAllProperties().stream()
+            .flatMap( prop -> {
+               if ( prop.getDataType().isEmpty() || prop.isNotInPayload() ) {
+                  return Stream.empty();
+               }
+
+               final Type propType = prop.getDataType().get();
+               if ( propType.isComplexType() ) {
+                  return Stream.of( processComplexType(
+                        propType.as( ComplexType.class ),
+                        columnName( prop ),
+                        context
+                  ) );
+               } else {
+                  final String columnType = propType.accept( this, context );
+                  final Optional<String> columnComment = config.includeColumnComments()
+                        ? Optional.ofNullable( prop.getDescription( config.commentLanguage() ) )
+                        : Optional.empty();
+
+                  return Stream.of( column(
+                        columnName( prop ),
+                        columnType,
+                        prop.isOptional(),
+                        columnComment
+                  ) );
+               }
+            } )
+            .collect( Collectors.joining( ",\n" ) );
    }
 
    private DatabricksType.DatabricksStruct entityToStruct( final ComplexType entity, final boolean isInsideNestedType ) {
