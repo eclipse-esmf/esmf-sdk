@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
@@ -196,7 +195,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
       }
 
       return property.getCharacteristic().get().accept( this, context.copy()
-            .prefix( (context.prefix().isEmpty() ? "" : context.prefix() + LEVEL_DELIMITER) + columnName( property ) )
+            .prefix( ( context.prefix().isEmpty() ? "" : context.prefix() + LEVEL_DELIMITER ) + columnName( property ) )
             .currentProperty( property )
             .build() );
    }
@@ -213,7 +212,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
             .forceOptional( true )
             .forceDescriptionFromElement( either.getRight() )
             .build() );
-      return leftResult + "\n" + (rightResult.startsWith( "  " ) ? "" : "  ") + rightResult;
+      return leftResult + "\n" + ( rightResult.startsWith( "  " ) ? "" : "  " ) + rightResult;
    }
 
    @Override
@@ -254,55 +253,55 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
    public String visitCollection( final Collection collection, final Context context ) {
       final Property property = context.currentProperty();
       final Type type = collection.getDataType().orElseThrow();
-
-      if ( type.isComplexType() ) {
-         final ComplexType complexType = type.as( ComplexType.class );
-         return processComplexType( complexType, context.prefix() + columnName( property ), context );
-      }
-
       final Optional<String> comment = config.includeColumnComments()
-            ? Optional.ofNullable( property.getDescription( config.commentLanguage() ) )
+            ? Optional.ofNullable( Optional.ofNullable( context.forceDescriptionFromElement() ).orElse( property )
+            .getDescription( config.commentLanguage() ) )
             : Optional.empty();
 
-      final String typeDef = type.accept( this, context );
-
-      return column(
-            context.prefix(),
-            "ARRAY<" + typeDef + ">",
-            property.isOptional(),
-            comment
-      );
+      if ( type.isComplexType() ) {
+         // Flattening collections of complex types
+         final ComplexType complexType = type.as( ComplexType.class );
+         return processComplexType( complexType, context, context.prefix() );
+      } else {
+         // Handle scalar types normally
+         final String typeDef = type.accept( this, context );
+         return column(
+               context.prefix(),
+               "ARRAY<" + typeDef + ">",
+               property.isOptional() || context.forceOptional(),
+               comment
+         );
+      }
    }
 
-   private String processComplexType( final ComplexType complexType, final String prefix, final Context context ) {
-      return complexType.getAllProperties().stream()
-            .flatMap( prop -> {
-               if ( prop.getDataType().isEmpty() || prop.isNotInPayload() ) {
-                  return Stream.empty();
-               }
+   private String processComplexType( final ComplexType entity, final Context context, final String parentPrefix ) {
+      StringBuilder columns = new StringBuilder();
 
-               final Type propType = prop.getDataType().get();
-               if ( propType.isComplexType() ) {
-                  return Stream.of( processComplexType(
-                        propType.as( ComplexType.class ),
-                        columnName( prop ),
-                        context
-                  ) );
-               } else {
-                  final String columnType = propType.accept( this, context );
-                  final Optional<String> columnComment = config.includeColumnComments()
-                        ? Optional.ofNullable( prop.getDescription( config.commentLanguage() ) )
-                        : Optional.empty();
+      entity.getAllProperties().forEach( property -> {
+         if ( property.getDataType().isEmpty() || property.isNotInPayload() ) {
+            return; // Skip properties with no data type or not in payload
+         }
 
-                  return Stream.of( column(
-                        columnName( prop ),
-                        columnType,
-                        prop.isOptional(),
-                        columnComment
-                  ) );
-               }
-            } )
-            .collect( Collectors.joining( ",\n" ) );
+         final Type type = property.getDataType().get();
+         final String columnPrefix = !parentPrefix.contains( LEVEL_DELIMITER )
+               ? columnName( property )
+               : parentPrefix + LEVEL_DELIMITER + columnName( property );
+
+         if ( type instanceof Scalar ) {
+            final String typeDef = type.accept( this, context );
+            columns.append( column( columnPrefix, typeDef, property.isOptional(),
+                        Optional.ofNullable( property.getDescription( config.commentLanguage() ) ) ) )
+                  .append( ",\n  " );
+         } else if ( type instanceof ComplexType ) {
+            columns.append( processComplexType( type.as( ComplexType.class ), context, columnPrefix ) );
+         }
+      } );
+
+      if ( !columns.isEmpty() && columns.toString().endsWith( ",\n  " ) ) {
+         columns.setLength( columns.length() - 4 ); // Remove last ",\n  "
+      }
+
+      return columns.toString();
    }
 
    private DatabricksType.DatabricksStruct entityToStruct( final ComplexType entity, final boolean isInsideNestedType ) {

@@ -106,7 +106,7 @@ class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase
    void testAspectWithComplexEntityCollectionEnum() {
       assertThat( sql( TestAspect.ASPECT_WITH_COMPLEX_ENTITY_COLLECTION_ENUM ) ).isEqualTo( """
             CREATE TABLE IF NOT EXISTS aspect_with_complex_entity_collection_enum (
-              entity_property_two STRING NOT NULL
+              my_property_one__entity_property_one__entity_property_two STRING NOT NULL
             )
             TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithComplexEntityCollectionEnum');
             """ );
@@ -199,10 +199,10 @@ class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase
       assertThat( sql( TestAspect.ASPECT_WITH_ENTITY_LIST ) ).isEqualTo( """
             CREATE TABLE IF NOT EXISTS aspect_with_entity_list (
               test_string STRING NOT NULL,
-            test_int INT NOT NULL,
-            test_float FLOAT NOT NULL,
-            test_local_date_time TIMESTAMP NOT NULL,
-            random_value STRING NOT NULL
+              test_int INT NOT NULL,
+              test_float FLOAT NOT NULL,
+              test_local_date_time TIMESTAMP NOT NULL,
+              random_value STRING NOT NULL
             )
             TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEntityList');
             """ );
@@ -213,7 +213,7 @@ class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase
       assertThat( sql( TestAspect.ASPECT_WITH_ENTITY_WITH_NESTED_ENTITY_LIST_PROPERTY ) ).isEqualTo( """
             CREATE TABLE IF NOT EXISTS aspect_with_entity_with_nested_entity_list_property (
               test_property__code SMALLINT NOT NULL,
-              nested_entity_property STRING NOT NULL
+              test_property__test_list__nested_entity_property STRING NOT NULL
             )
             TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEntityWithNestedEntityListProperty');
             """ );
@@ -224,7 +224,7 @@ class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase
       assertThat( sql( TestAspect.ASPECT_WITH_EXTENDED_ENTITY ) ).isEqualTo( """
             CREATE TABLE IF NOT EXISTS aspect_with_extended_entity (
               parent_string STRING NOT NULL,
-            parent_of_parent_string STRING NOT NULL
+              parent_of_parent_string STRING NOT NULL
             )
             TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithExtendedEntity');
             """ );
@@ -314,15 +314,15 @@ class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase
       assertThat( sql( TestAspect.ASPECT_WITH_MULTIPLE_ENTITY_COLLECTIONS ) ).isEqualTo( """
             CREATE TABLE IF NOT EXISTS aspect_with_multiple_entity_collections (
               test_string STRING NOT NULL,
-            test_int INT NOT NULL,
-            test_float FLOAT NOT NULL,
-            test_local_date_time TIMESTAMP NOT NULL,
-            random_value STRING NOT NULL,
+              test_int INT NOT NULL,
+              test_float FLOAT NOT NULL,
+              test_local_date_time TIMESTAMP NOT NULL,
+              random_value STRING NOT NULL,
               test_string STRING NOT NULL,
-            test_int INT NOT NULL,
-            test_float FLOAT NOT NULL,
-            test_local_date_time TIMESTAMP NOT NULL,
-            random_value STRING NOT NULL
+              test_int INT NOT NULL,
+              test_float FLOAT NOT NULL,
+              test_local_date_time TIMESTAMP NOT NULL,
+              random_value STRING NOT NULL
             )
             TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithMultipleEntityCollections');
             """ );
@@ -333,10 +333,10 @@ class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase
       assertThat( sql( TestAspect.ASPECT_WITH_NESTED_ENTITY_LIST ) ).isEqualTo( """
             CREATE TABLE IF NOT EXISTS aspect_with_nested_entity_list (
               test_string STRING NOT NULL,
-            test_int INT NOT NULL,
-            test_float FLOAT NOT NULL,
-            test_local_date_time TIMESTAMP NOT NULL,
-            random_value STRING NOT NULL
+              test_int INT NOT NULL,
+              test_float FLOAT NOT NULL,
+              test_local_date_time TIMESTAMP NOT NULL,
+              random_value STRING NOT NULL
             )
             TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithNestedEntityList');
             """ );
@@ -380,7 +380,7 @@ class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase
               test_optional_string STRING,
               test_optional_entity__code_property INT,
               test_optional_entity__test_second_string STRING,
-              test_optional_entity__test_int_list ARRAY<INT> NOT NULL
+              test_optional_entity__test_int_list ARRAY<INT>
             )
             TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithOptionalPropertiesWithEntity');
             """ );
@@ -489,7 +489,7 @@ class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase
       assertThat( sql( TestAspect.ASPECT_WITH_TIME_SERIES ) ).isEqualTo( """
             CREATE TABLE IF NOT EXISTS aspect_with_time_series (
               value STRING NOT NULL COMMENT 'The value that was recorded and is part of a time series.',
-            timestamp TIMESTAMP NOT NULL COMMENT 'The specific point in time when the corresponding value was recorded.'
+              timestamp TIMESTAMP NOT NULL COMMENT 'The specific point in time when the corresponding value was recorded.'
             )
             COMMENT 'This is a test description'
             TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithTimeSeries');
