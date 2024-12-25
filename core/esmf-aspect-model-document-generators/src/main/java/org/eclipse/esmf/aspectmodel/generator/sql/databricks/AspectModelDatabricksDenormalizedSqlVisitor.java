@@ -289,7 +289,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
          if ( parentPrefix.contains( LEVEL_DELIMITER ) ) {
             columnPrefix = parentPrefix + LEVEL_DELIMITER + columnName( property );
 
-            columns.append( column( columnPrefix + "_id", "LONG", false, Optional.empty() ) )
+            columns.append( column( columnPrefix + "_id", "BIGINT", false, Optional.empty() ) )
                   .append( lineDelimiter );
          }
 

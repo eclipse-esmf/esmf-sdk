@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
-public class DatabricksColumnDefinitionParserTest extends DatabricksTestBase {
+class DatabricksColumnDefinitionParserTest extends DatabricksTestBase {
    @Test
    void testMinimalDefinition() {
       final DatabricksColumnDefinition definition = new DatabricksColumnDefinitionParser( "abc STRING" ).get();
