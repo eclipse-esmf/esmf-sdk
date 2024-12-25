@@ -106,6 +106,7 @@ class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase
    void testAspectWithComplexEntityCollectionEnum() {
       assertThat( sql( TestAspect.ASPECT_WITH_COMPLEX_ENTITY_COLLECTION_ENUM ) ).isEqualTo( """
             CREATE TABLE IF NOT EXISTS aspect_with_complex_entity_collection_enum (
+              my_property_one__entity_property_one__entity_property_two_id LONG NOT NULL,
               my_property_one__entity_property_one__entity_property_two STRING NOT NULL
             )
             TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithComplexEntityCollectionEnum');
@@ -213,6 +214,7 @@ class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase
       assertThat( sql( TestAspect.ASPECT_WITH_ENTITY_WITH_NESTED_ENTITY_LIST_PROPERTY ) ).isEqualTo( """
             CREATE TABLE IF NOT EXISTS aspect_with_entity_with_nested_entity_list_property (
               test_property__code SMALLINT NOT NULL,
+              test_property__test_list__nested_entity_property_id LONG NOT NULL,
               test_property__test_list__nested_entity_property STRING NOT NULL
             )
             TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEntityWithNestedEntityListProperty');

@@ -276,6 +276,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
 
    private String processComplexType( final ComplexType entity, final Context context, final String parentPrefix ) {
       StringBuilder columns = new StringBuilder();
+      final String lineDelimiter =  ",\n  ";
 
       entity.getAllProperties().forEach( property -> {
          if ( property.getDataType().isEmpty() || property.isNotInPayload() ) {
@@ -283,15 +284,20 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
          }
 
          final Type type = property.getDataType().get();
-         final String columnPrefix = !parentPrefix.contains( LEVEL_DELIMITER )
-               ? columnName( property )
-               : parentPrefix + LEVEL_DELIMITER + columnName( property );
+         String columnPrefix = columnName( property );
+
+         if ( parentPrefix.contains( LEVEL_DELIMITER ) ) {
+            columnPrefix = parentPrefix + LEVEL_DELIMITER + columnName( property );
+
+            columns.append( column( columnPrefix + "_id", "LONG", false, Optional.empty() ) )
+                  .append( lineDelimiter );
+         }
 
          if ( type instanceof Scalar ) {
             final String typeDef = type.accept( this, context );
             columns.append( column( columnPrefix, typeDef, property.isOptional(),
                         Optional.ofNullable( property.getDescription( config.commentLanguage() ) ) ) )
-                  .append( ",\n  " );
+                  .append( lineDelimiter );
          } else if ( type instanceof ComplexType ) {
             columns.append( processComplexType( type.as( ComplexType.class ), context, columnPrefix ) );
          }
