@@ -22,15 +22,14 @@ import java.io.File;
 import java.net.URISyntaxException;
 
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidCountOfAspectsException;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
-import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestModel;
 
-import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.junit.jupiter.api.Test;
@@ -118,13 +117,6 @@ public class AspectModelResolverTest {
 
       final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
 
-      final AspectModelUrn inputUrn = AspectModelUrn
-            .fromUrn( TestModel.TEST_NAMESPACE + "AnotherTest" );
-      final Model model = TurtleLoader.loadTurtle(
-            AspectModelResolverTest.class.getResourceAsStream(
-                  "/" + KnownVersion.getLatest().toString().toLowerCase()
-                        + "/org.eclipse.esmf.test/1.0.0/Test.ttl" ) ).get();
-
       final ResolutionStrategy inMemoryStrategy = new FromLoadedFileStrategy( AspectModelFileLoader.load(
             AspectModelResolverTest.class.getResourceAsStream(
                   "/" + KnownVersion.getLatest().toString().toLowerCase()
@@ -192,5 +184,41 @@ public class AspectModelResolverTest {
       assertThatThrownBy( () -> {
          final AspectModel result = new AspectModelLoader( urnStrategy ).load( testUrn );
       } ).isInstanceOf( ModelResolutionException.class );
+   }
+
+   @Test
+   void getExceptionWhileLoadingModelWithTwoAspects() throws URISyntaxException {
+      final File aspectModelsRootDirectory = new File(
+            AspectModelResolverTest.class.getClassLoader().getResource( KnownVersion.getLatest().toString().toLowerCase() )
+                  .toURI().getPath() );
+
+      final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
+
+      final AspectModelUrn testUrn = AspectModelUrn.fromUrn( "urn:samm:io.catenax.shared.uuid:2.0.0#Uuid2" );
+
+      assertThatThrownBy( () -> {
+         final AspectModel result = new AspectModelLoader( urnStrategy ).load( testUrn );
+      } )
+            .isInstanceOf( InvalidCountOfAspectsException.class )
+            .hasMessageContaining( aspectModelsRootDirectory.getPath()
+                  + "/io.catenax.shared.uuid/2.0.0/invalid_uudi_aspect_contains_two_aspects.ttl. Total aspects: 2" );
+   }
+
+   @Test
+   void getExceptionWhileLoadingModelWithTwoAspectsInSharedFiles() throws URISyntaxException {
+      final File aspectModelsRootDirectory = new File(
+            AspectModelResolverTest.class.getClassLoader().getResource( KnownVersion.getLatest().toString().toLowerCase() )
+                  .toURI().getPath() );
+
+      final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
+
+      final AspectModelUrn testUrn = AspectModelUrn.fromUrn( "urn:samm:io.catenax.shared.uuid:2.0.0#Uuid" );
+
+      assertThatThrownBy( () -> {
+         final AspectModel result = new AspectModelLoader( urnStrategy ).load( testUrn );
+      } )
+            .isInstanceOf( InvalidCountOfAspectsException.class )
+            .hasMessageContaining( aspectModelsRootDirectory.getPath()
+                  + "/io.catenax.shared.uuid/2.0.0/invalid_uudi_aspect_contains_two_aspects.ttl. Total aspects: 2" );
    }
 }

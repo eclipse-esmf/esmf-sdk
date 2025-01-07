@@ -45,6 +45,7 @@ import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ModelSource;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategySupport;
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidCountOfAspectsException;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.resolver.fs.FlatModelsRoot;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.DefaultAspectModelFile;
@@ -480,6 +481,14 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
             .filter( modelElement -> modelElement.is( Aspect.class ) )
             .findFirst()
             .ifPresent( aspect -> mergedModel.setNsPrefix( "", aspect.urn().getUrnPrefix() ) );
+      for ( AspectModelFile file : files ) {
+         if ( file.aspects().size() > 1 ) {
+            throw new InvalidCountOfAspectsException(
+                  "Invalid number of aspects for " + file
+                        + ". Total aspects: " + file.aspects().size()
+            );
+         }
+      }
       return new DefaultAspectModel( files, mergedModel, elements );
    }
 
