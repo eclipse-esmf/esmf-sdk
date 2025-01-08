@@ -200,8 +200,7 @@ public class AspectModelResolverTest {
          final AspectModel result = new AspectModelLoader( urnStrategy ).load( testUrn );
       } )
             .isInstanceOf( InvalidCountOfAspectsException.class )
-            .hasMessageContaining( aspectModelsRootDirectory.getPath()
-                  + "/io.catenax.shared.uuid/2.0.0/invalid_uudi_aspect_contains_two_aspects.ttl. Total aspects: 2" );
+            .hasMessageContaining( "/io.catenax.shared.uuid/2.0.0/invalid_uudi_aspect_contains_two_aspects.ttl. Total aspects: 2" );
    }
 
    @Test
@@ -218,7 +217,6 @@ public class AspectModelResolverTest {
          final AspectModel result = new AspectModelLoader( urnStrategy ).load( testUrn );
       } )
             .isInstanceOf( InvalidCountOfAspectsException.class )
-            .hasMessageContaining( aspectModelsRootDirectory.getPath()
-                  + "/io.catenax.shared.uuid/2.0.0/invalid_uudi_aspect_contains_two_aspects.ttl. Total aspects: 2" );
+            .hasMessageContaining( "/io.catenax.shared.uuid/2.0.0/invalid_uudi_aspect_contains_two_aspects.ttl. Total aspects: 2" );
    }
 }
