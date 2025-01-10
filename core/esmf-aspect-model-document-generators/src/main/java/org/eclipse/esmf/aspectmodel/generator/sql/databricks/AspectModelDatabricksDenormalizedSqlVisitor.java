@@ -35,6 +35,7 @@ import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.characteristic.Collection;
 import org.eclipse.esmf.metamodel.characteristic.Either;
 import org.eclipse.esmf.metamodel.characteristic.Trait;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultList;
 import org.eclipse.esmf.metamodel.vocabulary.SAMM;
 import org.eclipse.esmf.samm.KnownVersion;
 
@@ -219,6 +220,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
    public String visitCharacteristic( final Characteristic characteristic, final Context context ) {
       final Property property = context.currentProperty();
       final Type type = characteristic.getDataType().orElseThrow();
+      System.out.println("TEST Complex Type Collection or not: " + type.isComplexType() + " : " + characteristic.getName());
       if ( type.isComplexType() ) {
          // Break endless recursion
          if ( context.recursionDepth().getOrDefault( property, 0 ) >= MAX_RECURSION_DEPTH ) {
@@ -261,7 +263,8 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
       if ( type.isComplexType() ) {
          // Flattening collections of complex types
          final ComplexType complexType = type.as( ComplexType.class );
-         return processComplexType( complexType, context, context.prefix() );
+         collection.as( Collection.class ).getCollectionType();
+         return processComplexType( complexType, context, context.prefix(), collection.is( DefaultList.class ) );
       } else {
          // Handle scalar types normally
          final String typeDef = type.accept( this, context );
@@ -274,7 +277,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
       }
    }
 
-   private String processComplexType( final ComplexType entity, final Context context, final String parentPrefix ) {
+   private String processComplexType( final ComplexType entity, final Context context, final String parentPrefix, final boolean isCollection ) {
       StringBuilder columns = new StringBuilder();
       final String lineDelimiter =  ",\n  ";
 
@@ -293,13 +296,17 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
                   .append( lineDelimiter );
          }
 
+         if ( isCollection && !parentPrefix.contains( LEVEL_DELIMITER ) ) {
+            columnPrefix = parentPrefix + LEVEL_DELIMITER + columnName( property );
+         }
+
          if ( type instanceof Scalar ) {
             final String typeDef = type.accept( this, context );
             columns.append( column( columnPrefix, typeDef, property.isOptional(),
                         Optional.ofNullable( property.getDescription( config.commentLanguage() ) ) ) )
                   .append( lineDelimiter );
          } else if ( type instanceof ComplexType ) {
-            columns.append( processComplexType( type.as( ComplexType.class ), context, columnPrefix ) );
+            columns.append( processComplexType( type.as( ComplexType.class ), context, columnPrefix, type.is( DefaultList.class ) ) );
          }
       } );
 
