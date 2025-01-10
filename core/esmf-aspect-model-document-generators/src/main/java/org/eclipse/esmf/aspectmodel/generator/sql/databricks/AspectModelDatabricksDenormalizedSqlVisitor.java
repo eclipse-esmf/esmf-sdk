@@ -196,7 +196,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
       }
 
       return property.getCharacteristic().get().accept( this, context.copy()
-            .prefix( ( context.prefix().isEmpty() ? "" : context.prefix() + LEVEL_DELIMITER ) + columnName( property ) )
+            .prefix( (context.prefix().isEmpty() ? "" : context.prefix() + LEVEL_DELIMITER) + columnName( property ) )
             .currentProperty( property )
             .build() );
    }
@@ -220,7 +220,6 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
    public String visitCharacteristic( final Characteristic characteristic, final Context context ) {
       final Property property = context.currentProperty();
       final Type type = characteristic.getDataType().orElseThrow();
-      System.out.println("TEST Complex Type Collection or not: " + type.isComplexType() + " : " + characteristic.getName());
       if ( type.isComplexType() ) {
          // Break endless recursion
          if ( context.recursionDepth().getOrDefault( property, 0 ) >= MAX_RECURSION_DEPTH ) {
@@ -277,9 +276,10 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
       }
    }
 
-   private String processComplexType( final ComplexType entity, final Context context, final String parentPrefix, final boolean isCollection ) {
+   private String processComplexType( final ComplexType entity, final Context context, final String parentPrefix,
+         final boolean isCollection ) {
       StringBuilder columns = new StringBuilder();
-      final String lineDelimiter =  ",\n  ";
+      final String lineDelimiter = ",\n  ";
 
       entity.getAllProperties().forEach( property -> {
          if ( property.getDataType().isEmpty() || property.isNotInPayload() ) {
