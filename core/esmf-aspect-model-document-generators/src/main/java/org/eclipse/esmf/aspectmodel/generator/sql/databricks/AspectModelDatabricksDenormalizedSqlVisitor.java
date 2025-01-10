@@ -277,7 +277,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
    }
 
    private String processComplexType( final ComplexType entity, final Context context, final String parentPrefix,
-         final boolean isCollection ) {
+         final boolean isDefaultList ) {
       StringBuilder columns = new StringBuilder();
       final String lineDelimiter = ",\n  ";
 
@@ -296,7 +296,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
                   .append( lineDelimiter );
          }
 
-         if ( isCollection && !parentPrefix.contains( LEVEL_DELIMITER ) ) {
+         if ( isDefaultList && !parentPrefix.contains( LEVEL_DELIMITER ) ) {
             columnPrefix = parentPrefix + LEVEL_DELIMITER + columnName( property );
          }
 
