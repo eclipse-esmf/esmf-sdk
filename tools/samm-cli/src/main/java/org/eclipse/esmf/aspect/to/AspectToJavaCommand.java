@@ -146,7 +146,7 @@ public class AspectToJavaCommand extends AbstractCommand {
             .jsonTypeInfo( jsonTypeInfo )
             .templateLibFile( templateLibFile )
             .enableJacksonAnnotations( !disableJacksonAnnotations )
-            .enableJacksonAnnotationJsonFormatShapeObject(!disableJacksonAnnotationJsonFormatShapeObject)
+            .enableJacksonAnnotationJsonFormatShapeObject( !disableJacksonAnnotationJsonFormatShapeObject )
             .packageName( pkgName )
             .namePrefix( namePrefix )
             .namePostfix( namePostfix )
