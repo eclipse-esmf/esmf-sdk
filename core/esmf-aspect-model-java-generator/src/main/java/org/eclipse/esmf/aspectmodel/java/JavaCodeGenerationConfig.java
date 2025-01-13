@@ -45,12 +45,14 @@ public record JavaCodeGenerationConfig(
       String namePostfix
 
 ) implements GenerationConfig {
-   enableJacksonAnnotationJsonFormatShapeObject = true;
    public enum JsonTypeInfoType {
       NONE, CLASS, MINIMAL_CLASS, NAME, SIMPLE_NAME, DEDUCTION, CUSTOM
    }
 
    public JavaCodeGenerationConfig {
+
+      enableJacksonAnnotationJsonFormatShapeObject = true;
+
       if ( jsonTypeInfo == null ) {
          jsonTypeInfo = JsonTypeInfoType.DEDUCTION;
       }
