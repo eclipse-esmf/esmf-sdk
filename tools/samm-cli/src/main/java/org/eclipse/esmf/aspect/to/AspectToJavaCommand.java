@@ -46,6 +46,11 @@ public class AspectToJavaCommand extends AbstractCommand {
    private boolean disableJacksonAnnotations = false;
 
    @CommandLine.Option(
+         names = { "--no-jackson-jsonformat-shape", "-njjs" },
+         description = "Disable Jackson annotation JsonFormat.Shape object generation in generated Java classes." )
+   private boolean disableJacksonAnnotationJsonFormatShapeObject = false;
+
+   @CommandLine.Option(
          names = { "--json-type-info", "-jti" },
          description = "If Jackson annotations are enabled, determines the value of JsonTypeInfo.Id. Default: DEDUCTION",
          converter = JsonTypeInfoConverter.class
@@ -141,6 +146,7 @@ public class AspectToJavaCommand extends AbstractCommand {
             .jsonTypeInfo( jsonTypeInfo )
             .templateLibFile( templateLibFile )
             .enableJacksonAnnotations( !disableJacksonAnnotations )
+            .enableJacksonAnnotationJsonFormatShapeObject(!disableJacksonAnnotationJsonFormatShapeObject)
             .packageName( pkgName )
             .namePrefix( namePrefix )
             .namePostfix( namePostfix )

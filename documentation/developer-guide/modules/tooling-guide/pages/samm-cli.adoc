@@ -111,6 +111,8 @@ of model resolution] for more information.
                                    | _--package-name, -pn_ : package to use for generated Java classes                       | `samm aspect AspectModel.ttl to java -pn org.company.product`
                                    | _--no-jackson, -nj_ : disable https://github.com/FasterXML/jackson[Jackson] annotation
                                        generation in generated Java classes                                                  |
+                                   | _--no-jackson-jsonformat-shape, -njjs_ : disable https://github.com/FasterXML/jackson-annotations/blob/2.19/src/main/java/com/fasterxml/jackson/annotation/JsonFormat.java[JsonFormat.Shape] annotation
+                                       generation in generated Java classes               |
                                    | _--json-type-info_, _-jti_ : If Jackson annotations are enabled, determines the value
                                        of JsonTypeInfo.Id. Default: DEDUCTION                                                |
                                    | _--template-library-file, -tlf_ : the path and name of the

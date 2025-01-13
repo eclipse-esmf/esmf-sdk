@@ -35,7 +35,7 @@ import io.soabase.recordbuilder.core.RecordBuilder;
 @RecordBuilder
 public record JavaCodeGenerationConfig(
       boolean enableJacksonAnnotations,
-      boolean disableJsonFormatJacksonAnnotation,
+      boolean enableJacksonAnnotationJsonFormatShapeObject,
       JsonTypeInfoType jsonTypeInfo,
       String packageName,
       ImportTracker importTracker,
@@ -45,6 +45,7 @@ public record JavaCodeGenerationConfig(
       String namePostfix
 
 ) implements GenerationConfig {
+   enableJacksonAnnotationJsonFormatShapeObject = true;
    public enum JsonTypeInfoType {
       NONE, CLASS, MINIMAL_CLASS, NAME, SIMPLE_NAME, DEDUCTION, CUSTOM
    }
