@@ -35,6 +35,7 @@ import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.characteristic.Collection;
 import org.eclipse.esmf.metamodel.characteristic.Either;
 import org.eclipse.esmf.metamodel.characteristic.Trait;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultList;
 import org.eclipse.esmf.metamodel.vocabulary.SAMM;
 import org.eclipse.esmf.samm.KnownVersion;
 
@@ -170,6 +171,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
 
    @Override
    public String visitAspect( final Aspect aspect, final Context context ) {
+
       final String columnDeclarations = visitStructureElement( aspect, context );
       final String comment = config.includeTableComment()
             ? Optional.ofNullable( aspect.getDescription( config.commentLanguage() ) ).map( description ->
@@ -194,7 +196,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
       }
 
       return property.getCharacteristic().get().accept( this, context.copy()
-            .prefix( ( context.prefix().isEmpty() ? "" : context.prefix() + LEVEL_DELIMITER ) + columnName( property ) )
+            .prefix( (context.prefix().isEmpty() ? "" : context.prefix() + LEVEL_DELIMITER) + columnName( property ) )
             .currentProperty( property )
             .build() );
    }
@@ -256,11 +258,63 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
             ? Optional.ofNullable( Optional.ofNullable( context.forceDescriptionFromElement() ).orElse( property )
             .getDescription( config.commentLanguage() ) )
             : Optional.empty();
-      final String typeDef = type.isComplexType()
-            ? entityToStruct( type.as( ComplexType.class ), false ).toString()
-            : type.accept( this, context );
-      return column( context.prefix(), "ARRAY<" + typeDef + ">", property.isOptional() || context.forceOptional(),
-            comment );
+
+      if ( type.isComplexType() ) {
+         // Flattening collections of complex types
+         final ComplexType complexType = type.as( ComplexType.class );
+         collection.as( Collection.class ).getCollectionType();
+         return processComplexType( complexType, context, context.prefix(), collection.is( DefaultList.class ) );
+      } else {
+         // Handle scalar types normally
+         final String typeDef = type.accept( this, context );
+         return column(
+               context.prefix(),
+               "ARRAY<" + typeDef + ">",
+               property.isOptional() || context.forceOptional(),
+               comment
+         );
+      }
+   }
+
+   private String processComplexType( final ComplexType entity, final Context context, final String parentPrefix,
+         final boolean isDefaultList ) {
+      StringBuilder columns = new StringBuilder();
+      final String lineDelimiter = ",\n  ";
+
+      entity.getAllProperties().forEach( property -> {
+         if ( property.getDataType().isEmpty() || property.isNotInPayload() ) {
+            return; // Skip properties with no data type or not in payload
+         }
+
+         final Type type = property.getDataType().get();
+         String columnPrefix = columnName( property );
+
+         if ( parentPrefix.contains( LEVEL_DELIMITER ) ) {
+            columnPrefix = parentPrefix + LEVEL_DELIMITER + columnName( property );
+
+            columns.append( column( columnPrefix + "_id", "BIGINT", false, Optional.empty() ) )
+                  .append( lineDelimiter );
+         }
+
+         if ( isDefaultList && !parentPrefix.contains( LEVEL_DELIMITER ) ) {
+            columnPrefix = parentPrefix + LEVEL_DELIMITER + columnName( property );
+         }
+
+         if ( type instanceof Scalar ) {
+            final String typeDef = type.accept( this, context );
+            columns.append( column( columnPrefix, typeDef, property.isOptional(),
+                        Optional.ofNullable( property.getDescription( config.commentLanguage() ) ) ) )
+                  .append( lineDelimiter );
+         } else if ( type instanceof ComplexType ) {
+            columns.append( processComplexType( type.as( ComplexType.class ), context, columnPrefix, type.is( DefaultList.class ) ) );
+         }
+      } );
+
+      if ( !columns.isEmpty() && columns.toString().endsWith( ",\n  " ) ) {
+         columns.setLength( columns.length() - 4 ); // Remove last ",\n  "
+      }
+
+      return columns.toString();
    }
 
    private DatabricksType.DatabricksStruct entityToStruct( final ComplexType entity, final boolean isInsideNestedType ) {
