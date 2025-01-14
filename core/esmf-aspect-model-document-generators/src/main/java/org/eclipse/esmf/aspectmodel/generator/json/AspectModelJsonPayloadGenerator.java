@@ -36,6 +36,7 @@ import java.util.Random;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -60,6 +61,7 @@ import org.eclipse.esmf.metamodel.characteristic.Either;
 import org.eclipse.esmf.metamodel.characteristic.Enumeration;
 import org.eclipse.esmf.metamodel.characteristic.State;
 import org.eclipse.esmf.metamodel.characteristic.Trait;
+import org.eclipse.esmf.metamodel.constraint.FixedPointConstraint;
 import org.eclipse.esmf.metamodel.constraint.LengthConstraint;
 import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
 import org.eclipse.esmf.metamodel.constraint.RegularExpressionConstraint;
@@ -479,6 +481,9 @@ public class AspectModelJsonPayloadGenerator extends JsonGenerator<JsonPayloadGe
             if ( constraint.is( RegularExpressionConstraint.class ) ) {
                return Optional.of( getRandomValue( constraint.as( RegularExpressionConstraint.class ) ) );
             }
+            if ( constraint.is( FixedPointConstraint.class ) ) {
+               return Optional.of( getRandomValue( constraint.as( FixedPointConstraint.class ) ) );
+            }
          }
          return Optional.empty();
       }
@@ -572,6 +577,26 @@ public class AspectModelJsonPayloadGenerator extends JsonGenerator<JsonPayloadGe
          return generateForNumericTypeInRange( valueType, min, max );
       }
 
+      public Number getRandomValue( final FixedPointConstraint fixedPointConstraint ) {
+
+         final int integerDigits = fixedPointConstraint.getInteger();
+         final int scale = fixedPointConstraint.getScale();
+
+         final int integerPart = getRandomInteger( integerDigits );
+
+         if ( scale > 0 ) {
+            final double fractionalPart = getRandomDouble( scale );
+
+            final double result = integerPart + fractionalPart;
+
+            final BigDecimal roundedResult = BigDecimal.valueOf( result )
+                  .setScale( scale, RoundingMode.DOWN );
+            return roundedResult.doubleValue();
+         } else {
+            return integerPart;
+         }
+      }
+
       private Number generateForNumericTypeInRange( final java.lang.reflect.Type valueType, final Number min, final Number max ) {
          return generators
                .getOrDefault( valueType, ( low, high ) -> getRandomDouble( low.doubleValue(), high.doubleValue() ) )
@@ -580,7 +605,7 @@ public class AspectModelJsonPayloadGenerator extends JsonGenerator<JsonPayloadGe
 
       // narrowing conversion from BigDecimal to double
       private double safelyNarrowDown( final Number bound ) {
-         if ( !( BigDecimal.class.equals( bound.getClass() ) ) ) {
+         if ( !(BigDecimal.class.equals( bound.getClass() )) ) {
             return bound.doubleValue();
          }
 
@@ -589,7 +614,7 @@ public class AspectModelJsonPayloadGenerator extends JsonGenerator<JsonPayloadGe
          // Example: xsd:unsignedLong has a max. value of 18446744073709551615; when converting it to double
          // it will get represented as 1.8446744073709552E16, thereby exceeding the upper bound.
          // Therefore we need to take care of always rounding down when narrowing to double.
-         final BigDecimal narrowed = ( (BigDecimal) bound ).round( new MathContext( 15, RoundingMode.DOWN ) );
+         final BigDecimal narrowed = ((BigDecimal) bound).round( new MathContext( 15, RoundingMode.DOWN ) );
          return narrowed.doubleValue();
       }
 
@@ -637,12 +662,36 @@ public class AspectModelJsonPayloadGenerator extends JsonGenerator<JsonPayloadGe
          return random.doubles( 1, min, max ).findFirst().getAsDouble();
       }
 
+      private Double getRandomDouble( final int scale ) {
+         final int min = (int) Math.pow( 10, scale - 1 );
+         final int max = (int) Math.pow( 10, scale ) - 1;
+
+         final int fractionalValue = getRandomInteger( min, max );
+
+         return fractionalValue / Math.pow( 10, scale );
+      }
+
       private Integer getRandomInteger( final int min, final int max ) {
          if ( min == max ) {
             return min;
          }
          //noinspection OptionalGetWithoutIsPresent
          return random.ints( 1, min, max ).findFirst().getAsInt();
+      }
+
+      /**
+       * Generates a random integer with the exact specified number of digits.
+       *
+       * @param countOfDigits The number of digits the generated integer should have. Must be greater than 0.
+       * @return A random integer with exactly {@code countOfDigits} digits.
+       * For example, if {@code countOfDigits} is 3, the result will be
+       * a number between 100 and 999 inclusive.
+       * @throws IllegalArgumentException If {@code countOfDigits} is less than 1.
+       */
+      private int getRandomInteger( final int countOfDigits ) {
+         int min = (int) Math.pow( 10, countOfDigits - 1 );
+         int max = (int) Math.pow( 10, countOfDigits ) - 1;
+         return getRandomInteger( min, max );
       }
 
       // We need a Long generator too, because with a RangeConstraint set to Long bounds
