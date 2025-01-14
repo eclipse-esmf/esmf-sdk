@@ -480,6 +480,13 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
             .filter( modelElement -> modelElement.is( Aspect.class ) )
             .findFirst()
             .ifPresent( aspect -> mergedModel.setNsPrefix( "", aspect.urn().getUrnPrefix() ) );
+      for ( AspectModelFile file : files ) {
+         if ( file.aspects().size() > 1 ) {
+            throw new AspectLoadingException(
+                  "Aspect model file " + file.sourceLocation().map( location -> location + " " ).orElse( "" ) + "contains " + file.aspects()
+                        .size() + " aspects, but may only contain one." );
+         }
+      }
       return new DefaultAspectModel( files, mergedModel, elements );
    }
 

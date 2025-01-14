@@ -29,7 +29,9 @@ public enum InvalidTestAspect implements TestModel {
    INVALID_PREFERRED_NAME_DATATYPE,
    INVALID_CHARACTERISTIC_DATATYPE,
    RANGE_CONSTRAINT_WITH_WRONG_TYPE,
-   MODEL_WITH_CYCLES;
+   MODEL_WITH_CYCLES,
+
+   INVALID_ASPECT_WITH_TWO_ASPECTS;
 
    @Override
    public String getName() {

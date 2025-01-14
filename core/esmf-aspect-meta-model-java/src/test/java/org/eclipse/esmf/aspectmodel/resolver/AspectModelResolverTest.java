@@ -21,21 +21,22 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.io.File;
 import java.net.URISyntaxException;
 
+import org.eclipse.esmf.aspectmodel.AspectLoadingException;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
-import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.samm.KnownVersion;
+import org.eclipse.esmf.test.InvalidTestAspect;
 import org.eclipse.esmf.test.TestModel;
+import org.eclipse.esmf.test.TestResources;
 
-import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.junit.jupiter.api.Test;
 
-public class AspectModelResolverTest {
+class AspectModelResolverTest {
    @Test
    void testLoadDataModelExpectSuccess() throws URISyntaxException {
       final File aspectModelsRootDirectory = new File(
@@ -118,13 +119,6 @@ public class AspectModelResolverTest {
 
       final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
 
-      final AspectModelUrn inputUrn = AspectModelUrn
-            .fromUrn( TestModel.TEST_NAMESPACE + "AnotherTest" );
-      final Model model = TurtleLoader.loadTurtle(
-            AspectModelResolverTest.class.getResourceAsStream(
-                  "/" + KnownVersion.getLatest().toString().toLowerCase()
-                        + "/org.eclipse.esmf.test/1.0.0/Test.ttl" ) ).get();
-
       final ResolutionStrategy inMemoryStrategy = new FromLoadedFileStrategy( AspectModelFileLoader.load(
             AspectModelResolverTest.class.getResourceAsStream(
                   "/" + KnownVersion.getLatest().toString().toLowerCase()
@@ -192,5 +186,16 @@ public class AspectModelResolverTest {
       assertThatThrownBy( () -> {
          final AspectModel result = new AspectModelLoader( urnStrategy ).load( testUrn );
       } ).isInstanceOf( ModelResolutionException.class );
+   }
+
+   @Test
+   void getExceptionWhileLoadingModelWithTwoAspects() {
+      assertThatThrownBy( () -> {
+         TestResources.load( InvalidTestAspect.INVALID_ASPECT_WITH_TWO_ASPECTS );
+      } )
+            .isInstanceOf( AspectLoadingException.class )
+            .hasMessageContaining(
+                  "Aspect model file testmodel:invalid/org.eclipse.esmf.test/1.0.0/InvalidAspectWithTwoAspects.ttl contains 2 "
+                        + "aspects, but may only contain one." );
    }
 }
