@@ -36,7 +36,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.junit.jupiter.api.Test;
 
-public class AspectModelResolverTest {
+class AspectModelResolverTest {
    @Test
    void testLoadDataModelExpectSuccess() throws URISyntaxException {
       final File aspectModelsRootDirectory = new File(

@@ -12,49 +12,18 @@
 @prefix : <urn:samm:org.eclipse.esmf.test:2.0.0#>.
 @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#>.
 @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#>.
-@prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.1.0#>.
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.1.0#>.
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
 
 :Uuid2 a samm:Aspect;
     samm:preferredName "Shared Aspect for UUIDs v4"@en;
-    samm:properties (:uuidV4Property);
+    samm:properties ();
     samm:operations ();
     samm:events ().
-:uuidV4Property a samm:Property;
-    samm:preferredName "UUID v4 Property"@en;
-    samm:characteristic :UuidV4Trait;
-    samm:exampleValue "urn:uuid:48878d48-6f1d-47f5-8ded-a441d0d879df".
-:UuidV4Trait a samm-c:Trait;
-    samm:preferredName "Trait for UUIDs v4"@en;
-    samm-c:baseCharacteristic :Uuidv4Characteristic;
-    samm-c:constraint :Uuidv4RegularExpression.
-:Uuidv4Characteristic a samm:Characteristic;
-    samm:preferredName "UUID v4"@en;
-    samm:dataType xsd:string.
-:Uuidv4RegularExpression a samm-c:RegularExpressionConstraint;
-    samm:preferredName "UUID v4 Regular Expression"@en;
-    samm:value "(^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)|(^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)".
 
 :Uuid3 a samm:Aspect;
     samm:preferredName "Shared Aspect for UUIDs v4"@en;
-    samm:properties (:uuidV4Property3);
+    samm:properties ();
     samm:operations ();
     samm:events ().
-:uuidV4Property3 a samm:Property;
-    samm:preferredName "UUID v4 Property"@en;
-    samm:characteristic :UuidV4Trait3;
-    samm:exampleValue "urn:uuid:48878d48-6f1d-47f5-8ded-a441d0d879df".
-:UuidV4Trait3 a samm-c:Trait;
-    samm:preferredName "Trait for UUIDs v4"@en;
-    samm-c:baseCharacteristic :Uuidv4Characteristic3;
-    samm-c:constraint :Uuidv4RegularExpression3.
-:Uuidv4Characteristic3 a samm:Characteristic;
-    samm:preferredName "UUID v4"@en;
-    samm:dataType xsd:string.
-:Uuidv4RegularExpression3 a samm-c:RegularExpressionConstraint;
-    samm:preferredName "UUID v4 Regular Expression"@en;
-    samm:value "(^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)|(^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)".
 
