@@ -15,14 +15,14 @@
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.1.0#>.
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
 
-:Uuid2 a samm:Aspect;
-    samm:preferredName "Shared Aspect for UUIDs v4"@en;
+:Aspect1 a samm:Aspect;
+    samm:preferredName "Test Aspect1"@en;
     samm:properties ();
     samm:operations ();
     samm:events ().
 
-:Uuid3 a samm:Aspect;
-    samm:preferredName "Shared Aspect for UUIDs v4"@en;
+:Aspect2 a samm:Aspect;
+    samm:preferredName "Test Aspect2"@en;
     samm:properties ();
     samm:operations ();
     samm:events ().

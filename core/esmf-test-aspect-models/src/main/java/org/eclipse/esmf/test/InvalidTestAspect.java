@@ -31,7 +31,7 @@ public enum InvalidTestAspect implements TestModel {
    RANGE_CONSTRAINT_WITH_WRONG_TYPE,
    MODEL_WITH_CYCLES,
 
-   INVALID_UUID_ASPECT_WITH_TWO_ASPECTS;
+   INVALID_ASPECT_WITH_TWO_ASPECTS;
 
    @Override
    public String getName() {

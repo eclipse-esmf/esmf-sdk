@@ -191,11 +191,11 @@ class AspectModelResolverTest {
    @Test
    void getExceptionWhileLoadingModelWithTwoAspects() {
       assertThatThrownBy( () -> {
-         TestResources.load( InvalidTestAspect.INVALID_UUID_ASPECT_WITH_TWO_ASPECTS );
+         TestResources.load( InvalidTestAspect.INVALID_ASPECT_WITH_TWO_ASPECTS );
       } )
             .isInstanceOf( AspectLoadingException.class )
             .hasMessageContaining(
-                  "Aspect model file testmodel:invalid/org.eclipse.esmf.test/1.0.0/InvalidUuidAspectWithTwoAspects.ttl contains 2 "
+                  "Aspect model file testmodel:invalid/org.eclipse.esmf.test/1.0.0/InvalidAspectWithTwoAspects.ttl contains 2 "
                         + "aspects, but may only contain one." );
    }
 }
