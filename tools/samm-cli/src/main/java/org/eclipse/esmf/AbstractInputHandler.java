@@ -32,7 +32,6 @@ import org.eclipse.esmf.aspectmodel.resolver.github.GithubModelSourceConfigBuild
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
 import org.eclipse.esmf.aspectmodel.validation.services.DetailedViolationFormatter;
-import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectModel;
@@ -113,7 +112,7 @@ public abstract class AbstractInputHandler implements InputHandler {
          if ( details ) {
             System.out.println( new DetailedViolationFormatter().apply( violations ) );
          } else {
-            System.out.println( new ViolationFormatter().apply( violations ) );
+            System.out.println( new HighlightingViolationFormatter().apply( violations ) );
          }
          System.exit( 1 );
          return null;

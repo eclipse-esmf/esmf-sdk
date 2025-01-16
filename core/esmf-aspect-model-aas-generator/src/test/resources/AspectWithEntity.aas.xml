@@ -19,7 +19,7 @@
                   <aas:keys>
                      <aas:key>
                         <aas:type>GlobalReference</aas:type>
-                        <aas:value>Optional[urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEntity]</aas:value>
+                        <aas:value>urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEntity</aas:value>
                      </aas:key>
                   </aas:keys>
                </aas:dataSpecification>
@@ -62,7 +62,7 @@
             </aas:langStringTextType>
          </aas:description>
          <aas:administration/>
-         <aas:id>Optional[urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEntity]/submodel</aas:id>
+         <aas:id>urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEntity/submodel</aas:id>
          <aas:kind>Template</aas:kind>
          <aas:semanticId>
             <aas:type>ModelReference</aas:type>
@@ -144,7 +144,7 @@
                   <aas:keys>
                      <aas:key>
                         <aas:type>GlobalReference</aas:type>
-                        <aas:value>Optional[urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEntity]</aas:value>
+                        <aas:value>urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEntity</aas:value>
                      </aas:key>
                   </aas:keys>
                </aas:dataSpecification>
@@ -189,7 +189,7 @@
                   <aas:keys>
                      <aas:key>
                         <aas:type>GlobalReference</aas:type>
-                        <aas:value>Optional[urn:samm:org.eclipse.esmf.test:1.0.0#entityProperty]</aas:value>
+                        <aas:value>urn:samm:org.eclipse.esmf.test:1.0.0#entityProperty</aas:value>
                      </aas:key>
                   </aas:keys>
                </aas:dataSpecification>
@@ -237,7 +237,7 @@
                   <aas:keys>
                      <aas:key>
                         <aas:type>GlobalReference</aas:type>
-                        <aas:value>Optional[urn:samm:org.eclipse.esmf.test:1.0.0#testProperty]</aas:value>
+                        <aas:value>urn:samm:org.eclipse.esmf.test:1.0.0#testProperty</aas:value>
                      </aas:key>
                   </aas:keys>
                </aas:dataSpecification>

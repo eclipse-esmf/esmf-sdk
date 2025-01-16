@@ -18,7 +18,6 @@ import picocli.CommandLine;
       mixinStandardHelpOptions = true
 )
 public class AasToCommand extends AbstractCommand {
-
    public static final String COMMAND_NAME = "to";
 
    @CommandLine.Mixin
@@ -29,6 +28,6 @@ public class AasToCommand extends AbstractCommand {
 
    @Override
    public void run() {
-      throw new SubCommandException( COMMAND_NAME );
+      throw new SubCommandException( AasCommand.COMMAND_NAME + " " + COMMAND_NAME );
    }
 }

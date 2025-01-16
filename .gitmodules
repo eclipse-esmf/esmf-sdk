@@ -1,0 +1,4 @@
+[submodule "core/esmf-aspect-model-aas-generator/src/test/resources/submodel-templates"]
+	path = core/esmf-aspect-model-aas-generator/src/test/resources/submodel-templates
+	url = https://github.com/admin-shell-io/submodel-templates.git
+	branch = main

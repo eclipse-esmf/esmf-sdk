@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -34,8 +35,10 @@ import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
+import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFile;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
+import io.vavr.control.Try;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -160,28 +163,46 @@ public class ClasspathStrategy implements ResolutionStrategy {
             aspectModelUrn.getNamespaceMainPart(), aspectModelUrn.getVersion() );
       final URL namedResourceFile = resourceUrl( directory, aspectModelUrn.getName() + ".ttl" );
 
-      if ( namedResourceFile != null ) {
-         return AspectModelFileLoader.load( namedResourceFile );
+      final List<ModelResolutionException.LoadingFailure> checkedLocations = new ArrayList<>();
+      final Try<RawAspectModelFile> tryFile = Try.of( () -> AspectModelFileLoader.load( namedResourceFile ) );
+      if ( tryFile.isFailure() ) {
+         checkedLocations.add(
+               new ModelResolutionException.LoadingFailure( aspectModelUrn, "Class path file "
+                     + Optional.ofNullable( namedResourceFile ).map( URL::toString ).orElse( aspectModelUrn.getName() + ".ttl" ),
+                     tryFile.getCause().getMessage(), tryFile.getCause() ) );
+      } else {
+         return tryFile.get();
       }
 
       LOG.warn( "Looking for {}, but no {}.ttl was found. Inspecting files in {}", aspectModelUrn.getName(),
             aspectModelUrn.getName(), directory );
 
-      return filesInDirectory( directory )
+      for ( final Iterator<URL> it = filesInDirectory( directory )
             .filter( name -> name.endsWith( ".ttl" ) )
             .map( name -> resourceUrl( directory, name ) )
             .sorted( Comparator.comparing( URL::getPath ) )
-            .map( AspectModelFileLoader::load )
-            .filter( aspectModelFile -> resolutionStrategySupport.containsDefinition( aspectModelFile, aspectModelUrn ) )
-            .findFirst()
-            .orElseThrow( () -> new ModelResolutionException(
-                  "No model file containing " + aspectModelUrn + " could be found in directory: " + directory ) );
+            .iterator(); it.hasNext(); ) {
+         final URL url = it.next();
+         final Try<RawAspectModelFile> file = Try.of( () -> AspectModelFileLoader.load( url ) );
+         if ( file.isFailure() ) {
+            checkedLocations.add( new ModelResolutionException.LoadingFailure( aspectModelUrn, url.toString(),
+                  "Could not load file", file.getCause() ) );
+            continue;
+         }
+         final AspectModelFile result = file.get();
+         if ( resolutionStrategySupport.containsDefinition( result, aspectModelUrn ) ) {
+            return result;
+         }
+         checkedLocations.add( new ModelResolutionException.LoadingFailure( aspectModelUrn, url.toString(),
+               "File does not contain the element definition" ) );
+      }
+      throw new ModelResolutionException( checkedLocations );
    }
 
    private URL toUrl( final URI uri ) {
       try {
          return uri.toURL();
-      } catch ( final MalformedURLException e ) {
+      } catch ( final MalformedURLException exception ) {
          throw new ModelResolutionException( "Could not translate URI to URL: " + uri );
       }
    }
@@ -189,7 +210,7 @@ public class ClasspathStrategy implements ResolutionStrategy {
    private URI toUri( final URL url ) {
       try {
          return url.toURI();
-      } catch ( final URISyntaxException e ) {
+      } catch ( final URISyntaxException exception ) {
          throw new ModelResolutionException( "Could not translate URL to URI: " + url );
       }
    }

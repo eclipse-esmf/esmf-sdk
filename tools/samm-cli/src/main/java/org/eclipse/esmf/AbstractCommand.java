@@ -77,7 +77,7 @@ public abstract class AbstractCommand implements Runnable {
       } else if ( GitHubUrlInputHandler.appliesToInput( input ) ) {
          return new GitHubUrlInputHandler( input, resolverConfig, details );
       }
-      throw new CommandException( "Can not find file: " + input );
+      throw new CommandException( "File not found: " + input );
    }
 
    protected void generateDiagram( final String input, final DiagramGenerationConfig.Format targetFormat,

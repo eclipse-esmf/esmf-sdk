@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
  * replacement mechanism for capturing System.exit() <a href="https://bugs.openjdk.org/browse/JDK-8199704">has been defined yet</a>.
  * Therefore, there is currently no other way than using the deprecated class.
  */
+@SuppressWarnings( "removal" )
 public class MainClassProcessLauncher extends ProcessLauncher {
    private static final Logger LOG = LoggerFactory.getLogger( MainClassProcessLauncher.class );
    private final Class<?> mainClass;

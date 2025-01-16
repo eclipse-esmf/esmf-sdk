@@ -132,6 +132,30 @@ class SammCliTest {
    }
 
    @Test
+   void testNonExistingFile() {
+      final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile + "x", "validate" );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).contains( "File not found" );
+      assertThat( result.stderr() ).doesNotContain( "CommandException" );
+   }
+
+   @Test
+   void testNonExistingFileWithDebugLogLevel() {
+      final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile + "x", "validate", "-vvv" );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).contains( "File not found" );
+      assertThat( result.stderr() ).contains( "CommandException" );
+   }
+
+   @Test
+   void testSubCommandWithoutRequiredInput() {
+      final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "to" );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).contains( "This command needs a subcommand" );
+      assertThat( result.stderr() ).doesNotContain( "CommandException" );
+   }
+
+   @Test
    void testHelp() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "help" );
       assertThat( result.stdout() ).contains( "Usage:" );
@@ -232,6 +256,13 @@ class SammCliTest {
    }
 
    @Test
+   void testAspectValidateFromUrnWithoutModelsRoot() {
+      final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputUrn, "validate" );
+      assertThat( result.stdout() ).contains( "at least one models root directory" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
    void testAspectFromGitHubWithFullUrlValidateModel() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect",
             "https://github.com/eclipse-esmf/esmf-sdk/blob/main/core/esmf-test-aspect-models/src/main/resources/valid/org.eclipse.esmf"
@@ -246,6 +277,15 @@ class SammCliTest {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect",
             defaultInputUrn, "validate", "--github", "eclipse-esmf/esmf-sdk", "--github-directory", remoteModelsDirectory );
       assertThat( result.stdout() ).contains( "Input model is valid" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectFromGitHubButRepoNotActuallyContainingFile() {
+      final ExecutionResult result = sammCli.apply( "--disable-color", "aspect",
+            defaultInputUrn, "validate", "--github", "eclipse-esmf/esmf-parent" );
+      assertThat( result.stdout() ).contains( "could not be resolved" );
+      assertThat( result.stdout() ).contains( "Repository does not contain any file that contains the element" );
       assertThat( result.stderr() ).isEmpty();
    }
 

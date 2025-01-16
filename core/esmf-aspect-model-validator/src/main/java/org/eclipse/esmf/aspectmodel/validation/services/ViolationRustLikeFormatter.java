@@ -13,6 +13,9 @@
 
 package org.eclipse.esmf.aspectmodel.validation.services;
 
+import java.util.stream.Collectors;
+
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.resolver.parser.RdfTextFormatter;
 import org.eclipse.esmf.aspectmodel.shacl.RustLikeFormatter;
 import org.eclipse.esmf.aspectmodel.shacl.fix.Fix;
@@ -38,6 +41,7 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.MissingTypeViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.NodeKindViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.NotViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.PatternViolation;
+import org.eclipse.esmf.aspectmodel.shacl.violation.ProcessingViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.SparqlConstraintViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.UniqueLanguageViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.ValueFromListViolation;
@@ -47,9 +51,7 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.XoneViolation;
 import org.apache.jena.rdf.model.Model;
 
 public class ViolationRustLikeFormatter extends ViolationFormatter {
-
    private final RustLikeFormatter formatter;
-
    private final Model rawModel;
 
    public ViolationRustLikeFormatter() {

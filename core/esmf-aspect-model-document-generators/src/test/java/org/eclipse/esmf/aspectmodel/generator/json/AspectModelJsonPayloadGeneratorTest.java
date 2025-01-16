@@ -37,6 +37,7 @@ import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
+
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
@@ -60,6 +61,7 @@ import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithEntityE
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithEnum;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithEnumHavingNestedEntities;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithExtendedEnumsWithNotInPayloadProperty;
+import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithFixedPointConstraint;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithGTypeForRangeConstraints;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithGenericNumericProperty;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithMultiLanguageText;
@@ -548,11 +550,16 @@ public class AspectModelJsonPayloadGeneratorTest {
 
       final Aspect dynamicAspect = createAspectWithDynamicNumericProperty( numericType, boundKind.orElse( null ),
             randomRange );
+
       final AspectModelJsonPayloadGenerator randomGenerator = new AspectModelJsonPayloadGenerator( dynamicAspect );
       final AspectModelJsonPayloadGenerator minGenerator = new AspectModelJsonPayloadGenerator( dynamicAspect,
-            new MinValueRandomStrategy() );
+            JsonPayloadGenerationConfigBuilder.builder()
+                  .randomStrategy( new MinValueRandomStrategy() )
+                  .build() );
       final AspectModelJsonPayloadGenerator maxGenerator = new AspectModelJsonPayloadGenerator( dynamicAspect,
-            new MaxValueRandomStrategy() );
+            JsonPayloadGenerationConfigBuilder.builder()
+                  .randomStrategy( new MaxValueRandomStrategy() )
+                  .build() );
       try {
          final String generatedJson = randomGenerator.generateJson();
          final String minValue = minGenerator.generateJson();
@@ -698,6 +705,14 @@ public class AspectModelJsonPayloadGeneratorTest {
       final Id id1 = values.next();
       final Id id2 = values.next();
       assertThat( id1 ).isNotEqualTo( id2 );
+   }
+
+   @Test
+   void testGenerateJsonForAspectWithFixedPointConstraint() throws IOException {
+      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_FIXED_POINT_CONSTRAINT );
+      final AspectWithFixedPointConstraint aspectWithConstraint = parseJson( generatedJson, AspectWithFixedPointConstraint.class );
+      assertThat( generatedJson ).contains( "testProperty" );
+      assertThat( aspectWithConstraint.getTestProperty() ).matches( "\\s*\\d{3}\\.\\d{4,5}" );
    }
 
    private String generateJsonForModel( final TestAspect testAspect ) {

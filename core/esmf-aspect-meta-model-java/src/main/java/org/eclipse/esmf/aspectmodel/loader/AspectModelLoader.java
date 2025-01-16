@@ -25,7 +25,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +36,7 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.eclipse.esmf.aspectmodel.AspectLoadingException;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelFileLoader;
@@ -208,14 +208,14 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
     */
    public AspectModel loadNamespacePackage( final File namespacePackage ) {
       if ( !namespacePackage.exists() || !namespacePackage.isFile() ) {
-         throw new ModelResolutionException( "The specified file does not exist or is not a file." );
+         throw new AspectLoadingException( "The specified file does not exist or is not a file." );
       }
 
       try ( final InputStream inputStream = new FileInputStream( namespacePackage ) ) {
          return loadNamespacePackage( inputStream );
       } catch ( final IOException exception ) {
          LOG.error( "Error reading the file: {}", namespacePackage.getAbsolutePath(), exception );
-         throw new ModelResolutionException( "Error reading the file: " + namespacePackage.getAbsolutePath(), exception );
+         throw new AspectLoadingException( "Error reading the file: " + namespacePackage.getAbsolutePath(), exception );
       }
    }
 
@@ -232,7 +232,7 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
          inputStream.transferTo( baos );
          hasAspectModelsFolder = containsFolderInNamespacePackage( new ByteArrayInputStream( baos.toByteArray() ) );
       } catch ( final IOException exception ) {
-         throw new ModelResolutionException( "Could not read from input", exception );
+         throw new AspectLoadingException( "Could not read from input", exception );
       }
       return loadNamespacePackageFromStream( new ByteArrayInputStream( baos.toByteArray() ), hasAspectModelsFolder );
    }
@@ -258,7 +258,7 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
          zis.closeEntry();
       } catch ( final IOException exception ) {
          LOG.error( "Error reading the Archive input stream", exception );
-         throw new ModelResolutionException( "Error reading the Archive input stream", exception );
+         throw new AspectLoadingException( "Error reading the Archive input stream", exception );
       }
 
       final LoaderContext loaderContext = new LoaderContext();
@@ -336,13 +336,14 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
          }
          final AspectModelFile resolutionResult = resolutionStrategy.apply( aspectModelUrn, this );
          if ( !containsType( resolutionResult.sourceModel(), urn ) ) {
-            throw new ModelResolutionException(
+            throw new AspectLoadingException(
                   "Resolution strategy returned a model which does not contain element definition for " + urn );
          }
          return Optional.of( resolutionResult );
-      } catch ( final UrnSyntaxException e ) {
+      } catch ( final UrnSyntaxException exception ) {
+         // This happens if the URN to load is no actual URN.
          // If it's no valid Aspect Model URN but some other URI (e.g., a samm:see value), there is nothing
-         // to resolve, so we return just an empty model
+         // to resolve, so we return just an empty model.
          return Optional.empty();
       }
    }
@@ -379,6 +380,7 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
          context.unresolvedFiles().push( aspectModelFile );
       }
 
+      final List<ModelResolutionException.LoadingFailure> loadingFailures = new ArrayList<>();
       while ( !context.unresolvedFiles().isEmpty() || !context.unresolvedUrns().isEmpty() ) {
          if ( !context.unresolvedFiles().isEmpty() ) {
             final AspectModelFile modelFile = context.unresolvedFiles().pop();
@@ -389,10 +391,24 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
          }
 
          while ( !context.unresolvedUrns().isEmpty() ) {
-            applyResolutionStrategy( context.unresolvedUrns().pop() )
-                  .map( this::migrate )
-                  .ifPresent( resolvedFile -> markModelFileAsLoaded( resolvedFile, context ) );
+            try {
+               applyResolutionStrategy( context.unresolvedUrns().pop() )
+                     .map( this::migrate )
+                     .ifPresent( resolvedFile -> markModelFileAsLoaded( resolvedFile, context ) );
+            } catch ( final ModelResolutionException exception ) {
+               // If one element can not be resolved, collect its cause and continue, so that
+               // we can create an comprehensive overview of all elements that can not be resolved
+               if ( exception.getCheckedLocations().isEmpty() ) {
+                  throw exception;
+               } else {
+                  loadingFailures.addAll( exception.getCheckedLocations() );
+               }
+            }
          }
+      }
+
+      if ( !loadingFailures.isEmpty() ) {
+         throw new ModelResolutionException( loadingFailures );
       }
    }
 
@@ -442,7 +458,6 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
 
       final List<ModelElement> elements = new ArrayList<>();
       final List<AspectModelFile> files = new ArrayList<>();
-      final Map<AspectModelFile, MetaModelBaseAttributes> namespaceDefinitions = new HashMap<>();
       for ( final AspectModelFile file : inputFiles ) {
          final DefaultAspectModelFile aspectModelFile = new DefaultAspectModelFile( file.sourceModel(), file.headerComment(),
                file.sourceLocation() );
@@ -465,6 +480,13 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
             .filter( modelElement -> modelElement.is( Aspect.class ) )
             .findFirst()
             .ifPresent( aspect -> mergedModel.setNsPrefix( "", aspect.urn().getUrnPrefix() ) );
+      for ( AspectModelFile file : files ) {
+         if ( file.aspects().size() > 1 ) {
+            throw new AspectLoadingException(
+                  "Aspect model file " + file.sourceLocation().map( location -> location + " " ).orElse( "" ) + "contains " + file.aspects()
+                        .size() + " aspects, but may only contain one." );
+         }
+      }
       return new DefaultAspectModel( files, mergedModel, elements );
    }
 

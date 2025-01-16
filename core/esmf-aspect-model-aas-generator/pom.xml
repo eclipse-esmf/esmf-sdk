@@ -67,6 +67,11 @@
          <artifactId>assertj-core</artifactId>
          <scope>test</scope>
       </dependency>
+      <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-model-validator</artifactId>
+         <scope>test</scope>
+      </dependency>
    </dependencies>
 
    <build>

@@ -32,6 +32,8 @@ public record GithubRepository(
       String name();
 
       String refType();
+
+      String refTypeName();
    }
 
    public record Branch( String name ) implements Ref {
@@ -39,12 +41,22 @@ public record GithubRepository(
       public String refType() {
          return "heads";
       }
+
+      @Override
+      public String refTypeName() {
+         return "branch";
+      }
    }
 
    public record Tag( String name ) implements Ref {
       @Override
       public String refType() {
          return "tags";
+      }
+
+      @Override
+      public String refTypeName() {
+         return "tag";
       }
    }
 
@@ -58,5 +70,11 @@ public record GithubRepository(
       } catch ( final MalformedURLException exception ) {
          throw new ModelResolutionException( "Constructed GitHub URL is invalid: " + url );
       }
+   }
+
+   @Override
+   public String toString() {
+      return "GitHub repository %s/%s (%s %s)".formatted( owner(), repository(), branchOrTag().refTypeName(),
+            branchOrTag().name() );
    }
 }

@@ -44,6 +44,6 @@ public class AspectEditCommand extends AbstractCommand {
 
    @Override
    public void run() {
-      throw new SubCommandException( COMMAND_NAME );
+      throw new SubCommandException( AspectCommand.COMMAND_NAME + " " + COMMAND_NAME );
    }
 }

@@ -34,6 +34,17 @@ public class AspectModelJsonSchemaGenerator extends JsonGenerator<JsonSchemaGene
    @Deprecated( forRemoval = true )
    public static final AspectModelJsonSchemaGenerator INSTANCE = new AspectModelJsonSchemaGenerator( null );
 
+   /**
+    * Kept for backwards compatibility
+    *
+    * @deprecated Use {@link #AspectModelJsonSchemaGenerator(Aspect)} or
+    * {@link #AspectModelJsonSchemaGenerator(Aspect, JsonSchemaGenerationConfig)} instead
+    */
+   @Deprecated( forRemoval = true )
+   public AspectModelJsonSchemaGenerator() {
+      this( null );
+   }
+
    public AspectModelJsonSchemaGenerator( final Aspect aspect ) {
       this( aspect, DEFAULT_CONFIG );
    }

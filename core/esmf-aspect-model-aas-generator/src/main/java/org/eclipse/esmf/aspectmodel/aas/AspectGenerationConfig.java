@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -11,9 +11,13 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.aspectmodel;
+package org.eclipse.esmf.aspectmodel.aas;
 
-@Deprecated( forRemoval = true )
-public class MissingMetaModelVersionException extends RuntimeException {
-   private static final long serialVersionUID = -6978063564517733205L;
+import org.eclipse.esmf.aspectmodel.generator.GenerationConfig;
+
+import io.soabase.recordbuilder.core.RecordBuilder;
+
+@RecordBuilder
+public record AspectGenerationConfig(
+) implements GenerationConfig {
 }

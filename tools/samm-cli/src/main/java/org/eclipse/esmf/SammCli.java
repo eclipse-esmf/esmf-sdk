@@ -32,6 +32,8 @@ import org.eclipse.esmf.aspect.AspectEditCommand;
 import org.eclipse.esmf.aspect.AspectPrettyPrintCommand;
 import org.eclipse.esmf.aspect.AspectToCommand;
 import org.eclipse.esmf.aspect.to.AspectToSvgCommand;
+import org.eclipse.esmf.exception.CommandException;
+import org.eclipse.esmf.exception.SubCommandException;
 import org.eclipse.esmf.substitution.IsWindows;
 
 import org.fusesource.jansi.AnsiConsole;
@@ -102,20 +104,28 @@ public class SammCli extends AbstractCommand {
             .setExecutionStrategy( LoggingMixin::executionStrategy );
       initialCommandLine.getHelpSectionMap().put( SECTION_KEY_COMMAND_LIST, new CustomCommandListRenderer() );
       final CommandLine.IExecutionExceptionHandler defaultExecutionExceptionHandler = initialCommandLine.getExecutionExceptionHandler();
-      commandLine = initialCommandLine.setExecutionExceptionHandler( new CommandLine.IExecutionExceptionHandler() {
-         @Override
-         public int handleExecutionException( final Exception exception, final CommandLine commandLine,
-               final CommandLine.ParseResult parseResult ) throws Exception {
-            if ( exception.getClass().getName()
-                  .equals( String.format( "%s.MainClassProcessLauncher$SystemExitCaptured", SammCli.class.getPackageName() ) ) ) {
-               // If the exception we encounter is a SystemExitCaptured, this is part of the security manager in the test suite that
-               // captures System.exit() calls and throws an exception there. We don't want PicoCli to do anything further with that
-               // (i.e., serialize the stacktrace to stderr), so we'll just return here.
-               return 1;
-            }
-            // Delegate to the default execution exception handler
-            return defaultExecutionExceptionHandler.handleExecutionException( exception, commandLine, parseResult );
+      commandLine = initialCommandLine.setExecutionExceptionHandler( ( exception, commandLine, parseResult ) -> {
+         if ( exception.getClass().getName()
+               .equals( String.format( "%s.MainClassProcessLauncher$SystemExitCaptured", SammCli.class.getPackageName() ) ) ) {
+            // If the exception we encounter is a SystemExitCaptured, this is part of the security manager in the test suite that
+            // captures System.exit() calls and throws an exception there. We don't want PicoCli to do anything further with that
+            // (i.e., serialize the stacktrace to stderr), so we'll just return here.
+            return 1;
          }
+
+         if ( exception instanceof final SubCommandException subCommandException ) {
+            commandLine.getErr().println( "This command needs a subcommand. Please run '"
+                  + COMMAND_NAME + " help " + subCommandException.getSubCommandName() + "' for more information." );
+            return 1;
+         }
+
+         // For log level OFF and INFO, don't print stack traces
+         if ( exception instanceof CommandException && loggingMixin.getVerbosity().length < 2 ) {
+            commandLine.getErr().println( exception.getMessage() );
+            return 1;
+         }
+         // For higher log levels or unexpected exceptions, delegate to the default execution exception handler
+         return defaultExecutionExceptionHandler.handleExecutionException( exception, commandLine, parseResult );
       } );
    }
 
@@ -130,16 +140,6 @@ public class SammCli extends AbstractCommand {
 
    int run( final String... argv ) {
       return commandLine.execute( argv );
-   }
-
-   int runWithExceptionHandler( final CommandLine.IExecutionExceptionHandler exceptionHandler, final String... argv ) {
-      final CommandLine.IExecutionExceptionHandler oldHandler = commandLine.getExecutionExceptionHandler();
-      try {
-         commandLine.setExecutionExceptionHandler( exceptionHandler );
-         return commandLine.execute( argv );
-      } finally {
-         commandLine.setExecutionExceptionHandler( oldHandler );
-      }
    }
 
    public static void main( final String[] argv ) {
@@ -182,6 +182,7 @@ public class SammCli extends AbstractCommand {
       }
 
       if ( !disableColor ) {
+         System.setProperty( "jansi.passthrough", "true" );
          AnsiConsole.systemInstall();
       }
 

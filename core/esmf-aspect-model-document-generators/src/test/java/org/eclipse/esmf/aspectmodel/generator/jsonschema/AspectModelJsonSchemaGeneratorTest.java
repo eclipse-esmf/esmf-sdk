@@ -48,7 +48,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
-public class AspectModelJsonSchemaGeneratorTest {
+class AspectModelJsonSchemaGeneratorTest {
    private final ObjectMapper objectMapper = new ObjectMapper();
    final Configuration config = Configuration.defaultConfiguration().addOptions( Option.SUPPRESS_EXCEPTIONS );
 
@@ -128,7 +128,7 @@ public class AspectModelJsonSchemaGeneratorTest {
    @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
          "MODEL_WITH_BROKEN_CYCLES" // contains cycles, but all of them should be "breakable", need to be investigated
    } )
-   public void testGeneration( final TestAspect testAspect ) {
+   void testGeneration( final TestAspect testAspect ) {
       final Aspect aspect = TestResources.load( testAspect ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       final DocumentContext context = JsonPath.parse( schema.toString() );
@@ -139,7 +139,7 @@ public class AspectModelJsonSchemaGeneratorTest {
    }
 
    @Test
-   public void testSchemaNameClash() {
+   void testSchemaNameClash() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_ENTITY ).aspect();
       final JsonSchemaGenerationConfig config = JsonSchemaGenerationConfigBuilder.builder()
             .locale( Locale.ENGLISH )
@@ -154,7 +154,7 @@ public class AspectModelJsonSchemaGeneratorTest {
    }
 
    @Test
-   public void testTypeMapping() {
+   void testTypeMapping() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_TYPES ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       showJson( schema );
@@ -364,7 +364,7 @@ public class AspectModelJsonSchemaGeneratorTest {
    }
 
    @Test
-   public void testOptionalPropertyMapping() {
+   void testOptionalPropertyMapping() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_OPTIONAL_PROPERTY ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       final DocumentContext context = JsonPath.using( config ).parse( schema.toString() );
@@ -380,7 +380,7 @@ public class AspectModelJsonSchemaGeneratorTest {
    }
 
    @Test
-   public void testAspectWithRecursivePropertyWithOptional() {
+   void testAspectWithRecursivePropertyWithOptional() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_RECURSIVE_PROPERTY_WITH_OPTIONAL ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       showJson( schema );
@@ -396,7 +396,7 @@ public class AspectModelJsonSchemaGeneratorTest {
    }
 
    @Test
-   public void testNotInPayloadPropertyMapping() {
+   void testNotInPayloadPropertyMapping() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_AND_NOT_IN_PAYLOAD_PROPERTIES ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       final DocumentContext context = JsonPath.using( config ).parse( schema.toString() );
@@ -407,7 +407,7 @@ public class AspectModelJsonSchemaGeneratorTest {
    }
 
    @Test
-   public void testCollectionWithElementConstraint() {
+   void testCollectionWithElementConstraint() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_COLLECTION_WITH_ELEMENT_CONSTRAINT ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       final DocumentContext context = JsonPath.using( config ).parse( schema.toString() );
@@ -430,7 +430,7 @@ public class AspectModelJsonSchemaGeneratorTest {
    }
 
    @Test
-   public void testEntityMapping() {
+   void testEntityMapping() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_ENTITY ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       showJson( schema );
@@ -457,7 +457,7 @@ public class AspectModelJsonSchemaGeneratorTest {
    }
 
    @Test
-   public void testLengthConstraintForStringMapping() {
+   void testLengthConstraintForStringMapping() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_LENGTH_CONSTRAINT ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       final DocumentContext context = JsonPath.parse( schema.toString() );
@@ -478,7 +478,7 @@ public class AspectModelJsonSchemaGeneratorTest {
     * Verify that the json schema generated from the given aspect model contains descriptions as per the chosen language.
     */
    @Test
-   public void testMultilingualDescriptions() {
+   void testMultilingualDescriptions() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_ENGLISH_AND_GERMAN_DESCRIPTION ).aspect();
       final JsonNode schemaEnglish = new AspectModelJsonSchemaGenerator( aspect,
             JsonSchemaGenerationConfigBuilder.builder().locale( Locale.ENGLISH ).build() ).getContent();
@@ -497,7 +497,7 @@ public class AspectModelJsonSchemaGeneratorTest {
    }
 
    @Test
-   public void testLengthConstraintForListMapping() {
+   void testLengthConstraintForListMapping() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_LIST_WITH_LENGTH_CONSTRAINT ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       final DocumentContext context = JsonPath.parse( schema.toString() );
@@ -528,7 +528,7 @@ public class AspectModelJsonSchemaGeneratorTest {
    }
 
    @Test
-   public void testRangeConstraintMapping() {
+   void testRangeConstraintMapping() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
 
@@ -548,7 +548,7 @@ public class AspectModelJsonSchemaGeneratorTest {
    }
 
    @Test
-   public void testRangeConstraintOnConstrainedNumericType() {
+   void testRangeConstraintOnConstrainedNumericType() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_ON_CONSTRAINED_NUMERIC_TYPE ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
 
@@ -568,7 +568,7 @@ public class AspectModelJsonSchemaGeneratorTest {
    }
 
    @Test
-   public void testRangeConstraintWithBoundsMapping() {
+   void testRangeConstraintWithBoundsMapping() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_EXCLUSIVE_RANGE_CONSTRAINT ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
 
@@ -644,7 +644,7 @@ public class AspectModelJsonSchemaGeneratorTest {
    }
 
    @Test
-   public void testCollectionMapping() {
+   void testCollectionMapping() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_LIST ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       final DocumentContext context = JsonPath.parse( schema.toString() );
@@ -661,7 +661,7 @@ public class AspectModelJsonSchemaGeneratorTest {
    }
 
    @Test
-   public void testSetMapping() {
+   void testSetMapping() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SET ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       showJson( schema );
@@ -679,7 +679,7 @@ public class AspectModelJsonSchemaGeneratorTest {
    }
 
    @Test
-   public void testSortedSetSetMapping() {
+   void testSortedSetSetMapping() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SORTED_SET ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
 
@@ -701,7 +701,7 @@ public class AspectModelJsonSchemaGeneratorTest {
    }
 
    @Test
-   public void testLangStringMapping() {
+   void testLangStringMapping() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_MULTI_LANGUAGE_TEXT ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       showJson( schema );
@@ -734,7 +734,7 @@ public class AspectModelJsonSchemaGeneratorTest {
    }
 
    @Test
-   public void testEitherMapping() {
+   void testEitherMapping() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_EITHER ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       showJson( schema );
@@ -766,7 +766,7 @@ public class AspectModelJsonSchemaGeneratorTest {
    }
 
    @Test
-   public void testEnumScalarMapping() {
+   void testEnumScalarMapping() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_ENUMERATION ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
 
@@ -787,7 +787,7 @@ public class AspectModelJsonSchemaGeneratorTest {
    }
 
    @Test
-   public void testEnumComplexMapping() {
+   void testEnumComplexMapping() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_ENUM_HAVING_NESTED_ENTITIES ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
 
@@ -818,7 +818,7 @@ public class AspectModelJsonSchemaGeneratorTest {
    }
 
    @Test
-   public void testEnumComplexWithNotInPayloadMapping() {
+   void testEnumComplexWithNotInPayloadMapping() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_EXTENDED_ENUMS_WITH_NOT_IN_PAYLOAD_PROPERTY ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
 
@@ -843,7 +843,7 @@ public class AspectModelJsonSchemaGeneratorTest {
    }
 
    @Test
-   public void testEnumWithLangStringMapping() {
+   void testEnumWithLangStringMapping() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_AND_LANG_STRING ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
 
@@ -866,7 +866,7 @@ public class AspectModelJsonSchemaGeneratorTest {
    }
 
    @Test
-   public void testRegularExpressionConstraintMapping() {
+   void testRegularExpressionConstraintMapping() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_REGULAR_EXPRESSION_CONSTRAINT ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
 
@@ -889,7 +889,7 @@ public class AspectModelJsonSchemaGeneratorTest {
    }
 
    @Test
-   public void testComplexEntityCollectionEnum() {
+   void testComplexEntityCollectionEnum() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_COMPLEX_ENTITY_COLLECTION_ENUM ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       final DocumentContext context = JsonPath.parse( schema.toString() );
@@ -923,7 +923,7 @@ public class AspectModelJsonSchemaGeneratorTest {
    }
 
    @Test
-   public void testAspectWithAbstractSingleEntity() {
+   void testAspectWithAbstractSingleEntity() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_ABSTRACT_SINGLE_ENTITY ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       final DocumentContext context = JsonPath.parse( schema.toString() );
@@ -951,7 +951,7 @@ public class AspectModelJsonSchemaGeneratorTest {
    }
 
    @Test
-   public void testAspectWithAbstractEntity() {
+   void testAspectWithAbstractEntity() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_ABSTRACT_ENTITY ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       final DocumentContext context = JsonPath.parse( schema.toString() );
@@ -984,7 +984,7 @@ public class AspectModelJsonSchemaGeneratorTest {
     * Test to validate the json schema generated from the given aspect model containing an abstract property.
     */
    @Test
-   public void testAspectWithAbstractProperty() {
+   void testAspectWithAbstractProperty() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_ABSTRACT_PROPERTY ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       final String text = SammNs.SAMMC.Text().getLocalName();
@@ -998,7 +998,7 @@ public class AspectModelJsonSchemaGeneratorTest {
    }
 
    @Test
-   public void testAspectWithCollectionWithAbstractEntity() {
+   void testAspectWithCollectionWithAbstractEntity() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       final DocumentContext context = JsonPath.parse( schema.toString() );
