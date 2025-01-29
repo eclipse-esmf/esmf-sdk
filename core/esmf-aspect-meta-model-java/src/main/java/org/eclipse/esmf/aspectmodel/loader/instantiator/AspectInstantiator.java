@@ -45,10 +45,6 @@ public class AspectInstantiator extends Instantiator<Aspect> {
       final List<Event> events = getResourcesFromList( aspect, SammNs.SAMM.events() )
             .map( event -> modelElementFactory.create( Event.class, event ) )
             .collect( Collectors.toList() );
-      final boolean isCollectionAspect = properties.stream()
-            .map( Property::getCharacteristic )
-            .flatMap( Optional::stream )
-            .filter( Collection.class::isInstance ).count() == 1;
-      return new DefaultAspect( metaModelBaseAttributes, properties, operations, events, isCollectionAspect );
+      return new DefaultAspect( metaModelBaseAttributes, properties, operations, events );
    }
 }

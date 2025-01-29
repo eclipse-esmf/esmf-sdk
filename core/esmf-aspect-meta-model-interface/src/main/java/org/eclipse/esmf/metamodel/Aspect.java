@@ -14,6 +14,9 @@
 package org.eclipse.esmf.metamodel;
 
 import java.util.List;
+import java.util.Optional;
+
+import org.eclipse.esmf.metamodel.characteristic.Collection;
 
 /**
  * An Aspect encapsulates a number of properties and operations that define one functional facet of a Digital Twin.
@@ -31,4 +34,11 @@ public interface Aspect extends StructureElement {
     * @since SAMM 2.0.0
     */
    List<Event> getEvents();
+
+   default boolean isCollectionAspect() {
+      return getProperties().stream()
+            .map( Property::getCharacteristic )
+            .flatMap( Optional::stream )
+            .filter( Collection.class::isInstance ).count() == 1;
+   }
 }

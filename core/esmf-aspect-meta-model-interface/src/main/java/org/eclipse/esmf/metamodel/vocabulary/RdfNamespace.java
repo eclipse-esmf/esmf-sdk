@@ -53,10 +53,12 @@ public interface RdfNamespace {
    static Map<String, String> createPrefixMap( final KnownVersion metaModelVersion ) {
       final Map<String, String> result = new LinkedHashMap<>();
       final SAMM samm = new SAMM( metaModelVersion );
-      result.put( "samm", samm.getNamespace() );
-      result.put( "samm-c", new SAMMC( metaModelVersion ).getNamespace() );
+      result.put( samm.getShortForm(), samm.getNamespace() );
+      final SAMMC sammc = new SAMMC( metaModelVersion );
+      result.put( sammc.getShortForm(), sammc.getNamespace() );
       result.put( "samm-e", new SAMME( metaModelVersion, samm ).getNamespace() );
-      result.put( "unit", new UNIT( metaModelVersion, samm ).getNamespace() );
+      final UNIT unit = new UNIT( metaModelVersion, samm );
+      result.put( unit.getShortForm(), unit.getNamespace() );
       result.put( "rdf", RDF.getURI() );
       result.put( "rdfs", RDFS.getURI() );
       result.put( "xsd", XSD.getURI() );
@@ -65,10 +67,10 @@ public interface RdfNamespace {
 
    static Map<String, String> createPrefixMap() {
       final Map<String, String> result = new LinkedHashMap<>();
-      result.put( "samm", SammNs.SAMM.getNamespace() );
-      result.put( "samm-c", SammNs.SAMMC.getNamespace() );
-      result.put( "samm-e", SammNs.SAMME.getNamespace() );
-      result.put( "unit", SammNs.UNIT.getNamespace() );
+      result.put( SammNs.SAMM.getShortForm(), SammNs.SAMM.getNamespace() );
+      result.put( SammNs.SAMMC.getShortForm(), SammNs.SAMMC.getNamespace() );
+      result.put( SammNs.SAMME.getShortForm(), SammNs.SAMME.getNamespace() );
+      result.put( SammNs.UNIT.getShortForm(), SammNs.UNIT.getNamespace() );
       result.put( "rdf", RDF.getURI() );
       result.put( "rdfs", RDFS.getURI() );
       result.put( "xsd", XSD.getURI() );

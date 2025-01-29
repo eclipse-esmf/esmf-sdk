@@ -45,7 +45,6 @@ import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.Type;
-import org.eclipse.esmf.metamodel.characteristic.Collection;
 import org.eclipse.esmf.metamodel.characteristic.impl.DefaultList;
 import org.eclipse.esmf.metamodel.characteristic.impl.DefaultSingleEntity;
 import org.eclipse.esmf.metamodel.characteristic.impl.DefaultTrait;
@@ -302,15 +301,6 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
                   .findFirst() );
    }
 
-   private boolean impliesCollectionAspect( final List<Property> properties ) {
-      if ( properties.size() != 1 ) {
-         return false;
-      }
-      final Property property = properties.get( 0 );
-      return property.getName().equals( "items" ) && property.getCharacteristic().map( characteristic ->
-            characteristic.is( Collection.class ) ).orElse( false );
-   }
-
    private Aspect submodelToAspect( final Submodel submodel ) {
       final ElementName aspectName = determineSubmodelName( submodel, true );
       aspectUrn = aspectModelUrnFromId( submodel )
@@ -330,8 +320,7 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
             .build();
 
       final List<Property> properties = createProperties( submodel );
-      return new DefaultAspect( aspectMetaModelBaseAttributes,
-            properties, createOperations( submodel ), createEvents( submodel ), impliesCollectionAspect( properties ) );
+      return new DefaultAspect( aspectMetaModelBaseAttributes, properties, createOperations( submodel ), createEvents( submodel ) );
    }
 
    private List<Property> createProperties( final Submodel submodel ) {

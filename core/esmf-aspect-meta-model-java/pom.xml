@@ -170,6 +170,9 @@
                   <configuration>
                      <compileSourceRoots>${build-time-sources}</compileSourceRoots>
                      <generatedSourcesDirectory>${generated-sources}</generatedSourcesDirectory>
+                     <excludes>
+                        <exclude>**/buildtime/template/*.java</exclude>
+                     </excludes>
                   </configuration>
                </execution>
             </executions>
@@ -180,15 +183,19 @@
             <artifactId>exec-maven-plugin</artifactId>
             <executions>
                <execution>
-                  <id>generate-units-and-quantitykinds</id>
+                  <id>generate-sources</id>
                   <phase>process-sources</phase>
                   <goals>
                      <goal>java</goal>
                   </goals>
                   <configuration>
-                     <mainClass>org.eclipse.esmf.buildtime.GenerateUnitsTtl</mainClass>
-                     <!-- args[0]: Path to src-gen directory -->
-                     <commandlineArgs>${generated-sources}</commandlineArgs>
+                     <mainClass>org.eclipse.esmf.buildtime.GenerateBuildtimeCode</mainClass>
+                     <arguments>
+                        <!-- args[0]: Path to src-gen directory -->
+                        <argument>${generated-sources}</argument>
+                        <!-- args[1]: Path to src-buildtime directory -->
+                        <argument>${build-time-sources}</argument>
+                     </arguments>
                   </configuration>
                </execution>
             </executions>

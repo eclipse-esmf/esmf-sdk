@@ -53,7 +53,7 @@ public class DefaultCollection extends DefaultCharacteristic implements Collecti
     * @return the allowDuplicates.
     */
    @Override
-   public boolean isAllowDuplicates() {
+   public boolean allowsDuplicates() {
       return allowDuplicates;
    }
 

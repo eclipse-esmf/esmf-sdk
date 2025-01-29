@@ -61,7 +61,14 @@ public class DefaultNamespace implements Namespace {
     */
    public DefaultNamespace( final String uri, final List<ModelElement> elements, final Optional<AspectModelFile> source,
          final Optional<MetaModelBaseAttributes> baseAttributes ) {
-      this( uri.split( ":" )[2], VersionNumber.parse( uri.split( ":" )[3].replace( "#", "" ) ), elements, source, baseAttributes );
+      this( splitUri( uri ).namespacePart(), splitUri( uri ).version(), elements, source, baseAttributes );
+   }
+
+   private record UrnParts( String namespacePart, VersionNumber version ) {}
+
+   private static UrnParts splitUri( final String uri ) {
+      final String[] parts = uri.split( ":" );
+      return new UrnParts( parts[2], VersionNumber.parse( parts[parts.length - 1].replace( "#", "" ) ) );
    }
 
    @Override

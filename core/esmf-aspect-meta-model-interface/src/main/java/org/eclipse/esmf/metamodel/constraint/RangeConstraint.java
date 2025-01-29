@@ -28,29 +28,27 @@ import org.eclipse.esmf.metamodel.Type;
 public interface RangeConstraint extends Constraint {
 
    /**
-    * @return the lower bound of the range. The type of the values is determined by the {@link Type} returned by
-    *       {@link RangeConstraint#getDataType()}.
+    * @return the lower bound of the range. The type of the values is determined by the {@link Type} of the Trait that the Constraint
+    * is used with.
     */
    Optional<ScalarValue> getMinValue();
 
    /**
-    * @return the upper bound of the range. The type of the values is determined by the {@link Type} returned by
-    *       {@link RangeConstraint#getDataType()}.
+    * @return the upper bound of the range. The type of the values is determined by the {@link Type} of the Trait that the Constraint
+    * is used with.
     */
    Optional<ScalarValue> getMaxValue();
 
    /**
     * @return the definition of how the lower bound of the range is to be interpreted. Possible values are
-    *       'OPEN', 'AT_LEAST' and 'GREATER_THAN'
-    *
+    * 'OPEN', 'AT_LEAST' and 'GREATER_THAN'
     * @since SAMM 1.0.0
     */
    BoundDefinition getLowerBoundDefinition();
 
    /**
     * @return the definition of how the upper bound of the range is to be interpreted. Possible values are
-    *       'OPEN', 'AT_MOST' and 'LESS_THAN'
-    *
+    * 'OPEN', 'AT_MOST' and 'LESS_THAN'
     * @since SAMM 1.0.0
     */
    BoundDefinition getUpperBoundDefinition();

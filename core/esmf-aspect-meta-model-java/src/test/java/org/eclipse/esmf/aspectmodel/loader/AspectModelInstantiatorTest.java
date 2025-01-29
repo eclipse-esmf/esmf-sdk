@@ -253,7 +253,7 @@ public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiator
    @Test
    void testAspectWithRecursivePropertyWithOptional() {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_RECURSIVE_PROPERTY_WITH_OPTIONAL );
-      assertThat( aspect.getProperties().size() ).isEqualTo( 1 );
+      assertThat( aspect.getProperties() ).hasSize( 1 );
       final Property firstProperty = aspect.getProperties().get( 0 );
       final Property secondProperty = ( (DefaultEntity) firstProperty.getCharacteristic().get().getDataType().get() ).getProperties()
             .get( 0 );

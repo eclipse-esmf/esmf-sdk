@@ -49,7 +49,7 @@ public class CollectionInstantiatorTest extends AbstractAspectModelInstantiatorT
       final Scalar scalar = (Scalar) collection.getDataType().get();
       assertThat( scalar.getUrn() ).isEqualTo( XSD.xstring.getURI() );
 
-      assertThat( collection.isAllowDuplicates() ).isTrue();
+      assertThat( collection.allowsDuplicates() ).isTrue();
       assertThat( collection.isOrdered() ).isFalse();
       assertThat( collection.getElementCharacteristic() ).isEmpty();
    }
@@ -68,7 +68,7 @@ public class CollectionInstantiatorTest extends AbstractAspectModelInstantiatorT
 
       assertThat( collection.getDataType().get() ).isInstanceOf( Entity.class );
 
-      assertThat( collection.isAllowDuplicates() ).isTrue();
+      assertThat( collection.allowsDuplicates() ).isTrue();
       assertThat( collection.isOrdered() ).isFalse();
    }
 
@@ -87,7 +87,7 @@ public class CollectionInstantiatorTest extends AbstractAspectModelInstantiatorT
       final Scalar scalar = (Scalar) list.getDataType().get();
       assertThat( scalar.getUrn() ).isEqualTo( XSD.xstring.getURI() );
 
-      assertThat( list.isAllowDuplicates() ).isTrue();
+      assertThat( list.allowsDuplicates() ).isTrue();
       assertThat( list.isOrdered() ).isTrue();
    }
 
@@ -106,7 +106,7 @@ public class CollectionInstantiatorTest extends AbstractAspectModelInstantiatorT
       final Scalar scalar = (Scalar) set.getDataType().get();
       assertThat( scalar.getUrn() ).isEqualTo( XSD.xstring.getURI() );
 
-      assertThat( set.isAllowDuplicates() ).isFalse();
+      assertThat( set.allowsDuplicates() ).isFalse();
       assertThat( set.isOrdered() ).isFalse();
    }
 
@@ -125,7 +125,7 @@ public class CollectionInstantiatorTest extends AbstractAspectModelInstantiatorT
       final Scalar scalar = (Scalar) sortedSet.getDataType().get();
       assertThat( scalar.getUrn() ).isEqualTo( XSD.xstring.getURI() );
 
-      assertThat( sortedSet.isAllowDuplicates() ).isFalse();
+      assertThat( sortedSet.allowsDuplicates() ).isFalse();
       assertThat( sortedSet.isOrdered() ).isTrue();
    }
 
@@ -143,7 +143,7 @@ public class CollectionInstantiatorTest extends AbstractAspectModelInstantiatorT
 
       assertThat( timeSeries.getDataType().get() ).isInstanceOf( Entity.class );
 
-      assertThat( timeSeries.isAllowDuplicates() ).isFalse();
+      assertThat( timeSeries.allowsDuplicates() ).isFalse();
       assertThat( timeSeries.isOrdered() ).isTrue();
    }
 
@@ -160,7 +160,7 @@ public class CollectionInstantiatorTest extends AbstractAspectModelInstantiatorT
       final Scalar scalar = (Scalar) collection.getDataType().get();
       assertThat( scalar.getUrn() ).isEqualTo( XSD.xstring.getURI() );
 
-      assertThat( collection.isAllowDuplicates() ).isTrue();
+      assertThat( collection.allowsDuplicates() ).isTrue();
       assertThat( collection.isOrdered() ).isFalse();
 
       assertThat( collection.getElementCharacteristic() ).isPresent();
@@ -181,7 +181,7 @@ public class CollectionInstantiatorTest extends AbstractAspectModelInstantiatorT
       final Scalar scalar = (Scalar) collection.getDataType().get();
       assertThat( scalar.getUrn() ).isEqualTo( XSD.xfloat.getURI() );
 
-      assertThat( collection.isAllowDuplicates() ).isTrue();
+      assertThat( collection.allowsDuplicates() ).isTrue();
       assertThat( collection.isOrdered() ).isFalse();
 
       assertThat( collection.getElementCharacteristic() ).isPresent();
