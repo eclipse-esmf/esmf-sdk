@@ -32,6 +32,9 @@ public interface Scalar extends Type {
    }
 
    private boolean transitivelyCastable( final String from, final String to ) {
+      if ( from.equals( to ) ) {
+         return true;
+      }
       final Map<String, String> castable = ImmutableMap.<String, String> builder()
             .put( XSD.xbyte.getURI(), XSD.xshort.getURI() )
             .put( XSD.xshort.getURI(), XSD.xint.getURI() )
