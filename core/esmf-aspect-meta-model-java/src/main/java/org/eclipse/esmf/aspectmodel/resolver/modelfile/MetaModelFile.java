@@ -28,12 +28,14 @@ import org.eclipse.esmf.aspectmodel.AspectLoadingException;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.metamodel.datatype.SammXsdType;
+import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.samm.KnownVersion;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Streams;
 import io.vavr.Tuple2;
+import lombok.Getter;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
@@ -45,35 +47,38 @@ import org.apache.jena.rdf.model.Statement;
  * Enumeration of the {@link AspectModelFile}s that contain the SAMM meta model definition.
  */
 public enum MetaModelFile implements AspectModelFile {
-   UNITS( "unit", "units.ttl", SammNs.UNIT.getUri(), MetaModelFileType.ELEMENT_DEFINITION ),
-   FILE_RESOURCE( "entity", "FileResource.ttl", SammNs.SAMME.getUri(), MetaModelFileType.ELEMENT_DEFINITION ),
-   POINT_3D( "entity", "Point3d.ttl", SammNs.SAMME.getUri(), MetaModelFileType.ELEMENT_DEFINITION ),
-   TIME_SERIES_ENTITY( "entity", "TimeSeriesEntity.ttl", SammNs.SAMME.getUri(), MetaModelFileType.ELEMENT_DEFINITION ),
-   CHARACTERISTIC_INSTANCES( "characteristic", "characteristic-instances.ttl", SammNs.SAMMC.getUri(),
+   UNITS( "unit", "units.ttl", SammNs.UNIT, MetaModelFileType.ELEMENT_DEFINITION ),
+   FILE_RESOURCE( "entity", "FileResource.ttl", SammNs.SAMME, MetaModelFileType.ELEMENT_DEFINITION ),
+   POINT_3D( "entity", "Point3d.ttl", SammNs.SAMME, MetaModelFileType.ELEMENT_DEFINITION ),
+   TIME_SERIES_ENTITY( "entity", "TimeSeriesEntity.ttl", SammNs.SAMME, MetaModelFileType.ELEMENT_DEFINITION ),
+   CHARACTERISTIC_INSTANCES( "characteristic", "characteristic-instances.ttl", SammNs.SAMMC,
          MetaModelFileType.ELEMENT_DEFINITION ),
 
-   TYPE_CONVERSIONS( "meta-model", "type-conversions.ttl", SammNs.SAMM.getUri(), MetaModelFileType.META_MODEL_DEFINITION ),
-   ASPECT_META_MODEL_DEFINITIONS( "meta-model", "aspect-meta-model-definitions.ttl", SammNs.SAMM.getUri(),
+   TYPE_CONVERSIONS( "meta-model", "type-conversions.ttl", SammNs.SAMM, MetaModelFileType.META_MODEL_DEFINITION ),
+   ASPECT_META_MODEL_DEFINITIONS( "meta-model", "aspect-meta-model-definitions.ttl", SammNs.SAMM,
          MetaModelFileType.META_MODEL_DEFINITION ),
-   CHARACTERISTIC_DEFINITIONS( "characteristic", "characteristic-definitions.ttl", SammNs.SAMMC.getUri(),
+   CHARACTERISTIC_DEFINITIONS( "characteristic", "characteristic-definitions.ttl", SammNs.SAMMC,
          MetaModelFileType.META_MODEL_DEFINITION ),
 
-   ASPECT_META_MODEL_SHAPES( "meta-model", "aspect-meta-model-shapes.ttl", SammNs.SAMM.getUri(), MetaModelFileType.SHAPE_DEFINITION ),
-   PREFIX_DECLARATIONS( "meta-model", "prefix-declarations.ttl", SammNs.SAMM.getUri(), MetaModelFileType.SHAPE_DEFINITION ),
-   CHARACTERISTIC_SHAPES( "characteristic", "characteristic-shapes.ttl", SammNs.SAMMC.getUri(), MetaModelFileType.SHAPE_DEFINITION );
+   ASPECT_META_MODEL_SHAPES( "meta-model", "aspect-meta-model-shapes.ttl", SammNs.SAMM, MetaModelFileType.SHAPE_DEFINITION ),
+   PREFIX_DECLARATIONS( "meta-model", "prefix-declarations.ttl", SammNs.SAMM, MetaModelFileType.SHAPE_DEFINITION ),
+   CHARACTERISTIC_SHAPES( "characteristic", "characteristic-shapes.ttl", SammNs.SAMMC, MetaModelFileType.SHAPE_DEFINITION );
 
-   private enum MetaModelFileType {
+   public enum MetaModelFileType {
       ELEMENT_DEFINITION,
       META_MODEL_DEFINITION,
       SHAPE_DEFINITION
    }
 
-   private final String urn;
+   @Getter
+   private final RdfNamespace rdfNamespace;
+   @Getter
    private final MetaModelFileType metaModelFileType;
    private final Model sourceModel;
 
-   MetaModelFile( final String section, final String filename, final String urn, final MetaModelFileType metaModelFileType ) {
-      this.urn = urn;
+   MetaModelFile( final String section, final String filename, final RdfNamespace rdfNamespace,
+         final MetaModelFileType metaModelFileType ) {
+      this.rdfNamespace = rdfNamespace;
       this.metaModelFileType = metaModelFileType;
       sourceModel = TurtleLoader.loadTurtle( url( section, filename ) )
             .map( model -> {
@@ -139,7 +144,7 @@ public enum MetaModelFile implements AspectModelFile {
 
    @Override
    public Optional<URI> sourceLocation() {
-      return Optional.of( URI.create( urn ) );
+      return Optional.of( URI.create( rdfNamespace.getUri() ) );
    }
 
    public static List<MetaModelFile> getElementDefinitionsFiles() {

@@ -267,23 +267,23 @@ public class AspectModelJavaUtil {
             ? buildConstraintForCollectionElements( collection, codeGenerationConfig )
             : Optional.empty();
 
-      if ( collection.isAllowDuplicates() && collection.isOrdered() ) {
+      if ( collection.allowsDuplicates() && collection.isOrdered() ) {
          codeGenerationConfig.importTracker().importExplicit( List.class );
          return containerType( List.class, getDataType( dataType, codeGenerationConfig.importTracker(), codeGenerationConfig ),
                elementConstraint );
       }
-      if ( !collection.isAllowDuplicates() && collection.isOrdered() ) {
+      if ( !collection.allowsDuplicates() && collection.isOrdered() ) {
          codeGenerationConfig.importTracker().importExplicit( LinkedHashSet.class );
          return containerType( LinkedHashSet.class, getDataType( dataType, codeGenerationConfig.importTracker(), codeGenerationConfig ),
                elementConstraint );
       }
-      if ( collection.isAllowDuplicates() && !collection.isOrdered() ) {
+      if ( collection.allowsDuplicates() && !collection.isOrdered() ) {
          codeGenerationConfig.importTracker().importExplicit( java.util.Collection.class );
          return containerType( java.util.Collection.class,
                getDataType( dataType, codeGenerationConfig.importTracker(), codeGenerationConfig ),
                elementConstraint );
       }
-      if ( !collection.isAllowDuplicates() && !collection.isOrdered() ) {
+      if ( !collection.allowsDuplicates() && !collection.isOrdered() ) {
          codeGenerationConfig.importTracker().importExplicit( Set.class );
          return containerType( Set.class, getDataType( dataType, codeGenerationConfig.importTracker(), codeGenerationConfig ),
                elementConstraint );

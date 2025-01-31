@@ -37,7 +37,6 @@ import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
-
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
@@ -775,7 +774,7 @@ public class AspectModelJsonPayloadGeneratorTest {
       final List<Property> properties = List.of( createProperty( "testNumber", constraint ) );
       final MetaModelBaseAttributes aspectAttributes = MetaModelBaseAttributes.builder()
             .withUrn( TestModel.TEST_NAMESPACE + "AspectWithNumericProperty" ).build();
-      return new DefaultAspect( aspectAttributes, properties, List.of(), List.of(), false );
+      return new DefaultAspect( aspectAttributes, properties, List.of(), List.of() );
    }
 
    private Property createProperty( final String propertyName, final Characteristic characteristic ) {

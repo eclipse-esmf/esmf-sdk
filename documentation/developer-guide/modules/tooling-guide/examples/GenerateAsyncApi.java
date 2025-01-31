@@ -32,7 +32,7 @@ public class GenerateAsyncApi {
       // tag::generateYaml[]
       // AspectModel as returned by the AspectModelLoader
       final AspectModel aspectModel = // ...
-            // end::generate[]
+            // end::generateYaml[]
             new AspectModelLoader().load(
                   new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) );
       // tag::generateYaml[]
@@ -56,7 +56,7 @@ public class GenerateAsyncApi {
       // tag::generateJson[]
       // AspectModel as returned by the AspectModelLoader
       final AspectModel aspectModel = // ...
-            // end::generate[]
+            // end::generateJson[]
             new AspectModelLoader().load(
                   new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) );
       // tag::generateJson[]

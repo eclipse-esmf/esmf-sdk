@@ -245,6 +245,10 @@ public class SammXsdType<T> extends XSDDatatype implements SammType<T> {
          value -> URI.create( (String) XSDDatatype.XSDanyURI.parse( value ) ),
          URI::toString, XSDDatatype.XSDanyURI::isValid );
 
+   @SuppressWarnings( "checkstyle:LambdaParameterName" )
+   public static final SammXsdType<String> STRING = new SammXsdType<>(
+         org.apache.jena.vocabulary.XSD.xstring, String.class, Function.identity(), Function.identity(), __ -> true );
+
    public static final List<RDFDatatype> ALL_TYPES = List
          .of( XSDDatatype.XSDstring, BOOLEAN, DECIMAL, INTEGER, DOUBLE, FLOAT, DATE, TIME, DATE_TIME, DATE_TIME_STAMP,
                G_YEAR, G_MONTH, G_YEAR_MONTH, G_DAY, G_MONTH_DAY, DURATION, YEAR_MONTH_DURATION, DAY_TIME_DURATION,

@@ -17,14 +17,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
  * Defines the data type of a {@link Characteristic} as being a complex value.
  */
 public interface ComplexType extends Type, StructureElement {
-
    /**
     * @return a {@link java.util.List} of {@link ComplexType}s which extend this Entity
     */
@@ -41,10 +40,16 @@ public interface ComplexType extends Type, StructureElement {
     */
    default List<Property> getAllProperties() {
       if ( getExtends().isPresent() ) {
-         return Stream.of( getProperties(), getExtends().get().getAllProperties() ).flatMap( Collection::stream )
-               .collect( Collectors.toList() );
+         return Stream.of( getProperties(), getExtends().get().getAllProperties() ).flatMap( Collection::stream ).toList();
       }
       return List.copyOf( getProperties() );
+   }
+
+   default List<ComplexType> getAllSuperTypes() {
+      if ( getExtends().isPresent() ) {
+         return Stream.of( getExtends().stream(), getExtends().get().getAllSuperTypes().stream() ).flatMap( Function.identity() ).toList();
+      }
+      return List.of();
    }
 
    @Override
@@ -62,5 +67,16 @@ public interface ComplexType extends Type, StructureElement {
    @Override
    default boolean isComplexType() {
       return true;
+   }
+
+   @Override
+   default boolean isTypeOrSubtypeOf( final Type other ) {
+      if ( equals( other ) ) {
+         return true;
+      }
+      if ( !other.isComplexType() ) {
+         return false;
+      }
+      return ( (ComplexType) other ).getAllSuperTypes().contains( this );
    }
 }

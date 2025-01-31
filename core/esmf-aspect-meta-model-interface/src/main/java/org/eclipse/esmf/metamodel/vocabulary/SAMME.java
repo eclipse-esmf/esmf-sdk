@@ -48,8 +48,21 @@ public class SAMME implements RdfNamespace {
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
-   public Resource ThreeDimensionalPosition() {
-      return resource( "ThreeDimensionalPosition" );
+   public Resource Point3d() {
+      return resource( "Point3d" );
+   }
+
+   @SuppressWarnings( "checkstyle:MethodName" )
+   public Resource FileResource() {
+      return resource( "FileResource" );
+   }
+
+   public Property resource() {
+      return property( "resource" );
+   }
+
+   public Property mimeType() {
+      return property( "mimeType" );
    }
 
    public Property timestamp() {
@@ -76,6 +89,6 @@ public class SAMME implements RdfNamespace {
    }
 
    public Stream<Resource> allEntities() {
-      return Stream.of( TimeSeriesEntity(), ThreeDimensionalPosition() );
+      return Stream.of( TimeSeriesEntity(), Point3d() );
    }
 }

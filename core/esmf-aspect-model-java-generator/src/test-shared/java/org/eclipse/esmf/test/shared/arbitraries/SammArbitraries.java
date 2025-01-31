@@ -182,7 +182,7 @@ public interface SammArbitraries extends AspectModelUrnArbitraries, UriArbitrari
                      .withSee( see )
                      .build();
 
-               return new DefaultAspect( baseAttributes, properties, operations, events, false );
+               return new DefaultAspect( baseAttributes, properties, operations, events );
             } );
    }
 

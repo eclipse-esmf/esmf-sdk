@@ -29,6 +29,8 @@ public interface Type extends ModelElement {
    default boolean isComplexType() {
       return false;
    }
+
+   boolean isTypeOrSubtypeOf( Type other );
 }
 
 

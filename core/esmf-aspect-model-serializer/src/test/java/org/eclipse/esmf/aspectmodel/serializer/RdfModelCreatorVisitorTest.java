@@ -16,10 +16,8 @@ package org.eclipse.esmf.aspectmodel.serializer;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.esmf.aspectmodel.serializer.RdfComparison.modelToString;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectModel;
@@ -27,7 +25,6 @@ import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
 import org.eclipse.esmf.metamodel.vocabulary.SimpleRdfNamespace;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
-import org.eclipse.esmf.test.TestModel;
 import org.eclipse.esmf.test.TestResources;
 
 import org.apache.jena.rdf.model.Model;
@@ -91,6 +88,4 @@ public class RdfModelCreatorVisitorTest {
       }
       assertThat( serializedModelString ).isEqualToIgnoringWhitespace( originalModelString );
    }
-
-
 }
