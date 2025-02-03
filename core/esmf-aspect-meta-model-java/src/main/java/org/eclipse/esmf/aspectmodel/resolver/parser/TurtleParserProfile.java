@@ -17,6 +17,7 @@ import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.graph.Graph;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Triple;
+import org.apache.jena.irix.IRIx;
 import org.apache.jena.riot.system.ErrorHandler;
 import org.apache.jena.riot.system.FactoryRDF;
 import org.apache.jena.riot.system.ParserProfile;
@@ -141,5 +142,10 @@ public class TurtleParserProfile implements ParserProfile {
    @Override
    public Node createNodeFromToken( final Node scope, final Token token, final long line, final long col ) {
       return parserProfile.createNodeFromToken( scope, token, line, col );
+   }
+
+   @Override
+   public Node createURI( final IRIx iriX, final long line, final long col ) {
+      return parserProfile.createURI( iriX, line, col );
    }
 }
