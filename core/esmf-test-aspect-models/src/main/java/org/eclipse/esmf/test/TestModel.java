@@ -13,11 +13,12 @@
 
 package org.eclipse.esmf.test;
 
-import java.io.StringWriter;
-
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.riot.RDFFormat;
+import org.apache.jena.riot.RDFLanguages;
+import org.apache.jena.riot.RDFWriter;
 
 @SuppressWarnings( "squid:S1214" ) // Can not be avoided because enums can't inherit from an abstract class
 public interface TestModel {
@@ -30,8 +31,12 @@ public interface TestModel {
    }
 
    static String modelToString( final Model model ) {
-      final StringWriter stringWriter = new StringWriter();
-      model.write( stringWriter, "TURTLE" );
-      return stringWriter.toString();
+      //      org.apache.jena.riot.RDFWriter x;
+      final String string = RDFWriter.create().format( RDFFormat.TURTLE ).lang( RDFLanguages.TURTLE ).source( model ).asString();
+
+      //      final StringWriter stringWriter = new StringWriter();
+      //      model.write( stringWriter, "TURTLE" );
+      //      return stringWriter.toString();
+      return string;
    }
 }

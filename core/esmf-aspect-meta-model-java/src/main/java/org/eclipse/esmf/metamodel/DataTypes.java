@@ -108,10 +108,10 @@ public class DataTypes {
    }
 
    public static class samm {
-      public static final Scalar curie = new DefaultScalar( CurieType.INSTANCE.getURI() );
+      public static final Scalar curie = TYPES.get( CurieType.INSTANCE.getURI() );
    }
 
    public static class rdf {
-      public static final Scalar langString = new DefaultScalar( RDF.langString.getURI() );
+      public static final Scalar langString = TYPES.get( RDF.langString.getURI() );
    }
 }
