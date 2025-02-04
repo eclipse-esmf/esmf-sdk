@@ -13,10 +13,24 @@
 
 package org.eclipse.esmf.aspectmodel.generator.diagram;
 
-import org.eclipse.esmf.aspectmodel.generator.BinaryArtifact;
+import java.util.Locale;
 
-public class DiagramArtifact extends BinaryArtifact {
-   public DiagramArtifact( final String id, final byte[] content ) {
+import org.eclipse.esmf.aspectmodel.generator.BinaryArtifact;
+import org.eclipse.esmf.aspectmodel.generator.LocalizedArtifact;
+
+/**
+ * Generation artifact that represents a diagram
+ */
+public class DiagramArtifact extends BinaryArtifact implements LocalizedArtifact {
+   private final Locale language;
+
+   public DiagramArtifact( final String id, final byte[] content, final Locale language ) {
       super( id, content );
+      this.language = language;
+   }
+
+   @Override
+   public Locale language() {
+      return language;
    }
 }

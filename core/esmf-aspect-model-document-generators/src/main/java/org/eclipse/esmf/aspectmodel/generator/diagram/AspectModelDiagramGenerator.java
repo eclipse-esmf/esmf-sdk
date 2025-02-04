@@ -102,13 +102,18 @@ public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[],
 
    @Override
    public Stream<DiagramArtifact> generate() {
-      final String artifactName = "%s_%s.%s".formatted( aspect().getName(), config.language().toLanguageTag(),
-            config.format().toString().toLowerCase() );
-      final String svg = generateSvg();
-      final byte[] content = config.format() == DiagramGenerationConfig.Format.SVG
-            ? svg.getBytes( StandardCharsets.UTF_8 )
-            : generatePng( svg );
-      return Stream.of( new DiagramArtifact( artifactName, content ) );
+      final Set<Locale> targetLanguages = config.language() == null
+            ? LanguageCollector.collectUsedLanguages( aspect() )
+            : Set.of( config.language() );
+      return targetLanguages.stream().map( language -> {
+         final String artifactName = "%s_%s.%s".formatted( aspect().getName(), language.toLanguageTag(),
+               config.format().toString().toLowerCase() );
+         final String svg = generateSvg();
+         final byte[] content = config.format() == DiagramGenerationConfig.Format.SVG
+               ? svg.getBytes( StandardCharsets.UTF_8 )
+               : generatePng( svg );
+         return new DiagramArtifact( artifactName, content, language );
+      } );
    }
 
    private InputStream getInputStream( final String resource ) {
@@ -251,7 +256,11 @@ public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[],
                .language( language )
                .format( outputFormat == Format.PNG ? DiagramGenerationConfig.Format.PNG : DiagramGenerationConfig.Format.SVG )
                .build();
-         final DiagramArtifact diagramArtifact = new AspectModelDiagramGenerator( aspect(), config ).singleResult();
+         final DiagramArtifact diagramArtifact = new AspectModelDiagramGenerator( aspect(), config )
+               .generate()
+               .filter( artifact -> artifact.language().equals( language ) )
+               .findFirst()
+               .orElseThrow();
          IOUtils.copy( new ByteArrayInputStream( diagramArtifact.getContent() ), nameMapper.apply( diagramArtifact.getId() ) );
       }
    }
