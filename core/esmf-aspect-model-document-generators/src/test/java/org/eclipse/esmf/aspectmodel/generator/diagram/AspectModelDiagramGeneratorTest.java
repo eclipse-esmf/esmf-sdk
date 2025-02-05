@@ -81,6 +81,7 @@ public class AspectModelDiagramGeneratorTest {
             return NullOutputStream.INSTANCE;
          }
       }
+
       final GenerationFunction nameMapper = new GenerationFunction();
       generator2.generateDiagrams( AspectModelDiagramGenerator.Format.SVG, nameMapper );
       assertThat( nameMapper.count ).isEqualTo( 2 );

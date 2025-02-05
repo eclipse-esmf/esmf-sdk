@@ -193,7 +193,7 @@ public class AspectModelAsserts {
    @SuppressWarnings( "IncorrectFormatting" )
    //@formatter:off
    public static <SELF extends QuantityKindAssert<SELF, ACTUAL>, ACTUAL extends QuantityKind> QuantityKindAssert<SELF, ACTUAL>
-   assertThat( final ACTUAL quantityKind ) {
+         assertThat( final ACTUAL quantityKind ) {
       //@formatter:on
       return new QuantityKindAssert<>( quantityKind );
    }

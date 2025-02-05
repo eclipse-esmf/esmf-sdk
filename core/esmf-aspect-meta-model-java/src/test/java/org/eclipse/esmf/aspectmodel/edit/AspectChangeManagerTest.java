@@ -111,8 +111,8 @@ public class AspectChangeManagerTest {
 
       final Change group = new ChangeGroup( renameAspect, renameProperty );
       changeManager.applyChange( group );
-      assertThat(aspectModel).hasSingleAspectThat().hasName( newAspectName );
-      assertThat(aspectModel).hasSingleAspectThat().hasSinglePropertyThat().hasName( newPropertyName );
+      assertThat( aspectModel ).hasSingleAspectThat().hasName( newAspectName );
+      assertThat( aspectModel ).hasSingleAspectThat().hasSinglePropertyThat().hasName( newPropertyName );
    }
 
    @Test
