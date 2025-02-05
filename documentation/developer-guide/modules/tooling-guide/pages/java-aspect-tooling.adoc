@@ -291,9 +291,13 @@ include::example$SammBuilderDemo.java[tags=sammBuilder]
 =====
 
 When you use https://assertj.github.io/doc/[AssertJ] for testing, you can add a dependency to the
-`esmf-test-resources` module. Add a static import to
-`org.eclipse.esmf.test.AspectModelAsserts.assertThat` to your test code, then you can use custom
-fluent assertions similar to the `SammBuilder`, for asserting properties of an Aspect Model:
+tests jar provided by the `esmf-aspect-meta-model-java` module:
+
+include::esmf-developer-guide:ROOT:partial$esmf-aspect-meta-model-java-tests.adoc[]
+
+Add a static import to `org.eclipse.esmf.test.shared.AspectModelAsserts.assertThat` to your test
+code, then you can use custom fluent assertions similar to the `SammBuilder`, for asserting
+properties of an Aspect Model:
 
 [source,java,indent=0,subs="+macros,+quotes"]
 ----

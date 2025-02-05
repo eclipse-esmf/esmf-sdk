@@ -14,6 +14,7 @@
 package org.eclipse.esmf.aspectmodel.loader;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.esmf.test.shared.AspectModelAsserts.assertThat;
 
 import java.util.Locale;
 
@@ -38,11 +39,11 @@ public abstract class AbstractAspectModelInstantiatorTest {
    void assertBaseAttributes( final ModelElement base, final String expectedPreferredName, final String expectedDescription,
          final String... expectedSee ) {
       if ( expectedPreferredName != null ) {
-         assertThat( base.getPreferredName( Locale.ENGLISH ) ).isEqualTo( expectedPreferredName );
+         assertThat( base ).hasPreferredName( expectedPreferredName, Locale.ENGLISH );
       }
       if ( expectedDescription != null ) {
-         assertThat( base.getDescription( Locale.ENGLISH ) ).isEqualTo( expectedDescription );
+         assertThat( base ).hasDescription( expectedDescription, Locale.ENGLISH );
       }
-      assertThat( base.getSee() ).containsOnly( expectedSee );
+      assertThat( base ).see().containsOnly( expectedSee );
    }
 }

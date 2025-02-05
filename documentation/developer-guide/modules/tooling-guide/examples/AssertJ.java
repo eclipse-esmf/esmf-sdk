@@ -14,7 +14,7 @@
 package examples;
 
 import static org.eclipse.esmf.metamodel.builder.SammBuilder.*;
-import static org.eclipse.esmf.test.AspectModelAsserts.assertThat;
+import static org.eclipse.esmf.test.shared.AspectModelAsserts.assertThat;
 
 import java.util.Locale;
 

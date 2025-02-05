@@ -13,6 +13,7 @@
 package org.eclipse.esmf.metamodel;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.esmf.test.shared.AspectModelAsserts.assertThat;
 
 import java.util.Locale;
 import java.util.Optional;
@@ -25,22 +26,22 @@ public class UnitGenerationTest {
    public void testUnitFromName() {
       final Optional<Unit> optionalUnit = Units.fromName( "degreeCelsius" );
       final Unit unit = optionalUnit.get();
-      assertThat( unit.getPreferredName( Locale.ENGLISH ) ).isEqualTo( "degree Celsius" );
-
-      assertThat( unit.getReferenceUnit().get() ).isEqualTo( "kelvin" );
-      assertThat( unit.getConversionFactor().get() ).isEqualTo( "1 × K" );
+      assertThat( unit )
+            .hasPreferredName( "degree Celsius", Locale.ENGLISH )
+            .hasReferenceUnit( "kelvin" )
+            .hasConversionFactor( "1 × K" );
    }
 
    @Test
    public void testUnitWithoutReferenceUnit() {
       final Unit ampere = Units.fromName( "ampere" ).get();
-      assertThat( ampere.getReferenceUnit() ).isNotPresent();
+      assertThat( ampere ).hasNoReferenceUnit();
    }
 
    @Test
    public void testUnitFromcode() {
-      final Optional<Unit> unit = Units.fromCode( "A97" );
-      assertThat( unit.get() ).isEqualTo( Units.fromName( "hectopascal" ).get() );
+      final Unit unit = Units.fromCode( "A97" ).get();
+      assertThat( unit ).isEqualTo( Units.fromName( "hectopascal" ).get() );
    }
 
    @Test
@@ -49,7 +50,7 @@ public class UnitGenerationTest {
       assertThat( Units.fromSymbol( "kg" ) ).containsExactly( Units.fromName( "kilogram" ).get() );
 
       // Mutiple units with the same symbol
-      assertThat( Units.fromSymbol( "rad" ).size() ).isGreaterThan( 1 );
+      assertThat( Units.fromSymbol( "rad" ) ).size().isGreaterThan( 1 );
    }
 
    @Test
@@ -68,10 +69,7 @@ public class UnitGenerationTest {
 
    @Test
    public void testQuantityKindFromName() {
-      final Optional<QuantityKind> optionalQuantityKind = QuantityKinds.fromName( "distance" );
-      assertThat( optionalQuantityKind.get() ).isEqualTo( QuantityKinds.DISTANCE );
-      final QuantityKind quantityKind = optionalQuantityKind.get();
-      assertThat( quantityKind.getName() ).isEqualTo( "distance" );
-      assertThat( quantityKind.getLabel() ).isEqualTo( "distance" );
+      final QuantityKind quantityKind = QuantityKinds.fromName( "distance" ).get();
+      assertThat( quantityKind ).hasName( "distance" ).hasLabel( "distance" );
    }
 }

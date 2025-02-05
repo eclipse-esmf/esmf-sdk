@@ -17,6 +17,9 @@ import static org.apache.jena.rdf.model.ResourceFactory.createResource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.InstanceOfAssertFactories.STRING;
+import static org.eclipse.esmf.test.shared.AspectModelAsserts.ASPECT_MODEL_FILE;
+import static org.eclipse.esmf.test.shared.AspectModelAsserts.assertThat;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -50,11 +53,11 @@ class AspectModelResolverTest {
       assertThatCode( () -> {
          final AspectModel result = new AspectModelLoader( urnStrategy ).load( testUrn );
          final Resource aspect = createResource( TestModel.TEST_NAMESPACE + "Test" );
-         assertThat( result.mergedModel().listStatements( aspect, RDF.type, SammNs.SAMM.Aspect() ).nextOptional() ).isNotEmpty();
-         assertThat( result.files().get( 0 ).headerComment() ).isNotNull();
-         assertThat( result.files().get( 0 ).headerComment().get( 0 ) ).contains(
-               "Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH" );
-         assertThat( result.files().get( 0 ).spdxLicenseIdentifier() ).contains( "MPL-2.0" );
+         assertThat( result ).mergedModel().statements( aspect, RDF.type, SammNs.SAMM.Aspect() ).isNotEmpty();
+         assertThat( result ).files().first( ASPECT_MODEL_FILE ).headerComment().isNotEmpty();
+         assertThat( result ).files().first( ASPECT_MODEL_FILE ).headerComment()
+               .first( STRING ).contains( "Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH" );
+         assertThat( result ).files().first( ASPECT_MODEL_FILE ).spdxIdentifier().contains( "MPL-2.0" );
       } ).doesNotThrowAnyException();
    }
 
@@ -70,7 +73,7 @@ class AspectModelResolverTest {
       final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
       assertThatCode( () -> {
          final AspectModel result = new AspectModelLoader( urnStrategy ).load( testUrn );
-         assertThat( result.mergedModel().listStatements( null, RDF.type, SammNs.SAMM.Aspect() ).nextOptional() ).isNotEmpty();
+         assertThat( result ).mergedModel().statements( null, RDF.type, SammNs.SAMM.Aspect() ).isNotEmpty();
       } ).doesNotThrowAnyException();
    }
 
@@ -87,9 +90,9 @@ class AspectModelResolverTest {
       assertThatCode( () -> {
          final AspectModel result = new AspectModelLoader( urnStrategy ).load( testUrn );
          final Resource aspect = createResource( "urn:samm:org.eclipse.esmf.test:2.0.0#BammTest" );
-         assertThat( result.mergedModel().listStatements( aspect, RDF.type, SammNs.SAMM.Aspect() ).nextOptional() ).isNotEmpty();
-         assertThat( result.files().get( 0 ).headerComment() ).isNotNull();
-         assertThat( result.files().get( 0 ).headerComment().get( 0 ) ).contains(
+         assertThat( result ).mergedModel().statements( aspect, RDF.type, SammNs.SAMM.Aspect() ).isNotEmpty();
+         assertThat( result ).files().first( ASPECT_MODEL_FILE ).headerComment().isNotNull();
+         assertThat( result ).files().first( ASPECT_MODEL_FILE ).headerComment().first( STRING ).contains(
                "Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH" );
       } ).doesNotThrowAnyException();
    }
@@ -107,7 +110,7 @@ class AspectModelResolverTest {
       assertThatCode( () -> {
          final AspectModel result = new AspectModelLoader( urnStrategy ).load( testUrn );
          final Resource aspect = createResource( "urn:samm:org.eclipse.esmf.test:1.1.0#Test" );
-         assertThat( result.mergedModel().listStatements( aspect, RDF.type, SammNs.SAMM.Aspect() ).nextOptional() ).isNotEmpty();
+         assertThat( result ).mergedModel().statements( aspect, RDF.type, SammNs.SAMM.Aspect() ).isNotEmpty();
       } ).doesNotThrowAnyException();
    }
 
@@ -129,10 +132,10 @@ class AspectModelResolverTest {
       assertThatCode( () -> {
          final AspectModel result = new AspectModelLoader( inMemoryResolutionStrategy ).load( testUrn );
          final Resource aspect = createResource( testUrn.toString() );
-         assertThat( result.mergedModel().listStatements( aspect, RDF.type, SammNs.SAMM.Aspect() ).nextOptional() ).isNotEmpty();
-         assertThat( result.files().get( 0 ).headerComment() ).isNotNull();
-         assertThat( result.files().get( 0 ).headerComment().get( 0 ) ).contains(
-               "Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH" );
+         assertThat( result ).mergedModel().statements( aspect, RDF.type, SammNs.SAMM.Aspect() ).isNotEmpty();
+         assertThat( result ).files().first( ASPECT_MODEL_FILE ).headerComment().isNotNull();
+         assertThat( result ).files().first( ASPECT_MODEL_FILE ).headerComment().first( STRING )
+               .contains( "Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH" );
       } ).doesNotThrowAnyException();
    }
 
@@ -148,10 +151,10 @@ class AspectModelResolverTest {
       assertThatCode( () -> {
          final AspectModel result = new AspectModelLoader( urnStrategy ).load( testUrn );
          final Resource aspect = createResource( testUrn.toString() );
-         assertThat( result.mergedModel().listStatements( aspect, RDF.type, SammNs.SAMM.Aspect() ).nextOptional() ).isNotEmpty();
-         assertThat( result.files().get( 0 ).headerComment() ).isNotNull();
-         assertThat( result.files().get( 0 ).headerComment().get( 0 ) ).contains(
-               "Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH" );
+         assertThat( result ).mergedModel().statements( aspect, RDF.type, SammNs.SAMM.Aspect() ).isNotEmpty();
+         assertThat( result ).files().first( ASPECT_MODEL_FILE ).headerComment().isNotNull();
+         assertThat( result ).files().first( ASPECT_MODEL_FILE ).headerComment().first( STRING )
+               .contains( "Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH" );
 
          final Resource propertyFromReferencedAspect = createResource( TestModel.TEST_NAMESPACE + "foo" );
          assertThat( result.mergedModel().listStatements( propertyFromReferencedAspect, RDF.type, SammNs.SAMM.Property() )

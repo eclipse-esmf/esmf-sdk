@@ -14,6 +14,7 @@
 package org.eclipse.esmf.aspectmodel.generator.zip;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.esmf.test.shared.AspectModelAsserts.assertThat;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -24,6 +25,7 @@ import java.nio.file.Paths;
 
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.metamodel.AspectModel;
+import org.eclipse.esmf.metamodel.ModelElementGroup;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
@@ -50,8 +52,8 @@ class AspectModelNamespacePackageCreatorTest {
       assertThat( new File( outputFileName ) ).exists();
 
       final AspectModel aspectModelResult = new AspectModelLoader().loadNamespacePackage( new File( outputFileName ) );
-      assertThat( aspectModelResult.namespaces() ).hasSize( 1 );
-      assertThat( aspectModelResult.files() ).hasSize( 1 );
-      assertThat( aspectModelResult.files().get( 0 ).aspect() ).isEqualTo( aspectModel.aspect() );
+      assertThat( aspectModelResult ).namespaces().hasSize( 1 );
+      assertThat( aspectModelResult ).files().hasSize( 1 );
+      assertThat( aspectModelResult ).files().map( ModelElementGroup::aspect ).first().isEqualTo( aspectModel.aspect() );
    }
 }

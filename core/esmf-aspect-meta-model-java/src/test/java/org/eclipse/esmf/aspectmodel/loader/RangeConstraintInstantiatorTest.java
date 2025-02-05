@@ -14,6 +14,8 @@
 package org.eclipse.esmf.aspectmodel.loader;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.esmf.metamodel.builder.SammBuilder.*;
+import static org.eclipse.esmf.test.shared.AspectModelAsserts.assertThat;
 
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.BoundDefinition;
@@ -39,36 +41,36 @@ public class RangeConstraintInstantiatorTest extends AbstractAspectModelInstanti
 
    private void assertRangeConstraintWithMinAndMaxValue( final Aspect aspect,
          final BoundDefinition boundDefinitionForLowerBound, final BoundDefinition boundDefinitionForUpperBound ) {
-      assertThat( aspect.getProperties() ).hasSize( 1 );
+      assertThat( aspect ).properties().hasSize( 1 );
 
       final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic().get();
       final RangeConstraint rangeConstraint = (RangeConstraint) trait.getConstraints().get( 0 );
 
       assertBaseAttributes( rangeConstraint );
-
-      assertThat( rangeConstraint.getMaxValue() ).isPresent();
-      assertThat( rangeConstraint.getMaxValue().get().getValue() ).isEqualTo( 10.5f );
-      assertThat( rangeConstraint.getMinValue() ).isPresent();
-      assertThat( rangeConstraint.getLowerBoundDefinition() ).isEqualTo( boundDefinitionForLowerBound );
-      assertThat( rangeConstraint.getUpperBoundDefinition() ).isEqualTo( boundDefinitionForUpperBound );
+      assertThat( rangeConstraint )
+            .hasMaxValue( value( 10.5f ) )
+            .hasSomeMinValue()
+            .hasLowerBound( boundDefinitionForLowerBound )
+            .hasUpperBound( boundDefinitionForUpperBound );
    }
 
    @Test
    public void testRangeConstraintInstantiationWithOnlyLowerBoundInclBoundDefinitionExpectSuccess() {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_LOWER_BOUND_INCL_BOUND_DEFINITION );
 
-      assertThat( aspect.getProperties() ).hasSize( 1 );
+      assertThat( aspect ).properties().hasSize( 1 );
 
       final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic().get();
       final RangeConstraint rangeConstraint = (RangeConstraint) trait.getConstraints().get( 0 );
 
       assertBaseAttributes( rangeConstraint );
 
-      assertThat( rangeConstraint.getMaxValue() ).isNotPresent();
-      assertThat( rangeConstraint.getMinValue() ).isPresent();
-      assertThat( rangeConstraint.getMinValue().get().getValue() ).isEqualTo( 2.3f );
-      assertThat( rangeConstraint.getLowerBoundDefinition() ).isEqualTo( BoundDefinition.GREATER_THAN );
-      assertThat( rangeConstraint.getUpperBoundDefinition() ).isEqualTo( BoundDefinition.OPEN );
+      assertThat( rangeConstraint )
+            .hasNoMaxValue()
+            .hasSomeMinValue()
+            .hasMinValue( value( 2.3f ) )
+            .hasLowerBound( BoundDefinition.GREATER_THAN )
+            .hasUpperBound( BoundDefinition.OPEN );
    }
 
    @Test
@@ -82,11 +84,12 @@ public class RangeConstraintInstantiatorTest extends AbstractAspectModelInstanti
 
       assertBaseAttributes( rangeConstraint );
 
-      assertThat( rangeConstraint.getMaxValue() ).isPresent();
-      assertThat( rangeConstraint.getMinValue() ).isNotPresent();
-      assertThat( rangeConstraint.getMaxValue().get().getValue() ).isEqualTo( 2.3f );
-      assertThat( rangeConstraint.getLowerBoundDefinition() ).isEqualTo( BoundDefinition.OPEN );
-      assertThat( rangeConstraint.getUpperBoundDefinition() ).isEqualTo( BoundDefinition.LESS_THAN );
+      assertThat( rangeConstraint )
+            .hasSomeMaxValue()
+            .hasNoMinValue()
+            .hasMaxValue( value( 2.3f ) )
+            .hasLowerBound( BoundDefinition.OPEN )
+            .hasUpperBound( BoundDefinition.LESS_THAN );
    }
 
    @Test
@@ -100,11 +103,11 @@ public class RangeConstraintInstantiatorTest extends AbstractAspectModelInstanti
 
       assertBaseAttributes( rangeConstraint );
 
-      assertThat( rangeConstraint.getMaxValue() ).isNotPresent();
-      assertThat( rangeConstraint.getMinValue() ).isPresent();
-      assertThat( rangeConstraint.getMinValue().get().getValue() ).isEqualTo( 2.3f );
-      assertThat( rangeConstraint.getLowerBoundDefinition() ).isEqualTo( BoundDefinition.AT_LEAST );
-      assertThat( rangeConstraint.getUpperBoundDefinition() ).isEqualTo( BoundDefinition.OPEN );
+      assertThat( rangeConstraint )
+            .hasNoMaxValue()
+            .hasMinValue( value( 2.3f ) )
+            .hasLowerBound( BoundDefinition.AT_LEAST )
+            .hasUpperBound( BoundDefinition.OPEN );
    }
 
    @Test
@@ -118,11 +121,11 @@ public class RangeConstraintInstantiatorTest extends AbstractAspectModelInstanti
 
       assertBaseAttributes( rangeConstraint );
 
-      assertThat( rangeConstraint.getMaxValue() ).isPresent();
-      assertThat( rangeConstraint.getMinValue() ).isNotPresent();
-      assertThat( rangeConstraint.getMaxValue().get().getValue() ).isEqualTo( 2.3f );
-      assertThat( rangeConstraint.getLowerBoundDefinition() ).isEqualTo( BoundDefinition.OPEN );
-      assertThat( rangeConstraint.getUpperBoundDefinition() ).isEqualTo( BoundDefinition.AT_MOST );
+      assertThat( rangeConstraint )
+            .hasMaxValue( value( 2.3f ) )
+            .hasNoMinValue()
+            .hasLowerBound( BoundDefinition.OPEN )
+            .hasUpperBound( BoundDefinition.AT_MOST );
    }
 
    private void assertBaseAttributes( final ModelElement base ) {

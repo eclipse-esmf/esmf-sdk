@@ -14,6 +14,7 @@
 package org.eclipse.esmf.aspectmodel.edit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.esmf.test.shared.AspectModelAsserts.assertThat;
 
 import java.util.List;
 
@@ -44,8 +45,8 @@ public class RdfUtilTest {
             .map( element -> element.getSourceFile().sourceModel().createResource( element.urn().toString() ) )
             .forEach( elementResource -> {
                final Model definition = RdfUtil.getModelElementDefinition( elementResource );
-               assertThat( definition.listStatements( null, RDF.type, (RDFNode) null ).toList() ).hasSizeGreaterThan( 0 );
-               assertThat( definition.listStatements( elementResource, RDF.type, (RDFNode) null ).toList() ).hasSize( 1 );
+               assertThat( definition ).statements( null, RDF.type, null ).hasSizeGreaterThan( 0 );
+               assertThat( definition ).statements( elementResource, RDF.type, null ).hasSize( 1 );
             } );
    }
 
@@ -64,7 +65,7 @@ public class RdfUtilTest {
       final Model sourceModel = aspectModel.aspect().getSourceFile().sourceModel();
       final Resource aspectResource = sourceModel.createResource( aspectModel.aspect().urn().toString() );
       final Model definition = RdfUtil.getModelElementDefinition( aspectResource );
-      assertThat( definition.listStatements( null, RDF.type, (RDFNode) null ).toList() ).hasSize( 1 );
+      assertThat( definition ).statements( null, RDF.type, null ).hasSize( 1 );
       final List<RDFNode> propertiesList = definition.listStatements( aspectResource, SammNs.SAMM.properties(), (RDFNode) null )
             .nextStatement()
             .getObject().as( RDFList.class ).asJavaList();
