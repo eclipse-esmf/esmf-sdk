@@ -37,8 +37,5 @@ public record DiagramGenerationConfig(
       if ( format == null ) {
          format = Format.SVG;
       }
-      if ( language == null ) {
-         language = Locale.ENGLISH;
-      }
    }
 }

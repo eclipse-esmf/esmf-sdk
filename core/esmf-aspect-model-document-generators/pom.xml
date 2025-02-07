@@ -90,6 +90,10 @@
          <groupId>com.google.guava</groupId>
          <artifactId>guava</artifactId>
       </dependency>
+      <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-model-serializer</artifactId>
+      </dependency>
 
       <!-- Test dependencies -->
       <dependency>
@@ -162,7 +166,11 @@
       </dependency>
       <dependency>
          <groupId>org.eclipse.esmf</groupId>
-         <artifactId>esmf-aspect-model-serializer</artifactId>
+         <artifactId>esmf-aspect-meta-model-java</artifactId>
+         <version>${project.version}</version>
+         <classifier>tests</classifier>
+         <type>test-jar</type>
+         <scope>test</scope>
       </dependency>
    </dependencies>
 

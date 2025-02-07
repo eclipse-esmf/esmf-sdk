@@ -44,6 +44,14 @@
          <artifactId>esmf-test-aspect-models</artifactId>
          <scope>test</scope>
       </dependency>
+      <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-meta-model-java</artifactId>
+         <version>${project.version}</version>
+         <classifier>tests</classifier>
+         <type>test-jar</type>
+         <scope>test</scope>
+      </dependency>
    </dependencies>
 
    <build>

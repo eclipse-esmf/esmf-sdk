@@ -15,6 +15,7 @@ package org.eclipse.esmf.aspectmodel.loader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.eclipse.esmf.test.shared.AspectModelAsserts.assertThat;
 
 import java.util.List;
 import java.util.Locale;
@@ -28,7 +29,6 @@ import org.eclipse.esmf.metamodel.Entity;
 import org.eclipse.esmf.metamodel.Namespace;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.Scalar;
-import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.characteristic.Code;
 import org.eclipse.esmf.metamodel.characteristic.Either;
 import org.eclipse.esmf.metamodel.characteristic.SingleEntity;
@@ -61,16 +61,16 @@ public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiator
       final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "testProperty" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_PROPERTY );
 
-      assertThat( aspect.getProperties() ).hasSize( 1 );
-      assertThat( aspect.isCollectionAspect() ).isFalse();
+      assertThat( aspect ).properties().hasSize( 1 );
+      assertThat( aspect ).isNoCollectionAspect();
 
       final Property property = aspect.getProperties().get( 0 );
 
       assertBaseAttributes( property, expectedAspectModelUrn, "testProperty", "Test Property",
             "This is a test property.", "http://example.com/me", "http://example.com/" );
-      assertThat( property.getExampleValue() ).map( value -> value.as( ScalarValue.class ).getValue() ).contains( "Example Value" );
-      assertThat( property.isOptional() ).isFalse();
-      assertThat( property.getCharacteristic().get().getName() ).isEqualTo( "Text" );
+      assertThat( property ).exampleValue().value().isEqualTo( "Example Value" );
+      assertThat( property ).isMandatory();
+      assertThat( property ).characteristic().hasName( "Text" );
       assertThat( property.getDataType() ).isInstanceOf( Optional.class );
       assertThat( property.getDataType().get() ).isInstanceOf( Scalar.class );
    }
@@ -80,18 +80,18 @@ public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiator
       final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "testProperty" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_OPTIONAL_PROPERTY );
 
-      assertThat( aspect.getProperties() ).hasSize( 1 );
+      assertThat( aspect ).properties().hasSize( 1 );
 
       final Property property = aspect.getProperties().get( 0 );
 
       assertBaseAttributes( property, expectedAspectModelUrn, "testProperty", "Test Property",
             "This is a test property.", "http://example.com/me", "http://example.com/" );
 
-      assertThat( property.getExampleValue() ).isEmpty();
-      assertThat( property.isOptional() ).isTrue();
-      assertThat( property.getPayloadName() ).isEqualTo( "testProperty" );
-      assertThat( property.isNotInPayload() ).isFalse();
-      assertThat( property.getCharacteristic().get().getName() ).isEqualTo( "Text" );
+      assertThat( property ).hasNoExampleValue();
+      assertThat( property ).isOptional();
+      assertThat( property ).hasPayloadName( "testProperty" );
+      assertThat( property ).isInPayload();
+      assertThat( property ).characteristic().hasName( "Text" );
    }
 
    @Test
@@ -106,10 +106,10 @@ public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiator
       assertBaseAttributes( property, expectedAspectModelUrn, "description", "Test Property",
             "This is a test property.", "http://example.com/me", "http://example.com/" );
 
-      assertThat( property.getExampleValue() ).isEmpty();
-      assertThat( property.isOptional() ).isFalse();
-      assertThat( property.isNotInPayload() ).isTrue();
-      assertThat( property.getCharacteristic().get().getName() ).isEqualTo( "Text" );
+      assertThat( property ).hasNoExampleValue();
+      assertThat( property ).isNotOptional();
+      assertThat( property ).isNotInPayload();
+      assertThat( property ).characteristic().hasName( "Text" );
    }
 
    @Test
@@ -117,18 +117,18 @@ public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiator
       final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "testProperty" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_PROPERTY_WITH_PAYLOAD_NAME );
 
-      assertThat( aspect.getProperties() ).hasSize( 1 );
+      assertThat( aspect ).properties().hasSize( 1 );
 
       final Property property = aspect.getProperties().get( 0 );
 
       assertBaseAttributes( property, expectedAspectModelUrn, "testProperty", "Test Property",
             "This is a test property.", "http://example.com/me", "http://example.com/" );
 
-      assertThat( property.getExampleValue() ).isEmpty();
-      assertThat( property.isOptional() ).isFalse();
-      assertThat( property.getPayloadName() ).isEqualTo( "test" );
-      assertThat( property.isNotInPayload() ).isFalse();
-      assertThat( property.getCharacteristic().get().getName() ).isEqualTo( "Text" );
+      assertThat( property ).hasNoExampleValue();
+      assertThat( property ).isNotOptional();
+      assertThat( property ).isInPayload();
+      assertThat( property ).hasPayloadName( "test" );
+      assertThat( property ).characteristic().hasName( "Text" );
    }
 
    @Test
@@ -136,7 +136,7 @@ public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiator
       final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "TestEither" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_EITHER );
 
-      assertThat( aspect.getProperties() ).hasSize( 1 );
+      assertThat( aspect ).properties().hasSize( 1 );
 
       final Either either = (Either) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
@@ -144,8 +144,8 @@ public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiator
             "Test Either", "This is a test Either.", "http://example.com/" );
 
       assertThat( either.getDataType() ).isNotPresent();
-      assertThat( either.getLeft().getName() ).isEqualTo( "Text" );
-      assertThat( either.getRight().getName() ).isEqualTo( "Boolean" );
+      assertThat( either ).left().hasName( "Text" );
+      assertThat( either ).right().hasName( "Boolean" );
    }
 
    @Test
@@ -153,14 +153,14 @@ public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiator
       final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "EntityCharacteristic" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ENTITY );
 
-      assertThat( aspect.getProperties() ).hasSize( 1 );
+      assertThat( aspect ).properties().hasSize( 1 );
 
       final SingleEntity singleEntity = (SingleEntity) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
       assertBaseAttributes( singleEntity, expectedAspectModelUrn, "EntityCharacteristic",
             "Test Entity Characteristic", "This is a test Entity Characteristic", "http://example.com/" );
 
-      assertThat( singleEntity.getDataType().get() ).isInstanceOf( Entity.class );
+      assertThat( singleEntity ).dataType().isEntity();
    }
 
    @Test
@@ -168,7 +168,7 @@ public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiator
       final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "AbstractTestEntity" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ABSTRACT_ENTITY );
 
-      assertThat( aspect.getProperties() ).hasSize( 1 );
+      assertThat( aspect ).properties().hasSize( 1 );
 
       final Entity entity = (Entity) aspect.getProperties().get( 0 ).getCharacteristic().get().getDataType().get();
       final AbstractEntity abstractEntity = (AbstractEntity) entity.getExtends().get();
@@ -184,7 +184,7 @@ public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiator
       final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "AbstractTestEntity" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY );
 
-      assertThat( aspect.getProperties() ).hasSize( 1 );
+      assertThat( aspect ).properties().hasSize( 1 );
 
       final AbstractEntity abstractEntity = (AbstractEntity) aspect.getProperties().get( 0 ).getCharacteristic().get().getDataType().get();
       assertThat( abstractEntity.getExtends() ).isEmpty();
@@ -199,15 +199,14 @@ public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiator
       final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "TestCode" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_CODE );
 
-      assertThat( aspect.getProperties() ).hasSize( 1 );
+      assertThat( aspect ).properties().hasSize( 1 );
 
       final Code code = (Code) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
       assertBaseAttributes( code, expectedAspectModelUrn, "TestCode",
             "Test Code", "This is a test code.", "http://example.com/" );
 
-      final Scalar scalar = (Scalar) code.getDataType().get();
-      assertThat( scalar.getUrn() ).isEqualTo( XSD.xint.getURI() );
+      assertThat( code ).dataType().isScalarThat().hasUrn( XSD.xint.getURI() );
    }
 
    @Test
@@ -219,8 +218,8 @@ public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiator
             "This is a test description",
             "http://example.com/" );
 
-      assertThat( aspect.getProperties() ).hasSize( 1 );
-      assertThat( aspect.isCollectionAspect() ).isTrue();
+      assertThat( aspect ).properties().hasSize( 1 );
+      assertThat( aspect ).isCollectionAspect();
    }
 
    @Test
@@ -233,8 +232,8 @@ public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiator
             "This is a test description",
             "http://example.com/" );
 
-      assertThat( aspect.getProperties() ).hasSize( 2 );
-      assertThat( aspect.isCollectionAspect() ).isFalse();
+      assertThat( aspect ).properties().hasSize( 2 );
+      assertThat( aspect ).isNoCollectionAspect();
    }
 
    @Test
@@ -246,14 +245,14 @@ public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiator
       assertBaseAttributes( aspect, expectedAspectModelUrn, "AspectWithListAndAdditionalProperty",
             "Test Aspect", "This is a test description", "http://example.com/" );
 
-      assertThat( aspect.getProperties() ).hasSize( 2 );
-      assertThat( aspect.isCollectionAspect() ).isTrue();
+      assertThat( aspect ).properties().hasSize( 2 );
+      assertThat( aspect ).isCollectionAspect();
    }
 
    @Test
    void testAspectWithRecursivePropertyWithOptional() {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_RECURSIVE_PROPERTY_WITH_OPTIONAL );
-      assertThat( aspect.getProperties() ).hasSize( 1 );
+      assertThat( aspect ).properties().hasSize( 1 );
       final Property firstProperty = aspect.getProperties().get( 0 );
       final Property secondProperty = ( (DefaultEntity) firstProperty.getCharacteristic().get().getDataType().get() ).getProperties()
             .get( 0 );
@@ -297,11 +296,11 @@ public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiator
    void testLoadAspectWithNamespaceDescription() {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_NAMESPACE_DESCRIPTION );
       final Namespace namespace = aspect.getSourceFile().namespace();
-      assertThat( namespace.namespaceMainPart() ).isEqualTo( aspect.urn().getNamespaceMainPart() );
-      assertThat( namespace.version().toString() ).isEqualTo( aspect.urn().getVersion() );
-      assertThat( namespace.getPreferredName( Locale.ENGLISH ) ).isEqualTo( "Test namespace" );
-      assertThat( namespace.getDescription( Locale.ENGLISH ) ).isEqualTo( "Test of the namespace pseudo element" );
-      assertThat( namespace.getSee() ).hasSize( 1 ).contains( "http://example.com/" );
-      assertThat( namespace.elements() ).containsAll( List.of( aspect, aspect.getProperties().get( 0 ) ) );
+      assertThat( namespace ).urn().hasNamespaceMainPart( aspect.urn().getNamespaceMainPart() );
+      assertThat( namespace ).urn().hasVersion( aspect.urn().getVersion() );
+      assertThat( namespace ).hasPreferredName( "Test namespace", Locale.ENGLISH );
+      assertThat( namespace ).hasDescription( "Test of the namespace pseudo element", Locale.ENGLISH );
+      assertThat( namespace ).see().hasSize( 1 ).contains( "http://example.com/" );
+      assertThat( namespace ).elements().containsAll( List.of( aspect, aspect.getProperties().get( 0 ) ) );
    }
 }

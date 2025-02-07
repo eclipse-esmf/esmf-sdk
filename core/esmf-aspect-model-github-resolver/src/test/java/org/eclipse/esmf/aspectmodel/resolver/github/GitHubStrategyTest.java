@@ -14,6 +14,7 @@
 package org.eclipse.esmf.aspectmodel.resolver.github;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.esmf.test.shared.AspectModelAsserts.assertThat;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -83,8 +84,8 @@ public class GitHubStrategyTest {
       inject( modelSource, tempFile );
 
       final AspectModel aspectModel = new AspectModelLoader().loadAspectModelFiles( modelSource.loadContents().toList() );
-      assertThat( aspectModel.files() ).hasSize( 1 );
-      assertThat( aspectModel.aspect().getName() ).isEqualTo( "Aspect" );
+      assertThat( aspectModel ).files().hasSize( 1 );
+      assertThat( aspectModel ).hasSingleAspectThat().hasName( "Aspect" );
    }
 
    @Test
@@ -98,8 +99,8 @@ public class GitHubStrategyTest {
       final AspectModelFile aspectModelFile = files.stream()
             .filter( file -> file.sourceLocation().map( URI::toString ).get().endsWith( "/Aspect.ttl" ) ).findFirst().get();
       final AspectModel aspectModel = new AspectModelLoader().loadAspectModelFiles( List.of( aspectModelFile ) );
-      assertThat( aspectModel.files() ).hasSize( 1 );
-      assertThat( aspectModel.aspect().getName() ).isEqualTo( "Aspect" );
+      assertThat( aspectModel ).files().hasSize( 1 );
+      assertThat( aspectModel ).hasSingleAspectThat().hasName( "Aspect" );
    }
 
    @Test
@@ -116,24 +117,22 @@ public class GitHubStrategyTest {
 
       final AspectModelUrn testUrn = AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.test:1.0.0#Aspect" );
       final AspectModel result = new AspectModelLoader( gitHubStrategy ).load( testUrn );
-      assertThat( result.files() ).hasSize( 1 );
-      assertThat( result.elements() ).hasSize( 1 );
-      assertThat( result.aspect().getName() ).isEqualTo( "Aspect" );
-      assertThat( result.aspect().urn() ).isEqualTo( testUrn );
+      assertThat( result ).files().hasSize( 1 );
+      assertThat( result ).elements().hasSize( 1 );
+      assertThat( result ).hasSingleAspectThat().hasName( "Aspect" );
+      assertThat( result ).hasSingleAspectThat().hasUrn( testUrn );
    }
 
    @Test
    void testGithubStrategy() {
       final AspectModelUrn testUrn = AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.test:1.0.0#Aspect" );
-
       final ResolutionStrategy gitHubStrategy = new GitHubStrategy( esmfSdk,
             "core/esmf-test-aspect-models/src/main/resources/valid" );
-
       final AspectModel result = new AspectModelLoader( gitHubStrategy ).load( testUrn );
-      assertThat( result.files() ).hasSize( 1 );
-      assertThat( result.elements() ).hasSize( 1 );
-      assertThat( result.aspect().getName() ).isEqualTo( "Aspect" );
-      assertThat( result.aspect().urn() ).isEqualTo( testUrn );
+      assertThat( result ).files().hasSize( 1 );
+      assertThat( result ).elements().hasSize( 1 );
+      assertThat( result ).hasSingleAspectThat().hasName( "Aspect" );
+      assertThat( result ).hasSingleAspectThat().hasUrn( testUrn );
    }
 
    private void inject( final GitHubModelSource gitHubModelSource, final File tempFile ) {
