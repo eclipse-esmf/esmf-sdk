@@ -489,9 +489,9 @@ Configuration Properties:
 | `language` | The language from the model for which an OpenAPI specification should be generated. | `String` | en | {nok}
 | `templateFilePath` | The path to the file with a template for the resulting specification, including values undefined by the aspect's OpenAPI specification. The template can be in JSON or YAML format. | `String` | none | {nok}
 | `openApiGeneratorVersion` | The version to use for the openapi-generator-maven-plugin | `String` | 7.9.0 | {nok}
-| `openApiGeneratorName` | The openapi-generator template to use | `String` | none | `java` | {nok}
+| `openApiGeneratorName` | The openapi-generator template to use | `String` | `java` | {nok}
 | `openApiGeneratorConfigOptions` | The additional parameters to pass to the openapi-generator, similar to the `configOptions` attribute for openapi-generator-maven-plugin | `String` | none | {nok}
-| `schemaMappings` | Add additional mappings from OpenAPI schema name (i.e., Aspect Model element local name) to fully qualified Java class, in the format `Name=com.example.Name` | `String` | none | {nok}
+| `schemaMappings` | Add additional mappings from OpenAPI schema name (i.e., Aspect Model element local name) to fully qualified Java class, in the format `Name=com.example.Name,Another=com.example.Another` | `String` | none | {nok}
 |===
 
 == Generate an SQL script from an Aspect Model
