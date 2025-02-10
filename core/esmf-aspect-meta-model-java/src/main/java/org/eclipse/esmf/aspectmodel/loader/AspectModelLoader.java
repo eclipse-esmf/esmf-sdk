@@ -13,8 +13,6 @@
 
 package org.eclipse.esmf.aspectmodel.loader;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -33,8 +31,6 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import org.eclipse.esmf.aspectmodel.AspectLoadingException;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
@@ -43,6 +39,7 @@ import org.eclipse.esmf.aspectmodel.resolver.AspectModelFileLoader;
 import org.eclipse.esmf.aspectmodel.resolver.EitherStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ModelSource;
+import org.eclipse.esmf.aspectmodel.resolver.NamespacePackage;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategySupport;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
@@ -176,7 +173,8 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
    }
 
    /**
-    * Load an Aspect Model from an input stream and optionally set the source location for this input
+    * Load an Aspect Model (.ttl) from an input stream and optionally set the source location for this input. For loading
+    * an Aspect Model Namespace Package (.zip), use {@link #loadNamespacePackage(InputStream, URI)} instead.
     *
     * @param inputStream the input stream
     * @param sourceLocation the source location for the model
@@ -212,7 +210,7 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
       }
 
       try ( final InputStream inputStream = new FileInputStream( namespacePackage ) ) {
-         return loadNamespacePackage( inputStream );
+         return loadNamespacePackage( inputStream, namespacePackage.toURI() );
       } catch ( final IOException exception ) {
          LOG.error( "Error reading the file: {}", namespacePackage.getAbsolutePath(), exception );
          throw new AspectLoadingException( "Error reading the file: " + namespacePackage.getAbsolutePath(), exception );
@@ -220,62 +218,46 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
    }
 
    /**
+    * Load a namespace package from binary with a given location. The location is not resolved or loaded from, but is only attached
+    * to the files loaded from the input stream to indicate their original source, e.g., file system location or URL.
+    *
+    * @param location the source location
+    * @param binaryContent the ZIP content
+    * @return the loaded and resolved Aspect Model
+    */
+   public AspectModel loadNamespacePackage( final byte[] binaryContent, final URI location ) {
+      final List<AspectModelFile> packageFiles = new NamespacePackage( binaryContent, location ).loadContents().toList();
+      final LoaderContext loaderContext = new LoaderContext();
+      resolve( packageFiles, loaderContext );
+      return loadAspectModelFiles( loaderContext.loadedFiles() );
+   }
+
+   /**
+    * Load a namespace package from an input stream with a given location. The location is not resolved or loaded from, but is only attached
+    * to the files loaded from the input stream to indicate their original source, e.g., file system location or URL of the
+    * namespace package.
+    *
+    * @param location the source location
+    * @param inputStream the input stream to load the ZIP content from
+    * @return the loaded and resolved Aspect Model
+    */
+   public AspectModel loadNamespacePackage( final InputStream inputStream, final URI location ) {
+      final List<AspectModelFile> packageFiles = new NamespacePackage( inputStream, location ).loadContents().toList();
+      final LoaderContext loaderContext = new LoaderContext();
+      resolve( packageFiles, loaderContext );
+      return loadAspectModelFiles( loaderContext.loadedFiles() );
+   }
+
+   /**
     * Load a Namespace Package (Archive) from an InputStream
     *
     * @param inputStream the input stream
     * @return the Aspect Model
+    * @deprecated Use {@link #loadNamespacePackage(InputStream, URI)} instead
     */
+   @Deprecated
    public AspectModel loadNamespacePackage( final InputStream inputStream ) {
-      final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      final boolean hasAspectModelsFolder;
-      try {
-         inputStream.transferTo( baos );
-         hasAspectModelsFolder = containsFolderInNamespacePackage( new ByteArrayInputStream( baos.toByteArray() ) );
-      } catch ( final IOException exception ) {
-         throw new AspectLoadingException( "Could not read from input", exception );
-      }
-      return loadNamespacePackageFromStream( new ByteArrayInputStream( baos.toByteArray() ), hasAspectModelsFolder );
-   }
-
-   private AspectModel loadNamespacePackageFromStream( final InputStream inputStream, final boolean hasAspectModelsFolder ) {
-      final List<AspectModelFile> aspectModelFiles = new ArrayList<>();
-
-      try ( final ZipInputStream zis = new ZipInputStream( inputStream ) ) {
-         ZipEntry entry;
-
-         while ( ( entry = zis.getNextEntry() ) != null ) {
-            final boolean isRelevantEntry =
-                  ( hasAspectModelsFolder && entry.getName().contains( String.format( "%s/", ASPECT_MODELS_FOLDER ) )
-                        && entry.getName().endsWith( ".ttl" ) )
-                        || ( !hasAspectModelsFolder && entry.getName().endsWith( ".ttl" ) );
-
-            if ( isRelevantEntry ) {
-               final AspectModelFile aspectModelFile = migrate( AspectModelFileLoader.load( zis ) );
-               aspectModelFiles.add( aspectModelFile );
-            }
-         }
-
-         zis.closeEntry();
-      } catch ( final IOException exception ) {
-         LOG.error( "Error reading the Archive input stream", exception );
-         throw new AspectLoadingException( "Error reading the Archive input stream", exception );
-      }
-
-      final LoaderContext loaderContext = new LoaderContext();
-      resolve( aspectModelFiles, loaderContext );
-      return loadAspectModelFiles( loaderContext.loadedFiles() );
-   }
-
-   private boolean containsFolderInNamespacePackage( final InputStream inputStream ) throws IOException {
-      try ( final ZipInputStream zis = new ZipInputStream( inputStream ) ) {
-         ZipEntry entry;
-         while ( ( entry = zis.getNextEntry() ) != null ) {
-            if ( entry.isDirectory() && entry.getName().contains( String.format( "%s/", ASPECT_MODELS_FOLDER ) ) ) {
-               return true;
-            }
-         }
-      }
-      return false;
+      return loadNamespacePackage( inputStream, URI.create( "file:unknown" ) );
    }
 
    private AspectModelFile migrate( final AspectModelFile file ) {

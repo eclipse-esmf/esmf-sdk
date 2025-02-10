@@ -113,6 +113,10 @@ public class AspectModelFileLoader {
       return new RawAspectModelFile( model, List.of(), Optional.empty() );
    }
 
+   public static RawAspectModelFile load( final byte[] content, final Optional<URI> sourceLocation ) {
+      return load( new ByteArrayInputStream( content ), sourceLocation );
+   }
+
    public static RawAspectModelFile load( final byte[] content ) {
       return load( new ByteArrayInputStream( content ) );
    }
