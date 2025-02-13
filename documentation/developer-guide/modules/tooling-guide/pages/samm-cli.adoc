@@ -105,7 +105,7 @@ of model resolution] for more information.
                                    | _--language, -l_ : the language from the model for which the diagram should be
                                        generated (default: en)                                                               |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements | `samm aspect AspectModel.ttl to svg --custom-resolver "java -jar resolver.jar"`
-.11+| [[aspect-to-java]] aspect <model> to java | Generate Java classes from an Aspect Model                                 | `samm aspect AspectModel.ttl to java`
+.12+| [[aspect-to-java]] aspect <model> to java | Generate Java classes from an Aspect Model                                 | `samm aspect AspectModel.ttl to java`
                                    | _--output-directory, -d_ : output directory to write files to (default:
                                        current directory)                                                                    |
                                    | _--package-name, -pn_ : package to use for generated Java classes                       | `samm aspect AspectModel.ttl to java -pn org.company.product`
