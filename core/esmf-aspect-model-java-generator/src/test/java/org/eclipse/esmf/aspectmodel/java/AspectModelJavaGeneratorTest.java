@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -63,14 +64,18 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 public class AspectModelJavaGeneratorTest {
-   private Collection<JavaGenerator> getGenerators( final TestAspect testAspect, final String customJavaPackageName ) {
+   private Collection<JavaGenerator> getGenerators( final TestAspect testAspect, final JavaCodeGenerationConfig config ) {
       final Aspect aspect = TestResources.load( testAspect ).aspect();
-      final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
-            .packageName( customJavaPackageName )
-            .enableJacksonAnnotations( true )
-            .executeLibraryMacros( false )
-            .build();
       return List.of( new AspectModelJavaGenerator( aspect, config ) );
+   }
+
+   private Collection<JavaGenerator> getGenerators( final TestAspect testAspect, final String customJavaPackageName ) {
+      return getGenerators( testAspect,
+            JavaCodeGenerationConfigBuilder.builder()
+                  .packageName( customJavaPackageName )
+                  .enableJacksonAnnotations( true )
+                  .executeLibraryMacros( false )
+                  .build() );
    }
 
    private Collection<JavaGenerator> getGenerators( final TestAspect testAspect, final boolean enableJacksonAnnotations,
@@ -524,6 +529,34 @@ public class AspectModelJavaGeneratorTest {
 
       result.assertFields( "YesNo", ImmutableMap.<String, Object> builder().put( "value", String.class ).build(), new HashMap<>() );
       result.assertEnumConstants( "YesNo", ImmutableSet.of( "YES", "NO" ), Collections.emptyMap() );
+
+      assertThat( result.getGeneratedSource( new QualifiedName( "EvaluationResults", "org.eclipse.esmf.test" ) ) )
+            .contains( "@JsonFormat" );
+   }
+
+   @Test
+   void testGenerateAspectModelWithEnumerationDisableJsonFormatAnnotation() throws IOException {
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+            .put( "result", "EvaluationResults" )
+            .put( "simpleResult", "YesNo" )
+            .build();
+
+      final ImmutableMap<String, Object> expectedFieldsForEvaluationResult = ImmutableMap.<String, Object> builder()
+            .put( "numericCode", Short.class.getSimpleName() )
+            .put( "description", String.class.getSimpleName() )
+            .build();
+
+      final TestAspect aspect = TestAspect.ASPECT_WITH_COMPLEX_ENUM;
+      final JavaCodeGenerationConfig codeGenerationConfig = JavaCodeGenerationConfigBuilder.builder()
+            .enableJacksonAnnotations( true )
+            .executeLibraryMacros( false )
+            .packageName( aspect.getUrn().getNamespaceMainPart() )
+            .enableJacksonAnnotationJsonFormatShapeObject( false )
+            .build();
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, codeGenerationConfig ) );
+
+      assertThat( result.getGeneratedSource( new QualifiedName( "EvaluationResults", "org.eclipse.esmf.test" ) ) )
+            .doesNotContain( "@JsonFormat" );
    }
 
    @Test

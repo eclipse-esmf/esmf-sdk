@@ -37,20 +37,25 @@ public class TestContext {
    public static ThrowingFunction<Collection<JavaGenerator>, GenerationResult, IOException> generateAspectCode() {
       return generators -> {
          final File tempDirectory = Files.createTempDirectory( "junit" ).toFile();
-         final Map<QualifiedName, Class<?>> generatedClasses = generateJavaCode( tempDirectory, generators );
-         return new GenerationResult( tempDirectory, generatedClasses );
+         final GeneratedCodeAndClasses generatedCodeAndClasses = generateJavaCode( tempDirectory, generators );
+         return new GenerationResult( tempDirectory, generatedCodeAndClasses.classes(), generatedCodeAndClasses.sources() );
       };
    }
 
    public static ThrowingFunction<Collection<JavaGenerator>, StaticClassGenerationResult, IOException> generateStaticAspectCode() {
       return generators -> {
          final File tempDirectory = Files.createTempDirectory( "junit" ).toFile();
-         final Map<QualifiedName, Class<?>> generatedClasses = generateJavaCode( tempDirectory, generators );
-         return new StaticClassGenerationResult( tempDirectory, generatedClasses );
+         final GeneratedCodeAndClasses generatedCodeAndClasses = generateJavaCode( tempDirectory, generators );
+         return new StaticClassGenerationResult( tempDirectory, generatedCodeAndClasses.classes(), generatedCodeAndClasses.sources() );
       };
    }
 
-   private static Map<QualifiedName, Class<?>> generateJavaCode( final File tempDirectory, final Collection<JavaGenerator> generators )
+   private record GeneratedCodeAndClasses(
+         Map<QualifiedName, Class<?>> classes,
+         Map<QualifiedName, String> sources
+   ) {}
+
+   private static GeneratedCodeAndClasses generateJavaCode( final File tempDirectory, final Collection<JavaGenerator> generators )
          throws IOException {
       final File subFolder = new File(
             tempDirectory.getAbsolutePath() + File.separator + generators.iterator().next().getConfig().packageName()
@@ -79,7 +84,7 @@ public class TestContext {
                         generator.getConfig().importTracker().getUsedStaticImports().stream() ) )
             .collect( Collectors.toList() );
 
-      return JavaCompiler.compile( loadOrder, sources, referencedClasses ).compilationUnits();
+      return new GeneratedCodeAndClasses( JavaCompiler.compile( loadOrder, sources, referencedClasses ).compilationUnits(), sources );
    }
 
    private static void writeFile( final String className, final byte[] content, final File targetDirectory ) {
