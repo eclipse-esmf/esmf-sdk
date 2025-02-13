@@ -50,7 +50,6 @@ public record JavaCodeGenerationConfig(
    }
 
    public JavaCodeGenerationConfig {
-
       enableJacksonAnnotationJsonFormatShapeObject = true;
 
       if ( jsonTypeInfo == null ) {
