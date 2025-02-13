@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -35,7 +36,6 @@ import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.HasDescription;
 import org.eclipse.esmf.samm.KnownVersion;
 
-import org.apache.commons.io.IOUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -204,14 +204,13 @@ public class NamespacePackageTest {
    @Test
    void testNamespacePackageAsResolutionStrategy() throws IOException {
       final File archivePath = getPackage( "namespaces.zip" ).toFile();
-      final FileInputStream input = new FileInputStream( archivePath );
-      final byte[] content = IOUtils.toByteArray( input );
-      final NamespacePackage namespacePackage = new NamespacePackage( content, archivePath.toURI() );
-
-      // By using the NamespacePackage as an AspectModelLoader constructor argument, it is used as a ResolutionStrategy
-      final AspectModelLoader aspectModelLoader = new AspectModelLoader( namespacePackage );
-      final AspectModel aspectModel = aspectModelLoader.load(
-            AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.examples:1.0.0#Movement" ) );
-      assertThat( aspectModel ).hasSingleAspectThat().hasName( "Movement" );
+      try ( final InputStream input = new FileInputStream( archivePath ) ) {
+         final NamespacePackage namespacePackage = new NamespacePackage( input, archivePath.toURI() );
+         // By using the NamespacePackage as an AspectModelLoader constructor argument, it is used as a ResolutionStrategy
+         final AspectModelLoader aspectModelLoader = new AspectModelLoader( namespacePackage );
+         final AspectModel aspectModel = aspectModelLoader.load(
+               AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.examples:1.0.0#Movement" ) );
+         assertThat( aspectModel ).hasSingleAspectThat().hasName( "Movement" );
+      }
    }
 }
