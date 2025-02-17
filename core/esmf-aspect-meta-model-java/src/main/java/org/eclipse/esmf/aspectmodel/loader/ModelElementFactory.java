@@ -58,6 +58,7 @@ import org.eclipse.esmf.aspectmodel.loader.instantiator.StateInstantiator;
 import org.eclipse.esmf.aspectmodel.loader.instantiator.StructuredValueInstantiator;
 import org.eclipse.esmf.aspectmodel.loader.instantiator.TimeSeriesInstantiator;
 import org.eclipse.esmf.aspectmodel.loader.instantiator.TraitInstantiator;
+import org.eclipse.esmf.aspectmodel.resolver.modelfile.MetaModelFile;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Entity;
@@ -356,6 +357,15 @@ public class ModelElementFactory extends AttributeValueRetriever {
    }
 
    public AspectModelFile getSourceLocation( final Resource modelElement ) {
+      if ( modelElement.isURIResource() ) {
+         for ( final MetaModelFile metaModelFile : MetaModelFile.values() ) {
+            if ( metaModelFile.getMetaModelFileType() == MetaModelFile.MetaModelFileType.ELEMENT_DEFINITION
+                  && modelElement.getURI().startsWith( metaModelFile.getRdfNamespace().getUri() ) ) {
+               return metaModelFile;
+            }
+         }
+      }
+
       return sourceLocator.apply( modelElement );
    }
 }

@@ -13,7 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.loader;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.esmf.test.shared.AspectModelAsserts.assertThat;
 
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.characteristic.Trait;
@@ -34,7 +34,7 @@ class FixedPointConstraintInstantiatorTest extends AbstractAspectModelInstantiat
             "This is a test fixed point constraint.",
             "http://example.com/" );
 
-      assertThat( fixedPointConstraint.getScale() ).isEqualTo( Integer.valueOf( 5 ) );
-      assertThat( fixedPointConstraint.getInteger() ).isEqualTo( Integer.valueOf( 3 ) );
+      assertThat( fixedPointConstraint ).hasScale( 5 );
+      assertThat( fixedPointConstraint ).hasInteger( 3 );
    }
 }

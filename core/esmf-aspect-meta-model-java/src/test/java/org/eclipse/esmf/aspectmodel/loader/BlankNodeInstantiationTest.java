@@ -13,7 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.loader;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.esmf.test.shared.AspectModelAsserts.assertThat;
 
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Characteristic;
@@ -26,10 +26,10 @@ public class BlankNodeInstantiationTest extends AbstractAspectModelInstantiatorT
    @Test
    void testBlankNodeInstantiation() {
       final Aspect aspect = loadAspect( TestAspect.MODEL_WITH_BLANK_AND_ADDITIONAL_NODES );
-      assertThat( aspect.getProperties() ).hasSize( 1 );
+      assertThat( aspect ).properties().hasSize( 1 );
       final List list = (List) aspect.getProperties().get( 0 ).getCharacteristic().get();
       final Characteristic characteristic = list.getElementCharacteristic().get();
-      assertThat( characteristic.isAnonymous() ).isTrue();
-      assertThat( characteristic.getName() ).startsWith( "x" );
+      assertThat( characteristic ).isAnonymous();
+      assertThat( characteristic ).name().startsWith( "x" );
    }
 }

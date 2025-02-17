@@ -24,20 +24,26 @@ import org.eclipse.esmf.metamodel.CollectionValue;
  * @since SAMM 1.0.0
  */
 public interface Collection extends Characteristic {
-
    /**
     * @return a {@link boolean} which determines whether the elements in the collection are ordered.
     */
    boolean isOrdered();
 
    /**
+    * @deprecated Use {@link #allowsDuplicates()} instead
+    */
+   @Deprecated( forRemoval = true )
+   default boolean isAllowDuplicates() {
+      return allowsDuplicates();
+   }
+
+   /**
     * @return a {@link boolean} which determines whether the collection may contain duplicate values.
     */
-   boolean isAllowDuplicates();
+   boolean allowsDuplicates();
 
    /**
     * @return {@link Optional} containing the {@link Characteristic} describing the elements of the Collection
-    *
     * @since SAMM 1.0.0
     */
    default Optional<Characteristic> getElementCharacteristic() {

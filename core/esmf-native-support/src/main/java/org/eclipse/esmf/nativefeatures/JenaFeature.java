@@ -71,32 +71,21 @@ public class JenaFeature implements Feature {
             .initializeAtBuildTime();
       Native.forClass( org.apache.jena.ext.xerces.impl.dv.xs.BaseSchemaDVFactory.class )
             .initializeAtBuildTime();
-      Native.forClass( org.apache.jena.ext.xerces.impl.dv.xs.ExtendedSchemaDVFactoryImpl.class )
-            .initializeAtBuildTime();
-      Native.forClass( org.apache.jena.ext.xerces.impl.dv.xs.QNameDV.class )
+      Native.forClass( org.apache.jena.ext.xerces.impl.dv.xs.BaseDVFactory.class )
             .initializeAtBuildTime();
       Native.forClass( org.apache.jena.ext.xerces.impl.dv.xs.SchemaDVFactoryImpl.class )
             .initializeAtBuildTime();
       Native.forClass( org.apache.jena.ext.xerces.impl.dv.xs.XSSimpleTypeDecl.class )
             .initializeAtBuildTime();
-      Native.forClass( org.apache.jena.ext.xerces.impl.dv.xs.XSSimpleTypeDecl.class )
-            .initializeAtBuildTime();
-      Native.forClass( "org.apache.jena.ext.xerces.impl.xpath.regex.Token$CharToken" )
-            .initializeAtBuildTime();
-      Native.forClass( "org.apache.jena.ext.xerces.impl.xpath.regex.Token$ClosureToken" )
-            .initializeAtBuildTime();
-      Native.forClass( "org.apache.jena.ext.xerces.impl.xpath.regex.Token$ParenToken" )
-            .initializeAtBuildTime();
-      Native.forClass( "org.apache.jena.ext.xerces.impl.xpath.regex.Token$UnionToken" )
-            .initializeAtBuildTime();
       Native.forClass( org.apache.jena.ext.xerces.util.XercesXMLChar.class )
             .initializeAtBuildTime();
+      Native.forClass( "com.github.benmanes.caffeine.cache.SSMS" )
+            .registerEverythingForReflection();
+      Native.forClass( "com.github.benmanes.caffeine.cache.PSMS" )
+            .registerEverythingForReflection();
 
       Native.addResource( "META-INF/services/org.apache.jena.sys.JenaSubsystemLifecycle" );
       Native.addResource( "org/apache/jena/arq/arq-properties.xml" );
       Native.addResource( "org/apache/jena/jena-properties.xml" );
-
-      Native.addResourceBundle( "org.apache.jena.ext.xerces.impl.xpath.regex.message" );
-      Native.addResourceBundle( "org.apache.jena.ext.xerces.impl.msg.XMLSchemaMessages" );
    }
 }

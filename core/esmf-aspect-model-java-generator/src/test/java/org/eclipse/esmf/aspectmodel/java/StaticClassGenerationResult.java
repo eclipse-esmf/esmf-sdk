@@ -36,9 +36,9 @@ import com.github.javaparser.ast.stmt.Statement;
 
 public class StaticClassGenerationResult extends GenerationResult {
 
-   public StaticClassGenerationResult( final File outputDirectory, final Map<QualifiedName, Class<?>> generatedClasses )
-         throws IOException {
-      super( outputDirectory, generatedClasses );
+   public StaticClassGenerationResult( final File outputDirectory, final Map<QualifiedName, Class<?>> generatedClasses,
+         final Map<QualifiedName, String> sources ) throws IOException {
+      super( outputDirectory, generatedClasses, sources );
    }
 
    /**

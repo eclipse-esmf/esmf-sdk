@@ -14,6 +14,7 @@
 package org.eclipse.esmf.aspectmodel.loader;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.esmf.test.shared.AspectModelAsserts.assertThat;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -34,7 +35,7 @@ public class ConstraintInstantiatorTest extends AbstractAspectModelInstantiatorT
    public void testLanguageConstraintInstantiationExpectSuccess() {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_LANGUAGE_CONSTRAINT );
 
-      assertThat( aspect.getProperties() ).hasSize( 1 );
+      assertThat( aspect ).properties().hasSize( 1 );
 
       final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic().get();
       final LanguageConstraint languageConstraint = (LanguageConstraint) trait.getConstraints().get( 0 );
@@ -44,14 +45,14 @@ public class ConstraintInstantiatorTest extends AbstractAspectModelInstantiatorT
             "This is a test language constraint.",
             "http://example.com/" );
 
-      assertThat( languageConstraint.getLanguageCode() ).isEqualTo( Locale.forLanguageTag( "de" ) );
+      assertThat( languageConstraint ).hasLanguageCode( Locale.forLanguageTag( "de" ) );
    }
 
    @Test
    public void testEncodingConstraintInstantiationExpectSuccess() {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ENCODING_CONSTRAINT );
 
-      assertThat( aspect.getProperties() ).hasSize( 1 );
+      assertThat( aspect ).properties().hasSize( 1 );
 
       final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic().get();
       final EncodingConstraint encodingConstraint = (EncodingConstraint) trait.getConstraints().get( 0 );
@@ -61,14 +62,14 @@ public class ConstraintInstantiatorTest extends AbstractAspectModelInstantiatorT
             "This is a test encoding constraint.",
             "http://example.com/" );
 
-      assertThat( encodingConstraint.getValue() ).isEqualTo( StandardCharsets.UTF_8 );
+      assertThat( encodingConstraint ).hasValue( StandardCharsets.UTF_8 );
    }
 
    @Test
    public void testLengthConstraintInstantiationExpectSuccess() {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_LENGTH_CONSTRAINT );
 
-      assertThat( aspect.getProperties() ).hasSize( 1 );
+      assertThat( aspect ).properties().hasSize( 1 );
 
       final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic().get();
       final LengthConstraint lengthConstraint = (LengthConstraint) trait.getConstraints().get( 0 );
@@ -78,10 +79,8 @@ public class ConstraintInstantiatorTest extends AbstractAspectModelInstantiatorT
             "This is a test length constraint.",
             "http://example.com/" );
 
-      assertThat( lengthConstraint.getMaxValue() ).isPresent();
-      assertThat( lengthConstraint.getMaxValue().get() ).isEqualTo( new BigInteger( "10" ) );
-      assertThat( lengthConstraint.getMinValue() ).isPresent();
-      assertThat( lengthConstraint.getMinValue().get() ).isEqualTo( new BigInteger( "5" ) );
+      assertThat( lengthConstraint ).hasMaxValue( new BigInteger( "10" ) );
+      assertThat( lengthConstraint ).hasMinValue( new BigInteger( "5" ) );
    }
 
    @Test
@@ -99,6 +98,6 @@ public class ConstraintInstantiatorTest extends AbstractAspectModelInstantiatorT
             "This is a test regular expression constraint.",
             "http://example.com/" );
 
-      assertThat( regularExpressionConstraint.getValue() ).isEqualTo( "^[0-9]*$" );
+      assertThat( regularExpressionConstraint ).hasRegularExpression( "^[0-9]*$" );
    }
 }

@@ -28,19 +28,16 @@ public class DefaultAspect extends ModelElementImpl implements Aspect {
    private final List<Property> properties;
    private final List<Operation> operations;
    private final List<Event> events;
-   private final boolean isCollectionAspect;
 
    public DefaultAspect(
          final MetaModelBaseAttributes metaModelBaseAttributes,
          final List<Property> properties,
          final List<Operation> operations,
-         final List<Event> events,
-         final boolean isCollectionAspect ) {
+         final List<Event> events ) {
       super( metaModelBaseAttributes );
       this.properties = new ArrayList<>( properties );
       this.operations = new ArrayList<>( operations );
       this.events = new ArrayList<>( events );
-      this.isCollectionAspect = isCollectionAspect;
    }
 
    /**
@@ -86,17 +83,11 @@ public class DefaultAspect extends ModelElementImpl implements Aspect {
    }
 
    @Override
-   public boolean isCollectionAspect() {
-      return isCollectionAspect;
-   }
-
-   @Override
    public String toString() {
       return new StringJoiner( ", ", DefaultAspect.class.getSimpleName() + "[", "]" )
             .add( "properties=" + properties )
             .add( "operations=" + operations )
             .add( "events=" + events )
-            .add( "isCollectionAspect=" + isCollectionAspect )
             .toString();
    }
 
@@ -112,14 +103,13 @@ public class DefaultAspect extends ModelElementImpl implements Aspect {
          return false;
       }
       final DefaultAspect that = (DefaultAspect) o;
-      return isCollectionAspect == that.isCollectionAspect
-            && Objects.equals( properties, that.properties )
+      return Objects.equals( properties, that.properties )
             && Objects.equals( operations, that.operations )
             && Objects.equals( events, that.events );
    }
 
    @Override
    public int hashCode() {
-      return Objects.hash( super.hashCode(), properties, operations, events, isCollectionAspect );
+      return Objects.hash( super.hashCode(), properties, operations, events );
    }
 }

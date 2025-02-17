@@ -18,8 +18,10 @@ import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 public interface TestSharedModel extends TestModel {
    String TEST_NAMESPACE = "urn:samm:org.eclipse.esmf.test.shared:1.0.0#";
 
+   @Override
    String getName();
 
+   @Override
    default AspectModelUrn getUrn() {
       return AspectModelUrn.fromUrn( TEST_NAMESPACE + getName() );
    }

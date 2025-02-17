@@ -13,10 +13,24 @@
 
 package org.eclipse.esmf.aspectmodel.generator.docu;
 
+import java.util.Locale;
+
+import org.eclipse.esmf.aspectmodel.generator.LocalizedArtifact;
 import org.eclipse.esmf.aspectmodel.generator.StringArtifact;
 
-public class DocumentationArtifact extends StringArtifact {
-   public DocumentationArtifact( final String id, final String content ) {
+/**
+ * Generation artifact that represents documentation for an Aspect Model
+ */
+public class DocumentationArtifact extends StringArtifact implements LocalizedArtifact {
+   private final Locale language;
+
+   public DocumentationArtifact( final String id, final String content, final Locale language ) {
       super( id, content );
+      this.language = language;
+   }
+
+   @Override
+   public Locale language() {
+      return language;
    }
 }

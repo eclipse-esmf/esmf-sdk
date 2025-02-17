@@ -104,7 +104,7 @@ public class AspectModelDocumentationGenerator extends
          source = insertAspectModelDiagram( source, language );
          source = insertStaticPlaceholders( source );
          source = insertCustomCss( source );
-         return new DocumentationArtifact( artifactName, source );
+         return new DocumentationArtifact( artifactName, source, language );
       } );
    }
 

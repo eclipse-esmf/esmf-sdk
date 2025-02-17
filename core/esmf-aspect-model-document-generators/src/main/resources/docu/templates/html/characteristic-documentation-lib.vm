@@ -139,7 +139,7 @@ Characteristic specific macros will be joined together in the main macro (see ab
         #end
     </div>
     <div class="table-row-group">
-        #if( $collection.isAllowDuplicates() )
+        #if( $collection.allowsDuplicates() )
             <div class="table-cell pb-3 col-span-2">$i18n.getText( "docu.label.duplicates" )</div>
         #else
             <div class="table-cell pb-3 col-span-2">$i18n.getText( "docu.label.no-duplicates" )</div>

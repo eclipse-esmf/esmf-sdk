@@ -26,47 +26,39 @@ import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import jakarta.xml.bind.DatatypeConverter;
+import org.apache.commons.lang3.NotImplementedException;
+import org.apache.jena.datatypes.DatatypeFormatException;
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.datatypes.TypeMapper;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.datatypes.xsd.impl.RDFLangString;
-import org.apache.jena.ext.xerces.impl.dv.XSSimpleType;
-import org.apache.jena.ext.xerces.impl.dv.xs.ExtendedSchemaDVFactoryImpl;
+import org.apache.jena.graph.impl.LiteralLabel;
 import org.apache.jena.rdf.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The custom RDF type implementations that have deterministic and typed parsers and unparsers (i.e., serializers).
+ *
+ * @param <T> the Java class that represents values for the type
+ */
 // the order of the variables is required because of the way they reference each other
 public class SammXsdType<T> extends XSDDatatype implements SammType<T> {
    private static final Logger LOG = LoggerFactory.getLogger( SammXsdType.class );
    public static DatatypeFactory datatypeFactory;
 
-   private final Class<T> correspondingJavaClass;
    private final Function<String, T> parser;
    private final Function<T, String> unparser;
    private final Predicate<String> lexicalValidator;
    private static boolean checking = true;
-   private static final ExtendedSchemaDVFactoryImpl EXTENDED_SCHEMA_DV_FACTORY = new ExtendedSchemaDVFactoryImpl();
 
-   public SammXsdType( final Resource dataTypeResource, final Class<T> correspondingJavaClass,
-         final Function<String, T> parser,
-         final Function<T, String> unparser,
-         final Predicate<String> lexicalValidator ) {
-      super( dataTypeResource.getLocalName() );
-      this.correspondingJavaClass = correspondingJavaClass;
-      this.parser = parser;
-      this.unparser = unparser;
-      this.lexicalValidator = lexicalValidator;
-   }
-
-   private SammXsdType( final Resource dataTypeResource, final XSSimpleType xstype,
+   protected SammXsdType( final Resource dataTypeResource,
          final Class<T> correspondingJavaClass,
          final Function<String, T> parser,
          final Function<T, String> unparser,
          final Predicate<String> lexicalValidator ) {
-      //In the namespace the hash symbol should be removed, because jena defines the namespace differently.
-      super( xstype, dataTypeResource.getNameSpace().replace( "#", "" ) );
-      this.correspondingJavaClass = correspondingJavaClass;
+      super( dataTypeResource.getLocalName() );
+      javaClass = correspondingJavaClass;
       this.parser = parser;
       this.unparser = unparser;
       this.lexicalValidator = lexicalValidator;
@@ -139,10 +131,9 @@ public class SammXsdType<T> extends XSDDatatype implements SammType<T> {
          value -> datatypeFactory.newXMLGregorianCalendar( value ), XMLGregorianCalendar::toXMLFormat,
          XSDDatatype.XSDdateTime::isValid );
 
-   public static final SammXsdType<XMLGregorianCalendar> DATE_TIME_STAMP = new SammXsdType<>(
+   public static final SammExtendedXsdType<XMLGregorianCalendar> DATE_TIME_STAMP = new SammExtendedXsdType<>(
          org.apache.jena.vocabulary.XSD.dateTimeStamp,
-         EXTENDED_SCHEMA_DV_FACTORY.getBuiltInType( org.apache.jena.vocabulary.XSD.dateTimeStamp.getLocalName() ),
-         XMLGregorianCalendar.class, value -> datatypeFactory.newXMLGregorianCalendar( value ),
+         XMLGregorianCalendar.class, value -> SammXsdType.datatypeFactory.newXMLGregorianCalendar( value ),
          XMLGregorianCalendar::toXMLFormat, XSDDatatype.XSDdateTimeStamp::isValid );
 
    public static final SammXsdType<XMLGregorianCalendar> G_YEAR = new SammXsdType<>(
@@ -174,16 +165,14 @@ public class SammXsdType<T> extends XSDDatatype implements SammType<T> {
          org.apache.jena.vocabulary.XSD.duration, Duration.class, value -> datatypeFactory.newDuration( value ),
          Duration::toString, XSDDatatype.XSDduration::isValid );
 
-   public static final SammXsdType<Duration> YEAR_MONTH_DURATION = new SammXsdType<>(
+   public static final SammExtendedXsdType<Duration> YEAR_MONTH_DURATION = new SammExtendedXsdType<>(
          org.apache.jena.vocabulary.XSD.yearMonthDuration,
-         EXTENDED_SCHEMA_DV_FACTORY.getBuiltInType( org.apache.jena.vocabulary.XSD.yearMonthDuration.getLocalName() ),
-         Duration.class, value -> datatypeFactory.newDurationYearMonth( value ), Duration::toString,
+         Duration.class, value -> SammXsdType.datatypeFactory.newDurationYearMonth( value ), Duration::toString,
          XSDDatatype.XSDyearMonthDuration::isValid );
 
-   public static final SammXsdType<Duration> DAY_TIME_DURATION = new SammXsdType<>(
+   public static final SammExtendedXsdType<Duration> DAY_TIME_DURATION = new SammExtendedXsdType<>(
          org.apache.jena.vocabulary.XSD.dayTimeDuration,
-         EXTENDED_SCHEMA_DV_FACTORY.getBuiltInType( org.apache.jena.vocabulary.XSD.dayTimeDuration.getLocalName() ),
-         Duration.class, value -> datatypeFactory.newDurationDayTime( value ), Duration::toString,
+         Duration.class, value -> SammXsdType.datatypeFactory.newDurationDayTime( value ), Duration::toString,
          XSDDatatype.XSDdayTimeDuration::isValid );
 
    public static final SammXsdType<Byte> BYTE = new SammXsdType<>( org.apache.jena.vocabulary.XSD.xbyte,
@@ -307,9 +296,10 @@ public class SammXsdType<T> extends XSDDatatype implements SammType<T> {
       return lexicalValidator.test( lexicalForm );
    }
 
+   @SuppressWarnings( "unchecked" )
    @Override
    public Class<T> getJavaClass() {
-      return correspondingJavaClass;
+      return (Class<T>) javaClass;
    }
 
    private static boolean setupPerformed = false;
@@ -344,5 +334,117 @@ public class SammXsdType<T> extends XSDDatatype implements SammType<T> {
             .map( RDFDatatype::getJavaClass )
             .findAny()
             .orElseThrow( () -> new IllegalStateException( "Invalid data type " + type + " found in model." ) );
+   }
+
+   /**
+    * Separate implementation for the "extended" RDF types that can not be based on {@link XSDDatatype}.
+    *
+    * @param <T> the Java class that represents values for the type
+    */
+   public static class SammExtendedXsdType<T> implements SammType<T> {
+      private final String uri;
+      private final Class<T> javaClass;
+      private final Function<String, T> parser;
+      private final Function<T, String> unparser;
+      private final Predicate<String> lexicalValidator;
+
+      public SammExtendedXsdType(
+            final Resource dataTypeResource,
+            final Class<T> javaClass,
+            final Function<String, T> parser,
+            final Function<T, String> unparser,
+            final Predicate<String> lexicalValidator
+      ) {
+         uri = dataTypeResource.getURI();
+         this.javaClass = javaClass;
+         this.parser = parser;
+         this.unparser = unparser;
+         this.lexicalValidator = lexicalValidator;
+      }
+
+      @Override
+      public Optional<T> parseTyped( final String lexicalForm ) {
+         try {
+            return Optional.of( parser.apply( lexicalForm ) );
+         } catch ( final RuntimeException exception ) {
+            if ( checking ) {
+               throw exception;
+            }
+         }
+         return Optional.empty();
+      }
+
+      @Override
+      public String unparseTyped( final T value ) {
+         return unparser.apply( value );
+      }
+
+      @Override
+      public String getURI() {
+         return uri;
+      }
+
+      @Override
+      @SuppressWarnings( "unchecked" )
+      public String unparse( final Object value ) {
+         return unparseTyped( (T) value );
+      }
+
+      @Override
+      public Object parse( final String lexicalForm ) throws DatatypeFormatException {
+         try {
+            return parser.apply( lexicalForm );
+         } catch ( final Exception exception ) {
+            if ( checking ) {
+               throw exception;
+            }
+         }
+         return lexicalForm;
+      }
+
+      @Override
+      public boolean isValid( final String lexicalForm ) {
+         return lexicalValidator.test( lexicalForm );
+      }
+
+      @Override
+      public boolean isValidValue( final Object valueForm ) {
+         return isValid( unparse( valueForm ) );
+      }
+
+      @Override
+      public boolean isValidLiteral( final LiteralLabel lit ) {
+         return isValid( lit.getLexicalForm() );
+      }
+
+      @Override
+      public boolean isEqual( final LiteralLabel value1, final LiteralLabel value2 ) {
+         return value1.getLexicalForm().equals( value2.getLexicalForm() );
+      }
+
+      @Override
+      public int getHashCode( final LiteralLabel lit ) {
+         return lit.getValueHashCode();
+      }
+
+      @Override
+      public Class<T> getJavaClass() {
+         return javaClass;
+      }
+
+      @Override
+      public Object cannonicalise( final Object value ) {
+         return value;
+      }
+
+      @Override
+      public Object extendedTypeDefinition() {
+         throw new NotImplementedException();
+      }
+
+      @Override
+      public RDFDatatype normalizeSubType( final Object value, final RDFDatatype dt ) {
+         return this;
+      }
    }
 }

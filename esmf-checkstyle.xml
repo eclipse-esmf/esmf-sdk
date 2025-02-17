@@ -42,7 +42,9 @@
       <property name="allowByTailComment" value="true"/>
       <property name="allowNonPrintableEscapes" value="true"/>
     </module>
-    <module name="AvoidStarImport"/>
+    <module name="AvoidStarImport">
+        <property name="excludes" value="org.eclipse.esmf.metamodel.Elements.*,org.eclipse.esmf.metamodel.builder.SammBuilder.*,org.eclipse.esmf.metamodel.DataTypes.*"/>
+    </module>
     <module name="OneTopLevelClass"/>
     <module name="NoLineWrap">
       <property name="tokens" value="PACKAGE_DEF, IMPORT, STATIC_IMPORT"/>
@@ -340,7 +342,11 @@
   </module>
   <module name="SuppressionSingleFilter">
       <property name="checks" value=".*"/>
-      <property name="files" value="[\\/]generated-sources[\\/]"/>
+      <property name="files" value="[\\/]src-gen[\\/]"/>
+  </module>
+  <module name="SuppressionSingleFilter">
+    <property name="checks" value=".*"/>
+    <property name="files" value="[\\/]buildtime/template[\\/]"/>
   </module>
   <module name="SuppressionSingleFilter">
       <property name="checks" value=".*"/>
