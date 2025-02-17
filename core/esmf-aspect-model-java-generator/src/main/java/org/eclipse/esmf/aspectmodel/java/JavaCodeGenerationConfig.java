@@ -35,6 +35,7 @@ import io.soabase.recordbuilder.core.RecordBuilder;
 @RecordBuilder
 public record JavaCodeGenerationConfig(
       boolean enableJacksonAnnotations,
+      Boolean enableJacksonAnnotationJsonFormatShapeObject,
       JsonTypeInfoType jsonTypeInfo,
       String packageName,
       ImportTracker importTracker,
@@ -49,6 +50,9 @@ public record JavaCodeGenerationConfig(
    }
 
    public JavaCodeGenerationConfig {
+      if ( enableJacksonAnnotationJsonFormatShapeObject == null ) {
+         enableJacksonAnnotationJsonFormatShapeObject = true;
+      }
       if ( jsonTypeInfo == null ) {
          jsonTypeInfo = JsonTypeInfoType.DEDUCTION;
       }

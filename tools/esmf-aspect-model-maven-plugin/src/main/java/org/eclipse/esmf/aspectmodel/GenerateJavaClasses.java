@@ -38,6 +38,9 @@ public class GenerateJavaClasses extends CodeGenerationMojo {
    @Parameter( defaultValue = "false" )
    private boolean disableJacksonAnnotations;
 
+   @Parameter( defaultValue = "false" )
+   private boolean disableJacksonAnnotationJsonFormatShapeObject;
+
    @Parameter( defaultValue = "deduction" )
    protected String jsonTypeInfo;
 
@@ -49,6 +52,7 @@ public class GenerateJavaClasses extends CodeGenerationMojo {
 
    public GenerateJavaClasses(
          final boolean disableJacksonAnnotations,
+         boolean disableJacksonAnnotationJsonFormatShapeObject,
          final String jsonTypeInfo,
          final String packageName,
          final String templateFile,
@@ -58,6 +62,7 @@ public class GenerateJavaClasses extends CodeGenerationMojo {
          final String namePostfix
    ) {
       this.disableJacksonAnnotations = disableJacksonAnnotations;
+      this.disableJacksonAnnotationJsonFormatShapeObject = disableJacksonAnnotationJsonFormatShapeObject;
       this.jsonTypeInfo = jsonTypeInfo;
       this.packageName = packageName;
       this.templateFile = templateFile;
@@ -76,6 +81,7 @@ public class GenerateJavaClasses extends CodeGenerationMojo {
          try {
             final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
                   .enableJacksonAnnotations( !disableJacksonAnnotations )
+                  .enableJacksonAnnotationJsonFormatShapeObject( !disableJacksonAnnotationJsonFormatShapeObject )
                   .jsonTypeInfo( JavaCodeGenerationConfig.JsonTypeInfoType.valueOf(
                         Optional.ofNullable( jsonTypeInfo ).map( String::toUpperCase ).orElse( "DEDUCTION" ) ) )
                   .packageName( determinePackageName( aspect ) )

@@ -156,6 +156,7 @@ are replaced using `packageName` | `String` | none | {nok}
 | `templateFile` | The path and name of the velocity template file containing the macro library. See xref:java-aspect-tooling.adoc#providing-custom-macros-for-code-generation[Providing Custom Macros for Code Generation]. | `String` | none | {nok}
 | `executeLibraryMacros` | Execute the macros provided in the velocity macro library. | `Boolean` | `false` | {nok}
 | `disableJacksonAnnotations` | Leads to generated Java code that does not contain https://github.com/FasterXML/jackson[Jackson] annotations. | `Boolean` | `false` | {nok}
+| `disableJacksonAnnotationJsonFormatShapeObject` | Leads to generated Java code that does not contain https://github.com/FasterXML/jackson-annotations/blob/2.19/src/main/java/com/fasterxml/jackson/annotation/JsonFormat.java[JsonFormat.Shape] annotation. | `Boolean` | `false` | {nok}
 | `jsonTypeInfo` | If Jackson annotations are enabled, determines the value of `JsonTypeInfo.Id`, e.g., `NAME`.  | `String` | `DEDUCTION` | {nok}
 | `skip` | Skip execution of plugin and generation | `Boolean` | `false` | {nok}
 | `namePrefix` | Name prefix for generated Aspect, Entity Java classes | `String` | none | {nok}
