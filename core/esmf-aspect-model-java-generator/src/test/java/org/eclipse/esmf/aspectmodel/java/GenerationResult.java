@@ -65,10 +65,12 @@ class GenerationResult {
    private final long numFailedCompilationUnits;
    private final Collection<Problem> parseProblems;
    private final Map<QualifiedName, Class<?>> generatedClasses;
-
+   private final Map<QualifiedName, String> sources;
    final Map<String, CompilationUnit> compilationUnits;
 
-   GenerationResult( final File outputDirectory, final Map<QualifiedName, Class<?>> generatedClasses ) throws IOException {
+   GenerationResult( final File outputDirectory, final Map<QualifiedName, Class<?>> generatedClasses,
+         final Map<QualifiedName, String> sources ) throws IOException {
+      this.sources = sources;
       combinedTypeSolver.add( new ReflectionTypeSolver() );
       combinedTypeSolver.add( new JavaParserTypeSolver( outputDirectory ) );
       combinedTypeSolver.add( new ClassLoaderTypeSolver( getClass().getClassLoader() ) );
@@ -373,5 +375,9 @@ class GenerationResult {
 
    Class<?> getGeneratedClass( final QualifiedName qualifiedName ) {
       return generatedClasses.get( qualifiedName );
+   }
+
+   String getGeneratedSource( final QualifiedName qualifiedName ) {
+      return sources.get( qualifiedName );
    }
 }
