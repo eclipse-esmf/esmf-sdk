@@ -30,7 +30,8 @@ import org.eclipse.esmf.metamodel.Aspect;
 
 import picocli.CommandLine;
 
-@CommandLine.Command( name = AspectToJavaCommand.COMMAND_NAME,
+@CommandLine.Command(
+      name = AspectToJavaCommand.COMMAND_NAME,
       description = "Generate Java domain classes for an Aspect Model",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",

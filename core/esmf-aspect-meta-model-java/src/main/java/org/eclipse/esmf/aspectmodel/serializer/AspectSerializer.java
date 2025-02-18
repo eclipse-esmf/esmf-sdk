@@ -108,6 +108,7 @@ public class AspectSerializer {
     * Writes the content of an Aspect Model file to its defined source location
     *
     * @param aspectModelFile the Aspect Model file
+    * @throws SerializationException if writing the file failed
     */
    public void write( final AspectModelFile aspectModelFile ) {
       final URL url = aspectModelFileUrl( aspectModelFile );

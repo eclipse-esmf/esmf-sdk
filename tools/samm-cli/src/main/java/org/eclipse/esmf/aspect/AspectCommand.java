@@ -19,7 +19,8 @@ import org.eclipse.esmf.exception.SubCommandException;
 
 import picocli.CommandLine;
 
-@CommandLine.Command( name = AspectCommand.COMMAND_NAME,
+@CommandLine.Command(
+      name = AspectCommand.COMMAND_NAME,
       description = "Validate and transform Aspect Models",
       subcommands = {
             CommandLine.HelpCommand.class,

@@ -44,7 +44,8 @@ import org.eclipse.esmf.metamodel.impl.DefaultNamespace;
 
 import picocli.CommandLine;
 
-@CommandLine.Command( name = AspectEditMoveCommand.COMMAND_NAME,
+@CommandLine.Command(
+      name = AspectEditMoveCommand.COMMAND_NAME,
       description = "Move elements to other files or namespaces",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",

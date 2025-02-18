@@ -27,7 +27,8 @@ import org.eclipse.esmf.metamodel.Aspect;
 import org.apache.commons.io.FileUtils;
 import picocli.CommandLine;
 
-@CommandLine.Command( name = AspectToHtmlCommand.COMMAND_NAME,
+@CommandLine.Command(
+      name = AspectToHtmlCommand.COMMAND_NAME,
       description = "Generate HTML documentation for an Aspect Model",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",

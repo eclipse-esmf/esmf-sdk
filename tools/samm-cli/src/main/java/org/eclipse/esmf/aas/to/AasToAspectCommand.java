@@ -38,11 +38,16 @@ public class AasToAspectCommand extends AbstractCommand {
    @CommandLine.ParentCommand
    private AasToCommand parentCommand;
 
-   @CommandLine.Option( names = { "--output-directory", "-d" }, description = "Output directory to write files to" )
+   @CommandLine.Option(
+         names = { "--output-directory", "-d" },
+         description = "Output directory to write files to"
+   )
    private String outputPath = ".";
 
-   @CommandLine.Option( names = { "--submodel-template",
-         "-s" }, description = "Select the submodel template(s) to include, as returned by the aas list command" )
+   @CommandLine.Option(
+         names = { "--submodel-template", "-s" },
+         description = "Select the submodel template(s) to include, as returned by the aas list command"
+   )
    private List<Integer> selectedOptions = new ArrayList<>();
 
    @CommandLine.Mixin
@@ -62,7 +67,7 @@ public class AasToAspectCommand extends AbstractCommand {
       final StructuredModelsRoot modelsRoot = new StructuredModelsRoot( Path.of( outputPath ) );
       final List<Aspect> generatedAspects = generator.generateAspects();
 
-      final List<Aspect> filteredAspects = this.selectedOptions.isEmpty() ? generatedAspects :
+      final List<Aspect> filteredAspects = selectedOptions.isEmpty() ? generatedAspects :
             IntStream.range( 0, generatedAspects.size() )
                   .filter( index -> selectedOptions.contains( index + 1 ) )
                   .mapToObj( generatedAspects::get )

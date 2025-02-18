@@ -21,7 +21,8 @@ import org.eclipse.esmf.exception.SubCommandException;
 
 import picocli.CommandLine;
 
-@CommandLine.Command( name = AspectEditCommand.COMMAND_NAME,
+@CommandLine.Command(
+      name = AspectEditCommand.COMMAND_NAME,
       description = "Edit (refactor) an Aspect Model",
       subcommands = {
             CommandLine.HelpCommand.class,

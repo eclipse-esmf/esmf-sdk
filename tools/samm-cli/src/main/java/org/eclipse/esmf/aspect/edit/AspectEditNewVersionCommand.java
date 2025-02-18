@@ -35,7 +35,8 @@ import org.eclipse.esmf.metamodel.Namespace;
 
 import picocli.CommandLine;
 
-@CommandLine.Command( name = AspectEditNewVersionCommand.COMMAND_NAME,
+@CommandLine.Command(
+      name = AspectEditNewVersionCommand.COMMAND_NAME,
       description = "Create a new version of a file or namespace",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",

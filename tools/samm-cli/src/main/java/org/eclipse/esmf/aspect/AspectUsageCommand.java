@@ -32,7 +32,8 @@ import org.eclipse.esmf.exception.CommandException;
 import io.vavr.control.Try;
 import picocli.CommandLine;
 
-@CommandLine.Command( name = AspectUsageCommand.COMMAND_NAME,
+@CommandLine.Command(
+      name = AspectUsageCommand.COMMAND_NAME,
       description = "Shows where model elements are used in Aspect Models",
       headerHeading = "@|bold Usage|@:%n%n",
       descriptionHeading = "%n@|bold Description|@:%n%n",

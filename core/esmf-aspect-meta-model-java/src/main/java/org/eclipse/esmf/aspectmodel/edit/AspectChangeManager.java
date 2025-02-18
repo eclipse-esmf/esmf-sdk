@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -13,9 +13,16 @@
 
 package org.eclipse.esmf.aspectmodel.edit;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -23,6 +30,8 @@ import java.util.stream.Stream;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFile;
+import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
+import org.eclipse.esmf.aspectmodel.serializer.SerializationException;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.impl.DefaultAspectModel;
 
@@ -38,8 +47,8 @@ import org.slf4j.LoggerFactory;
  * Note the following points:
  * <ul>
  *    <li>Only one AspectChangeManager must wrap a given AspectModel at any time</li>
- *    <li>All changes are done <i>in-memory</i>. In order to write them to the file system, use the
- *    {@link org.eclipse.esmf.aspectmodel.serializer.AspectSerializer}</li>
+ *    <li>All changes are done <i>in-memory</i>. In order to write them to the file system, use {@link #writeChangesToDisk(WriteConfig)}
+ *    </li>
  *    <li>After performing an {@link #applyChange(Change)}, {@link #undoChange()} or {@link #redoChange()} operation, and until the
  *    next call of one of them, the methods {@link #modifiedFiles()}, {@link #createdFiles()} and {@link #removedFiles()} indicate
  *    corresponding changes in the AspectModel's files.
@@ -184,5 +193,108 @@ public class AspectChangeManager implements ChangeContext {
       if ( fileState.get( file ) != FileState.CREATED ) {
          fileState.put( file, FileState.CHANGED );
       }
+   }
+
+   /**
+    * Syncs all queued changes to the file system. This is the operation that acutally performs operations such as deleting, creating and
+    * writing files.
+    */
+   public synchronized WriteResult writeChangesToDisk( final WriteConfig config ) {
+      final WriteResult writeResult = checkFileSystemConsistency( config );
+      if ( writeResult instanceof WriteResult.PreconditionsNotMet ) {
+         return writeResult;
+      }
+
+      final WriteResult result = performFileSystemWrite();
+      if ( result instanceof WriteResult.Success ) {
+         resetFileStates();
+      }
+      return result;
+   }
+
+   protected WriteResult performFileSystemWrite() {
+      final List<String> messages = new ArrayList<>();
+      removedFiles()
+            .map( fileToRemove -> Paths.get( fileToRemove.sourceLocation().orElseThrow() ).toFile() )
+            .forEach( file -> {
+               try {
+                  Files.delete( file.toPath() );
+               } catch ( final IOException exception ) {
+                  messages.add( "Could not delete file: " + file );
+               }
+            } );
+
+      createdFiles().forEach( fileToCreate -> {
+         final File file = Paths.get( fileToCreate.sourceLocation().orElseThrow() ).toFile();
+         if ( !file.getParentFile().exists() && !file.getParentFile().mkdirs() ) {
+            messages.add( "Target path to write file could not be created: " + file );
+         } else {
+            try {
+               AspectSerializer.INSTANCE.write( fileToCreate );
+            } catch ( final SerializationException exception ) {
+               messages.add( exception.getMessage() );
+            }
+         }
+      } );
+
+      modifiedFiles().forEach( aspectModelFile -> {
+         try {
+            AspectSerializer.INSTANCE.write( aspectModelFile );
+         } catch ( final SerializationException exception ) {
+            messages.add( exception.getMessage() );
+         }
+      } );
+
+      return messages.isEmpty()
+            ? new WriteResult.Success()
+            : new WriteResult.WriteFailure( messages );
+   }
+
+   protected WriteResult checkFileSystemConsistency( final WriteConfig config ) {
+      final List<String> messages = new ArrayList<>();
+      final boolean[] canBeFixedByOverwriting = new boolean[1];
+      removedFiles().map( AspectSerializer.INSTANCE::aspectModelFileUrl ).forEach( url -> {
+         if ( !url.getProtocol().equals( "file" ) ) {
+            messages.add( "File should be removed, but it is not identified by a file: URL: " + url );
+         }
+         final File file = new File( URI.create( url.toString() ) );
+         if ( !file.exists() ) {
+            messages.add( "File should be removed, but it does not exist: " + file );
+         }
+      } );
+
+      createdFiles().map( AspectSerializer.INSTANCE::aspectModelFileUrl ).forEach( url -> {
+         if ( !url.getProtocol().equals( "file" ) ) {
+            messages.add( "New file should be written, but it is not identified by a file: URL: " + url );
+         }
+         final File file = new File( URI.create( url.toString() ) );
+         if ( file.exists() && !config.forceOverwrite() ) {
+            messages.add( "New file should be written, but it already exists: " + file );
+            canBeFixedByOverwriting[0] = true;
+         }
+         if ( file.exists() && config.forceOverwrite() && !file.canWrite() ) {
+            messages.add( "New file should be written, but it is not writable: " + file );
+         }
+      } );
+
+      modifiedFiles().map( AspectSerializer.INSTANCE::aspectModelFileUrl ).forEach( url -> {
+         if ( !url.getProtocol().equals( "file" ) ) {
+            messages.add( "File should be modified, but it is not identified by a file: URL: " + url );
+         }
+         final File file = new File( URI.create( url.toString() ) );
+         if ( !file.exists() ) {
+            messages.add( "File should be modified, but it does not exist: " + file );
+         }
+         if ( !file.canWrite() ) {
+            messages.add( "File should be modified, but it is not writable: " + file );
+         }
+         if ( !file.isFile() ) {
+            messages.add( "File should be modified, but it is not a regular file: " + file );
+         }
+      } );
+
+      return messages.isEmpty()
+            ? new WriteResult.Success()
+            : new WriteResult.PreconditionsNotMet( messages, canBeFixedByOverwriting[0] );
    }
 }

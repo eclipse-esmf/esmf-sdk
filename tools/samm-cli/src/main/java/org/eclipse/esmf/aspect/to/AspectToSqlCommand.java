@@ -34,7 +34,8 @@ import org.eclipse.esmf.metamodel.Aspect;
 
 import picocli.CommandLine;
 
-@CommandLine.Command( name = AspectToSqlCommand.COMMAND_NAME,
+@CommandLine.Command(
+      name = AspectToSqlCommand.COMMAND_NAME,
       description = "Generate SQL table creation script for an Aspect Model",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",
