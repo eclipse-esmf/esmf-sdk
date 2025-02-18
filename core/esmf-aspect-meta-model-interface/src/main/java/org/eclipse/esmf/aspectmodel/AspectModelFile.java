@@ -17,6 +17,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.ModelElementGroup;
 import org.eclipse.esmf.metamodel.Namespace;
@@ -69,12 +70,40 @@ public interface AspectModelFile extends ModelElementGroup {
    Optional<URI> sourceLocation();
 
    /**
+    * Returns the local file name ("something.ttl") of this AspectModelFile, based on its source location.
+    *
+    * @return the local Aspect Model file
+    */
+   default Optional<String> filename() {
+      return sourceLocation().flatMap( uri -> {
+         final String path = uri.toString();
+         if ( !path.contains( "/" ) ) {
+            return Optional.empty();
+         }
+         final String filename = path.substring( path.lastIndexOf( "/" ) + 1 );
+         if ( filename.endsWith( ".ttl" ) && filename.length() >= 5 ) {
+            return Optional.of( filename );
+         }
+         return Optional.empty();
+      } );
+   }
+
+   /**
     * Returns the {@link Namespace} this AspectModelFile is a part of
     *
     * @return the namespace
     */
    default Namespace namespace() {
       throw new UnsupportedOperationException( "Uninitialized Aspect Model" );
+   }
+
+   /**
+    * Returns the URN of the namespace of this file
+    *
+    * @return the namespace URN
+    */
+   default AspectModelUrn namespaceUrn() {
+      return namespace().urn();
    }
 
    /**

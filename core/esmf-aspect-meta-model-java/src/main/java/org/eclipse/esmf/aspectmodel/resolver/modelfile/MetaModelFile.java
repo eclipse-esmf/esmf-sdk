@@ -75,9 +75,11 @@ public enum MetaModelFile implements AspectModelFile {
    @Getter
    private final MetaModelFileType metaModelFileType;
    private final Model sourceModel;
+   private final String filename;
 
    MetaModelFile( final String section, final String filename, final RdfNamespace rdfNamespace,
          final MetaModelFileType metaModelFileType ) {
+      this.filename = filename;
       this.rdfNamespace = rdfNamespace;
       this.metaModelFileType = metaModelFileType;
       sourceModel = TurtleLoader.loadTurtle( url( section, filename ) )
@@ -145,6 +147,11 @@ public enum MetaModelFile implements AspectModelFile {
    @Override
    public Optional<URI> sourceLocation() {
       return Optional.of( URI.create( rdfNamespace.getUri() ) );
+   }
+
+   @Override
+   public Optional<String> filename() {
+      return Optional.of( filename );
    }
 
    public static List<MetaModelFile> getElementDefinitionsFiles() {

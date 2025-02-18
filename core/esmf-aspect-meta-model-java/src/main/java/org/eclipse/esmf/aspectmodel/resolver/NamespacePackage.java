@@ -39,12 +39,14 @@ import org.eclipse.esmf.aspectmodel.generator.Artifact;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFile;
 import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
+import org.eclipse.esmf.aspectmodel.serializer.SerializationException;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.versionupdate.MetaModelVersionMigrator;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.Namespace;
 
 import com.google.common.collect.ImmutableList;
+import lombok.Getter;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +63,7 @@ public class NamespacePackage implements ResolutionStrategy, Artifact<URI, byte[
    private static final String ASPECT_MODELS_FOLDER = "aspect-models";
 
    // Fields that are always set
+   @Getter
    private final String modelsRoot;
    private final List<AspectModelFile> files;
 
@@ -261,19 +264,7 @@ public class NamespacePackage implements ResolutionStrategy, Artifact<URI, byte[
    }
 
    private String outputFileName( final AspectModelFile aspectModelFile ) {
-      return aspectModelFile.sourceLocation()
-            .flatMap( uri -> {
-               final String path = uri.toString();
-               if ( !path.contains( "/" ) ) {
-                  return Optional.empty();
-               }
-               final String filename = path.substring( path.lastIndexOf( "/" ) + 1 );
-               if ( filename.endsWith( ".ttl" ) && filename.length() >= 5 ) {
-                  return Optional.of( filename );
-               }
-               return Optional.empty();
-            } )
-            .orElseGet( () -> "definitions" + aspectModelFile.hashCode() + ".ttl" );
+      return aspectModelFile.filename().orElseGet( () -> "definitions" + aspectModelFile.hashCode() + ".ttl" );
    }
 
    @Override
@@ -304,10 +295,21 @@ public class NamespacePackage implements ResolutionStrategy, Artifact<URI, byte[
                addFile( out, filePath, fileContent );
             }
          }
-      } catch ( final IOException e ) {
-         throw new RuntimeException( e );
+      } catch ( final IOException exception ) {
+         throw new SerializationException( exception );
       }
 
       return buffer.toByteArray();
+   }
+
+   /**
+    * Returns the location of the namespace package, if it was created from an external location. If it was created from an in-memory
+    * {@link AspectModel}, the returned location is null.
+    *
+    * @return the location if set, or null
+    */
+   @SuppressWarnings( { "LombokGetterMayBeUsed", "RedundantSuppression" } )
+   public URI getLocation() {
+      return location;
    }
 }

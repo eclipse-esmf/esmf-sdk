@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 import io.soabase.recordbuilder.core.RecordBuilder;
 import org.apache.jena.rdf.model.Model;
@@ -54,5 +56,11 @@ public record RawAspectModelFile(
    @Override
    public String toString() {
       return sourceLocation().map( URI::toString ).orElse( "(unknown file)" );
+   }
+
+   @Override
+   public AspectModelUrn namespaceUrn() {
+      return AspectModelUrn.from( sourceModel().getNsPrefixMap().get( "" ).replace( "#", "" ) )
+            .getOrElseThrow( () -> new ModelResolutionException( "Aspect Model File " + this + " does not contain a '@prefix :'" ) );
    }
 }
