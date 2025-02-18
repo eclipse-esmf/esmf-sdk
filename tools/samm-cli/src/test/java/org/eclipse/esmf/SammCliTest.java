@@ -1497,6 +1497,51 @@ class SammCliTest {
       assertThat( result.stdout() ).contains( TestModel.TEST_NAMESPACE + "testProperty" );
    }
 
+   @Test
+   void testPackageWithoutSubcommand() {
+      final ExecutionResult result = sammCli.apply( "--disable-color", "package" );
+      assertThat( result.exitStatus() ).isEqualTo( 2 );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).contains( "Missing required parameter" );
+   }
+
+   @Test
+   void testPackageImport() {
+      // Set up new empty models root directory
+      final File modelsRoot = outputDirectory.toFile();
+      modelsRoot.mkdirs();
+
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "package",
+            inputFile( "namespaces.zip" ).getAbsolutePath(), "import", "--models-root", modelsRoot.getAbsolutePath() );
+      assertThat( result.exitStatus() ).isEqualTo( 0 );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+
+      assertThat( outputDirectory ).exists().isDirectory();
+      assertThat( outputDirectory.resolve( "org.eclipse.esmf.examples" ) ).exists().isDirectory();
+      assertThat( outputDirectory.resolve( "org.eclipse.esmf.examples" ).resolve( "1.0.0" ) )
+            .exists().isDirectory().isNotEmptyDirectory();
+
+      final ExecutionResult result2 = sammCli.apply( "--disable-color", "package",
+            inputFile( "namespaces.zip" ).getAbsolutePath(), "import", "--models-root", modelsRoot.getAbsolutePath() );
+      assertThat( result2.exitStatus() ).isEqualTo( 1 );
+      assertThat( result2.stdout() ).isEmpty();
+      assertThat( result2.stderr() ).contains( "already exists" );
+   }
+
+   /**
+    * Returns the File object for a test namespace package file
+    */
+   private File inputFile( final String filename ) {
+      final String resourcePath = String.format( "%s/../../core/esmf-test-aspect-models/src/main/resources/packages/%s",
+            System.getProperty( "user.dir" ), filename );
+      try {
+         return new File( resourcePath ).getCanonicalFile();
+      } catch ( final IOException e ) {
+         throw new RuntimeException( e );
+      }
+   }
+
    /**
     * Returns the File object for a test model file
     */

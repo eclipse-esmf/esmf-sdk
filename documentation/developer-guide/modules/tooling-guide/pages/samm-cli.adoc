@@ -240,7 +240,14 @@ of model resolution] for more information.
                                        run `samm aas <aas file> list` to list them.                                          | `samm aas AssetAdminShell.aasx to aspect -s 1 -s 2`
 .1+| [[aas-list]] aas <aas file> list | Retrieve a list of submodel templates contained within the provided
                                        Asset Administration Shell (AAS) file.                                                | `samm aas AssetAdminShell.aasx list`
-
+.4+| [[package-list]] package <namespace package> import | Imports a Namespace Package (file or URL) into a given
+                                     xref:models-directory-structure[models directory]                                       | `samm package MyPackage.zip import --models-root c:\models`
+                                   | _--dry-run_ : Don't write changes to the file system, but print a report of changes
+                                     that would be performed.                                                                |
+                                   | _--details_ : When used with `--dry-run`, include details about model content
+                                     changes in the report .                                                                 |
+                                   | _--force_ : When a new file is to be created but it already exists in the file system,
+                                     the operation will be cancelled, unless `--force` is used.                              |
 |===
 
 [[configuration-of-model-resolution]]

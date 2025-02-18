@@ -18,26 +18,24 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URI;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.eclipse.esmf.aspectmodel.edit.AspectChangeManager;
 import org.eclipse.esmf.aspectmodel.edit.AspectChangeManagerConfig;
 import org.eclipse.esmf.aspectmodel.edit.Change;
 import org.eclipse.esmf.aspectmodel.edit.ChangeReport;
 import org.eclipse.esmf.aspectmodel.edit.ChangeReportFormatter;
+import org.eclipse.esmf.aspectmodel.edit.WriteConfig;
+import org.eclipse.esmf.aspectmodel.edit.WriteConfigBuilder;
+import org.eclipse.esmf.aspectmodel.edit.WriteResult;
 import org.eclipse.esmf.aspectmodel.generator.LanguageCollector;
 import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
 import org.eclipse.esmf.aspectmodel.generator.diagram.DiagramGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.diagram.DiagramGenerationConfigBuilder;
-import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectModel;
@@ -145,80 +143,50 @@ public abstract class AbstractCommand implements Runnable {
       return new File( filePath ).getParent();
    }
 
-   protected Optional<AspectChangeManager> performRefactoring( final AspectModel aspectModel, final Change change,
-         final AspectChangeManagerConfig config, final boolean dryRun ) {
+   protected void performRefactoring( final AspectModel aspectModel, final Change change,
+         final AspectChangeManagerConfig config, final boolean dryRun, final boolean forceOverwrite ) {
       final AspectChangeManager changeContext = new AspectChangeManager( config, aspectModel );
       final ChangeReport changeReport = changeContext.applyChange( change );
       if ( dryRun ) {
          System.out.println( "Changes to be performed" );
          System.out.println( "=======================" );
          System.out.println( ChangeReportFormatter.INSTANCE.apply( changeReport, config ) );
-         return Optional.empty();
+         return;
       }
-      return Optional.of( changeContext );
-   }
 
-   protected void performFileSystemWrite( final AspectChangeManager changeContext ) {
-      changeContext.removedFiles()
-            .map( fileToRemove -> Paths.get( fileToRemove.sourceLocation().orElseThrow() ).toFile() )
-            .filter( file -> !file.delete() )
-            .forEach( file -> {
-               throw new CommandException( "Could not delete file: " + file );
-            } );
-      changeContext.createdFiles().forEach( fileToCreate -> {
-         final File file = Paths.get( fileToCreate.sourceLocation().orElseThrow() ).toFile();
-         file.getParentFile().mkdirs();
-         AspectSerializer.INSTANCE.write( fileToCreate );
-      } );
-      changeContext.modifiedFiles().forEach( AspectSerializer.INSTANCE::write );
-   }
+      final WriteConfig writeConfig = WriteConfigBuilder.builder().forceOverwrite( forceOverwrite ).build();
+      final WriteResult writeResult = changeContext.writeChangesToDisk( writeConfig );
+      System.err.print( writeResult.accept( new WriteResult.Visitor<String>() {
+         @Override
+         public String visitSuccess( final WriteResult.Success success ) {
+            return "";
+         }
 
-   protected void checkFilesystemConsistency( final AspectChangeManager changeContext, final boolean force ) {
-      final List<String> messages = new ArrayList<>();
-      changeContext.removedFiles().map( AspectSerializer.INSTANCE::aspectModelFileUrl ).forEach( url -> {
-         if ( !url.getProtocol().equals( "file" ) ) {
-            messages.add( "File should be removed, but it is not identified by a file: URL: " + url );
+         @Override
+         public String visitWriteFailure( final WriteResult.WriteFailure failure ) {
+            return "Writing failed:\n"
+                  + failure.errorMessages().stream()
+                  .map( message -> "- " + message )
+                  .collect( Collectors.joining( "\n" ) ) + "\n";
          }
-         final File file = new File( URI.create( url.toString() ) );
-         if ( !file.exists() ) {
-            messages.add( "File should be removed, but it does not exist: " + file );
-         }
-      } );
 
-      changeContext.createdFiles().map( AspectSerializer.INSTANCE::aspectModelFileUrl ).forEach( url -> {
-         if ( !url.getProtocol().equals( "file" ) ) {
-            messages.add( "New file should be written, but it is not identified by a file: URL: " + url );
+         @Override
+         public String visitPreconditionsNotMet( final WriteResult.PreconditionsNotMet preconditionsNotMet ) {
+            final StringBuilder builder = new StringBuilder();
+            builder.append( "Encountered problems, cancelling writing:\n" );
+            preconditionsNotMet.errorMessages().stream()
+                  .map( message -> "- " + message + "\n" )
+                  .forEach( builder::append );
+            if ( preconditionsNotMet.canBeFixedByOverwriting() ) {
+               builder.append( "Add --force to force overwriting existing files.\n" );
+            }
+            return builder.toString();
          }
-         final File file = new File( URI.create( url.toString() ) );
-         if ( file.exists() && !force ) {
-            messages.add(
-                  "New file should be written, but it already exists: " + file + ". Use the --force flag to force overwriting." );
-         }
-         if ( file.exists() && force && !file.canWrite() ) {
-            messages.add( "New file should be written, but it is not writable:" + file );
-         }
-      } );
+      } ) );
 
-      changeContext.modifiedFiles().map( AspectSerializer.INSTANCE::aspectModelFileUrl ).forEach( url -> {
-         if ( !url.getProtocol().equals( "file" ) ) {
-            messages.add( "File should be modified, but it is not identified by a file: URL: " + url );
-         }
-         final File file = new File( URI.create( url.toString() ) );
-         if ( !file.exists() ) {
-            messages.add( "File should be modified, but it does not exist: " + file );
-         }
-         if ( !file.canWrite() ) {
-            messages.add( "File should be modified, but it is not writable: " + file );
-         }
-         if ( !file.isFile() ) {
-            messages.add( "File should be modified, but it is not a regular file: " + file );
-         }
-      } );
-
-      if ( !messages.isEmpty() ) {
-         System.out.println( "Encountered problems, canceling writing." );
-         messages.forEach( message -> System.out.println( "- " + message ) );
-         System.exit( 1 );
+      if ( writeResult instanceof WriteResult.Success ) {
+         return;
       }
+      System.exit( 1 );
    }
 }

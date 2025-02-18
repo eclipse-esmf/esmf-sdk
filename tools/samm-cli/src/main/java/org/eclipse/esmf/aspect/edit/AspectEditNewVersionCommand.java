@@ -98,6 +98,7 @@ public class AspectEditNewVersionCommand extends AbstractCommand {
    )
    private boolean force;
 
+   @SuppressWarnings( "UseOfSystemOutOrSystemErr" )
    @Override
    public void run() {
       setDetails( details );
@@ -142,10 +143,6 @@ public class AspectEditNewVersionCommand extends AbstractCommand {
       final AspectChangeManagerConfig config = AspectChangeManagerConfigBuilder.builder()
             .detailedChangeReport( details )
             .build();
-      performRefactoring( aspectModel, copy, config, dryRun ).ifPresent( changeContext -> {
-         // Check & write changes to file system
-         checkFilesystemConsistency( changeContext, force );
-         performFileSystemWrite( changeContext );
-      } );
+      performRefactoring( aspectModel, copy, config, dryRun, force );
    }
 }
