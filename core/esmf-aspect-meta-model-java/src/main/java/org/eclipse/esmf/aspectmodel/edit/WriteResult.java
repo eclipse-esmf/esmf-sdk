@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * Represents the result of the operation of writing changes in the {@link AspectChangeManager} to the file system.
  */
-sealed public interface WriteResult {
+public sealed interface WriteResult {
    interface Visitor<T> {
       T visitSuccess( Success success );
 

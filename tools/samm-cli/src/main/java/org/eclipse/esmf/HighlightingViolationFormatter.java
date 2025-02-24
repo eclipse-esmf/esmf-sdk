@@ -42,8 +42,8 @@ public class HighlightingViolationFormatter extends ViolationFormatter {
                .map( failure -> "- %s (%s)".formatted( failure.location(),
                      new JansiRdfSyntaxHighlighter().formatError( failure.description() ).getResult() ) )
                .collect( Collectors.joining( "\n",
-                     "A reference in the model to " + new JansiRdfSyntaxHighlighter().formatIri( element.toString() ).getResult()
-                           + " could not be resolved. Checked locations:\n", "" ) );
+                     "No file containing the definition of " + new JansiRdfSyntaxHighlighter().formatIri( element.toString() ).getResult()
+                           + " could be resolved. Checked locations:\n", "" ) );
 
          if ( modelResolutionException.getCheckedLocations().size() > 1 ) {
             return "%s%n%n%s additional elements could not be resolved. Use --details for more information.%n".formatted(

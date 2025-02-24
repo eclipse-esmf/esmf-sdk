@@ -105,7 +105,9 @@ public class PackageImportCommand extends AbstractCommand {
 
       // Load the Namespace Package and create a "add file" change for each file in it
       final ModelsRoot modelsRoot = new StructuredModelsRoot( modelsRootLocation.toPath() );
-      final Change changes = new ChangeGroup( loadNamespacePackageFromInput().loadContents().map( file -> {
+      final Change changes = new ChangeGroup( loadNamespacePackageFromInput()
+            .loadContents()
+            .map( file -> {
                // Set the destination inside the target models root for each Aspect Model File
                final URI targetLocation = modelsRoot.directoryForNamespace( file.namespaceUrn() )
                      .resolve( file.filename().orElseThrow() )

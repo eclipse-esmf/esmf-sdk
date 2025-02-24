@@ -86,8 +86,8 @@ public class AspectUsageCommand extends AbstractCommand {
          if ( inputAspectModelUrn.isSuccess()
                && resolverConfiguration != null
                && resolverConfiguration.modelsRoots.isEmpty()
-               && ( resolverConfiguration.gitHubResolutionOptions == null
-               || resolverConfiguration.gitHubResolutionOptions.gitHubName == null ) ) {
+               && ( resolverConfiguration.gitHubResolverOptions == null
+               || resolverConfiguration.gitHubResolverOptions.isEmpty() ) ) {
             System.out.println( "Did you forget to set a models root or GitHub resolution?" );
          }
          System.exit( 0 );

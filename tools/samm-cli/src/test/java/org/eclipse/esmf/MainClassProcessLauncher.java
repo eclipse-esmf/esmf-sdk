@@ -27,6 +27,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.Permission;
 import java.util.stream.Collectors;
 
+import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

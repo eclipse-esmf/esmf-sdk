@@ -46,11 +46,13 @@ public class AspectModelUrnInputHandler extends AbstractInputHandler {
    protected List<ResolutionStrategy> resolutionStrategies() {
       final boolean noName = urn.getName().isEmpty();
       final boolean noResolverConfig = resolverConfig == null;
-      final boolean noGitHubResolver =
-            noResolverConfig || resolverConfig.gitHubResolutionOptions == null || resolverConfig.gitHubResolutionOptions.gitHubName == null;
+      final boolean noGitHubResolver = noResolverConfig || resolverConfig.gitHubResolverOptions == null
+            || resolverConfig.gitHubResolverOptions.isEmpty();
       final boolean noLocalModelRoots = noResolverConfig || resolverConfig.modelsRoots == null || resolverConfig.modelsRoots.isEmpty();
-      if ( !noName && noGitHubResolver && noLocalModelRoots ) {
-         throw new CommandException( "When resolving a URN, at least one models root directory or GitHub repository must be set" );
+      final boolean noCustomResolver = noResolverConfig || resolverConfig.commandLine == null || resolverConfig.commandLine.isEmpty();
+      if ( !noName && noGitHubResolver && noLocalModelRoots && noCustomResolver ) {
+         throw new CommandException(
+               "When resolving a URN, at least one models root directory, GitHub repository or custom resolver must be set" );
       }
       return configuredStrategies();
    }

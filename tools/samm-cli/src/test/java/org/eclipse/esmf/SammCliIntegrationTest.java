@@ -13,9 +13,15 @@
 
 package org.eclipse.esmf;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.List;
 import java.util.Optional;
+
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.ProcessExecutionException;
+import org.eclipse.esmf.aspectmodel.resolver.process.BinaryLauncher;
+import org.eclipse.esmf.aspectmodel.resolver.process.ExecutableJarLauncher;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
@@ -33,9 +39,24 @@ public class SammCliIntegrationTest extends SammCliTest {
    @BeforeEach
    @Override
    public void beforeEach() throws IOException {
-      sammCli = Optional.ofNullable( System.getProperty( "packaging-type" ) ).orElse( "jar" ).equals( "jar" )
-            ? new ExecutableJarLauncher()
-            : new BinaryLauncher();
+      if ( Optional.ofNullable( System.getProperty( "packaging-type" ) ).orElse( "jar" ).equals( "jar" ) ) {
+         final String jarFile = System.getProperty( "executableJar" );
+         if ( jarFile == null || !new File( jarFile ).exists() ) {
+            throw new ProcessExecutionException( "Executable jar " + jarFile + " not found" );
+         }
+         sammCli = new ExecutableJarLauncher( new File( jarFile ), List.of( "-Djava.awt.headless=true" ) );
+      } else {
+         String binary = System.getProperty( "binary" );
+         if ( System.getProperty( "os.name" ).startsWith( "Windows" ) ) {
+            binary = binary.replace( "/", "\\" );
+            binary = binary + ".exe";
+         }
+         final File binaryFile = new File( binary );
+         if ( binary == null || !binaryFile.exists() ) {
+            throw new ProcessExecutionException( "Binary " + binary + " not found" );
+         }
+         sammCli = new BinaryLauncher( binaryFile );
+      }
       outputDirectory = Files.createTempDirectory( "junit" );
    }
 }

@@ -32,8 +32,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.eclipse.esmf.ProcessLauncher.ExecutionResult;
 import org.eclipse.esmf.aspect.AspectValidateCommand;
+import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher;
+import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher.ExecutionResult;
 import org.eclipse.esmf.aspectmodel.shacl.violation.InvalidSyntaxViolation;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.samm.KnownVersion;
@@ -284,7 +285,7 @@ class SammCliTest {
    void testAspectFromGitHubButRepoNotActuallyContainingFile() {
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect",
             defaultInputUrn, "validate", "--github", "eclipse-esmf/esmf-parent" );
-      assertThat( result.stdout() ).contains( "could not be resolved" );
+      assertThat( result.stdout() ).contains( "No file containing the definition" ).contains( "could be resolved" );
       assertThat( result.stdout() ).contains( "Repository does not contain any file that contains the element" );
       assertThat( result.stderr() ).isEmpty();
    }

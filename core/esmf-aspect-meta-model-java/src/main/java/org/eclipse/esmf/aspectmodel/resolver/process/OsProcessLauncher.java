@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -11,9 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf;
-
-import static org.junit.jupiter.api.Assertions.fail;
+package org.eclipse.esmf.aspectmodel.resolver.process;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -29,6 +27,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
+
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.ProcessExecutionException;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -82,16 +82,15 @@ public class OsProcessLauncher extends ProcessLauncher {
             stdoutRaw = stdoutFuture.get().toByteArray();
             stderrRaw = stderrFuture.get().toByteArray();
          } catch ( final ExecutionException | InterruptedException exception ) {
-            throw new RuntimeException( exception );
+            throw new ProcessExecutionException( exception );
          }
 
          return new ExecutionResult( process.exitValue(), new String( stdoutRaw, StandardCharsets.UTF_8 ),
                new String( stderrRaw, StandardCharsets.UTF_8 ),
                stdoutRaw, stderrRaw );
       } catch ( final IOException | InterruptedException exception ) {
-         fail( exception );
+         throw new ProcessExecutionException( exception );
       }
-      return null;
    }
 
    /**

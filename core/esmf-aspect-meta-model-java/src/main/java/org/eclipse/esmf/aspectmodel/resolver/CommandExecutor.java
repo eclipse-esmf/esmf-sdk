@@ -13,33 +13,42 @@
 
 package org.eclipse.esmf.aspectmodel.resolver;
 
-import java.io.IOException;
+import java.io.File;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
-import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.ProcessExecutionException;
+import org.eclipse.esmf.aspectmodel.resolver.process.BinaryLauncher;
+import org.eclipse.esmf.aspectmodel.resolver.process.ExecutableJarLauncher;
+import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher;
 
 /**
  * Executes an external resolver via the underlying OS command and returns the stdout from the command as result.
  */
 public class CommandExecutor {
-   public static String executeCommand( String command ) {
-      // convenience: if just the name of the jar is given, expand to the proper java invocation command
-      if ( isJarInvocation( command ) ) {
-         command = String.format( "%s -jar %s", ProcessHandle.current().info().command().orElse( "java" ), command );
+   public static String executeCommand( final String command ) {
+      final List<String> parts = Arrays.asList( command.split( " " ) );
+      final String executableOrJar = parts.get( 0 );
+      final ProcessLauncher processLauncher = executableOrJar.toLowerCase().endsWith( ".jar" )
+            ? new ExecutableJarLauncher( new File( executableOrJar ) )
+            : new BinaryLauncher( new File( executableOrJar ) );
+      final List<String> arguments = parts.size() == 1
+            ? List.of()
+            : parts.subList( 1, parts.size() );
+      final ProcessLauncher.ExecutionContext context = new ProcessLauncher.ExecutionContext(
+            arguments, Optional.empty(), new File( System.getProperty( "user.dir" ) ) );
+      final ProcessLauncher.ExecutionResult result = processLauncher.apply( context );
+
+      if ( result.exitStatus() == 0 ) {
+         return result.stdout();
       }
 
-      try {
-         final Process p = Runtime.getRuntime().exec( command );
-         final int result = p.waitFor();
-         if ( result != 0 ) {
-            throw new ModelResolutionException( getOutputFrom( p.getErrorStream() ) );
-         }
-         return getOutputFrom( p.getInputStream() );
-      } catch ( final IOException | InterruptedException exception ) {
-         throw new ModelResolutionException( "The attempt to execute external resolver failed with the error:", exception );
-      }
+      throw new ProcessExecutionException( "Execution of '" + executableOrJar + "' failed (status " + result.exitStatus() + "). "
+            + "Error output: " + result.stderr() );
    }
 
    private static boolean isJarInvocation( final String command ) {
