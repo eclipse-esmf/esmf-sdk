@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidVersionException;
 import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.samm.KnownVersion;
 
 import com.google.common.collect.Streams;
@@ -35,9 +36,6 @@ import org.apache.jena.vocabulary.RDF;
  */
 public class BammUriRewriter extends AbstractUriRewriter {
    private final BammVersion bammVersion;
-
-   private static final String SAMM_C_PREFIX = "samm-c";
-   private static final String SAMM_E_PREFIX = "samm-e";
 
    public BammUriRewriter( final BammVersion bammVersion ) {
       // Translating versions will only fail if there are no SAMM versions (i.e., KnownVersion) for the versions in BAMM_VERSION
@@ -52,10 +50,10 @@ public class BammUriRewriter extends AbstractUriRewriter {
          final Map<String, String> oldToNewNamespaces ) {
       return sourceModel.getNsPrefixMap().keySet().stream()
             .map( prefix -> switch ( prefix ) {
-               case "bamm" -> Map.entry( "samm", targetPrefixes.get( "samm" ) );
-               case "bamm-c" -> Map.entry( SAMM_C_PREFIX, targetPrefixes.get( SAMM_C_PREFIX ) );
-               case "bamm-e" -> Map.entry( SAMM_E_PREFIX, targetPrefixes.get( SAMM_E_PREFIX ) );
-               case "unit" -> Map.entry( "unit", targetPrefixes.get( "unit" ) );
+               case "bamm" -> Map.entry( SammNs.SAMM.getShortForm(), targetPrefixes.get( SammNs.SAMM.getShortForm() ) );
+               case "bamm-c" -> Map.entry( SammNs.SAMMC.getShortForm(), targetPrefixes.get( SammNs.SAMMC.getShortForm() ) );
+               case "bamm-e" -> Map.entry( SammNs.SAMME.getShortForm(), targetPrefixes.get( SammNs.SAMME.getShortForm() ) );
+               case "unit" -> Map.entry( SammNs.UNIT.getShortForm(), targetPrefixes.get( SammNs.UNIT.getShortForm() ) );
                default -> Map.entry( prefix, rewriteUri( sourceModel.getNsPrefixURI( prefix ), oldToNewNamespaces )
                      .orElse( sourceModel.getNsPrefixURI( prefix ) ) );
             } )
@@ -66,10 +64,12 @@ public class BammUriRewriter extends AbstractUriRewriter {
    protected Map<String, String> buildReplacementPrefixMap( final Model sourceModel, final Map<String, String> targetPrefixes ) {
       // The mapping of the URNs of the legacy BAMM Aspect Meta model to their corresponding SAMM counterparts
       return Map.of(
-            "urn:bamm:io.openmanufacturing:meta-model:" + bammVersion.versionString() + "#", targetPrefixes.get( "samm" ),
-            "urn:bamm:io.openmanufacturing:characteristic:" + bammVersion.versionString() + "#", targetPrefixes.get( SAMM_C_PREFIX ),
-            "urn:bamm:io.openmanufacturing:entity:" + bammVersion.versionString() + "#", targetPrefixes.get( SAMM_E_PREFIX ),
-            "urn:bamm:io.openmanufacturing:unit:" + bammVersion.versionString() + "#", targetPrefixes.get( "unit" )
+            "urn:bamm:io.openmanufacturing:meta-model:" + bammVersion.versionString() + "#",
+            targetPrefixes.get( SammNs.SAMM.getShortForm() ),
+            "urn:bamm:io.openmanufacturing:characteristic:" + bammVersion.versionString() + "#",
+            targetPrefixes.get( SammNs.SAMMC.getShortForm() ),
+            "urn:bamm:io.openmanufacturing:entity:" + bammVersion.versionString() + "#", targetPrefixes.get( SammNs.SAMME.getShortForm() ),
+            "urn:bamm:io.openmanufacturing:unit:" + bammVersion.versionString() + "#", targetPrefixes.get( SammNs.UNIT.getShortForm() )
       );
    }
 
@@ -119,6 +119,7 @@ public class BammUriRewriter extends AbstractUriRewriter {
 
       sourceModel.removeAll();
       remappedStatements.forEach( sourceModel::add );
+      sourceModel.clearNsPrefixMap();
       sourceModel.setNsPrefixes( buildPrefixMap( sourceModel, targetPrefixes, oldToNewNamespaces ) );
       return sourceModel;
    }
