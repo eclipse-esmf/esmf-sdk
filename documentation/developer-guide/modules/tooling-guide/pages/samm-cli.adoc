@@ -57,6 +57,8 @@ can also be seen in the help text of the individual subcommands.
 
 === List of commands
 
+{empty} +
+
 [TIP]
 ====
 In place of `<model>` in the command descriptions below, you can provide either one of:
@@ -240,7 +242,7 @@ of model resolution] for more information.
                                        run `samm aas <aas file> list` to list them.                                          | `samm aas AssetAdminShell.aasx to aspect -s 1 -s 2`
 .1+| [[aas-list]] aas <aas file> list | Retrieve a list of submodel templates contained within the provided
                                        Asset Administration Shell (AAS) file.                                                | `samm aas AssetAdminShell.aasx list`
-.4+| [[package-list]] package <namespace package> import | Imports a Namespace Package (file or URL) into a given
+.4+| [[package-import]] package <namespace package> import | Imports a Namespace Package (file or URL) into a given
                                      xref:models-directory-structure[models directory]                                       | `samm package MyPackage.zip import --models-root c:\models`
                                    | _--dry-run_ : Don't write changes to the file system, but print a report of changes
                                      that would be performed.                                                                |
@@ -248,6 +250,13 @@ of model resolution] for more information.
                                      changes in the report .                                                                 |
                                    | _--force_ : When a new file is to be created but it already exists in the file system,
                                      the operation will be cancelled, unless `--force` is used.                              |
+.2+| [[package-export]] package <model or namespace URN> export | Exports an Aspect Model with its dependencies
+                                     or a complete namespace to a Namespace Package (.zip)                                   | `samm package urn:samm:org.eclipse.example.myns:1.0.0 --output package.zip` +
+                                     {empty} +
+                                     `samm package AspectModel.ttl export --output package.zip`
+                                   | _--output, -o_ : output file path (default: stdout); as ZIP is a binary format, it is
+                                       strongly recommended to output the result to a file by using the -o option or the
+                                       console redirection operator '>')|
 |===
 
 [[configuration-of-model-resolution]]

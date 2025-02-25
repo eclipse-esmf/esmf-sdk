@@ -64,6 +64,10 @@ public class NamespacePackageTest {
       assertThat( aspectModel ).files().anySatisfy( aspectModelFile -> {
          Assertions.assertThat( aspectsNames ).contains( aspectModelFile.aspect().getName() );
       } );
+
+      assertThat( aspectModel ).files().allMatch( file ->
+            file.sourceLocation().orElseThrow().toString().matches(
+                  "^jar:file:[^!]*namespaces\\.zip!/org\\.eclipse\\.esmf\\.examples/\\d\\.\\d\\.\\d/" + file.filename().orElseThrow() ) );
    }
 
    @Test

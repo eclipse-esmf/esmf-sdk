@@ -41,6 +41,7 @@ import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.InvalidTestAspect;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
+import org.eclipse.esmf.test.TestSharedAspect;
 import org.eclipse.esmf.test.TestSharedModel;
 
 import org.apache.commons.io.FileUtils;
@@ -603,8 +604,7 @@ class SammCliTest {
    void testAspectToJavaWithCustomPackageName() {
       final File outputDir = outputDirectory.toFile();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
-            "--output-directory",
-            outputDir.getAbsolutePath(), "--package-name", "com.example.foo" );
+            "--output-directory", outputDir.getAbsolutePath(), "--package-name", "com.example.foo" );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
 
@@ -618,8 +618,7 @@ class SammCliTest {
    void testAspectToJavaWithoutJacksonAnnotations() {
       final File outputDir = outputDirectory.toFile();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
-            "--output-directory",
-            outputDir.getAbsolutePath(), "--no-jackson" );
+            "--output-directory", outputDir.getAbsolutePath(), "--no-jackson" );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
 
@@ -658,8 +657,8 @@ class SammCliTest {
             System.getProperty( "user.dir" ) + "/../../core/esmf-aspect-model-java-generator/templates/test-macro-lib.vm" );
 
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
-            "--output-directory",
-            outputDir.getAbsolutePath(), "--execute-library-macros", "--template-library-file", templateLibraryFile.getAbsolutePath() );
+            "--output-directory", outputDir.getAbsolutePath(), "--execute-library-macros", "--template-library-file",
+            templateLibraryFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
 
@@ -1528,6 +1527,44 @@ class SammCliTest {
       assertThat( result2.exitStatus() ).isEqualTo( 1 );
       assertThat( result2.stdout() ).isEmpty();
       assertThat( result2.stderr() ).contains( "already exists" );
+   }
+
+   @Test
+   void testPackageExportForNamespace() {
+      final TestModel testModel = TestSharedAspect.ASPECT_WITH_COLLECTION_ENTITY;
+      final String namespaceUrn = testModel.getUrn().getNamespaceIdentifier();
+      final String modelsRoot = inputFile( testModel ).getParentFile().getParentFile().getParentFile()
+            .getAbsolutePath();
+      final Path outputFile = outputDirectory.resolve( "package.zip" );
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "package",
+            namespaceUrn, "export", "--models-root", modelsRoot, "--output", outputFile.toFile().getAbsolutePath() );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( outputFile ).exists();
+      assertThat( contentType( outputFile.toFile() ) ).isEqualTo( MediaType.application( "zip" ) );
+   }
+
+   @Test
+   void testPackageExportForAspectFromFile() {
+      final Path outputFile = outputDirectory.resolve( "package.zip" );
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "package",
+            inputFile( testModel ).getAbsolutePath(), "export", "--output", outputFile.toFile().getAbsolutePath() );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( outputFile ).exists();
+      assertThat( contentType( outputFile.toFile() ) ).isEqualTo( MediaType.application( "zip" ) );
+   }
+
+   @Test
+   void testPackageExportForAspectFromUrn() {
+      final String modelsRoot = inputFile( testModel ).getParentFile().getParentFile().getParentFile().getAbsolutePath();
+      final Path outputFile = outputDirectory.resolve( "package.zip" );
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "package",
+            testModel.getUrn().toString(), "export", "--models-root", modelsRoot, "--output", outputFile.toFile().getAbsolutePath() );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( outputFile ).exists();
+      assertThat( contentType( outputFile.toFile() ) ).isEqualTo( MediaType.application( "zip" ) );
    }
 
    /**

@@ -68,12 +68,19 @@ public class AspectModelUrnInputHandler extends AbstractInputHandler {
 
    @Override
    public AspectModel loadAspectModel() {
-      return applyAspectModelLoader( aspectModelLoader -> aspectModelLoader.load( urn ) );
+      // Does the URN denote a namespace?
+      return urn.getName().isEmpty()
+            ? applyAspectModelLoader( aspectModelLoader -> aspectModelLoader.loadNamespace( urn ) )
+            : applyAspectModelLoader( aspectModelLoader -> aspectModelLoader.load( urn ) );
    }
 
    @Override
    public URI inputUri() {
       return URI.create( urn.toString() );
+   }
+
+   public AspectModelUrn urn() {
+      return urn;
    }
 
    @Override

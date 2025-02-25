@@ -159,8 +159,14 @@ public class NamespacePackage implements ResolutionStrategy, Artifact<URI, byte[
       return "";
    }
 
+   /**
+    * Constructs the "jar:" URL as described in {@link java.net.JarURLConnection}, as a URI.
+    *
+    * @param filePath the relative path inside the file
+    * @return the full jar URL
+    */
    private URI constructLocationForFile( final String filePath ) {
-      return URI.create( "jar:%s!%s".formatted( location, filePath ) );
+      return URI.create( "jar:%s!/%s".formatted( location, filePath ) );
    }
 
    private List<AspectModelFile> loadZipContent() {

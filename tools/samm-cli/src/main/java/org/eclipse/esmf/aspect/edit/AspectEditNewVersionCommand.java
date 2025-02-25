@@ -98,7 +98,6 @@ public class AspectEditNewVersionCommand extends AbstractCommand {
    )
    private boolean force;
 
-   @SuppressWarnings( "UseOfSystemOutOrSystemErr" )
    @Override
    public void run() {
       setDetails( details );

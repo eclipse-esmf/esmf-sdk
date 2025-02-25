@@ -27,7 +27,8 @@ import picocli.CommandLine;
       description = "Import and export Namespace Packages",
       subcommands = {
             CommandLine.HelpCommand.class,
-            PackageImportCommand.class
+            PackageImportCommand.class,
+            PackageExportCommand.class
       },
       headerHeading = "@|bold Usage|@:%n%n",
       descriptionHeading = "%n@|bold Description|@:%n%n",
@@ -42,7 +43,7 @@ public class PackageCommand extends AbstractCommand {
 
    @CommandLine.Parameters(
          paramLabel = "INPUT",
-         description = "Input Namespace Package file or URL",
+         description = "Input Namespace Package file, URL or Aspect Model URN",
          arity = "1",
          index = "0"
    )

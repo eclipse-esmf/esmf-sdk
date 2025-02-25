@@ -158,6 +158,19 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
    }
 
    /**
+    * Loads all contents of a complete namespace into an Aspect Model
+    *
+    * @param urn the namespace URN
+    * @return the Aspect Model
+    */
+   public AspectModel loadNamespace( final AspectModelUrn urn ) {
+      if ( !urn.getName().isEmpty() ) {
+         throw new AspectLoadingException( "URN does not denote a namespace" );
+      }
+      return loadAspectModelFiles( loadContentsForNamespace( urn ).toList() );
+   }
+
+   /**
     * Load an Aspect Model by transitively resolving a set of given input URNs
     *
     * @param urns the Aspect Model URNs
@@ -234,8 +247,12 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
 
    /**
     * Load a namespace package from an input stream with a given location. The location is not resolved or loaded from, but is only attached
-    * to the files loaded from the input stream to indicate their original source, e.g., file system location or URL of the
-    * namespace package.
+    * to the files loaded from the input stream to indicate their original source, i.e., a file system location or URL of the
+    * namespace package. For example, if the namespace package is located at {@code file:/some/path/package.zip} or
+    * {@code https://example.com/package.zip}, the files in the package will have a location URI such as
+    * {@code jar:file:/some/path/package.zip!/com.example.namespace/1.0.0/AspectModel.ttl} or
+    * {@code jar:https://example.com/package.zip!/com.example.namespace/1.0.0/AspectModel.ttl}, respectively, as described in
+    * the JavaDoc for {@link java.net.JarURLConnection}.
     *
     * @param location the source location
     * @param inputStream the input stream to load the ZIP content from
@@ -432,15 +449,18 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
     * @return the Aspect Model
     */
    public AspectModel loadAspectModelFiles( final Collection<AspectModelFile> inputFiles ) {
+      final Collection<AspectModelFile> migratedInputs = inputFiles.stream()
+            .map( this::migrate )
+            .toList();
       final Model mergedModel = ModelFactory.createDefaultModel();
-      for ( final AspectModelFile file : inputFiles ) {
+      for ( final AspectModelFile file : migratedInputs ) {
          RdfUtil.mergeModel( mergedModel, file.sourceModel() );
       }
       mergedModel.add( MetaModelFile.metaModelDefinitions() );
 
       final List<ModelElement> elements = new ArrayList<>();
       final List<AspectModelFile> files = new ArrayList<>();
-      for ( final AspectModelFile file : inputFiles ) {
+      for ( final AspectModelFile file : migratedInputs ) {
          final DefaultAspectModelFile aspectModelFile = new DefaultAspectModelFile( file.sourceModel(), file.headerComment(),
                file.sourceLocation() );
          files.add( aspectModelFile );
