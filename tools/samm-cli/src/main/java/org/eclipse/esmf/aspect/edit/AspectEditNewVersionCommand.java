@@ -35,7 +35,8 @@ import org.eclipse.esmf.metamodel.Namespace;
 
 import picocli.CommandLine;
 
-@CommandLine.Command( name = AspectEditNewVersionCommand.COMMAND_NAME,
+@CommandLine.Command(
+      name = AspectEditNewVersionCommand.COMMAND_NAME,
       description = "Create a new version of a file or namespace",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",
@@ -141,10 +142,6 @@ public class AspectEditNewVersionCommand extends AbstractCommand {
       final AspectChangeManagerConfig config = AspectChangeManagerConfigBuilder.builder()
             .detailedChangeReport( details )
             .build();
-      performRefactoring( aspectModel, copy, config, dryRun ).ifPresent( changeContext -> {
-         // Check & write changes to file system
-         checkFilesystemConsistency( changeContext, force );
-         performFileSystemWrite( changeContext );
-      } );
+      performRefactoring( aspectModel, copy, config, dryRun, force );
    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -11,40 +11,51 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.aspect;
+package org.eclipse.esmf.namespacepackage;
 
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.LoggingMixin;
-import org.eclipse.esmf.aspect.edit.AspectEditMoveCommand;
-import org.eclipse.esmf.aspect.edit.AspectEditNewVersionCommand;
 import org.eclipse.esmf.exception.SubCommandException;
 
 import picocli.CommandLine;
 
+/**
+ * Top-level command for working with Namespace Packages
+ */
 @CommandLine.Command(
-      name = AspectEditCommand.COMMAND_NAME,
-      description = "Edit (refactor) an Aspect Model",
+      name = PackageCommand.COMMAND_NAME,
+      description = "Import and export Namespace Packages",
       subcommands = {
             CommandLine.HelpCommand.class,
-            AspectEditMoveCommand.class,
-            AspectEditNewVersionCommand.class
+            PackageImportCommand.class,
+            PackageExportCommand.class
       },
       headerHeading = "@|bold Usage|@:%n%n",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",
       optionListHeading = "%n@|bold Options|@:%n"
 )
-public class AspectEditCommand extends AbstractCommand {
-   public static final String COMMAND_NAME = "edit";
+public class PackageCommand extends AbstractCommand {
+   public static final String COMMAND_NAME = "package";
 
    @CommandLine.Mixin
    private LoggingMixin loggingMixin;
 
-   @CommandLine.ParentCommand
-   public AspectCommand parentCommand;
+   @CommandLine.Parameters(
+         paramLabel = "INPUT",
+         description = "Input Namespace Package file, URL or Aspect Model URN",
+         arity = "1",
+         index = "0"
+   )
+   private String input;
 
    @Override
    public void run() {
-      throw new SubCommandException( AspectCommand.COMMAND_NAME + " " + COMMAND_NAME );
+      throw new SubCommandException( COMMAND_NAME );
+   }
+
+   @SuppressWarnings( { "LombokGetterMayBeUsed", "RedundantSuppression" } )
+   public String getInput() {
+      return input;
    }
 }

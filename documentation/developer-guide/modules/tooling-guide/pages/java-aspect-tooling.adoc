@@ -263,9 +263,9 @@ Alternatively, you can also serialize a complete `AspectModelFile`:
 include::example$SerializeAspectModel.java[tags=serializeFile]
 ----
 
-To include the serializer artifact, use the following dependencies:
+To include the serializer, use the following dependency:
 
-include::esmf-developer-guide:ROOT:partial$esmf-aspect-model-serializer-artifact.adoc[]
+include::esmf-developer-guide:ROOT:partial$esmf-aspect-meta-model-java-artifact.adoc[]
 
 [[creating-aspect-models]]
 == Programmatically Creating Aspect Models

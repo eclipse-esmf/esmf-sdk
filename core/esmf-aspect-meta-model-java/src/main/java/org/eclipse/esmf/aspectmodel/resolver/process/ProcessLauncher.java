@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -11,15 +11,15 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf;
-
-import static org.junit.jupiter.api.Assertions.fail;
+package org.eclipse.esmf.aspectmodel.resolver.process;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.ProcessExecutionException;
 
 /**
  * This class abstracts running a "process", i.e. running a program by providing its arguments, optional stdin and its working directory,
@@ -36,20 +36,21 @@ public abstract class ProcessLauncher implements Function<ProcessLauncher.Execut
    public ExecutionResult runAndExpectSuccess( final String... arguments ) {
       final ExecutionResult result = apply( arguments );
       if ( result.exitStatus() != 0 ) {
-         System.out.printf( "Execution failed (status %d):%n", result.exitStatus() );
-         System.out.println( "stdout:" );
-         System.out.println( result.stdout() );
-         System.out.println();
-         System.out.println( "stderr:" );
-         System.out.println( result.stderr() );
-         fail();
+         throw new ProcessExecutionException(
+               "Execution failed (status " + result.exitStatus + "):\n"
+                     + "stdout:"
+                     + result.stdout()
+                     + "\n"
+                     + "stderr:"
+                     + result.stderr()
+         );
       }
       return result;
    }
 
-   public static record ExecutionContext( List<String> arguments, Optional<byte[]> stdin, File workingDirectory ) {
+   public record ExecutionContext( List<String> arguments, Optional<byte[]> stdin, File workingDirectory ) {
    }
 
-   public static record ExecutionResult( int exitStatus, String stdout, String stderr, byte[] stdoutRaw, byte[] stderrRaw ) {
+   public record ExecutionResult( int exitStatus, String stdout, String stderr, byte[] stdoutRaw, byte[] stderrRaw ) {
    }
 }

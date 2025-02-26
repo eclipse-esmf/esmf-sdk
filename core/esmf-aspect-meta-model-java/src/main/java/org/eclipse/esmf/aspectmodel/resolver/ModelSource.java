@@ -14,6 +14,7 @@
 package org.eclipse.esmf.aspectmodel.resolver;
 
 import java.net.URI;
+import java.util.Iterator;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
@@ -22,7 +23,7 @@ import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 /**
  * A model source is one place where {@link AspectModelFile}s are stored and can be retrieved from.
  */
-public interface ModelSource {
+public interface ModelSource extends Iterable<AspectModelFile> {
    /**
     * Lists all URIs of Aspect Model files in this model source
     *
@@ -52,4 +53,14 @@ public interface ModelSource {
     * @return the Aspect Model files
     */
    Stream<AspectModelFile> loadContentsForNamespace( AspectModelUrn namespace );
+
+   /**
+    * Makes the contents of this model sources iterable
+    *
+    * @return an iterator for the AspectModelFiles in this model source
+    */
+   @Override
+   default Iterator<AspectModelFile> iterator() {
+      return loadContents().iterator();
+   }
 }

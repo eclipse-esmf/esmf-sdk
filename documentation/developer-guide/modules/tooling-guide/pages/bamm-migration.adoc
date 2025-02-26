@@ -85,7 +85,7 @@ What as previously known as the `sds-sdk` is now the `esmf-sdk`.
 | `io.openmanufacturing:sds-aspect-model-starter` | `org:eclipse.esmf:esmf-aspect-model-starter`
 | `io.openmanufacturing:sds-aspect-static-meta-model-java` | `org:eclipse.esmf:esmf-aspect-static-meta-model-java`
 | `io.openmanufacturing:sds-aspect-model-java-core` | `org:eclipse.esmf:esmf-aspect-model-java-core`
-| `io.openmanufacturing:sds-aspect-model-serializer` | `org:eclipse.esmf:esmf-aspect-model-serializer`
+| `io.openmanufacturing:sds-aspect-model-serializer` | `org:eclipse.esmf:esmf-aspect-meta-model-java`
 | `io.openmanufacturing:sds-aspect-model-jackson` | `org:eclipse.esmf:esmf-aspect-model-jackson`
 | `io.openmanufacturing:sds-test-aspect-models` | `org:eclipse.esmf:esmf-test-aspect-models`
 | `io.openmanufacturing:sds-test-resources` | `org:eclipse.esmf:esmf-test-resources`

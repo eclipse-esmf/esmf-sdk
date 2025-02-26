@@ -27,7 +27,8 @@ import org.eclipse.esmf.exception.CommandException;
 
 import picocli.CommandLine;
 
-@CommandLine.Command( name = AspectPrettyPrintCommand.COMMAND_NAME,
+@CommandLine.Command(
+      name = AspectPrettyPrintCommand.COMMAND_NAME,
       description = "Pretty print (format) Aspect Model",
       headerHeading = "@|bold Usage|@:%n%n",
       descriptionHeading = "%n@|bold Description|@:%n%n",

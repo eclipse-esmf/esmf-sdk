@@ -31,7 +31,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import picocli.CommandLine;
 
-@CommandLine.Command( name = AspectToJsonSchemaCommand.COMMAND_NAME,
+@CommandLine.Command(
+      name = AspectToJsonSchemaCommand.COMMAND_NAME,
       description = "Generate JSON schema for an Aspect Model",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",

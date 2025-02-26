@@ -82,8 +82,8 @@ public class MetaModelVersionMigrator implements UnaryOperator<AspectModelFile> 
             .map( Resource::getURI )
             .filter( uri -> uri.startsWith( sammUrnStart ) )
             .flatMap( uri -> AspectModelUrn.from( uri ).toJavaStream() )
-            .filter( urn -> (urn.getElementType().equals( ElementType.META_MODEL ) || urn.getElementType()
-                  .equals( ElementType.CHARACTERISTIC )) )
+            .filter( urn -> ( urn.getElementType().equals( ElementType.META_MODEL ) || urn.getElementType()
+                  .equals( ElementType.CHARACTERISTIC ) ) )
             .map( AspectModelUrn::getVersion )
             .map( VersionNumber::parse )
             .collect( Collectors.toSet() );
@@ -105,7 +105,6 @@ public class MetaModelVersionMigrator implements UnaryOperator<AspectModelFile> 
     * @param modelFile the source model file
     * @return the resulting {@link AspectModelFile} that corresponds to the input Aspect model file, but with the new meta model version
     */
-   //   public AspectModelFile updateMetaModelVersion( final AspectModelFile modelFile ) {
    @Override
    public AspectModelFile apply( final AspectModelFile modelFile ) {
       // Before any semantic migration, perform the mechanical translation of legacy BAMM models

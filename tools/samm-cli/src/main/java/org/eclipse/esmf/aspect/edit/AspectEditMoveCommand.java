@@ -44,7 +44,8 @@ import org.eclipse.esmf.metamodel.impl.DefaultNamespace;
 
 import picocli.CommandLine;
 
-@CommandLine.Command( name = AspectEditMoveCommand.COMMAND_NAME,
+@CommandLine.Command(
+      name = AspectEditMoveCommand.COMMAND_NAME,
       description = "Move elements to other files or namespaces",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",
@@ -169,11 +170,7 @@ public class AspectEditMoveCommand extends AbstractCommand {
       final AspectChangeManagerConfig config = AspectChangeManagerConfigBuilder.builder()
             .detailedChangeReport( details )
             .build();
-      performRefactoring( aspectModel, move, config, dryRun ).ifPresent( changeContext -> {
-         // Check & write changes to file system
-         checkFilesystemConsistency( changeContext, force );
-         performFileSystemWrite( changeContext );
-      } );
+      performRefactoring( aspectModel, move, config, dryRun, force );
    }
 
    /**
@@ -199,11 +196,7 @@ public class AspectEditMoveCommand extends AbstractCommand {
       final AspectChangeManagerConfig config = AspectChangeManagerConfigBuilder.builder()
             .detailedChangeReport( details )
             .build();
-      performRefactoring( aspectModel, move, config, dryRun ).ifPresent( changeContext -> {
-         // Check & write changes to file system
-         checkFilesystemConsistency( changeContext, force );
-         performFileSystemWrite( changeContext );
-      } );
+      performRefactoring( aspectModel, move, config, dryRun, force );
    }
 
    /**
@@ -226,11 +219,7 @@ public class AspectEditMoveCommand extends AbstractCommand {
       final AspectChangeManagerConfig config = AspectChangeManagerConfigBuilder.builder()
             .detailedChangeReport( details )
             .build();
-      performRefactoring( aspectModel, move, config, dryRun ).ifPresent( changeContext -> {
-         // Check & write changes to file system
-         checkFilesystemConsistency( changeContext, force );
-         performFileSystemWrite( changeContext );
-      } );
+      performRefactoring( aspectModel, move, config, dryRun, force );
    }
 
    /**
@@ -254,11 +243,7 @@ public class AspectEditMoveCommand extends AbstractCommand {
       final AspectChangeManagerConfig config = AspectChangeManagerConfigBuilder.builder()
             .detailedChangeReport( details )
             .build();
-      performRefactoring( aspectModel, move, config, dryRun ).ifPresent( changeContext -> {
-         // Check & write changes to file system
-         checkFilesystemConsistency( changeContext, force );
-         performFileSystemWrite( changeContext );
-      } );
+      performRefactoring( aspectModel, move, config, dryRun, force );
    }
 
    private AspectModelFile determineTargetAspectModelFile( final AspectModel aspectModel, final Namespace targetNamespace ) {

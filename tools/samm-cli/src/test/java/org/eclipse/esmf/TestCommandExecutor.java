@@ -30,7 +30,6 @@ import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 
 public class TestCommandExecutor {
-
    @EnabledOnOs( OS.WINDOWS )
    @Test
    void testCmdScript() {

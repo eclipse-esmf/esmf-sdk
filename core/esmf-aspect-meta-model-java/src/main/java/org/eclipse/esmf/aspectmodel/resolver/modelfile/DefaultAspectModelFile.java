@@ -22,13 +22,20 @@ import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Namespace;
 
+import lombok.Setter;
 import org.apache.jena.rdf.model.Model;
 
+/**
+ * Default implementation of an AspectModelFile that not only provides access to the underlying RDF graph but also the object representation
+ * of the model elements in this file
+ */
 public final class DefaultAspectModelFile implements AspectModelFile {
    private final Model sourceModel;
    private final List<String> headerComment;
    private final Optional<URI> sourceLocation;
+   @Setter
    private List<ModelElement> elements;
+   @Setter
    private Namespace namespace = null;
 
    public DefaultAspectModelFile( final Model sourceModel, final List<String> headerComment, final Optional<URI> sourceLocation ) {
@@ -66,14 +73,6 @@ public final class DefaultAspectModelFile implements AspectModelFile {
    @Override
    public Namespace namespace() {
       return namespace;
-   }
-
-   public void setElements( final List<ModelElement> elements ) {
-      this.elements = elements;
-   }
-
-   public void setNamespace( final Namespace namespace ) {
-      this.namespace = namespace;
    }
 
    @Override

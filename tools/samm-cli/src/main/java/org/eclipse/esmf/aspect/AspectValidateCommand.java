@@ -29,7 +29,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
-@CommandLine.Command( name = AspectValidateCommand.COMMAND_NAME,
+@CommandLine.Command(
+      name = AspectValidateCommand.COMMAND_NAME,
       description = "Validate input Aspect Model",
       headerHeading = "@|bold Usage|@:%n%n",
       descriptionHeading = "%n@|bold Description|@:%n%n",

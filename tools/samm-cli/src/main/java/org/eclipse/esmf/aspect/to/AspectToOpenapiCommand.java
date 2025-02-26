@@ -52,7 +52,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import picocli.CommandLine;
 
-@CommandLine.Command( name = AspectToOpenapiCommand.COMMAND_NAME,
+@CommandLine.Command(
+      name = AspectToOpenapiCommand.COMMAND_NAME,
       description = "Generate OpenAPI specification for an Aspect Model",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",

@@ -13,18 +13,16 @@
 
 package org.eclipse.esmf.aspect.to;
 
-import java.io.IOException;
-
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.ResolverConfigurationMixin;
 import org.eclipse.esmf.aspect.AspectToCommand;
 import org.eclipse.esmf.aspectmodel.generator.jsonld.AspectModelToJsonLdGenerator;
-import org.eclipse.esmf.exception.CommandException;
 
 import picocli.CommandLine;
 
-@CommandLine.Command( name = AspectToJsonLdCommand.COMMAND_NAME,
+@CommandLine.Command(
+      name = AspectToJsonLdCommand.COMMAND_NAME,
       description = "Generate JSON-LD representation of an Aspect Model",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",

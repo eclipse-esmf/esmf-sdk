@@ -23,7 +23,8 @@ import org.eclipse.esmf.aspectmodel.generator.json.JsonPayloadGenerationConfigBu
 
 import picocli.CommandLine;
 
-@CommandLine.Command( name = AspectToJsonCommand.COMMAND_NAME,
+@CommandLine.Command(
+      name = AspectToJsonCommand.COMMAND_NAME,
       description = "Generate OpenAPI JSON specification for an Aspect Model",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",

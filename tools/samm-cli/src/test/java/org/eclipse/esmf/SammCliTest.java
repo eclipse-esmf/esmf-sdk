@@ -32,14 +32,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.eclipse.esmf.ProcessLauncher.ExecutionResult;
 import org.eclipse.esmf.aspect.AspectValidateCommand;
+import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher;
+import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher.ExecutionResult;
 import org.eclipse.esmf.aspectmodel.shacl.violation.InvalidSyntaxViolation;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.InvalidTestAspect;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
+import org.eclipse.esmf.test.TestSharedAspect;
 import org.eclipse.esmf.test.TestSharedModel;
 
 import org.apache.commons.io.FileUtils;
@@ -284,7 +286,7 @@ class SammCliTest {
    void testAspectFromGitHubButRepoNotActuallyContainingFile() {
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect",
             defaultInputUrn, "validate", "--github", "eclipse-esmf/esmf-parent" );
-      assertThat( result.stdout() ).contains( "could not be resolved" );
+      assertThat( result.stdout() ).contains( "No file containing the definition" ).contains( "could be resolved" );
       assertThat( result.stdout() ).contains( "Repository does not contain any file that contains the element" );
       assertThat( result.stderr() ).isEmpty();
    }
@@ -602,8 +604,7 @@ class SammCliTest {
    void testAspectToJavaWithCustomPackageName() {
       final File outputDir = outputDirectory.toFile();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
-            "--output-directory",
-            outputDir.getAbsolutePath(), "--package-name", "com.example.foo" );
+            "--output-directory", outputDir.getAbsolutePath(), "--package-name", "com.example.foo" );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
 
@@ -617,8 +618,7 @@ class SammCliTest {
    void testAspectToJavaWithoutJacksonAnnotations() {
       final File outputDir = outputDirectory.toFile();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
-            "--output-directory",
-            outputDir.getAbsolutePath(), "--no-jackson" );
+            "--output-directory", outputDir.getAbsolutePath(), "--no-jackson" );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
 
@@ -657,8 +657,8 @@ class SammCliTest {
             System.getProperty( "user.dir" ) + "/../../core/esmf-aspect-model-java-generator/templates/test-macro-lib.vm" );
 
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
-            "--output-directory",
-            outputDir.getAbsolutePath(), "--execute-library-macros", "--template-library-file", templateLibraryFile.getAbsolutePath() );
+            "--output-directory", outputDir.getAbsolutePath(), "--execute-library-macros", "--template-library-file",
+            templateLibraryFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
 
@@ -1495,6 +1495,89 @@ class SammCliTest {
             "--github", "eclipse-esmf/esmf-sdk", "--github-directory", remoteModelsDirectory );
       assertThat( result.stderr() ).isEmpty();
       assertThat( result.stdout() ).contains( TestModel.TEST_NAMESPACE + "testProperty" );
+   }
+
+   @Test
+   void testPackageWithoutSubcommand() {
+      final ExecutionResult result = sammCli.apply( "--disable-color", "package" );
+      assertThat( result.exitStatus() ).isEqualTo( 2 );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).contains( "Missing required parameter" );
+   }
+
+   @Test
+   void testPackageImport() {
+      // Set up new empty models root directory
+      final File modelsRoot = outputDirectory.toFile();
+      modelsRoot.mkdirs();
+
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "package",
+            inputFile( "namespaces.zip" ).getAbsolutePath(), "import", "--models-root", modelsRoot.getAbsolutePath() );
+      assertThat( result.exitStatus() ).isEqualTo( 0 );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+
+      assertThat( outputDirectory ).exists().isDirectory();
+      assertThat( outputDirectory.resolve( "org.eclipse.esmf.examples" ) ).exists().isDirectory();
+      assertThat( outputDirectory.resolve( "org.eclipse.esmf.examples" ).resolve( "1.0.0" ) )
+            .exists().isDirectory().isNotEmptyDirectory();
+
+      final ExecutionResult result2 = sammCli.apply( "--disable-color", "package",
+            inputFile( "namespaces.zip" ).getAbsolutePath(), "import", "--models-root", modelsRoot.getAbsolutePath() );
+      assertThat( result2.exitStatus() ).isEqualTo( 1 );
+      assertThat( result2.stdout() ).isEmpty();
+      assertThat( result2.stderr() ).contains( "already exists" );
+   }
+
+   @Test
+   void testPackageExportForNamespace() {
+      final TestModel testModel = TestSharedAspect.ASPECT_WITH_COLLECTION_ENTITY;
+      final String namespaceUrn = testModel.getUrn().getNamespaceIdentifier();
+      final String modelsRoot = inputFile( testModel ).getParentFile().getParentFile().getParentFile()
+            .getAbsolutePath();
+      final Path outputFile = outputDirectory.resolve( "package.zip" );
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "package",
+            namespaceUrn, "export", "--models-root", modelsRoot, "--output", outputFile.toFile().getAbsolutePath() );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( outputFile ).exists();
+      assertThat( contentType( outputFile.toFile() ) ).isEqualTo( MediaType.application( "zip" ) );
+   }
+
+   @Test
+   void testPackageExportForAspectFromFile() {
+      final Path outputFile = outputDirectory.resolve( "package.zip" );
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "package",
+            inputFile( testModel ).getAbsolutePath(), "export", "--output", outputFile.toFile().getAbsolutePath() );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( outputFile ).exists();
+      assertThat( contentType( outputFile.toFile() ) ).isEqualTo( MediaType.application( "zip" ) );
+   }
+
+   @Test
+   void testPackageExportForAspectFromUrn() {
+      final String modelsRoot = inputFile( testModel ).getParentFile().getParentFile().getParentFile().getAbsolutePath();
+      final Path outputFile = outputDirectory.resolve( "package.zip" );
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "package",
+            testModel.getUrn().toString(), "export", "--models-root", modelsRoot, "--output", outputFile.toFile().getAbsolutePath() );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( outputFile ).exists();
+      assertThat( contentType( outputFile.toFile() ) ).isEqualTo( MediaType.application( "zip" ) );
+   }
+
+   /**
+    * Returns the File object for a test namespace package file
+    */
+   private File inputFile( final String filename ) {
+      final String resourcePath = String.format( "%s/../../core/esmf-test-aspect-models/src/main/resources/packages/%s",
+            System.getProperty( "user.dir" ), filename );
+      try {
+         return new File( resourcePath ).getCanonicalFile();
+      } catch ( final IOException e ) {
+         throw new RuntimeException( e );
+      }
    }
 
    /**

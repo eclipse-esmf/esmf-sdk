@@ -7,7 +7,9 @@ import org.eclipse.esmf.exception.SubCommandException;
 
 import picocli.CommandLine;
 
-@CommandLine.Command( name = AasToCommand.COMMAND_NAME, description = "Transforms an Aspect Model into another format",
+@CommandLine.Command(
+      name = AasToCommand.COMMAND_NAME,
+      description = "Transforms an Aspect Model into another format",
       subcommands = {
             CommandLine.HelpCommand.class,
             AasToAspectCommand.class

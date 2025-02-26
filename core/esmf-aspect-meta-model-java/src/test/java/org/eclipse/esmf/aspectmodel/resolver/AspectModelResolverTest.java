@@ -25,6 +25,7 @@ import java.io.File;
 import java.net.URISyntaxException;
 
 import org.eclipse.esmf.aspectmodel.AspectLoadingException;
+import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
@@ -94,6 +95,9 @@ class AspectModelResolverTest {
          assertThat( result ).files().first( ASPECT_MODEL_FILE ).headerComment().isNotNull();
          assertThat( result ).files().first( ASPECT_MODEL_FILE ).headerComment().first( STRING ).contains(
                "Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH" );
+         for ( final AspectModelFile file : result.files() ) {
+            assertThat( file.sourceModel().getNsPrefixMap().keySet() ).allMatch( prefix -> !prefix.contains( "bamm" ) );
+         }
       } ).doesNotThrowAnyException();
    }
 

@@ -14,10 +14,11 @@
 package org.eclipse.esmf;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.ExternalResolverStrategy;
@@ -68,35 +69,43 @@ public abstract class AbstractInputHandler implements InputHandler {
    protected abstract String expectedAspectName();
 
    protected List<ResolutionStrategy> configuredStrategies() {
-      final List<ResolutionStrategy> strategies = new ArrayList<>();
       if ( resolverConfig == null ) {
-         return strategies;
+         return List.of();
       }
-      final List<String> modelsRoots = resolverConfig.modelsRoots == null
-            ? List.of()
-            : resolverConfig.modelsRoots;
-      for ( final String modelsRoot : modelsRoots ) {
-         strategies.add( new FileSystemStrategy( new StructuredModelsRoot( Path.of( modelsRoot ) ) ) );
+      return Stream.of(
+                  Optional.ofNullable( resolverConfig.modelsRoots ).orElse( List.of() )
+                        .stream()
+                        .map( modelsRoot -> new FileSystemStrategy( new StructuredModelsRoot( Path.of( modelsRoot ) ) ) ),
+                  Optional.ofNullable( resolverConfig.commandLine )
+                        .orElse( List.of() )
+                        .stream()
+                        .map( ExternalResolverStrategy::new ),
+                  Optional.ofNullable( resolverConfig.gitHubResolverOptions ).orElse( List.of() )
+                        .stream()
+                        .map( options -> buildGithubModelSourceConfig( options, resolverConfig.gitHubToken ) )
+                        .flatMap( Optional::stream )
+                        .map( GitHubStrategy::new ) )
+            .<ResolutionStrategy> flatMap( Function.identity() )
+            .toList();
+   }
+
+   private Optional<GithubModelSourceConfig> buildGithubModelSourceConfig(
+         final ResolverConfigurationMixin.GitHubResolverOptions options, final String gitHubToken ) {
+      if ( options.gitHubName == null ) {
+         return Optional.empty();
       }
-      if ( resolverConfig.commandLine != null && !resolverConfig.commandLine.isBlank() ) {
-         strategies.add( new ExternalResolverStrategy( resolverConfig.commandLine ) );
-      }
-      if ( resolverConfig.gitHubResolutionOptions != null && resolverConfig.gitHubResolutionOptions.gitHubName != null ) {
-         final String[] parts = resolverConfig.gitHubResolutionOptions.gitHubName.split( "/" );
-         final String owner = parts[0];
-         final String repositoryName = parts[1];
-         final GithubRepository.Ref branchOrTag = resolverConfig.gitHubResolutionOptions.gitHubTag != null
-               ? new GithubRepository.Tag( resolverConfig.gitHubResolutionOptions.gitHubTag )
-               : new GithubRepository.Branch( resolverConfig.gitHubResolutionOptions.gitHubBranch );
-         final GithubRepository repository = new GithubRepository( owner, repositoryName, branchOrTag );
-         final GithubModelSourceConfig modelSourceConfig = GithubModelSourceConfigBuilder.builder()
-               .repository( repository )
-               .directory( resolverConfig.gitHubResolutionOptions.gitHubDirectory )
-               .token( resolverConfig.gitHubResolutionOptions.gitHubToken )
-               .build();
-         strategies.add( new GitHubStrategy( modelSourceConfig ) );
-      }
-      return strategies;
+      final String[] parts = options.gitHubName.split( "/" );
+      final String owner = parts[0];
+      final String repositoryName = parts[1];
+      final GithubRepository.Ref branchOrTag = options.gitHubTag != null
+            ? new GithubRepository.Tag( options.gitHubTag )
+            : new GithubRepository.Branch( options.gitHubBranch );
+      final GithubRepository repository = new GithubRepository( owner, repositoryName, branchOrTag );
+      return Optional.of( GithubModelSourceConfigBuilder.builder()
+            .repository( repository )
+            .directory( options.gitHubDirectory )
+            .token( gitHubToken )
+            .build() );
    }
 
    @Override

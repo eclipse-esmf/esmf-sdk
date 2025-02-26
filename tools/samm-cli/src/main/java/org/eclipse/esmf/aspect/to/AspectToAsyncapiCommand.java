@@ -42,7 +42,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
-@CommandLine.Command( name = AspectToAsyncapiCommand.COMMAND_NAME,
+@CommandLine.Command(
+      name = AspectToAsyncapiCommand.COMMAND_NAME,
       description = "Generate AsyncAPI specification for an Aspect Model",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",

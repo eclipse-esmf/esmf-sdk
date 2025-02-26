@@ -32,7 +32,8 @@ import org.eclipse.esmf.exception.CommandException;
 import io.vavr.control.Try;
 import picocli.CommandLine;
 
-@CommandLine.Command( name = AspectUsageCommand.COMMAND_NAME,
+@CommandLine.Command(
+      name = AspectUsageCommand.COMMAND_NAME,
       description = "Shows where model elements are used in Aspect Models",
       headerHeading = "@|bold Usage|@:%n%n",
       descriptionHeading = "%n@|bold Description|@:%n%n",
@@ -85,8 +86,8 @@ public class AspectUsageCommand extends AbstractCommand {
          if ( inputAspectModelUrn.isSuccess()
                && resolverConfiguration != null
                && resolverConfiguration.modelsRoots.isEmpty()
-               && ( resolverConfiguration.gitHubResolutionOptions == null
-               || resolverConfiguration.gitHubResolutionOptions.gitHubName == null ) ) {
+               && ( resolverConfiguration.gitHubResolverOptions == null
+               || resolverConfiguration.gitHubResolverOptions.isEmpty() ) ) {
             System.out.println( "Did you forget to set a models root or GitHub resolution?" );
          }
          System.exit( 0 );

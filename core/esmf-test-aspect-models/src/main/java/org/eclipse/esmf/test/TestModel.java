@@ -31,12 +31,6 @@ public interface TestModel {
    }
 
    static String modelToString( final Model model ) {
-      //      org.apache.jena.riot.RDFWriter x;
-      final String string = RDFWriter.create().format( RDFFormat.TURTLE ).lang( RDFLanguages.TURTLE ).source( model ).asString();
-
-      //      final StringWriter stringWriter = new StringWriter();
-      //      model.write( stringWriter, "TURTLE" );
-      //      return stringWriter.toString();
-      return string;
+      return RDFWriter.create().format( RDFFormat.TURTLE ).lang( RDFLanguages.TURTLE ).source( model ).asString();
    }
 }

@@ -19,13 +19,13 @@ import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.ResolverConfigurationMixin;
 import org.eclipse.esmf.aspect.AspectToCommand;
-import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
 import org.eclipse.esmf.aspectmodel.generator.diagram.DiagramGenerationConfig;
 import org.eclipse.esmf.exception.CommandException;
 
 import picocli.CommandLine;
 
-@CommandLine.Command( name = AspectToSvgCommand.COMMAND_NAME,
+@CommandLine.Command(
+      name = AspectToSvgCommand.COMMAND_NAME,
       description = "Generate SVG diagram for an Aspect Model",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",
