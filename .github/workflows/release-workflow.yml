@@ -8,7 +8,7 @@ on:
 jobs:
   check-preconditions:
     name: Check preconditions
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -48,7 +48,7 @@ jobs:
   build-linux:
     name: Linux build
     needs: [check-preconditions]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
