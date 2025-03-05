@@ -77,7 +77,6 @@ import org.slf4j.LoggerFactory;
  */
 public class AspectModelLoader implements ModelSource, ResolutionStrategySupport {
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelLoader.class );
-   private static final String ASPECT_MODELS_FOLDER = "aspect-models";
 
    public static final Supplier<ResolutionStrategy> DEFAULT_STRATEGY = () -> {
       final Path currentDirectory = Path.of( System.getProperty( "user.dir" ) );
