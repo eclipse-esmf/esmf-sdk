@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Locale;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
 import javax.annotation.Nonnull;
 
 import org.eclipse.esmf.substitution.IsLinux;

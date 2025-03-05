@@ -32,8 +32,8 @@ import org.graalvm.nativeimage.hosted.FieldValueTransformer;
       "unused",
       "squid:S00101", // Class name uses GraalVM substitution class naming schema, see
       // https://github.com/oracle/graal/tree/master/substratevm/src/com.oracle.svm.core/src/com/oracle/svm/core/jdk
-      "checkstyle:TypeName"
-      , "NewClassNamingConvention" } )
+      "checkstyle:TypeName",
+      "NewClassNamingConvention" } )
 public final class Target_org_apache_logging_log4j_LogManager {
    @Alias
    @RecomputeFieldValue( kind = RecomputeFieldValue.Kind.FromAlias )

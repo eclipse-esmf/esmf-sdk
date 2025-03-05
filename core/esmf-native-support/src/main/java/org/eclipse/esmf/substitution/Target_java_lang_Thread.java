@@ -31,8 +31,8 @@ import com.oracle.svm.core.annotate.TargetClass;
       "unused",
       "squid:S00101", // Class name uses GraalVM substitution class naming schema, see
       // https://github.com/oracle/graal/tree/master/substratevm/src/com.oracle.svm.core/src/com/oracle/svm/core/jdk
-      "checkstyle:TypeName"
-      , "NewClassNamingConvention" } )
+      "checkstyle:TypeName",
+      "NewClassNamingConvention" } )
 public final class Target_java_lang_Thread {
    @Delete
    @SuppressWarnings( { "static-method" } )
