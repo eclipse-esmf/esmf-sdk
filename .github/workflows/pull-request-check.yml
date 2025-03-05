@@ -30,9 +30,9 @@ jobs:
           fail_on_error: true
 
       - name: Setup JDK
-        uses: graalvm/setup-graalvm@2f25c0caae5b220866f732832d5e3e29ff493338 # v1.2.1
+        uses: graalvm/setup-graalvm@01ed653ac833fe80569f1ef9f25585ba2811baab # v1.3.3
         with:
-          java-version: '17.0.10'
+          java-version: '21.0.6'
           distribution: 'graalvm'
           components: 'native-image,js'
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -86,9 +86,9 @@ jobs:
           mvn -B -pl tools/samm-cli clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
           bundle="samm-bundle-DEV-SNAPSHOT-$(date +%s)"
           mkdir ${bundle}
-          curl -Lo jre.tar.gz https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.3%2B9/OpenJDK21U-jre_x64_mac_hotspot_21.0.3_9.tar.gz
+          curl -Lo jre.tar.gz https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.6%2B9/OpenJDK21U-jre_x64_mac_hotspot_21.0.6_7.tar.gz
           tar -xvf jre.tar.gz 
-          cp -r ./jdk-21.0.3+9-jre/Contents/Home ./${bundle}/jre
+          cp -r ./jdk-21.0.6+7-jre/Contents/Home ./${bundle}/jre
           cp tools/samm-cli/target/samm-cli-DEV-SNAPSHOT.jar ./${bundle}/
           
           cat <<EOF > ./${bundle}/run.sh
@@ -116,7 +116,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
           overwrite-settings: false
 
       - name: Test executable jar on Temurin
