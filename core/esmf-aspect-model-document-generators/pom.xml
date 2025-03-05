@@ -67,7 +67,7 @@
       </dependency>
       <dependency>
          <groupId>org.graphper</groupId>
-         <artifactId>graph-support</artifactId>
+         <artifactId>graph-support-core</artifactId>
       </dependency>
       <dependency>
          <groupId>com.github.curious-odd-man</groupId>

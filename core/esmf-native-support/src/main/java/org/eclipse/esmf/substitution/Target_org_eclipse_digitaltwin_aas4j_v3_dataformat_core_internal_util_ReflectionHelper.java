@@ -244,7 +244,7 @@ public final class Target_org_eclipse_digitaltwin_aas4j_v3_dataformat_core_inter
     * @see ReflectionHelper#setEmptyListsToNull(Object)
     */
    @KeepOriginal
-   public static native void setEmptyListsToNull( Object element );
+   public static native List<Runnable> setEmptyListsToNull( Object element );
 
    /**
     * @param element @see ReflectionHelper#createResetRunnable(Object, Field)

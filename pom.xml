@@ -79,10 +79,25 @@
       <!-- The path to the native configs as it is reachable from the submodules -->
       <native-config-path>${project.basedir}/../../${relative-native-config-path}</native-config-path>
 
-      <!-- Dependency version overrides -->
-      <log4j-version>2.22.1</log4j-version>
-      <wagon-maven-plugin-version>1.0</wagon-maven-plugin-version>
-      <mojo-executor-version>2.4.0</mojo-executor-version>
+      <!-- Override dependency versions until they are updated in esmf-parent -->
+      <graph-support-version>1.5.0</graph-support-version>
+      <junit-jupiter-version>5.12.0</junit-jupiter-version>
+      <log4j-version>2.24.3</log4j-version>
+      <logback-version>1.5.17</logback-version>
+      <mojo-executor-version>2.4.1</mojo-executor-version>
+      <slf4j-api-version>2.0.17</slf4j-api-version>
+      <spring-boot-version>3.4.3</spring-boot-version>
+      <tika-version>3.1.0</tika-version>
+      <validation-api-version>3.1.1</validation-api-version>
+      <vavr-version>0.10.6</vavr-version>
+
+      <flatten-maven-plugin-version>1.7.0</flatten-maven-plugin-version>
+      <maven-clean-plugin-version>3.4.1</maven-clean-plugin-version>
+      <maven-compiler-plugin-version>3.14.0</maven-compiler-plugin-version>
+      <maven-deploy-plugin-version>3.1.4</maven-deploy-plugin-version>
+      <maven-install-plugin-version>3.1.4</maven-install-plugin-version>
+      <native-maven-plugin-version>0.10.5</native-maven-plugin-version>
+      <wagon-maven-plugin-version>2.0.2</wagon-maven-plugin-version>
    </properties>
 
    <dependencyManagement>
@@ -208,6 +223,11 @@
             <artifactId>mojo-executor</artifactId>
             <version>${mojo-executor-version}</version>
          </dependency>
+         <dependency>
+            <groupId>org.graphper</groupId>
+            <artifactId>graph-support-core</artifactId>
+            <version>${graph-support-version}</version>
+         </dependency>
       </dependencies>
    </dependencyManagement>
 
@@ -219,19 +239,9 @@
          <version>[3.3.3,)</version>
       </dependency>
       <dependency>
-         <groupId>org.yaml</groupId>
-         <artifactId>snakeyaml</artifactId>
-         <version>[2.0,)</version>
-      </dependency>
-      <dependency>
-         <groupId>org.apache.commons</groupId>
-         <artifactId>commons-compress</artifactId>
-         <version>[1.21,)</version>
-      </dependency>
-      <dependency>
          <groupId>commons-io</groupId>
          <artifactId>commons-io</artifactId>
-         <version>2.16.1</version>
+         <version>[2.16.1,)</version>
       </dependency>
       <dependency>
          <groupId>org.codehaus.plexus</groupId>

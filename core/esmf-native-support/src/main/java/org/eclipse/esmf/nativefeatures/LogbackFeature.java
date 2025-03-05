@@ -176,5 +176,22 @@ public class LogbackFeature implements Feature {
             .registerEverythingForReflection();
 
       Native.addResource( "org/slf4j/impl/StaticLoggerBinder.class" );
+
+      Native.forClass( "org.apache.logging.log4j.status.StatusLogger$Config" )
+            .initializeAtBuildTime();
+      Native.forClass( "jdk.internal.net.http.common.DebugLogger$LoggerConfig" )
+            .initializeAtBuildTime();
+      Native.forClass( "org.apache.logging.log4j.util.StackLocatorUtil" )
+            .initializeAtBuildTime();
+      Native.forClass( "org.apache.logging.log4j.util.EnvironmentPropertySource" )
+            .initializeAtBuildTime();
+      Native.forClass( "org.apache.logging.log4j.util.StackLocator" )
+            .initializeAtBuildTime();
+      Native.forClass( "org.apache.logging.log4j.util.PropertyFilePropertySource" )
+            .initializeAtBuildTime();
+      Native.forClass( "org.apache.logging.log4j.status.StatusLogger$InstanceHolder" )
+            .initializeAtBuildTime();
+      Native.forClass( "org.apache.logging.log4j.util.SystemPropertiesPropertySource" )
+            .initializeAtBuildTime();
    }
 }
