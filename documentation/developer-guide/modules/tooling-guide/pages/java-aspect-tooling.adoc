@@ -38,18 +38,10 @@ https://docs.github.com/en/packages/working-with-a-github-packages-registry/work
 [[jdk-requirements]]
 == JDK requirements
 
-The esmf-sdk components are built with Java 17 and require a JDK >= 17 such as
+The esmf-sdk components are built with Java 21 and require a JDK >= 21 such as
 https://adoptium.net/[Adoptium Temurin].
 
-The esmf-sdk can also be used with a Java 17-compatible https://www.graalvm.org/[GraalVM JDK]. With
-GraalVM you need to make the Graal JavaScript component available, as parts of the SDK such as the
-Aspect Model validation component require embedded JavaScript execution:
-
-* For using the esmf-sdk in the GraalVM itself, install the JS component using the
-  https://www.graalvm.org/22.3/reference-manual/js/[GraalVM Updater]: `gu install js`
-* For using the esmf-sdk with GraalVM `native-image`, be sure to use the `--language:js` option when
-  building the native image; for more information see
-  https://www.graalvm.org/22.3/reference-manual/polyglot-programming/[polyglot programming].
+The esmf-sdk can also be used with a Java 21-compatible https://www.graalvm.org/[GraalVM JDK].
 
 [TIP]
 =====
