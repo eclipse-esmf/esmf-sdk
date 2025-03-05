@@ -235,7 +235,7 @@ public class Native {
    /**
     * @deprecated Use {@link #addResourceBundle(String)} instead
     */
-   @Deprecated
+   @Deprecated( forRemoval = true )
    public static void addClassBasedResourceBundle( final String name, final String className ) {
       RUNTIME_RESOURCE_SUPPORT.get().addResourceBundles( alwaysTrue(), name );
    }

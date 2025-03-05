@@ -88,7 +88,6 @@ import org.eclipse.digitaltwin.aas4j.v3.model.ModellingKind;
 import org.eclipse.digitaltwin.aas4j.v3.model.MultiLanguageProperty;
 import org.eclipse.digitaltwin.aas4j.v3.model.OperationVariable;
 import org.eclipse.digitaltwin.aas4j.v3.model.Range;
-import org.eclipse.digitaltwin.aas4j.v3.model.Referable;
 import org.eclipse.digitaltwin.aas4j.v3.model.Reference;
 import org.eclipse.digitaltwin.aas4j.v3.model.ReferenceElement;
 import org.eclipse.digitaltwin.aas4j.v3.model.RelationshipElement;
@@ -165,32 +164,6 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
             .filter( submodel -> submodel.getKind().equals( ModellingKind.TEMPLATE ) )
             .map( this::submodelToAspect )
             .map( aspect -> new AspectArtifact( aspect.urn(), aspect ) );
-   }
-
-   /**
-    * Generates the list of Aspects for the input AAS environment
-    *
-    * @return the list of Aspects
-    * @deprecated Use {@link #generate()} instead
-    */
-   @Deprecated( forRemoval = true )
-   public List<Aspect> generateAspects() {
-      return generate().map( AspectArtifact::getContent ).toList();
-   }
-
-   /**
-    * Lists the names of submodel templates contained in the input AAS environment
-    *
-    * @return the idShorts of the submodel templates
-    * @deprecated Will be removed without replacement; this is out-of-the-box functionality of AAS4J.
-    */
-   @Deprecated( forRemoval = true )
-   public List<String> getSubmodelNames() {
-      return aasEnvironment.getSubmodels()
-            .stream()
-            .filter( submodel -> submodel.getKind().equals( ModellingKind.TEMPLATE ) )
-            .map( Referable::getIdShort )
-            .collect( Collectors.toList() );
    }
 
    private String iriToReversedHostNameNotation( final IRI iri ) {

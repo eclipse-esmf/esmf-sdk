@@ -64,39 +64,6 @@ public abstract class JsonGenerator<C extends JsonGenerationConfig, R extends Js
       return singleResult().getContentAsYaml();
    }
 
-   /**
-    * Kept for backwards compatibility
-    *
-    * @return the JSON representation of the generated artifact
-    * @deprecated Use {@link #generateJson()} instead
-    */
-   @Deprecated( forRemoval = true )
-   public String generateJsonPretty() throws IOException {
-      return generateJson();
-   }
-
-   /**
-    * Kept for backwards compatibility
-    *
-    * @param nameMapper the callback function that maps artifact identifiers to OutputStreams
-    * @deprecated Use {@link #generate(Function)} instead
-    */
-   @Deprecated( forRemoval = true )
-   public void generateJsonPretty( final Function<String, OutputStream> nameMapper ) throws IOException {
-      generate( nameMapper );
-   }
-
-   /**
-    * Kept for backwards compatibility
-    *
-    * @param nameMapper the callback function that maps artifact identifiers to OutputStreams
-    * @deprecated Use {@link #generate(Function)} instead
-    */
-   @Deprecated( forRemoval = true )
-   public void generateJson( final Function<String, OutputStream> nameMapper ) throws IOException {
-      generate( nameMapper );
-   }
-
    @Override
    protected void write( final Artifact<String, R> artifact, final Function<String, OutputStream> nameMapper ) {
       try ( final OutputStream output = nameMapper.apply( aspect().getName() ) ) {

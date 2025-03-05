@@ -25,8 +25,6 @@ import org.eclipse.esmf.metamodel.Aspect;
  * Generates SQL scripts from an Aspect Model that set up tables to contain the data of the Aspect.
  */
 public class AspectModelSqlGenerator extends AspectGenerator<String, String, SqlGenerationConfig, SqlArtifact> {
-   @Deprecated( forRemoval = true )
-   public static final AspectModelSqlGenerator INSTANCE = new AspectModelSqlGenerator( null );
    public static final SqlGenerationConfig DEFAULT_CONFIG = SqlGenerationConfigBuilder.builder().build();
 
    public AspectModelSqlGenerator( final Aspect aspect ) {
@@ -35,14 +33,6 @@ public class AspectModelSqlGenerator extends AspectGenerator<String, String, Sql
 
    public AspectModelSqlGenerator( final Aspect aspect, final SqlGenerationConfig config ) {
       super( aspect, config );
-   }
-
-   /**
-    * @deprecated Use {@link #AspectModelSqlGenerator(Aspect, SqlGenerationConfig)} and {@link #singleResult()} instead
-    */
-   @Deprecated( forRemoval = true )
-   public SqlArtifact apply( final Aspect aspect, final SqlGenerationConfig sqlGenerationConfig ) {
-      return new AspectModelSqlGenerator( aspect, sqlGenerationConfig ).singleResult();
    }
 
    @Override

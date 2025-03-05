@@ -20,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.eclipse.esmf.aspectmodel.aas.AasToAspectModelGenerator;
+import org.eclipse.esmf.aspectmodel.generator.AspectArtifact;
 import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.Aspect;
@@ -39,7 +40,7 @@ public class GenerateAspectFromAas extends AspectModelMojo {
       for ( final String include : includes ) {
          final AasToAspectModelGenerator generator = AasToAspectModelGenerator.fromFile( new File( include ) );
 
-         for ( final Aspect aspect : generator.generateAspects() ) {
+         for ( final Aspect aspect : generator.generate().map( AspectArtifact::getContent ).toList() ) {
             try ( final FileOutputStream outputStreamForFile = new FileOutputStream( getOutputFile( aspect ) ) ) {
                outputStreamForFile.write( AspectSerializer.INSTANCE.aspectToString( aspect ).getBytes() );
             } catch ( final IOException exception ) {

@@ -60,18 +60,6 @@ public class AspectSerializer {
    }
 
    /**
-    * Serializes an Aspect and the elements in the same file
-    *
-    * @param aspect the Aspect
-    * @return the String representation in RDF/Turtle
-    * @deprecated Use {link {@link #aspectToString(Aspect)}} instead
-    */
-   @Deprecated( forRemoval = true )
-   public String apply( final Aspect aspect ) {
-      return aspectToString( aspect );
-   }
-
-   /**
     * Serializes all files of an Aspect Model to their respective source locations.
     * <b>Attention:</b> This method does not check validity of paths or existance of files and will overwrite without further checks.
     *

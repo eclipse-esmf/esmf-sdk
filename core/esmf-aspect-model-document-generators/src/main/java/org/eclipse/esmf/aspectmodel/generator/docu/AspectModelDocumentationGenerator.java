@@ -16,14 +16,12 @@ package org.eclipse.esmf.aspectmodel.generator.docu;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.generator.AspectGenerator;
@@ -54,17 +52,6 @@ public class AspectModelDocumentationGenerator extends
    private static final String DOCU_ROOT_DIR = "/docu";
    private static final String DOCU_TEMPLATE_ROOT_DIR = DOCU_ROOT_DIR + "/templates";
    private final Properties engineConfiguration;
-
-   /**
-    * @deprecated Replaced by {@link DocumentationGenerationConfig}
-    */
-   @Deprecated( forRemoval = true )
-   public enum HtmlGenerationOption {
-      /**
-       * Set the CSS stylesheet to use in the generated HTML
-       */
-      STYLESHEET
-   }
 
    public AspectModelDocumentationGenerator( final Aspect aspect ) {
       this( aspect, DEFAULT_CONFIG );
@@ -106,47 +93,6 @@ public class AspectModelDocumentationGenerator extends
          source = insertCustomCss( source );
          return new DocumentationArtifact( artifactName, source, language );
       } );
-   }
-
-   /**
-    * Generates HTML documentation for Aspect Models. As this generation produces multiple documents
-    * (one for each supported language), the generator provides the caller with the name of the document
-    * (e.g., "FooAspect_en") via the callback function. The caller needs to provide an {@link OutputStream}
-    * for the respective artifact, e.g. a suitable FileOutputStream.
-    *
-    * @param nameMapper The callback function that maps documentation artifact names to OutputStreams
-    * @param generationOptions Additional optional options that control the document generation. See {@link
-    * HtmlGenerationOption} for the usable keys.
-    * @deprecated Use {@link #AspectModelDocumentationGenerator(Aspect, DocumentationGenerationConfig)} and {@link #generate()} instead
-    */
-   @Deprecated( forRemoval = true )
-   public void generate( final Function<String, OutputStream> nameMapper, final Map<HtmlGenerationOption, String> generationOptions ) {
-      final DocumentationGenerationConfig config = DocumentationGenerationConfigBuilder.builder()
-            .stylesheet( generationOptions.get( HtmlGenerationOption.STYLESHEET ) )
-            .build();
-      new AspectModelDocumentationGenerator( aspect(), config ).generate( nameMapper );
-   }
-
-   /**
-    * Generates HTML documentation for Aspect Models. As this generation produces multiple documents
-    * (one for each supported language), the generator provides the caller with the name of the document
-    * (e.g., "FooAspect_en") via the callback function. The caller needs to provide an {@link OutputStream}
-    * for the respective artifact, e.g. a suitable FileOutputStream.
-    *
-    * @param nameMapper The callback function that maps documentation artifact names to OutputStreams
-    * @param generationOptions Additional optional options that control the document generation. See {@link HtmlGenerationOption} for the
-    * usable keys.
-    * @param language The language for which a document should be generated
-    * @deprecated Use {@link #AspectModelDocumentationGenerator(Aspect, DocumentationGenerationConfig)} and {@link #generate()} instead
-    */
-   @Deprecated( forRemoval = true )
-   public void generate( final Function<String, OutputStream> nameMapper, final Map<HtmlGenerationOption, String> generationOptions,
-         final Locale language ) {
-      final DocumentationGenerationConfig config = DocumentationGenerationConfigBuilder.builder()
-            .stylesheet( generationOptions.get( HtmlGenerationOption.STYLESHEET ) )
-            .locale( language )
-            .build();
-      new AspectModelDocumentationGenerator( aspect(), config ).generate( nameMapper );
    }
 
    private String insertAspectModelDiagram( final String html, final Locale language ) {

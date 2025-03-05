@@ -113,33 +113,12 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<OpenApiSchemaGene
    private static final AspectModelPagingGenerator PAGING_GENERATOR = new AspectModelPagingGenerator();
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelOpenApiGenerator.class );
 
-   /**
-    * Kept for backwards compatibility
-    *
-    * @deprecated Use {@link #AspectModelOpenApiGenerator(Aspect)} or
-    * {@link #AspectModelOpenApiGenerator(Aspect, OpenApiSchemaGenerationConfig)} instead
-    */
-   @Deprecated( forRemoval = true )
-   public AspectModelOpenApiGenerator() {
-      this( null );
-   }
-
    public AspectModelOpenApiGenerator( final Aspect aspect ) {
       this( aspect, DEFAULT_CONFIG );
    }
 
    public AspectModelOpenApiGenerator( final Aspect aspect, final OpenApiSchemaGenerationConfig config ) {
       super( aspect, config );
-   }
-
-   /**
-    * Kept for backwards compatibility
-    *
-    * @deprecated Use {@link #AspectModelOpenApiGenerator(Aspect, OpenApiSchemaGenerationConfig)} and {@link #singleResult()} instead
-    */
-   @Deprecated( forRemoval = true )
-   public OpenApiSchemaArtifact apply( final Aspect aspect, final OpenApiSchemaGenerationConfig config ) {
-      return new AspectModelOpenApiGenerator( aspect, config ).singleResult();
    }
 
    /**
