@@ -21,6 +21,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -42,7 +43,7 @@ import org.graalvm.nativeimage.impl.RuntimeResourceSupport;
  */
 public class Native {
    private final Class<?> clazz;
-   private static final Supplier<RuntimeResourceSupport<ConfigurationCondition>> RUNTIME_RESOURCE_SUPPORT;
+   private static final Supplier<RuntimeResourceSupport> RUNTIME_RESOURCE_SUPPORT;
    private static final Supplier<RuntimeClassInitializationSupport> RUNTIME_CLASS_INITIALIZATION_SUPPORT;
    private static final Supplier<RuntimeReflectionSupport> RUNTIME_REFLECTION_SUPPORT;
    private static final Supplier<RuntimeJNIAccessSupport> RUNTIME_JNI_ACCESS_SUPPORT;
@@ -54,7 +55,7 @@ public class Native {
        exceptions, which allows testing class instantiation from the Feature classes.
       */
       if ( ImageInfo.inImageBuildtimeCode() ) {
-         RUNTIME_RESOURCE_SUPPORT = RuntimeResourceSupport::singleton;
+         RUNTIME_RESOURCE_SUPPORT = () -> ImageSingletons.lookup( RuntimeResourceSupport.class );
          RUNTIME_CLASS_INITIALIZATION_SUPPORT = () -> ImageSingletons.lookup( RuntimeClassInitializationSupport.class );
          RUNTIME_REFLECTION_SUPPORT = () -> ImageSingletons.lookup( RuntimeReflectionSupport.class );
          RUNTIME_JNI_ACCESS_SUPPORT = () -> ImageSingletons.lookup( RuntimeJNIAccessSupport.class );
@@ -231,6 +232,9 @@ public class Native {
       RUNTIME_RESOURCE_SUPPORT.get().addResourceBundles( alwaysTrue(), name );
    }
 
+   /**
+    * @deprecated Use {@link #addResourceBundle(String)} instead
+    */
    @Deprecated
    public static void addClassBasedResourceBundle( final String name, final String className ) {
       RUNTIME_RESOURCE_SUPPORT.get().addResourceBundles( alwaysTrue(), name );
@@ -258,44 +262,29 @@ public class Native {
       return new IsWindows().getAsBoolean();
    }
 
-   private static class DummyRuntimeResourceSupport<C> implements RuntimeResourceSupport<C> {
+   private static class DummyRuntimeResourceSupport<C> implements RuntimeResourceSupport {
       @Override
-      public void addResources( final Object condition, final String pattern ) {
-         // nothing
-      }
-
-      @Override
-      public void addGlob( final Object condition, final String module, final String glob ) {
-         // nothing
-      }
-
-      @Override
-      public void ignoreResources( final Object condition, final String pattern ) {
-         // nothing
-      }
-
-      @Override
-      public void addResourceBundles( final Object condition, final String name ) {
-         // nothing
-      }
-
-      @Override
-      public void addCondition( final ConfigurationCondition configurationCondition, final Module module, final String resourcePath ) {
-         // nothing
-      }
-
-      @Override
-      public void addResourceEntry( final Module module, final String resourcePath ) {
-         // nothing
-      }
-
-      @Override
-      public void addResourceBundles( final Object condition, final String basename, final Collection collection ) {
+      public void addResources( final ConfigurationCondition condition, final String pattern ) {
          // nothing
       }
 
       @Override
       public void injectResource( final Module module, final String resourcePath, final byte[] resourceContent ) {
+         // nothing
+      }
+
+      @Override
+      public void ignoreResources( final ConfigurationCondition condition, final String pattern ) {
+         // nothing
+      }
+
+      @Override
+      public void addResourceBundles( final ConfigurationCondition condition, final String name ) {
+         // nothing
+      }
+
+      @Override
+      public void addResourceBundles( final ConfigurationCondition condition, final String basename, final Collection<Locale> locales ) {
          // nothing
       }
    }
@@ -345,28 +334,6 @@ public class Native {
 
       @Override
       public void register( final ConfigurationCondition condition, final boolean finalIsWritable, final Field... fields ) {
-         // nothing
-      }
-
-      @Override
-      public void registerClassLookup( final ConfigurationCondition condition, final String typeName ) {
-         // nothing
-      }
-
-      @Override
-      public void registerFieldLookup( final ConfigurationCondition condition, final Class<?> declaringClass, final String fieldName ) {
-         // nothing
-      }
-
-      @Override
-      public void registerMethodLookup( final ConfigurationCondition condition, final Class<?> declaringClass, final String methodName,
-            final Class<?>... parameterTypes ) {
-         // nothing
-      }
-
-      @Override
-      public void registerConstructorLookup( final ConfigurationCondition condition, final Class<?> declaringClass,
-            final Class<?>... parameterTypes ) {
          // nothing
       }
    }

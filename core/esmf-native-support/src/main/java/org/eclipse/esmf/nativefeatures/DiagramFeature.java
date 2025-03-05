@@ -312,7 +312,7 @@ public class DiagramFeature implements Feature {
       Native.forClass( "sun.awt.image.VolatileSurfaceManager" )
             .registerFieldsForJni( "sdCurrent" );
 
-      Native.addClassBasedResourceBundle( "sun.awt.resources.awt", "sun.awt.resources.awt" );
+      Native.addResourceBundle( "sun.awt.resources.awt" );
    }
 
    private void setupBatikConfiguration() {
