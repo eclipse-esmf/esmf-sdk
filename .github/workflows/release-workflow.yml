@@ -8,7 +8,7 @@ on:
 jobs:
   check-preconditions:
     name: Check preconditions
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -16,11 +16,11 @@ jobs:
           submodules: recursive
 
       # Required for Maven
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
           overwrite-settings: false
 
       - name: Setup Git
@@ -48,7 +48,7 @@ jobs:
   build-linux:
     name: Linux build
     needs: [check-preconditions]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -62,15 +62,15 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
           gpg-private-key: ${{ secrets.PGP_KEY }}
           gpg-passphrase: PGP_KEY_PASSWORD
           overwrite-settings: false
 
       - name: Setup JDK
-        uses: graalvm/setup-graalvm@2f25c0caae5b220866f732832d5e3e29ff493338 # v1.2.1
+        uses: graalvm/setup-graalvm@01ed653ac833fe80569f1ef9f25585ba2811baab # v1.3.3
         with:
-          java-version: '17.0.10'
+          java-version: '21.0.6'
           distribution: 'graalvm'
           components: 'native-image,js'
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -122,7 +122,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
           overwrite-settings: false
 
       - name: Test executable jar on Temurin
@@ -153,9 +153,9 @@ jobs:
           submodules: recursive
 
       - name: Setup JDK
-        uses: graalvm/setup-graalvm@2f25c0caae5b220866f732832d5e3e29ff493338 # v1.2.1
+        uses: graalvm/setup-graalvm@01ed653ac833fe80569f1ef9f25585ba2811baab # v1.3.3
         with:
-          java-version: '17.0.10'
+          java-version: '21.0.6'
           distribution: 'graalvm'
           components: 'native-image,js'
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -187,9 +187,9 @@ jobs:
         run: |
           bundle="samm-bundle-$(date +%s)"
           mkdir ${bundle}
-          curl -Lo jre.tar.gz https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.3%2B9/OpenJDK21U-jre_x64_mac_hotspot_21.0.3_9.tar.gz
+          curl -Lo jre.tar.gz https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.6%2B7/OpenJDK21U-jre_x64_mac_hotspot_21.0.6_7.tar.gz
           tar -xvf jre.tar.gz 
-          cp -r ./jdk-21.0.3+9-jre/Contents/Home ./${bundle}/jre
+          cp -r ./jdk-21.0.6+7-jre/Contents/Home ./${bundle}/jre
           cp tools/samm-cli/target/samm-cli-${{ github.event.inputs.release_version }}.jar ./${bundle}/
           
           cat <<EOF > ./${bundle}/run.sh
@@ -228,9 +228,9 @@ jobs:
           submodules: recursive
 
       - name: Setup JDK
-        uses: graalvm/setup-graalvm@2f25c0caae5b220866f732832d5e3e29ff493338 # v1.2.1
+        uses: graalvm/setup-graalvm@01ed653ac833fe80569f1ef9f25585ba2811baab # v1.3.3
         with:
-          java-version: '17.0.10'
+          java-version: '21.0.6'
           distribution: 'graalvm'
           components: 'native-image,js'
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -291,11 +291,11 @@ jobs:
         uses: actions/checkout@v4
 
       # Required to have Maven settings.xml set up correctly
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
           server-id: ossrh
           server-username: OSSRH_USERNAME
           server-password: OSSRH_TOKEN
@@ -304,9 +304,9 @@ jobs:
       # Required to run the mvn:versions, since enforcer plugin
       # will check for GraalVM JDK
       - name: Setup JDK
-        uses: graalvm/setup-graalvm@2f25c0caae5b220866f732832d5e3e29ff493338 # v1.2.1
+        uses: graalvm/setup-graalvm@01ed653ac833fe80569f1ef9f25585ba2811baab # v1.3.3
         with:
-          java-version: '17.0.10'
+          java-version: '21.0.6'
           distribution: 'graalvm'
           components: 'native-image,js'
           github-token: ${{ secrets.GITHUB_TOKEN }}

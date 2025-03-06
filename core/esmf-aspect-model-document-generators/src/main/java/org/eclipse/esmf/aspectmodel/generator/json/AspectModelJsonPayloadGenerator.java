@@ -90,18 +90,6 @@ public class AspectModelJsonPayloadGenerator extends JsonGenerator<JsonPayloadGe
       super( aspect, config );
    }
 
-   /**
-    * Constructor for backwards compatibility.
-    *
-    * @param aspect the Aspect to generate JSON payload for
-    * @param random the random generator
-    * @deprecated Use {@link #AspectModelJsonPayloadGenerator(Aspect, JsonPayloadGenerationConfig)} instead
-    */
-   @Deprecated( forRemoval = true )
-   public AspectModelJsonPayloadGenerator( final Aspect aspect, final Random random ) {
-      super( aspect, JsonPayloadGenerationConfigBuilder.builder().randomStrategy( random ).build() );
-   }
-
    @Override
    public Stream<JsonPayloadArtifact> generate() {
       return Stream.of( new PayloadGenerator( objectMapper ).apply( aspect(), config ) );
@@ -604,7 +592,7 @@ public class AspectModelJsonPayloadGenerator extends JsonGenerator<JsonPayloadGe
 
       // narrowing conversion from BigDecimal to double
       private double safelyNarrowDown( final Number bound ) {
-         if ( !(BigDecimal.class.equals( bound.getClass() )) ) {
+         if ( !( BigDecimal.class.equals( bound.getClass() ) ) ) {
             return bound.doubleValue();
          }
 
@@ -613,7 +601,7 @@ public class AspectModelJsonPayloadGenerator extends JsonGenerator<JsonPayloadGe
          // Example: xsd:unsignedLong has a max. value of 18446744073709551615; when converting it to double
          // it will get represented as 1.8446744073709552E16, thereby exceeding the upper bound.
          // Therefore we need to take care of always rounding down when narrowing to double.
-         final BigDecimal narrowed = ((BigDecimal) bound).round( new MathContext( 15, RoundingMode.DOWN ) );
+         final BigDecimal narrowed = ( (BigDecimal) bound ).round( new MathContext( 15, RoundingMode.DOWN ) );
          return narrowed.doubleValue();
       }
 
@@ -688,8 +676,8 @@ public class AspectModelJsonPayloadGenerator extends JsonGenerator<JsonPayloadGe
        * @throws IllegalArgumentException If {@code countOfDigits} is less than 1.
        */
       private int getRandomInteger( final int countOfDigits ) {
-         int min = (int) Math.pow( 10, countOfDigits - 1 );
-         int max = (int) Math.pow( 10, countOfDigits ) - 1;
+         final int min = (int) Math.pow( 10, countOfDigits - 1 );
+         final int max = (int) Math.pow( 10, countOfDigits ) - 1;
          return getRandomInteger( min, max );
       }
 

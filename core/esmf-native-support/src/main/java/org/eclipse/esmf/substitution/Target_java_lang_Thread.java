@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -13,29 +13,31 @@
 
 package org.eclipse.esmf.substitution;
 
-import java.lang.invoke.MethodHandles;
-import java.util.List;
-
-import com.oracle.svm.core.annotate.Substitute;
+import com.oracle.svm.core.annotate.Delete;
 import com.oracle.svm.core.annotate.TargetClass;
-import org.apache.logging.log4j.util.ServiceLoaderUtil;
 
 /**
  * This is a <a href="https://build-native-java-apps.cc/developer-guide/substitution/">GraalVM substitution class</a>
- * for {@link ServiceLoaderUtil}.
- * Reason: The original implementation uses reflection to instantiate classes, which is unsupported in GraalVM.
+ * for {@link Thread}.
+ * Reason: Backport of
+ * <a
+ * href="https://github.com/oracle/graal/commit/369f0ff8b0a1c2b1051065b8c5d96937d058c922#diff
+ * -0aac6c381ea903b15210c9b8e29f378ef804565a21270977b0dd5bdf9e826982">a
+ * fix</a>
+ * which leads to issue <a href="https://github.com/oracle/graal/issues/9672">9672</a> but which is not released as of 21.0.6-graal
  */
-@TargetClass( ServiceLoaderUtil.class )
+@TargetClass( Thread.class )
 @SuppressWarnings( {
       "unused",
       "squid:S00101", // Class name uses GraalVM substitution class naming schema, see
       // https://github.com/oracle/graal/tree/master/substratevm/src/com.oracle.svm.core/src/com/oracle/svm/core/jdk
-      "checkstyle:TypeName"
-} )
-public final class Target_org_apache_logging_log4j_util_ServiceLoaderUtil {
-   @Substitute
-   static <T> Iterable<T> callServiceLoader( final MethodHandles.Lookup lookup, final Class<T> serviceType, final ClassLoader classLoader,
-         final boolean verbose ) {
-      return List.of();
-   }
+      "checkstyle:TypeName",
+      "NewClassNamingConvention" } )
+public final class Target_java_lang_Thread {
+   @Delete
+   @SuppressWarnings( { "static-method" } )
+   private native Object getStackTrace0();
+
+   @Delete
+   static native long getNextThreadIdOffset();
 }

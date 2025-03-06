@@ -345,17 +345,6 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
     * Returns the namespace part of the URN, e.g. com.example.foo
     *
     * @return the namespace part of the URN
-    * @deprecated Use {@link #getNamespaceMainPart()} instead
-    */
-   @Deprecated( forRemoval = true )
-   public String getNamespace() {
-      return namespaceMainPart;
-   }
-
-   /**
-    * Returns the namespace part of the URN, e.g. com.example.foo
-    *
-    * @return the namespace part of the URN
     */
    public String getNamespaceMainPart() {
       return namespaceMainPart;

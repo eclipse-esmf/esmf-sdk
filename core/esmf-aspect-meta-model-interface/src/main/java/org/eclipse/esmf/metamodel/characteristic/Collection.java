@@ -30,14 +30,6 @@ public interface Collection extends Characteristic {
    boolean isOrdered();
 
    /**
-    * @deprecated Use {@link #allowsDuplicates()} instead
-    */
-   @Deprecated( forRemoval = true )
-   default boolean isAllowDuplicates() {
-      return allowsDuplicates();
-   }
-
-   /**
     * @return a {@link boolean} which determines whether the collection may contain duplicate values.
     */
    boolean allowsDuplicates();

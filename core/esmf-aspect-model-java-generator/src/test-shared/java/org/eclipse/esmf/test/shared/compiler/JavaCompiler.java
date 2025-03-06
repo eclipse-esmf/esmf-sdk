@@ -85,7 +85,7 @@ public class JavaCompiler {
             }
          };
 
-         final List<String> compilerOptions = List.of( "-classpath", System.getProperty( "java.class.path" ) );
+         final List<String> compilerOptions = List.of( "-classpath", System.getProperty( "java.class.path" ), "-proc:none", "-Xlint:none" );
          compiler.getTask( null, manager, diagnosticListener, compilerOptions, null, compilerInput ).call();
          final ClassLoader classLoader = new ClassLoader() {
             @Override

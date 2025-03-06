@@ -3,7 +3,6 @@ package org.eclipse.esmf.aspectmodel.generator.zip;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.stream.Stream;
@@ -24,11 +23,6 @@ import org.eclipse.esmf.metamodel.AspectModel;
 public class AspectModelNamespacePackageCreator
       extends Generator<AspectModel, String, byte[], NamespacePackageGenerationConfig, NamespacePackageArtifact> {
    public static final NamespacePackageGenerationConfig DEFAULT_CONFIG = NamespacePackageGenerationConfigBuilder.builder().build();
-   /**
-    * @deprecated Use {@link #AspectModelNamespacePackageCreator(AspectModel, NamespacePackageGenerationConfig)} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static final AspectModelNamespacePackageCreator INSTANCE = new AspectModelNamespacePackageCreator( null );
    private static final String BASE_ARCHIVE_FORMAT_PATH = "aspect-models/";
 
    public AspectModelNamespacePackageCreator( final AspectModel aspectModel ) {
@@ -41,18 +35,6 @@ public class AspectModelNamespacePackageCreator
 
    private AspectModel aspectModel() {
       return focus;
-   }
-
-   /**
-    * @deprecated Use {@link #AspectModelNamespacePackageCreator(AspectModel, NamespacePackageGenerationConfig)} instead
-    */
-   @Deprecated( forRemoval = true )
-   public void accept( final AspectModel aspectModel, final OutputStream outputStream, final String rootPath ) {
-      final NamespacePackageGenerationConfig config = NamespacePackageGenerationConfigBuilder.builder()
-            .rootPath( rootPath )
-            .build();
-      final NamespacePackageArtifact artifact = new AspectModelNamespacePackageCreator( aspectModel, config ).singleResult();
-      write( artifact, x -> outputStream );
    }
 
    /**

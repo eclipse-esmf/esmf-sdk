@@ -31,9 +31,6 @@
       <packaging-type>jar</packaging-type>
       <main-class>org.eclipse.esmf.SammCli</main-class>
       <binary-name>samm</binary-name>
-      <!-- The separate jar that is built without GraalVM-internal dependencies which trip up the GraalVM compiler,
-           which is exclusive used to pass on to native-image -->
-      <native-image-jar>${project.artifactId}-${project.version}-for-native</native-image-jar>
       <skip.maven.surefire>false</skip.maven.surefire>
       <skip.maven.failsafe>true</skip.maven.failsafe>
       <skip.maven.surefire.report.plugin>false</skip.maven.surefire.report.plugin>
@@ -95,10 +92,15 @@
          <version>${graalvm-version}</version>
       </dependency>
       <dependency>
-         <groupId>org.graalvm.js</groupId>
-         <artifactId>js</artifactId>
-         <type>jar</type>
+         <groupId>org.graalvm.polyglot</groupId>
+         <artifactId>polyglot</artifactId>
          <version>${graalvm-version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.graalvm.polyglot</groupId>
+         <artifactId>js</artifactId>
+         <version>${graalvm-version}</version>
+         <type>pom</type>
       </dependency>
       <dependency>
          <groupId>org.graalvm.js</groupId>
@@ -154,26 +156,6 @@
          </resource>
       </resources>
 
-      <pluginManagement>
-         <plugins>
-            <plugin>
-               <groupId>org.graalvm.nativeimage</groupId>
-               <artifactId>native-image-maven-plugin</artifactId>
-               <version>${graalvm-version}</version>
-               <configuration>
-                  <imageName>${binary-name}</imageName>
-                  <mainClass>${main-class}</mainClass>
-                  <buildArgs>
-                     <buildArg>--no-fallback</buildArg>
-                     <buildArg>-cp ${project.build.directory}/${project.artifactId}-${project.version}.jar</buildArg>
-                     <buildArg>-Djava.awt.headless=true</buildArg>
-                  </buildArgs>
-               </configuration>
-            </plugin>
-
-         </plugins>
-      </pluginManagement>
-
       <plugins>
          <!-- Configure maven surefire plugin (execution of unit tests) -->
          <plugin>
@@ -187,7 +169,7 @@
                </systemPropertyVariables>
                <forkCount>1</forkCount>
                <reuseForks>false</reuseForks>
-               <argLine>-Xmx6g</argLine>
+               <argLine>-Xmx6g -Djava.security.manager=allow</argLine>
                <skip>${skip.maven.surefire}</skip>
                <reportsDirectory>${project.build.directory}/${testreports.surefire}</reportsDirectory>
                <!-- Do NOT wildcard include *Test.java, because then we would also run the SammCliIntegrationTest -->
@@ -219,203 +201,6 @@
             <configuration>
                <skip>true</skip>
             </configuration>
-         </plugin>
-
-         <!-- Build fat jar -->
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-shade-plugin</artifactId>
-            <executions>
-               <execution>
-                  <id>shade-for-native-image</id>
-                  <phase>package</phase>
-                  <goals>
-                     <goal>shade</goal>
-                  </goals>
-                  <configuration>
-                     <finalName>${native-image-jar}</finalName>
-                     <createDependencyReducedPom>false</createDependencyReducedPom>
-                     <createSourcesJar>false</createSourcesJar>
-                     <skip>${skip.maven.shade}</skip>
-                     <transformers>
-                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                           <manifestEntries>
-                              <Main-Class>${main-class}</Main-Class>
-                           </manifestEntries>
-                        </transformer>
-                        <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-                     </transformers>
-                     <artifactSet>
-                        <excludes>
-                           <!-- Duplicate annotations that are already contained in javax.annotation-api -->
-                           <exclude>javax.annotation:jsr250-api</exclude>
-                           <!-- GraalVM SDK classes & friends must not be used at runtime -->
-                           <exclude>org.graalvm.sdk:graal-sdk</exclude>
-                           <exclude>org.graalvm.nativeimage:svm</exclude>
-                           <exclude>org.graalvm.truffle:truffle-api</exclude>
-                        </excludes>
-                     </artifactSet>
-                     <filters>
-                        <!-- Required to prevent overlapping resources -->
-                        <filter>
-                           <artifact>*:*</artifact>
-                           <excludes>
-                              <exclude>module-info.class</exclude>
-                              <exclude>META-INF/*</exclude>
-                              <exclude>META-INF/sisu/javax.inject.Named</exclude>
-                              <exclude>META-INF/plexus/components.xml</exclude>
-                              <exclude>META-INF.versions*/**</exclude>
-                              <exclude>META-INF/versions*/**</exclude>
-                              <exclude>META-INF/maven/**</exclude>
-                              <exclude>plugin.xml</exclude>
-                              <exclude>about.html</exclude>
-                           </excludes>
-                        </filter>
-                        <!-- Required to override the excludes above -->
-                        <filter>
-                           <artifact>${project.groupId}:${project.artifactId}</artifact>
-                           <excludeDefaults>false</excludeDefaults>
-                           <includes>
-                              <include>**</include>
-                              <include>META-INF/**</include>
-                              <include>git.properties</include>
-                           </includes>
-                           <excludes>
-                              <!-- Explicitly exclude build-time-only code from jar -->
-                              <exclude>org/eclipse/esmf/buildtime/**</exclude>
-                           </excludes>
-                        </filter>
-                        <!-- Clashes with the files from xml-apis-ext -->
-                        <filter>
-                           <artifact>xml-apis:xml-apis</artifact>
-                           <excludes>
-                              <exclude>license/**</exclude>
-                           </excludes>
-                        </filter>
-                        <!-- Clashes with the same file from batik-rasterizer -->
-                        <filter>
-                           <artifact>org.apache.xmlgraphics:batik-svgrasterizer</artifact>
-                           <excludes>
-                              <exclude>org/apache/batik/apps/rasterizer/resources/rasterizer.policy</exclude>
-                           </excludes>
-                        </filter>
-                        <!-- These configs add lots of spurious GraalVM configuration -->
-                        <filter>
-                           <artifact>org.jboss.forge.roaster:roaster-jdt</artifact>
-                           <excludes>
-                              <exclude>META-INF/native-image/**</exclude>
-                           </excludes>
-                        </filter>
-                        <!-- Required to have Model Instantiators available -->
-                        <filter>
-                           <artifact>org.eclipse.esmf:esmf-aspect-meta-model-java</artifact>
-                           <includes>
-                              <include>**</include>
-                           </includes>
-                        </filter>
-                        <!-- Prevent overlapping classes from javax modules -->
-                        <filter>
-                           <artifact>jakarta.activation:jakarta.activation-api</artifact>
-                           <excludes>
-                              <exclude>**</exclude>
-                           </excludes>
-                        </filter>
-                     </filters>
-                  </configuration>
-               </execution>
-               <execution>
-                  <id>default-shade</id>
-                  <phase>package</phase>
-                  <goals>
-                     <goal>shade</goal>
-                  </goals>
-                  <configuration>
-                     <createDependencyReducedPom>false</createDependencyReducedPom>
-                     <createSourcesJar>false</createSourcesJar>
-                     <skip>${skip.maven.shade}</skip>
-                     <transformers>
-                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                           <manifestEntries>
-                              <Main-Class>${main-class}</Main-Class>
-                           </manifestEntries>
-                        </transformer>
-                        <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-                     </transformers>
-                     <artifactSet>
-                        <excludes>
-                           <!-- Duplicate annotations that are already contained in javax.annotation-api -->
-                           <exclude>javax.annotation:jsr250-api</exclude>
-                        </excludes>
-                     </artifactSet>
-                     <filters>
-                        <!-- Required to prevent overlapping resources -->
-                        <filter>
-                           <artifact>*:*</artifact>
-                           <excludes>
-                              <exclude>module-info.class</exclude>
-                              <exclude>META-INF/*</exclude>
-                              <exclude>META-INF/sisu/javax.inject.Named</exclude>
-                              <exclude>META-INF/plexus/components.xml</exclude>
-                              <exclude>META-INF.versions*/**</exclude>
-                              <exclude>META-INF/versions*/**</exclude>
-                              <exclude>META-INF/maven/**</exclude>
-                              <exclude>plugin.xml</exclude>
-                              <exclude>about.html</exclude>
-                           </excludes>
-                        </filter>
-                        <!-- Required to override the excludes above -->
-                        <filter>
-                           <artifact>${project.groupId}:${project.artifactId}</artifact>
-                           <excludeDefaults>false</excludeDefaults>
-                           <includes>
-                              <include>**</include>
-                              <include>META-INF/**</include>
-                              <include>git.properties</include>
-                           </includes>
-                           <excludes>
-                              <!-- Explicitly exclude build-time-only code from jar -->
-                              <exclude>org/eclipse/esmf/buildtime/**</exclude>
-                           </excludes>
-                        </filter>
-                        <!-- Clashes with the files from xml-apis-ext -->
-                        <filter>
-                           <artifact>xml-apis:xml-apis</artifact>
-                           <excludes>
-                              <exclude>license/**</exclude>
-                           </excludes>
-                        </filter>
-                        <!-- Clashes with the same file from batik-rasterizer -->
-                        <filter>
-                           <artifact>org.apache.xmlgraphics:batik-svgrasterizer</artifact>
-                           <excludes>
-                              <exclude>org/apache/batik/apps/rasterizer/resources/rasterizer.policy</exclude>
-                           </excludes>
-                        </filter>
-                        <!-- These configs add lots of spurious GraalVM configuration -->
-                        <filter>
-                           <artifact>org.jboss.forge.roaster:roaster-jdt</artifact>
-                           <excludes>
-                              <exclude>META-INF/native-image/**</exclude>
-                           </excludes>
-                        </filter>
-                        <!-- Required to have Model Instantiators available -->
-                        <filter>
-                           <artifact>org.eclipse.esmf:esmf-aspect-meta-model-java</artifact>
-                           <includes>
-                              <include>**</include>
-                           </includes>
-                        </filter>
-                        <!-- Prevent overlapping classes from javax modules -->
-                        <filter>
-                           <artifact>jakarta.activation:jakarta.activation-api</artifact>
-                           <excludes>
-                              <exclude>**</exclude>
-                           </excludes>
-                        </filter>
-                     </filters>
-                  </configuration>
-               </execution>
-            </executions>
          </plugin>
 
          <plugin>
@@ -629,7 +414,6 @@
                         <arg>--no-fallback</arg>
                         <arg>--report-unsupported-elements-at-runtime</arg>
                         <arg>--features=org.eclipse.esmf.nativefeatures.SammCliFeature</arg>
-                        <arg>--language:js</arg>
                         <arg>-H:-DeadlockWatchdogExitOnTimeout</arg>
                         <arg>-H:DeadlockWatchdogInterval=0</arg>
                         <arg>-H:+AddAllCharsets</arg>
@@ -639,15 +423,12 @@
                         <arg>-J-XX:GCTimeRatio=19</arg>
                         <arg>-J--add-exports=java.desktop/sun.awt=ALL-UNNAMED</arg>
                         <arg>-J--add-exports=java.desktop/sun.font=ALL-UNNAMED</arg>
-                        <arg>-J--add-exports=org.graalvm.sdk/org.graalvm.nativeimage.impl=ALL-UNNAMED</arg>
+                        <arg>-J--add-exports=org.graalvm.nativeimage/org.graalvm.nativeimage.impl=ALL-UNNAMED</arg>
                         <arg>-J--add-exports=org.graalvm.nativeimage.builder/com.oracle.svm.core.configure=ALL-UNNAMED</arg>
                         <arg>-J--add-exports=org.graalvm.nativeimage.builder/com.oracle.svm.core.jni=ALL-UNNAMED</arg>
                         <arg>--initialize-at-build-time=org.eclipse.esmf.nativefeatures.Native</arg>
                      </buildArgs>
                      <quickBuild>true</quickBuild>
-                     <classpath>
-                        <param>${project.build.directory}/${native-image-jar}.jar</param>
-                     </classpath>
                   </configuration>
                </plugin>
             </plugins>

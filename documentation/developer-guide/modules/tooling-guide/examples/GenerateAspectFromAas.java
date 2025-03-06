@@ -15,13 +15,12 @@ package examples;
 
 // tag::imports[]
 import java.io.File;
-import java.util.List;
 
 import org.eclipse.esmf.aspectmodel.aas.AasFileFormat;
 import org.eclipse.esmf.aspectmodel.aas.AasGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.aas.AasToAspectModelGenerator;
 import org.eclipse.esmf.aspectmodel.aas.AspectModelAasGenerator;
-import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.aspectmodel.generator.AspectArtifact;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.metamodel.AspectModel;
 // end::imports[]
@@ -61,8 +60,7 @@ public class GenerateAspectFromAas extends AbstractGenerator {
       // Multiple "from" methods are available: fromFile (which checks the file extension),
       // fromAasJson, fromAasXml, fromAasx as well as fromEnvironment (for an AAS4J AAS environment)
       final AasToAspectModelGenerator generator = AasToAspectModelGenerator.fromFile( file );
-      final List<Aspect> aspects = generator.generateAspects();
-      aspects.forEach( aspect -> {
+      generator.generate().map( AspectArtifact::getContent ).forEach( aspect -> {
          // do something with the generated aspect
       } );
       // end::generate[]

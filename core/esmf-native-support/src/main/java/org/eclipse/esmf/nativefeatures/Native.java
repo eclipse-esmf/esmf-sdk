@@ -29,20 +29,20 @@ import javax.annotation.Nonnull;
 import org.eclipse.esmf.substitution.IsLinux;
 import org.eclipse.esmf.substitution.IsWindows;
 
-import com.oracle.svm.core.configure.ResourcesRegistry;
 import org.graalvm.nativeimage.ImageInfo;
 import org.graalvm.nativeimage.ImageSingletons;
 import org.graalvm.nativeimage.impl.ConfigurationCondition;
 import org.graalvm.nativeimage.impl.RuntimeClassInitializationSupport;
 import org.graalvm.nativeimage.impl.RuntimeJNIAccessSupport;
 import org.graalvm.nativeimage.impl.RuntimeReflectionSupport;
+import org.graalvm.nativeimage.impl.RuntimeResourceSupport;
 
 /**
  * Helper class for registration of resources, classes etc. for GraalVM native image compilation.
  */
 public class Native {
    private final Class<?> clazz;
-   private static final Supplier<ResourcesRegistry> RESOURCES_REGISTRY;
+   private static final Supplier<RuntimeResourceSupport> RUNTIME_RESOURCE_SUPPORT;
    private static final Supplier<RuntimeClassInitializationSupport> RUNTIME_CLASS_INITIALIZATION_SUPPORT;
    private static final Supplier<RuntimeReflectionSupport> RUNTIME_REFLECTION_SUPPORT;
    private static final Supplier<RuntimeJNIAccessSupport> RUNTIME_JNI_ACCESS_SUPPORT;
@@ -54,12 +54,12 @@ public class Native {
        exceptions, which allows testing class instantiation from the Feature classes.
       */
       if ( ImageInfo.inImageBuildtimeCode() ) {
-         RESOURCES_REGISTRY = () -> ImageSingletons.lookup( ResourcesRegistry.class );
+         RUNTIME_RESOURCE_SUPPORT = () -> ImageSingletons.lookup( RuntimeResourceSupport.class );
          RUNTIME_CLASS_INITIALIZATION_SUPPORT = () -> ImageSingletons.lookup( RuntimeClassInitializationSupport.class );
          RUNTIME_REFLECTION_SUPPORT = () -> ImageSingletons.lookup( RuntimeReflectionSupport.class );
          RUNTIME_JNI_ACCESS_SUPPORT = () -> ImageSingletons.lookup( RuntimeJNIAccessSupport.class );
       } else {
-         RESOURCES_REGISTRY = DummyResourcesRegistry::new;
+         RUNTIME_RESOURCE_SUPPORT = DummyRuntimeResourceSupport::new;
          RUNTIME_CLASS_INITIALIZATION_SUPPORT = DummyRuntimeClassInitializationSupport::new;
          RUNTIME_REFLECTION_SUPPORT = DummyRuntimeReflectionSupport::new;
          RUNTIME_JNI_ACCESS_SUPPORT = DummyRuntimeJniAccessSupport::new;
@@ -220,19 +220,23 @@ public class Native {
    }
 
    public static void addResource( final String resource ) {
-      RESOURCES_REGISTRY.get().addResources( alwaysTrue(), "\\Q" + resource + "\\E" );
+      RUNTIME_RESOURCE_SUPPORT.get().addResources( alwaysTrue(), "\\Q" + resource + "\\E" );
    }
 
    public static void addResourcesPattern( final String pattern ) {
-      RESOURCES_REGISTRY.get().addResources( alwaysTrue(), pattern );
+      RUNTIME_RESOURCE_SUPPORT.get().addResources( alwaysTrue(), pattern );
    }
 
    public static void addResourceBundle( final String name ) {
-      RESOURCES_REGISTRY.get().addResourceBundles( alwaysTrue(), name );
+      RUNTIME_RESOURCE_SUPPORT.get().addResourceBundles( alwaysTrue(), name );
    }
 
+   /**
+    * @deprecated Use {@link #addResourceBundle(String)} instead
+    */
+   @Deprecated( forRemoval = true )
    public static void addClassBasedResourceBundle( final String name, final String className ) {
-      RESOURCES_REGISTRY.get().addClassBasedResourceBundle( alwaysTrue(), name, className );
+      RUNTIME_RESOURCE_SUPPORT.get().addResourceBundles( alwaysTrue(), name );
    }
 
    /**
@@ -257,12 +261,7 @@ public class Native {
       return new IsWindows().getAsBoolean();
    }
 
-   private static class DummyResourcesRegistry implements ResourcesRegistry {
-      @Override
-      public void addClassBasedResourceBundle( final ConfigurationCondition condition, final String basename, final String className ) {
-         // nothing
-      }
-
+   private static class DummyRuntimeResourceSupport<C> implements RuntimeResourceSupport {
       @Override
       public void addResources( final ConfigurationCondition condition, final String pattern ) {
          // nothing

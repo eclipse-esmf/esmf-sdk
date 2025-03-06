@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.ServiceLoader;
 import java.util.Set;
 
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
@@ -122,11 +123,12 @@ public abstract class AspectModelMojo extends AbstractMojo {
       return new HashSet<>( loadAspectModels().keySet() );
    }
 
-   private Map<AspectModel, Aspect> loadAspectModels() throws MojoExecutionException {
-      if ( aspects != null ) {
-         return aspects;
-      }
+   private AspectModelLoader createAspectModelLoader() throws MojoExecutionException {
       final List<ResolutionStrategy> strategies = new ArrayList<>();
+
+      for ( final ResolutionStrategy strategy : ServiceLoader.load( ResolutionStrategy.class ) ) {
+         strategies.add( strategy );
+      }
       if ( modelsRootDirectory != null ) {
          final Path modelsRoot = Path.of( modelsRootDirectory );
          strategies.add( new FileSystemStrategy( modelsRoot ) );
@@ -138,10 +140,17 @@ public abstract class AspectModelMojo extends AbstractMojo {
          throw new MojoExecutionException(
                "Neither modelsRootDirectory nor gitHubServerId were configured, don't know how to resolve Aspect Models" );
       }
+      return new AspectModelLoader( strategies );
+   }
+
+   private Map<AspectModel, Aspect> loadAspectModels() throws MojoExecutionException {
+      if ( aspects != null ) {
+         return aspects;
+      }
 
       aspects = new HashMap<>();
 
-      final AspectModelLoader aspectModelLoader = new AspectModelLoader( strategies );
+      final AspectModelLoader aspectModelLoader = createAspectModelLoader();
       for ( final String inputUrn : includes ) {
          final AspectModelUrn urn = AspectModelUrn.fromUrn( inputUrn );
          final Either<List<Violation>, AspectModel> loadingResult = new AspectModelValidator().loadModel( () ->

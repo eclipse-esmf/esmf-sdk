@@ -93,6 +93,18 @@
          <version>${junit-jupiter-version}</version>
          <scope>test</scope>
       </dependency>
+      <dependency>
+         <groupId>org.junit.platform</groupId>
+         <artifactId>junit-platform-commons</artifactId>
+         <version>1.12.0</version>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.junit.platform</groupId>
+         <artifactId>junit-platform-engine</artifactId>
+         <scope>test</scope>
+         <version>1.12.0</version>
+      </dependency>
    </dependencies>
 
    <build>

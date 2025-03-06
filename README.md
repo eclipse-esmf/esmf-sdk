@@ -54,9 +54,7 @@ Are you having trouble with ESMF SDK? We want to help!
 ## Build and contribute
 
 The top level elements of the SDK structure are all carried out as Maven multimodule projects.
-Building the SDK requires a Java 17-compatible [GraalVM JDK](https://www.graalvm.org/) with the 'js'
-component installed. If you want to build the samm-cli (see below), you will also have to have the
-'native-image' GraalVM component installed.
+Building the SDK requires a Java 21-compatible [GraalVM JDK](https://www.graalvm.org/).
 
 To build the SDK core components, run the following command:
 ```bash

@@ -88,13 +88,14 @@
             <artifactId>maven-compiler-plugin</artifactId>
             <configuration>
                <compilerArgs>
+                  <arg>-proc:none</arg>
                   <arg>-Aproject=${project.groupId}/${project.artifactId}</arg>
                   <arg>--add-exports</arg>
                   <arg>java.desktop/sun.awt=ALL-UNNAMED</arg>
                   <arg>--add-exports</arg>
                   <arg>java.desktop/sun.font=ALL-UNNAMED</arg>
                   <arg>--add-exports</arg>
-                  <arg>org.graalvm.sdk/org.graalvm.nativeimage.impl=ALL-UNNAMED</arg>
+                  <arg>org.graalvm.nativeimage/org.graalvm.nativeimage.impl=ALL-UNNAMED</arg>
                </compilerArgs>
                <showWarnings>false</showWarnings>
                <showDeprecation>false</showDeprecation>
@@ -115,7 +116,7 @@
             <configuration>
                <forkCount>1</forkCount>
                <reuseForks>false</reuseForks>
-               <argLine>--add-exports org.graalvm.sdk/org.graalvm.nativeimage.impl=ALL-UNNAMED</argLine>
+               <argLine>--add-exports org.graalvm.nativeimage/org.graalvm.nativeimage.impl=ALL-UNNAMED</argLine>
             </configuration>
          </plugin>
 

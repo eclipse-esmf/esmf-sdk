@@ -14,6 +14,7 @@ import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.aas.AasToCommand;
 import org.eclipse.esmf.aspectmodel.aas.AasToAspectModelGenerator;
+import org.eclipse.esmf.aspectmodel.generator.AspectArtifact;
 import org.eclipse.esmf.aspectmodel.resolver.fs.StructuredModelsRoot;
 import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
 import org.eclipse.esmf.exception.CommandException;
@@ -65,7 +66,7 @@ public class AasToAspectCommand extends AbstractCommand {
 
    private void generateAspects( final AasToAspectModelGenerator generator ) {
       final StructuredModelsRoot modelsRoot = new StructuredModelsRoot( Path.of( outputPath ) );
-      final List<Aspect> generatedAspects = generator.generateAspects();
+      final List<Aspect> generatedAspects = generator.generate().map( AspectArtifact::getContent ).toList();
 
       final List<Aspect> filteredAspects = selectedOptions.isEmpty() ? generatedAspects :
             IntStream.range( 0, generatedAspects.size() )

@@ -28,37 +28,12 @@ public class AspectModelJsonSchemaGenerator extends JsonGenerator<JsonSchemaGene
 
    public static final JsonSchemaGenerationConfig DEFAULT_CONFIG = JsonSchemaGenerationConfigBuilder.builder().build();
 
-   /**
-    * Kept for backwards compatibility
-    */
-   @Deprecated( forRemoval = true )
-   public static final AspectModelJsonSchemaGenerator INSTANCE = new AspectModelJsonSchemaGenerator( null );
-
-   /**
-    * Kept for backwards compatibility
-    *
-    * @deprecated Use {@link #AspectModelJsonSchemaGenerator(Aspect)} or
-    * {@link #AspectModelJsonSchemaGenerator(Aspect, JsonSchemaGenerationConfig)} instead
-    */
-   @Deprecated( forRemoval = true )
-   public AspectModelJsonSchemaGenerator() {
-      this( null );
-   }
-
    public AspectModelJsonSchemaGenerator( final Aspect aspect ) {
       this( aspect, DEFAULT_CONFIG );
    }
 
    public AspectModelJsonSchemaGenerator( final Aspect aspect, final JsonSchemaGenerationConfig config ) {
       super( aspect, config );
-   }
-
-   /**
-    * @deprecated Use {@link #AspectModelJsonSchemaGenerator(Aspect, JsonSchemaGenerationConfig)} and {@link #singleResult()} instead
-    */
-   @Deprecated( forRemoval = true )
-   public JsonSchemaArtifact apply( final Aspect aspect, final JsonSchemaGenerationConfig config ) {
-      return new AspectModelJsonSchemaGenerator( aspect, config ).singleResult();
    }
 
    @Override
