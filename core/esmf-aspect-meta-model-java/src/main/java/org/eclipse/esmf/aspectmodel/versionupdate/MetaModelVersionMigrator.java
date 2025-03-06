@@ -45,6 +45,7 @@ public class MetaModelVersionMigrator implements UnaryOperator<AspectModelFile> 
    }
 
    private final List<Migrator> migrators = ImmutableList.<Migrator> builder()
+         .add( new SammMetaModelVersionUriRewriter( KnownVersion.SAMM_2_1_0, KnownVersion.SAMM_2_2_0 ) )
          .add( new SammMetaModelVersionUriRewriter( KnownVersion.SAMM_2_0_0, KnownVersion.SAMM_2_1_0 ) )
          .add( new SammMetaModelVersionUriRewriter( KnownVersion.SAMM_1_0_0, KnownVersion.SAMM_2_0_0 ) )
          .add( new SammRemoveSammNameMigrator( KnownVersion.SAMM_1_0_0, KnownVersion.SAMM_2_0_0 ) )
