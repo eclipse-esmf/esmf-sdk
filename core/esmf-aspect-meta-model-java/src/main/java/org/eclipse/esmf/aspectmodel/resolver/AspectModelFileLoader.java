@@ -13,8 +13,6 @@
 
 package org.eclipse.esmf.aspectmodel.resolver;
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -92,12 +90,10 @@ public class AspectModelFileLoader {
    private static List<String> headerComment( final String content ) {
       final List<String> list = content.lines()
             .dropWhile( String::isBlank )
-            .takeWhile( line -> line.startsWith( "#" ) || isBlank( line ) )
-            .map( line -> line.startsWith( "#" ) ? line.substring( 1 ).trim() : line )
+            .takeWhile( line -> line.startsWith( "#" ) )
+            .map( line -> line.substring( 1 ).trim() )
             .toList();
-      return !list.isEmpty() && list.get( list.size() - 1 ).isEmpty()
-            ? list.subList( 0, list.size() - 1 )
-            : list;
+      return list;
    }
 
    public static RawAspectModelFile load( final InputStream inputStream ) {

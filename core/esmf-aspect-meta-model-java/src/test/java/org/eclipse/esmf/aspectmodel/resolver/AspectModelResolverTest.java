@@ -63,6 +63,44 @@ class AspectModelResolverTest {
    }
 
    @Test
+   void testLoadModelWithNoEmptyLineAfterHeaderCommentBlock() {
+      assertThat( AspectModelFileLoader.load( """
+            #
+            # Test copyright
+            #
+            @prefix : <urn:samm:com.xyz:0.0.1#> .
+            """ ) )
+            .headerComment().hasSize( 3 ).matches( list -> list.get( 1 ).contains( "Test copyright" ) );
+      assertThat( AspectModelFileLoader.load( """
+            #
+            # Test copyright
+            #
+            
+            @prefix : <urn:samm:com.xyz:0.0.1#> .
+            """ ) )
+            .headerComment().hasSize( 3 ).matches( list -> list.get( 1 ).contains( "Test copyright" ) );
+      assertThat( AspectModelFileLoader.load( """
+            #
+            # Test copyright
+            #
+            
+            # Another comment
+            @prefix : <urn:samm:com.xyz:0.0.1#> .
+            """ ) )
+            .headerComment().hasSize( 3 ).matches( list -> list.get( 1 ).contains( "Test copyright" ) );
+      assertThat( AspectModelFileLoader.load( """
+            #
+            # Test copyright
+            #
+            
+            # Another comment
+            
+            @prefix : <urn:samm:com.xyz:0.0.1#> .
+            """ ) )
+            .headerComment().hasSize( 3 ).matches( list -> list.get( 1 ).contains( "Test copyright" ) );
+   }
+
+   @Test
    void testLoadLegacyBammModelWithoutPrefixesExpectSuccess() throws URISyntaxException {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader()
