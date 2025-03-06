@@ -187,9 +187,9 @@ jobs:
         run: |
           bundle="samm-bundle-$(date +%s)"
           mkdir ${bundle}
-          curl -Lo jre.tar.gz https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.3%2B9/OpenJDK21U-jre_x64_mac_hotspot_21.0.3_9.tar.gz
+          curl -Lo jre.tar.gz https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.6%2B7/OpenJDK21U-jre_x64_mac_hotspot_21.0.6_7.tar.gz
           tar -xvf jre.tar.gz 
-          cp -r ./jdk-21.0.3+9-jre/Contents/Home ./${bundle}/jre
+          cp -r ./jdk-21.0.6+7-jre/Contents/Home ./${bundle}/jre
           cp tools/samm-cli/target/samm-cli-${{ github.event.inputs.release_version }}.jar ./${bundle}/
           
           cat <<EOF > ./${bundle}/run.sh

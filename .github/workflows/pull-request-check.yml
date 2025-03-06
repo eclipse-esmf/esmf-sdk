@@ -86,7 +86,7 @@ jobs:
           mvn -B -pl tools/samm-cli clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
           bundle="samm-bundle-DEV-SNAPSHOT-$(date +%s)"
           mkdir ${bundle}
-          curl -Lo jre.tar.gz https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.6%2B9/OpenJDK21U-jre_x64_mac_hotspot_21.0.6_7.tar.gz
+          curl -Lo jre.tar.gz https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.6%2B7/OpenJDK21U-jre_x64_mac_hotspot_21.0.6_7.tar.gz
           tar -xvf jre.tar.gz 
           cp -r ./jdk-21.0.6+7-jre/Contents/Home ./${bundle}/jre
           cp tools/samm-cli/target/samm-cli-DEV-SNAPSHOT.jar ./${bundle}/
