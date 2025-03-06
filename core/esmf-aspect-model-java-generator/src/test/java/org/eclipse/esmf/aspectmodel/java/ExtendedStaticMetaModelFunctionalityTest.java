@@ -152,6 +152,41 @@ public class ExtendedStaticMetaModelFunctionalityTest extends StaticMetaModelGen
    }
 
    @Test
+   void testCollectionPropertyChainWithNullCollectionInBetween() throws IOException, ReflectiveOperationException {
+      final TestAspect aspect = TestAspect.ASPECT_WITH_NESTED_ENTITY_LIST;
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
+
+      final Class<?> aspectClass = findGeneratedClass( result, "AspectWithNestedEntityList" );
+      final Class<?> entityClass = findGeneratedClass( result, "TestFirstEntity" );
+      final Class<?> metaAspectClass = findGeneratedClass( result, "MetaAspectWithNestedEntityList" );
+      final Class<?> metaEntity = findGeneratedClass( result, "MetaTestFirstEntity" );
+      final Class<?> metaNestedEntity = findGeneratedClass( result, "MetaTestSecondEntity" );
+
+      final StaticContainerProperty<Object, Object, List<Object>> listProperty =
+            (StaticContainerProperty<Object, Object, List<Object>>) metaAspectClass.getField( "TEST_LIST" ).get( null );
+
+      final StaticContainerProperty<Object, Object, List<Object>> nestedListProperty =
+            (StaticContainerProperty<Object, Object, List<Object>>) metaEntity.getField( "TEST_SECOND_LIST" ).get( null );
+
+      final StaticProperty<Object, Object> nestedEntityStringProperty =
+            (StaticProperty<Object, Object>) metaNestedEntity.getField( "RANDOM_VALUE" ).get( null );
+
+      final ContainerPropertyChain<Object, List<Object>, Object> entityStringCollectionChain = PropertyChain.fromCollection( listProperty )
+            .via( nestedListProperty )
+            .to( nestedEntityStringProperty );
+
+      final Object entityInstance = ConstructorUtils.invokeConstructor( entityClass, "Some Text", 123, 123.0f, null );
+      final Object aspectInstance = ConstructorUtils.invokeConstructor( aspectClass, List.of( entityInstance ) );
+
+      assertThat( entityStringCollectionChain.getProperties() ).hasSize( 3 );
+      assertThat( entityStringCollectionChain.getFirstProperty() ).isEqualTo( listProperty );
+      assertThat( entityStringCollectionChain.getLastProperty() ).isEqualTo( nestedEntityStringProperty );
+      assertThat( entityStringCollectionChain.getPropertyType() ).isEqualTo( List.class );
+      assertThat( entityStringCollectionChain.getContainingType() ).isEqualTo( aspectClass );
+      assertThat( entityStringCollectionChain.getValue( aspectInstance ) ).isEmpty();
+   }
+
+   @Test
    void testSinglePropertyPredicates() throws IOException, ReflectiveOperationException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_NESTED_ENTITY_LIST;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
