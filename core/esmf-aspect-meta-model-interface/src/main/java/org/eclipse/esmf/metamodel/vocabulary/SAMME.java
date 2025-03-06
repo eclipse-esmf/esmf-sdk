@@ -15,6 +15,7 @@ package org.eclipse.esmf.metamodel.vocabulary;
 
 import java.util.stream.Stream;
 
+import org.eclipse.esmf.metamodel.QuantityKind;
 import org.eclipse.esmf.samm.KnownVersion;
 
 import org.apache.jena.rdf.model.Property;
@@ -57,6 +58,11 @@ public class SAMME implements RdfNamespace {
       return resource( "FileResource" );
    }
 
+   @SuppressWarnings( "checkstyle:MethodName" )
+   public Resource Quantity() {
+      return resource( "Quantity" );
+   }
+
    public Property resource() {
       return property( "resource" );
    }
@@ -88,7 +94,12 @@ public class SAMME implements RdfNamespace {
       return property( "z" );
    }
 
+   @SuppressWarnings( "checkstyle:MethodName" )
+   public Property unit() {
+      return property( "unit" );
+   }
+
    public Stream<Resource> allEntities() {
-      return Stream.of( TimeSeriesEntity(), Point3d() );
+      return Stream.of( TimeSeriesEntity(), Point3d(), FileResource(), Quantity() );
    }
 }

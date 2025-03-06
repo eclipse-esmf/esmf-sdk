@@ -51,6 +51,7 @@ public enum MetaModelFile implements AspectModelFile {
    FILE_RESOURCE( "entity", "FileResource.ttl", SammNs.SAMME, MetaModelFileType.ELEMENT_DEFINITION ),
    POINT_3D( "entity", "Point3d.ttl", SammNs.SAMME, MetaModelFileType.ELEMENT_DEFINITION ),
    TIME_SERIES_ENTITY( "entity", "TimeSeriesEntity.ttl", SammNs.SAMME, MetaModelFileType.ELEMENT_DEFINITION ),
+   QUANTITY( "entity", "Quantity.ttl", SammNs.SAMME, MetaModelFileType.ELEMENT_DEFINITION ),
    CHARACTERISTIC_INSTANCES( "characteristic", "characteristic-instances.ttl", SammNs.SAMMC,
          MetaModelFileType.ELEMENT_DEFINITION ),
 
