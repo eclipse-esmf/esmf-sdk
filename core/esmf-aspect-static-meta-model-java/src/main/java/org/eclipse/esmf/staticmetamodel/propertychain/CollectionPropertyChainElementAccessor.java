@@ -38,7 +38,7 @@ public class CollectionPropertyChainElementAccessor
             return nextCollection.stream();
          }
 
-         return Stream.of( nextValue );
+         return Stream.ofNullable( nextValue );
       } ).toList();
    }
 }
