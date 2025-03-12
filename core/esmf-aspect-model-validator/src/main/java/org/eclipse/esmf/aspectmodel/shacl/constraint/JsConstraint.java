@@ -77,7 +77,7 @@ public class JsConstraint implements Constraint {
       engine = new ScriptEngineManager().getEngineByName( "JavaScript" );
       if ( engine == null ) {
          throw new ShaclValidationException( "Could not initialize JavaScript engine. Please make sure org.graalvm.js:js is "
-               + "in the list of dependencies and/or the 'js' component is installed in you GraalVM runtime." );
+               + "in the list of dependencies and/or the 'js' component is installed in your GraalVM runtime." );
       }
       final Bindings bindings = engine.getBindings( ScriptContext.ENGINE_SCOPE );
       // The following settings are required to allow the script to access methods and fields on the injected objects
