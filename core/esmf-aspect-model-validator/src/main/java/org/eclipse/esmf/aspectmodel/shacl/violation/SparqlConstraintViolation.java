@@ -54,7 +54,8 @@ public record SparqlConstraintViolation( EvaluationContext context, String const
          final String value = entry.getValue().isURIResource()
                ? context.shortUri( entry.getValue().asResource().getURI() )
                : entry.getValue().toString();
-         interpolatedMessage = interpolatedMessage.replaceAll( "\\{[$?]" + entry.getKey() + "\\}", value );
+         interpolatedMessage = interpolatedMessage.replace( "{?" + entry.getKey() + "}", value )
+               .replace( "{$" + entry.getKey() + "}", value );
       }
       return interpolatedMessage;
    }
