@@ -23,7 +23,6 @@ import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
 import org.eclipse.esmf.metamodel.vocabulary.SimpleRdfNamespace;
-import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
@@ -49,12 +48,9 @@ class RdfModelCreatorVisitorTest {
          "ASPECT_WITH_USED_AND_UNUSED_EITHER",
          "ASPECT_WITH_USED_AND_UNUSED_ENUMERATION",
          "ASPECT_WITHOUT_PROPERTIES_AND_OPERATIONS",
-         "ASPECT_WITH_ENUM_ONLY_ONE_SEE",
          "ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY",
          "ASPECT_WITH_ABSTRACT_SINGLE_ENTITY",
          "ASPECT_WITH_ABSTRACT_PROPERTY",
-         "ASPECT_WITH_MULTIPLE_ENTITIES_SAME_EXTEND",
-         "ASPECT_WITH_UMLAUT_DESCRIPTION",
          "MODEL_WITH_BROKEN_CYCLES",
          "MODEL_WITH_BLANK_AND_ADDITIONAL_NODES",
          "ASPECT_WITH_TIME_SERIES",
@@ -64,7 +60,6 @@ class RdfModelCreatorVisitorTest {
    void testRdfModelCreatorVisitor( final TestAspect testAspect ) {
       final AspectModel aspectModel = TestResources.load( testAspect );
       final Aspect aspect = aspectModel.aspect();
-
       final RdfNamespace namespace = new SimpleRdfNamespace( "", aspect.urn().getUrnPrefix() );
       final RdfModelCreatorVisitor visitor = new RdfModelCreatorVisitor( namespace );
       final Model serializedModel = visitor.visitAspect( aspect, null ).model();
