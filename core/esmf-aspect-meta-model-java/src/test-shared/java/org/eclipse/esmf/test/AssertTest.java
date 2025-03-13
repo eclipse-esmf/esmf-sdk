@@ -13,7 +13,7 @@
 
 package org.eclipse.esmf.test;
 
-import static org.eclipse.esmf.metamodel.DataTypes.xsd;
+import static org.eclipse.esmf.metamodel.DataTypes.*;
 import static org.eclipse.esmf.metamodel.Elements.*;
 import static org.eclipse.esmf.metamodel.builder.SammBuilder.*;
 import static org.eclipse.esmf.test.shared.AspectModelAsserts.assertThat;
@@ -32,6 +32,7 @@ import org.eclipse.esmf.metamodel.Namespace;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
+import org.eclipse.esmf.samm.KnownVersion;
 
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.junit.jupiter.api.Test;
@@ -138,7 +139,7 @@ public class AssertTest {
             .characteristic()
             .hasDataType( xsd.string )
             .sourceFile()
-            .hasLocation( "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0" );
+            .hasLocation( "urn:samm:org.eclipse.esmf.samm:characteristic:" + KnownVersion.getLatest().toVersionString() );
 
       final RangeConstraint rangeConstraint = rangeConstraint()
             .minValue( value( 5, xsd.integer ) )

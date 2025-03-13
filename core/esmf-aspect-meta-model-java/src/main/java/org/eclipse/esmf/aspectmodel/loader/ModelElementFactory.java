@@ -257,7 +257,9 @@ public class ModelElementFactory extends AttributeValueRetriever {
          }
          return Optional.empty();
       }
-      return Optional.of( AspectModelUrn.fromUrn( modelElement.getURI() ) );
+      return modelElement.getURI().endsWith( "#" )
+            ? Optional.of( AspectModelUrn.fromUrn( modelElement.getURI().replace( "#", "" ) ) )
+            : Optional.of( AspectModelUrn.fromUrn( modelElement.getURI() ) );
    }
 
    /**

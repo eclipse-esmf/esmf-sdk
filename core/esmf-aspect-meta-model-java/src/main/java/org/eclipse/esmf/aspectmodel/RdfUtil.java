@@ -118,6 +118,7 @@ public class RdfUtil {
             .map( Statement::getSubject )
             .filter( Resource::isURIResource )
             .map( Resource::getURI )
+            .map( uri -> uri.endsWith( "#" ) ? uri.replace( "#", "" ) : uri )
             .map( AspectModelUrn::fromUrn )
             .findAny()
             .ifPresent( urn -> model.setNsPrefix( "", urn.getUrnPrefix() ) );

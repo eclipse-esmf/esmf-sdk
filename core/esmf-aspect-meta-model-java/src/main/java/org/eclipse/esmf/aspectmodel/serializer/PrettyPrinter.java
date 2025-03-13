@@ -481,7 +481,9 @@ public class PrettyPrinter {
       public Object visitURI( final Node_URI it, final String uri ) {
          final String suri = model.shortForm( uri );
          if ( uri.equals( suri ) ) {
-            return "<" + uri + ">";
+            return uri.startsWith( "urn:samm:" ) && !uri.contains( "#" )
+                  ? "<" + uri + "#>"
+                  : "<" + uri + ">";
          } else {
             return suri;
          }
