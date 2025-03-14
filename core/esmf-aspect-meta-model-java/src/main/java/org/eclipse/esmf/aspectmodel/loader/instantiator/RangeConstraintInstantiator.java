@@ -42,10 +42,10 @@ public class RangeConstraintInstantiator extends Instantiator<RangeConstraint> {
 
       final Optional<ScalarValue> minValue = optionalAttributeValue( rangeConstraint, SammNs.SAMMC.minValue() )
             .map( Statement::getLiteral )
-            .map( literal -> new DefaultScalarValue( literal.getValue(), new DefaultScalar( literal.getDatatypeURI() ) ) );
+            .map( literal -> new DefaultScalarValue( literal.getValue(), new DefaultScalar( literal.getDatatypeURI() ), null ) );
       final Optional<ScalarValue> maxValue = optionalAttributeValue( rangeConstraint, SammNs.SAMMC.maxValue() )
             .map( Statement::getLiteral )
-            .map( literal -> new DefaultScalarValue( literal.getValue(), new DefaultScalar( literal.getDatatypeURI() ) ) );
+            .map( literal -> new DefaultScalarValue( literal.getValue(), new DefaultScalar( literal.getDatatypeURI() ), null ) );
       final BoundDefinition lowerBoundDefinition = getBoundDefinitionForRangeValue( minValue,
             SammNs.SAMMC.lowerBoundDefinition(), rangeConstraint, BoundDefinition.AT_LEAST );
       final BoundDefinition upperBoundDefinition = getBoundDefinitionForRangeValue( maxValue,

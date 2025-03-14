@@ -33,6 +33,7 @@ import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import org.apache.jena.datatypes.BaseDatatype;
 import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
@@ -51,15 +52,18 @@ public class PropertyInstantiator extends Instantiator<Property> {
 
    @Override
    public Property apply( final Resource property ) {
-      final boolean isOptional = optionalAttributeValue( property, SammNs.SAMM.optional() ).map( Statement::getBoolean ).orElse( false );
-      final boolean isNotInPayload = optionalAttributeValue( property, SammNs.SAMM.notInPayload() ).map( Statement::getBoolean )
-            .orElse( false );
-      final Optional<String> payloadName = optionalAttributeValue( property, SammNs.SAMM.payloadName() ).map( Statement::getString );
+      final boolean isOptional = optionalAttributeValue( property, SammNs.SAMM.optional() )
+            .map( Statement::getBoolean ).orElse( false );
+      final boolean isNotInPayload = optionalAttributeValue( property, SammNs.SAMM.notInPayload() )
+            .map( Statement::getBoolean ).orElse( false );
+      final Optional<String> payloadName = optionalAttributeValue( property, SammNs.SAMM.payloadName() )
+            .map( Statement::getString );
       final Optional<Resource> extendsResource = optionalAttributeValue( property, SammNs.SAMM._extends() )
             .map( Statement::getResource );
       final Optional<Property> extends_ = extendsResource.map( superElementResource ->
             modelElementFactory.create( Property.class, superElementResource ) );
-      final boolean isAbstract = !property.isAnon() && property.getModel().contains( property, RDF.type, SammNs.SAMM.AbstractProperty() );
+      final boolean isAbstract = !property.isAnon() &&
+            property.getModel().contains( property, RDF.type, SammNs.SAMM.AbstractProperty() );
 
       final MetaModelBaseAttributes metaModelBaseAttributes = property.isAnon()
             ? buildBaseAttributes( extendsResource.orElse( property ) )
@@ -70,26 +74,32 @@ public class PropertyInstantiator extends Instantiator<Property> {
          return resourcePropertyMap.get( property );
       }
       resourcePropertyMap.put( property, defaultPropertyWrapper );
+
       final DefaultProperty defProperty;
       if ( isAbstract ) {
-         defProperty = new DefaultProperty( metaModelBaseAttributes, Optional.of( fallbackCharacteristic ), Optional.empty(), isOptional,
-               isNotInPayload, payloadName, isAbstract, extends_ );
+         defProperty = new DefaultProperty( metaModelBaseAttributes, Optional.of( fallbackCharacteristic ),
+               Optional.empty(), isOptional, isNotInPayload, payloadName, isAbstract, extends_ );
       } else {
          final Resource characteristicResource = attributeValue( property, SammNs.SAMM.characteristic() ).getResource();
          final Characteristic characteristic = modelElementFactory.create( Characteristic.class, characteristicResource );
-         final Optional<ScalarValue> exampleValue = optionalAttributeValue( property, SammNs.SAMM.exampleValue() )
-               .flatMap( statement -> characteristic.getDataType()
-                     .map( type -> {
-                        if ( !type.is( Scalar.class ) ) {
-                           throw new AspectLoadingException( "Type of example value on Property " + property + " has incorrect type" );
-                        }
-                        return type.as( Scalar.class );
-                     } )
-                     .map( type -> buildScalarValue( statement.getLiteral(), type ) ) );
 
-         defProperty = new DefaultProperty( metaModelBaseAttributes, Optional.of( characteristic ), exampleValue, isOptional,
-               isNotInPayload, payloadName, isAbstract, extends_ );
+         final Optional<Object> exampleValue = optionalAttributeValue( property, SammNs.SAMM.exampleValue() )
+               .flatMap( statement -> {
+                  RDFNode node = statement.getObject();
+                  return characteristic.getDataType()
+                        .map( type -> {
+                           if ( !type.is( Scalar.class ) ) {
+                              throw new AspectLoadingException( "Type of example value on Property " + property + " has incorrect type" );
+                           }
+                           return type.as( Scalar.class );
+                        } )
+                        .map( type -> buildValue( node, Optional.of( property ), type ) );
+               } );
+
+         defProperty = new DefaultProperty( metaModelBaseAttributes, Optional.of( characteristic ),
+               exampleValue, isOptional, isNotInPayload, payloadName, isAbstract, extends_ );
       }
+
       defaultPropertyWrapper.setProperty( defProperty );
       return defaultPropertyWrapper;
    }
@@ -97,10 +107,10 @@ public class PropertyInstantiator extends Instantiator<Property> {
    private ScalarValue buildScalarValue( final Literal literal, final Scalar type ) {
       final Object literalValue = literal.getValue();
       if ( literalValue instanceof BaseDatatype.TypedValue ) {
-         return new DefaultScalarValue( literal.getLexicalForm(), type );
+         return new DefaultScalarValue( literal.getLexicalForm(), type, null );
       } else if ( literal.getDatatypeURI().equals( RDF.langString.getURI() ) ) {
          return valueInstantiator.buildLanguageString( literal.getLexicalForm(), literal.getLanguage() );
       }
-      return new DefaultScalarValue( literalValue, type );
+      return new DefaultScalarValue( literalValue, type, null );
    }
 }

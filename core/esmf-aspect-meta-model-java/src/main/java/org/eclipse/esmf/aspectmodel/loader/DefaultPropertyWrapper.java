@@ -17,7 +17,6 @@ import java.util.Optional;
 
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.Property;
-import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.impl.DefaultProperty;
 
 public class DefaultPropertyWrapper extends DefaultProperty {
@@ -33,7 +32,7 @@ public class DefaultPropertyWrapper extends DefaultProperty {
    }
 
    @Override
-   public Optional<ScalarValue> getExampleValue() {
+   public Optional<Object> getExampleValue() {
       return property.getExampleValue();
    }
 

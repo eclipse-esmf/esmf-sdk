@@ -32,9 +32,9 @@ public interface Property extends ModelElement {
 
    /**
     * @return an {@link Optional} which may contain an example value for the Property. The type of the value is
-    *       determined by the {@link Type} returned by {@link Property#getDataType()}.
+    * determined by the {@link Type} returned by {@link Property#getDataType()}.
     */
-   Optional<ScalarValue> getExampleValue();
+   Optional<Object> getExampleValue();
 
    /**
     * @return the name of the Property used in the runtime payload.

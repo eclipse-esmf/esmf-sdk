@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
-public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiatorTest {
+class AspectModelInstantiatorTest extends AbstractAspectModelInstantiatorTest {
    @ParameterizedTest
    @EnumSource( value = TestAspect.class )
    void testLoadAspectExpectSuccess( final TestAspect aspect ) {

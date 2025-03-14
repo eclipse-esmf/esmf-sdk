@@ -35,10 +35,10 @@ import org.apache.jena.vocabulary.RDF;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
-public class AspectStreamTraversalVisitorTest {
+class AspectStreamTraversalVisitorTest {
    @ParameterizedTest
    @EnumSource( value = TestAspect.class )
-   public void testLoadAspectExpectSuccess( final TestAspect testAspect ) {
+   void testLoadAspectExpectSuccess( final TestAspect testAspect ) {
       final AspectModel aspectModel = TestResources.load( testAspect );
       assertThat( aspectModel.files() ).hasSize( 1 );
       final AspectModelFile file = aspectModel.files().iterator().next();

@@ -395,7 +395,7 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
                      .ifPresent( resolvedFile -> markModelFileAsLoaded( resolvedFile, context ) );
             } catch ( final ModelResolutionException exception ) {
                // If one element can not be resolved, collect its cause and continue, so that
-               // we can create an comprehensive overview of all elements that can not be resolved
+               // we can create a comprehensive overview of all elements that can not be resolved
                if ( exception.getCheckedLocations().isEmpty() ) {
                   throw exception;
                } else {

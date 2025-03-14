@@ -181,6 +181,8 @@ public class SAMM implements RdfNamespace {
       return resource( "AbstractEntity" );
    }
 
+   public Resource Value() { return resource( "Value" ); }
+
    @SuppressWarnings( "checkstyle:MethodName" )
    public Property _extends() {
       return property( "extends" );

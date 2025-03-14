@@ -49,7 +49,7 @@ import org.eclipse.esmf.test.TestResources;
 import org.apache.jena.vocabulary.RDF;
 import org.junit.jupiter.api.Test;
 
-public class AspectChangeManagerTest {
+class AspectChangeManagerTest {
    @Test
    void testRenameElement() {
       final AspectModel aspectModel = TestResources.load( TestAspect.ASPECT );
@@ -166,7 +166,7 @@ public class AspectChangeManagerTest {
       final AspectModelFile aspectModelFile = RawAspectModelFileBuilder.builder()
             .sourceLocation( Optional.of( URI.create( "file:///temp/test.ttl" ) ) )
             .sourceModel( createModel( """
-                  @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#> .
+                  @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
                   @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
                   @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
                   
@@ -205,7 +205,7 @@ public class AspectChangeManagerTest {
             new AddAspectModelFile( aspectModelFile ),
             new AddElementDefinition( AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.test:1.0.0#Aspect" ),
                   createModel( """
-                        @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#> .
+                        @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
                         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
                         @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
                         
@@ -274,7 +274,7 @@ public class AspectChangeManagerTest {
       final AspectModelFile file1 = RawAspectModelFileBuilder.builder()
             .sourceLocation( file1Location )
             .sourceModel( createModel( """
-                  @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#> .
+                  @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
                   @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
                   @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
                   
@@ -355,7 +355,7 @@ public class AspectChangeManagerTest {
       final AspectModelFile file1 = RawAspectModelFileBuilder.builder()
             .sourceLocation( file1Location )
             .sourceModel( createModel( """
-                  @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#> .
+                  @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
                   @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
                   @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
                   

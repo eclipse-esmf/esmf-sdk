@@ -31,7 +31,7 @@ public abstract class StaticConstraintContainerProperty<E, R, T, C extends Chara
    public StaticConstraintContainerProperty(
          final MetaModelBaseAttributes metaModelBaseAttributes,
          final Characteristic characteristic,
-         final Optional<ScalarValue> exampleValue,
+         final Optional<Object> exampleValue,
          final boolean optional,
          final boolean notInPayload,
          final Optional<String> payloadName,

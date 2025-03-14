@@ -789,10 +789,10 @@ public class AspectModelJsonPayloadGeneratorTest {
             .withUrn( TestModel.TEST_NAMESPACE + "TestConstraint" ).build();
       final Optional<ScalarValue> minValue = BoundDefinition.OPEN.equals( boundKind )
             ? Optional.empty()
-            : Optional.of( new DefaultScalarValue( randomRange.getLeft(), new DefaultScalar( dataType.getUrn() ) ) );
+            : Optional.of( new DefaultScalarValue( randomRange.getLeft(), new DefaultScalar( dataType.getUrn() ), null ) );
       final Optional<ScalarValue> maxValue = BoundDefinition.OPEN.equals( boundKind )
             ? Optional.empty()
-            : Optional.of( new DefaultScalarValue( randomRange.getRight(), new DefaultScalar( dataType.getUrn() ) ) );
+            : Optional.of( new DefaultScalarValue( randomRange.getRight(), new DefaultScalar( dataType.getUrn() ), null ) );
       final RangeConstraint rangeConstraint = new DefaultRangeConstraint( constraintAttibutes, minValue, maxValue, boundKind,
             getMatchingUpperBound( boundKind ) );
       final MetaModelBaseAttributes traitAttributes = MetaModelBaseAttributes.builder().withUrn( TestModel.TEST_NAMESPACE + "TestTrait" )
