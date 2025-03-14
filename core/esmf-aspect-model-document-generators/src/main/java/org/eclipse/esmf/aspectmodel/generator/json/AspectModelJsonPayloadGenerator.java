@@ -36,6 +36,7 @@ import java.util.Random;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -43,6 +44,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.eclipse.esmf.aspectmodel.generator.ArtifactGenerator;
 import org.eclipse.esmf.aspectmodel.generator.JsonGenerator;
 import org.eclipse.esmf.aspectmodel.generator.NumericTypeTraits;
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.BoundDefinition;
@@ -66,6 +68,8 @@ import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
 import org.eclipse.esmf.metamodel.constraint.RegularExpressionConstraint;
 import org.eclipse.esmf.metamodel.datatype.Curie;
 import org.eclipse.esmf.metamodel.datatype.SammXsdType;
+import org.eclipse.esmf.metamodel.impl.DefaultScalar;
+import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -358,9 +362,13 @@ public class AspectModelJsonPayloadGenerator extends JsonGenerator<JsonPayloadGe
          private final Optional<ScalarValue> exampleValue;
 
          BasicProperty( final Property property ) {
-            this( property.getPayloadName(), property.getCharacteristic().orElseThrow( () ->
-                  new IllegalArgumentException( "Could not process Property " + property )
-            ), property.getExampleValue() );
+            this(
+                  property.getPayloadName(),
+                  property.getCharacteristic().orElseThrow( () ->
+                        new IllegalArgumentException( "Could not process Property " + property )
+                  ),
+                  processExampleValue( property.getExampleValue() )
+            );
          }
 
          BasicProperty( final String name, final Characteristic characteristic, final Optional<ScalarValue> exampleValue ) {
@@ -379,6 +387,36 @@ public class AspectModelJsonPayloadGenerator extends JsonGenerator<JsonPayloadGe
 
          public Optional<ScalarValue> getExampleValue() {
             return exampleValue;
+         }
+
+         private static Optional<ScalarValue> processExampleValue( Optional<Object> exampleValue ) {
+            return exampleValue.map( value -> {
+               if ( value instanceof ScalarValue scalarValue ) {
+                  return scalarValue;
+               } else if ( value instanceof Value valueInstance ) {
+                  return convertToScalarValue( valueInstance );
+               } else {
+                  throw new IllegalArgumentException( "Unexpected exampleValue type: " + value.getClass() );
+               }
+            } );
+         }
+
+         private static ScalarValue convertToScalarValue( Value value ) {
+            if ( value instanceof ScalarValue scalarValue ) {
+               return scalarValue;
+            }
+
+            return new DefaultScalarValue(
+                  ( ( ScalarValue ) value).getValue(),
+                  new DefaultScalar( value.getType().toString() ),
+                  MetaModelBaseAttributes.builder()
+                        .withUrn( value.urn() )
+                        .withPreferredNames( value.getPreferredNames() )
+                        .withDescriptions( value.getDescriptions() )
+                        .withSee( value.getSee() )
+                        .isAnonymous( value.isAnonymous() )
+                        .withSourceFile( value.getSourceFile() ).build()
+            );
          }
       }
    }
@@ -414,7 +452,7 @@ public class AspectModelJsonPayloadGenerator extends JsonGenerator<JsonPayloadGe
       private Object generateExampleValue( final Characteristic characteristic ) {
          final Type dataType = getDataType( characteristic );
 
-         if ( !( dataType.is( Scalar.class ) ) ) {
+         if ( !(dataType.is( Scalar.class )) ) {
             throw new IllegalArgumentException( "Example values can only be generated for scalar types." );
          }
 
@@ -592,7 +630,7 @@ public class AspectModelJsonPayloadGenerator extends JsonGenerator<JsonPayloadGe
 
       // narrowing conversion from BigDecimal to double
       private double safelyNarrowDown( final Number bound ) {
-         if ( !( BigDecimal.class.equals( bound.getClass() ) ) ) {
+         if ( !(BigDecimal.class.equals( bound.getClass() )) ) {
             return bound.doubleValue();
          }
 
@@ -601,7 +639,7 @@ public class AspectModelJsonPayloadGenerator extends JsonGenerator<JsonPayloadGe
          // Example: xsd:unsignedLong has a max. value of 18446744073709551615; when converting it to double
          // it will get represented as 1.8446744073709552E16, thereby exceeding the upper bound.
          // Therefore we need to take care of always rounding down when narrowing to double.
-         final BigDecimal narrowed = ( (BigDecimal) bound ).round( new MathContext( 15, RoundingMode.DOWN ) );
+         final BigDecimal narrowed = ((BigDecimal) bound).round( new MathContext( 15, RoundingMode.DOWN ) );
          return narrowed.doubleValue();
       }
 

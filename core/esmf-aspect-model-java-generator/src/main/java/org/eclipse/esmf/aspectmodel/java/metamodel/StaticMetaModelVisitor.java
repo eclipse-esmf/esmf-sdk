@@ -527,7 +527,7 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
       }
 
       if ( optionalValue.get() instanceof ScalarValue ) {
-         return "Optional.of(" + ( (ScalarValue) optionalValue.get() ).accept( this, context ) + ")";
+         return "Optional.of(" + ((ScalarValue) optionalValue.get()).accept( this, context ) + ")";
       }
 
       context.getCodeGenerationConfig().importTracker().importExplicit( AspectModelJavaUtil.getDataTypeClass( type ) );
@@ -546,7 +546,15 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
 
    public String exampleValue( final Property property, final StaticCodeGenerationContext context ) {
       return property.getExampleValue()
-            .map( exampleValue -> "Optional.of(" + this.visitScalarValue( exampleValue, context ) + ")" )
+            .map( exampleValue -> {
+               if ( exampleValue instanceof ScalarValue scalarValue ) {
+                  return "Optional.of(" + this.visitScalarValue( scalarValue, context ) + ")";
+               } else if ( exampleValue instanceof Value value ) {
+                  return "Optional.of(" + this.visitValue( value, context ) + ")";
+               } else {
+                  throw new IllegalArgumentException( "Unexpected exampleValue type: " + exampleValue.getClass() );
+               }
+            } )
             .orElse( "Optional.empty()" );
    }
 

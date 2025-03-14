@@ -51,6 +51,7 @@ import org.eclipse.esmf.aspectmodel.loader.instantiator.PropertyInstantiator;
 import org.eclipse.esmf.aspectmodel.loader.instantiator.QuantifiableInstantiator;
 import org.eclipse.esmf.aspectmodel.loader.instantiator.RangeConstraintInstantiator;
 import org.eclipse.esmf.aspectmodel.loader.instantiator.RegularExpressionConstraintInstantiator;
+import org.eclipse.esmf.aspectmodel.loader.instantiator.ScalarValueInstantiator;
 import org.eclipse.esmf.aspectmodel.loader.instantiator.SetInstantiator;
 import org.eclipse.esmf.aspectmodel.loader.instantiator.SingleEntityInstantiator;
 import org.eclipse.esmf.aspectmodel.loader.instantiator.SortedSetInstantiator;
@@ -109,6 +110,10 @@ public class ModelElementFactory extends AttributeValueRetriever {
       registerInstantiator( SammNs.SAMM.Event(), new EventInstantiator( this ) );
       registerInstantiator( SammNs.SAMM.Operation(), new OperationInstantiator( this ) );
       registerInstantiator( SammNs.SAMM.Property(), new PropertyInstantiator( this ) );
+      /*
+       *
+       */
+      registerInstantiator( SammNs.SAMM.Value(), new ScalarValueInstantiator( this ) );
 
       registerInstantiator( SammNs.SAMMC.Code(), new CodeInstantiator( this ) );
       registerInstantiator( SammNs.SAMMC.Collection(), new CollectionInstantiator( this ) );

@@ -31,7 +31,7 @@ import org.apache.jena.rdf.model.Model;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
-public class RdfModelCreatorVisitorTest {
+class RdfModelCreatorVisitorTest {
    /*
     * Exclude the test models that contain unused elements; the resulting serialized models can
     * never be identical to the original because the unused elements are ignored when loading the
@@ -58,10 +58,10 @@ public class RdfModelCreatorVisitorTest {
          "MODEL_WITH_BROKEN_CYCLES",
          "MODEL_WITH_BLANK_AND_ADDITIONAL_NODES",
          "ASPECT_WITH_TIME_SERIES",
-         "ASPECT_WITH_NAMESPACE_DESCRIPTION"
+         "ASPECT_WITH_NAMESPACE_DESCRIPTION",
+         "ASPECT_WITH_ANY_VALUE_DECLARATIONS"
    } )
-   public void testRdfModelCreatorVisitor( final TestAspect testAspect ) {
-      final KnownVersion knownVersion = KnownVersion.getLatest();
+   void testRdfModelCreatorVisitor( final TestAspect testAspect ) {
       final AspectModel aspectModel = TestResources.load( testAspect );
       final Aspect aspect = aspectModel.aspect();
 

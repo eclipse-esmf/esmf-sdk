@@ -45,6 +45,7 @@ import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Unit;
+import org.eclipse.esmf.metamodel.Value;
 import org.eclipse.esmf.metamodel.characteristic.Code;
 import org.eclipse.esmf.metamodel.characteristic.Collection;
 import org.eclipse.esmf.metamodel.characteristic.Duration;
@@ -646,10 +647,14 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       model.add( serializeDescriptions( resource, property ) );
 
       property.getExampleValue().ifPresent( exampleValue -> {
-         final ElementModel exampleValueElementModel = exampleValue.accept( this, property );
-         model.add( exampleValueElementModel.model() );
-         exampleValueElementModel.focusElement().ifPresent( exampleValueNode ->
-               model.add( resource, SammNs.SAMM.exampleValue(), exampleValueNode ) );
+         if ( exampleValue instanceof Value ) {
+            final ElementModel exampleValueElementModel = ((Value) exampleValue).accept( this, property );
+            model.add( exampleValueElementModel.model() );
+            exampleValueElementModel.focusElement().ifPresent( exampleValueNode ->
+                  model.add( resource, SammNs.SAMM.exampleValue(), exampleValueNode ) );
+         } else {
+            throw new IllegalArgumentException( "exampleValue is not a Value: " + exampleValue.getClass() );
+         }
       } );
 
       property.getCharacteristic().ifPresent( characteristic -> {

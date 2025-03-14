@@ -42,9 +42,9 @@ import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
 import org.junit.jupiter.api.Test;
 
-public class EnumerationInstantiatorTest extends AbstractAspectModelInstantiatorTest {
+class EnumerationInstantiatorTest extends AbstractAspectModelInstantiatorTest {
    @Test
-   public void testEnumerationCharacteristicInstantiationExpectSuccess() {
+   void testEnumerationCharacteristicInstantiationExpectSuccess() {
       final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "TestEnumeration" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ENUMERATION );
 
@@ -59,7 +59,7 @@ public class EnumerationInstantiatorTest extends AbstractAspectModelInstantiator
    }
 
    @Test
-   public void testEnumerationCharacteristicWithEntityDataTypeExpectSuccess() {
+   void testEnumerationCharacteristicWithEntityDataTypeExpectSuccess() {
       final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "TestEnumeration" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION );
 
@@ -79,7 +79,7 @@ public class EnumerationInstantiatorTest extends AbstractAspectModelInstantiator
    }
 
    @Test
-   public void testEnumerationCharacteristicWithEntityDataTypeWithOptionalAndNotInPayloadPropertiesExpectSuccess() {
+   void testEnumerationCharacteristicWithEntityDataTypeWithOptionalAndNotInPayloadPropertiesExpectSuccess() {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_WITH_OPTIONAL_AND_NOT_IN_PAYLOAD_PROPERTIES );
       final Enumeration enumeration = (Enumeration) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
@@ -107,7 +107,7 @@ public class EnumerationInstantiatorTest extends AbstractAspectModelInstantiator
    }
 
    @Test
-   public void testEnumerationCharacteristicWithListOfEntityDataTypeExpectSuccess() {
+   void testEnumerationCharacteristicWithListOfEntityDataTypeExpectSuccess() {
       final AspectModelUrn expectedAspectModelUrn = AspectModelUrn
             .fromUrn( TestModel.TEST_NAMESPACE + "TestEnumeration" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_LIST_ENTITY_ENUMERATION );
@@ -131,7 +131,7 @@ public class EnumerationInstantiatorTest extends AbstractAspectModelInstantiator
    }
 
    @Test
-   public void testEnumerationCharacteristicWithNestedEntityAndNotInPayloadDataTypeExpectSuccess() {
+   void testEnumerationCharacteristicWithNestedEntityAndNotInPayloadDataTypeExpectSuccess() {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_NESTED_ENTITY_ENUMERATION_WITH_NOT_IN_PAYLOAD );
       assertThat( aspect ).properties().hasSize( 1 );
 
@@ -160,7 +160,7 @@ public class EnumerationInstantiatorTest extends AbstractAspectModelInstantiator
    }
 
    @Test
-   public void testEnumerationCharacteristicWithNestedEntityListAndNotInPayloadDataTypeExpectSuccess() {
+   void testEnumerationCharacteristicWithNestedEntityListAndNotInPayloadDataTypeExpectSuccess() {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_NESTED_ENTITY_LIST_ENUMERATION_WITH_NOT_IN_PAYLOAD );
       assertThat( aspect ).properties().hasSize( 1 );
 
@@ -192,7 +192,7 @@ public class EnumerationInstantiatorTest extends AbstractAspectModelInstantiator
    }
 
    @Test
-   public void testEnumerationWithNestedEntityWithLangStringExpectSuccess() {
+   void testEnumerationWithNestedEntityWithLangStringExpectSuccess() {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_AND_LANG_STRING );
       assertThat( aspect ).properties().hasSize( 1 );
 
