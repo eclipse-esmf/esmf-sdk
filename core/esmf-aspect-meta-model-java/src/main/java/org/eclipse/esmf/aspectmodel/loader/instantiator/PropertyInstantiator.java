@@ -51,26 +51,26 @@ public class PropertyInstantiator extends Instantiator<Property> {
    }
 
    @Override
-   public Property apply(final Resource property) {
-      final boolean isOptional = optionalAttributeValue(property, SammNs.SAMM.optional())
-            .map(Statement::getBoolean).orElse(false);
-      final boolean isNotInPayload = optionalAttributeValue(property, SammNs.SAMM.notInPayload())
-            .map(Statement::getBoolean).orElse(false);
-      final Optional<String> payloadName = optionalAttributeValue(property, SammNs.SAMM.payloadName())
-            .map(Statement::getString);
-      final Optional<Resource> extendsResource = optionalAttributeValue(property, SammNs.SAMM._extends())
-            .map(Statement::getResource);
-      final Optional<Property> extends_ = extendsResource.map(superElementResource ->
-            modelElementFactory.create(Property.class, superElementResource));
+   public Property apply( final Resource property ) {
+      final boolean isOptional = optionalAttributeValue( property, SammNs.SAMM.optional() )
+            .map( Statement::getBoolean ).orElse( false );
+      final boolean isNotInPayload = optionalAttributeValue( property, SammNs.SAMM.notInPayload() )
+            .map( Statement::getBoolean ).orElse( false );
+      final Optional<String> payloadName = optionalAttributeValue( property, SammNs.SAMM.payloadName() )
+            .map( Statement::getString );
+      final Optional<Resource> extendsResource = optionalAttributeValue( property, SammNs.SAMM._extends() )
+            .map( Statement::getResource );
+      final Optional<Property> extends_ = extendsResource.map( superElementResource ->
+            modelElementFactory.create( Property.class, superElementResource ) );
       final boolean isAbstract = !property.isAnon() &&
-            property.getModel().contains(property, RDF.type, SammNs.SAMM.AbstractProperty());
+            property.getModel().contains( property, RDF.type, SammNs.SAMM.AbstractProperty() );
 
       final MetaModelBaseAttributes metaModelBaseAttributes = property.isAnon()
             ? buildBaseAttributes( extendsResource.orElse( property ) )
             : buildBaseAttributes( property );
       final DefaultPropertyWrapper defaultPropertyWrapper = new DefaultPropertyWrapper( metaModelBaseAttributes );
 
-      if ( resourcePropertyMap.containsKey( property )) {
+      if ( resourcePropertyMap.containsKey( property ) ) {
          return resourcePropertyMap.get( property );
       }
       resourcePropertyMap.put( property, defaultPropertyWrapper );
@@ -92,9 +92,9 @@ public class PropertyInstantiator extends Instantiator<Property> {
                               throw new AspectLoadingException( "Type of example value on Property " + property + " has incorrect type" );
                            }
                            return type.as( Scalar.class );
-                        })
+                        } )
                         .map( type -> buildValue( node, Optional.of( property ), type ) );
-               });
+               } );
 
          defProperty = new DefaultProperty( metaModelBaseAttributes, Optional.of( characteristic ),
                exampleValue, isOptional, isNotInPayload, payloadName, isAbstract, extends_ );
@@ -103,7 +103,6 @@ public class PropertyInstantiator extends Instantiator<Property> {
       defaultPropertyWrapper.setProperty( defProperty );
       return defaultPropertyWrapper;
    }
-
 
    private ScalarValue buildScalarValue( final Literal literal, final Scalar type ) {
       final Object literalValue = literal.getValue();
