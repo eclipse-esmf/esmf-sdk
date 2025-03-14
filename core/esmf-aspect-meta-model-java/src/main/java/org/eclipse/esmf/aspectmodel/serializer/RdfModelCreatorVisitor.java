@@ -647,8 +647,8 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       model.add( serializeDescriptions( resource, property ) );
 
       property.getExampleValue().ifPresent( exampleValue -> {
-         if ( exampleValue instanceof Value ) {
-            final ElementModel exampleValueElementModel = ((Value) exampleValue).accept( this, property );
+         if ( exampleValue instanceof Value value ) {
+            final ElementModel exampleValueElementModel = ( value ).accept( this, property );
             model.add( exampleValueElementModel.model() );
             exampleValueElementModel.focusElement().ifPresent( exampleValueNode ->
                   model.add( resource, SammNs.SAMM.exampleValue(), exampleValueNode ) );

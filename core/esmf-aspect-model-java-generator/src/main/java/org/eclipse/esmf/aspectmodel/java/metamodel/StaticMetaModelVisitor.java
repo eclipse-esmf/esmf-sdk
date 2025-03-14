@@ -526,8 +526,8 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
          return "Optional.empty()";
       }
 
-      if ( optionalValue.get() instanceof ScalarValue ) {
-         return "Optional.of(" + ((ScalarValue) optionalValue.get()).accept( this, context ) + ")";
+      if ( optionalValue.get() instanceof ScalarValue scalarValue ) {
+         return "Optional.of(" + ( scalarValue ).accept( this, context ) + ")";
       }
 
       context.getCodeGenerationConfig().importTracker().importExplicit( AspectModelJavaUtil.getDataTypeClass( type ) );

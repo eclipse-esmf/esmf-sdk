@@ -452,7 +452,7 @@ public class AspectModelJsonPayloadGenerator extends JsonGenerator<JsonPayloadGe
       private Object generateExampleValue( final Characteristic characteristic ) {
          final Type dataType = getDataType( characteristic );
 
-         if ( !(dataType.is( Scalar.class )) ) {
+         if ( !( dataType.is( Scalar.class ) ) ) {
             throw new IllegalArgumentException( "Example values can only be generated for scalar types." );
          }
 
@@ -630,7 +630,7 @@ public class AspectModelJsonPayloadGenerator extends JsonGenerator<JsonPayloadGe
 
       // narrowing conversion from BigDecimal to double
       private double safelyNarrowDown( final Number bound ) {
-         if ( !(BigDecimal.class.equals( bound.getClass() )) ) {
+         if ( !( BigDecimal.class.equals( bound.getClass() ) ) ) {
             return bound.doubleValue();
          }
 
@@ -639,7 +639,7 @@ public class AspectModelJsonPayloadGenerator extends JsonGenerator<JsonPayloadGe
          // Example: xsd:unsignedLong has a max. value of 18446744073709551615; when converting it to double
          // it will get represented as 1.8446744073709552E16, thereby exceeding the upper bound.
          // Therefore we need to take care of always rounding down when narrowing to double.
-         final BigDecimal narrowed = ((BigDecimal) bound).round( new MathContext( 15, RoundingMode.DOWN ) );
+         final BigDecimal narrowed = ( (BigDecimal) bound ).round( new MathContext( 15, RoundingMode.DOWN ) );
          return narrowed.doubleValue();
       }
 

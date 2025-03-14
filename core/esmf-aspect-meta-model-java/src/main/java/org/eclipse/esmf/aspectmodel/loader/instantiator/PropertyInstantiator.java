@@ -66,41 +66,41 @@ public class PropertyInstantiator extends Instantiator<Property> {
             property.getModel().contains(property, RDF.type, SammNs.SAMM.AbstractProperty());
 
       final MetaModelBaseAttributes metaModelBaseAttributes = property.isAnon()
-            ? buildBaseAttributes(extendsResource.orElse(property))
-            : buildBaseAttributes(property);
-      final DefaultPropertyWrapper defaultPropertyWrapper = new DefaultPropertyWrapper(metaModelBaseAttributes);
+            ? buildBaseAttributes( extendsResource.orElse( property ) )
+            : buildBaseAttributes( property );
+      final DefaultPropertyWrapper defaultPropertyWrapper = new DefaultPropertyWrapper( metaModelBaseAttributes );
 
-      if (resourcePropertyMap.containsKey(property)) {
-         return resourcePropertyMap.get(property);
+      if ( resourcePropertyMap.containsKey( property )) {
+         return resourcePropertyMap.get( property );
       }
-      resourcePropertyMap.put(property, defaultPropertyWrapper);
+      resourcePropertyMap.put( property, defaultPropertyWrapper );
 
       final DefaultProperty defProperty;
-      if (isAbstract) {
-         defProperty = new DefaultProperty(metaModelBaseAttributes, Optional.of(fallbackCharacteristic),
-               Optional.empty(), isOptional, isNotInPayload, payloadName, isAbstract, extends_);
+      if ( isAbstract ) {
+         defProperty = new DefaultProperty( metaModelBaseAttributes, Optional.of( fallbackCharacteristic ),
+               Optional.empty(), isOptional, isNotInPayload, payloadName, isAbstract, extends_ );
       } else {
-         final Resource characteristicResource = attributeValue(property, SammNs.SAMM.characteristic()).getResource();
-         final Characteristic characteristic = modelElementFactory.create(Characteristic.class, characteristicResource);
+         final Resource characteristicResource = attributeValue( property, SammNs.SAMM.characteristic() ).getResource();
+         final Characteristic characteristic = modelElementFactory.create( Characteristic.class, characteristicResource );
 
-         final Optional<Object> exampleValue = optionalAttributeValue(property, SammNs.SAMM.exampleValue())
-               .flatMap(statement -> {
+         final Optional<Object> exampleValue = optionalAttributeValue( property, SammNs.SAMM.exampleValue() )
+               .flatMap( statement -> {
                   RDFNode node = statement.getObject();
                   return characteristic.getDataType()
-                        .map(type -> {
-                           if (!type.is(Scalar.class)) {
-                              throw new AspectLoadingException("Type of example value on Property " + property + " has incorrect type");
+                        .map( type -> {
+                           if ( !type.is( Scalar.class ) ) {
+                              throw new AspectLoadingException( "Type of example value on Property " + property + " has incorrect type" );
                            }
-                           return type.as(Scalar.class);
+                           return type.as( Scalar.class );
                         })
-                        .map(type -> buildValue(node, Optional.of(property), type)); // <-- используем buildValue
+                        .map( type -> buildValue( node, Optional.of( property ), type ) );
                });
 
-         defProperty = new DefaultProperty(metaModelBaseAttributes, Optional.of(characteristic),
-               exampleValue, isOptional, isNotInPayload, payloadName, isAbstract, extends_);
+         defProperty = new DefaultProperty( metaModelBaseAttributes, Optional.of( characteristic ),
+               exampleValue, isOptional, isNotInPayload, payloadName, isAbstract, extends_ );
       }
 
-      defaultPropertyWrapper.setProperty(defProperty);
+      defaultPropertyWrapper.setProperty( defProperty );
       return defaultPropertyWrapper;
    }
 
