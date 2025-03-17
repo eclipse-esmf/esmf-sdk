@@ -27,6 +27,7 @@ import org.eclipse.esmf.aspectmodel.java.AspectModelJavaUtil;
 import org.eclipse.esmf.aspectmodel.java.ValueExpressionVisitor;
 import org.eclipse.esmf.aspectmodel.java.ValueInitializer;
 import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.BoundDefinition;
@@ -111,10 +112,11 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
    public String visitScalarValue( final ScalarValue value, final StaticCodeGenerationContext context ) {
       context.getCodeGenerationConfig().importTracker().importExplicit( DefaultScalarValue.class );
       final ValueExpressionVisitor.Context valueContext = new ValueExpressionVisitor.Context( context.getCodeGenerationConfig(), false );
-      final String metaModelAttributes = ( !value.getSee().isEmpty() && !value.getPreferredNames().isEmpty() )
-            ? "getMetaModelBaseAttributes( value, context )"
-            : null;
+      final String metaModelAttributes = (!value.getSee().isEmpty() && !value.getPreferredNames().isEmpty())
+            ? getMetaModelBaseAttributes( value, context )
+            : "MetaModelBaseAttributes.builder().build()";
       return "new DefaultScalarValue("
+            // Object value
             + metaModelAttributes + ","
             // Object value
             + value.accept( valueExpressionVisitor, valueContext ) + ","

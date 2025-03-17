@@ -34,6 +34,7 @@ import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFileBuilder;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.metamodel.AspectModel;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
@@ -120,7 +121,7 @@ class AspectSerializerTest {
       final AspectModelFile file1 = RawAspectModelFileBuilder.builder()
             .sourceLocation( Optional.of( file1Path.toUri() ) )
             .sourceModel( createModel( """
-                  @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+                  @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> .
                   @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
                   @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
 
@@ -128,14 +129,14 @@ class AspectSerializerTest {
                      samm:description "This is a test description"@en ;
                      samm:properties ( ) ;
                      samm:operations ( ) .
-                  """
+                  """.formatted( KnownVersion.getLatest().toVersionString() )
             ) )
             .build();
       final Path file2Path = outputDirectory.resolve( "Aspect2.ttl" );
       final AspectModelFile file2 = RawAspectModelFileBuilder.builder()
             .sourceLocation( Optional.of( file2Path.toUri() ) )
             .sourceModel( createModel( """
-                  @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+                  @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> .
                   @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
                   @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
 
@@ -143,7 +144,7 @@ class AspectSerializerTest {
                      samm:description "This is a test description"@en ;
                      samm:properties ( ) ;
                      samm:operations ( ) .
-                  """
+                  """.formatted( KnownVersion.getLatest().toVersionString() )
             ) )
             .build();
       final AspectChangeManager changeContext = new AspectChangeManager( aspectModel );

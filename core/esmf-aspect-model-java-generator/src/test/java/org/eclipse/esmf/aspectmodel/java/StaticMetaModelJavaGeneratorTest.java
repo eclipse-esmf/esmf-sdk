@@ -446,9 +446,9 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
                   new DefaultEnumeration(MetaModelBaseAttributes.builder().withUrn(AspectModelUrn.fromUrn(NAMESPACE + "TestEnumeration")).build(), new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer"), new ArrayList<Value>() {
 
                       {
-                          add(new DefaultScalarValue(null, new BigInteger("1"), new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer")));
-                          add(new DefaultScalarValue(null, new BigInteger("2"), new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer")));
-                          add(new DefaultScalarValue(null, new BigInteger("3"), new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer")));
+                          add(new DefaultScalarValue(MetaModelBaseAttributes.builder().build(), new BigInteger("1"), new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer")));
+                          add(new DefaultScalarValue(MetaModelBaseAttributes.builder().build(), new BigInteger("2"), new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer")));
+                          add(new DefaultScalarValue(MetaModelBaseAttributes.builder().build(), new BigInteger("3"), new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer")));
                       }
                   })""";
 
@@ -518,7 +518,7 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
 
       result.assertMetaModelBaseAttributesForProperties( "MetaAspectWithCollection", expectedBaseAttributes );
 
-      final String expectedExampleValue = "Optional.of(new DefaultScalarValue(null, \"Example Value\", new DefaultScalar(\"http://www.w3"
+      final String expectedExampleValue = "Optional.of(new DefaultScalarValue(MetaModelBaseAttributes.builder().build(), \"Example Value\", new DefaultScalar(\"http://www.w3"
             + ".org/2001/XMLSchema#string\")))";
 
       result.assertConstructorArgumentForProperties(

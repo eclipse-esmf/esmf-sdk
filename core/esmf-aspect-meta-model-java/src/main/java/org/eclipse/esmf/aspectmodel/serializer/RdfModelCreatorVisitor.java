@@ -647,14 +647,10 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       model.add( serializeDescriptions( resource, property ) );
 
       property.getExampleValue().ifPresent( exampleValue -> {
-         if ( exampleValue instanceof Value value ) {
-            final ElementModel exampleValueElementModel = ( value ).accept( this, property );
-            model.add( exampleValueElementModel.model() );
-            exampleValueElementModel.focusElement().ifPresent( exampleValueNode ->
-                  model.add( resource, SammNs.SAMM.exampleValue(), exampleValueNode ) );
-         } else {
-            throw new IllegalArgumentException( "exampleValue is not a Value: " + exampleValue.getClass() );
-         }
+         final ElementModel exampleValueElementModel = ( exampleValue ).accept( this, property );
+         model.add( exampleValueElementModel.model() );
+         exampleValueElementModel.focusElement().ifPresent( exampleValueNode ->
+               model.add( resource, SammNs.SAMM.exampleValue(), exampleValueNode ) );
       } );
 
       property.getCharacteristic().ifPresent( characteristic -> {

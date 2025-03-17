@@ -43,6 +43,7 @@ import org.eclipse.esmf.metamodel.Namespace;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.impl.DefaultNamespace;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
@@ -166,7 +167,7 @@ class AspectChangeManagerTest {
       final AspectModelFile aspectModelFile = RawAspectModelFileBuilder.builder()
             .sourceLocation( Optional.of( URI.create( "file:///temp/test.ttl" ) ) )
             .sourceModel( createModel( """
-                  @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+                  @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> .
                   @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
                   @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
                   
@@ -174,7 +175,7 @@ class AspectChangeManagerTest {
                      samm:description "This is a test description"@en ;
                      samm:properties ( ) ;
                      samm:operations ( ) .
-                  """
+                  """.formatted( KnownVersion.getLatest().toVersionString() )
             ) )
             .build();
       final Change addFile = new AddAspectModelFile( aspectModelFile );
@@ -205,7 +206,7 @@ class AspectChangeManagerTest {
             new AddAspectModelFile( aspectModelFile ),
             new AddElementDefinition( AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.test:1.0.0#Aspect" ),
                   createModel( """
-                        @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+                        @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> .
                         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
                         @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
                         
@@ -213,7 +214,7 @@ class AspectChangeManagerTest {
                            samm:description "This is a test description"@en ;
                            samm:properties ( ) ;
                            samm:operations ( ) .
-                        """ ), aspectModelFile )
+                        """.formatted( KnownVersion.getLatest().toVersionString() ) ), aspectModelFile )
       );
 
       changeManager.applyChange( changes );
@@ -274,7 +275,7 @@ class AspectChangeManagerTest {
       final AspectModelFile file1 = RawAspectModelFileBuilder.builder()
             .sourceLocation( file1Location )
             .sourceModel( createModel( """
-                  @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+                  @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> .
                   @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
                   @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
                   
@@ -282,7 +283,7 @@ class AspectChangeManagerTest {
                      samm:description "This is a test description"@en ;
                      samm:properties ( ) ;
                      samm:operations ( ) .
-                  """
+                  """.formatted( KnownVersion.getLatest().toVersionString() )
             ) )
             .build();
       final AspectModelFile file2 = RawAspectModelFileBuilder.builder().sourceLocation( file2Location ).build();
@@ -355,7 +356,7 @@ class AspectChangeManagerTest {
       final AspectModelFile file1 = RawAspectModelFileBuilder.builder()
             .sourceLocation( file1Location )
             .sourceModel( createModel( """
-                  @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+                  @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> .
                   @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
                   @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
                   
@@ -363,7 +364,7 @@ class AspectChangeManagerTest {
                      samm:description "This is a test description"@en ;
                      samm:properties ( ) ;
                      samm:operations ( ) .
-                  """
+                  """.formatted( KnownVersion.getLatest().toVersionString() )
             ) )
             .build();
       final AspectModelFile file2 = RawAspectModelFileBuilder.builder().sourceLocation( file2Location ).build();

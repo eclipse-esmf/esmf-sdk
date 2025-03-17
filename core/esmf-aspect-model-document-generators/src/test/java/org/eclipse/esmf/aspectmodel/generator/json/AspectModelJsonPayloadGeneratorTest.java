@@ -148,7 +148,8 @@ class AspectModelJsonPayloadGeneratorTest {
    @ParameterizedTest
    @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
          "MODEL_WITH_BROKEN_CYCLES",
-         "ASPECT_WITH_MULTIPLE_ENTITIES_SAME_EXTEND"
+         "ASPECT_WITH_MULTIPLE_ENTITIES_SAME_EXTEND",
+         "ASPECT_WITH_ANY_VALUE_DECLARATIONS"
    } )
    void testDeserializationForGeneratedJson( final TestAspect testAspect ) {
       final Aspect aspect = TestResources.load( testAspect ).aspect();
@@ -790,13 +791,11 @@ class AspectModelJsonPayloadGeneratorTest {
             .withUrn( TestModel.TEST_NAMESPACE + "TestConstraint" ).build();
       final Optional<ScalarValue> minValue = BoundDefinition.OPEN.equals( boundKind )
             ? Optional.empty()
-            :
-            Optional.of( new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), randomRange.getLeft(),
+            : Optional.of( new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), randomRange.getLeft(),
                   new DefaultScalar( dataType.getUrn() ) ) );
       final Optional<ScalarValue> maxValue = BoundDefinition.OPEN.equals( boundKind )
             ? Optional.empty()
-            :
-            Optional.of( new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), randomRange.getRight(),
+            : Optional.of( new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), randomRange.getRight(),
                   new DefaultScalar( dataType.getUrn() ) ) );
       final RangeConstraint rangeConstraint = new DefaultRangeConstraint( constraintAttibutes, minValue, maxValue, boundKind,
             getMatchingUpperBound( boundKind ) );

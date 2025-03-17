@@ -14,11 +14,13 @@
 package org.eclipse.esmf.aspectmodel.loader;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -166,23 +168,6 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
       if ( node.isResource() ) {
          Resource resource = node.asResource();
 
-         if ( resource.canAs( RDFList.class ) ) {
-            RDFList list = resource.as( RDFList.class );
-            List<Value> values = list.iterator().toList().stream()
-                  .map( rdfNode -> buildValue( rdfNode, characteristicResource, type ) )
-                  .toList();
-
-            return new DefaultCollectionValue( values, CollectionValue.CollectionType.SET, type );
-         }
-
-         if ( type.is( Entity.class ) ) {
-            return buildEntityInstance( resource, (Entity) type );
-         }
-
-         if ( !resource.hasProperty( RDF.type, SammNs.SAMM.Value() ) ) {
-            return new DefaultScalarValue( buildBaseAttributes( resource ), resource.getURI(), new DefaultScalar( type.toString() ) );
-         }
-
          if ( resource.hasProperty( RDF.type, SammNs.SAMM.Value() ) ) {
             Optional<String> valueOpt = optionalAttributeValue( resource, SammNs.SAMM.value() ).map( Statement::getString );
 
@@ -190,7 +175,7 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
                throw new AspectLoadingException( "samm:Value must contain a samm:value property" );
             }
 
-            return new DefaultScalarValue( buildBaseAttributes( resource ), valueOpt.get(), new DefaultScalar( type.toString() ) );
+            return new DefaultScalarValue( buildBaseAttributes( resource ), valueOpt.get(), new DefaultScalar( type.getUrn() ) );
          }
       }
 

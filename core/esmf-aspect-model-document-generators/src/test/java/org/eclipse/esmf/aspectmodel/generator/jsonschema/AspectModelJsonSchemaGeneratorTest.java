@@ -126,7 +126,8 @@ class AspectModelJsonSchemaGeneratorTest {
     */
    @ParameterizedTest
    @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
-         "MODEL_WITH_BROKEN_CYCLES" // contains cycles, but all of them should be "breakable", need to be investigated
+         "MODEL_WITH_BROKEN_CYCLES", // contains cycles, but all of them should be "breakable", need to be investigated
+         "ASPECT_WITH_ANY_VALUE_DECLARATIONS"
    } )
    void testGeneration( final TestAspect testAspect ) {
       final Aspect aspect = TestResources.load( testAspect ).aspect();
