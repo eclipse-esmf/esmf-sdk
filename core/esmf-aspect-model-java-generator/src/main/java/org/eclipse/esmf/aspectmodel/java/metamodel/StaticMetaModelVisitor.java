@@ -111,7 +111,9 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
    public String visitScalarValue( final ScalarValue value, final StaticCodeGenerationContext context ) {
       context.getCodeGenerationConfig().importTracker().importExplicit( DefaultScalarValue.class );
       final ValueExpressionVisitor.Context valueContext = new ValueExpressionVisitor.Context( context.getCodeGenerationConfig(), false );
-      final String metaModelAttributes = ( !value.getSee().isEmpty() && !value.getPreferredNames().isEmpty() ) ? "getMetaModelBaseAttributes( value, context )" : null;
+      final String metaModelAttributes = ( !value.getSee().isEmpty() && !value.getPreferredNames().isEmpty() ) ?
+            "getMetaModelBaseAttributes( value, context )" :
+            null;
       return "new DefaultScalarValue("
             + metaModelAttributes + ","
             // Object value
@@ -529,7 +531,7 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
       }
 
       if ( optionalValue.get() instanceof ScalarValue scalarValue ) {
-         return "Optional.of(" + ( scalarValue ).accept( this, context ) + ")";
+         return "Optional.of(" + (scalarValue).accept( this, context ) + ")";
       }
 
       context.getCodeGenerationConfig().importTracker().importExplicit( AspectModelJavaUtil.getDataTypeClass( type ) );

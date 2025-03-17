@@ -37,6 +37,7 @@ import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
+
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
@@ -131,7 +132,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class AspectModelJsonPayloadGeneratorTest {
+class AspectModelJsonPayloadGeneratorTest {
    private static final String PACKAGE = "org.eclipse.esmf.test.generatedtestclasses";
    private static DatatypeFactory datatypeFactory;
 
@@ -789,10 +790,14 @@ public class AspectModelJsonPayloadGeneratorTest {
             .withUrn( TestModel.TEST_NAMESPACE + "TestConstraint" ).build();
       final Optional<ScalarValue> minValue = BoundDefinition.OPEN.equals( boundKind )
             ? Optional.empty()
-            : Optional.of( new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), randomRange.getLeft(), new DefaultScalar( dataType.getUrn() ) ) );
+            :
+            Optional.of( new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), randomRange.getLeft(),
+                  new DefaultScalar( dataType.getUrn() ) ) );
       final Optional<ScalarValue> maxValue = BoundDefinition.OPEN.equals( boundKind )
             ? Optional.empty()
-            : Optional.of( new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), randomRange.getRight(), new DefaultScalar( dataType.getUrn() ) ) );
+            :
+            Optional.of( new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), randomRange.getRight(),
+                  new DefaultScalar( dataType.getUrn() ) ) );
       final RangeConstraint rangeConstraint = new DefaultRangeConstraint( constraintAttibutes, minValue, maxValue, boundKind,
             getMatchingUpperBound( boundKind ) );
       final MetaModelBaseAttributes traitAttributes = MetaModelBaseAttributes.builder().withUrn( TestModel.TEST_NAMESPACE + "TestTrait" )
