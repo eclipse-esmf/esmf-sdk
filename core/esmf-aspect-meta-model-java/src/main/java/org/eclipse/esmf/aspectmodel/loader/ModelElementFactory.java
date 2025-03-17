@@ -112,11 +112,12 @@ public class ModelElementFactory extends AttributeValueRetriever {
       registerInstantiator( SammNs.SAMM.Event(), new EventInstantiator( this ) );
       registerInstantiator( SammNs.SAMM.Operation(), new OperationInstantiator( this ) );
       registerInstantiator( SammNs.SAMM.Property(), new PropertyInstantiator( this ) );
-      /**
+
+      /*
        * Registers an instantiator for the {@link Value} type.
        * In aspect-meta-model, {@link Value} corresponds to {@link ScalarValueInstantiator} in the SDK.
        */
-      registerInstantiator( SammNs.SAMM.Value(), new ScalarValueInstantiator( this ) );
+      registerInstantiator(SammNs.SAMM.Value(), new ScalarValueInstantiator(this));
 
       registerInstantiator( SammNs.SAMMC.Code(), new CodeInstantiator( this ) );
       registerInstantiator( SammNs.SAMMC.Collection(), new CollectionInstantiator( this ) );
