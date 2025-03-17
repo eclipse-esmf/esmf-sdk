@@ -18,8 +18,9 @@ To include the plugin, use the following dependency:
 </dependency>
 ----
 
-[NOTE]
-====
+[[model-resolution]]
+== Model Resolution in the Maven Plugin
+
 The current implementation of the `esmf-aspect-model-maven-plugin` uses the
 `FileSystemStrategy` or the `GitHubStrategy`, or combination of both, to resolve Aspect Models. See
 xref:java-aspect-tooling.adoc#understanding-model-resolution[Understanding Model Resolution] for
@@ -55,7 +56,9 @@ Settings] should contain a corresonding `<server>` entry:
   </servers>
 </settings>
 ----
-====
+
+It is possible to provide a custom model resolution strategy to the
+`esmf-aspect-model-maven-plugin`. See section <<custom-model-resolution>> for more information.
 
 == Validating an Aspect Model
 
@@ -880,3 +883,68 @@ Configuration Properties:
 | `includes` | A list of AAS files to convert. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated Aspect Models will be written to. | `String` | none | {ok}
 |===
+
+[[custom-model-resolution]]
+== Custom Model Resolution
+
+It is possible to provide a custom model resolution strategy implementation to the
+`esmf-aspect-model-maven-plugin` that is used instead of the
+xref:maven-plugin.adoc#model-resolution[built-in resolution strategies]. This is done using the Java
+https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ServiceLoader.html[ServiceLoader].
+To provide your own resolution strategy, you need to:
+
+. Create a class that implements `org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy`.
+. Register the class as a service: create a file
+`META-INF/services/org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy` that contains one line
+with the fully qualified name of your resolver class.
+. Bundle your class as a Maven artifact. In order to use your custom resolver with the
+`esmf-aspect-model-maven-plugin`, declare your artifact as a plugin dependency:
++
+[source,xml,subs=attributes+]
+----
+<build>
+  <plugins>
+    <plugin>
+      <artifactId>esmf-aspect-model-maven-plugin</artifactId>
+      <dependencies>
+        <dependency>
+          <groupId>your.resolver.group.id</groupId>
+          <artifactId>your.resolver.artifact.id</artifactId>
+          <version>1.0.0</version>
+        </dependency>
+      </dependencies>
+      <configuration>
+        <!-- ... -->
+      </configuration>
+    </plugin>
+  </plugins>
+</build>
+----
+
+In order to enable users of your custom resolver to pass arguments to your resolver implementation,
+they can use a block called `<resolutionConfiguration>` in the plugin `<configuration>`:
+
+[source,xml,subs=attributes+]
+----
+<build>
+  <plugins>
+    <plugin>
+      <artifactId>esmf-aspect-model-maven-plugin</artifactId>
+      <!-- ... -->
+      <configuration>
+        <resolutionConfiguration>
+          <my.custom.property>...</my.custom.property>
+        </resolutionConfiguration>
+      </configuration>
+    </plugin>
+  </plugins>
+</build>
+----
+
+The ResolutionStrategy implementation can access these properties using `System.getProperty()`,
+e.g.:
+
+[source,java,subs=attributes+]
+----
+String myCustomProperty = System.getProperty("my.custom.property");
+----
