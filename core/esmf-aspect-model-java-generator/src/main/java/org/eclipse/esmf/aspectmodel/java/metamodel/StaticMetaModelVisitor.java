@@ -112,7 +112,7 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
    public String visitScalarValue( final ScalarValue value, final StaticCodeGenerationContext context ) {
       context.getCodeGenerationConfig().importTracker().importExplicit( DefaultScalarValue.class );
       final ValueExpressionVisitor.Context valueContext = new ValueExpressionVisitor.Context( context.getCodeGenerationConfig(), false );
-      final String metaModelAttributes = (!value.getSee().isEmpty() && !value.getPreferredNames().isEmpty())
+      final String metaModelAttributes = ( !value.getSee().isEmpty() && !value.getPreferredNames().isEmpty() )
             ? getMetaModelBaseAttributes( value, context )
             : "MetaModelBaseAttributes.builder().build()";
       return "new DefaultScalarValue("
