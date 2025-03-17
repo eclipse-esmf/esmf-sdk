@@ -78,7 +78,7 @@ class PrettyPrinterTest {
       final AspectModelFile originalFile = aspectModel.files().iterator().next();
       final String formattedModel = formatAspectModelFile( originalFile );
       final Model prettyPrintedModel = TurtleLoader.loadTurtle( formattedModel ).get();
-      assertThat( RdfComparison.hash( originalFile.sourceModel() ) ).isEqualTo(RdfComparison.hash( prettyPrintedModel ) );
+      assertThat( RdfComparison.hash( originalFile.sourceModel() ) ).isEqualTo( RdfComparison.hash( prettyPrintedModel ) );
    }
 
    @Test
@@ -87,6 +87,6 @@ class PrettyPrinterTest {
       final AspectModelFile originalFile = aspectModel.files().iterator().next();
       final String formattedModel = formatAspectModelFile( originalFile );
       final Model prettyPrintedModel = TurtleLoader.loadTurtle( formattedModel ).get();
-      assertThat( RdfComparison.hash( originalFile.sourceModel() ) ).isEqualTo(RdfComparison.hash( prettyPrintedModel ) );
+      assertThat( RdfComparison.hash( originalFile.sourceModel() ) ).isEqualTo( RdfComparison.hash( prettyPrintedModel ) );
    }
 }
