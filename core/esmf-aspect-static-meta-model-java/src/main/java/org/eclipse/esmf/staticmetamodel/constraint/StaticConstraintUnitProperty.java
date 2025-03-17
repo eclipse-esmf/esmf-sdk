@@ -34,7 +34,7 @@ public abstract class StaticConstraintUnitProperty<E, T, C extends Characteristi
    public StaticConstraintUnitProperty(
          final MetaModelBaseAttributes metaModelBaseAttributes,
          final Quantifiable characteristic,
-         final Optional<Object> exampleValue,
+         final Optional<ScalarValue> exampleValue,
          final boolean optional,
          final boolean notInPayload,
          final Optional<String> payloadName,

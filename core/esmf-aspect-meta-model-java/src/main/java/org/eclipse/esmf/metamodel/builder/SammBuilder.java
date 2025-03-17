@@ -1371,25 +1371,25 @@ public class SammBuilder {
    }
 
    public static ScalarValue value( final String stringValue ) {
-      return new DefaultScalarValue( stringValue, xsd.string, null );
+      return new DefaultScalarValue( null, stringValue, xsd.string );
    }
 
    public static ScalarValue value( final boolean booleanValue ) {
-      return new DefaultScalarValue( booleanValue, xsd.boolean_, null );
+      return new DefaultScalarValue( null, booleanValue, xsd.boolean_ );
    }
 
    public static ScalarValue value( final float floatValue ) {
-      return new DefaultScalarValue( floatValue, xsd.float_, null );
+      return new DefaultScalarValue( null, floatValue, xsd.float_ );
    }
 
    public static ScalarValue value( final double doubleValue ) {
-      return new DefaultScalarValue( doubleValue, xsd.double_, null );
+      return new DefaultScalarValue( null, doubleValue, xsd.double_ );
    }
 
    /* Intentionally no value(int) method here, because an int value could imply different XSD types */
 
    public static ScalarValue value( final Object value, final Scalar type ) {
-      return new DefaultScalarValue( value, dataTypeByUri( type.getUrn() ), null );
+      return new DefaultScalarValue( null, value, dataTypeByUri( type.getUrn() ) );
    }
 
    public static <T> java.util.List<ScalarValue> values( final Scalar type, final T... values ) {

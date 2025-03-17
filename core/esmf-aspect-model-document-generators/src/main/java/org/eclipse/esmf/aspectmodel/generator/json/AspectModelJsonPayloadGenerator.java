@@ -389,7 +389,7 @@ public class AspectModelJsonPayloadGenerator extends JsonGenerator<JsonPayloadGe
             return exampleValue;
          }
 
-         private static Optional<ScalarValue> processExampleValue( Optional<Object> exampleValue ) {
+         private static Optional<ScalarValue> processExampleValue( Optional<ScalarValue> exampleValue ) {
             return exampleValue.map( value -> {
                if ( value instanceof ScalarValue scalarValue ) {
                   return scalarValue;
@@ -407,15 +407,15 @@ public class AspectModelJsonPayloadGenerator extends JsonGenerator<JsonPayloadGe
             }
 
             return new DefaultScalarValue(
-                  ( ( ScalarValue ) value).getValue(),
-                  new DefaultScalar( value.getType().toString() ),
                   MetaModelBaseAttributes.builder()
                         .withUrn( value.urn() )
                         .withPreferredNames( value.getPreferredNames() )
                         .withDescriptions( value.getDescriptions() )
                         .withSee( value.getSee() )
                         .isAnonymous( value.isAnonymous() )
-                        .withSourceFile( value.getSourceFile() ).build()
+                        .withSourceFile( value.getSourceFile() ).build(),
+                  ( ( ScalarValue ) value).getValue(),
+                  new DefaultScalar( value.getType().toString() )
             );
          }
       }

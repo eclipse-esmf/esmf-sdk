@@ -254,7 +254,7 @@ public interface SammArbitraries extends AspectModelUrnArbitraries, UriArbitrari
    }
 
    private Value buildScalarValue( final Object value, final Scalar type ) {
-      return new DefaultScalarValue( value, type, null );
+      return new DefaultScalarValue( null, value, type );
    }
 
    @Provide

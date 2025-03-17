@@ -30,7 +30,7 @@ public abstract class StaticUnitProperty<C, T> extends StaticProperty<C, T> impl
    public StaticUnitProperty(
          final MetaModelBaseAttributes metaModelBaseAttributes,
          final Quantifiable characteristic,
-         final Optional<Object> exampleValue,
+         final Optional<ScalarValue> exampleValue,
          final boolean optional,
          final boolean notInPayload,
          final Optional<String> payloadName,

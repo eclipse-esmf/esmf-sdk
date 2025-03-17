@@ -18,6 +18,6 @@ public class ScalarValueInstantiator extends Instantiator<ScalarValue> {
    @Override
    public ScalarValue apply( final Resource value ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( value );
-      return new DefaultScalarValue( value, new DefaultScalar( value.getURI() ), metaModelBaseAttributes );
+      return new DefaultScalarValue( metaModelBaseAttributes, value, new DefaultScalar( value.getURI() ) );
    }
 }

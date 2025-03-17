@@ -180,7 +180,7 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
          }
 
          if ( !resource.hasProperty( RDF.type, SammNs.SAMM.Value() ) ) {
-            return new DefaultScalarValue( resource.getURI(), new DefaultScalar( type.toString() ), null );
+            return new DefaultScalarValue( null, resource.getURI(), new DefaultScalar( type.toString() ) );
          }
 
          if ( resource.hasProperty( RDF.type, SammNs.SAMM.Value() ) ) {
@@ -190,7 +190,7 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
                throw new AspectLoadingException( "samm:Value must contain a samm:value property" );
             }
 
-            return new DefaultScalarValue( valueOpt.get(), new DefaultScalar( type.toString() ), buildBaseAttributes( resource ) );
+            return new DefaultScalarValue( buildBaseAttributes( resource ), valueOpt.get(), new DefaultScalar( type.toString() ) );
          }
       }
 

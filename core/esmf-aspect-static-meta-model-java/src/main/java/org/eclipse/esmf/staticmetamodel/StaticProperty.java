@@ -18,6 +18,7 @@ import java.util.Optional;
 import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.Property;
+import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.impl.DefaultProperty;
 
@@ -29,7 +30,7 @@ public abstract class StaticProperty<C, T> extends DefaultProperty implements Pr
    public StaticProperty(
          final MetaModelBaseAttributes metaModelBaseAttributes,
          final Characteristic characteristic,
-         final Optional<Object> exampleValue,
+         final Optional<ScalarValue> exampleValue,
          final boolean optional,
          final boolean notInPayload,
          final Optional<String> payloadName,

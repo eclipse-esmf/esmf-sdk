@@ -400,7 +400,7 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
 
       final MetaModelBaseAttributes metaModelBaseAttributes = baseAttributes( submodelElement, new DetermineAutomatically(), false );
       final Characteristic characteristic = createCharacteristic( submodelElement, metaModelBaseAttributes.urn() );
-      final Optional<Object> exampleValue =
+      final Optional<ScalarValue> exampleValue =
             submodelElement instanceof final org.eclipse.digitaltwin.aas4j.v3.model.Property property
                   ? Optional.ofNullable( property.getValue() )
                   .flatMap( lexicalRepresentation ->

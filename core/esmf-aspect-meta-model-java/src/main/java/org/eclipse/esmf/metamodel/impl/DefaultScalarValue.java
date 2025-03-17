@@ -31,11 +31,10 @@ public class DefaultScalarValue implements ScalarValue {
 
    private final MetaModelBaseAttributes metaModelBaseAttributes;
 
-   public DefaultScalarValue( final Object value, final Scalar type,
-         final MetaModelBaseAttributes metaModelBaseAttributes ) {
+   public DefaultScalarValue( final MetaModelBaseAttributes metaModelBaseAttributes, final Object value, final Scalar type ) {
+      this.metaModelBaseAttributes = metaModelBaseAttributes;
       this.value = value;
       this.type = type;
-      this.metaModelBaseAttributes = metaModelBaseAttributes;
    }
 
    @Override

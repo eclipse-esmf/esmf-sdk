@@ -24,14 +24,14 @@ import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.loader.ModelElementFactory;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.Property;
-import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.ScalarValue;
+import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;
 import org.eclipse.esmf.metamodel.impl.DefaultProperty;
+import org.eclipse.esmf.metamodel.impl.DefaultScalar;
 import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
-import org.apache.jena.datatypes.BaseDatatype;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
@@ -83,18 +83,8 @@ public class PropertyInstantiator extends Instantiator<Property> {
          final Resource characteristicResource = attributeValue( property, SammNs.SAMM.characteristic() ).getResource();
          final Characteristic characteristic = modelElementFactory.create( Characteristic.class, characteristicResource );
 
-         final Optional<Object> exampleValue = optionalAttributeValue( property, SammNs.SAMM.exampleValue() )
-               .flatMap( statement -> {
-                  RDFNode node = statement.getObject();
-                  return characteristic.getDataType()
-                        .map( type -> {
-                           if ( !type.is( Scalar.class ) ) {
-                              throw new AspectLoadingException( "Type of example value on Property " + property + " has incorrect type" );
-                           }
-                           return type.as( Scalar.class );
-                        } )
-                        .map( type -> buildValue( node, Optional.of( property ), type ) );
-               } );
+         final Optional<ScalarValue> exampleValue = optionalAttributeValue( property, SammNs.SAMM.exampleValue() )
+               .map( statement -> buildScalarValue( statement.getObject(), characteristic.getDataType().orElseThrow() ) );
 
          defProperty = new DefaultProperty( metaModelBaseAttributes, Optional.of( characteristic ),
                exampleValue, isOptional, isNotInPayload, payloadName, isAbstract, extends_ );
@@ -104,13 +94,29 @@ public class PropertyInstantiator extends Instantiator<Property> {
       return defaultPropertyWrapper;
    }
 
-   private ScalarValue buildScalarValue( final Literal literal, final Scalar type ) {
-      final Object literalValue = literal.getValue();
-      if ( literalValue instanceof BaseDatatype.TypedValue ) {
-         return new DefaultScalarValue( literal.getLexicalForm(), type, null );
-      } else if ( literal.getDatatypeURI().equals( RDF.langString.getURI() ) ) {
-         return valueInstantiator.buildLanguageString( literal.getLexicalForm(), literal.getLanguage() );
+   private ScalarValue buildScalarValue( final RDFNode node, final Type expectedType ) {
+      if ( node.isLiteral() ) {
+         final Literal literal = node.asLiteral();
+         return valueInstantiator.buildScalarValue( literal.getLexicalForm(), literal.getLanguage(), literal.getDatatypeURI() )
+               .orElseThrow( () -> new AspectLoadingException( "Literal cannot be parsed: " + literal ) );
       }
-      return new DefaultScalarValue( literalValue, type, null );
+
+      if ( node.isResource() ) {
+         Resource resource = node.asResource();
+
+         if ( resource.hasProperty( RDF.type, SammNs.SAMM.Value() ) ) {
+            Optional<String> valueOpt = optionalAttributeValue( resource, SammNs.SAMM.value() ).map( Statement::getString );
+
+            if ( valueOpt.isEmpty() ) {
+               throw new AspectLoadingException( "samm:Value must contain a samm:value property" );
+            }
+
+            return new DefaultScalarValue( buildBaseAttributes( resource ), valueOpt.get(), new DefaultScalar( expectedType.toString() ) );
+         }
+
+         return new DefaultScalarValue( null, resource.getURI(), new DefaultScalar( expectedType.toString() ) );
+      }
+
+      throw new AspectLoadingException( "Unexpected RDF node type: " + node );
    }
 }
