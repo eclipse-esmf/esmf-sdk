@@ -53,11 +53,11 @@ public class MetaModelVersionMigrator implements UnaryOperator<AspectModelFile> 
          .build();
 
    private Model execute( final Migrator migrator, final Model sourceModel ) {
-      LOG.info( "Start Migration for {} to {}", migrator.sourceVersion(), migrator.targetVersion() );
+      LOG.debug( "Start Migration for {} to {}", migrator.sourceVersion(), migrator.targetVersion() );
       final String description = migrator.getDescription().orElse( "" );
-      LOG.info( "Migration step {} {}", migrator.getClass().getSimpleName(), description );
+      LOG.debug( "Migration step {} {}", migrator.getClass().getSimpleName(), description );
       final Model targetModel = migrator.migrate( sourceModel );
-      LOG.info( "End Migration" );
+      LOG.debug( "End Migration" );
       return targetModel;
    }
 
