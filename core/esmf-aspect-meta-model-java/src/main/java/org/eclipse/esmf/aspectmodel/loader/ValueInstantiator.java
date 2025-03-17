@@ -51,7 +51,8 @@ public class ValueInstantiator {
       return SammXsdType.ALL_TYPES.stream()
             .filter( type -> type.getURI().equals( datatypeUri ) )
             .map( type -> type.parse( lexicalRepresentation ) )
-            .<ScalarValue> map( value -> new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), value, new DefaultScalar( datatypeUri ) ) )
+            .<ScalarValue> map(
+                  value -> new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), value, new DefaultScalar( datatypeUri ) ) )
             .findAny();
    }
 
