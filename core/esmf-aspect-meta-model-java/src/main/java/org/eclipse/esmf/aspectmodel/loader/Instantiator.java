@@ -180,7 +180,7 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
          }
 
          if ( !resource.hasProperty( RDF.type, SammNs.SAMM.Value() ) ) {
-            return new DefaultScalarValue( null, resource.getURI(), new DefaultScalar( type.toString() ) );
+            return new DefaultScalarValue( buildBaseAttributes( resource ), resource.getURI(), new DefaultScalar( type.toString() ) );
          }
 
          if ( resource.hasProperty( RDF.type, SammNs.SAMM.Value() ) ) {

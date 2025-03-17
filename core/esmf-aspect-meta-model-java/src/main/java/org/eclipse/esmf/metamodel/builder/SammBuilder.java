@@ -1371,25 +1371,41 @@ public class SammBuilder {
    }
 
    public static ScalarValue value( final String stringValue ) {
-      return new DefaultScalarValue( null, stringValue, xsd.string );
+      return new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), stringValue, xsd.string );
    }
 
    public static ScalarValue value( final boolean booleanValue ) {
-      return new DefaultScalarValue( null, booleanValue, xsd.boolean_ );
+      return new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), booleanValue, xsd.boolean_ );
    }
 
    public static ScalarValue value( final float floatValue ) {
-      return new DefaultScalarValue( null, floatValue, xsd.float_ );
+      return new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), floatValue, xsd.float_ );
    }
 
    public static ScalarValue value( final double doubleValue ) {
-      return new DefaultScalarValue( null, doubleValue, xsd.double_ );
+      return new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), doubleValue, xsd.double_ );
    }
 
    /* Intentionally no value(int) method here, because an int value could imply different XSD types */
 
    public static ScalarValue value( final Object value, final Scalar type ) {
-      return new DefaultScalarValue( null, value, dataTypeByUri( type.getUrn() ) );
+      MetaModelBaseAttributes metaModelBaseAttributes;
+
+      if ( value instanceof ScalarValue scalarValue ) {
+         metaModelBaseAttributes = MetaModelBaseAttributes.builder()
+               .withUrn( scalarValue.urn() )
+               .withPreferredNames( scalarValue.getPreferredNames() )
+               .withDescriptions( scalarValue.getDescriptions() )
+               .withSee( scalarValue.getSee() )
+               .isAnonymous( scalarValue.isAnonymous() )
+               .withSourceFile( scalarValue.getSourceFile() )
+               .build();
+      } else {
+         metaModelBaseAttributes = MetaModelBaseAttributes.builder()
+               .isAnonymous( false )
+               .build();
+      }
+      return new DefaultScalarValue( metaModelBaseAttributes, value, dataTypeByUri( type.getUrn() ) );
    }
 
    public static <T> java.util.List<ScalarValue> values( final Scalar type, final T... values ) {

@@ -114,7 +114,7 @@ public class PropertyInstantiator extends Instantiator<Property> {
             return new DefaultScalarValue( buildBaseAttributes( resource ), valueOpt.get(), new DefaultScalar( expectedType.toString() ) );
          }
 
-         return new DefaultScalarValue( null, resource.getURI(), new DefaultScalar( expectedType.toString() ) );
+         return new DefaultScalarValue( buildBaseAttributes( resource ), resource.getURI(), new DefaultScalar( expectedType.toString() ) );
       }
 
       throw new AspectLoadingException( "Unexpected RDF node type: " + node );
