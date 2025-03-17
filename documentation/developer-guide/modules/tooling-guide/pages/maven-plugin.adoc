@@ -12,9 +12,9 @@ To include the plugin, use the following dependency:
 [source,xml,subs=attributes+]
 ----
 <dependency>
-    <groupId>org.eclipse.esmf</groupId>
-    <artifactId>esmf-aspect-model-maven-plugin</artifactId>
-    <version>{esmf-sdk-version}</version>
+  <groupId>org.eclipse.esmf</groupId>
+  <artifactId>esmf-aspect-model-maven-plugin</artifactId>
+  <version>{esmf-sdk-version}</version>
 </dependency>
 ----
 
@@ -67,24 +67,24 @@ Usage:
 ----
 <build>
   <plugins>
-     <plugin>
-        <artifactId>esmf-aspect-model-maven-plugin</artifactId>
-        <executions>
-           <execution>
-              <id>validate-aspect-model</id>
-              <goals>
-                 <goal>validate</goal>
-              </goals>
-           </execution>
-        </executions>
-        <configuration>
-           <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
-           <githubServerId>my-github-repo</githubServerId>
-           <includes>
-              <include>$\{urn-of-aspect-model-to-be-included}</include>
-           </includes>
-        </configuration>
-     </plugin>
+    <plugin>
+      <artifactId>esmf-aspect-model-maven-plugin</artifactId>
+      <executions>
+        <execution>
+          <id>validate-aspect-model</id>
+          <goals>
+            <goal>validate</goal>
+          </goals>
+        </execution>
+      </executions>
+      <configuration>
+        <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
+        <githubServerId>my-github-repo</githubServerId>
+        <includes>
+          <include>$\{urn-of-aspect-model-to-be-included}</include>
+        </includes>
+      </configuration>
+    </plugin>
   </plugins>
 </build>
 ----
@@ -114,24 +114,24 @@ Usage:
 ----
 <build>
   <plugins>
-     <plugin>
-        <artifactId>esmf-aspect-model-maven-plugin</artifactId>
-        <executions>
-           <execution>
-              <id>generate-java-classes</id>
-              <goals>
-                 <goal>generateJavaClasses</goal>
-              </goals>
-           </execution>
-        </executions>
-        <configuration>
-           <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
-           <includes>
-              <include>$\{urn-of-aspect-model-to-be-included}</include>
-           </includes>
-           <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
-        </configuration>
-     </plugin>
+    <plugin>
+      <artifactId>esmf-aspect-model-maven-plugin</artifactId>
+      <executions>
+        <execution>
+          <id>generate-java-classes</id>
+          <goals>
+            <goal>generateJavaClasses</goal>
+          </goals>
+        </execution>
+      </executions>
+      <configuration>
+        <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
+        <includes>
+          <include>$\{urn-of-aspect-model-to-be-included}</include>
+        </includes>
+        <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
+      </configuration>
+    </plugin>
   </plugins>
 </build>
 ----
@@ -175,24 +175,24 @@ Usage:
 ----
 <build>
   <plugins>
-     <plugin>
-        <artifactId>esmf-aspect-model-maven-plugin</artifactId>
-        <executions>
-           <execution>
-              <id>generate-static-java-classes</id>
-              <goals>
-                 <goal>generateStaticJavaClasses</goal>
-              </goals>
-           </execution>
-        </executions>
-        <configuration>
-           <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
-           <includes>
-              <include>$\{urn-of-aspect-model-to-be-included}</include>
-           </includes>
-           <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
-        </configuration>
-     </plugin>
+    <plugin>
+      <artifactId>esmf-aspect-model-maven-plugin</artifactId>
+      <executions>
+        <execution>
+          <id>generate-static-java-classes</id>
+          <goals>
+            <goal>generateStaticJavaClasses</goal>
+          </goals>
+        </execution>
+      </executions>
+      <configuration>
+        <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
+        <includes>
+          <include>$\{urn-of-aspect-model-to-be-included}</include>
+        </includes>
+        <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
+      </configuration>
+    </plugin>
   </plugins>
 </build>
 ----
@@ -229,24 +229,24 @@ Usage:
 ----
 <build>
   <plugins>
-     <plugin>
-        <artifactId>esmf-aspect-model-maven-plugin</artifactId>
-        <executions>
-           <execution>
-              <id>generate-json-schema</id>
-              <goals>
-                 <goal>generateJsonSchema</goal>
-              </goals>
-           </execution>
-        </executions>
-        <configuration>
-           <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
-           <includes>
-              <include>$\{urn-of-aspect-model-to-be-included}</include>
-           </includes>
-           <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
-        </configuration>
-     </plugin>
+    <plugin>
+      <artifactId>esmf-aspect-model-maven-plugin</artifactId>
+      <executions>
+        <execution>
+          <id>generate-json-schema</id>
+          <goals>
+            <goal>generateJsonSchema</goal>
+          </goals>
+        </execution>
+      </executions>
+      <configuration>
+        <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
+        <includes>
+          <include>$\{urn-of-aspect-model-to-be-included}</include>
+        </includes>
+        <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
+      </configuration>
+    </plugin>
   </plugins>
 </build>
 ----
@@ -276,26 +276,26 @@ Usage:
 ----
 <build>
   <plugins>
-     <plugin>
-        <artifactId>esmf-aspect-model-maven-plugin</artifactId>
-        <executions>
-           <execution>
-              <id>generate-openapi-spec</id>
-              <goals>
-                 <goal>generateOpenApiSpec</goal>
-              </goals>
-           </execution>
-        </executions>
-        <configuration>
-           <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
-           <includes>
-              <include>$\{urn-of-aspect-model-to-be-included}</include>
-           </includes>
-           <aspectApiBaseUrl>http://example.com</aspectApiBaseUrl>
-           <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
-           <outputFormat>yaml</outputFormat>
-        </configuration>
-     </plugin>
+    <plugin>
+      <artifactId>esmf-aspect-model-maven-plugin</artifactId>
+      <executions>
+        <execution>
+          <id>generate-openapi-spec</id>
+          <goals>
+            <goal>generateOpenApiSpec</goal>
+          </goals>
+        </execution>
+      </executions>
+      <configuration>
+        <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
+        <includes>
+          <include>$\{urn-of-aspect-model-to-be-included}</include>
+        </includes>
+        <aspectApiBaseUrl>http://example.com</aspectApiBaseUrl>
+        <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
+        <outputFormat>yaml</outputFormat>
+      </configuration>
+    </plugin>
   </plugins>
 </build>
 ----
@@ -340,25 +340,25 @@ Usage:
 ----
 <build>
   <plugins>
-     <plugin>
-        <artifactId>esmf-aspect-model-maven-plugin</artifactId>
-        <executions>
-           <execution>
-              <id>generate-asyncapi-spec</id>
-              <goals>
-                 <goal>generateAsyncApiSpec</goal>
-              </goals>
-           </execution>
-        </executions>
-        <configuration>
-           <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
-           <includes>
-              <include>$\{urn-of-aspect-model-to-be-included}</include>
-           </includes>
-           <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
-           <outputFormat>json</outputFormat>
-        </configuration>
-     </plugin>
+    <plugin>
+      <artifactId>esmf-aspect-model-maven-plugin</artifactId>
+      <executions>
+        <execution>
+          <id>generate-asyncapi-spec</id>
+          <goals>
+            <goal>generateAsyncApiSpec</goal>
+          </goals>
+        </execution>
+      </executions>
+      <configuration>
+        <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
+        <includes>
+          <include>$\{urn-of-aspect-model-to-be-included}</include>
+        </includes>
+        <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
+        <outputFormat>json</outputFormat>
+      </configuration>
+    </plugin>
   </plugins>
 </build>
 ----
@@ -396,70 +396,70 @@ Usage:
 ----
 <build>
   <plugins>
-     <plugin>
-        <artifactId>esmf-aspect-model-maven-plugin</artifactId>
-        <executions>
-           <execution>
-              <id>generate-openapi-spec</id>
-              <goals>
-                 <goal>generateAspectImplementationStub</goal>
-              </goals>
-           </execution>
-        </executions>
-        <configuration>
-           <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
-           <includes>
-              <include>$\{urn-of-aspect-model-to-be-included}</include>
-           </includes>
-           <aspectApiBaseUrl>http://example.com</aspectApiBaseUrl>
-           <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
-           <outputFormat>yaml</outputFormat>
-        </configuration>
-     </plugin>
+    <plugin>
+      <artifactId>esmf-aspect-model-maven-plugin</artifactId>
+      <executions>
+        <execution>
+          <id>generate-openapi-spec</id>
+          <goals>
+            <goal>generateAspectImplementationStub</goal>
+          </goals>
+        </execution>
+      </executions>
+      <configuration>
+        <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
+        <includes>
+          <include>$\{urn-of-aspect-model-to-be-included}</include>
+        </includes>
+        <aspectApiBaseUrl>http://example.com</aspectApiBaseUrl>
+        <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
+        <outputFormat>yaml</outputFormat>
+      </configuration>
+    </plugin>
 
-     <plugin>
-        <artifactId>esmf-aspect-model-maven-plugin</artifactId>
-        <executions>
-           <execution>
-              <id>generate-aspect-implementation</id>
-              <goals>
-                 <goal>generateAspectImplementationStub</goal>
-              </goals>
-              <configuration>
-                 <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
-                 <includes>
-                    <include>$\{urn-of-aspect-model-to-be-included}</include>
-                 </includes>
-                 <!-- this is recommended to be set to 'src-gen' -->
-                 <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
-                 <detailedValidationMessages>true</detailedValidationMessages>
-                 <packageName>com.example</packageName>
-                 <aspectApiBaseUrl>http://example.com</aspectApiBaseUrl>
-                 <aspectResourcePath>/my-api</aspectResourcePath>
-                 <!-- optional: override the default openapi-generator version -->
-                 <openApiGeneratorVersion>${openapi-generator-maven-plugin.version}</openApiGeneratorVersion>
-                 <!-- the following configuration is only an example, using the 'spring' template -->
-                 <openApiGeneratorName>spring</openApiGeneratorName>
-                 <openApiGeneratorConfigOptions>
-                    <!-- this should match the `packageName` attribute -->
-                    <modelPackage>com.example</modelPackage>
-                    <apiPackage>com.example.api</apiPackage>
-                    <configPackage>com.example.config</configPackage>
-                    <sourceFolder>main/java</sourceFolder>
-                    <resourceFolder>main/resources</resourceFolder>
-                    <library>spring-cloud</library>
-                    <useSpringBoot3>true</useSpringBoot3>
-                    <dateLibrary>java8</dateLibrary>
-                    <useOptional>true</useOptional>
-                    <useSwaggerUI>false</useSwaggerUI>
-                    <useTags>true</useTags>
-                    <documentationProvider>none</documentationProvider>
-                    <title>MyAspect</title>
-                 </openApiGeneratorConfigOptions>
-              </configuration>
-           </execution>
-        </executions>
-     </plugin>
+    <plugin>
+      <artifactId>esmf-aspect-model-maven-plugin</artifactId>
+      <executions>
+        <execution>
+          <id>generate-aspect-implementation</id>
+          <goals>
+            <goal>generateAspectImplementationStub</goal>
+          </goals>
+          <configuration>
+            <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
+            <includes>
+              <include>$\{urn-of-aspect-model-to-be-included}</include>
+            </includes>
+            <!-- this is recommended to be set to 'src-gen' -->
+            <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
+            <detailedValidationMessages>true</detailedValidationMessages>
+            <packageName>com.example</packageName>
+            <aspectApiBaseUrl>http://example.com</aspectApiBaseUrl>
+            <aspectResourcePath>/my-api</aspectResourcePath>
+            <!-- optional: override the default openapi-generator version -->
+            <openApiGeneratorVersion>${openapi-generator-maven-plugin.version}</openApiGeneratorVersion>
+            <!-- the following configuration is only an example, using the 'spring' template -->
+            <openApiGeneratorName>spring</openApiGeneratorName>
+            <openApiGeneratorConfigOptions>
+              <!-- this should match the `packageName` attribute -->
+              <modelPackage>com.example</modelPackage>
+              <apiPackage>com.example.api</apiPackage>
+              <configPackage>com.example.config</configPackage>
+              <sourceFolder>main/java</sourceFolder>
+              <resourceFolder>main/resources</resourceFolder>
+              <library>spring-cloud</library>
+              <useSpringBoot3>true</useSpringBoot3>
+              <dateLibrary>java8</dateLibrary>
+              <useOptional>true</useOptional>
+              <useSwaggerUI>false</useSwaggerUI>
+              <useTags>true</useTags>
+              <documentationProvider>none</documentationProvider>
+              <title>MyAspect</title>
+            </openApiGeneratorConfigOptions>
+          </configuration>
+        </execution>
+      </executions>
+    </plugin>
   </plugins>
 </build>
 ----
@@ -506,24 +506,24 @@ Usage:
 ----
 <build>
   <plugins>
-     <plugin>
-        <artifactId>esmf-aspect-model-maven-plugin</artifactId>
-        <executions>
-           <execution>
-              <id>generate-sql</id>
-              <goals>
-                 <goal>generateSql</goal>
-              </goals>
-           </execution>
-        </executions>
-        <configuration>
-           <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
-           <includes>
-              <include>$\{urn-of-aspect-model-to-be-included}</include>
-           </includes>
-           <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
-        </configuration>
-     </plugin>
+    <plugin>
+      <artifactId>esmf-aspect-model-maven-plugin</artifactId>
+      <executions>
+        <execution>
+          <id>generate-sql</id>
+          <goals>
+            <goal>generateSql</goal>
+          </goals>
+        </execution>
+      </executions>
+      <configuration>
+        <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
+        <includes>
+          <include>$\{urn-of-aspect-model-to-be-included}</include>
+        </includes>
+        <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
+      </configuration>
+    </plugin>
   </plugins>
 </build>
 ----
@@ -560,24 +560,24 @@ Usage:
 ----
 <build>
   <plugins>
-     <plugin>
-        <artifactId>esmf-aspect-model-maven-plugin</artifactId>
-        <executions>
-           <execution>
-              <id>generate-html-doc</id>
-              <goals>
-                 <goal>generateDocumentation</goal>
-              </goals>
-           </execution>
-        </executions>
-        <configuration>
-           <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
-           <includes>
-              <include>$\{urn-of-aspect-model-to-be-included}</include>
-           </includes>
-           <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
-        </configuration>
-     </plugin>
+    <plugin>
+      <artifactId>esmf-aspect-model-maven-plugin</artifactId>
+      <executions>
+        <execution>
+          <id>generate-html-doc</id>
+          <goals>
+            <goal>generateDocumentation</goal>
+          </goals>
+        </execution>
+      </executions>
+      <configuration>
+        <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
+        <includes>
+          <include>$\{urn-of-aspect-model-to-be-included}</include>
+        </includes>
+        <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
+      </configuration>
+    </plugin>
   </plugins>
 </build>
 ----
@@ -607,27 +607,27 @@ Usage:
 ----
 <build>
   <plugins>
-     <plugin>
-        <artifactId>esmf-aspect-model-maven-plugin</artifactId>
-        <executions>
-           <execution>
-              <id>generate-aspect-model-diagram</id>
-              <goals>
-                 <goal>generateDiagram</goal>
-              </goals>
-           </execution>
-        </executions>
-        <configuration>
-           <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
-           <includes>
-              <include>$\{urn-of-aspect-model-to-be-included}</include>
-           </includes>
-           <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
-           <targetFormats>
-              <targetFormat>png</targetFormat>
-           </targetFormats>
-        </configuration>
-     </plugin>
+    <plugin>
+      <artifactId>esmf-aspect-model-maven-plugin</artifactId>
+      <executions>
+        <execution>
+          <id>generate-aspect-model-diagram</id>
+          <goals>
+            <goal>generateDiagram</goal>
+          </goals>
+        </execution>
+      </executions>
+      <configuration>
+        <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
+        <includes>
+          <include>$\{urn-of-aspect-model-to-be-included}</include>
+        </includes>
+        <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
+        <targetFormats>
+          <targetFormat>png</targetFormat>
+        </targetFormats>
+      </configuration>
+    </plugin>
   </plugins>
 </build>
 ----
@@ -657,24 +657,24 @@ Usage:
 ----
 <build>
   <plugins>
-     <plugin>
-        <artifactId>esmf-aspect-model-maven-plugin</artifactId>
-        <executions>
-           <execution>
-              <id>generate-json-payload</id>
-              <goals>
-                 <goal>generateJsonPayload</goal>
-              </goals>
-           </execution>
-        </executions>
-        <configuration>
-           <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
-           <includes>
-              <include>$\{urn-of-aspect-model-to-be-included}</include>
-           </includes>
-           <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
-        </configuration>
-     </plugin>
+    <plugin>
+      <artifactId>esmf-aspect-model-maven-plugin</artifactId>
+      <executions>
+        <execution>
+          <id>generate-json-payload</id>
+          <goals>
+            <goal>generateJsonPayload</goal>
+          </goals>
+        </execution>
+      </executions>
+      <configuration>
+        <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
+        <includes>
+          <include>$\{urn-of-aspect-model-to-be-included}</include>
+        </includes>
+        <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
+      </configuration>
+    </plugin>
   </plugins>
 </build>
 ----
@@ -702,24 +702,24 @@ Usage:
 ----
 <build>
   <plugins>
-     <plugin>
-        <artifactId>esmf-aspect-model-maven-plugin</artifactId>
-        <executions>
-           <execution>
-              <id>generate-jsonld</id>
-              <goals>
-                 <goal>generateJsonLd</goal>
-              </goals>
-           </execution>
-        </executions>
-        <configuration>
-           <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
-           <includes>
-              <include>$\{urn-of-aspect-model-to-be-included}</include>
-           </includes>
-           <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
-        </configuration>
-     </plugin>
+    <plugin>
+      <artifactId>esmf-aspect-model-maven-plugin</artifactId>
+      <executions>
+        <execution>
+          <id>generate-jsonld</id>
+          <goals>
+            <goal>generateJsonLd</goal>
+          </goals>
+        </execution>
+      </executions>
+      <configuration>
+        <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
+        <includes>
+          <include>$\{urn-of-aspect-model-to-be-included}</include>
+        </includes>
+        <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
+      </configuration>
+    </plugin>
   </plugins>
 </build>
 ----
@@ -751,24 +751,24 @@ Usage:
 ----
 <build>
   <plugins>
-     <plugin>
-        <artifactId>esmf-aspect-model-maven-plugin</artifactId>
-        <executions>
-           <execution>
-              <id>pretty-print-aspect-model</id>
-              <goals>
-                 <goal>prettyPrint</goal>
-              </goals>
-           </execution>
-        </executions>
-        <configuration>
-           <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
-           <includes>
-              <include>$\{urn-of-aspect-model-to-be-included}</include>
-           </includes>
-           <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
-        </configuration>
-     </plugin>
+    <plugin>
+      <artifactId>esmf-aspect-model-maven-plugin</artifactId>
+      <executions>
+        <execution>
+          <id>pretty-print-aspect-model</id>
+          <goals>
+            <goal>prettyPrint</goal>
+          </goals>
+        </execution>
+      </executions>
+      <configuration>
+        <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
+        <includes>
+          <include>$\{urn-of-aspect-model-to-be-included}</include>
+        </includes>
+        <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
+      </configuration>
+    </plugin>
   </plugins>
 </build>
 ----
@@ -800,25 +800,25 @@ Usage:
 ----
 <build>
   <plugins>
-     <plugin>
-        <artifactId>esmf-aspect-model-maven-plugin</artifactId>
-        <executions>
-           <execution>
-              <id>generate-aas</id>
-              <goals>
-                 <goal>generateAas</goal>
-              </goals>
-           </execution>
-        </executions>
-        <configuration>
-           <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
-           <includes>
-              <include>$\{urn-of-aspect-model-to-be-included}</include>
-           </includes>
-           <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
-           <targetFormat>aasx</targetFormat>
-        </configuration>
-     </plugin>
+    <plugin>
+      <artifactId>esmf-aspect-model-maven-plugin</artifactId>
+      <executions>
+        <execution>
+          <id>generate-aas</id>
+          <goals>
+            <goal>generateAas</goal>
+          </goals>
+        </execution>
+      </executions>
+      <configuration>
+        <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
+        <includes>
+          <include>$\{urn-of-aspect-model-to-be-included}</include>
+        </includes>
+        <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
+        <targetFormat>aasx</targetFormat>
+      </configuration>
+    </plugin>
   </plugins>
 </build>
 ----
@@ -850,23 +850,23 @@ Usage:
 ----
 <build>
   <plugins>
-     <plugin>
-        <artifactId>esmf-aspect-model-maven-plugin</artifactId>
-        <executions>
-           <execution>
-              <id>generate-aspect-model-from-aas</id>
-              <goals>
-                 <goal>generateAspectFromAas</goal>
-              </goals>
-           </execution>
-        </executions>
-        <configuration>
-           <includes>
-              <include>$\{aas-file-path}</include>
-           </includes>
-           <outputDirectory>$\{directory-for-generated-aspect-models}</outputDirectory>
-        </configuration>
-     </plugin>
+    <plugin>
+      <artifactId>esmf-aspect-model-maven-plugin</artifactId>
+      <executions>
+        <execution>
+          <id>generate-aspect-model-from-aas</id>
+          <goals>
+            <goal>generateAspectFromAas</goal>
+          </goals>
+        </execution>
+      </executions>
+      <configuration>
+        <includes>
+          <include>$\{aas-file-path}</include>
+        </includes>
+        <outputDirectory>$\{directory-for-generated-aspect-models}</outputDirectory>
+      </configuration>
+    </plugin>
   </plugins>
 </build>
 ----
