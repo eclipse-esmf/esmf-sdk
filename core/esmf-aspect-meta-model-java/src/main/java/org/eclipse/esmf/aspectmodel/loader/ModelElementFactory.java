@@ -13,6 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.loader;
 
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -69,6 +70,7 @@ import org.eclipse.esmf.metamodel.QuantityKind;
 import org.eclipse.esmf.metamodel.QuantityKinds;
 import org.eclipse.esmf.metamodel.Unit;
 import org.eclipse.esmf.metamodel.Units;
+import org.eclipse.esmf.metamodel.Value;
 import org.eclipse.esmf.metamodel.datatype.LangString;
 import org.eclipse.esmf.metamodel.impl.DefaultQuantityKind;
 import org.eclipse.esmf.metamodel.impl.DefaultUnit;
@@ -110,8 +112,9 @@ public class ModelElementFactory extends AttributeValueRetriever {
       registerInstantiator( SammNs.SAMM.Event(), new EventInstantiator( this ) );
       registerInstantiator( SammNs.SAMM.Operation(), new OperationInstantiator( this ) );
       registerInstantiator( SammNs.SAMM.Property(), new PropertyInstantiator( this ) );
-      /*
-       *
+      /**
+       * Registers an instantiator for the {@link Value} type.
+       * In aspect-meta-model, {@link Value} corresponds to {@link ScalarValueInstantiator} in the SDK.
        */
       registerInstantiator( SammNs.SAMM.Value(), new ScalarValueInstantiator( this ) );
 
