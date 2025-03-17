@@ -15,7 +15,7 @@
 @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:PrimaryAspect a samm:Aspect ;
+:AspectWithAnyValueDeclarations a samm:Aspect ;
     samm:properties ( :property1 ) ;
     samm:operations () ;
     samm:events () .
@@ -24,7 +24,6 @@
     samm:characteristic :TrafficLight .
 
 :TrafficLight a samm-c:Enumeration ;
-   samm:name "TrafficLight" ;
    samm:preferredName "Warning Level"@en ;
    samm:description "Represents if speed of position change is within specification (green), within tolerance (yellow), or outside specification (red)."@en ;
    samm:dataType xsd:string ;

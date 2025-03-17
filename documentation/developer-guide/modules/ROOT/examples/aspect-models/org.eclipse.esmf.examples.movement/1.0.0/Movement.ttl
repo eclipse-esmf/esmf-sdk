@@ -64,7 +64,6 @@
    samm-c:unit unit:kilometrePerHour .
 
 :TrafficLight a samm-c:Enumeration ;
-   samm:name "TrafficLight" ;
    samm:preferredName "warning level"@en ;
    samm:description "Represents if speed of position change is within specification (green), within tolerance (yellow), or outside specification (red)."@en ;
    samm:dataType xsd:string ;
