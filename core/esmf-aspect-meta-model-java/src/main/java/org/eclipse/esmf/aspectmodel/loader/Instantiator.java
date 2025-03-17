@@ -172,7 +172,7 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
                   .map( rdfNode -> buildValue( rdfNode, characteristicResource, type ) )
                   .toList();
 
-            return new DefaultCollectionValue( values, CollectionValue.CollectionType.LIST, type );
+            return new DefaultCollectionValue( values, CollectionValue.CollectionType.SET, type );
          }
 
          if ( type.is( Entity.class ) ) {

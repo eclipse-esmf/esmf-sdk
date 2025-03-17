@@ -518,7 +518,7 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
 
       result.assertMetaModelBaseAttributesForProperties( "MetaAspectWithCollection", expectedBaseAttributes );
 
-      final String expectedExampleValue = "Optional.of(null, new DefaultScalarValue(\"Example Value\", new DefaultScalar(\"http://www.w3"
+      final String expectedExampleValue = "Optional.of(new DefaultScalarValue(null, \"Example Value\", new DefaultScalar(\"http://www.w3"
             + ".org/2001/XMLSchema#string\")))";
 
       result.assertConstructorArgumentForProperties(
