@@ -45,7 +45,6 @@ import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Unit;
-import org.eclipse.esmf.metamodel.Value;
 import org.eclipse.esmf.metamodel.characteristic.Code;
 import org.eclipse.esmf.metamodel.characteristic.Collection;
 import org.eclipse.esmf.metamodel.characteristic.Duration;

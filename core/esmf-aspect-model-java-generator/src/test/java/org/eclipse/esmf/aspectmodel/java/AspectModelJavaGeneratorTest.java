@@ -122,8 +122,7 @@ public class AspectModelJavaGeneratorTest {
    @ParameterizedTest
    @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
          "ASPECT_WITH_USED_AND_UNUSED_ENUMERATION", // No code will be generated for an unused enumeration
-         "MODEL_WITH_BROKEN_CYCLES", // Contains elements that are not references from the Aspect
-         "ASPECT_WITH_ANY_VALUE_DECLARATIONS"
+         "MODEL_WITH_BROKEN_CYCLES" // Contains elements that are not references from the Aspect
    } )
    void testCodeGeneration( final TestAspect testAspect ) {
       assertThatCode( () -> {
