@@ -51,13 +51,14 @@ public class ValueInstantiator {
       return SammXsdType.ALL_TYPES.stream()
             .filter( type -> type.getURI().equals( datatypeUri ) )
             .map( type -> type.parse( lexicalRepresentation ) )
-            .<ScalarValue> map( value -> new DefaultScalarValue( value, new DefaultScalar( datatypeUri ) ) )
+            .<ScalarValue> map(
+                  value -> new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), value, new DefaultScalar( datatypeUri ) ) )
             .findAny();
    }
 
    public ScalarValue buildLanguageString( final String lexicalRepresentation, final String languageTag ) {
       final LangString langString = new LangString( lexicalRepresentation, Locale.forLanguageTag( languageTag ) );
       final Scalar type = new DefaultScalar( RDF.langString.getURI() );
-      return new DefaultScalarValue( langString, type );
+      return new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), langString, type );
    }
 }

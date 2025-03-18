@@ -13,19 +13,26 @@
 
 package org.eclipse.esmf.metamodel.impl;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.StringJoiner;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.ScalarValue;
+import org.eclipse.esmf.metamodel.datatype.LangString;
 
 public class DefaultScalarValue implements ScalarValue {
    private final Object value;
    private final Scalar type;
 
-   public DefaultScalarValue( final Object value, final Scalar type ) {
+   private final MetaModelBaseAttributes metaModelBaseAttributes;
+
+   public DefaultScalarValue( final MetaModelBaseAttributes metaModelBaseAttributes, final Object value, final Scalar type ) {
+      this.metaModelBaseAttributes = metaModelBaseAttributes;
       this.value = value;
       this.type = type;
    }
@@ -38,6 +45,21 @@ public class DefaultScalarValue implements ScalarValue {
    @Override
    public Scalar getType() {
       return type;
+   }
+
+   @Override
+   public List<String> getSee() {
+      return metaModelBaseAttributes.getSee();
+   }
+
+   @Override
+   public Set<LangString> getPreferredNames() {
+      return metaModelBaseAttributes.getPreferredNames();
+   }
+
+   @Override
+   public Set<LangString> getDescriptions() {
+      return metaModelBaseAttributes.getDescriptions();
    }
 
    /**

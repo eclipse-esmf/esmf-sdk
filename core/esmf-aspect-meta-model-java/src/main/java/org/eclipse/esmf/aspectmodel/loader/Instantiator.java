@@ -37,6 +37,7 @@ import org.eclipse.esmf.metamodel.Value;
 import org.eclipse.esmf.metamodel.impl.DefaultCollectionValue;
 import org.eclipse.esmf.metamodel.impl.DefaultEntityInstance;
 import org.eclipse.esmf.metamodel.impl.DefaultScalar;
+import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
 import org.eclipse.esmf.metamodel.vocabulary.SAMM;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
@@ -160,6 +161,20 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
          final Literal literal = node.asLiteral();
          return valueInstantiator.buildScalarValue( literal.getLexicalForm(), literal.getLanguage(), literal.getDatatypeURI() )
                .orElseThrow( () -> new AspectLoadingException( "Literal can not be parsed: " + literal ) );
+      }
+
+      if ( node.isResource() ) {
+         Resource resource = node.asResource();
+
+         if ( resource.hasProperty( RDF.type, SammNs.SAMM.Value() ) ) {
+            Optional<String> valueOpt = optionalAttributeValue( resource, SammNs.SAMM.value() ).map( Statement::getString );
+
+            if ( valueOpt.isEmpty() ) {
+               throw new AspectLoadingException( "samm:Value must contain a samm:value property" );
+            }
+
+            return new DefaultScalarValue( buildBaseAttributes( resource ), valueOpt.get(), new DefaultScalar( type.getUrn() ) );
+         }
       }
 
       // Collections

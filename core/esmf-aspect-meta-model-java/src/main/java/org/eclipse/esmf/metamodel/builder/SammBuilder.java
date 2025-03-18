@@ -15,7 +15,7 @@ package org.eclipse.esmf.metamodel.builder;
 
 import static org.eclipse.esmf.metamodel.DataTypes.dataTypeByUri;
 import static org.eclipse.esmf.metamodel.DataTypes.xsd;
-import static org.eclipse.esmf.metamodel.Elements.*;
+import static org.eclipse.esmf.metamodel.Elements.samm_e;
 
 import java.math.BigInteger;
 import java.net.URI;
@@ -1371,25 +1371,54 @@ public class SammBuilder {
    }
 
    public static ScalarValue value( final String stringValue ) {
-      return new DefaultScalarValue( stringValue, xsd.string );
+      return new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), stringValue, xsd.string );
    }
 
    public static ScalarValue value( final boolean booleanValue ) {
-      return new DefaultScalarValue( booleanValue, xsd.boolean_ );
+      return new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), booleanValue, xsd.boolean_ );
    }
 
    public static ScalarValue value( final float floatValue ) {
-      return new DefaultScalarValue( floatValue, xsd.float_ );
+      return new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), floatValue, xsd.float_ );
    }
 
    public static ScalarValue value( final double doubleValue ) {
-      return new DefaultScalarValue( doubleValue, xsd.double_ );
+      return new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), doubleValue, xsd.double_ );
    }
 
    /* Intentionally no value(int) method here, because an int value could imply different XSD types */
 
    public static ScalarValue value( final Object value, final Scalar type ) {
-      return new DefaultScalarValue( value, dataTypeByUri( type.getUrn() ) );
+      MetaModelBaseAttributes metaModelBaseAttributes;
+
+      if ( value instanceof ModelElement modelElement ) {
+         boolean hasUrn = modelElement.urn() != null;
+
+         MetaModelBaseAttributes.Builder builder = MetaModelBaseAttributes.builder()
+               .isAnonymous( !hasUrn );
+
+         if ( hasUrn ) {
+            builder.withUrn( modelElement.urn() );
+         } else if ( !builder.build().isAnonymous() ) {
+            throw new IllegalStateException( "Non-anonymous ModelElement must have a URN: " + modelElement );
+         }
+
+         if ( modelElement instanceof ScalarValue scalarValue ) {
+            builder
+                  .withPreferredNames( scalarValue.getPreferredNames() )
+                  .withDescriptions( scalarValue.getDescriptions() )
+                  .withSee( scalarValue.getSee() )
+                  .withSourceFile( scalarValue.getSourceFile() );
+         }
+
+         metaModelBaseAttributes = builder.build();
+      } else {
+         metaModelBaseAttributes = MetaModelBaseAttributes.builder()
+               .isAnonymous( true )
+               .build();
+      }
+
+      return new DefaultScalarValue( metaModelBaseAttributes, value, dataTypeByUri( type.getUrn() ) );
    }
 
    public static <T> java.util.List<ScalarValue> values( final Scalar type, final T... values ) {

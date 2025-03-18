@@ -35,7 +35,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class PrettyPrinterTest {
+class PrettyPrinterTest {
    @ParameterizedTest
    @MethodSource( value = "testModels" )
    void testPrettyPrinter( final TestModel testModel ) {
@@ -70,5 +70,23 @@ public class PrettyPrinterTest {
                   // contains blank nodes which are not referenced from an aspect and therefore not pretty-printed
                   testModel != TestAspect.MODEL_WITH_BLANK_AND_ADDITIONAL_NODES )
             .map( Arguments::arguments );
+   }
+
+   @Test
+   void testPrintAspectWithAnyValueDeclarations() {
+      final AspectModel aspectModel = TestResources.load( TestAspect.ASPECT_WITH_ANY_VALUE_DECLARATIONS );
+      final AspectModelFile originalFile = aspectModel.files().iterator().next();
+      final String formattedModel = formatAspectModelFile( originalFile );
+      final Model prettyPrintedModel = TurtleLoader.loadTurtle( formattedModel ).get();
+      assertThat( RdfComparison.hash( originalFile.sourceModel() ) ).isEqualTo( RdfComparison.hash( prettyPrintedModel ) );
+   }
+
+   @Test
+   void testPrintPropertyWithValue() {
+      final AspectModel aspectModel = TestResources.load( TestProperty.PROPERTY_WITH_VALUE );
+      final AspectModelFile originalFile = aspectModel.files().iterator().next();
+      final String formattedModel = formatAspectModelFile( originalFile );
+      final Model prettyPrintedModel = TurtleLoader.loadTurtle( formattedModel ).get();
+      assertThat( RdfComparison.hash( originalFile.sourceModel() ) ).isEqualTo( RdfComparison.hash( prettyPrintedModel ) );
    }
 }

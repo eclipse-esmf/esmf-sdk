@@ -39,7 +39,7 @@ import org.eclipse.esmf.samm.KnownVersion;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class NamespacePackageTest {
+class NamespacePackageTest {
    /**
     * Returns the File object for a test model file
     */
