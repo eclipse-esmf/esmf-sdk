@@ -15,7 +15,7 @@ package org.eclipse.esmf.metamodel.builder;
 
 import static org.eclipse.esmf.metamodel.DataTypes.dataTypeByUri;
 import static org.eclipse.esmf.metamodel.DataTypes.xsd;
-import static org.eclipse.esmf.metamodel.Elements.*;
+import static org.eclipse.esmf.metamodel.Elements.samm_e;
 
 import java.math.BigInteger;
 import java.net.URI;
@@ -1391,20 +1391,33 @@ public class SammBuilder {
    public static ScalarValue value( final Object value, final Scalar type ) {
       MetaModelBaseAttributes metaModelBaseAttributes;
 
-      if ( value instanceof ScalarValue scalarValue ) {
-         metaModelBaseAttributes = MetaModelBaseAttributes.builder()
-               .withUrn( scalarValue.urn() )
-               .withPreferredNames( scalarValue.getPreferredNames() )
-               .withDescriptions( scalarValue.getDescriptions() )
-               .withSee( scalarValue.getSee() )
-               .isAnonymous( scalarValue.isAnonymous() )
-               .withSourceFile( scalarValue.getSourceFile() )
-               .build();
+      if ( value instanceof ModelElement modelElement ) {
+         boolean hasUrn = modelElement.urn() != null;
+
+         MetaModelBaseAttributes.Builder builder = MetaModelBaseAttributes.builder()
+               .isAnonymous( !hasUrn );
+
+         if ( hasUrn ) {
+            builder.withUrn( modelElement.urn() );
+         } else if ( !builder.build().isAnonymous() ) {
+            throw new IllegalStateException( "Non-anonymous ModelElement must have a URN: " + modelElement );
+         }
+
+         if ( modelElement instanceof ScalarValue scalarValue ) {
+            builder
+                  .withPreferredNames( scalarValue.getPreferredNames() )
+                  .withDescriptions( scalarValue.getDescriptions() )
+                  .withSee( scalarValue.getSee() )
+                  .withSourceFile( scalarValue.getSourceFile() );
+         }
+
+         metaModelBaseAttributes = builder.build();
       } else {
          metaModelBaseAttributes = MetaModelBaseAttributes.builder()
-               .isAnonymous( false )
+               .isAnonymous( true )
                .build();
       }
+
       return new DefaultScalarValue( metaModelBaseAttributes, value, dataTypeByUri( type.getUrn() ) );
    }
 
