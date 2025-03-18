@@ -92,6 +92,9 @@ public abstract class AspectModelMojo extends AbstractMojo {
    @Parameter( defaultValue = "${session}", readonly = true )
    protected MavenSession mavenSession;
 
+   @Parameter
+   protected Map<String, String> resolutionConfiguration = new HashMap<>();
+
    protected GithubModelSourceConfig gitHubConfig;
 
    private Map<AspectModel, Aspect> aspects;
@@ -126,6 +129,11 @@ public abstract class AspectModelMojo extends AbstractMojo {
    private AspectModelLoader createAspectModelLoader() throws MojoExecutionException {
       final List<ResolutionStrategy> strategies = new ArrayList<>();
 
+      if ( resolutionConfiguration != null && !resolutionConfiguration.isEmpty() ) {
+         for ( final Map.Entry<String, String> config : resolutionConfiguration.entrySet() ) {
+            System.setProperty( config.getKey(), config.getValue() );
+         }
+      }
       for ( final ResolutionStrategy strategy : ServiceLoader.load( ResolutionStrategy.class ) ) {
          strategies.add( strategy );
       }
