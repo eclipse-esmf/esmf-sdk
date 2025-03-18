@@ -23,7 +23,7 @@
 
    <artifactId>esmf-sdk-parent</artifactId>
    <name>ESMF SDK Parent</name>
-   <version>DEV-SNAPSHOT</version>
+   <version>2.10.0</version>
    <packaging>pom</packaging>
 
    <description>ESMF SDK</description>
