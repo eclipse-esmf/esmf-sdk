@@ -164,10 +164,9 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
       }
 
       if ( node.isResource() ) {
-         Resource resource = node.asResource();
-
+         final Resource resource = node.asResource();
          if ( resource.hasProperty( RDF.type, SammNs.SAMM.Value() ) ) {
-            Optional<String> valueOpt = optionalAttributeValue( resource, SammNs.SAMM.value() ).map( Statement::getString );
+            final Optional<String> valueOpt = optionalAttributeValue( resource, SammNs.SAMM.value() ).map( Statement::getString );
 
             if ( valueOpt.isEmpty() ) {
                throw new AspectLoadingException( "samm:Value must contain a samm:value property" );

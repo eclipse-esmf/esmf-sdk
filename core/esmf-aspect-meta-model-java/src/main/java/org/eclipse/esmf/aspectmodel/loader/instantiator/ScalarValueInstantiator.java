@@ -10,7 +10,6 @@ import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
 import org.apache.jena.rdf.model.Resource;
 
 public class ScalarValueInstantiator extends Instantiator<ScalarValue> {
-
    public ScalarValueInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, ScalarValue.class );
    }
