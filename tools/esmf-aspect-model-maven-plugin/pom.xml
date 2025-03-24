@@ -60,7 +60,6 @@
          <artifactId>record-builder-processor</artifactId>
          <scope>provided</scope>
       </dependency>
-
       <dependency>
          <groupId>org.eclipse.esmf</groupId>
          <artifactId>esmf-aspect-model-starter</artifactId>
@@ -68,6 +67,10 @@
       <dependency>
          <groupId>org.eclipse.esmf</groupId>
          <artifactId>esmf-aspect-model-github-resolver</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.commons</groupId>
+         <artifactId>commons-lang3</artifactId>
       </dependency>
 
       <dependency>
