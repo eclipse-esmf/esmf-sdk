@@ -29,6 +29,7 @@ import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.ComplexType;
+import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.test.InvalidTestAspect;
 import org.eclipse.esmf.test.TestAspect;
@@ -38,8 +39,23 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 class AspectModelLoaderTest {
+   @ParameterizedTest
+   @EnumSource( value = TestAspect.class )
+   void testLoadAspectModelsSourceFilesArePresent( final TestAspect testAspect ) {
+      final AspectModel aspectModel = TestResources.load( testAspect );
+      for ( final ModelElement element : aspectModel.elements() ) {
+         assertThat( element.getSourceFile() )
+               .describedAs( "Element %s has no source file", element ).isNotNull();
+         assertThat( element.getSourceFile() )
+               .describedAs( "Source file %s must contain defintion for %s", element.getSourceFile(), element.urn() )
+               .elements().contains( element );
+      }
+   }
+
    @Test
    void loadAspectModelWithoutCharacteristicDatatype() {
       assertThatThrownBy( () -> TestResources.load( InvalidTestAspect.INVALID_CHARACTERISTIC_DATATYPE ) )

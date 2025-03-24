@@ -62,14 +62,9 @@ public class DefaultScalarValue implements ScalarValue {
       return metaModelBaseAttributes.getDescriptions();
    }
 
-   /**
-    * Similar to {@link DefaultScalar#getSourceFile()}, scalar values are not defined in Aspect Model files, so this returns null.
-    *
-    * @return null
-    */
    @Override
    public AspectModelFile getSourceFile() {
-      return null;
+      return metaModelBaseAttributes.getSourceFile();
    }
 
    @Override
@@ -90,7 +85,7 @@ public class DefaultScalarValue implements ScalarValue {
 
    @SuppressWarnings( "unchecked" )
    private <T extends Comparable<T>> int compareTo( final Object value1, final Object value2 ) {
-      return ((T) value1).compareTo( (T) value2 );
+      return ( (T) value1 ).compareTo( (T) value2 );
    }
 
    @Override
