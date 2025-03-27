@@ -586,6 +586,8 @@ public class AspectModelOpenApiGeneratorTest {
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
 
+      assertThat( openApi.getComponents().getRequestBodies().get( "AspectWithoutSeeAttribute" ).getRequired() ).isTrue();
+
       final String apiEndpoint = "/{tenant-id}/aspect-without-see-attribute";
 
       assertThat( openApi.getPaths().get( apiEndpoint ).getGet() ).isNotNull();
