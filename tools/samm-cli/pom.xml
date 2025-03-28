@@ -32,7 +32,7 @@
       <main-class>org.eclipse.esmf.SammCli</main-class>
       <binary-name>samm</binary-name>
       <skip.maven.surefire>false</skip.maven.surefire>
-      <skip.maven.failsafe>true</skip.maven.failsafe>
+      <skip.maven.failsafe>false</skip.maven.failsafe>
       <skip.maven.surefire.report.plugin>false</skip.maven.surefire.report.plugin>
       <skip.maven.shade>false</skip.maven.shade>
    </properties>
@@ -298,6 +298,14 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-jar-plugin</artifactId>
+            <version>3.2.2</version>
+            <configuration>
+               <archive>
+                  <manifest>
+                     <mainClass>${main-class}</mainClass>
+                  </manifest>
+               </archive>
+            </configuration>
             <executions>
                <!-- For testing of the command executor, we need a test JAR file -->
                <execution>
@@ -314,6 +322,28 @@
                         </manifest>
                      </archive>
                      <classifier>tests</classifier>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
+            <version>3.5.0</version>
+            <executions>
+               <execution>
+                  <phase>package</phase>
+                  <goals>
+                     <goal>shade</goal>
+                  </goals>
+                  <configuration>
+                     <createDependencyReducedPom>false</createDependencyReducedPom>
+                     <transformers>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                           <mainClass>${main-class}</mainClass>
+                        </transformer>
+                     </transformers>
                   </configuration>
                </execution>
             </executions>
