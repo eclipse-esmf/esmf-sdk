@@ -125,11 +125,17 @@ public class BammUriRewriter extends AbstractUriRewriter {
    }
 
    public enum BammVersion {
-      BAMM_1_0_0,
-      BAMM_2_0_0;
+      BAMM_1_0_0( "1.0.0" ),
+      BAMM_2_0_0( "2.0.0" );
+
+      private final String versionString;
+
+      BammVersion( final String versionString ) {
+         this.versionString = versionString;
+      }
 
       public String versionString() {
-         return toString().replaceFirst( "BAMM_(\\d+)_(\\d+)_(\\d+)", "$1.$2.$3" );
+         return versionString;
       }
    }
 }

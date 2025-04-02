@@ -525,7 +525,7 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
                   final ModelElementFactory modelElementFactory = new ModelElementFactory( model, Map.of(), r -> null );
                   final Resource namespaceResource = model.listStatements( null, RDF.type, SammNs.SAMM.Namespace() )
                         .mapWith( Statement::getSubject )
-                        .toList().iterator().next();
+                        .toList().getFirst();
                   namespaceDefinition = modelElementFactory.createBaseAttributes( namespaceResource );
                   fileContainingNamespaceDefinition = elementFile;
                   break;
