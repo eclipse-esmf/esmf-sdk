@@ -73,6 +73,7 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
    private final String namespaceMainPart;
    private final ElementType elementType;
    private final boolean isSammUrn;
+   private final String namespaceIdentifier;
 
    @JsonValue
    private final URI urn;
@@ -85,6 +86,10 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
       this.elementType = elementType;
       this.version = version;
       this.isSammUrn = isSammUrn;
+      final String urnString = urn.toString();
+      namespaceIdentifier = urnString.contains( "#" )
+            ? urnString.substring( 0, urnString.indexOf( '#' ) )
+            : urnString;
    }
 
    /**
@@ -357,7 +362,7 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
     * @return the prefix part of the URN
     */
    public String getNamespaceIdentifier() {
-      return urn.toString().split( "#" )[0];
+      return namespaceIdentifier;
    }
 
    /**

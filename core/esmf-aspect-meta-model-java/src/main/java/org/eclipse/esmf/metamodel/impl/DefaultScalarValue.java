@@ -31,6 +31,23 @@ public class DefaultScalarValue implements ScalarValue {
 
    private final MetaModelBaseAttributes metaModelBaseAttributes;
 
+   /**
+    * Constructor for non-described/anonymous scalar values
+    *
+    * @param value the value
+    * @param type the type
+    */
+   public DefaultScalarValue( final Object value, final Scalar type ) {
+      this( null, value, type );
+   }
+
+   /**
+    * Standard constructor for scalar values that provides context information such as the value's descriptions
+    *
+    * @param metaModelBaseAttributes the base attributes
+    * @param value the value
+    * @param type the type
+    */
    public DefaultScalarValue( final MetaModelBaseAttributes metaModelBaseAttributes, final Object value, final Scalar type ) {
       this.metaModelBaseAttributes = metaModelBaseAttributes;
       this.value = value;
@@ -49,22 +66,22 @@ public class DefaultScalarValue implements ScalarValue {
 
    @Override
    public List<String> getSee() {
-      return metaModelBaseAttributes.getSee();
+      return metaModelBaseAttributes == null ? List.of() : metaModelBaseAttributes.getSee();
    }
 
    @Override
    public Set<LangString> getPreferredNames() {
-      return metaModelBaseAttributes.getPreferredNames();
+      return metaModelBaseAttributes == null ? Set.of() : metaModelBaseAttributes.getPreferredNames();
    }
 
    @Override
    public Set<LangString> getDescriptions() {
-      return metaModelBaseAttributes.getDescriptions();
+      return metaModelBaseAttributes == null ? Set.of() : metaModelBaseAttributes.getDescriptions();
    }
 
    @Override
    public AspectModelFile getSourceFile() {
-      return metaModelBaseAttributes.getSourceFile();
+      return metaModelBaseAttributes == null ? null : metaModelBaseAttributes.getSourceFile();
    }
 
    @Override
