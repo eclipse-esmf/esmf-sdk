@@ -58,14 +58,13 @@ Building the SDK requires a Java 21-compatible [GraalVM JDK](https://www.graalvm
 
 To build the SDK core components, run the following command:
 ```bash
-mvn -pl '!org.eclipse.esmf:samm-cli' clean install
+mvn -pl '!org.eclipse.esmf:samm-cli' clean install -Pnative
 ```
 
 To also build SDK core components and the CLI tool, run the above command, followed by:
 ```bash
-cd tools/samm-cli
-mvn -B clean verify
-mvn -B verify -Pnative
+mvn -pl org.eclipse.esmf:samm-cli clean verify
+mvn -pl org.eclipse.esmf:samm-cli verify -Pnative
 ```
 
 We are always looking forward to your contributions. For more details on how to contribute just take
