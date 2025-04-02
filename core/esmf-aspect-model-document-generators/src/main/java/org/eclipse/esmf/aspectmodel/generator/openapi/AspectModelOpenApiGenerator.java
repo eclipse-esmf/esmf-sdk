@@ -248,13 +248,13 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<OpenApiSchemaGene
       final ObjectNode componentsResponseNode = (ObjectNode) jsonNode.get( FIELD_COMPONENTS ).get( FIELD_RESPONSES );
       final ObjectNode referenceNode = FACTORY.objectNode()
             .put( REF, COMPONENTS_SCHEMAS + ( includePaging ? FIELD_PAGING_SCHEMA : aspect.getName() ) );
-      final ObjectNode contentNode = getApplicationNode( referenceNode );
+      final ObjectNode contentNode = getApplicationNode( referenceNode, false );
       componentsResponseNode.set( aspect.getName(), contentNode );
       contentNode.put( FIELD_DESCRIPTION, "The request was successful." );
       if ( !aspect.getOperations().isEmpty() ) {
          final ObjectNode operationResponseNode = FACTORY.objectNode()
                .put( REF, COMPONENTS_SCHEMAS + FIELD_OPERATION_RESPONSE );
-         final ObjectNode wrappedOperationNode = getApplicationNode( operationResponseNode );
+         final ObjectNode wrappedOperationNode = getApplicationNode( operationResponseNode, false );
          componentsResponseNode.set( FIELD_OPERATION_RESPONSE, wrappedOperationNode );
          wrappedOperationNode.put( FIELD_DESCRIPTION, "The request was successful." );
       }
@@ -265,21 +265,24 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<OpenApiSchemaGene
       final ObjectNode requestBodies = FACTORY.objectNode();
       componentNode.set( FIELD_REQUEST_BODIES, requestBodies );
       requestBodies.set( aspect.getName(),
-            getApplicationNode( FACTORY.objectNode().put( REF, COMPONENTS_SCHEMAS + aspect.getName() ) ) );
+            getApplicationNode( FACTORY.objectNode().put( REF, COMPONENTS_SCHEMAS + aspect.getName() ), true ) );
       if ( config.includeQueryApi() ) {
          requestBodies.set( FIELD_FILTER,
-               getApplicationNode( FACTORY.objectNode().put( REF, COMPONENTS_SCHEMAS + FIELD_FILTER ) ) );
+               getApplicationNode( FACTORY.objectNode().put( REF, COMPONENTS_SCHEMAS + FIELD_FILTER ), true ) );
       }
       if ( !aspect.getOperations().isEmpty() ) {
          requestBodies.set( FIELD_OPERATION,
-               getApplicationNode( FACTORY.objectNode().put( REF, COMPONENTS_SCHEMAS + FIELD_OPERATION ) ) );
+               getApplicationNode( FACTORY.objectNode().put( REF, COMPONENTS_SCHEMAS + FIELD_OPERATION ), true ) );
       }
    }
 
-   private ObjectNode getApplicationNode( final ObjectNode contentNode ) {
-      return FACTORY.objectNode().set( FIELD_CONTENT,
-            FACTORY.objectNode().set( APPLICATION_JSON,
-                  FACTORY.objectNode().set( FIELD_SCHEMA, contentNode ) ) );
+   private ObjectNode getApplicationNode( final ObjectNode contentNode, final boolean addRequired ) {
+      final ObjectNode result = FACTORY.objectNode();
+      result.set( FIELD_CONTENT, FACTORY.objectNode().set( APPLICATION_JSON, FACTORY.objectNode().set( FIELD_SCHEMA, contentNode ) ) );
+      if ( addRequired ) {
+         result.put( FIELD_REQUIRED, true );
+      }
+      return result;
    }
 
    private void setAspectSchemas( final Aspect aspect, final OpenApiSchemaGenerationConfig config, final ObjectNode jsonNode ) {
@@ -503,7 +506,10 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<OpenApiSchemaGene
       objectNode.set( "tags", FACTORY.arrayNode().add( aspect.getName() ) );
       objectNode.put( FIELD_OPERATION_ID, ( isPut ? FIELD_PUT : FIELD_PATCH ) + aspect.getName() );
       objectNode.set( FIELD_PARAMETERS, getRequiredParameters( parameterNode, isEmpty( resourcePath ) ) );
-      objectNode.set( FIELD_REQUEST_BODY, FACTORY.objectNode().put( REF, COMPONENTS_REQUESTS + aspect.getName() ) );
+      final ObjectNode requestBody = FACTORY.objectNode();
+      requestBody.put( FIELD_REQUIRED, true );
+      requestBody.put( REF, COMPONENTS_REQUESTS + aspect.getName() );
+      objectNode.set( FIELD_REQUEST_BODY, requestBody );
       objectNode.set( FIELD_RESPONSES, getResponsesForGet( aspect ) );
       return objectNode;
    }
