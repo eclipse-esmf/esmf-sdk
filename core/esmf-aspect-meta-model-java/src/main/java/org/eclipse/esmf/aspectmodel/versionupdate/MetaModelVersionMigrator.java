@@ -19,12 +19,14 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.aspectmodel.VersionNumber;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidVersionException;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFile;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.urn.ElementType;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.samm.KnownVersion;
 
 import com.google.common.collect.ImmutableList;
@@ -40,6 +42,7 @@ import org.slf4j.LoggerFactory;
 public class MetaModelVersionMigrator implements UnaryOperator<AspectModelFile> {
    public static final MetaModelVersionMigrator INSTANCE = new MetaModelVersionMigrator();
    private static final Logger LOG = LoggerFactory.getLogger( MetaModelVersionMigrator.class );
+   private static final VersionNumber LATEST_SAMM = VersionNumber.parse( KnownVersion.getLatest().toVersionString() );
 
    private MetaModelVersionMigrator() {
    }
@@ -74,6 +77,15 @@ public class MetaModelVersionMigrator implements UnaryOperator<AspectModelFile> 
     * @return the meta model versions
     */
    private VersionNumber getUsedMetaModelVersion( final Model model ) {
+      final String sammUri = model.getNsPrefixURI( SammNs.SAMM.getShortForm() );
+      if ( SammNs.SAMM.getNamespace().equals( sammUri ) ) {
+         return LATEST_SAMM;
+      }
+      if ( sammUri != null ) {
+         return VersionNumber.parse( sammUri.substring( sammUri.lastIndexOf( ":" ) + 1, sammUri.length() - 1 ) );
+      }
+
+      // The file does not contain a "@prefix samm:" declaration: Determine the version from the triple URIs
       final String sammUrnStart = String.format( "%s:%s", AspectModelUrn.VALID_PROTOCOL, AspectModelUrn.VALID_NAMESPACE_IDENTIFIER );
       final Set<VersionNumber> result = model.listObjects()
             .toList()
@@ -110,22 +122,18 @@ public class MetaModelVersionMigrator implements UnaryOperator<AspectModelFile> 
    public AspectModelFile apply( final AspectModelFile modelFile ) {
       // Before any semantic migration, perform the mechanical translation of legacy BAMM models
       final Model input = convertBammToSamm( modelFile.sourceModel() );
-
-      final VersionNumber latestKnownVersion = VersionNumber.parse( KnownVersion.getLatest().toVersionString() );
       final VersionNumber sourceVersion = getUsedMetaModelVersion( input );
-      Model migrationModel = modelFile.sourceModel();
 
-      if ( sourceVersion.greaterThan( latestKnownVersion ) ) {
-         // looks like unreachable
-         throw new InvalidVersionException(
-               String.format( "Model version %s can not be updated to version %s", sourceVersion, latestKnownVersion ) );
+      if ( sourceVersion.equals( LATEST_SAMM ) ) {
+         return modelFile;
+      }
+      if ( sourceVersion.greaterThan( LATEST_SAMM ) ) {
+         throw new InvalidVersionException( "Aspect Model version %s in source model is not supported".formatted( sourceVersion ) );
       }
 
-      if ( !sourceVersion.equals( latestKnownVersion ) ) {
-         migrationModel = migrate( migrators, sourceVersion, latestKnownVersion, migrationModel );
-      }
-
-      return new RawAspectModelFile( migrationModel, modelFile.headerComment(), modelFile.sourceLocation() );
+      final Model migratedModel = migrate( migrators, sourceVersion, LATEST_SAMM, modelFile.sourceModel() );
+      return new RawAspectModelFile( RdfUtil.modelToString( migratedModel ), migratedModel, modelFile.headerComment(),
+            modelFile.sourceLocation() );
    }
 
    private Model migrate( final List<Migrator> migrators, final VersionNumber sourceVersion, final VersionNumber targetVersion,
