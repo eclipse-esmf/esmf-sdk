@@ -141,28 +141,6 @@
             </executions>
          </plugin>
 
-         <!-- Disable surefire report plugin. The report is created in the esmf-sdk-test-report module -->
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-report-plugin</artifactId>
-            <version>${maven-surefire-report-plugin-version}</version>
-            <configuration>
-               <skipFailsafeReport>true</skipFailsafeReport>
-               <skipSurefireReport>true</skipSurefireReport>
-            </configuration>
-         </plugin>
-
-         <!-- Disable maven site plugin. It is not required since the report is created in the
-         esmf-sdk-test-report module -->
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-site-plugin</artifactId>
-            <version>${maven-site-plugin-version}</version>
-            <configuration>
-               <skip>true</skip>
-            </configuration>
-         </plugin>
-
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-clean-plugin</artifactId>
