@@ -8,9 +8,16 @@
 
 In this section, the Java APIs for working with Aspect Models are described. All of the components described in the
 following subsections can either be included in your project using a dedicated dependency (as described in the
-respective subsection), _or_ you can use the `aspect-model-starter` artifact that aggregates all necessary dependencies:
+respective subsection), _or_ you can use the `esmf-aspect-model-starter` artifact that aggregates all necessary dependencies:
 
 include::esmf-developer-guide:ROOT:partial$esmf-aspect-model-starter-artifact.adoc[]
+
+Alternatively, you can use the `esmf-sdk-parent` artifact as a
+https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Bill_of_Materials_.28BOM.29_POMs[Maven
+BOM] (Bill of Materials) to enable declaring dependencies to specific modules without an explicit
+version. Add the following section to the Maven pom.xml in your project:
+
+include::esmf-developer-guide:ROOT:partial$esmf-bom.adoc[]
 
 [[versioning]]
 == Getting the right version
@@ -49,7 +56,7 @@ When using esmf-sdk with a GraalVM JDK and you target `native-image` compilation
 dependency to the `esmf-native-support` module. This will add the necessary configuration for
 esmf-sdk resources, reflection and initialization that is required by the compiler:
 
-include::esmf-developer-guide:ROOT:partial$esmf-aspect-model-starter-artifact.adoc[]
+include::esmf-developer-guide:ROOT:partial$esmf-native-support-artifact.adoc[]
 =====
 
 [[parsing-aspect-model-urns]]

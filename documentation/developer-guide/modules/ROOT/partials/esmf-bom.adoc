@@ -1,0 +1,14 @@
+[source,maven,subs=attributes+]
+----
+<dependencyManagement>
+  <dependencies>
+    <dependency>
+      <groupId>org.eclipse.esmf</groupId>
+      <artifactId>esmf-sdk-parent</artifactId>
+      <version>{esmf-sdk-version}</version>
+      <type>pom</type>
+      <scope>import</scope>
+    </dependency>
+  </dependencies>
+</dependencyManagement>
+----
