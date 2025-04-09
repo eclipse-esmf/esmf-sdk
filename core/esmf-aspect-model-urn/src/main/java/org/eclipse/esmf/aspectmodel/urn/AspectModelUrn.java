@@ -186,6 +186,56 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
    }
 
    /**
+    * Construct an AspectModelUrn from a namespace main part and a version number
+    *
+    * @param namespaceMainPart the namespace main part (e.g., "com.example")
+    * @param versionNumber the version number (e.g., "1.2.3")
+    * @return the Aspect Model URN or a {@link UrnSyntaxException}
+    */
+   public static Try<AspectModelUrn> from( final String namespaceMainPart, final String versionNumber ) {
+      return from( "%s:%s:%s%s".formatted( VALID_PROTOCOL, VALID_NAMESPACE_IDENTIFIER, namespaceMainPart, versionNumber ) );
+   }
+
+   /**
+    * Construct an AspectModelUrn from a namespace main part, a version number and a model element name
+    *
+    * @param namespaceMainPart the namespace main part (e.g., "com.example")
+    * @param versionNumber the version number (e.g., "1.2.3")
+    * @param modelElementName the model element name (e.g., "MyAspect")
+    * @return the Aspect Model URN or a {@link UrnSyntaxException}
+    */
+   public static Try<AspectModelUrn> from( final String namespaceMainPart, final String versionNumber, final String modelElementName ) {
+      return from(
+            "%s:%s:%s%s#%s".formatted( VALID_PROTOCOL, VALID_NAMESPACE_IDENTIFIER, namespaceMainPart, versionNumber, modelElementName ) );
+   }
+
+   /**
+    * Construct an AspectModelUrn from a namespace main part and a version number
+    *
+    * @param namespaceMainPart the namespace main part (e.g., "com.example")
+    * @param versionNumber the version number (e.g., "1.2.3")
+    * @return the Aspect Model URN
+    * @throws UrnSyntaxException if {@code urn} is not valid
+    */
+   public static AspectModelUrn fromParts( final String namespaceMainPart, final String versionNumber ) {
+      return fromUrn( "%s:%s:%s%s".formatted( VALID_PROTOCOL, VALID_NAMESPACE_IDENTIFIER, namespaceMainPart, versionNumber ) );
+   }
+
+   /**
+    * Construct an AspectModelUrn from a namespace main part, a version number and a model element name
+    *
+    * @param namespaceMainPart the namespace main part (e.g., "com.example")
+    * @param versionNumber the version number (e.g., "1.2.3")
+    * @param modelElementName the model element name (e.g., "MyAspect")
+    * @return the Aspect Model URN
+    * @throws UrnSyntaxException if {@code urn} is not valid
+    */
+   public static AspectModelUrn fromParts( final String namespaceMainPart, final String versionNumber, final String modelElementName ) {
+      return fromUrn(
+            "%s:%s:%s%s#%s".formatted( VALID_PROTOCOL, VALID_NAMESPACE_IDENTIFIER, namespaceMainPart, versionNumber, modelElementName ) );
+   }
+
+   /**
     * Retrieves the element type from the Aspect Model URN.
     *
     * @return the {@link ElementType} for the given Aspect Model URN
