@@ -46,7 +46,6 @@ import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.Namespace;
 
 import com.google.common.collect.ImmutableList;
-import lombok.Getter;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +62,6 @@ public class NamespacePackage implements ResolutionStrategy, Artifact<URI, byte[
    private static final String ASPECT_MODELS_FOLDER = "aspect-models";
 
    // Fields that are always set
-   @Getter
    private final String modelsRoot;
    private final List<AspectModelFile> files;
 
@@ -314,8 +312,11 @@ public class NamespacePackage implements ResolutionStrategy, Artifact<URI, byte[
     *
     * @return the location if set, or null
     */
-   @SuppressWarnings( { "LombokGetterMayBeUsed", "RedundantSuppression" } )
    public URI getLocation() {
       return location;
+   }
+
+   public String getModelsRoot() {
+      return modelsRoot;
    }
 }

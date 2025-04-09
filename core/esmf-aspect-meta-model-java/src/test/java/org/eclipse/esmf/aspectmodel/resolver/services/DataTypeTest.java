@@ -29,7 +29,6 @@ import org.eclipse.esmf.metamodel.datatype.Curie;
 import org.eclipse.esmf.metamodel.datatype.SammType;
 import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 
-import lombok.Value;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -60,7 +59,7 @@ public class DataTypeTest {
    @ParameterizedTest
    @MethodSource( value = "getTestConfigurationsWithLexicalErrors" )
    public <T> void testConfigurableParserChecks( final TestConfiguration<T> testConfiguration ) {
-      testConfiguration.predicates.keySet().forEach( testValue -> {
+      testConfiguration.predicates().keySet().forEach( testValue -> {
          SammXsdType.setChecking( false );
          final Object parsedUntypedObject = testConfiguration.type.parse( testValue );
          assertThat( parsedUntypedObject ).isEqualTo( testValue );
@@ -81,11 +80,10 @@ public class DataTypeTest {
       } );
    }
 
-   @Value
-   private static class TestConfiguration<T> {
-      SammType<T> type;
-      Map<String, Predicate<T>> predicates;
-
+   private record TestConfiguration<T>(
+         SammType<T> type,
+         Map<String, Predicate<T>> predicates
+   ) {
       @Override
       public String toString() {
          return type.toString();
@@ -322,8 +320,8 @@ public class DataTypeTest {
                         && dataType.getJavaClass().equals( Curie.class ) )
                   .map( dataType -> (SammType<Curie>) dataType )
                   .map( curieType -> new TestConfiguration<>( curieType, Map.of(
-                        "xsd:string", v -> ((Curie) v).value().equals( "xsd:string" ),
-                        "unit:hectopascal", v -> ((Curie) v).value().equals( "unit:hectopascal" )
+                        "xsd:string", v -> ( (Curie) v ).value().equals( "xsd:string" ),
+                        "unit:hectopascal", v -> ( (Curie) v ).value().equals( "unit:hectopascal" )
                   ) ) );
 
       return Stream.concat( extendedXsdTypes, curieTypes );

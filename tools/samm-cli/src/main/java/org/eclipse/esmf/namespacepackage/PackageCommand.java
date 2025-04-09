@@ -54,7 +54,6 @@ public class PackageCommand extends AbstractCommand {
       throw new SubCommandException( COMMAND_NAME );
    }
 
-   @SuppressWarnings( { "LombokGetterMayBeUsed", "RedundantSuppression" } )
    public String getInput() {
       return input;
    }

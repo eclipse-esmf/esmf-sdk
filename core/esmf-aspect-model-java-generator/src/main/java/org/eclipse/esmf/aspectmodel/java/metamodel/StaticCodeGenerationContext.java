@@ -16,11 +16,13 @@ package org.eclipse.esmf.aspectmodel.java.metamodel;
 import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfig;
 import org.eclipse.esmf.metamodel.Characteristic;
 
-@lombok.Value
-@lombok.With
-public class StaticCodeGenerationContext {
-   JavaCodeGenerationConfig codeGenerationConfig;
-   String modelUrnPrefix;
-   String characteristicBaseUrn;
-   Characteristic currentCharacteristic;
+public record StaticCodeGenerationContext(
+      JavaCodeGenerationConfig codeGenerationConfig,
+      String modelUrnPrefix,
+      String characteristicBaseUrn,
+      Characteristic currentCharacteristic
+) {
+   public StaticCodeGenerationContext withCurrentCharacteristic( final Characteristic characteristic ) {
+      return new StaticCodeGenerationContext( codeGenerationConfig(), modelUrnPrefix(), characteristicBaseUrn(), characteristic );
+   }
 }
