@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
@@ -51,8 +52,9 @@ import org.apache.jena.rdf.model.Model;
 public class AspectModelFileLoader {
    public static RawAspectModelFile load( final File file ) {
       try {
-         final RawAspectModelFile fromString = load( content( new FileInputStream( file ) ) );
-         return new RawAspectModelFile( fromString.sourceModel(), fromString.headerComment(), Optional.of( file.toURI() ) );
+         final String stringContent = content( new FileInputStream( file ) );
+         final RawAspectModelFile fromString = load( stringContent );
+         return new RawAspectModelFile( stringContent, fromString.sourceModel(), fromString.headerComment(), Optional.of( file.toURI() ) );
       } catch ( final ModelResolutionException exception ) {
          if ( exception.getMessage().startsWith( "Encountered invalid encoding" ) ) {
             throw new ModelResolutionException( "Encountered invalid encoding in input file " + file, exception.getCause() );
@@ -71,7 +73,7 @@ public class AspectModelFileLoader {
       }
       final Model model = tryModel.getOrElseThrow(
             () -> new ModelResolutionException( "Can not load model", tryModel.getCause() ) );
-      return new RawAspectModelFile( model, headerComment, Optional.empty() );
+      return new RawAspectModelFile( rdfTurtle, model, headerComment, Optional.empty() );
    }
 
    private static String content( final InputStream inputStream ) {
@@ -88,12 +90,11 @@ public class AspectModelFileLoader {
    }
 
    private static List<String> headerComment( final String content ) {
-      final List<String> list = content.lines()
+      return content.lines()
             .dropWhile( String::isBlank )
             .takeWhile( line -> line.startsWith( "#" ) )
             .map( line -> line.substring( 1 ).trim() )
             .toList();
-      return list;
    }
 
    public static RawAspectModelFile load( final InputStream inputStream ) {
@@ -101,12 +102,13 @@ public class AspectModelFileLoader {
    }
 
    public static RawAspectModelFile load( final InputStream inputStream, final Optional<URI> sourceLocation ) {
-      final AspectModelFile fromString = load( content( inputStream ) );
-      return new RawAspectModelFile( fromString.sourceModel(), fromString.headerComment(), sourceLocation );
+      final String stringContent = content( inputStream );
+      final RawAspectModelFile fromString = load( stringContent );
+      return new RawAspectModelFile( stringContent, fromString.sourceModel(), fromString.headerComment(), sourceLocation );
    }
 
    public static RawAspectModelFile load( final Model model ) {
-      return new RawAspectModelFile( model, List.of(), Optional.empty() );
+      return new RawAspectModelFile( RdfUtil.modelToString( model ), model, List.of(), Optional.empty() );
    }
 
    public static RawAspectModelFile load( final byte[] content, final Optional<URI> sourceLocation ) {

@@ -174,7 +174,7 @@ public class NamespacePackage implements ResolutionStrategy, Artifact<URI, byte[
             if ( entry.getName().startsWith( modelsRoot ) && entry.getName().endsWith( ".ttl" ) ) {
                final RawAspectModelFile rawFile = AspectModelFileLoader.load( inputStream,
                      Optional.of( constructLocationForFile( entry.getName() ) ) );
-               builder.add( migrate( rawFile ) );
+               builder.add( rawFile );
             }
          }
       } catch ( final IOException exception ) {
@@ -182,10 +182,6 @@ public class NamespacePackage implements ResolutionStrategy, Artifact<URI, byte[
          throw new ModelResolutionException( "Error reading the archive input stream", exception );
       }
       return builder.build();
-   }
-
-   private AspectModelFile migrate( final AspectModelFile file ) {
-      return MetaModelVersionMigrator.INSTANCE.apply( file );
    }
 
    @Override
@@ -217,9 +213,19 @@ public class NamespacePackage implements ResolutionStrategy, Artifact<URI, byte[
             uri.toString().contains( pathToFilter ) );
    }
 
+   /**
+    * Similar to {@link #loadContents()} except files are not automatically migrated to the latest SAMM version.
+    *
+    * @return The stream of files
+    */
+   public Stream<AspectModelFile> loadLiteralFiles() {
+      return files.stream();
+   }
+
    @Override
    public Stream<AspectModelFile> loadContents() {
-      return files.stream();
+      return files.stream()
+            .map( MetaModelVersionMigrator.INSTANCE );
    }
 
    @Override

@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.eclipse.esmf.test.TestModel;
+import org.eclipse.esmf.aspectmodel.RdfUtil;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFList;
@@ -63,7 +63,7 @@ public class RdfComparison {
    }
 
    static String modelToString( final Model model ) {
-      return Arrays.stream( TestModel.modelToString( model )
+      return Arrays.stream( RdfUtil.modelToString( model )
                   .replaceAll( ";", "" )
                   .replaceAll( "\\.", "" )
                   .replaceAll( " +", "" )
