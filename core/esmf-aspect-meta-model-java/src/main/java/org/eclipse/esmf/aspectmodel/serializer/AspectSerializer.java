@@ -32,6 +32,7 @@ import java.util.function.Function;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFileBuilder;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectModel;
@@ -147,6 +148,9 @@ public class AspectSerializer {
     * @return the String representation in RDF/Turtle
     */
    public String aspectModelFileToString( final AspectModelFile aspectModelFile ) {
+      if ( aspectModelFile instanceof final RawAspectModelFile rawAspectModelFile ) {
+         return rawAspectModelFile.sourceRepresentation();
+      }
       final StringWriter stringWriter = new StringWriter();
       try ( final PrintWriter printWriter = new PrintWriter( stringWriter ) ) {
          final PrettyPrinter prettyPrinter = new PrettyPrinter( aspectModelFile, printWriter );

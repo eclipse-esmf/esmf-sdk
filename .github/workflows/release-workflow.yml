@@ -471,7 +471,7 @@ jobs:
       # Milestone release: Maven deploy to Github
       - name: Publish to Github
         if: contains( github.event.inputs.release_version, '-M' )
-        run: mvn -s ./settings.xml -B clean -pl '!esmf-sdk-test-report,!documentation,!tools/samm-cli' deploy -DskipTests -Pmilestone-build,sign
+        run: mvn -s ./settings.xml -B clean -pl '!documentation,!tools/samm-cli' deploy -DskipTests -Pmilestone-build,sign
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
           PGP_KEY_PASSWORD: ${{ secrets.PGP_KEY_PASSWORD }}

@@ -4,7 +4,6 @@ import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.exception.SubCommandException;
 
-import lombok.Getter;
 import picocli.CommandLine;
 
 @CommandLine.Command(
@@ -35,7 +34,6 @@ public class AasCommand extends AbstractCommand {
    )
    private String input;
 
-   @SuppressWarnings( { "LombokGetterMayBeUsed", "RedundantSuppression" } )
    public String getInput() {
       return input;
    }
