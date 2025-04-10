@@ -16,6 +16,7 @@ package org.eclipse.esmf.aspectmodel.resolver;
 import java.net.Authenticator;
 import java.net.InetSocketAddress;
 import java.net.ProxySelector;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,17 +24,23 @@ import io.soabase.recordbuilder.core.RecordBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Configuration of proxy settings with optional {@link ProxySelector} and {@link Authenticator}
+ *
+ * @param proxy the proxy selector
+ * @param authenticator the authenticator
+ */
 @RecordBuilder
 public record ProxyConfig(
-      ProxySelector proxy,
-      Authenticator authenticator
+      Optional<ProxySelector> proxy,
+      Optional<Authenticator> authenticator
 ) {
    private static final Logger LOG = LoggerFactory.getLogger( ProxyConfig.class );
 
-   public static final ProxyConfig NO_PROXY = new ProxyConfig( null, null );
+   public static final ProxyConfig NO_PROXY = new ProxyConfig( Optional.empty(), Optional.empty() );
 
    public static ProxyConfig from( final String host, final int port ) {
-      return new ProxyConfig( ProxySelector.of( new InetSocketAddress( host, port ) ), null );
+      return new ProxyConfig( Optional.of( ProxySelector.of( new InetSocketAddress( host, port ) ) ), Optional.empty() );
    }
 
    public static ProxyConfig detectProxySettings() {
@@ -54,7 +61,8 @@ public record ProxyConfig(
       final String host = System.getProperty( "http.proxyHost" );
       final String port = System.getProperty( "http.proxyPort" );
       if ( host != null && port != null ) {
-         return new ProxyConfig( ProxySelector.of( new InetSocketAddress( host, Integer.parseInt( port ) ) ), null );
+         return new ProxyConfig( Optional.of( ProxySelector.of( new InetSocketAddress( host, Integer.parseInt( port ) ) ) ),
+               Optional.empty() );
       }
       return NO_PROXY;
    }

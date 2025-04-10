@@ -23,7 +23,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
@@ -70,8 +69,8 @@ public class Download {
                .version( HttpClient.Version.HTTP_1_1 )
                .followRedirects( HttpClient.Redirect.ALWAYS )
                .connectTimeout( Duration.ofSeconds( 10 ) );
-         Optional.ofNullable( proxyConfig.proxy() ).ifPresent( clientBuilder::proxy );
-         Optional.ofNullable( proxyConfig.authenticator() ).ifPresent( clientBuilder::authenticator );
+         proxyConfig.proxy().ifPresent( clientBuilder::proxy );
+         proxyConfig.authenticator().ifPresent( clientBuilder::authenticator );
          final HttpClient client = clientBuilder.build();
          final String[] headersArray = headers.entrySet().stream()
                .flatMap( entry -> Stream.of( entry.getKey(), entry.getValue() ) )
