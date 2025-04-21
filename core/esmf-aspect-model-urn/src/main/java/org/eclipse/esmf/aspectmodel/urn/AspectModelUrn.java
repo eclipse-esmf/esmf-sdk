@@ -306,7 +306,6 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
 
       final String regex = ".*\\b" + elementType.getValue() + ":\\b.*\\b#\\b.*";
       return urn.toString().matches( regex );
-      //      return urnParts.get(ELEMENT_TYPE_INDEX).equalsIgnoreCase(elementType.getValue());
    }
 
    private static void checkElementName( final String modelElementName, final String elementTypeForErrorMessage ) {
@@ -421,13 +420,6 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
       }
       return pattern;
    }
-
-   //   private static void checkUrn(final boolean expression, final String errorMessage, final Object... errorMessageArguments) {
-   //      if (!expression) {
-   //         final String formattedErrorMessage = String.format(errorMessage, errorMessageArguments);
-   //         throw new UrnSyntaxException(formattedErrorMessage);
-   //      }
-   //   }
 
    @Override
    public String toString() {
