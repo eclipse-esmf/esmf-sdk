@@ -73,6 +73,7 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
    private final String namespaceMainPart;
    private final ElementType elementType;
    private final boolean isSammUrn;
+   private final String namespaceIdentifier;
 
    @JsonValue
    private final URI urn;
@@ -85,6 +86,10 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
       this.elementType = elementType;
       this.version = version;
       this.isSammUrn = isSammUrn;
+      final String urnString = urn.toString();
+      namespaceIdentifier = urnString.contains( "#" )
+            ? urnString.substring( 0, urnString.indexOf( '#' ) )
+            : urnString;
    }
 
    /**
@@ -190,6 +195,56 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
       } catch ( final UrnSyntaxException exception ) {
          return Try.failure( exception );
       }
+   }
+
+   /**
+    * Construct an AspectModelUrn from a namespace main part and a version number
+    *
+    * @param namespaceMainPart the namespace main part (e.g., "com.example")
+    * @param versionNumber the version number (e.g., "1.2.3")
+    * @return the Aspect Model URN or a {@link UrnSyntaxException}
+    */
+   public static Try<AspectModelUrn> from( final String namespaceMainPart, final String versionNumber ) {
+      return from( "%s:%s:%s%s".formatted( VALID_PROTOCOL, VALID_NAMESPACE_IDENTIFIER, namespaceMainPart, versionNumber ) );
+   }
+
+   /**
+    * Construct an AspectModelUrn from a namespace main part, a version number and a model element name
+    *
+    * @param namespaceMainPart the namespace main part (e.g., "com.example")
+    * @param versionNumber the version number (e.g., "1.2.3")
+    * @param modelElementName the model element name (e.g., "MyAspect")
+    * @return the Aspect Model URN or a {@link UrnSyntaxException}
+    */
+   public static Try<AspectModelUrn> from( final String namespaceMainPart, final String versionNumber, final String modelElementName ) {
+      return from(
+            "%s:%s:%s%s#%s".formatted( VALID_PROTOCOL, VALID_NAMESPACE_IDENTIFIER, namespaceMainPart, versionNumber, modelElementName ) );
+   }
+
+   /**
+    * Construct an AspectModelUrn from a namespace main part and a version number
+    *
+    * @param namespaceMainPart the namespace main part (e.g., "com.example")
+    * @param versionNumber the version number (e.g., "1.2.3")
+    * @return the Aspect Model URN
+    * @throws UrnSyntaxException if {@code urn} is not valid
+    */
+   public static AspectModelUrn fromParts( final String namespaceMainPart, final String versionNumber ) {
+      return fromUrn( "%s:%s:%s%s".formatted( VALID_PROTOCOL, VALID_NAMESPACE_IDENTIFIER, namespaceMainPart, versionNumber ) );
+   }
+
+   /**
+    * Construct an AspectModelUrn from a namespace main part, a version number and a model element name
+    *
+    * @param namespaceMainPart the namespace main part (e.g., "com.example")
+    * @param versionNumber the version number (e.g., "1.2.3")
+    * @param modelElementName the model element name (e.g., "MyAspect")
+    * @return the Aspect Model URN
+    * @throws UrnSyntaxException if {@code urn} is not valid
+    */
+   public static AspectModelUrn fromParts( final String namespaceMainPart, final String versionNumber, final String modelElementName ) {
+      return fromUrn(
+            "%s:%s:%s%s#%s".formatted( VALID_PROTOCOL, VALID_NAMESPACE_IDENTIFIER, namespaceMainPart, versionNumber, modelElementName ) );
    }
 
    /**
@@ -369,7 +424,7 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
     * @return the prefix part of the URN
     */
    public String getNamespaceIdentifier() {
-      return urn.toString().split( "#" )[0];
+      return namespaceIdentifier;
    }
 
    /**

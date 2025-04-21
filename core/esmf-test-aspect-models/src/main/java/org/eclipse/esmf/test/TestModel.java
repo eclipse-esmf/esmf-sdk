@@ -15,11 +15,6 @@ package org.eclipse.esmf.test;
 
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.riot.RDFFormat;
-import org.apache.jena.riot.RDFLanguages;
-import org.apache.jena.riot.RDFWriter;
-
 @SuppressWarnings( "squid:S1214" ) // Can not be avoided because enums can't inherit from an abstract class
 public interface TestModel {
    String TEST_NAMESPACE = "urn:samm:org.eclipse.esmf.test:1.0.0#";
@@ -28,9 +23,5 @@ public interface TestModel {
 
    default AspectModelUrn getUrn() {
       return AspectModelUrn.fromUrn( TEST_NAMESPACE + getName() );
-   }
-
-   static String modelToString( final Model model ) {
-      return RDFWriter.create().format( RDFFormat.TURTLE ).lang( RDFLanguages.TURTLE ).source( model ).asString();
    }
 }

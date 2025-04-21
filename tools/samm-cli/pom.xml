@@ -32,7 +32,7 @@
       <main-class>org.eclipse.esmf.SammCli</main-class>
       <binary-name>samm</binary-name>
       <skip.maven.surefire>false</skip.maven.surefire>
-      <skip.maven.failsafe>true</skip.maven.failsafe>
+      <skip.maven.failsafe>false</skip.maven.failsafe>
       <skip.maven.surefire.report.plugin>false</skip.maven.surefire.report.plugin>
       <skip.maven.shade>false</skip.maven.shade>
    </properties>
@@ -192,15 +192,104 @@
             </executions>
          </plugin>
 
-         <!-- Disable maven site plugin. It is not required since the report is created in the
-              esmf-sdk-test-report module -->
+         <!-- Build fat jar -->
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-site-plugin</artifactId>
-            <version>${maven-site-plugin-version}</version>
-            <configuration>
-               <skip>true</skip>
-            </configuration>
+            <artifactId>maven-shade-plugin</artifactId>
+            <executions>
+               <execution>
+                  <id>default-shade</id>
+                  <phase>package</phase>
+                  <goals>
+                     <goal>shade</goal>
+                  </goals>
+                  <configuration>
+                     <createDependencyReducedPom>false</createDependencyReducedPom>
+                     <createSourcesJar>false</createSourcesJar>
+                     <skip>${skip.maven.shade}</skip>
+                     <transformers>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                           <manifestEntries>
+                              <Main-Class>${main-class}</Main-Class>
+                           </manifestEntries>
+                        </transformer>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                     </transformers>
+                     <artifactSet>
+                        <excludes>
+                           <!-- Duplicate annotations that are already contained in javax.annotation-api -->
+                           <exclude>javax.annotation:jsr250-api</exclude>
+                        </excludes>
+                     </artifactSet>
+                     <filters>
+                        <!-- Required to prevent overlapping resources -->
+                        <filter>
+                           <artifact>*:*</artifact>
+                           <excludes>
+                              <exclude>module-info.class</exclude>
+                              <exclude>META-INF/*</exclude>
+                              <exclude>META-INF/sisu/javax.inject.Named</exclude>
+                              <exclude>META-INF/plexus/components.xml</exclude>
+                              <exclude>META-INF.versions*/**</exclude>
+                              <exclude>META-INF/versions*/**</exclude>
+                              <exclude>META-INF/maven/**</exclude>
+                              <exclude>plugin.xml</exclude>
+                              <exclude>about.html</exclude>
+                           </excludes>
+                        </filter>
+                        <!-- Required to override the excludes above -->
+                        <filter>
+                           <artifact>${project.groupId}:${project.artifactId}</artifact>
+                           <excludeDefaults>false</excludeDefaults>
+                           <includes>
+                              <include>**</include>
+                              <include>META-INF/**</include>
+                              <include>git.properties</include>
+                           </includes>
+                           <excludes>
+                              <!-- Explicitly exclude build-time-only code from jar -->
+                              <exclude>org/eclipse/esmf/buildtime/**</exclude>
+                           </excludes>
+                        </filter>
+                        <!-- Clashes with the files from xml-apis-ext -->
+                        <filter>
+                           <artifact>xml-apis:xml-apis</artifact>
+                           <excludes>
+                              <exclude>license/**</exclude>
+                           </excludes>
+                        </filter>
+                        <!-- Clashes with the same file from batik-rasterizer -->
+                        <filter>
+                           <artifact>org.apache.xmlgraphics:batik-svgrasterizer</artifact>
+                           <excludes>
+                              <exclude>org/apache/batik/apps/rasterizer/resources/rasterizer.policy</exclude>
+                           </excludes>
+                        </filter>
+                        <!-- These configs add lots of spurious GraalVM configuration -->
+                        <filter>
+                           <artifact>org.jboss.forge.roaster:roaster-jdt</artifact>
+                           <excludes>
+                              <exclude>META-INF/native-image/**</exclude>
+                           </excludes>
+                        </filter>
+                        <!-- Required to have Model Instantiators available -->
+                        <filter>
+                           <artifact>org.eclipse.esmf:esmf-aspect-meta-model-java</artifact>
+                           <includes>
+                              <include>**</include>
+                           </includes>
+                        </filter>
+                        <!-- Prevent overlapping classes from javax modules -->
+                        <filter>
+                           <artifact>jakarta.activation:jakarta.activation-api</artifact>
+                           <excludes>
+                              <exclude>**</exclude>
+                           </excludes>
+                        </filter>
+                     </filters>
+                  </configuration>
+               </execution>
+            </executions>
          </plugin>
 
          <plugin>
@@ -385,11 +474,24 @@
             <packaging-type>native</packaging-type>
             <skip.maven.surefire>true</skip.maven.surefire>
             <skip.maven.failsafe>false</skip.maven.failsafe>
+            <skip.maven.shade>true</skip.maven.shade>
             <maven.source.skip>false</maven.source.skip>
          </properties>
 
          <build>
             <plugins>
+               <!-- When building native, skip build the jar -->
+               <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-jar-plugin</artifactId>
+                  <executions>
+                     <execution>
+                        <id>default-jar</id>
+                        <phase>none</phase>
+                     </execution>
+                  </executions>
+               </plugin>
+
                <plugin>
                   <groupId>org.graalvm.buildtools</groupId>
                   <artifactId>native-maven-plugin</artifactId>
@@ -400,7 +502,7 @@
                         <goals>
                            <goal>compile</goal>
                         </goals>
-                        <phase>package</phase>
+                        <phase>prepare-package</phase>
                      </execution>
                   </executions>
                   <configuration>

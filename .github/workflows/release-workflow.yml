@@ -104,9 +104,11 @@ jobs:
 
           # Actual build of core SDK
           mvn -B -pl '!org.eclipse.esmf:samm-cli' clean deploy -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60 -DaltDeploymentRepository=local::default::file://nexus-staging -Psign
-          # Build of CLI
+          # Build samm-cli executable jar and run integration tests
           unset JAVA_TOOL_OPTIONS
-          mvn -B -pl tools/samm-cli clean verify -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+          mvn -B -pl tools/samm-cli clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+          # Build native binary and run integration tests
+          mvn -B -pl tools/samm-cli verify -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
 
           # Create .tar.gz of samm-cli
           pushd tools/samm-cli/target
@@ -178,7 +180,7 @@ jobs:
           mvn versions:commit
           # Actual build of core SDK
           mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
-          # Build of CLI
+          # Build samm-cli executable jar and run integration tests
           unset JAVA_TOOL_OPTIONS
           mvn -B -pl tools/samm-cli clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
         shell: bash
@@ -266,9 +268,11 @@ jobs:
 
           # Actual build of core SDK
           mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
-          # Build of CLI
+          # Build samm-cli executable jar and run integration tests
           unset JAVA_TOOL_OPTIONS
-          mvn -B -pl tools/samm-cli clean verify -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+          mvn -B -pl tools/samm-cli clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+          # Build native binary and run integration tests
+          mvn -B -pl tools/samm-cli verify -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
         shell: bash
 
       - name: Upload Windows binary
@@ -467,7 +471,7 @@ jobs:
       # Milestone release: Maven deploy to Github
       - name: Publish to Github
         if: contains( github.event.inputs.release_version, '-M' )
-        run: mvn -s ./settings.xml -B clean -pl '!esmf-sdk-test-report,!documentation,!tools/samm-cli' deploy -DskipTests -Pmilestone-build,sign
+        run: mvn -s ./settings.xml -B clean -pl '!documentation,!tools/samm-cli' deploy -DskipTests -Pmilestone-build,sign
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
           PGP_KEY_PASSWORD: ${{ secrets.PGP_KEY_PASSWORD }}

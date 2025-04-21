@@ -19,7 +19,6 @@ import java.util.Optional;
 import org.eclipse.esmf.samm.KnownVersion;
 
 public class SammMetaModelVersionUriRewriter extends AbstractUriRewriter {
-
    public SammMetaModelVersionUriRewriter( final KnownVersion sourceVersion, final KnownVersion targetVersion ) {
       super( sourceVersion, targetVersion );
    }
@@ -31,15 +30,15 @@ public class SammMetaModelVersionUriRewriter extends AbstractUriRewriter {
 
    @Override
    protected Optional<String> rewriteUri( final String oldUri, final Map<String, String> oldToNewNamespaces ) {
-      final String[] uriParts = oldUri.split( "#" );
-      if ( uriParts.length == 1 ) {
+      final int indexOfHash = oldUri.indexOf( '#' );
+      if ( indexOfHash == -1 ) {
          return Optional.empty();
       }
-      return oldToNewNamespaces.keySet()
-            .stream()
-            .filter( key -> key.equals( uriParts[0] + "#" ) )
-            .findAny()
-            .map( key -> oldToNewNamespaces.get( key ) + uriParts[1] );
+      final String newNamespace = oldToNewNamespaces.get( oldUri.substring( 0, indexOfHash + 1 ) );
+      if ( newNamespace == null ) {
+         return Optional.empty();
+      }
+      return Optional.of( newNamespace + oldUri.substring( indexOfHash + 1 ) );
    }
 
    @Override

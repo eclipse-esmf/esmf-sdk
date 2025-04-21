@@ -46,7 +46,6 @@ import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.Namespace;
 
 import com.google.common.collect.ImmutableList;
-import lombok.Getter;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +62,6 @@ public class NamespacePackage implements ResolutionStrategy, Artifact<URI, byte[
    private static final String ASPECT_MODELS_FOLDER = "aspect-models";
 
    // Fields that are always set
-   @Getter
    private final String modelsRoot;
    private final List<AspectModelFile> files;
 
@@ -176,7 +174,7 @@ public class NamespacePackage implements ResolutionStrategy, Artifact<URI, byte[
             if ( entry.getName().startsWith( modelsRoot ) && entry.getName().endsWith( ".ttl" ) ) {
                final RawAspectModelFile rawFile = AspectModelFileLoader.load( inputStream,
                      Optional.of( constructLocationForFile( entry.getName() ) ) );
-               builder.add( migrate( rawFile ) );
+               builder.add( rawFile );
             }
          }
       } catch ( final IOException exception ) {
@@ -184,10 +182,6 @@ public class NamespacePackage implements ResolutionStrategy, Artifact<URI, byte[
          throw new ModelResolutionException( "Error reading the archive input stream", exception );
       }
       return builder.build();
-   }
-
-   private AspectModelFile migrate( final AspectModelFile file ) {
-      return MetaModelVersionMigrator.INSTANCE.apply( file );
    }
 
    @Override
@@ -219,9 +213,19 @@ public class NamespacePackage implements ResolutionStrategy, Artifact<URI, byte[
             uri.toString().contains( pathToFilter ) );
    }
 
+   /**
+    * Similar to {@link #loadContents()} except files are not automatically migrated to the latest SAMM version.
+    *
+    * @return The stream of files
+    */
+   public Stream<AspectModelFile> loadLiteralFiles() {
+      return files.stream();
+   }
+
    @Override
    public Stream<AspectModelFile> loadContents() {
-      return files.stream();
+      return files.stream()
+            .map( MetaModelVersionMigrator.INSTANCE );
    }
 
    @Override
@@ -314,8 +318,11 @@ public class NamespacePackage implements ResolutionStrategy, Artifact<URI, byte[
     *
     * @return the location if set, or null
     */
-   @SuppressWarnings( { "LombokGetterMayBeUsed", "RedundantSuppression" } )
    public URI getLocation() {
       return location;
+   }
+
+   public String getModelsRoot() {
+      return modelsRoot;
    }
 }

@@ -22,7 +22,6 @@ import java.util.stream.Stream;
 import org.eclipse.esmf.functions.ThrowingFunction;
 import org.eclipse.esmf.metamodel.ModelElement;
 
-import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,10 +40,8 @@ public abstract class Generator<F, I, T, C extends GenerationConfig, A extends A
    /**
     * The "focus" element, i.e., the main "input" for the generation process
     */
-   @Getter
    protected final F focus;
 
-   @Getter
    protected final C config;
    protected final Comparator<ModelElement> uniqueByModelElementIdentifier = ( modelElementOne, modelElementTwo ) -> {
       final String modelElementOneIdentifier = modelElementOne.urn().toString();
@@ -134,5 +131,13 @@ public abstract class Generator<F, I, T, C extends GenerationConfig, A extends A
       } catch ( final Throwable exception ) {
          LOG.error( "Failure during writing of generated artifact", exception );
       }
+   }
+
+   public F getFocus() {
+      return focus;
+   }
+
+   public C getConfig() {
+      return config;
    }
 }

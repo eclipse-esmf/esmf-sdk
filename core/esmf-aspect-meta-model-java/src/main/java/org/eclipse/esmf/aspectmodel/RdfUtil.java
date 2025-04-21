@@ -23,6 +23,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
+import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.urn.ElementType;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
@@ -39,6 +40,9 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.riot.RDFFormat;
+import org.apache.jena.riot.RDFLanguages;
+import org.apache.jena.riot.RDFWriter;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
 
@@ -145,6 +149,17 @@ public class RdfUtil {
     */
    public static Model createModel( final String ttlRepresentation ) {
       return TurtleLoader.loadTurtle( ttlRepresentation ).get();
+   }
+
+   /**
+    * Turn a an RDF model to its String representation. Note that this method should only be used where {@link AspectSerializer} can
+    * not be used since it does not honor Aspect Model formatting rules.
+    *
+    * @param model the input model
+    * @return the rendered model
+    */
+   public static String modelToString( final Model model ) {
+      return RDFWriter.create().format( RDFFormat.TURTLE ).lang( RDFLanguages.TURTLE ).source( model ).asString();
    }
 
    /**
