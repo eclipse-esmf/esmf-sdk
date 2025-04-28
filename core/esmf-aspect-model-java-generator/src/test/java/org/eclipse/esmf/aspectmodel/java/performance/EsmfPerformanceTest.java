@@ -29,23 +29,23 @@ import org.junit.jupiter.api.Timeout;
 
 class EsmfPerformanceTest {
    private static final int ITERATIONS = 10;
-   private static final List<AspectModelFile> inputFiles210 = InlineModel.getModel( KnownVersion.SAMM_2_2_0.toVersionString() );
-   private static final Collection<AspectModelUrn> urns210 = getUrns( inputFiles210 );
-   private static final List<AspectModelFile> inputFilesLatest = InlineModel.getModel( KnownVersion.getLatest().toVersionString() );
-   private static final Collection<AspectModelUrn> urnsLatest = getUrns( inputFilesLatest );
+   private static final List<AspectModelFile> INPUT_FILES_2_1_0 = InlineModel.getModel( KnownVersion.SAMM_2_2_0.toVersionString() );
+   private static final Collection<AspectModelUrn> URNS_2_1_0 = getUrns( INPUT_FILES_2_1_0 );
+   private static final List<AspectModelFile> INPUT_FILES_LATEST = InlineModel.getModel( KnownVersion.getLatest().toVersionString() );
+   private static final Collection<AspectModelUrn> URNS_LATEST = getUrns( INPUT_FILES_LATEST );
    private static final long MAX_DURATION_MS = 800;
    private static final long MAX_MEMORY_BYTES = 130L * 1024 * 1024;
 
    @Test
    @Timeout( 90 )
    void testResolvingWithOldSammVersion() {
-      measurePerformance( "OldSammVersion", inputFiles210, urns210 );
+      measurePerformance( "OldSammVersion", INPUT_FILES_2_1_0, URNS_2_1_0 );
    }
 
    @Test
    @Timeout( 2 )
    void testResolvingWithLatestSammVersion() {
-      measurePerformance( "LatestSammVersion", inputFilesLatest, urnsLatest );
+      measurePerformance( "LatestSammVersion", INPUT_FILES_LATEST, URNS_LATEST );
    }
 
    private static Set<AspectModelUrn> getUrns( final List<AspectModelFile> listOfFiles ) {
