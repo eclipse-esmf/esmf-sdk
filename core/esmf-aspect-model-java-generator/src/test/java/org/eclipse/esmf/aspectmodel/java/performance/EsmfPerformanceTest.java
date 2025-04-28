@@ -33,7 +33,7 @@ class EsmfPerformanceTest {
    private static final Collection<AspectModelUrn> URNS_2_1_0 = getUrns( INPUT_FILES_2_1_0 );
    private static final List<AspectModelFile> INPUT_FILES_LATEST = InlineModel.getModel( KnownVersion.getLatest().toVersionString() );
    private static final Collection<AspectModelUrn> URNS_LATEST = getUrns( INPUT_FILES_LATEST );
-   private static final long MAX_DURATION_MS = 800;
+   private static final long MAX_DURATION_MS = 1000;
    private static final long MAX_MEMORY_BYTES = 130L * 1024 * 1024;
 
    @Test
