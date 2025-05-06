@@ -21,6 +21,7 @@ import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.ResolverConfigurationMixin;
 import org.eclipse.esmf.aspect.AspectEditCommand;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.edit.AspectChangeManager;
 import org.eclipse.esmf.aspectmodel.edit.AspectChangeManagerConfig;
 import org.eclipse.esmf.aspectmodel.edit.AspectChangeManagerConfigBuilder;
 import org.eclipse.esmf.aspectmodel.edit.Change;
@@ -142,6 +143,7 @@ public class AspectEditNewVersionCommand extends AbstractCommand {
       final AspectChangeManagerConfig config = AspectChangeManagerConfigBuilder.builder()
             .detailedChangeReport( details )
             .build();
-      performRefactoring( aspectModel, copy, config, dryRun, force );
+      final AspectChangeManager changeContext = new AspectChangeManager( config, aspectModel );
+      performRefactoring( changeContext, copy, dryRun, force );
    }
 }

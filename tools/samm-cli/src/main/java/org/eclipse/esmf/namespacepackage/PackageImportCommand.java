@@ -17,27 +17,22 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.http.HttpResponse;
 import java.util.Map;
-import java.util.Optional;
 
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.ResolverConfigurationMixin;
+import org.eclipse.esmf.aspectmodel.edit.AspectChangeManager;
 import org.eclipse.esmf.aspectmodel.edit.AspectChangeManagerConfig;
 import org.eclipse.esmf.aspectmodel.edit.AspectChangeManagerConfigBuilder;
 import org.eclipse.esmf.aspectmodel.edit.Change;
-import org.eclipse.esmf.aspectmodel.edit.ChangeGroup;
-import org.eclipse.esmf.aspectmodel.edit.change.AddAspectModelFile;
-import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.Download;
 import org.eclipse.esmf.aspectmodel.resolver.NamespacePackage;
 import org.eclipse.esmf.aspectmodel.resolver.fs.ModelsRoot;
 import org.eclipse.esmf.aspectmodel.resolver.fs.StructuredModelsRoot;
-import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFileBuilder;
 import org.eclipse.esmf.exception.SubCommandException;
 
 import org.apache.commons.io.IOUtils;
@@ -105,26 +100,12 @@ public class PackageImportCommand extends AbstractCommand {
 
       // Load the Namespace Package and create a "add file" change for each file in it
       final ModelsRoot modelsRoot = new StructuredModelsRoot( modelsRootLocation.toPath() );
-      final Change changes = new ChangeGroup( loadNamespacePackageFromInput()
-            .loadContents()
-            .map( file -> {
-               // Set the destination inside the target models root for each Aspect Model File
-               final URI targetLocation = modelsRoot.directoryForNamespace( file.namespaceUrn() )
-                     .resolve( file.filename().orElseThrow() )
-                     .toUri();
-               return RawAspectModelFileBuilder.builder()
-                     .sourceModel( file.sourceModel() )
-                     .sourceLocation( Optional.of( targetLocation ) )
-                     .headerComment( file.headerComment() )
-                     .build();
-            } )
-            .<Change> map( AddAspectModelFile::new )
-            .toList() );
-
+      final Change changes = loadNamespacePackageFromInput().prepareWriteToModelsRoot( modelsRoot );
       final AspectChangeManagerConfig config = AspectChangeManagerConfigBuilder.builder()
             .detailedChangeReport( details )
             .build();
-      performRefactoring( new AspectModelLoader().emptyModel(), changes, config, dryRun, force );
+      final AspectChangeManager changeContext = new AspectChangeManager( config );
+      performRefactoring( changeContext, changes, dryRun, force );
    }
 
    private NamespacePackage loadNamespacePackageFromInput() {
