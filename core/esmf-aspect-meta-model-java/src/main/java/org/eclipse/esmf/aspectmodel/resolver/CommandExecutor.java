@@ -14,12 +14,9 @@
 package org.eclipse.esmf.aspectmodel.resolver;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.Scanner;
-import java.util.StringTokenizer;
 
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ProcessExecutionException;
 import org.eclipse.esmf.aspectmodel.resolver.process.BinaryLauncher;
@@ -49,19 +46,5 @@ public class CommandExecutor {
 
       throw new ProcessExecutionException( "Execution of '" + executableOrJar + "' failed (status " + result.exitStatus() + "). "
             + "Error output: " + result.stderr() );
-   }
-
-   private static boolean isJarInvocation( final String command ) {
-      final StringTokenizer st = new StringTokenizer( command, " " );
-      if ( st.hasMoreTokens() ) {
-         return st.nextToken().toUpperCase().endsWith( ".JAR" );
-      }
-      return false;
-   }
-
-   private static String getOutputFrom( final InputStream stream ) {
-      try ( final Scanner s = new Scanner( stream ).useDelimiter( "\\A" ) ) {
-         return s.hasNext() ? s.next() : "";
-      }
    }
 }

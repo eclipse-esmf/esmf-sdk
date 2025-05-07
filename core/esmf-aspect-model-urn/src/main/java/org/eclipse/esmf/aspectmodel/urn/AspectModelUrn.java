@@ -244,7 +244,7 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
     */
    public static AspectModelUrn fromParts( final String namespaceMainPart, final String versionNumber, final String modelElementName ) {
       return fromUrn(
-            "%s:%s:%s%s#%s".formatted( VALID_PROTOCOL, VALID_NAMESPACE_IDENTIFIER, namespaceMainPart, versionNumber, modelElementName ) );
+            "%s:%s:%s:%s#%s".formatted( VALID_PROTOCOL, VALID_NAMESPACE_IDENTIFIER, namespaceMainPart, versionNumber, modelElementName ) );
    }
 
    /**

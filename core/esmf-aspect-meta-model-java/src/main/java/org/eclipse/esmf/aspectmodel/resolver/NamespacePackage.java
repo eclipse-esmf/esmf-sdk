@@ -35,9 +35,15 @@ import java.util.zip.ZipOutputStream;
 
 import org.eclipse.esmf.aspectmodel.AspectLoadingException;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.edit.Change;
+import org.eclipse.esmf.aspectmodel.edit.ChangeGroup;
+import org.eclipse.esmf.aspectmodel.edit.ModelChangeException;
+import org.eclipse.esmf.aspectmodel.edit.change.AddAspectModelFile;
 import org.eclipse.esmf.aspectmodel.generator.Artifact;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
+import org.eclipse.esmf.aspectmodel.resolver.fs.ModelsRoot;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFile;
+import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFileBuilder;
 import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
 import org.eclipse.esmf.aspectmodel.serializer.SerializationException;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
@@ -324,5 +330,29 @@ public class NamespacePackage implements ResolutionStrategy, Artifact<URI, byte[
 
    public String getModelsRoot() {
       return modelsRoot;
+   }
+
+   /**
+    * Turn the files from this namespace package to a series of "add file" changes relative to a models root
+    *
+    * @param modelsRoot the target models root
+    * @return the changes
+    */
+   public ChangeGroup prepareWriteToModelsRoot( final ModelsRoot modelsRoot ) {
+      return new ChangeGroup( loadContents()
+            .map( file -> {
+               // Set the destination inside the target models root for each Aspect Model File
+               final URI targetLocation = modelsRoot.directoryForNamespace( file.namespaceUrn() )
+                     .resolve( file.filename().orElseThrow( () ->
+                           new ModelChangeException( "Encountered an unnamed Aspect Model File in Aspect Model that should be written" ) ) )
+                     .toUri();
+               return RawAspectModelFileBuilder.builder()
+                     .sourceModel( file.sourceModel() )
+                     .sourceLocation( Optional.of( targetLocation ) )
+                     .headerComment( file.headerComment() )
+                     .build();
+            } )
+            .<Change> map( AddAspectModelFile::new )
+            .toList() );
    }
 }
