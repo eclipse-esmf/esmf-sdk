@@ -135,10 +135,10 @@ of model resolution] for more information.
                                    | _--comment, -c_ : only in combination with --json; generates `$comment`
                                        OpenAPI 3.1 keyword for all `samm:see` attributes                                     |
                                    | _--parameter-file, -p_ : the path to a file including the parameter for the Aspect
-                                       API endpoints                                                                         | For detailed description, see the section bellow
+                                       API endpoints                                                                         | For detailed description, see the section below
                                    | _--semantic-version, -sv_ : use the full semantic version from the Aspect Model as the
                                        version for the Aspect API                                                            |
-                                   | _--resource-path, -r_ : the resource path for the Aspect API endpoints                  | For detailed description, see the section bellow
+                                   | _--resource-path, -r_ : the resource path for the Aspect API endpoints                  | For detailed description, see the section below
                                    | _--include-query-api, -q_ : include the path for the Query Aspect API Endpoint in the
                                        https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification                           |
                                    | _--include-crud, -cr_ : include the POST/PUT/PATCH methods in the OpenAPI specification |
@@ -156,7 +156,7 @@ of model resolution] for more information.
                                    | _--language, -l_ : The language from the model for which an OpenAPI specification should
                                        be generated (default: en)                                                            | `samm aspect AspectModel.ttl to openapi -l de`
                                    | _--template-file, -t_ : the path to a file including a template for
-                                       the resulting specification, can be in JSON or YAML                                   | For detailed description, see the section bellow
+                                       the resulting specification, can be in JSON or YAML                                   | For detailed description, see the section below
                                    | _--separate-files, -sf_ : Create separate files for each schema                         |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
 .8+| [[aspect-to-asyncapi]] aspect <model> to asyncapi | Generate https://www.asyncapi.com/docs/reference/specification/v3.0.0[AsyncAPI] specification for an Aspect Model| `samm aspect AspectModel.ttl to asyncapi`
@@ -199,8 +199,8 @@ of model resolution] for more information.
                                    | _--custom-column, -col_ : Additional custom column definition, e.g. for databricks following the pattern `column_name DATATYPE [NOT NULL] [COMMENT 'custom']`. This parameter can be repeated for multiple columns.                                                  | `samm aspect AspectModel.ttl to sql --custom-column "column_name STRING NOT NULL COMMENT 'custom'"`
 .5+| [[aspect-to-aas]] aspect <model> to aas | Generate an Asset Administration Shell (AAS) submodel template from an
                                      Aspect Model                                                                            | `samm aspect AspectModel.ttl to aas`
-                                   | _--output, -o_ : output file path (default: stdout)                                     | `samm aspect AspectModel.ttl to aas -o="some-path-`
-                                   | _--format, -f_ : output file format (XML, JSON, or AASX, default: XML)                  |
+                                   | _--output, -o_ : output file path (default: stdout)                                     | `samm aspect AspectModel.ttl to aas -o="somewhere\new-file-name.extension"`
+                                   | _--format, -f_ : output file format (XML, JSON, or AASX, default: XML)                  | `samm aspect AspectModel.ttl to aas -f="aasx" -o="somewhere\newfile.aasx"`
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
                                    | _--aspect-data, -a_ : path to a JSON file containing aspect data corresponding to the
                                      Aspect Model                                                                            |
