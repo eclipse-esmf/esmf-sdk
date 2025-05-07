@@ -65,7 +65,7 @@ In place of `<model>` in the command descriptions below, you can provide either 
 
 * a relative file name, such as `AspectModel.ttl` or `./somewhere/AspectModel.ttl` (on Linux and
 MacOS) or `.\somewhere\AspectModel.ttl` (on Windows),
-* an absolut file name, such as
+* an absolut file name (put it in quotes ("") if the path or file name contains blank spaces), such as
 `/home/me/aspect-models/org.eclipse.esmf.example/1.0.0/AspectModel.ttl` (on Linux and MacOS) or
 `C:\Users\me\aspect-models\org.eclipse.esmf.example\1.0.0\AspectModel.ttl` (on Windows),
 * a URL pointing to a .ttl file in a publically accessible GitHub repository, such as
@@ -199,7 +199,7 @@ of model resolution] for more information.
                                    | _--custom-column, -col_ : Additional custom column definition, e.g. for databricks following the pattern `column_name DATATYPE [NOT NULL] [COMMENT 'custom']`. This parameter can be repeated for multiple columns.                                                  | `samm aspect AspectModel.ttl to sql --custom-column "column_name STRING NOT NULL COMMENT 'custom'"`
 .5+| [[aspect-to-aas]] aspect <model> to aas | Generate an Asset Administration Shell (AAS) submodel template from an
                                      Aspect Model                                                                            | `samm aspect AspectModel.ttl to aas`
-                                   | _--output, -o_ : output file path (default: stdout)                                     |
+                                   | _--output, -o_ : output file path (default: stdout)                                     | `samm aspect AspectModel.ttl to aas -o="some-path-`
                                    | _--format, -f_ : output file format (XML, JSON, or AASX, default: XML)                  |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
                                    | _--aspect-data, -a_ : path to a JSON file containing aspect data corresponding to the
