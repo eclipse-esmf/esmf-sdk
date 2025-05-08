@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Pattern;
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -129,6 +130,14 @@ public class AspectModelJavaGeneratorTest {
                final AspectModel aspectModel = TestResources.load( testAspect );
                final Model model = aspectModel.files().iterator().next().sourceModel();
                final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspectModel ) );
+
+               final Pattern uninterpolatedTemplate = Pattern.compile( "\\$[a-zA-Z]" );
+               result.compilationUnits.values().forEach( compilationUnit -> {
+                  // Check that all template variables have been replaced. If Velocity fails to insert a value (because evaluation of the
+                  // expression throws an exception), it leaves the template unchanged, i.e., leaving literal $ characters
+                  assertThat( compilationUnit.toString() ).doesNotContainPattern( uninterpolatedTemplate );
+               } );
+
                final int numberOfFiles = result.compilationUnits.size();
                final List<Resource> structureElements = Streams.stream( model.listStatements( null, RDF.type, (RDFNode) null ) )
                      .filter( statement -> {

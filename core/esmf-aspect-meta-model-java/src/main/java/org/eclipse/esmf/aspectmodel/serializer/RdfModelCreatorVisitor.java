@@ -94,7 +94,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    private final RdfNamespace namespace;
    private final Map<ModelElement, Resource> anonymousResources = new HashMap<>();
    private final List<Resource> resourceList = new LinkedList<>();
-   private final List<ComplexType> hasVisited = new LinkedList<>();
+   private final List<ModelElement> hasVisited = new LinkedList<>();
 
    /**
     * A {@link Model} together with an optional pointer to the resource that is defined in the model.
@@ -441,7 +441,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    public ElementModel visitEnumeration( final Enumeration enumeration, final ModelElement context ) {
       final Model model = createCharacteristicsModel( enumeration );
       final Resource resource = getElementResource( enumeration );
-      if ( !(enumeration.is( State.class )) ) {
+      if ( !( enumeration.is( State.class ) ) ) {
          model.add( resource, RDF.type, SammNs.SAMMC.Enumeration() );
       }
 
@@ -557,6 +557,11 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
 
    @Override
    public ElementModel visitStructuredValue( final StructuredValue structuredValue, final ModelElement context ) {
+      if ( hasVisited.contains( structuredValue ) ) {
+         return new ElementModel( ModelFactory.createDefaultModel(), Optional.empty() );
+      }
+      hasVisited.add( structuredValue );
+
       final Model model = createCharacteristicsModel( structuredValue );
       final Resource resource = getElementResource( structuredValue );
       model.add( resource, RDF.type, SammNs.SAMMC.StructuredValue() );

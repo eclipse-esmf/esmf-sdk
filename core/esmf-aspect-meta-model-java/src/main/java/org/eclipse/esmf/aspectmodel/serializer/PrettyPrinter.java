@@ -13,8 +13,6 @@
 
 package org.eclipse.esmf.aspectmodel.serializer;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -23,7 +21,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -32,6 +29,7 @@ import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.aspectmodel.resolver.parser.SmartToken;
 import org.eclipse.esmf.aspectmodel.resolver.parser.TokenRegistry;
+import org.eclipse.esmf.buildtime.template.VersionInfo;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
@@ -185,20 +183,9 @@ public class PrettyPrinter {
    }
 
    private void showMilestoneBanner() {
-      final Properties properties = new Properties();
-      final InputStream propertiesResource = PrettyPrinter.class.getClassLoader().getResourceAsStream( "pom.properties" );
-      if ( propertiesResource == null ) {
-         return;
-      }
-      try {
-         properties.load( propertiesResource );
-      } catch ( final IOException exception ) {
-         return;
-      }
-
-      final String version = properties.get( "aspect-meta-model-version" ).toString();
-      if ( version.contains( "-M" ) ) {
-         writer.println( "# This model was created using SAMM version " + version + " and is not intended for productive usage." );
+      if ( VersionInfo.ASPECT_META_MODEL_VERSION.contains( "-M" ) ) {
+         writer.println( "# This model was created using SAMM version " + VersionInfo.ASPECT_META_MODEL_VERSION
+               + " and is not intended for productive usage." );
          writer.println();
       }
    }

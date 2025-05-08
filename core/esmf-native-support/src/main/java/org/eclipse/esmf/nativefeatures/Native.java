@@ -34,6 +34,7 @@ import org.graalvm.nativeimage.ImageSingletons;
 import org.graalvm.nativeimage.impl.ConfigurationCondition;
 import org.graalvm.nativeimage.impl.RuntimeClassInitializationSupport;
 import org.graalvm.nativeimage.impl.RuntimeJNIAccessSupport;
+import org.graalvm.nativeimage.impl.RuntimeProxyCreationSupport;
 import org.graalvm.nativeimage.impl.RuntimeReflectionSupport;
 import org.graalvm.nativeimage.impl.RuntimeResourceSupport;
 
@@ -46,6 +47,7 @@ public class Native {
    private static final Supplier<RuntimeClassInitializationSupport> RUNTIME_CLASS_INITIALIZATION_SUPPORT;
    private static final Supplier<RuntimeReflectionSupport> RUNTIME_REFLECTION_SUPPORT;
    private static final Supplier<RuntimeJNIAccessSupport> RUNTIME_JNI_ACCESS_SUPPORT;
+   private static final Supplier<RuntimeProxyCreationSupport> RUNTIME_PROXY_CREATION_SUPPORT;
 
    static {
       /*
@@ -58,11 +60,13 @@ public class Native {
          RUNTIME_CLASS_INITIALIZATION_SUPPORT = () -> ImageSingletons.lookup( RuntimeClassInitializationSupport.class );
          RUNTIME_REFLECTION_SUPPORT = () -> ImageSingletons.lookup( RuntimeReflectionSupport.class );
          RUNTIME_JNI_ACCESS_SUPPORT = () -> ImageSingletons.lookup( RuntimeJNIAccessSupport.class );
+         RUNTIME_PROXY_CREATION_SUPPORT = () -> ImageSingletons.lookup( RuntimeProxyCreationSupport.class );
       } else {
          RUNTIME_RESOURCE_SUPPORT = DummyRuntimeResourceSupport::new;
          RUNTIME_CLASS_INITIALIZATION_SUPPORT = DummyRuntimeClassInitializationSupport::new;
          RUNTIME_REFLECTION_SUPPORT = DummyRuntimeReflectionSupport::new;
          RUNTIME_JNI_ACCESS_SUPPORT = DummyRuntimeJniAccessSupport::new;
+         RUNTIME_PROXY_CREATION_SUPPORT = DummyRuntimeProxyCreationSupport::new;
       }
    }
 
@@ -216,6 +220,11 @@ public class Native {
          throw new RuntimeException( "Could not find method " + name + " in " + clazz + " with args "
                + Arrays.stream( args ).map( Class::toString ).collect( Collectors.joining( ",", "[", "]" ) ) );
       }
+      return this;
+   }
+
+   public Native registerProxyCreationSupport( final Class<?>... classes ) {
+      RUNTIME_PROXY_CREATION_SUPPORT.get().addProxyClass( classes );
       return this;
    }
 
@@ -439,6 +448,13 @@ public class Native {
 
       @Override
       public void register( final ConfigurationCondition condition, final boolean finalIsWritable, final Field... fields ) {
+         //nothing
+      }
+   }
+
+   private static class DummyRuntimeProxyCreationSupport implements RuntimeProxyCreationSupport {
+      @Override
+      public void addProxyClass( final Class<?>... interfaces ) {
          //nothing
       }
    }

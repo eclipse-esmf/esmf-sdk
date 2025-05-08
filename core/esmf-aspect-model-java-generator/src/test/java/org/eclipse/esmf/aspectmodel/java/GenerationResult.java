@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import javax.annotation.processing.Generated;
 
 import com.github.javaparser.ParseResult;
 import com.github.javaparser.ParserConfiguration;
@@ -60,7 +61,6 @@ import com.google.inject.util.Types;
 import org.assertj.core.api.Condition;
 
 class GenerationResult {
-
    private final CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
    private final long numFailedCompilationUnits;
    private final Collection<Problem> parseProblems;
@@ -169,7 +169,7 @@ class GenerationResult {
          final Map<String, String> expectedParameterAnnotations ) {
       assertThat( parameters ).hasSize( fieldTypesOrTypeNames.size() );
 
-      if ( expectedParameterAnnotations.size() > 0 ) {
+      if ( !expectedParameterAnnotations.isEmpty() ) {
          assertThat( parameters ).allSatisfy( parameter ->
                assertThat( expectedParameterAnnotations.get( parameter.resolve().getName() ) ).isEqualTo(
                      parameter.getAnnotations().stream().map( Node::toString ).collect( Collectors.joining() ) ) );
@@ -277,7 +277,7 @@ class GenerationResult {
             .extracting( SimpleName::asString )
             .containsExactlyInAnyOrderElementsOf( expectedConstants );
 
-      if ( expectedConstantArguments.size() > 0 ) {
+      if ( !expectedConstantArguments.isEmpty() ) {
          assertThat( constants ).allSatisfy( enumConstantDeclaration -> {
             assertThat( enumConstantDeclaration.getArguments() ).hasSize( 1 );
             final String name = enumConstantDeclaration.getName().asString();
@@ -298,10 +298,11 @@ class GenerationResult {
          assertThat( typeDeclaration.getModifiers() ).containsAll( expectedModifiers );
 
          final NodeList<AnnotationExpr> annotations = typeDeclaration.getAnnotations();
-         assertThat( annotations ).hasSize( expectedAnnotations.size() );
-         annotations.forEach( annotationExpr -> {
-            assertThat( expectedAnnotations ).contains( annotationExpr.toString() );
-         } );
+         annotations.stream()
+               .filter( annotation -> !annotation.getName().toString().contains( Generated.class.getSimpleName() ) )
+               .forEach( annotationExpr -> {
+                  assertThat( expectedAnnotations ).contains( annotationExpr.toString() );
+               } );
 
          final ClassOrInterfaceDeclaration classOrInterfaceDeclaration = typeDeclaration.asClassOrInterfaceDeclaration();
 

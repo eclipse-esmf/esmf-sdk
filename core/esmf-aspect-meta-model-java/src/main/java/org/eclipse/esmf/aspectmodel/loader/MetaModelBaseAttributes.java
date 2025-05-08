@@ -127,6 +127,18 @@ public class MetaModelBaseAttributes implements HasDescription {
       private boolean isAnonymous = true;
       private AspectModelFile sourceFile;
 
+      public Builder fromModelElement( final ModelElement modelElement ) {
+         if ( !modelElement.isAnonymous() ) {
+            withUrn( modelElement.urn() );
+         }
+         isAnonymous( modelElement.isAnonymous() );
+         withPreferredNames( modelElement.getPreferredNames() );
+         withDescriptions( modelElement.getDescriptions() );
+         withSee( modelElement.getSee() );
+         withSourceFile( modelElement.getSourceFile() );
+         return this;
+      }
+
       public Builder withUrn( final String urn ) {
          return withUrn( AspectModelUrn.fromUrn( urn ) );
       }

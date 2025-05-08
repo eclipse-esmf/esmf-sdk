@@ -43,7 +43,6 @@ public record JavaCodeGenerationConfig(
       File templateLibFile,
       String namePrefix,
       String namePostfix
-
 ) implements GenerationConfig {
    public enum JsonTypeInfoType {
       NONE, CLASS, MINIMAL_CLASS, NAME, SIMPLE_NAME, DEDUCTION, CUSTOM

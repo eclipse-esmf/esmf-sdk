@@ -17,6 +17,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -24,6 +25,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.eclipse.esmf.aspectmodel.java.AspectModelJavaUtil;
+import org.eclipse.esmf.aspectmodel.java.DeconstructionSet;
+import org.eclipse.esmf.aspectmodel.java.StructuredValuePropertiesDeconstructor;
 import org.eclipse.esmf.aspectmodel.java.ValueExpressionVisitor;
 import org.eclipse.esmf.aspectmodel.java.ValueInitializer;
 import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
@@ -337,6 +340,22 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
    public String visitStructuredValue( final StructuredValue structuredValue, final StaticCodeGenerationContext context ) {
       context.codeGenerationConfig().importTracker().importExplicit( DefaultStructuredValue.class );
       context.codeGenerationConfig().importTracker().importExplicit( ArrayList.class );
+
+      // The referenced Properties created by the StructuredValuePropertiesDeconstructor could differ from the referenced Properties
+      // given in the StructuredValue: For example, when two properties "startDate" and "endDate" both use a StructuredValue
+      // with elements ( :year "-" :month "-" :day ), the StructuredValue will refer to "year", "month" and "day", while
+      // referencedProperties retrieved here will refer to "startDateYear", "startDateMonth", "starteDateDay" or
+      // "endDateYear", "endDateMonth", "endDateDay", respectively; since those are the names of the fields created (to prevent
+      // name clashes). The latter are the names we need to refer to in the "new DefaultStructuredValue" call.
+      final Property originalProperty = context.currentProperty();
+      final StructuredValuePropertiesDeconstructor deconstructor = new StructuredValuePropertiesDeconstructor( context.currentElement() );
+      final List<Property> referencedProperties = deconstructor.getDeconstructionSets()
+            .stream()
+            .collect( Collectors.groupingBy( DeconstructionSet::originalProperty ) )
+            .get( originalProperty )
+            .getFirst()
+            .elementProperties();
+
       return "new DefaultStructuredValue("
             // MetaModelBaseAttributes
             + getMetaModelBaseAttributes( structuredValue, context ) + ","
@@ -346,7 +365,24 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
             + AspectModelJavaUtil.createLiteral( structuredValue.getDeconstructionRule() ) + ","
             // List<Object> elements
             + "new ArrayList<Object>(){{" + structuredValue.getElements().stream().sequential()
-            .map( element -> String.format( "add(%s);", AspectModelJavaUtil.printStructuredValueElement( element ) ) )
+            .map( element -> {
+               if ( element instanceof final Property referencedPropertyFromStructuredValue ) {
+                  // Find the qualified property in the referencedProperties list that corresponds to referencedPropertyFromStructuredValue
+                  final String targetName = deconstructor.createQualifiedPropertyName( originalProperty,
+                        referencedPropertyFromStructuredValue );
+                  final Property referencedProperty = referencedProperties.stream()
+                        .filter( p -> p.urn().equals( referencedPropertyFromStructuredValue.urn() ) )
+                        .findFirst()
+                        .or( () -> referencedProperties.stream()
+                              .filter( p -> p.getName().equals( targetName ) )
+                              .findFirst() )
+                        .orElseThrow();
+                  return AspectModelJavaUtil.toConstant( referencedProperty.getName() );
+               } else {
+                  return AspectModelJavaUtil.createLiteral( element.toString() );
+               }
+            } )
+            .map( s -> "add(" + s + ");" )
             .collect( Collectors.joining() ) + "}})";
    }
 
