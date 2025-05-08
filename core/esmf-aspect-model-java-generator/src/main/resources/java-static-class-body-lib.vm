@@ -16,8 +16,9 @@
 #set( $className = ${util.generateClassName( $element, $codeGenerationConfig )} )
 $codeGenerationConfig.importTracker().importExplicit( "${codeGenerationConfig.packageName()}.${className}" )
 /**
-* Generated class {@link Meta${className}}.
+* Generated class Meta${className} (${elementUrn}).
 */
+@Generated(value = "$codeGeneratorName", date = "$codeGeneratorDate")
 public class Meta${className} implements StaticMetaClass<${className}>, PropertyContainer {
 public static final String NAMESPACE = "${modelUrnPrefix}";
 public static final String MODEL_ELEMENT_URN = NAMESPACE + "${element.getName()}";

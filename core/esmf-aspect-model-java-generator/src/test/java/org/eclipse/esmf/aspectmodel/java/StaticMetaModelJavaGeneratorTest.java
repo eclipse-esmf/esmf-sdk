@@ -45,7 +45,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
-
    /**
     * Tests that code generation succeeds for all test models for the latest meta model version
     *
@@ -518,8 +517,10 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
 
       result.assertMetaModelBaseAttributesForProperties( "MetaAspectWithCollection", expectedBaseAttributes );
 
-      final String expectedExampleValue = "Optional.of(new DefaultScalarValue(MetaModelBaseAttributes.builder().build(), \"Example Value\", new DefaultScalar(\"http://www.w3"
-            + ".org/2001/XMLSchema#string\")))";
+      final String expectedExampleValue =
+            "Optional.of(new DefaultScalarValue(MetaModelBaseAttributes.builder().build(), \"Example Value\", new DefaultScalar"
+                  + "(\"http://www.w3"
+                  + ".org/2001/XMLSchema#string\")))";
 
       result.assertConstructorArgumentForProperties(
             "MetaAspectWithCollection",

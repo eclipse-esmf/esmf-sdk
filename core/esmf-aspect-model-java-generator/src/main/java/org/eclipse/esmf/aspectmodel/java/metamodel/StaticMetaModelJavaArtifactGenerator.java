@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import javax.annotation.processing.Generated;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
@@ -132,6 +133,7 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
       importTracker.importExplicit( Trait.class );
       importTracker.importExplicit( Arrays.class );
       importTracker.importExplicit( Locale.class );
+      importTracker.importExplicit( Generated.class );
 
       final CharMatcher matchHash = CharMatcher.is( '#' );
       final String modelUrnPrefix = element.urn().getUrnPrefix();
@@ -144,10 +146,12 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
             .put( "Charset", Charset.class )
             .put( "Code", Code.class )
             .put( "codeGenerationConfig", config )
+            .put( "codeGeneratorName", AspectModelJavaUtil.codeGeneratorName() )
+            .put( "codeGeneratorDate", AspectModelJavaUtil.CURRENT_DATE_ISO_8601 )
             .put( "Collection", Collection.class )
             .put( "Collections", Collections.class )
             .put( "Constraint", Constraint.class )
-            .put( "context", new StaticCodeGenerationContext( config, modelUrnPrefix, characteristicBaseUrn, null ) )
+            .put( "context", new StaticCodeGenerationContext( config, modelUrnPrefix, characteristicBaseUrn, null, null, null ) )
             .put( "currentYear", Year.now() )
             .put( "DatatypeConfigurationException", DatatypeConfigurationException.class )
             .put( "DatatypeConstants", DatatypeConstants.class )
@@ -184,8 +188,10 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
             .put( "EncodingConstraint", EncodingConstraint.class )
             .put( "Entity", Entity.class )
             .put( "AbstractEntity", AbstractEntity.class )
+            .put( "elementUrn", element.isAnonymous() ? "" : element.urn() )
             .put( "Enumeration", Enumeration.class )
             .put( "FixedPointConstraint", FixedPointConstraint.class )
+            .put( "Generator", Generated.class )
             .put( "HashSet", HashSet.class )
             .put( "LangString", LangString.class )
             .put( "LanguageConstraint", LanguageConstraint.class )

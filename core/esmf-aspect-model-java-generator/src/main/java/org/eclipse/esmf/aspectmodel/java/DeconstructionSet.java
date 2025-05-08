@@ -22,27 +22,8 @@ import org.eclipse.esmf.metamodel.characteristic.StructuredValue;
  * Encapsulates a {@link Property} and, if it uses a {@link StructuredValue} characteristic, the corresponding
  * deconstruction rule and the referenced Properties
  */
-public class DeconstructionSet {
-   private final Property originalProperty;
-   private final String deconstructionRule;
-   private final List<Property> elementProperties;
-
-   public DeconstructionSet( final Property originalProperty, final String deconstructionRule,
-         final List<Property> elementProperties ) {
-      this.originalProperty = originalProperty;
-      this.deconstructionRule = deconstructionRule;
-      this.elementProperties = elementProperties;
-   }
-
-   public Property getOriginalProperty() {
-      return originalProperty;
-   }
-
-   public String getDeconstructionRule() {
-      return deconstructionRule;
-   }
-
-   public List<Property> getElementProperties() {
-      return elementProperties;
-   }
-}
+public record DeconstructionSet(
+      Property originalProperty,
+      String deconstructionRule,
+      List<Property> elementProperties
+) {}

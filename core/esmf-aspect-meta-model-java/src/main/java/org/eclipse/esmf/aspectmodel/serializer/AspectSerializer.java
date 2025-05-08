@@ -107,7 +107,9 @@ public class AspectSerializer {
       }
 
       final String content = aspectModelFileToString( aspectModelFile );
-      try ( final OutputStream out = protocolHandler.apply( aspectModelFile.sourceLocation().get() ) ) {
+      try ( final OutputStream out = protocolHandler.apply( aspectModelFile.sourceLocation().orElseThrow( () ->
+            new SerializationException( "Can not write Aspect Model File: No source location is set"
+                  + aspectModelFile.filename().map( name -> ": " + name ).orElse( "" ) ) ) ) ) {
          out.write( content.getBytes( StandardCharsets.UTF_8 ) );
       } catch ( final IOException exception ) {
          throw new SerializationException( exception );

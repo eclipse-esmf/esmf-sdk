@@ -50,8 +50,8 @@ public class AspectToAasCommand extends AbstractCommand {
 
    @CommandLine.Option(
          names = { "--format", "-f" },
-         description = "The file format the AAS is to be generated in. Valid options are \"${COMPLETION-CANDIDATES}\". Default is "
-               + "\"${DEFAULT-VALUE}\"." )
+         description = "The file format the AAS is to be generated in. Valid options are ${COMPLETION-CANDIDATES}. Default is "
+               + "${DEFAULT-VALUE}." )
    private AasFileFormat format = AasFileFormat.XML;
 
    @CommandLine.Option(

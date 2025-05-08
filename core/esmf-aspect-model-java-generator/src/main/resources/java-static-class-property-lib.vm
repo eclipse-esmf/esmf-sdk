@@ -52,8 +52,9 @@
 #end
 
 #* @vtlvariable name="characteristic" type="org.eclipse.esmf.metamodel.Characteristic" *#
-#macro( propertyCharacteristic $characteristic $propertyTypeName )
-    $characteristic.accept($modelVisitor, $context)
+#* @vtlvariable name="element" type="org.eclipse.esmf.metamodel.StructureElement" *#
+#macro( propertyCharacteristic $element $property $characteristic $propertyTypeName )
+    $characteristic.accept($modelVisitor, $context.withCurrentElement( $element ).withCurrentProperty( $property ) )
 #end
 
 #macro( javaStaticClassProperty $property $codeGenerationConfig $element )
@@ -130,7 +131,7 @@
 
     ## $arg1, $arg2, ... ) {
     $modelVisitor.metaModelBaseAttributes( $property, $context ),
-    #propertyCharacteristic( $property.getCharacteristic().get(), $propertyType ),
+    #propertyCharacteristic( $element, $property, $property.getCharacteristic().get(), $propertyType ),
     $modelVisitor.exampleValue( $property, $context ),
     $property.isOptional(),
     $property.isNotInPayload(),

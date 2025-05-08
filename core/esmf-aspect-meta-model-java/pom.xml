@@ -28,6 +28,11 @@
    <name>ESMF Aspect Meta Model Java</name>
    <packaging>jar</packaging>
 
+   <properties>
+      <!-- Necessary so that properties-maven-plugin writes it into app.properties -->
+      <project-version>${project.version}</project-version>
+   </properties>
+
    <dependencies>
       <dependency>
          <groupId>org.eclipse.esmf</groupId>
@@ -81,10 +86,28 @@
       <plugins>
          <plugin>
             <groupId>org.codehaus.mojo</groupId>
+            <artifactId>properties-maven-plugin</artifactId>
+            <executions>
+               <execution>
+                  <phase>initialize</phase>
+                  <goals>
+                     <goal>write-project-properties</goal>
+                  </goals>
+                  <configuration>
+                     <outputFile>
+                        ${project.build.outputDirectory}/app.properties
+                     </outputFile>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+
+         <plugin>
+            <groupId>org.codehaus.mojo</groupId>
             <artifactId>build-helper-maven-plugin</artifactId>
             <executions>
                <execution>
-                  <id>add-shared-test-source</id>
+                  <id>add-shared-test-sources</id>
                   <phase>initialize</phase>
                   <goals>
                      <goal>add-test-source</goal>
@@ -96,7 +119,7 @@
                   </configuration>
                </execution>
                <execution>
-                  <id>add-source</id>
+                  <id>add-generated-sources</id>
                   <phase>initialize</phase>
                   <goals>
                      <goal>add-source</goal>
@@ -108,7 +131,7 @@
                   </configuration>
                </execution>
                <execution>
-                  <id>add-src-buildtime-source</id>
+                  <id>add-buildtime-sources</id>
                   <phase>initialize</phase>
                   <goals>
                      <goal>add-source</goal>

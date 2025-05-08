@@ -93,7 +93,7 @@ public class ValueInitializer {
 
    public boolean needInitializationToConstructor( final List<DeconstructionSet> deconstructionSets ) {
       return deconstructionSets.stream()
-            .flatMap( deconstructionSet -> deconstructionSet.getElementProperties().stream().map( property -> property.getDataType()
+            .flatMap( deconstructionSet -> deconstructionSet.elementProperties().stream().map( property -> property.getDataType()
                   .map( type -> SammXsdType.getJavaTypeForMetaModelType( ResourceFactory.createResource( type.getUrn() ) ) ) ) )
             .anyMatch( dataType -> dataType.map( type -> type == XMLGregorianCalendar.class ).orElse( false ) );
    }
