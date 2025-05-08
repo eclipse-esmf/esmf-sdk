@@ -28,7 +28,7 @@ public class LoadAspectModelObjects {
       // tag::loadModel[]
       final AspectModel aspectModel = new AspectModelLoader().load(
             // a File, InputStream or AspectModelUrn
-            // end::generate[]
+            // end::loadModel[]
             new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" )
             // tag::loadModel[]
       );

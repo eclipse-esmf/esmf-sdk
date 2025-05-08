@@ -15,9 +15,11 @@ package org.eclipse.esmf.aspectmodel.java.pojo;
 
 import java.time.Year;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import javax.annotation.processing.Generated;
 
 import org.eclipse.esmf.aspectmodel.generator.ArtifactGenerator;
 import org.eclipse.esmf.aspectmodel.generator.TemplateEngine;
@@ -50,19 +52,25 @@ public class EnumerationJavaArtifactGenerator<E extends Enumeration> implements 
    public JavaArtifact apply( final E element, final JavaCodeGenerationConfig config ) {
       final ImportTracker importTracker = config.importTracker();
       importTracker.importExplicit( EnumAttributeNotFoundException.class );
+      importTracker.importExplicit( Generated.class );
 
       final Map<String, Object> context = ImmutableMap.<String, Object> builder()
             .put( "Arrays", Arrays.class )
             .put( "className", element.getName() )
             .put( "codeGenerationConfig", config )
+            .put( "codeGeneratorName", AspectModelJavaUtil.codeGeneratorName() )
+            .put( "codeGeneratorDate", AspectModelJavaUtil.CURRENT_DATE_ISO_8601 )
             .put( "currentYear", Year.now() )
             .put( "dataType", AspectModelJavaUtil.getDataType( element.getDataType(), config.importTracker(), config ) )
+            .put( "elementUrn", element.isAnonymous() ? "" : element.urn() )
             .put( "Entity", Entity.class )
             .put( "enumeration", element )
+            .put( "Generated", Generated.class )
             .put( "importTracker", importTracker )
             .put( "JsonValue", JsonValue.class )
             .put( "JsonCreator", JsonCreator.class )
             .put( "JsonFormat", JsonFormat.class )
+            .put( "localeEn", Locale.ENGLISH )
             .put( "Optional", Optional.class )
             .put( "Scalar", Scalar.class )
             .put( "State", State.class )

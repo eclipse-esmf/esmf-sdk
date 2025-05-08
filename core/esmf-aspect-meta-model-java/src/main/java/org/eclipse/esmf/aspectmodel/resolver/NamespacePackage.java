@@ -35,9 +35,15 @@ import java.util.zip.ZipOutputStream;
 
 import org.eclipse.esmf.aspectmodel.AspectLoadingException;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.edit.Change;
+import org.eclipse.esmf.aspectmodel.edit.ChangeGroup;
+import org.eclipse.esmf.aspectmodel.edit.ModelChangeException;
+import org.eclipse.esmf.aspectmodel.edit.change.AddAspectModelFile;
 import org.eclipse.esmf.aspectmodel.generator.Artifact;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
+import org.eclipse.esmf.aspectmodel.resolver.fs.ModelsRoot;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFile;
+import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFileBuilder;
 import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
 import org.eclipse.esmf.aspectmodel.serializer.SerializationException;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
@@ -46,7 +52,6 @@ import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.Namespace;
 
 import com.google.common.collect.ImmutableList;
-import lombok.Getter;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +68,6 @@ public class NamespacePackage implements ResolutionStrategy, Artifact<URI, byte[
    private static final String ASPECT_MODELS_FOLDER = "aspect-models";
 
    // Fields that are always set
-   @Getter
    private final String modelsRoot;
    private final List<AspectModelFile> files;
 
@@ -176,7 +180,7 @@ public class NamespacePackage implements ResolutionStrategy, Artifact<URI, byte[
             if ( entry.getName().startsWith( modelsRoot ) && entry.getName().endsWith( ".ttl" ) ) {
                final RawAspectModelFile rawFile = AspectModelFileLoader.load( inputStream,
                      Optional.of( constructLocationForFile( entry.getName() ) ) );
-               builder.add( migrate( rawFile ) );
+               builder.add( rawFile );
             }
          }
       } catch ( final IOException exception ) {
@@ -184,10 +188,6 @@ public class NamespacePackage implements ResolutionStrategy, Artifact<URI, byte[
          throw new ModelResolutionException( "Error reading the archive input stream", exception );
       }
       return builder.build();
-   }
-
-   private AspectModelFile migrate( final AspectModelFile file ) {
-      return MetaModelVersionMigrator.INSTANCE.apply( file );
    }
 
    @Override
@@ -219,9 +219,19 @@ public class NamespacePackage implements ResolutionStrategy, Artifact<URI, byte[
             uri.toString().contains( pathToFilter ) );
    }
 
+   /**
+    * Similar to {@link #loadContents()} except files are not automatically migrated to the latest SAMM version.
+    *
+    * @return The stream of files
+    */
+   public Stream<AspectModelFile> loadLiteralFiles() {
+      return files.stream();
+   }
+
    @Override
    public Stream<AspectModelFile> loadContents() {
-      return files.stream();
+      return files.stream()
+            .map( MetaModelVersionMigrator.INSTANCE );
    }
 
    @Override
@@ -314,8 +324,35 @@ public class NamespacePackage implements ResolutionStrategy, Artifact<URI, byte[
     *
     * @return the location if set, or null
     */
-   @SuppressWarnings( { "LombokGetterMayBeUsed", "RedundantSuppression" } )
    public URI getLocation() {
       return location;
+   }
+
+   public String getModelsRoot() {
+      return modelsRoot;
+   }
+
+   /**
+    * Turn the files from this namespace package to a series of "add file" changes relative to a models root
+    *
+    * @param modelsRoot the target models root
+    * @return the changes
+    */
+   public ChangeGroup prepareWriteToModelsRoot( final ModelsRoot modelsRoot ) {
+      return new ChangeGroup( loadContents()
+            .map( file -> {
+               // Set the destination inside the target models root for each Aspect Model File
+               final URI targetLocation = modelsRoot.directoryForNamespace( file.namespaceUrn() )
+                     .resolve( file.filename().orElseThrow( () ->
+                           new ModelChangeException( "Encountered an unnamed Aspect Model File in Aspect Model that should be written" ) ) )
+                     .toUri();
+               return RawAspectModelFileBuilder.builder()
+                     .sourceModel( file.sourceModel() )
+                     .sourceLocation( Optional.of( targetLocation ) )
+                     .headerComment( file.headerComment() )
+                     .build();
+            } )
+            .<Change> map( AddAspectModelFile::new )
+            .toList() );
    }
 }

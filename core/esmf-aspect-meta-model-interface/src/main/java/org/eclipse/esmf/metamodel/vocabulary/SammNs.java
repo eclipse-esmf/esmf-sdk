@@ -13,6 +13,8 @@
 
 package org.eclipse.esmf.metamodel.vocabulary;
 
+import java.util.stream.Stream;
+
 import org.eclipse.esmf.samm.KnownVersion;
 
 /**
@@ -23,4 +25,13 @@ public class SammNs {
    public static final SAMMC SAMMC = new SAMMC( KnownVersion.getLatest() );
    public static final SAMME SAMME = new SAMME( KnownVersion.getLatest(), SAMM );
    public static final UNIT UNIT = new UNIT( KnownVersion.getLatest(), SAMM );
+
+   /**
+    * All SAMM-specific metamodel RDF namespaces
+    *
+    * @return the namespaces
+    */
+   public static Stream<RdfNamespace> sammNamespaces() {
+      return Stream.of( SAMM, SAMMC, SAMME, UNIT );
+   }
 }

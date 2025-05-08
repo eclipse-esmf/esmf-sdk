@@ -192,17 +192,6 @@
             </executions>
          </plugin>
 
-         <!-- Disable maven site plugin. It is not required since the report is created in the
-              esmf-sdk-test-report module -->
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-site-plugin</artifactId>
-            <version>${maven-site-plugin-version}</version>
-            <configuration>
-               <skip>true</skip>
-            </configuration>
-         </plugin>
-
          <!-- Build fat jar -->
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>

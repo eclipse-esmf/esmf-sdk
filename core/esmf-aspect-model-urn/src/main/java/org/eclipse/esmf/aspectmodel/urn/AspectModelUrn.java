@@ -15,7 +15,7 @@ package org.eclipse.esmf.aspectmodel.urn;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -119,18 +119,7 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
    public static AspectModelUrn fromUrn( final URI urn ) {
       checkNotEmpty( urn );
 
-      final List<String> urnParts;
-      if ( urn.toString().contains( "#" ) ) {
-         urnParts = ImmutableList.copyOf( urn.toString().split( "[:|#]" ) );
-      } else {
-         final String[] parts = urn.toString().split( ":" );
-         final ImmutableList.Builder<String> builder = ImmutableList.builder();
-         for ( final String part : parts ) {
-            builder.add( part );
-         }
-         builder.add( "" );
-         urnParts = builder.build();
-      }
+      final List<String> urnParts = getStrings( urn );
 
       final int numberOfUrnParts = urnParts.size();
       checkUrn( numberOfUrnParts >= 5, UrnSyntaxException.URN_IS_MISSING_SECTIONS_MESSAGE );
@@ -155,6 +144,29 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
       final String version = getVersion( isSammUrn, urnParts, elementType );
       final String elementName = getName( isSammUrn, urnParts, elementType );
       return new AspectModelUrn( urn, elementName, namespace, elementType, version, isSammUrn );
+   }
+
+   private static List<String> getStrings( final URI urn ) {
+      final List<String> urnParts;
+      if ( urn.toString().contains( "#" ) ) {
+         final String urnStr = urn.toString();
+         final String[] baseAndFragment = urnStr.split( "#", 2 ); // [0]=before #, [1]=after #
+         final String[] parts = baseAndFragment[0].split( ":", -1 ); // base parts of URN
+
+         urnParts = new ArrayList<>( Arrays.asList( parts ) );
+         if ( baseAndFragment.length == 2 ) {
+            urnParts.add( baseAndFragment[1] );
+         }
+      } else {
+         final String[] parts = urn.toString().split( ":" );
+         final ImmutableList.Builder<String> builder = ImmutableList.builder();
+         for ( final String part : parts ) {
+            builder.add( part );
+         }
+         builder.add( "" );
+         urnParts = builder.build();
+      }
+      return urnParts;
    }
 
    /**
@@ -183,6 +195,56 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
       } catch ( final UrnSyntaxException exception ) {
          return Try.failure( exception );
       }
+   }
+
+   /**
+    * Construct an AspectModelUrn from a namespace main part and a version number
+    *
+    * @param namespaceMainPart the namespace main part (e.g., "com.example")
+    * @param versionNumber the version number (e.g., "1.2.3")
+    * @return the Aspect Model URN or a {@link UrnSyntaxException}
+    */
+   public static Try<AspectModelUrn> from( final String namespaceMainPart, final String versionNumber ) {
+      return from( "%s:%s:%s%s".formatted( VALID_PROTOCOL, VALID_NAMESPACE_IDENTIFIER, namespaceMainPart, versionNumber ) );
+   }
+
+   /**
+    * Construct an AspectModelUrn from a namespace main part, a version number and a model element name
+    *
+    * @param namespaceMainPart the namespace main part (e.g., "com.example")
+    * @param versionNumber the version number (e.g., "1.2.3")
+    * @param modelElementName the model element name (e.g., "MyAspect")
+    * @return the Aspect Model URN or a {@link UrnSyntaxException}
+    */
+   public static Try<AspectModelUrn> from( final String namespaceMainPart, final String versionNumber, final String modelElementName ) {
+      return from(
+            "%s:%s:%s%s#%s".formatted( VALID_PROTOCOL, VALID_NAMESPACE_IDENTIFIER, namespaceMainPart, versionNumber, modelElementName ) );
+   }
+
+   /**
+    * Construct an AspectModelUrn from a namespace main part and a version number
+    *
+    * @param namespaceMainPart the namespace main part (e.g., "com.example")
+    * @param versionNumber the version number (e.g., "1.2.3")
+    * @return the Aspect Model URN
+    * @throws UrnSyntaxException if {@code urn} is not valid
+    */
+   public static AspectModelUrn fromParts( final String namespaceMainPart, final String versionNumber ) {
+      return fromUrn( "%s:%s:%s%s".formatted( VALID_PROTOCOL, VALID_NAMESPACE_IDENTIFIER, namespaceMainPart, versionNumber ) );
+   }
+
+   /**
+    * Construct an AspectModelUrn from a namespace main part, a version number and a model element name
+    *
+    * @param namespaceMainPart the namespace main part (e.g., "com.example")
+    * @param versionNumber the version number (e.g., "1.2.3")
+    * @param modelElementName the model element name (e.g., "MyAspect")
+    * @return the Aspect Model URN
+    * @throws UrnSyntaxException if {@code urn} is not valid
+    */
+   public static AspectModelUrn fromParts( final String namespaceMainPart, final String versionNumber, final String modelElementName ) {
+      return fromUrn(
+            "%s:%s:%s:%s#%s".formatted( VALID_PROTOCOL, VALID_NAMESPACE_IDENTIFIER, namespaceMainPart, versionNumber, modelElementName ) );
    }
 
    /**
@@ -400,12 +462,18 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
     * @param errorMessage the exception message to use if the check is successful
     * @throws UrnSyntaxException if {@code expression} is false
     */
-   private static void checkUrn( final boolean expression, final String errorMessage,
-         final Object... errorMessageArguments ) {
-      final String formattedErrorMessage = MessageFormat.format( errorMessage, errorMessageArguments );
+   private static void checkUrn( final boolean expression, final String errorMessage, final Object... errorMessageArguments ) {
       if ( !expression ) {
-         throw new UrnSyntaxException( formattedErrorMessage );
+         String msg = formatSimple( errorMessage, errorMessageArguments );
+         throw new UrnSyntaxException( msg );
       }
+   }
+
+   private static String formatSimple( String pattern, final Object... args ) {
+      for ( int i = 0; i < args.length; i++ ) {
+         pattern = pattern.replace( "{" + i + "}", String.valueOf( args[i] ) );
+      }
+      return pattern;
    }
 
    @Override

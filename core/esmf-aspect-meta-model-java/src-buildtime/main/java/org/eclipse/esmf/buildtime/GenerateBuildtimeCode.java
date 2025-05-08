@@ -31,7 +31,8 @@ public class GenerateBuildtimeCode {
 
       Stream.of(
             new GenerateUnits( srcBuildtimePath, srcGenPath ),
-            new GenerateQuantityKinds( srcBuildtimePath, srcGenPath )
+            new GenerateQuantityKinds( srcBuildtimePath, srcGenPath ),
+            new GenerateVersionInfo( srcBuildtimePath, srcGenPath )
       ).forEach( BuildtimeCodeGenerator::writeGeneratedFile );
    }
 }

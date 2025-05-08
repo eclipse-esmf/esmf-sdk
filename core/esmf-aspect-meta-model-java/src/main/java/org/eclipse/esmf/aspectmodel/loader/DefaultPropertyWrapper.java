@@ -21,15 +21,16 @@ import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.impl.DefaultProperty;
 
 public class DefaultPropertyWrapper extends DefaultProperty {
-   private DefaultProperty property;
+   private Property property;
+   private String payloadName;
 
-   public DefaultPropertyWrapper( MetaModelBaseAttributes metaModelBaseAttributes ) {
+   public DefaultPropertyWrapper( final MetaModelBaseAttributes metaModelBaseAttributes ) {
       super( metaModelBaseAttributes, null, null, false, false, null, false, null );
    }
 
    @Override
    public String getPayloadName() {
-      return property.getPayloadName();
+      return payloadName != null ? payloadName : property.getPayloadName();
    }
 
    @Override
@@ -75,7 +76,11 @@ public class DefaultPropertyWrapper extends DefaultProperty {
       return property.hashCode();
    }
 
-   public void setProperty( DefaultProperty property ) {
+   public void setProperty( final Property property ) {
       this.property = property;
+   }
+
+   public void setPayloadName( String payloadName ) {
+      this.payloadName = payloadName;
    }
 }

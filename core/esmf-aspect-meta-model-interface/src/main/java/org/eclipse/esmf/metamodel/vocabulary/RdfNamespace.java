@@ -56,7 +56,8 @@ public interface RdfNamespace {
       result.put( samm.getShortForm(), samm.getNamespace() );
       final SAMMC sammc = new SAMMC( metaModelVersion );
       result.put( sammc.getShortForm(), sammc.getNamespace() );
-      result.put( "samm-e", new SAMME( metaModelVersion, samm ).getNamespace() );
+      final SAMME samme = new SAMME( metaModelVersion, samm );
+      result.put( samme.getShortForm(), samme.getNamespace() );
       final UNIT unit = new UNIT( metaModelVersion, samm );
       result.put( unit.getShortForm(), unit.getNamespace() );
       result.put( "rdf", RDF.getURI() );

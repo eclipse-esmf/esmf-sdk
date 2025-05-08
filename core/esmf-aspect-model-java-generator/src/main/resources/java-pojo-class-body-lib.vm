@@ -18,9 +18,10 @@
 
 #macro( javaPojoClassBody )
 /**
-* Generated class for $element.getPreferredName( $localeEn ).
+* Generated class for $element.getPreferredName( $localeEn ) (${elementUrn}).
 *#if ( $element.getDescription( $localeEn ) ) $element.getDescription( $localeEn )#end
 */
+@Generated(value = "$codeGeneratorName", date = "$codeGeneratorDate")
 #if ( $element.isCollectionAspect() )
 ${util.determineCollectionAspectClassDefinition( $element, $codeGenerationConfig )} {
 #elseif ( $element.isComplexType() )

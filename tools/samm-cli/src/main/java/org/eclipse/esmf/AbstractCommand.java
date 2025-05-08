@@ -25,7 +25,6 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.eclipse.esmf.aspectmodel.edit.AspectChangeManager;
-import org.eclipse.esmf.aspectmodel.edit.AspectChangeManagerConfig;
 import org.eclipse.esmf.aspectmodel.edit.Change;
 import org.eclipse.esmf.aspectmodel.edit.ChangeReport;
 import org.eclipse.esmf.aspectmodel.edit.ChangeReportFormatter;
@@ -38,7 +37,6 @@ import org.eclipse.esmf.aspectmodel.generator.diagram.DiagramGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.diagram.DiagramGenerationConfigBuilder;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.AspectModel;
 
 @SuppressWarnings( "UseOfSystemOutOrSystemErr" )
 public abstract class AbstractCommand implements Runnable {
@@ -143,14 +141,13 @@ public abstract class AbstractCommand implements Runnable {
       return new File( filePath ).getParent();
    }
 
-   protected void performRefactoring( final AspectModel aspectModel, final Change change,
-         final AspectChangeManagerConfig config, final boolean dryRun, final boolean forceOverwrite ) {
-      final AspectChangeManager changeContext = new AspectChangeManager( config, aspectModel );
+   protected void performRefactoring( final AspectChangeManager changeContext, final Change change,
+         final boolean dryRun, final boolean forceOverwrite ) {
       final ChangeReport changeReport = changeContext.applyChange( change );
       if ( dryRun ) {
          System.out.println( "Changes to be performed" );
          System.out.println( "=======================" );
-         System.out.println( ChangeReportFormatter.INSTANCE.apply( changeReport, config ) );
+         System.out.println( ChangeReportFormatter.INSTANCE.apply( changeReport, changeContext.config() ) );
          return;
       }
 

@@ -37,6 +37,7 @@ import org.apache.jena.rdf.model.ModelFactory;
 @SuppressWarnings( "OptionalUsedAsFieldOrParameterType" )
 @RecordBuilder
 public record RawAspectModelFile(
+      String sourceRepresentation,
       Model sourceModel,
       List<String> headerComment,
       Optional<URI> sourceLocation )

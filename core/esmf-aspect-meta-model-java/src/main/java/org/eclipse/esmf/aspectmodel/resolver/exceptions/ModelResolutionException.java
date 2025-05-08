@@ -18,9 +18,6 @@ import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
-import lombok.Getter;
-
-@Getter
 public class ModelResolutionException extends RuntimeException {
    public record LoadingFailure(
          AspectModelUrn element,
@@ -55,5 +52,9 @@ public class ModelResolutionException extends RuntimeException {
    public ModelResolutionException( final String message, final Throwable cause ) {
       super( message, cause );
       checkedLocations = List.of();
+   }
+
+   public List<LoadingFailure> getCheckedLocations() {
+      return checkedLocations;
    }
 }

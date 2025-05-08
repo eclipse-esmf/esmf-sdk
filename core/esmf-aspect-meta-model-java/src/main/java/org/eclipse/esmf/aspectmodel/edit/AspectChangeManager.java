@@ -39,7 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The AspectChangeManager is the central place to to changes/edits/refactorings of an {@link AspectModel}. The AspectChangeManager
+ * The AspectChangeManager is the central place to perform changes/edits/refactorings of an {@link AspectModel}. The AspectChangeManager
  * wraps an AspectModel and allows applying instances of the {@link Change} class using the {@link #applyChange(Change)} method.
  * Calling this method returns a {@link ChangeReport} that describes the performed changes in a structured way. Use the
  * {@link ChangeReportFormatter} to render the ChangeReport to a structured string representation.
@@ -67,6 +67,12 @@ public class AspectChangeManager implements ChangeContext {
       CREATED, CHANGED, REMOVED
    }
 
+   /**
+    * Apply the change manager using an explicit configuration and the target Aspect Model to perform changes on
+    *
+    * @param config the configuration
+    * @param aspectModel the target Aspect Model
+    */
    public AspectChangeManager( final AspectChangeManagerConfig config, final AspectModel aspectModel ) {
       this.config = config;
       resetFileStates();
@@ -77,8 +83,29 @@ public class AspectChangeManager implements ChangeContext {
       }
    }
 
+   /**
+    * Apply the change manager to a given target Aspect Model, using the default configuration
+    *
+    * @param aspectModel the target Aspect Model
+    */
    public AspectChangeManager( final AspectModel aspectModel ) {
       this( AspectChangeManagerConfigBuilder.builder().build(), aspectModel );
+   }
+
+   /**
+    * Apply the change manager to a new, empty Aspect Model using the given configuration
+    *
+    * @param config the configuration
+    */
+   public AspectChangeManager( final AspectChangeManagerConfig config ) {
+      this( config, new AspectModelLoader().emptyModel() );
+   }
+
+   /**
+    * Apply the change manager to a new, empty Aspect Model using the default configuration
+    */
+   public AspectChangeManager() {
+      this( AspectChangeManagerConfigBuilder.builder().build() );
    }
 
    public synchronized ChangeReport applyChange( final Change change ) {

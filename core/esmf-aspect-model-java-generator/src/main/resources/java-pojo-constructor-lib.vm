@@ -38,10 +38,10 @@
     #end
     #foreach( $deconstructionSet in $deconstructionSets )
     {
-        final Pattern pattern = Pattern.compile( "${deconstructionSet.getDeconstructionRule().replaceAll("\\", "\\\\")}" );
-        final Matcher matcher = pattern.matcher( ${deconstructionSet.getOriginalProperty().getName()}.toString() );
+        final java.util.regex.Pattern pattern = java.util.regex.Pattern.compile( "${deconstructionSet.deconstructionRule().replaceAll("\\", "\\\\")}" );
+        final Matcher matcher = pattern.matcher( ${deconstructionSet.originalProperty().getName()}.toString() );
         if ( matcher.find() ) {
-        #foreach( $property in $deconstructionSet.getElementProperties() )
+        #foreach( $property in $deconstructionSet.elementProperties() )
             #set( $value = "matcher.group( ${foreach.count} )" )
             this.${property.name} = $util.generateInitializer( $property, $value, $codeGenerationConfig, $valueInitializer );
         #end
@@ -54,7 +54,6 @@
 #macro( javaPojoConstructor )
 #if ( $deconstructor.isApplicable() )
     $codeGenerationConfig.importTracker().importExplicit( $Matcher )
-    $codeGenerationConfig.importTracker().importExplicit( $Pattern )
 #end
 #set( $deconstructionSets = $deconstructor.getDeconstructionSets() )
 #set( $needInitializer = $valueInitializer.needInitializationToConstructor( $deconstructionSets ) )

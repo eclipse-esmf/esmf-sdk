@@ -15,12 +15,29 @@ package org.eclipse.esmf.aspectmodel.java.metamodel;
 
 import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfig;
 import org.eclipse.esmf.metamodel.Characteristic;
+import org.eclipse.esmf.metamodel.Property;
+import org.eclipse.esmf.metamodel.StructureElement;
 
-@lombok.Value
-@lombok.With
-public class StaticCodeGenerationContext {
-   JavaCodeGenerationConfig codeGenerationConfig;
-   String modelUrnPrefix;
-   String characteristicBaseUrn;
-   Characteristic currentCharacteristic;
+public record StaticCodeGenerationContext(
+      JavaCodeGenerationConfig codeGenerationConfig,
+      String modelUrnPrefix,
+      String characteristicBaseUrn,
+      Characteristic currentCharacteristic,
+      StructureElement currentElement,
+      Property currentProperty
+) {
+   public StaticCodeGenerationContext withCurrentCharacteristic( final Characteristic characteristic ) {
+      return new StaticCodeGenerationContext( codeGenerationConfig(), modelUrnPrefix(), characteristicBaseUrn(), characteristic,
+            currentElement(), currentProperty() );
+   }
+
+   public StaticCodeGenerationContext withCurrentElement( final StructureElement element ) {
+      return new StaticCodeGenerationContext( codeGenerationConfig(), modelUrnPrefix(), characteristicBaseUrn(), currentCharacteristic(),
+            element, currentProperty() );
+   }
+
+   public StaticCodeGenerationContext withCurrentProperty( final Property property ) {
+      return new StaticCodeGenerationContext( codeGenerationConfig(), modelUrnPrefix(), characteristicBaseUrn(), currentCharacteristic(),
+            currentElement(), property );
+   }
 }

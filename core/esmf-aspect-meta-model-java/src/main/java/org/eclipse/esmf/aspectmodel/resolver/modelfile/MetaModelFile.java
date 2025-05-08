@@ -35,7 +35,6 @@ import org.eclipse.esmf.samm.KnownVersion;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Streams;
 import io.vavr.Tuple2;
-import lombok.Getter;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
@@ -71,9 +70,7 @@ public enum MetaModelFile implements AspectModelFile {
       SHAPE_DEFINITION
    }
 
-   @Getter
    private final RdfNamespace rdfNamespace;
-   @Getter
    private final MetaModelFileType metaModelFileType;
    private final Model sourceModel;
    private final String filename;
@@ -225,5 +222,13 @@ public enum MetaModelFile implements AspectModelFile {
       } catch ( final IOException e ) {
          throw new AspectLoadingException( "Could not resolve meta model file: " + filename );
       }
+   }
+
+   public RdfNamespace getRdfNamespace() {
+      return rdfNamespace;
+   }
+
+   public MetaModelFileType getMetaModelFileType() {
+      return metaModelFileType;
    }
 }

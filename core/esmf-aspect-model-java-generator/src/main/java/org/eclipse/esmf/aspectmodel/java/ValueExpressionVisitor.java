@@ -46,11 +46,10 @@ import org.apache.jena.vocabulary.RDF;
 public class ValueExpressionVisitor implements AspectVisitor<String, ValueExpressionVisitor.Context> {
    private final ValueInitializer valueInitializer = new ValueInitializer();
 
-   @lombok.Value
-   public static class Context {
-      JavaCodeGenerationConfig codeGenerationConfig;
-      boolean isOptional;
-   }
+   public record Context(
+         JavaCodeGenerationConfig codeGenerationConfig,
+         boolean isOptional
+   ) {}
 
    @Override
    public String visitBase( final ModelElement modelElement, final Context context ) {
@@ -69,8 +68,8 @@ public class ValueExpressionVisitor implements AspectVisitor<String, ValueExpres
    private String generateValueExpression( final ScalarValue value, final Context context ) {
       final String typeUri = value.getType().as( Scalar.class ).getUrn();
       if ( typeUri.equals( RDF.langString.getURI() ) ) {
-         context.getCodeGenerationConfig().importTracker().importExplicit( LangString.class );
-         context.getCodeGenerationConfig().importTracker().importExplicit( Locale.class );
+         context.codeGenerationConfig().importTracker().importExplicit( LangString.class );
+         context.codeGenerationConfig().importTracker().importExplicit( Locale.class );
          final LangString langStringValue = (LangString) value.as( ScalarValue.class ).getValue();
          return String.format( "new LangString(\"%s\", Locale.forLanguageTag(\"%s\"))",
                AspectModelJavaUtil.escapeForLiteral( langStringValue.getValue() ),
@@ -79,14 +78,14 @@ public class ValueExpressionVisitor implements AspectVisitor<String, ValueExpres
 
       final Resource typeResource = ResourceFactory.createResource( typeUri );
       final Class<?> javaType = SammXsdType.getJavaTypeForMetaModelType( typeResource );
-      context.getCodeGenerationConfig().importTracker().importExplicit( javaType );
+      context.codeGenerationConfig().importTracker().importExplicit( javaType );
       return valueInitializer.apply( typeResource, javaType, AspectModelJavaUtil.createLiteral( value.getValue().toString() ) );
    }
 
    @Override
    public String visitCollectionValue( final CollectionValue collection, final Context context ) {
       final Class<?> collectionClass = collection.getValues().getClass();
-      context.getCodeGenerationConfig().importTracker().importExplicit( collectionClass );
+      context.codeGenerationConfig().importTracker().importExplicit( collectionClass );
       final StringBuilder result = new StringBuilder();
       result.append( "new " );
       result.append( collectionClass.getSimpleName() );

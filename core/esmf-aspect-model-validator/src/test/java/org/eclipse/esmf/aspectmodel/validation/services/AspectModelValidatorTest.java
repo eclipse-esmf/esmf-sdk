@@ -149,7 +149,7 @@ class AspectModelValidatorTest {
       final List<Violation> violations = service.validateModel( invalidTurtleSyntax );
       assertThat( violations ).hasSize( 1 );
       final ProcessingViolation violation = (ProcessingViolation) violations.get( 0 );
-      assertThat( violation.message() ).contains( "can not be updated to version" );
+      assertThat( violation.message() ).contains( "is not supported" );
    }
 
    @Test

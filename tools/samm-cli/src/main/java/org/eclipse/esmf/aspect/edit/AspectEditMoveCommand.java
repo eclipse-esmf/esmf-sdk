@@ -27,6 +27,7 @@ import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.ResolverConfigurationMixin;
 import org.eclipse.esmf.aspect.AspectEditCommand;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.edit.AspectChangeManager;
 import org.eclipse.esmf.aspectmodel.edit.AspectChangeManagerConfig;
 import org.eclipse.esmf.aspectmodel.edit.AspectChangeManagerConfigBuilder;
 import org.eclipse.esmf.aspectmodel.edit.Change;
@@ -170,7 +171,8 @@ public class AspectEditMoveCommand extends AbstractCommand {
       final AspectChangeManagerConfig config = AspectChangeManagerConfigBuilder.builder()
             .detailedChangeReport( details )
             .build();
-      performRefactoring( aspectModel, move, config, dryRun, force );
+      final AspectChangeManager changeContext = new AspectChangeManager( config, aspectModel );
+      performRefactoring( changeContext, move, dryRun, force );
    }
 
    /**
@@ -196,7 +198,8 @@ public class AspectEditMoveCommand extends AbstractCommand {
       final AspectChangeManagerConfig config = AspectChangeManagerConfigBuilder.builder()
             .detailedChangeReport( details )
             .build();
-      performRefactoring( aspectModel, move, config, dryRun, force );
+      final AspectChangeManager changeContext = new AspectChangeManager( config, aspectModel );
+      performRefactoring( changeContext, move, dryRun, force );
    }
 
    /**
@@ -219,7 +222,8 @@ public class AspectEditMoveCommand extends AbstractCommand {
       final AspectChangeManagerConfig config = AspectChangeManagerConfigBuilder.builder()
             .detailedChangeReport( details )
             .build();
-      performRefactoring( aspectModel, move, config, dryRun, force );
+      final AspectChangeManager changeContext = new AspectChangeManager( config, aspectModel );
+      performRefactoring( changeContext, move, dryRun, force );
    }
 
    /**
@@ -243,7 +247,8 @@ public class AspectEditMoveCommand extends AbstractCommand {
       final AspectChangeManagerConfig config = AspectChangeManagerConfigBuilder.builder()
             .detailedChangeReport( details )
             .build();
-      performRefactoring( aspectModel, move, config, dryRun, force );
+      final AspectChangeManager changeContext = new AspectChangeManager( config, aspectModel );
+      performRefactoring( changeContext, move, dryRun, force );
    }
 
    private AspectModelFile determineTargetAspectModelFile( final AspectModel aspectModel, final Namespace targetNamespace ) {

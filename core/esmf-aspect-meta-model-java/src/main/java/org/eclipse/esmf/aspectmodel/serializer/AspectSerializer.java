@@ -32,6 +32,7 @@ import java.util.function.Function;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFileBuilder;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectModel;
@@ -106,7 +107,9 @@ public class AspectSerializer {
       }
 
       final String content = aspectModelFileToString( aspectModelFile );
-      try ( final OutputStream out = protocolHandler.apply( aspectModelFile.sourceLocation().get() ) ) {
+      try ( final OutputStream out = protocolHandler.apply( aspectModelFile.sourceLocation().orElseThrow( () ->
+            new SerializationException( "Can not write Aspect Model File: No source location is set"
+                  + aspectModelFile.filename().map( name -> ": " + name ).orElse( "" ) ) ) ) ) {
          out.write( content.getBytes( StandardCharsets.UTF_8 ) );
       } catch ( final IOException exception ) {
          throw new SerializationException( exception );
@@ -147,6 +150,9 @@ public class AspectSerializer {
     * @return the String representation in RDF/Turtle
     */
    public String aspectModelFileToString( final AspectModelFile aspectModelFile ) {
+      if ( aspectModelFile instanceof final RawAspectModelFile rawAspectModelFile ) {
+         return rawAspectModelFile.sourceRepresentation();
+      }
       final StringWriter stringWriter = new StringWriter();
       try ( final PrintWriter printWriter = new PrintWriter( stringWriter ) ) {
          final PrettyPrinter prettyPrinter = new PrettyPrinter( aspectModelFile, printWriter );
