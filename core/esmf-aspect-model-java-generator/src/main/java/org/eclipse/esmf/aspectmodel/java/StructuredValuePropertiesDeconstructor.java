@@ -17,12 +17,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.esmf.aspectmodel.visitor.AspectStreamTraversalVisitor;
-import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
+import org.eclipse.esmf.aspectmodel.loader.DefaultPropertyWrapper;
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.HasProperties;
-import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.characteristic.StructuredValue;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * When a {@link Property} uses the {@link StructuredValue} Characteristic, this class retrieves the
@@ -51,18 +52,58 @@ public class StructuredValuePropertiesDeconstructor {
     * @return the list of {@link DeconstructionSet}s
     */
    private List<DeconstructionSet> deconstructProperties( final HasProperties element ) {
-      final AspectVisitor<Stream<ModelElement>, Void> visitor = new AspectStreamTraversalVisitor();
-      return element.getProperties().stream().flatMap( property ->
-                  visitor.visitProperty( property, null )
-                        .filter( StructuredValue.class::isInstance )
-                        .map( StructuredValue.class::cast )
-                        .map( structuredValue -> new DeconstructionSet( property,
-                              structuredValue.getDeconstructionRule(),
-                              structuredValue.getElements().stream()
-                                    .filter( Property.class::isInstance )
-                                    .map( Property.class::cast )
-                                    .collect( Collectors.toList() ) ) ) )
-            .collect( Collectors.toList() );
+      record Association( Property originalProperty, String deconstructionRule, Property referredProperty ) {}
+
+      final List<Association> associations = element.getProperties().stream()
+            .flatMap( property -> {
+               if ( property.getEffectiveCharacteristic().isPresent() && property.getEffectiveCharacteristic()
+                     .get() instanceof final StructuredValue structuredValue ) {
+                  return structuredValue.getElements().stream()
+                        .filter( Property.class::isInstance )
+                        .map( Property.class::cast )
+                        .map( structuredValueProperty ->
+                              new Association( property, structuredValue.getDeconstructionRule(), structuredValueProperty ) );
+               }
+               return Stream.empty();
+            } )
+            .toList();
+
+      final List<DeconstructionSet> result;
+      if ( associations.stream()
+            .anyMatch( association -> associations.stream()
+                  .filter( a -> a.referredProperty().equals( association.referredProperty() ) )
+                  .count() > 1 ) ) {
+         // At least one property is referred to multiple times, so the field names are prefixed with the referring property
+         return associations.stream()
+               .collect( Collectors.groupingBy( association -> association.originalProperty ) )
+               .entrySet()
+               .stream()
+               .map( entry -> new DeconstructionSet( entry.getKey(), entry.getValue().getFirst().deconstructionRule(),
+                     entry.getValue().stream().map( association -> {
+                        final Property originalProperty = association.referredProperty();
+                        final String newPropertyName = createQualifiedPropertyName( association.originalProperty(),
+                              association.referredProperty() );
+                        final DefaultPropertyWrapper defaultPropertyWrapper = new DefaultPropertyWrapper( MetaModelBaseAttributes.builder()
+                              .fromModelElement( originalProperty )
+                              .withUrn( originalProperty.urn().withName( newPropertyName ) )
+                              .build() );
+                        defaultPropertyWrapper.setProperty( originalProperty );
+                        defaultPropertyWrapper.setPayloadName( newPropertyName );
+                        return (Property) defaultPropertyWrapper;
+                     } ).toList() ) )
+               .toList();
+      }
+      return associations.stream()
+            .collect( Collectors.groupingBy( association -> association.originalProperty ) )
+            .entrySet()
+            .stream()
+            .map( entry -> new DeconstructionSet( entry.getKey(), entry.getValue().getFirst().deconstructionRule(),
+                  entry.getValue().stream().map( Association::referredProperty ).toList() ) )
+            .toList();
+   }
+
+   public String createQualifiedPropertyName( final Property originalProperty, final Property referredProperty ) {
+      return originalProperty.getPayloadName() + StringUtils.capitalize( referredProperty.getPayloadName() );
    }
 
    /**
@@ -73,9 +114,9 @@ public class StructuredValuePropertiesDeconstructor {
     */
    private List<Property> getAllProperties( final List<DeconstructionSet> deconstructionSets ) {
       return deconstructionSets.stream()
-            .map( DeconstructionSet::getElementProperties )
+            .map( DeconstructionSet::elementProperties )
             .flatMap( List::stream )
-            .collect( Collectors.toList() );
+            .toList();
    }
 
    /**

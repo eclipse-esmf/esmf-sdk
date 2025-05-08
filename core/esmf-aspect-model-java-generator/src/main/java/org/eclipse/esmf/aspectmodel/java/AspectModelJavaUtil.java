@@ -13,7 +13,9 @@
 
 package org.eclipse.esmf.aspectmodel.java;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.eclipse.esmf.aspectmodel.VersionInfo;
 import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
 import org.eclipse.esmf.aspectmodel.visitor.AspectStreamTraversalVisitor;
 import org.eclipse.esmf.metamodel.AbstractEntity;
@@ -64,6 +67,8 @@ public class AspectModelJavaUtil {
    public static final Converter<String, String> TO_CONSTANT = CaseFormat.UPPER_CAMEL.converterTo( CaseFormat.UPPER_UNDERSCORE );
 
    public static final UnicodeUnescaper UNESCAPER = new UnicodeUnescaper();
+
+   public static final String CURRENT_DATE_ISO_8601 = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSSX" ).format( new Date() );
 
    private AspectModelJavaUtil() {
    }
@@ -515,13 +520,6 @@ public class AspectModelJavaUtil {
       } ).orElseThrow( error );
    }
 
-   public static String printStructuredValueElement( final Object object ) {
-      if ( object instanceof String ) {
-         return createLiteral( object.toString() );
-      }
-      return toConstant( ( (Property) object ).getName() );
-   }
-
    public static boolean isXmlDatatypeFactoryRequired( final StructureElement element ) {
       final AspectStreamTraversalVisitor visitor = new AspectStreamTraversalVisitor();
       return visitor.visitStructureElement( element, null )
@@ -671,5 +669,9 @@ public class AspectModelJavaUtil {
             .map( type -> XSD.xboolean.getURI().equals( type.getUrn() ) )
             .orElse( false );
       return ( isBooleanType ? "is" : "get" ) + StringUtils.capitalize( property.getPayloadName() );
+   }
+
+   public static String codeGeneratorName() {
+      return "esmf-sdk " + VersionInfo.ESMF_SDK_VERSION;
    }
 }

@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import javax.annotation.processing.Generated;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
@@ -83,12 +83,15 @@ public class StructureElementJavaArtifactGenerator<E extends StructureElement> i
       importTracker.importExplicit( java.util.List.class );
       importTracker.importExplicit( java.util.Locale.class );
       importTracker.importExplicit( java.util.Objects.class );
+      importTracker.importExplicit( Generated.class );
 
       final Map<String, Object> context = ImmutableMap.<String, Object> builder()
             .put( "ArrayList", ArrayList.class )
             .put( "Base64BinarySerializer", "org.eclipse.esmf.aspectmodel.jackson.Base64BinarySerializer" )
             .put( "Base64BinaryDeserializer", "org.eclipse.esmf.aspectmodel.jackson.Base64BinaryDeserializer" )
             .put( "codeGenerationConfig", config )
+            .put( "codeGeneratorName", AspectModelJavaUtil.codeGeneratorName() )
+            .put( "codeGeneratorDate", AspectModelJavaUtil.CURRENT_DATE_ISO_8601 )
             .put( "Constraint", Constraint.class )
             .put( "ComplexType", ComplexType.class )
             .put( "currentYear", Year.now() )
@@ -100,6 +103,8 @@ public class StructureElementJavaArtifactGenerator<E extends StructureElement> i
             .put( "DefaultScalar", DefaultScalar.class )
             .put( "DefaultScalarValue", DefaultScalarValue.class )
             .put( "element", element )
+            .put( "elementUrn", element.isAnonymous() ? "" : element.urn() )
+            .put( "Generated", Generated.class )
             .put( "HexBinarySerializer", "org.eclipse.esmf.aspectmodel.jackson.HexBinarySerializer" )
             .put( "HexBinaryDeserializer", "org.eclipse.esmf.aspectmodel.jackson.HexBinaryDeserializer" )
             .put( "JsonProperty", JsonProperty.class )
@@ -111,7 +116,6 @@ public class StructureElementJavaArtifactGenerator<E extends StructureElement> i
             .put( "Matcher", Matcher.class )
             .put( "NotNull", NotNull.class )
             .put( "Object", Object.class )
-            .put( "Pattern", Pattern.class )
             .put( "ResourceFactory", ResourceFactory.class )
             .put( "Scalar", Scalar.class )
             .put( "String", String.class )

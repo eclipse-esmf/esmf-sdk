@@ -20,9 +20,11 @@ $codeGenerationConfig.importTracker().importExplicit( $Arrays )
 #end
 
 /**
-* Generated class {@link ${enumeration.name}}.
+* Generated class ${enumeration.name} (${elementUrn}).
+*#if ( $enumeration.getDescription( $localeEn ) ) $enumeration.getDescription( $localeEn )#end
 */
 #if( $codeGenerationConfig.enableJacksonAnnotationJsonFormatShapeObject() && $codeGenerationConfig.enableJacksonAnnotations() )@JsonFormat(shape = JsonFormat.Shape.OBJECT) #end
+@Generated(value = "$codeGeneratorName", date = "$codeGeneratorDate")
 public enum ${enumeration.name} {
 #foreach( $value in $enumeration.values )
     $util.generateEnumKey($value)($util.generateEnumValue($value, $codeGenerationConfig))
