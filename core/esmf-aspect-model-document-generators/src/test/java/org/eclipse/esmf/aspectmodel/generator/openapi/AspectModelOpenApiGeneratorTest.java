@@ -520,11 +520,11 @@ public class AspectModelOpenApiGeneratorTest {
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
       assertThat(
-            ((Schema) openApi.getComponents().getSchemas().get( "testOperation" ).getAllOf()
-                  .get( 1 )).getProperties() ).doesNotContainKey(
+            ( (Schema) openApi.getComponents().getSchemas().get( "testOperation" ).getAllOf()
+                  .get( 1 ) ).getProperties() ).doesNotContainKey(
             "params" );
-      assertThat( ((Schema) openApi.getComponents().getSchemas().get( "testOperationTwo" ).getAllOf()
-            .get( 1 )).getProperties() ).doesNotContainKey( "params" );
+      assertThat( ( (Schema) openApi.getComponents().getSchemas().get( "testOperationTwo" ).getAllOf()
+            .get( 1 ) ).getProperties() ).doesNotContainKey( "params" );
    }
 
    @Test
