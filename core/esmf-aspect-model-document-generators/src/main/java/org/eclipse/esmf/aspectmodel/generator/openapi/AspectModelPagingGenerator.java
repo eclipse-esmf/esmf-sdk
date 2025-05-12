@@ -54,9 +54,9 @@ class AspectModelPagingGenerator {
    /**
     * Sets the paging properties for an aspect to an given ObjectNode.
     *
-    * @param aspect               The related aspect for the paging properties.
+    * @param aspect The related aspect for the paging properties.
     * @param selectedPagingOption The selected paging option.
-    * @param objectNode           The ObjectNode where the properties shall be inserted.
+    * @param objectNode The ObjectNode where the properties shall be inserted.
     * @throws IOException In case the root property file can't be loaded.
     */
    public void setPagingProperties( final Aspect aspect, final PagingOption selectedPagingOption, final ObjectNode objectNode )
@@ -79,9 +79,9 @@ class AspectModelPagingGenerator {
    /**
     * Sets the paging schema for an aspect to an given ObjectNode.
     *
-    * @param aspect               The related aspect for the paging schema.
+    * @param aspect The related aspect for the paging schema.
     * @param selectedPagingOption The selected paging option.
-    * @param schemaNode           The ObjectNode where the schema shall be inserted.
+    * @param schemaNode The ObjectNode where the schema shall be inserted.
     * @throws IOException In case the root schema file can't be loaded.
     */
    public void setSchemaInformationForPaging( final Aspect aspect, final ObjectNode schemaNode,
@@ -134,7 +134,7 @@ class AspectModelPagingGenerator {
       schemaNode.set( AspectModelOpenApiGenerator.FIELD_PAGING_SCHEMA, node );
 
       final ObjectNode itemNode = (ObjectNode) node.get( "properties" ).get( "items" );
-      itemNode.set( "items", FACTORY.objectNode().put( "$ref", "#/components/schemas/" + aspect.getName() ) );
+      itemNode.put( "$ref", "#/components/schemas/" + aspect.getName() );
    }
 
    private void validatePaging( final PagingOption definedPagingOption, final Set<PagingOption> possiblePagingOptions ) {

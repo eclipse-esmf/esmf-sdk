@@ -520,11 +520,11 @@ public class AspectModelOpenApiGeneratorTest {
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
       assertThat(
-            ( (Schema) openApi.getComponents().getSchemas().get( "testOperation" ).getAllOf()
-                  .get( 1 ) ).getProperties() ).doesNotContainKey(
+            ((Schema) openApi.getComponents().getSchemas().get( "testOperation" ).getAllOf()
+                  .get( 1 )).getProperties() ).doesNotContainKey(
             "params" );
-      assertThat( ( (Schema) openApi.getComponents().getSchemas().get( "testOperationTwo" ).getAllOf()
-            .get( 1 ) ).getProperties() ).doesNotContainKey( "params" );
+      assertThat( ((Schema) openApi.getComponents().getSchemas().get( "testOperationTwo" ).getAllOf()
+            .get( 1 )).getProperties() ).doesNotContainKey( "params" );
    }
 
    @Test
@@ -667,6 +667,42 @@ public class AspectModelOpenApiGeneratorTest {
             .isEqualTo( "See: http://example.com/, http://example.com/me" );
       assertThat( openApi.getComponents().getSchemas().get( "TestCollection" ).get$comment() )
             .isEqualTo( "See: http://example.com/" );
+   }
+
+   @Test
+   void testPagingSchemaStructure() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_COLLECTION ).aspect();
+
+      final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( true )
+            .baseUrl( TEST_BASE_URL )
+            .resourcePath( TEST_RESOURCE_PATH )
+            .locale( Locale.ENGLISH )
+            .build();
+
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
+      final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
+      final OpenAPI openApi = result.getOpenAPI();
+
+      Schema pagingSchema = openApi.getComponents().getSchemas().get( "PagingSchema" );
+      assertThat( pagingSchema ).isNotNull();
+
+      Schema itemsProperty = (Schema) pagingSchema.getProperties().get( "items" );
+      assertThat( itemsProperty.get$ref() )
+            .isEqualTo( "#/components/schemas/" + aspect.getName() );
+
+      assertThat( itemsProperty.getType() ).isNull();
+      assertThat( itemsProperty.getItems() ).isNull();
+
+      assertThat( pagingSchema.getProperties() ).containsKeys(
+            "totalItems",
+            "totalPages",
+            "pageSize",
+            "currentPage"
+      );
+
+      assertThat( openApi.getComponents().getSchemas().get( aspect.getName() ) )
+            .isNotNull();
    }
 
    private void assertSpecificationIsValid( final JsonNode jsonNode, final String json, final Aspect aspect ) throws IOException {
