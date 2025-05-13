@@ -68,7 +68,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 @ExtendWith( LogExtension.class )
 @TestInstance( TestInstance.Lifecycle.PER_CLASS )
 class SammCliTest {
-   protected ProcessLauncher sammCli;
+   protected ProcessLauncher<?> sammCli;
    private final TestModel testModel = TestAspect.ASPECT_WITH_ENTITY;
    private final String defaultInputFile = inputFile( testModel ).getAbsolutePath();
    private final String defaultInputUrn = testModel.getUrn().toString();
@@ -78,7 +78,12 @@ class SammCliTest {
 
    @BeforeEach
    void beforeEach() throws IOException {
-      sammCli = new MainClassProcessLauncher( SammCli.class );
+      final List<String> additionalJvmArgs = Optional.ofNullable( System.getProperty( "nativeConfigPath" ) )
+            .map( path -> "-agentlib:native-image-agent=config-merge-dir=" + path )
+            .stream().toList();
+      sammCli = new MainClassProcessLauncher( SammCli.class, additionalJvmArgs,
+            argument -> !"-XX:ThreadPriorityPolicy=1".equals( argument ) && !argument.startsWith( "-agentlib:jdwp" )
+      );
       outputDirectory = Files.createTempDirectory( "junit" );
    }
 
@@ -305,10 +310,9 @@ class SammCliTest {
    void testAspectValidateWithRelativePath() {
       final File workingDirectory = new File( defaultInputFile ).getParentFile();
       final String relativeFileName = "." + File.separator + new File( defaultInputFile ).getName();
-      final ProcessLauncher.ExecutionContext executionContext = new ProcessLauncher.ExecutionContext(
-            List.of( "--disable-color", "aspect", relativeFileName, "validate" ), Optional.empty(), workingDirectory );
 
-      final ExecutionResult result = sammCli.apply( executionContext );
+      final ExecutionResult result = sammCli.apply( List.of( "--disable-color", "aspect", relativeFileName, "validate" ), Optional.empty(),
+            workingDirectory );
       assertThat( result.stdout() ).contains( "Input model is valid" );
       assertThat( result.stderr() ).isEmpty();
    }
