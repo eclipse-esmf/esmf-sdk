@@ -101,10 +101,10 @@ public abstract class ProcessLauncher<T> implements Function<ProcessLauncher<T>.
             return false;
          }
          @SuppressWarnings( "unchecked" ) final ExecutionContext that = (ExecutionContext) obj;
-         return Objects.equals( arguments, that.arguments ) &&
-               Objects.equals( stdin, that.stdin ) &&
-               Objects.equals( workingDirectory, that.workingDirectory ) &&
-               Objects.equals( processConsumer, that.processConsumer );
+         return Objects.equals( arguments, that.arguments )
+               && Objects.equals( stdin, that.stdin )
+               && Objects.equals( workingDirectory, that.workingDirectory )
+               && Objects.equals( processConsumer, that.processConsumer );
       }
 
       @Override
@@ -114,11 +114,11 @@ public abstract class ProcessLauncher<T> implements Function<ProcessLauncher<T>.
 
       @Override
       public String toString() {
-         return "ExecutionContext[" +
-               "arguments=" + arguments + ", " +
-               "stdin=" + stdin + ", " +
-               "workingDirectory=" + workingDirectory + ", " +
-               "processConsumer=" + processConsumer + ']';
+         return "ExecutionContext["
+               + "arguments=" + arguments + ", "
+               + "stdin=" + stdin + ", "
+               + "workingDirectory=" + workingDirectory + ", "
+               + "processConsumer=" + processConsumer + ']';
       }
    }
 
