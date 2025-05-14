@@ -15,13 +15,10 @@ package org.eclipse.esmf;
 import static picocli.CommandLine.Model.UsageMessageSpec.SECTION_KEY_COMMAND_LIST;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 import java.util.stream.IntStream;
 
 import org.eclipse.esmf.aas.AasCommand;
@@ -32,6 +29,7 @@ import org.eclipse.esmf.aspect.AspectEditCommand;
 import org.eclipse.esmf.aspect.AspectPrettyPrintCommand;
 import org.eclipse.esmf.aspect.AspectToCommand;
 import org.eclipse.esmf.aspect.to.AspectToSvgCommand;
+import org.eclipse.esmf.aspectmodel.VersionInfo;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.exception.SubCommandException;
 import org.eclipse.esmf.namespacepackage.PackageCommand;
@@ -245,27 +243,14 @@ public class SammCli extends AbstractCommand {
       return commandLine.getColorScheme().ansi().string( string );
    }
 
-   private Properties loadProperties( final String filename ) {
-      final Properties properties = new Properties();
-      final InputStream propertiesResource = SammCli.class.getClassLoader().getResourceAsStream( filename );
-      try {
-         properties.load( propertiesResource );
-      } catch ( final IOException exception ) {
-         throw new RuntimeException( "Failed to load Properties: " + filename );
-      }
-      return properties;
-   }
-
    @Override
    public void run() {
       if ( version ) {
-         final Properties applicationProperties = loadProperties( "application.properties" );
-         final Properties gitProperties = loadProperties( "git.properties" );
-         System.out.printf( "samm-cli - %s%nVersion: %s%nBuild date: %s%nGit commit: %s%n",
-               applicationProperties.get( "application.name" ),
-               applicationProperties.get( "version" ),
-               applicationProperties.get( "build.date" ),
-               gitProperties.get( "git.commit.id" ) );
+         System.out.println(
+               "samm-cli - Semantic Aspect Meta Model Command Line Tool\n"
+                     + "Version: " + VersionInfo.ESMF_SDK_VERSION + "\n"
+                     + "Build date: " + VersionInfo.BUILD_DATE + "\n"
+                     + "Git commit: " + VersionInfo.COMMIT_ID );
          System.exit( 0 );
       }
       System.out.println( commandLine.getHelp().fullSynopsis() );

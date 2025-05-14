@@ -103,6 +103,26 @@
          </plugin>
 
          <plugin>
+            <groupId>pl.project13.maven</groupId>
+            <artifactId>git-commit-id-plugin</artifactId>
+            <executions>
+               <execution>
+                  <id>get-the-git-infos</id>
+                  <phase>initialize</phase>
+                  <goals>
+                     <goal>revision</goal>
+                  </goals>
+               </execution>
+            </executions>
+            <configuration>
+               <dotGitDirectory>${project.basedir}/../.git</dotGitDirectory>
+               <generateGitPropertiesFile>true</generateGitPropertiesFile>
+               <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties
+               </generateGitPropertiesFilename>
+            </configuration>
+         </plugin>
+
+         <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>build-helper-maven-plugin</artifactId>
             <executions>

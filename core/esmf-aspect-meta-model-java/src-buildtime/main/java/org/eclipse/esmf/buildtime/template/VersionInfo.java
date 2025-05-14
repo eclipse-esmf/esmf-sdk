@@ -19,4 +19,6 @@ import javax.annotation.processing.Generated;
 public class VersionInfo {
    public static final String ESMF_SDK_VERSION = "${esmfSdkVersion}";
    public static final String ASPECT_META_MODEL_VERSION = "${aspectMetaModelVersion}";
+   public static final String BUILD_DATE = "${buildDate}";
+   public static final String COMMIT_ID = "${commitId}";
 }
