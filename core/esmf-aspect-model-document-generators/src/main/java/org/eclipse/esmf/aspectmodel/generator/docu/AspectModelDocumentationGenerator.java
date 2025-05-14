@@ -33,7 +33,6 @@ import org.eclipse.esmf.aspectmodel.generator.TemplateEngine;
 import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
 import org.eclipse.esmf.aspectmodel.generator.diagram.DiagramGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.diagram.DiagramGenerationConfigBuilder;
-import org.eclipse.esmf.aspectmodel.utils.DescriptionsUtils;
 import org.eclipse.esmf.aspectmodel.visitor.AspectStreamTraversalVisitor;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Scalar;
@@ -78,7 +77,6 @@ public class AspectModelDocumentationGenerator extends
       final Map<String, Object> templateContext = new HashMap<>();
       templateContext.put( "aspectModel", aspect() );
       templateContext.put( "aspectModelHelper", new AspectModelHelper() );
-      templateContext.put( "descriptionsUtils", DescriptionsUtils.class );
       templateContext.put( "Scalar", Scalar.class );
 
       final Set<Locale> targetLanguages = config.locale() == null

@@ -33,4 +33,3 @@
 #* @vtlvariable name="languageConstraint" type="org.eclipse.esmf.metamodel.constraint.LanguageConstraint" *#
 #* @vtlvariable name="list" type="org.eclipse.esmf.metamodel.characteristic.List" *#
 #* @vtlvariable name="code" type="org.eclipse.esmf.metamodel.characteristic.Code" *#
-#* @vtlvariable name="descriptionsUtils" type="org.eclipse.esmf.aspectmodel.utils.DescriptionsUtils" *#

@@ -37,5 +37,5 @@
 #end
 
 #macro ( description $description )
-<span class="text-base py-4">#evaluate( $description )</span>
+<span class="text-base py-4">$description</span>
 #end

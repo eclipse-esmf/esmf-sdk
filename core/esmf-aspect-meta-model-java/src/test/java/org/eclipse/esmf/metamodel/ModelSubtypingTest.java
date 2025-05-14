@@ -18,7 +18,7 @@ import static org.eclipse.esmf.metamodel.DataTypes.*;
 
 import org.junit.jupiter.api.Test;
 
-class ModelSubtypingTest {
+public class ModelSubtypingTest {
    @Test
    void testScalarCasting() {
       assertThat( xsd.byte_.isTypeOrSubtypeOf( xsd.integer ) ).isTrue();
