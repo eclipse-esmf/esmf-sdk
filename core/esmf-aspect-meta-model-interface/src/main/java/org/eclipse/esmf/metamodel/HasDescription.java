@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.esmf.metamodel.datatype.LangString;
 
@@ -77,5 +78,12 @@ public interface HasDescription {
                }
                return getDescription( Locale.ENGLISH );
             } );
+   }
+
+   default Set<String> getDescriptions( final Locale locale ) {
+      return getDescriptions().stream()
+            .filter( description -> description.getLanguageTag().equals( locale ) )
+            .map( LangString::getValue )
+            .collect( Collectors.toSet());
    }
 }
