@@ -10,18 +10,22 @@ import org.junit.jupiter.api.Test;
 class DescriptionsUtilsTest {
    @Test
    void testExtractNotes_singleNote() {
-      String description = "> NOTE: This is a note.\n> Continued on the next line.";
-      List<String> notes = DescriptionsUtils.notes( description );
+      final String description = "> NOTE: This is a note.\n> Continued on the next line.";
+      final List<String> notes = DescriptionsUtils.notes( description );
       assertEquals( 1, notes.size() );
       assertEquals( "This is a note.\nContinued on the next line.", notes.get( 0 ) );
    }
 
    @Test
    void testExtractExamples_multipleExamples() {
-      String description =
-            "> EXAMPLE 1: First example.\n> More detail.\n" +
-            "> EXAMPLE 2: Second example.";
-      List<String> examples = DescriptionsUtils.examples( description );
+      final String description =
+            """
+                  > EXAMPLE 1: First example.
+                  > More detail.
+                                    
+                  > EXAMPLE 2: Second example.
+                  """;
+      final List<String> examples = DescriptionsUtils.examples( description );
 
       assertEquals( 2, examples.size() );
       assertEquals( "First example.\nMore detail.", examples.get( 0 ) );
@@ -30,18 +34,21 @@ class DescriptionsUtilsTest {
 
    @Test
    void testExtractSources_withLink() {
-      String description = "> SOURCE: Source with [link](https://example.com)";
-      List<String> sources = DescriptionsUtils.sources( description );
+      final String description = "> SOURCE: Source with [link](https://example.com)";
+      final List<String> sources = DescriptionsUtils.sources( description );
       assertEquals( 1, sources.size() );
       assertTrue( sources.get( 0 ).contains( "[link](https://example.com)" ) );
    }
 
    @Test
    void testMixedBlockTypes() {
-      String description =
-            "> NOTE: A note block.\n" +
-            "> EXAMPLE: An example block.\n" +
-            "> SOURCE: A source block.";
+      final String description =
+            """
+                  > NOTE: A note block.
+                  > EXAMPLE: An example block.
+                                    
+                  > SOURCE: A source block.
+                  """;
       assertEquals( 1, DescriptionsUtils.notes( description ).size() );
       assertEquals( 1, DescriptionsUtils.examples( description ).size() );
       assertEquals( 1, DescriptionsUtils.sources( description ).size() );
@@ -49,7 +56,7 @@ class DescriptionsUtilsTest {
 
    @Test
    void testNoBlocks() {
-      String description = "This is a plain description without any special blocks.";
+      final String description = "This is a plain description without any special blocks.";
       assertTrue( DescriptionsUtils.notes( description ).isEmpty() );
       assertTrue( DescriptionsUtils.examples( description ).isEmpty() );
       assertTrue( DescriptionsUtils.sources( description ).isEmpty() );
@@ -72,8 +79,7 @@ class DescriptionsUtilsTest {
                   Some **markdown** content here.
                   1. Ordered
                   2. List
-                  """
-      ;
+                  """;
 
       final String html = DescriptionsUtils.toHtml( description );
 
