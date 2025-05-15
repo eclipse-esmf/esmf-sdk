@@ -28,8 +28,8 @@ import org.commonmark.renderer.html.HtmlRenderer;
 
 /**
  * A utility class for converting SAMM-flavored Markdown descriptions into HTML.
- * <p>
- * This renderer supports a limited subset of Markdown syntax and introduces
+ *
+ * <p> This renderer supports a limited subset of Markdown syntax and introduces
  * custom processing for specific annotated blocks commonly used in SAMM descriptions,
  * such as {@code > NOTE: ...}, {@code > EXAMPLE: ...}, and {@code > SOURCE: ...}.
  * These blocks are extracted and rendered into semantically meaningful HTML
@@ -97,11 +97,11 @@ public class MarkdownHtmlRenderer {
 
    /**
     * Renders a list of extracted special blocks into HTML.
-    * <p>
+    *
     * - For {@code NOTE} and {@code SOURCE}, each entry is rendered in a {@code <div>} with a matching class.<br>
     * - For {@code EXAMPLE}, a single example is rendered as a {@code <div>}; multiple examples as a {@code <ul>}.
     *
-    * @param type The type of the special block (e.g., "NOTE", "EXAMPLE", "SOURCE").
+    * @param type  The type of the special block (e.g., "NOTE", "EXAMPLE", "SOURCE").
     * @param items The list of block contents for that type.
     * @return The rendered HTML string for the block.
     */
@@ -139,7 +139,7 @@ public class MarkdownHtmlRenderer {
     * Collects all special block entries (NOTE, EXAMPLE, SOURCE) from the input lines.
     * Lines not belonging to special blocks are appended to the {@code markdownBuffer}.
     *
-    * @param lines Stripped lines from the raw markdown block.
+    * @param lines          Stripped lines from the raw markdown block.
     * @param markdownBuffer Buffer to store non-special markdown content.
     * @return A map of special block types to their associated content.
     */
@@ -173,8 +173,8 @@ public class MarkdownHtmlRenderer {
     * Flushes the current block to the target map if non-empty.
     *
     * @param currentType The type of block being collected.
-    * @param block The current content buffer for the block.
-    * @param target The target map of blocks.
+    * @param block       The current content buffer for the block.
+    * @param target      The target map of blocks.
     */
    private static void flushBlock( final String currentType, final StringBuilder block, final Map<String, List<String>> target ) {
       if ( currentType != null && !block.isEmpty() ) {

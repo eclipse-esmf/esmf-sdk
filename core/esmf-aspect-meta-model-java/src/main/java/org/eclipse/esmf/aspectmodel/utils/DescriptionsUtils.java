@@ -22,8 +22,8 @@ import java.util.regex.Pattern;
 /**
  * Utility class for extracting and rendering structured content blocks (such as NOTE, EXAMPLE, SOURCE)
  * from SAMM-compliant Markdown descriptions.
- * <p>
- * This class supports parsing multi-line Markdown-style input and extracting semantically significant
+ *
+ * <p> This class supports parsing multi-line Markdown-style input and extracting semantically significant
  * sections such as {@code > NOTE: ...}, {@code > EXAMPLE: ...}, and {@code > SOURCE: ...}.
  * These blocks can be retrieved as plain text or rendered into HTML using {@link MarkdownHtmlRenderer}.
  */
@@ -85,8 +85,8 @@ public class DescriptionsUtils {
 
    /**
     * Extracts all blocks of a specified type (e.g., NOTE, EXAMPLE, SOURCE) from a set of Markdown strings.
-    * <p>
-    * Each block is expected to begin with a {@code > TYPE:} line and may span multiple lines,
+    *
+    * <p> Each block is expected to begin with a {@code > TYPE:} line and may span multiple lines,
     * each of which begins with {@code >}.
     *
     * @param descriptions A set of multi-line Markdown description strings.
