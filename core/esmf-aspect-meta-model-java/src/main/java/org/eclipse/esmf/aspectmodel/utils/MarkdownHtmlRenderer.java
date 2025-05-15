@@ -29,7 +29,7 @@ import org.commonmark.renderer.html.HtmlRenderer;
 /**
  * A utility class for converting SAMM-flavored Markdown descriptions into HTML.
  *
- * <p> This renderer supports a limited subset of Markdown syntax and introduces
+ * <p>This renderer supports a limited subset of Markdown syntax and introduces
  * custom processing for specific annotated blocks commonly used in SAMM descriptions,
  * such as {@code > NOTE: ...}, {@code > EXAMPLE: ...}, and {@code > SOURCE: ...}.
  * These blocks are extracted and rendered into semantically meaningful HTML
@@ -98,8 +98,8 @@ public class MarkdownHtmlRenderer {
    /**
     * Renders a list of extracted special blocks into HTML.
     *
-    * - For {@code NOTE} and {@code SOURCE}, each entry is rendered in a {@code <div>} with a matching class.<br>
-    * - For {@code EXAMPLE}, a single example is rendered as a {@code <div>}; multiple examples as a {@code <ul>}.
+    * <p>- For {@code NOTE} and {@code SOURCE}, each entry is rendered in a {@code <div>} with a matching class.<br>
+    *    - For {@code EXAMPLE}, a single example is rendered as a {@code <div>}; multiple examples as a {@code <ul>}.
     *
     * @param type  The type of the special block (e.g., "NOTE", "EXAMPLE", "SOURCE").
     * @param items The list of block contents for that type.
