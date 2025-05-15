@@ -60,15 +60,11 @@ public class MarkdownHtmlRenderer {
     * Converts a set of multi-line Markdown descriptions into a single HTML string.
     * Each entry in the set is processed independently and merged in the resulting output.
     *
-    * @param descriptions A set of Markdown description blocks to render.
+    * @param description A line of Markdown description blocks to render.
     * @return Combined HTML output representing all given descriptions.
     */
-   public static String renderHtmlFromDescriptions( final Set<String> descriptions ) {
-      StringBuilder result = new StringBuilder();
-      for ( String desc : descriptions ) {
-         result.append( processSpecialBlocks( desc ) ).append( "\n" );
-      }
-      return result.toString();
+   public static String renderHtmlFromDescriptions( final String description ) {
+      return processSpecialBlocks( description ) + "\n";
    }
 
    /**

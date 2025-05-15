@@ -45,42 +45,42 @@ public class DescriptionsUtils {
    /**
     * Extracts all {@code NOTE} blocks from the given set of Markdown description strings.
     *
-    * @param descriptions A set of multi-line Markdown descriptions.
+    * @param description A line Markdown description.
     * @return A list of extracted NOTE block contents.
     */
-   public static List<String> notes( final Set<String> descriptions ) {
-      return extractBlock( descriptions, "NOTE" );
+   public static List<String> notes( final String description ) {
+      return extractBlock( description, "NOTE" );
    }
 
    /**
     * Extracts all {@code EXAMPLE} blocks from the given set of Markdown description strings.
     *
-    * @param descriptions A set of multi-line Markdown descriptions.
+    * @param description A line Markdown description.
     * @return A list of extracted EXAMPLE block contents.
     */
-   public static List<String> examples( final Set<String> descriptions ) {
-      return extractBlock( descriptions, "EXAMPLE" );
+   public static List<String> examples( final String description ) {
+      return extractBlock( description, "EXAMPLE" );
    }
 
    /**
     * Extracts all {@code SOURCE} blocks from the given set of Markdown description strings.
     *
-    * @param descriptions A set of multi-line Markdown descriptions.
+    * @param description A line Markdown description.
     * @return A list of extracted SOURCE block contents.
     */
-   public static List<String> sources( final Set<String> descriptions ) {
-      return extractBlock( descriptions, "SOURCE" );
+   public static List<String> sources( final String description ) {
+      return extractBlock( description, "SOURCE" );
    }
 
    /**
     * Renders the given set of Markdown description strings into semantic HTML.
     * Uses {@link MarkdownHtmlRenderer} to process both special blocks and general Markdown syntax.
     *
-    * @param descriptions A set of Markdown description strings.
+    * @param description A line of Markdown description string.
     * @return The HTML representation of the combined input.
     */
-   public static String toHtml( final Set<String> descriptions ) {
-      return MarkdownHtmlRenderer.renderHtmlFromDescriptions( descriptions );
+   public static String toHtml( final String description ) {
+      return MarkdownHtmlRenderer.renderHtmlFromDescriptions( description );
    }
 
    /**
@@ -93,11 +93,9 @@ public class DescriptionsUtils {
     * @param type The type of block to extract ("NOTE", "EXAMPLE", or "SOURCE").
     * @return A list of extracted block contents for the specified type.
     */
-   private static List<String> extractBlock( final Set<String> descriptions, final String type ) {
+   private static List<String> extractBlock( final String descriptions, final String type ) {
       List<String> result = new ArrayList<>();
-      for ( String desc : descriptions ) {
-         extractFromDescription( desc, type, result );
-      }
+      extractFromDescription( descriptions, type, result );
       return result;
    }
 

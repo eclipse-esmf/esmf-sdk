@@ -4,28 +4,24 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
-import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
 class DescriptionsUtilsTest {
    @Test
    void testExtractNotes_singleNote() {
-      Set<String> descriptions = Set.of(
-            "> NOTE: This is a note.\n> Continued on the next line."
-      );
-      List<String> notes = DescriptionsUtils.notes( descriptions );
+      String description = "> NOTE: This is a note.\n> Continued on the next line.";
+      List<String> notes = DescriptionsUtils.notes( description );
       assertEquals( 1, notes.size() );
       assertEquals( "This is a note.\nContinued on the next line.", notes.get( 0 ) );
    }
 
    @Test
    void testExtractExamples_multipleExamples() {
-      Set<String> descriptions = Set.of(
-            "> EXAMPLE 1: First example.\n> More detail.",
-            "> EXAMPLE 2: Second example."
-      );
-      List<String> examples = DescriptionsUtils.examples( descriptions );
+      String description =
+            "> EXAMPLE 1: First example.\n> More detail.\n" +
+            "> EXAMPLE 2: Second example.";
+      List<String> examples = DescriptionsUtils.examples( description );
 
       assertEquals( 2, examples.size() );
       assertEquals( "First example.\nMore detail.", examples.get( 0 ) );
@@ -34,39 +30,34 @@ class DescriptionsUtilsTest {
 
    @Test
    void testExtractSources_withLink() {
-      Set<String> descriptions = Set.of(
-            "> SOURCE: Source with [link](https://example.com)"
-      );
-      List<String> sources = DescriptionsUtils.sources( descriptions );
+      String description = "> SOURCE: Source with [link](https://example.com)";
+      List<String> sources = DescriptionsUtils.sources( description );
       assertEquals( 1, sources.size() );
       assertTrue( sources.get( 0 ).contains( "[link](https://example.com)" ) );
    }
 
    @Test
    void testMixedBlockTypes() {
-      Set<String> descriptions = Set.of(
-            "> NOTE: A note block.",
-            "> EXAMPLE: An example block.",
-            "> SOURCE: A source block."
-      );
-      assertEquals( 1, DescriptionsUtils.notes( descriptions ).size() );
-      assertEquals( 1, DescriptionsUtils.examples( descriptions ).size() );
-      assertEquals( 1, DescriptionsUtils.sources( descriptions ).size() );
+      String description =
+            "> NOTE: A note block.\n" +
+            "> EXAMPLE: An example block.\n" +
+            "> SOURCE: A source block.";
+      assertEquals( 1, DescriptionsUtils.notes( description ).size() );
+      assertEquals( 1, DescriptionsUtils.examples( description ).size() );
+      assertEquals( 1, DescriptionsUtils.sources( description ).size() );
    }
 
    @Test
    void testNoBlocks() {
-      Set<String> descriptions = Set.of(
-            "This is a plain description without any special blocks."
-      );
-      assertTrue( DescriptionsUtils.notes( descriptions ).isEmpty() );
-      assertTrue( DescriptionsUtils.examples( descriptions ).isEmpty() );
-      assertTrue( DescriptionsUtils.sources( descriptions ).isEmpty() );
+      String description = "This is a plain description without any special blocks.";
+      assertTrue( DescriptionsUtils.notes( description ).isEmpty() );
+      assertTrue( DescriptionsUtils.examples( description ).isEmpty() );
+      assertTrue( DescriptionsUtils.sources( description ).isEmpty() );
    }
 
    @Test
-   public void testToHtml_withAllBlockTypes() {
-      Set<String> descriptions = Set.of(
+   void testToHtml_withAllBlockTypes() {
+      final String description =
             """
                   > NOTE: This is a note.
                   > With multiple lines.
@@ -82,9 +73,9 @@ class DescriptionsUtilsTest {
                   1. Ordered
                   2. List
                   """
-      );
+      ;
 
-      String html = DescriptionsUtils.toHtml( descriptions );
+      final String html = DescriptionsUtils.toHtml( description );
 
       assertTrue( html.contains( "<div class=\"note\">" ) );
       assertTrue( html.contains( "This is a note." ) );
