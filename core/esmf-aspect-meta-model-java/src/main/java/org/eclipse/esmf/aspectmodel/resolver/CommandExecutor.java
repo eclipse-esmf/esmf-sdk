@@ -30,13 +30,13 @@ public class CommandExecutor {
    public static String executeCommand( final String command ) {
       final List<String> parts = Arrays.asList( command.split( " " ) );
       final String executableOrJar = parts.get( 0 );
-      final ProcessLauncher processLauncher = executableOrJar.toLowerCase().endsWith( ".jar" )
+      final ProcessLauncher<Process> processLauncher = executableOrJar.toLowerCase().endsWith( ".jar" )
             ? new ExecutableJarLauncher( new File( executableOrJar ) )
             : new BinaryLauncher( new File( executableOrJar ) );
       final List<String> arguments = parts.size() == 1
             ? List.of()
             : parts.subList( 1, parts.size() );
-      final ProcessLauncher.ExecutionContext context = new ProcessLauncher.ExecutionContext(
+      final ProcessLauncher<Process>.ExecutionContext context = processLauncher.new ExecutionContext(
             arguments, Optional.empty(), new File( System.getProperty( "user.dir" ) ) );
       final ProcessLauncher.ExecutionResult result = processLauncher.apply( context );
 

@@ -13,141 +13,46 @@
 
 package org.eclipse.esmf;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import java.lang.management.ManagementFactory;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.URLPermission;
-import java.nio.charset.StandardCharsets;
-import java.security.Permission;
-import java.util.stream.Collectors;
-
+import org.eclipse.esmf.aspectmodel.resolver.process.OsProcessLauncher;
 import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
- * A {@link ProcessLauncher} that executes the static main(String[] args) function of a given class. It installs a {@link SecurityManager}
- * that captures System.exit() calls from the tested code.
- * NOTE: The SecurityManager class is <a href="https://openjdk.org/jeps/411">deprecated for removal</a> as of Java 17, however, no
- * replacement mechanism for capturing System.exit() <a href="https://bugs.openjdk.org/browse/JDK-8199704">has been defined yet</a>.
- * Therefore, there is currently no other way than using the deprecated class.
+ * A {@link ProcessLauncher} that executes the static main(String[] args) function of a given class by running it in a new JVM
+ * process. The class path and JVM arguments are adapted from the currently running process.
  */
-@SuppressWarnings( "removal" )
-public class MainClassProcessLauncher extends ProcessLauncher {
-   private static final Logger LOG = LoggerFactory.getLogger( MainClassProcessLauncher.class );
-   private final Class<?> mainClass;
-
-   public MainClassProcessLauncher( final Class<?> mainClass ) {
-      this.mainClass = mainClass;
+public class MainClassProcessLauncher extends OsProcessLauncher {
+   /**
+    * Constructor. Builds the process launcher from a given main class and JVM arguments.
+    *
+    * @param mainClass the main class to execute
+    * @param additionalJvmArguments additional arguments to add to the JVM
+    * @param keepJvmArgument predicate used to adjust the list of JVM arguments from the currently JVM: Only those arguments kept by this
+    * filter are kept in the newly launched JVM
+    */
+   public MainClassProcessLauncher( final Class<?> mainClass, final List<String> additionalJvmArguments,
+         final Predicate<String> keepJvmArgument ) {
+      super( buildCommand( mainClass, additionalJvmArguments, keepJvmArgument ) );
    }
 
-   @Override
-   public ExecutionResult apply( final ExecutionContext context ) {
-      final SecurityManager originalSecurityManager = System.getSecurityManager();
+   private static List<String> buildCommand( final Class<?> mainClass, final List<String> additionalJvmArguments,
+         final Predicate<String> keepJvmArgument ) {
+      final List<String> jvmArguments = Stream.concat( ManagementFactory.getRuntimeMXBean().getInputArguments().stream(),
+                  additionalJvmArguments.stream() )
+            .filter( keepJvmArgument )
+            .toList();
 
-      final CaptureSystemExit securityManager = new CaptureSystemExit( originalSecurityManager );
-      System.setSecurityManager( securityManager );
-
-      final ByteArrayOutputStream stdoutBuffer = new ByteArrayOutputStream();
-      final ByteArrayOutputStream stderrBuffer = new ByteArrayOutputStream();
-      final PrintStream testOut = new PrintStream( stdoutBuffer );
-      final PrintStream testErr = new PrintStream( stderrBuffer );
-
-      final PrintStream originalStdout = System.out;
-      final PrintStream originalStderr = System.err;
-      final InputStream originalStdin = System.in;
-      final String originalUserDir = System.getProperty( "user.dir" );
-      LOG.info( "Launch class in working dir {} with args: {} {}", context.workingDirectory(), mainClass.getName(),
-            context.arguments().stream()
-                  .map( argument -> String.format( "\"%s\"", argument ) )
-                  .collect( Collectors.joining( " " ) ) );
-      System.setOut( testOut );
-      System.setErr( testErr );
-
-      if ( context.stdin().isPresent() ) {
-         System.setIn( new ByteArrayInputStream( context.stdin().get() ) );
-      }
-
-      try {
-         System.setProperty( "user.dir", context.workingDirectory().getAbsolutePath() );
-         final Method method = mainClass.getMethod( "main", String[].class );
-         method.invoke( null, (Object) context.arguments().toArray( new String[0] ) );
-      } catch ( final InvocationTargetException exception ) {
-         // Ignore System.exit
-         if ( !exception.getCause().getClass().equals( SystemExitCaptured.class ) ) {
-            fail( exception );
-         }
-      } catch ( final NoSuchMethodException | IllegalAccessException e ) {
-         fail( e );
-      } finally {
-         System.setSecurityManager( originalSecurityManager );
-         System.setOut( originalStdout );
-         System.setErr( originalStderr );
-         if ( context.stdin().isPresent() ) {
-            System.setIn( originalStdin );
-         }
-         System.setProperty( "user.dir", originalUserDir );
-      }
-
-      final byte[] stdoutRaw = stdoutBuffer.toByteArray();
-      final byte[] stderrRaw = stderrBuffer.toByteArray();
-      try {
-         stdoutBuffer.close();
-         stderrBuffer.close();
-         testOut.close();
-         testErr.close();
-      } catch ( final IOException exception ) {
-         throw new RuntimeException( exception );
-      }
-      return new ExecutionResult( securityManager.getExitCode(), new String( stdoutRaw, StandardCharsets.UTF_8 ),
-            new String( stderrRaw, StandardCharsets.UTF_8 ), stdoutRaw, stderrRaw );
-   }
-
-   private static class CaptureSystemExit extends SecurityManager {
-      private final SecurityManager delegateSecurityManager;
-      private int exitCode = 0;
-
-      CaptureSystemExit( final SecurityManager delegateSecurityManager ) {
-         this.delegateSecurityManager = delegateSecurityManager;
-      }
-
-      int getExitCode() {
-         return exitCode;
-      }
-
-      @Override
-      public void checkPermission( final Permission permission ) {
-         if ( delegateSecurityManager != null ) {
-            delegateSecurityManager.checkPermission( permission );
-         }
-      }
-
-      @Override
-      public void checkPermission( final Permission permission, final Object context ) {
-         // Unblock HTTP GETs from unit tests
-         if ( permission instanceof URLPermission ) {
-            return;
-         }
-         if ( delegateSecurityManager != null ) {
-            delegateSecurityManager.checkPermission( permission, context );
-         }
-      }
-
-      @Override
-      public void checkExit( final int i ) {
-         exitCode = i;
-         throw new SystemExitCaptured();
-      }
-   }
-
-   private static class SystemExitCaptured extends RuntimeException {
-      private static final long serialVersionUID = 7327597963660480174L;
+      final List<String> commandWithArguments = new ArrayList<>();
+      commandWithArguments.add( ProcessHandle.current().info().command().orElse( "java" ) );
+      commandWithArguments.addAll( jvmArguments );
+      commandWithArguments.add( "--class-path" );
+      commandWithArguments.add( System.getProperty( "java.class.path" ) );
+      commandWithArguments.add( mainClass.getName() );
+      return commandWithArguments;
    }
 }
