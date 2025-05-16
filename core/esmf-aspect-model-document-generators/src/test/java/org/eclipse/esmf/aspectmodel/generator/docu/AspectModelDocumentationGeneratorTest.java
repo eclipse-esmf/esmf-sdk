@@ -66,7 +66,6 @@ class AspectModelDocumentationGeneratorTest {
 
    @Test
    void testScriptTagIsEscaped() throws IOException {
-      System.out.println( "TEST: " + generateHtmlDocumentation( TestAspect.ASPECT_WITH_SCRIPT_TAGS ) );
       assertThat( generateHtmlDocumentation( TestAspect.ASPECT_WITH_SCRIPT_TAGS ) )
             .isNotEmpty()
             .doesNotContain( "Test preferred name with script: <script>alert('Should not be alerted');</script>" );
