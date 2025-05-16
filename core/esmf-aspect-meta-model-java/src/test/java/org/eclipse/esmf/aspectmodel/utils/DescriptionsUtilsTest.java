@@ -132,4 +132,12 @@ class DescriptionsUtilsTest {
       String html = DescriptionsUtils.toHtml( testDescription );
       assertThat( html ).doesNotContain( "[Visit Example](https://example.com)" );
    }
+
+   @Test
+   void testStripIndentSingleLine() {
+      String input = "    only one line";
+      String expected = "only one line";
+      String result = DescriptionsUtils.stripIndent( input );
+      assertEquals( expected, result );
+   }
 }

@@ -20,10 +20,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 
+import org.eclipse.esmf.aspectmodel.utils.DescriptionsUtils;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -177,6 +179,24 @@ class AspectModelDocumentationGeneratorTest {
             "<div class=\"table-cell pb-3 col-span-2\">Trait</div>" );
       assertThat( documentation ).contains(
             "<li>http://example.com/me2</li>" );
+   }
+
+   @Test
+   void testMarkdownRenderingWithLink() throws IOException {
+      final String htmlResult = generateHtmlDocumentation( TestAspect.ASPECT_WITH_MARKDOWN_DESCRIPTION );
+      AssertionsForClassTypes.assertThat( htmlResult ).contains( "<a href=\"https://example.com\">Visit Example</a>" );
+   }
+
+   @Test
+   void testAspectWithMarkdownDescription() throws IOException {
+      final String htmlResult = generateHtmlDocumentation( TestAspect.ASPECT_WITH_MARKDOWN_DESCRIPTION );
+      AssertionsForClassTypes.assertThat( htmlResult ).doesNotContain( "[link](https://www.example.com/spec)" );
+   }
+
+   @Test
+   void testHtmlOutputDoesNotContainMarkdownSyntax() throws IOException {
+      final String htmlResult = generateHtmlDocumentation( TestAspect.ASPECT_WITH_MARKDOWN_DESCRIPTION );
+      AssertionsForClassTypes.assertThat( htmlResult ).doesNotContain( "[Visit Example](https://example.com)" );
    }
 
    private String generateHtmlDocumentation( final TestAspect testAspect ) throws IOException {

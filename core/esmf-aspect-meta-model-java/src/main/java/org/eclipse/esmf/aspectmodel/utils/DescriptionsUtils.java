@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Utility class for extracting and rendering structured content blocks (such as NOTE, EXAMPLE, SOURCE)
@@ -88,13 +89,13 @@ public class DescriptionsUtils {
     * <p>Each block is expected to begin with a {@code > TYPE:} line and may span multiple lines,
     * each of which begins with {@code >}.
     *
-    * @param descriptions A set of multi-line Markdown description strings.
+    * @param description A line Markdown description string.
     * @param type The type of block to extract ("NOTE", "EXAMPLE", or "SOURCE").
     * @return A list of extracted block contents for the specified type.
     */
-   private static List<String> extractBlock( final String descriptions, final String type ) {
+   private static List<String> extractBlock( final String description, final String type ) {
       List<String> result = new ArrayList<>();
-      extractFromDescription( descriptions, type, result );
+      extractFromDescription( stripIndent( description ), type, result );
       return result;
    }
 
@@ -140,6 +141,18 @@ public class DescriptionsUtils {
          blockContent.setLength( 0 );
          insideBlock[0] = false;
       }
+   }
+
+   static String stripIndent( final String string ) {
+      final int indent = string.lines()
+            .filter( line -> !line.isEmpty() )
+            .map( line -> line.indexOf( line.trim() ) )
+            .filter( offset -> offset > 0 )
+            .min( Integer::compareTo )
+            .orElse( 0 );
+      return string.lines()
+            .map( line -> indent <= line.length() ? line.substring( indent ) : line )
+            .collect( Collectors.joining( "\n" ) );
    }
 }
 
