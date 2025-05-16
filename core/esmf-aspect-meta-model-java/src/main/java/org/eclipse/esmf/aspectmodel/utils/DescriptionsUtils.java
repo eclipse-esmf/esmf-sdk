@@ -15,7 +15,6 @@ package org.eclipse.esmf.aspectmodel.utils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,7 +36,7 @@ public class DescriptionsUtils {
     * Matches lines beginning with {@code > NOTE:}, {@code > EXAMPLE:}, or {@code > SOURCE:},
     * optionally followed by a number (e.g., {@code > EXAMPLE 2: ...}).
     */
-   private static final Pattern BLOCK_PATTERN = Pattern.compile(
+   static final Pattern BLOCK_PATTERN = Pattern.compile(
          "^>\\s*(NOTE|EXAMPLE|SOURCE)(\\s+\\d+)?:\\s*(.*)",
          Pattern.CASE_INSENSITIVE
    );

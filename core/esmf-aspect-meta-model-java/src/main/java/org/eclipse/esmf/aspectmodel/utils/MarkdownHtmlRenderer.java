@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -140,14 +139,13 @@ public class MarkdownHtmlRenderer {
     * @return A map of special block types to their associated content.
     */
    private static Map<String, List<String>> collectSpecialBlocks( final String[] lines, final StringBuilder markdownBuffer ) {
-      Pattern pattern = Pattern.compile( "^>\\s*(NOTE|EXAMPLE|SOURCE)(\\s+\\d+)?:\\s*(.*)", Pattern.CASE_INSENSITIVE );
       Map<String, List<String>> specialBlocks = new LinkedHashMap<>();
 
       String currentType = null;
       StringBuilder block = new StringBuilder();
 
       for ( String line : lines ) {
-         Matcher matcher = pattern.matcher( line );
+         Matcher matcher = DescriptionsUtils.BLOCK_PATTERN.matcher( line );
          if ( matcher.find() ) {
             flushBlock( currentType, block, specialBlocks );
             currentType = matcher.group( 1 ).toUpperCase();
