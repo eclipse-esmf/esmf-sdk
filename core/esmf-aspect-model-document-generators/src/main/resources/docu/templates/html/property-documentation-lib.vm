@@ -17,7 +17,7 @@
     #paragraph( $property.getPreferredName( $i18n.getLocale() ) "${aspectModelHelper.buildAnchor( $property, $parentElement, 'property' )}" $weight )
 
     #if( $property.getDescription( $i18n.getLocale() ) )
-        #description( $property.getDescription( $i18n.getLocale() ) )
+        #description( $descriptionsUtils.toHtml( $property.getDescription( $i18n.getLocale() ) ) )
     #end
 
     <div class="flex border-b pb-1 py-4">

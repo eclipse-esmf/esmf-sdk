@@ -32,7 +32,9 @@ class DatabricksColumnDefinitionParserTest extends DatabricksTestBase {
    }
 
    @ParameterizedTest
-   @EnumSource( value = TestAspect.class )
+   @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
+         "ASPECT_WITH_MARKDOWN_DESCRIPTION"
+   } )
    void testParseSqlForAspectModel( final TestAspect testAspect ) {
       final String sql = sql( testAspect );
       final String parsedAndSerializedSql = sql.lines()

@@ -63,6 +63,10 @@
          <artifactId>record-builder-processor</artifactId>
          <scope>provided</scope>
       </dependency>
+      <dependency>
+         <groupId>org.commonmark</groupId>
+         <artifactId>commonmark</artifactId>
+      </dependency>
 
       <!-- Test dependencies -->
       <dependency>
