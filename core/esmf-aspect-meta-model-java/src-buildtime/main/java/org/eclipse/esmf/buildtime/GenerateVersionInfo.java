@@ -15,23 +15,32 @@ package org.eclipse.esmf.buildtime;
 
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Properties;
 
 /**
  * Generates the static version info class
  */
 public class GenerateVersionInfo extends BuildtimeCodeGenerator {
-   private final Properties properties;
+   private final Properties appProperties;
+   private final Properties gitProperties;
 
    protected GenerateVersionInfo( final Path srcBuildTimePath, final Path srcGenPath ) {
       super( srcBuildTimePath, srcGenPath, "VersionInfo", "org.eclipse.esmf.aspectmodel" );
 
-      try ( final InputStream stream = GenerateVersionInfo.class.getClassLoader().getResourceAsStream( "app.properties" ) ) {
+      appProperties = loadProperties( "app.properties" );
+      gitProperties = loadProperties( "git.properties" );
+   }
+
+   private Properties loadProperties( final String filename ) {
+      try ( final InputStream stream = GenerateVersionInfo.class.getClassLoader().getResourceAsStream( filename ) ) {
          if ( stream == null ) {
             throw new RuntimeException();
          }
-         properties = new Properties();
+         final Properties properties = new Properties();
          properties.load( stream );
+         return properties;
       } catch ( final Exception exception ) {
          throw new RuntimeException( "Could not load app.properties" );
       }
@@ -40,8 +49,10 @@ public class GenerateVersionInfo extends BuildtimeCodeGenerator {
    @Override
    protected String interpolateVariable( final String variableName ) {
       return switch ( variableName ) {
-         case "esmfSdkVersion" -> properties.getProperty( "project-version" );
-         case "aspectMetaModelVersion" -> properties.getProperty( "aspect-meta-model-version" );
+         case "esmfSdkVersion" -> appProperties.getProperty( "project-version" );
+         case "aspectMetaModelVersion" -> appProperties.getProperty( "aspect-meta-model-version" );
+         case "buildDate" -> new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format( new Date() );
+         case "commitId" -> gitProperties.getProperty( "git.commit.id" );
          case "generator" -> getClass().getCanonicalName();
          default -> throw new RuntimeException( "Unexpected variable in template: " + variableName );
       };

@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A {@link ProcessLauncher} that spawns an external operating system process
  */
-public class OsProcessLauncher extends ProcessLauncher {
+public class OsProcessLauncher extends ProcessLauncher<Process> {
    private static final Logger LOG = LoggerFactory.getLogger( OsProcessLauncher.class );
    private final List<String> commandWithArguments;
 
@@ -74,6 +74,7 @@ public class OsProcessLauncher extends ProcessLauncher {
          final Future<ByteArrayOutputStream> stderrFuture = executor.submit( new StreamAccumulator( process.getErrorStream() ) );
 
          LOG.debug( "Waiting for process {} to finish", process.pid() );
+         context.processConsumer().ifPresent( consumer -> consumer.accept( process ) );
          process.waitFor();
 
          final byte[] stdoutRaw;

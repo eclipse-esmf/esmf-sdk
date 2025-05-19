@@ -11,14 +11,14 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.buildtime.template;
+package org.eclipse.esmf.aspectmodel.generator.sql.databricks;
 
-import javax.annotation.processing.Generated;
-
-@Generated( "${generator}" )
-public class VersionInfo {
-   public static final String ESMF_SDK_VERSION = "${esmfSdkVersion}";
-   public static final String ASPECT_META_MODEL_VERSION = "${aspectMetaModelVersion}";
-   public static final String BUILD_DATE = "${buildDate}";
-   public static final String COMMIT_ID = "${commitId}";
+public record DatabricksCommentDefinition( String comment ) {
+   @Override
+   public String toString() {
+      return "COMMENT '" + comment
+            .replace( "'", "\\'" )
+            .replace( System.lineSeparator(), "\\n" )
+            + "'";
+   }
 }
