@@ -1389,12 +1389,12 @@ public class SammBuilder {
    /* Intentionally no value(int) method here, because an int value could imply different XSD types */
 
    public static ScalarValue value( final Object value, final Scalar type ) {
-      MetaModelBaseAttributes metaModelBaseAttributes;
+      final MetaModelBaseAttributes metaModelBaseAttributes;
 
-      if ( value instanceof ModelElement modelElement ) {
-         boolean hasUrn = modelElement.urn() != null;
+      if ( value instanceof final ModelElement modelElement ) {
+         final boolean hasUrn = modelElement.urn() != null;
 
-         MetaModelBaseAttributes.Builder builder = MetaModelBaseAttributes.builder()
+         final MetaModelBaseAttributes.Builder builder = MetaModelBaseAttributes.builder()
                .isAnonymous( !hasUrn );
 
          if ( hasUrn ) {

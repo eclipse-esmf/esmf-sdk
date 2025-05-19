@@ -169,7 +169,7 @@
                </systemPropertyVariables>
                <forkCount>1</forkCount>
                <reuseForks>false</reuseForks>
-               <argLine>-Xmx6g -Djava.security.manager=allow</argLine>
+               <argLine>-Xmx6g</argLine>
                <skip>${skip.maven.surefire}</skip>
                <reportsDirectory>${project.build.directory}/${testreports.surefire}</reportsDirectory>
                <!-- Do NOT wildcard include *Test.java, because then we would also run the SammCliIntegrationTest -->
@@ -293,26 +293,6 @@
          </plugin>
 
          <plugin>
-            <groupId>pl.project13.maven</groupId>
-            <artifactId>git-commit-id-plugin</artifactId>
-            <executions>
-               <execution>
-                  <id>get-the-git-infos</id>
-                  <phase>compile</phase>
-                  <goals>
-                     <goal>revision</goal>
-                  </goals>
-               </execution>
-            </executions>
-            <configuration>
-               <dotGitDirectory>${project.basedir}/../.git</dotGitDirectory>
-               <generateGitPropertiesFile>true</generateGitPropertiesFile>
-               <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties
-               </generateGitPropertiesFilename>
-            </configuration>
-         </plugin>
-
-         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-dependency-plugin</artifactId>
             <executions>
@@ -374,6 +354,7 @@
                   <executableJar>${project.build.directory}/${project.artifactId}-${project.version}.jar
                   </executableJar>
                   <binary>${project.build.directory}/${binary-name}</binary>
+                  <nativeConfigPath>${native-config-path}</nativeConfigPath>
                   <forkCount>1</forkCount>
                   <reuseForks>true</reuseForks>
                   <argLine>-Xmx4096m</argLine>

@@ -82,7 +82,11 @@ public abstract class BuildtimeCodeGenerator {
             final Matcher singleVariableMatcher = replaceSingleVariablePattern.matcher( line );
             if ( singleVariableMatcher.matches() ) {
                final String variableName = singleVariableMatcher.group( 1 );
-               lineToAdd = line.replace( "${" + variableName + "}", interpolateVariable( variableName ) );
+               final String targetValue = interpolateVariable( variableName );
+               if ( targetValue == null ) {
+                  throw new RuntimeException( "Build-time code generation failed: Value for " + variableName + " could not be determined" );
+               }
+               lineToAdd = line.replace( "${" + variableName + "}", targetValue );
             } else {
                lineToAdd = line;
             }
