@@ -196,7 +196,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
       }
 
       return property.getCharacteristic().get().accept( this, context.copy()
-            .prefix( (context.prefix().isEmpty() ? "" : context.prefix() + LEVEL_DELIMITER) + columnName( property ) )
+            .prefix( ( context.prefix().isEmpty() ? "" : context.prefix() + LEVEL_DELIMITER ) + columnName( property ) )
             .currentProperty( property )
             .build() );
    }
@@ -278,7 +278,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
 
    private String processComplexType( final ComplexType entity, final Context context, final String parentPrefix,
          final boolean isDefaultList ) {
-      StringBuilder columns = new StringBuilder();
+      final StringBuilder columns = new StringBuilder();
       final String lineDelimiter = ",\n  ";
 
       entity.getAllProperties().forEach( property -> {
@@ -333,7 +333,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
                   return Stream.empty();
                }
 
-               boolean isOptional = isInsideNestedType || property.isOptional();
+               final boolean isOptional = isInsideNestedType || property.isOptional();
 
                return Stream.of( new DatabricksType.DatabricksStructEntry( columnName( property ), databricksType,
                      isOptional, Optional.ofNullable( property.getDescription( config.commentLanguage() ) ) ) );
