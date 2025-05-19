@@ -18,7 +18,7 @@ public record DatabricksCommentDefinition( String comment ) {
    public String toString() {
       return "COMMENT '" + comment
             .replace( "'", "\\'" )
-            .replace( "\n", "\\n" )
+            .replace( System.lineSeparator(), "\\n" )
             + "'";
    }
 }
