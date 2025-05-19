@@ -80,7 +80,7 @@ public sealed interface DatabricksType {
       @Override
       public String toString() {
          return name + ": " + type + ( nullable ? "" : " NOT NULL" )
-               + comment.map( c -> " COMMENT '%s'".formatted( c.replace( "'", "\\'" ) ) ).orElse( "" );
+               + comment.map( theComment -> " " + new DatabricksCommentDefinition( theComment ) ).orElse( "" );
       }
    }
 

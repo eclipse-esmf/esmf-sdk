@@ -165,17 +165,12 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
       return result.toString();
    }
 
-   private String escapeComment( final String comment ) {
-      return comment.replace( "'", "\\'" );
-   }
-
    @Override
    public String visitAspect( final Aspect aspect, final Context context ) {
-
       final String columnDeclarations = visitStructureElement( aspect, context );
       final String comment = config.includeTableComment()
             ? Optional.ofNullable( aspect.getDescription( config.commentLanguage() ) ).map( description ->
-            "COMMENT '" + escapeComment( description ) + "'\n" ).orElse( "" )
+            new DatabricksCommentDefinition( description ) + "\n" ).orElse( "" )
             : "";
       return "%s %s (\n%s%s)\n%sTBLPROPERTIES ('%s'='%s');\n".formatted(
             config.createTableCommandPrefix(),
@@ -242,7 +237,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
 
    private String column( final String columnName, final String columnType, final boolean isNullable, final Optional<String> comment ) {
       return "%s %s%s".formatted( columnName, columnType, isNullable ? "" : " NOT NULL" )
-            + comment.map( args -> " COMMENT '%s'".formatted( escapeComment( args ) ) ).orElse( "" );
+            + comment.map( args -> " " + new DatabricksCommentDefinition( args ) ).orElse( "" );
    }
 
    @Override

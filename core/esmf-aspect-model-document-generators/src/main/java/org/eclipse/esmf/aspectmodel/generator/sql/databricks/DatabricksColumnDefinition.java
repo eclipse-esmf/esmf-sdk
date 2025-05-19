@@ -38,6 +38,6 @@ public record DatabricksColumnDefinition(
             name(),
             type(),
             nullable ? "" : " NOT NULL",
-            comment.map( c -> " COMMENT '" + c.replaceAll( "'", "\\\\'" ) + "'" ).orElse( "" ) );
+            comment.map( theComment -> " " + new DatabricksCommentDefinition( theComment ) ).orElse( "" ) );
    }
 }
