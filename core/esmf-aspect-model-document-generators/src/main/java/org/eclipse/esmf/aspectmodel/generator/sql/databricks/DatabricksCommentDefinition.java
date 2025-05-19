@@ -11,17 +11,14 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.metamodel;
+package org.eclipse.esmf.aspectmodel.generator.sql.databricks;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.esmf.metamodel.DataTypes.*;
-
-import org.junit.jupiter.api.Test;
-
-class ModelSubtypingTest {
-   @Test
-   void testScalarCasting() {
-      assertThat( xsd.byte_.isTypeOrSubtypeOf( xsd.integer ) ).isTrue();
-      assertThat( xsd.byte_.isTypeOrSubtypeOf( xsd.string ) ).isFalse();
+public record DatabricksCommentDefinition( String comment ) {
+   @Override
+   public String toString() {
+      return "COMMENT '" + comment
+            .replace( "'", "\\'" )
+            .replace( System.lineSeparator(), "\\n" )
+            + "'";
    }
 }
