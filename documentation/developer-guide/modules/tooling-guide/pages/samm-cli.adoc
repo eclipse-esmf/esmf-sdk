@@ -281,9 +281,11 @@ to load. You can configure where such lookup should be done:
 * Using the `--github` switch, you can configure a location in a remote GitHub repository as models
   root, e.g., `eclipse-esmf/esmf-sdk`. Optionally, you can also provide `--github-directory` to set
   the remote directory and `--github-branch` or `--github-tag` to set the branch name or tag,
-  respectively. If the repository is private, you can also pass `--github-token` and set a
-  https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token[fine-grained
-  access token]; the token needs at least "Contents" repository read permissions.
+  respectively. If the repository is private, you can also pass `--token` to set the repository-specific GitHub token
+  or `--github-token` for a token for repository/repositories.
+  To generate a token, refer to the https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token[fine-grained
+  access token] documentation; the token must have at least "Contents" repository read permissions.
+
 
 NOTE: When using an Aspect Model URN as input to a command (such as
 `urn:samm:org.eclipse.esmf.example:1.0.0#Aspect`), you must also provide at least one of the
