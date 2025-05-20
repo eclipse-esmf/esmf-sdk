@@ -87,7 +87,7 @@ public abstract class AspectModelMojo extends AbstractMojo {
    protected boolean detailedValidationMessages;
 
    @Parameter
-   protected String githubServerId;
+   protected List<String> githubServerIds;
 
    @Parameter( defaultValue = "${session}", readonly = true )
    protected MavenSession mavenSession;
@@ -95,7 +95,7 @@ public abstract class AspectModelMojo extends AbstractMojo {
    @Parameter
    protected Map<String, String> resolutionConfiguration = new HashMap<>();
 
-   protected GithubModelSourceConfig gitHubConfig;
+   protected List<GithubModelSourceConfig> gitHubConfigs = new ArrayList<>();
 
    private Map<AspectModel, Aspect> aspects;
 
@@ -141,8 +141,10 @@ public abstract class AspectModelMojo extends AbstractMojo {
          final Path modelsRoot = Path.of( modelsRootDirectory );
          strategies.add( new FileSystemStrategy( modelsRoot ) );
       }
-      if ( gitHubConfig != null ) {
-         strategies.add( new GitHubStrategy( gitHubConfig ) );
+      if ( !gitHubConfigs.isEmpty() ) {
+         for ( GithubModelSourceConfig gitHubConfig : gitHubConfigs ) {
+            strategies.add( new GitHubStrategy( gitHubConfig ) );
+         }
       }
       if ( strategies.isEmpty() ) {
          throw new MojoExecutionException(
@@ -206,50 +208,54 @@ public abstract class AspectModelMojo extends AbstractMojo {
          return;
       }
 
-      if ( githubServerId != null ) {
+      if ( githubServerIds != null && !githubServerIds.isEmpty() ) {
          if ( mavenSession == null ) {
             getLog().warn( "Could not read Maven session, ignoring GitHub server configuration." );
          } else {
-            final Server server = mavenSession.getSettings().getServer( githubServerId );
-            if ( server != null ) {
-               final Xpp3Dom dom = (Xpp3Dom) server.getConfiguration();
-               final String[] repositoryParts = Optional.ofNullable( dom.getChild( "repository" ) )
-                     .map( Xpp3Dom::getValue )
-                     .map( repository -> repository.split( "/" ) )
-                     .orElseThrow( () -> new MojoExecutionException( "Expected <repository> in settings.xml is missing" ) );
-               final String directory = Optional.ofNullable( dom.getChild( "directory" ) )
-                     .map( Xpp3Dom::getValue )
-                     .orElse( "" );
-               final String token = Optional.ofNullable( dom.getChild( "token" ) )
-                     .map( Xpp3Dom::getValue )
-                     .orElse( null );
+            for ( String serverId : githubServerIds ) {
+               final Server server = mavenSession.getSettings().getServer( serverId );
+               if ( server != null ) {
+                  final Xpp3Dom dom = (Xpp3Dom) server.getConfiguration();
+                  final String[] repositoryParts = Optional.ofNullable( dom.getChild( "repository" ) )
+                        .map( Xpp3Dom::getValue )
+                        .map( repository -> repository.split( "/" ) )
+                        .orElseThrow( () -> new MojoExecutionException( "Expected <repository> in settings.xml is missing" ) );
+                  final String directory = Optional.ofNullable( dom.getChild( "directory" ) )
+                        .map( Xpp3Dom::getValue )
+                        .orElse( "" );
+                  final String token = Optional.ofNullable( dom.getChild( "token" ) )
+                        .map( Xpp3Dom::getValue )
+                        .orElse( null );
 
-               final GithubRepository.Ref ref = Optional.ofNullable( dom.getChild( "branch" ) )
-                     .map( Xpp3Dom::getValue )
-                     .<GithubRepository.Ref> map( GithubRepository.Branch::new )
-                     .or( () -> Optional.ofNullable( dom.getChild( "tag" ) )
-                           .map( Xpp3Dom::getValue )
-                           .map( GithubRepository.Tag::new ) )
-                     .orElse( new GithubRepository.Branch( "main" ) );
+                  final GithubRepository.Ref ref = Optional.ofNullable( dom.getChild( "branch" ) )
+                        .map( Xpp3Dom::getValue )
+                        .<GithubRepository.Ref> map( GithubRepository.Branch::new )
+                        .or( () -> Optional.ofNullable( dom.getChild( "tag" ) )
+                              .map( Xpp3Dom::getValue )
+                              .map( GithubRepository.Tag::new ) )
+                        .orElse( new GithubRepository.Branch( "main" ) );
 
-               final List<Proxy> proxies = mavenSession.getSettings().getProxies();
-               final ProxyConfig proxyConfig = Optional.ofNullable( proxies ).stream().flatMap( Collection::stream )
-                     .filter( proxy -> proxy.getProtocol().equals( "https" ) )
-                     .findFirst()
-                     .or( () -> Optional.ofNullable( proxies ).stream().flatMap( Collection::stream )
-                           .filter( proxy -> proxy.getProtocol().equals( "http" ) )
-                           .findFirst() )
-                     .filter( Proxy::isActive )
-                     .map( proxy -> ProxyConfig.from( proxy.getHost(), proxy.getPort() ) )
-                     .orElse( ProxyConfig.detectProxySettings() );
+                  final List<Proxy> proxies = mavenSession.getSettings().getProxies();
+                  final ProxyConfig proxyConfig = Optional.ofNullable( proxies ).stream().flatMap( Collection::stream )
+                        .filter( proxy -> proxy.getProtocol().equals( "https" ) )
+                        .findFirst()
+                        .or( () -> Optional.ofNullable( proxies ).stream().flatMap( Collection::stream )
+                              .filter( proxy -> proxy.getProtocol().equals( "http" ) )
+                              .findFirst() )
+                        .filter( Proxy::isActive )
+                        .map( proxy -> ProxyConfig.from( proxy.getHost(), proxy.getPort() ) )
+                        .orElse( ProxyConfig.detectProxySettings() );
 
-               final GithubRepository repository = new GithubRepository( repositoryParts[0], repositoryParts[1], ref );
-               gitHubConfig = GithubModelSourceConfigBuilder.builder()
-                     .proxyConfig( proxyConfig )
-                     .repository( repository )
-                     .directory( directory )
-                     .token( token )
-                     .build();
+                  final GithubRepository repository = new GithubRepository( repositoryParts[0], repositoryParts[1], ref );
+                  GithubModelSourceConfig gitHubConfig = GithubModelSourceConfigBuilder.builder()
+                        .proxyConfig( proxyConfig )
+                        .repository( repository )
+                        .directory( directory )
+                        .token( token )
+                        .build();
+
+                  gitHubConfigs.add( gitHubConfig );
+               }
             }
          }
       }
