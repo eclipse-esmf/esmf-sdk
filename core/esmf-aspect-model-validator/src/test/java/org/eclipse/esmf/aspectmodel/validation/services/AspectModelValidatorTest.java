@@ -44,7 +44,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 class AspectModelValidatorTest {
-   // One specific validator instance for each meta model version
    AspectModelValidator service = new AspectModelValidator();
 
    @ParameterizedTest
@@ -205,6 +204,15 @@ class AspectModelValidatorTest {
          System.out.println( report );
       }
       assertThat( model.isRight() ).isTrue();
+   }
+
+   @Test
+   void testValidateInvalidLiteralValue() {
+      final Either<List<Violation>, AspectModel> result = service.loadModel( () -> TestResources.load( InvalidTestAspect.INVALID_URI ) );
+      assertThat( result.isLeft() ).isTrue();
+      final List<Violation> violations = result.getLeft();
+      assertThat( violations ).hasSize( 1 );
+      assertThat( violations.getFirst().message() ).contains( "is no valid value for type" );
    }
 
    private List<Violation> cycles( final String... cycles ) {

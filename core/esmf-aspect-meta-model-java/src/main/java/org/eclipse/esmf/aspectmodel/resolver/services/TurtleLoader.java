@@ -23,6 +23,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
+import org.eclipse.esmf.aspectmodel.ValueParsingException;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
 import org.eclipse.esmf.aspectmodel.resolver.parser.ReaderRiotTurtle;
 import org.eclipse.esmf.metamodel.datatype.SammXsdType;
@@ -100,12 +101,9 @@ public final class TurtleLoader {
                .lang( Lang.TURTLE )
                .toModel();
          return Try.success( streamModel );
-      } catch ( final IllegalArgumentException exception ) {
-         LOG.error( "Invalid value encountered in Aspect Model.", exception );
-         final String incorrectDataTypeDefinitionMessage = "%s is not a valid value for the defined data type.";
-         final String formattedErrorMessage = String
-               .format( incorrectDataTypeDefinitionMessage, exception.getMessage() );
-         return Try.failure( new IllegalArgumentException( formattedErrorMessage ) );
+      } catch ( final ValueParsingException exception ) {
+         return Try.failure( new ParserException( exception.getLine(), exception.getColumn(),
+               "'%s' is no valid value for type %s".formatted( exception.getValue(), exception.getType() ), modelContent ) );
       } catch ( final IOException exception ) {
          return Try.failure( exception );
       } catch ( final RiotException exception ) {

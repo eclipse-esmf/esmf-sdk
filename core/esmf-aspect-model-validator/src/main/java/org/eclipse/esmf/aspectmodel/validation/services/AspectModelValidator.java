@@ -16,8 +16,6 @@ package org.eclipse.esmf.aspectmodel.validation.services;
 import java.io.File;
 import java.util.List;
 import java.util.function.Supplier;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
@@ -80,18 +78,9 @@ public class AspectModelValidator {
          model = aspectModelSupplier.get();
          return Either.right( model );
       } catch ( final ParserException exception ) { // Syntax error
-         // RiotException's message looks like this:
-         // [line: 17, col: 2 ] Triples not terminated by DOT
-         final Pattern pattern = Pattern.compile( "\\[ *line: *(\\d+), *col: *(\\d+) *] *(.*)" );
-         final Matcher matcher = pattern.matcher( exception.getMessage() );
-         if ( matcher.find() ) {
-            final long line = Long.parseLong( matcher.group( 1 ) );
-            final long column = Long.parseLong( matcher.group( 2 ) );
-            final String message = matcher.group( 3 );
-            return Either.left( List.of( new InvalidSyntaxViolation( message, exception.getSourceDocument(), line, column ) ) );
-         }
-         return Either.left(
-               List.of( new InvalidSyntaxViolation( "Syntax error: " + exception.getMessage(), exception.getSourceDocument(), -1, -1 ) ) );
+         return Either.left( List.of(
+               new InvalidSyntaxViolation( exception.getMessage(), exception.getSourceDocument(), exception.getLine(),
+                     exception.getColumn() ) ) );
       } catch ( final Exception exception ) { // Any other exception, e.g., resolution exception
          return Either.left( List.of( new ProcessingViolation( exception.getMessage(), exception ) ) );
       }
