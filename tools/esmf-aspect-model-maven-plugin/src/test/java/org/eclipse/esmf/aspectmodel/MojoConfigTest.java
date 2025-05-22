@@ -16,6 +16,8 @@ package org.eclipse.esmf.aspectmodel;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
+import java.util.List;
+
 import org.eclipse.esmf.aspectmodel.resolver.github.GithubModelSourceConfig;
 
 import org.apache.maven.plugin.Mojo;
@@ -59,11 +61,13 @@ public class MojoConfigTest extends AspectModelMojoTest {
             """;
       final AspectModelMojo validate = (AspectModelMojo) getMojo( "test-pom-github-server-config", "validate", serverConfig );
       validate.execute();
-      final GithubModelSourceConfig config = validate.gitHubConfig;
-      assertThat( config.repository().owner() ).isEqualTo( "test-org" );
-      assertThat( config.repository().repository() ).isEqualTo( "test-repository" );
-      assertThat( config.directory() ).isEqualTo( "src/main/resources/aspects" );
-      assertThat( config.repository().branchOrTag().name() ).isEqualTo( "main" );
-      assertThat( config.token() ).isEqualTo( "THE_TOKEN" );
+      final List<GithubModelSourceConfig> configs = validate.gitHubConfigs;
+      for ( GithubModelSourceConfig config : configs ) {
+         assertThat( config.repository().owner() ).isEqualTo( "test-org" );
+         assertThat( config.repository().repository() ).isEqualTo( "test-repository" );
+         assertThat( config.directory() ).isEqualTo( "src/main/resources/aspects" );
+         assertThat( config.repository().branchOrTag().name() ).isEqualTo( "main" );
+         assertThat( config.token() ).isEqualTo( "THE_TOKEN" );
+      }
    }
 }

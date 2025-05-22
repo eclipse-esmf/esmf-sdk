@@ -90,7 +90,7 @@ public abstract class AbstractInputHandler implements InputHandler {
    }
 
    private Optional<GithubModelSourceConfig> buildGithubModelSourceConfig(
-         final ResolverConfigurationMixin.GitHubResolverOptions options, final String gitHubToken ) {
+         final ResolverConfigurationMixin.GitHubResolverOptions options, final String globalGitHubToken ) {
       if ( options.gitHubName == null ) {
          return Optional.empty();
       }
@@ -104,7 +104,7 @@ public abstract class AbstractInputHandler implements InputHandler {
       return Optional.of( GithubModelSourceConfigBuilder.builder()
             .repository( repository )
             .directory( options.gitHubDirectory )
-            .token( gitHubToken )
+            .token( options.token != null ? globalGitHubToken : options.token )
             .build() );
    }
 
