@@ -221,7 +221,7 @@ public class ModelCycleDetector {
    private void initializeQuery() {
       final String currentVersionPrefixes =
             Stream.of( SammNs.SAMM, SammNs.SAMMC, new SimpleRdfNamespace( "rdf", RDF.uri ) )
-                  .map( ns -> "prefix %s: <%s>".formatted( ns.getShortForm(), ns.getUri() ) )
+                  .map( ns -> "prefix %s: <%s>".formatted( ns.getShortForm(), ns.getNamespace() ) )
                   .collect( Collectors.joining( "\n" ) );
 
       //noinspection LongLine
