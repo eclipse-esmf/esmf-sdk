@@ -21,12 +21,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.shacl.violation.ProcessingViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.metamodel.vocabulary.SAMM;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
-import org.eclipse.esmf.samm.KnownVersion;
+import org.eclipse.esmf.metamodel.vocabulary.SimpleRdfNamespace;
 
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
@@ -57,12 +59,6 @@ public class ModelCycleDetector {
    static final String ERR_CYCLE_DETECTED =
          "The Aspect Model contains a cycle which includes following properties: %s. Please remove any cycles that do not allow a finite "
                + "json payload.";
-
-   private static final String PREFIXES = """
-         prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%1$s#>
-         prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:%1$s#>
-         prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-         """;
 
    final Set<String> discovered = new LinkedHashSet<>();
    final Set<String> discoveredOptionals = new HashSet<>();
@@ -186,7 +182,7 @@ public class ModelCycleDetector {
 
    private boolean isOptionalProperty( final Resource propertyNode ) {
       final Statement optional = propertyNode.getProperty( samm.optional() );
-      return (optional != null) && optional.getBoolean();
+      return ( optional != null ) && optional.getBoolean();
    }
 
    private String getUniqueName( final Resource property ) {
@@ -223,7 +219,11 @@ public class ModelCycleDetector {
 
    @SuppressWarnings( "checkstyle:LineLength" )
    private void initializeQuery() {
-      final String currentVersionPrefixes = PREFIXES.formatted( KnownVersion.getLatest().toVersionString() );
+      final String currentVersionPrefixes =
+            Stream.of( SammNs.SAMM, SammNs.SAMMC, new SimpleRdfNamespace( "rdf", RDF.uri ) )
+                  .map( ns -> "prefix %s: <%s>".formatted( ns.getShortForm(), ns.getNamespace() ) )
+                  .collect( Collectors.joining( "\n" ) );
+
       //noinspection LongLine
       final String queryString = String.format( """
                   %s select ?reachableProperty ?viaEither

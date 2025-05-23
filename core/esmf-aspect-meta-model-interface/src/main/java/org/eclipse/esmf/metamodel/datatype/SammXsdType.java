@@ -25,6 +25,9 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.eclipse.esmf.aspectmodel.ValueParsingException;
+
+import io.vavr.control.Try;
 import jakarta.xml.bind.DatatypeConverter;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.jena.datatypes.DatatypeFormatException;
@@ -65,173 +68,244 @@ public class SammXsdType<T> extends XSDDatatype implements SammType<T> {
    }
 
    public static final SammXsdType<Boolean> BOOLEAN = new SammXsdType<>(
-         org.apache.jena.vocabulary.XSD.xboolean, Boolean.class, Boolean::valueOf, Object::toString,
-         XSDDatatype.XSDboolean::isValid );
+         org.apache.jena.vocabulary.XSD.xboolean, Boolean.class, value ->
+         switch ( value.toLowerCase() ) {
+            case "true" -> true;
+            case "false" -> false;
+            default -> throw new ValueParsingException( "xsd:boolean", value );
+         }, Object::toString, XSDDatatype.XSDboolean::isValid );
 
    public static final SammXsdType<BigDecimal> DECIMAL = new SammXsdType<>(
-         org.apache.jena.vocabulary.XSD.decimal, BigDecimal.class, BigDecimal::new, BigDecimal::toString,
-         XSDDatatype.XSDdecimal::isValid );
+         org.apache.jena.vocabulary.XSD.decimal, BigDecimal.class,
+         value -> Try.of( () -> new BigDecimal( value ) )
+               .getOrElseThrow( cause -> new ValueParsingException( "xsd:decimal", value, cause ) ),
+         BigDecimal::toString, XSDDatatype.XSDdecimal::isValid );
 
    public static final SammXsdType<BigInteger> INTEGER = new SammXsdType<>(
-         org.apache.jena.vocabulary.XSD.integer, BigInteger.class, BigInteger::new, BigInteger::toString,
+         org.apache.jena.vocabulary.XSD.integer, BigInteger.class,
+         value -> Try.of( () -> new BigInteger( value ) )
+               .getOrElseThrow( cause -> new ValueParsingException( "xsd:decimal", value, cause ) ),
+         BigInteger::toString,
          XSDDatatype.XSDinteger::isValid );
 
    public static final SammXsdType<Double> DOUBLE = new SammXsdType<>(
-         org.apache.jena.vocabulary.XSD.xdouble, Double.class, value -> {
-      if ( "INF".equalsIgnoreCase( value ) ) {
-         return Double.POSITIVE_INFINITY;
-      }
-      if ( "-INF".equalsIgnoreCase( value ) ) {
-         return Double.NEGATIVE_INFINITY;
-      }
-      return Double.parseDouble( value );
-   }, value -> {
-      if ( value.isInfinite() ) {
-         if ( value > 0.0d ) {
-            return "INF";
-         } else {
-            return "-INF";
-         }
-      }
-      return value.toString();
-   }, XSDDatatype.XSDdouble::isValid );
+         org.apache.jena.vocabulary.XSD.xdouble, Double.class,
+         value -> switch ( value.toUpperCase() ) {
+            case "INF" -> Double.POSITIVE_INFINITY;
+            case "-INF" -> Double.NEGATIVE_INFINITY;
+            default -> Try.of( () -> Double.parseDouble( value ) )
+                  .getOrElseThrow( cause -> new ValueParsingException( "xsd:double", value, cause ) );
+         },
+         value -> {
+            if ( value.isInfinite() ) {
+               return value > 0.0d ? "INF" : "-INF";
+            }
+            return value.toString();
+         }, XSDDatatype.XSDdouble::isValid );
 
    public static final SammXsdType<Float> FLOAT = new SammXsdType<>(
-         org.apache.jena.vocabulary.XSD.xfloat, Float.class, value -> {
-      if ( "INF".equalsIgnoreCase( value ) ) {
-         return Float.POSITIVE_INFINITY;
-      }
-      if ( "-INF".equalsIgnoreCase( value ) ) {
-         return Float.NEGATIVE_INFINITY;
-      }
-      return Float.parseFloat( value );
-   }, value -> {
-      if ( value.isInfinite() ) {
-         if ( value > 0.0f ) {
-            return "INF";
-         } else {
-            return "-INF";
-         }
-      }
-      return value.toString();
-   }, XSDDatatype.XSDfloat::isValid );
+         org.apache.jena.vocabulary.XSD.xfloat, Float.class,
+         value -> switch ( value.toUpperCase() ) {
+            case "INF" -> Float.POSITIVE_INFINITY;
+            case "-INF" -> Float.NEGATIVE_INFINITY;
+            default -> Try.of( () -> Float.parseFloat( value ) )
+                  .getOrElseThrow( cause -> new ValueParsingException( "xsd:float", value, cause ) );
+         },
+         value -> {
+            if ( value.isInfinite() ) {
+               return value > 0.0f ? "INF" : "-INF";
+            }
+            return value.toString();
+         }, XSDDatatype.XSDfloat::isValid );
 
    public static final SammXsdType<XMLGregorianCalendar> DATE = new SammXsdType<>(
          org.apache.jena.vocabulary.XSD.date, XMLGregorianCalendar.class,
-         value -> datatypeFactory.newXMLGregorianCalendar( value ), XMLGregorianCalendar::toXMLFormat,
-         XSDDatatype.XSDdate::isValid );
+         value -> Try.of( () -> datatypeFactory.newXMLGregorianCalendar( value ) )
+               .getOrElseThrow( cause -> new ValueParsingException( "xsd:date", value, cause ) ),
+         XMLGregorianCalendar::toXMLFormat, XSDDatatype.XSDdate::isValid );
 
    public static final SammXsdType<XMLGregorianCalendar> TIME = new SammXsdType<>(
          org.apache.jena.vocabulary.XSD.time, XMLGregorianCalendar.class,
-         value -> datatypeFactory.newXMLGregorianCalendar( value ), XMLGregorianCalendar::toXMLFormat,
+         value -> Try.of( () -> datatypeFactory.newXMLGregorianCalendar( value ) )
+               .getOrElseThrow( cause -> new ValueParsingException( "xsd:time", value, cause ) ),
+         XMLGregorianCalendar::toXMLFormat,
          XSDDatatype.XSDtime::isValid );
 
    public static final SammXsdType<XMLGregorianCalendar> DATE_TIME = new SammXsdType<>(
          org.apache.jena.vocabulary.XSD.dateTime, XMLGregorianCalendar.class,
-         value -> datatypeFactory.newXMLGregorianCalendar( value ), XMLGregorianCalendar::toXMLFormat,
+         value -> Try.of( () -> datatypeFactory.newXMLGregorianCalendar( value ) )
+               .getOrElseThrow( cause -> new ValueParsingException( "xsd:dateTime", value, cause ) ),
+         XMLGregorianCalendar::toXMLFormat,
          XSDDatatype.XSDdateTime::isValid );
 
    public static final SammExtendedXsdType<XMLGregorianCalendar> DATE_TIME_STAMP = new SammExtendedXsdType<>(
-         org.apache.jena.vocabulary.XSD.dateTimeStamp,
-         XMLGregorianCalendar.class, value -> SammXsdType.datatypeFactory.newXMLGregorianCalendar( value ),
+         org.apache.jena.vocabulary.XSD.dateTimeStamp, XMLGregorianCalendar.class,
+         value -> Try.of( () -> datatypeFactory.newXMLGregorianCalendar( value ) )
+               .getOrElseThrow( cause -> new ValueParsingException( "xsd:dateTimeStamp", value, cause ) ),
          XMLGregorianCalendar::toXMLFormat, XSDDatatype.XSDdateTimeStamp::isValid );
 
    public static final SammXsdType<XMLGregorianCalendar> G_YEAR = new SammXsdType<>(
          org.apache.jena.vocabulary.XSD.gYear, XMLGregorianCalendar.class,
-         value -> datatypeFactory.newXMLGregorianCalendar( value ), XMLGregorianCalendar::toXMLFormat,
-         XSDDatatype.XSDgYear::isValid );
+         value -> Try.of( () -> datatypeFactory.newXMLGregorianCalendar( value ) )
+               .getOrElseThrow( cause -> new ValueParsingException( "xsd:gYear", value, cause ) ),
+         XMLGregorianCalendar::toXMLFormat, XSDDatatype.XSDgYear::isValid );
 
    public static final SammXsdType<XMLGregorianCalendar> G_MONTH = new SammXsdType<>(
          org.apache.jena.vocabulary.XSD.gMonth, XMLGregorianCalendar.class,
-         value -> datatypeFactory.newXMLGregorianCalendar( value ),
+         value -> Try.of( () -> datatypeFactory.newXMLGregorianCalendar( value ) )
+               .getOrElseThrow( cause -> new ValueParsingException( "xsd:gMonth", value, cause ) ),
          XMLGregorianCalendar::toXMLFormat, XSDDatatype.XSDgMonth::isValid );
 
    public static final SammXsdType<XMLGregorianCalendar> G_DAY = new SammXsdType<>(
          org.apache.jena.vocabulary.XSD.gDay, XMLGregorianCalendar.class,
-         value -> datatypeFactory.newXMLGregorianCalendar( value ), XMLGregorianCalendar::toXMLFormat,
-         XSDDatatype.XSDgDay::isValid );
+         value -> Try.of( () -> datatypeFactory.newXMLGregorianCalendar( value ) )
+               .getOrElseThrow( cause -> new ValueParsingException( "xsd:gDay", value, cause ) ),
+         XMLGregorianCalendar::toXMLFormat, XSDDatatype.XSDgDay::isValid );
 
    public static final SammXsdType<XMLGregorianCalendar> G_YEAR_MONTH = new SammXsdType<>(
          org.apache.jena.vocabulary.XSD.gYearMonth, XMLGregorianCalendar.class,
-         value -> datatypeFactory.newXMLGregorianCalendar( value ), XMLGregorianCalendar::toXMLFormat,
-         XSDDatatype.XSDgYearMonth::isValid );
+         value -> Try.of( () -> datatypeFactory.newXMLGregorianCalendar( value ) )
+               .getOrElseThrow( cause -> new ValueParsingException( "xsd:gYearMonth", value, cause ) ),
+         XMLGregorianCalendar::toXMLFormat, XSDDatatype.XSDgYearMonth::isValid );
 
    public static final SammXsdType<XMLGregorianCalendar> G_MONTH_DAY = new SammXsdType<>(
          org.apache.jena.vocabulary.XSD.gMonthDay, XMLGregorianCalendar.class,
-         value -> datatypeFactory.newXMLGregorianCalendar( value ), XMLGregorianCalendar::toXMLFormat,
-         XSDDatatype.XSDgMonthDay::isValid );
+         value -> Try.of( () -> datatypeFactory.newXMLGregorianCalendar( value ) )
+               .getOrElseThrow( cause -> new ValueParsingException( "xsd:gMonthDay", value, cause ) ),
+         XMLGregorianCalendar::toXMLFormat, XSDDatatype.XSDgMonthDay::isValid );
 
    public static final SammXsdType<Duration> DURATION = new SammXsdType<>(
-         org.apache.jena.vocabulary.XSD.duration, Duration.class, value -> datatypeFactory.newDuration( value ),
+         org.apache.jena.vocabulary.XSD.duration, Duration.class,
+         value -> Try.of( () -> datatypeFactory.newDuration( value ) )
+               .getOrElseThrow( cause -> new ValueParsingException( "xsd:duration", value, cause ) ),
          Duration::toString, XSDDatatype.XSDduration::isValid );
 
    public static final SammExtendedXsdType<Duration> YEAR_MONTH_DURATION = new SammExtendedXsdType<>(
-         org.apache.jena.vocabulary.XSD.yearMonthDuration,
-         Duration.class, value -> SammXsdType.datatypeFactory.newDurationYearMonth( value ), Duration::toString,
-         XSDDatatype.XSDyearMonthDuration::isValid );
+         org.apache.jena.vocabulary.XSD.yearMonthDuration, Duration.class,
+         value -> Try.of( () -> datatypeFactory.newDurationYearMonth( value ) )
+               .getOrElseThrow( cause -> new ValueParsingException( "xsd:yearMonthDuration", value, cause ) ),
+         Duration::toString, XSDDatatype.XSDyearMonthDuration::isValid );
 
    public static final SammExtendedXsdType<Duration> DAY_TIME_DURATION = new SammExtendedXsdType<>(
-         org.apache.jena.vocabulary.XSD.dayTimeDuration,
-         Duration.class, value -> SammXsdType.datatypeFactory.newDurationDayTime( value ), Duration::toString,
+         org.apache.jena.vocabulary.XSD.dayTimeDuration, Duration.class,
+         value -> Try.of( () -> datatypeFactory.newDurationDayTime( value ) )
+               .getOrElseThrow( cause -> new ValueParsingException( "xsd:dayTimeDuration", value, cause ) ),
+         Duration::toString,
          XSDDatatype.XSDdayTimeDuration::isValid );
 
-   public static final SammXsdType<Byte> BYTE = new SammXsdType<>( org.apache.jena.vocabulary.XSD.xbyte,
-         Byte.class, Byte::parseByte, Object::toString, XSDDatatype.XSDbyte::isValid );
+   public static final SammXsdType<Byte> BYTE = new SammXsdType<>(
+         org.apache.jena.vocabulary.XSD.xbyte, Byte.class,
+         value -> Try.of( () -> Byte.parseByte( value ) )
+               .getOrElseThrow( cause -> new ValueParsingException( "xsd:byte", value, cause ) ),
+         Object::toString, XSDDatatype.XSDbyte::isValid );
 
    public static final SammXsdType<Short> SHORT = new SammXsdType<>(
-         org.apache.jena.vocabulary.XSD.xshort, Short.class, Short::parseShort, Object::toString,
-         XSDDatatype.XSDshort::isValid );
+         org.apache.jena.vocabulary.XSD.xshort, Short.class,
+         value -> Try.of( () -> Short.parseShort( value ) )
+               .getOrElseThrow( cause -> new ValueParsingException( "xsd:short", value, cause ) ),
+         Object::toString, XSDDatatype.XSDshort::isValid );
 
    public static final SammXsdType<Integer> INT = new SammXsdType<>(
-         org.apache.jena.vocabulary.XSD.xint, Integer.class, Integer::parseInt, Object::toString,
-         XSDDatatype.XSDint::isValid );
+         org.apache.jena.vocabulary.XSD.xint, Integer.class,
+         value -> Try.of( () -> Integer.parseInt( value ) )
+               .getOrElseThrow( cause -> new ValueParsingException( "xsd:int", value, cause ) ),
+         Object::toString, XSDDatatype.XSDint::isValid );
 
-   public static final SammXsdType<Long> LONG = new SammXsdType<>( org.apache.jena.vocabulary.XSD.xlong,
-         Long.class, Long::parseLong, Object::toString, XSDDatatype.XSDlong::isValid );
+   public static final SammXsdType<Long> LONG = new SammXsdType<>(
+         org.apache.jena.vocabulary.XSD.xlong, Long.class,
+         value -> Try.of( () -> Long.parseLong( value ) )
+               .getOrElseThrow( cause -> new ValueParsingException( "xsd:long", value, cause ) ),
+         Object::toString, XSDDatatype.XSDlong::isValid );
 
    public static final SammXsdType<Short> UNSIGNED_BYTE = new SammXsdType<>(
-         org.apache.jena.vocabulary.XSD.unsignedByte, Short.class, Short::parseShort, Object::toString,
-         XSDDatatype.XSDunsignedByte::isValid );
+         org.apache.jena.vocabulary.XSD.unsignedByte, Short.class,
+         value -> Try.of( () -> Short.parseShort( value ) )
+               .flatMap( unsignedByteValue -> unsignedByteValue < 0 || unsignedByteValue > 255
+                     ? Try.failure( new IllegalArgumentException() )
+                     : Try.success( unsignedByteValue ) )
+               .getOrElseThrow( cause -> new ValueParsingException( "xsd:unsignedByte", value, cause ) ),
+         Object::toString, XSDDatatype.XSDunsignedByte::isValid );
 
    public static final SammXsdType<Integer> UNSIGNED_SHORT = new SammXsdType<>(
-         org.apache.jena.vocabulary.XSD.unsignedShort, Integer.class, Integer::parseInt, Object::toString,
-         XSDDatatype.XSDunsignedShort::isValid );
+         org.apache.jena.vocabulary.XSD.unsignedShort, Integer.class,
+         value -> Try.of( () -> Integer.parseInt( value ) )
+               .flatMap( unsignedShortValue -> unsignedShortValue < 0 || unsignedShortValue > 65535
+                     ? Try.failure( new IllegalArgumentException() )
+                     : Try.success( unsignedShortValue ) )
+               .getOrElseThrow( cause -> new ValueParsingException( "xsd:unsignedShort", value, cause ) ),
+         Object::toString, XSDDatatype.XSDunsignedShort::isValid );
 
    public static final SammXsdType<Long> UNSIGNED_INT = new SammXsdType<>(
-         org.apache.jena.vocabulary.XSD.unsignedInt, Long.class, Long::parseLong, Object::toString,
-         XSDDatatype.XSDunsignedInt::isValid );
+         org.apache.jena.vocabulary.XSD.unsignedInt, Long.class,
+         value -> Try.of( () -> Long.parseLong( value ) )
+               .flatMap( unsignedIntValue -> unsignedIntValue < 0 || unsignedIntValue > 4294967295L
+                     ? Try.failure( new IllegalArgumentException() )
+                     : Try.success( unsignedIntValue ) )
+               .getOrElseThrow( cause -> new ValueParsingException( "xsd:unsignedInt", value, cause ) ),
+         Object::toString, XSDDatatype.XSDunsignedInt::isValid );
 
    public static final SammXsdType<BigInteger> UNSIGNED_LONG = new SammXsdType<>(
-         org.apache.jena.vocabulary.XSD.unsignedLong, BigInteger.class, BigInteger::new, BigInteger::toString,
-         XSDDatatype.XSDunsignedLong::isValid );
+         org.apache.jena.vocabulary.XSD.unsignedLong, BigInteger.class,
+         value -> Try.of( () -> new BigInteger( value ) )
+               .flatMap( unsignedLongValue -> unsignedLongValue.compareTo( BigInteger.ZERO ) < 0
+                     || unsignedLongValue.compareTo( new BigInteger( "18446744073709551615" ) ) > 0
+                     ? Try.failure( new IllegalArgumentException() )
+                     : Try.success( unsignedLongValue ) )
+               .getOrElseThrow( cause -> new ValueParsingException( "xsd:unsignedLong", value, cause ) ),
+         BigInteger::toString, XSDDatatype.XSDunsignedLong::isValid );
 
    public static final SammXsdType<BigInteger> POSITIVE_INTEGER = new SammXsdType<>(
          org.apache.jena.vocabulary.XSD.positiveInteger, BigInteger.class,
-         BigInteger::new, BigInteger::toString, XSDDatatype.XSDpositiveInteger::isValid );
+         value -> Try.of( () -> new BigInteger( value ) )
+               .flatMap( positiveIntegerValue -> positiveIntegerValue.compareTo( BigInteger.ONE ) < 0
+                     ? Try.failure( new IllegalArgumentException() )
+                     : Try.success( positiveIntegerValue ) )
+               .getOrElseThrow( cause -> new ValueParsingException( "xsd:positiveInteger", value, cause ) ),
+         BigInteger::toString, XSDDatatype.XSDpositiveInteger::isValid );
 
    public static final SammXsdType<BigInteger> NON_NEGATIVE_INTEGER = new SammXsdType<>(
          org.apache.jena.vocabulary.XSD.nonNegativeInteger, BigInteger.class,
-         BigInteger::new, BigInteger::toString, XSDDatatype.XSDnonNegativeInteger::isValid );
+         value -> Try.of( () -> new BigInteger( value ) )
+               .flatMap( nonNegativeIntegerValue -> nonNegativeIntegerValue.compareTo( BigInteger.ZERO ) < 0
+                     ? Try.failure( new IllegalArgumentException() )
+                     : Try.success( nonNegativeIntegerValue ) )
+               .getOrElseThrow( cause -> new ValueParsingException( "xsd:nonNegativeInteger", value, cause ) ),
+         BigInteger::toString, XSDDatatype.XSDnonNegativeInteger::isValid );
 
    public static final SammXsdType<BigInteger> NEGATIVE_INTEGER = new SammXsdType<>(
          org.apache.jena.vocabulary.XSD.negativeInteger, BigInteger.class,
-         BigInteger::new, BigInteger::toString, XSDDatatype.XSDnegativeInteger::isValid );
+         value -> Try.of( () -> new BigInteger( value ) )
+               .flatMap( negativeIntegegerValue -> negativeIntegegerValue.compareTo( BigInteger.ZERO ) >= 0
+                     ? Try.failure( new IllegalArgumentException() )
+                     : Try.success( negativeIntegegerValue ) )
+               .getOrElseThrow( cause -> new ValueParsingException( "xsd:negativeInteger", value, cause ) ),
+         BigInteger::toString, XSDDatatype.XSDnegativeInteger::isValid );
 
    public static final SammXsdType<BigInteger> NON_POSITIVE_INTEGER = new SammXsdType<>(
          org.apache.jena.vocabulary.XSD.nonPositiveInteger, BigInteger.class,
-         BigInteger::new, BigInteger::toString, XSDDatatype.XSDnonPositiveInteger::isValid );
+         value -> Try.of( () -> new BigInteger( value ) )
+               .flatMap( nonPositiveIntegerValue -> nonPositiveIntegerValue.compareTo( BigInteger.ZERO ) > 0
+                     ? Try.failure( new IllegalArgumentException() )
+                     : Try.success( nonPositiveIntegerValue ) )
+               .getOrElseThrow( cause -> new ValueParsingException( "xsd:nonPositiveInteger", value, cause ) ),
+         BigInteger::toString, XSDDatatype.XSDnonPositiveInteger::isValid );
 
    public static final SammXsdType<byte[]> HEX_BINARY = new SammXsdType<>(
-         org.apache.jena.vocabulary.XSD.hexBinary, byte[].class, DatatypeConverter::parseHexBinary,
+         org.apache.jena.vocabulary.XSD.hexBinary, byte[].class,
+         value -> Try.of( () -> DatatypeConverter.parseHexBinary( value ) )
+               .getOrElseThrow( cause -> new ValueParsingException( "xsd:hexBinary", value, cause ) ),
          DatatypeConverter::printHexBinary, XSDDatatype.XSDhexBinary::isValid );
 
    public static final SammXsdType<byte[]> BASE64_BINARY = new SammXsdType<>(
-         org.apache.jena.vocabulary.XSD.base64Binary, byte[].class, DatatypeConverter::parseBase64Binary,
+         org.apache.jena.vocabulary.XSD.base64Binary, byte[].class,
+         value -> Try.of( () -> DatatypeConverter.parseBase64Binary( value ) )
+               .getOrElseThrow( cause -> new ValueParsingException( "xsd:base64Binary", value, cause ) ),
          DatatypeConverter::printBase64Binary, XSDDatatype.XSDbase64Binary::isValid );
 
    public static final SammXsdType<URI> ANY_URI = new SammXsdType<>(
          org.apache.jena.vocabulary.XSD.anyURI, URI.class,
-         value -> URI.create( (String) XSDDatatype.XSDanyURI.parse( value ) ),
+         value -> Try.of( () -> URI.create( (String) XSDDatatype.XSDanyURI.parse( value ) ) )
+               .getOrElseThrow( cause -> new ValueParsingException( "xsd:anyURI", value, cause ) ),
          URI::toString, XSDDatatype.XSDanyURI::isValid );
 
    public static final List<RDFDatatype> ALL_TYPES = List

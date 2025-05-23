@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import org.eclipse.esmf.aspectmodel.AspectLoadingException;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.ComplexType;
@@ -68,6 +69,16 @@ class AspectModelLoaderTest {
       assertThatThrownBy( () -> TestResources.load( InvalidTestAspect.INVALID_ENCODING ) )
             .isInstanceOf( ModelResolutionException.class )
             .hasMessageContaining( "Encountered invalid encoding" );
+   }
+
+   @Test
+   void testAspectModelWithInvalidUri() {
+      assertThatThrownBy( () -> TestResources.load( InvalidTestAspect.INVALID_URI ) )
+            .isInstanceOfSatisfying( ParserException.class, parserException -> {
+               assertThat( parserException.getMessage() ).contains( "invalid with spaces" );
+               assertThat( parserException.getLine() ).isNotEqualTo( -1 ).isNotEqualTo( 0 );
+               assertThat( parserException.getColumn() ).isNotEqualTo( -1 ).isNotEqualTo( 0 );
+            } );
    }
 
    @Test
