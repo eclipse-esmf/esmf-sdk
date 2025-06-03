@@ -68,7 +68,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.slf4j.LoggerFactory;
 
-public class AspectModelOpenApiGeneratorTest {
+class AspectModelOpenApiGeneratorTest {
    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
    private static final String TEST_BASE_URL = "https://test-aspect.example.com";
    private static final String TEST_RESOURCE_PATH = "my-test-aspect";
@@ -520,11 +520,11 @@ public class AspectModelOpenApiGeneratorTest {
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
       assertThat(
-            ( (Schema) openApi.getComponents().getSchemas().get( "testOperation" ).getAllOf()
-                  .get( 1 ) ).getProperties() ).doesNotContainKey(
+            ((Schema) openApi.getComponents().getSchemas().get( "testOperation" ).getAllOf()
+                  .get( 1 )).getProperties() ).doesNotContainKey(
             "params" );
-      assertThat( ( (Schema) openApi.getComponents().getSchemas().get( "testOperationTwo" ).getAllOf()
-            .get( 1 ) ).getProperties() ).doesNotContainKey( "params" );
+      assertThat( ((Schema) openApi.getComponents().getSchemas().get( "testOperationTwo" ).getAllOf()
+            .get( 1 )).getProperties() ).doesNotContainKey( "params" );
    }
 
    @Test
@@ -662,8 +662,8 @@ public class AspectModelOpenApiGeneratorTest {
       assertThat( openApi.getSpecVersion() ).isEqualTo( SpecVersion.V31 );
       assertThat( openApi.getComponents().getSchemas().get( "AspectWithCollection" ).get$comment() ).isEqualTo(
             "See: http://example.com/" );
-      assertThat( ( (Schema) openApi.getComponents().getSchemas().get( "AspectWithCollection" ).getProperties()
-            .get( "testProperty" ) ).get$comment() )
+      assertThat( ((Schema) openApi.getComponents().getSchemas().get( "AspectWithCollection" ).getProperties()
+            .get( "testProperty" )).get$comment() )
             .isEqualTo( "See: http://example.com/, http://example.com/me" );
       assertThat( openApi.getComponents().getSchemas().get( "TestCollection" ).get$comment() )
             .isEqualTo( "See: http://example.com/" );
@@ -684,15 +684,15 @@ public class AspectModelOpenApiGeneratorTest {
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
 
-      Schema pagingSchema = openApi.getComponents().getSchemas().get( "PagingSchema" );
+      final Schema pagingSchema = openApi.getComponents().getSchemas().get( "PagingSchema" );
       assertThat( pagingSchema ).isNotNull();
 
-      Schema itemsProperty = (Schema) pagingSchema.getProperties().get( "items" );
-      assertThat( itemsProperty.get$ref() )
-            .isEqualTo( "#/components/schemas/" + aspect.getName() );
+      final Schema itemsProperty = (Schema) pagingSchema.getProperties().get( "items" );
 
-      assertThat( itemsProperty.getType() ).isNull();
-      assertThat( itemsProperty.getItems() ).isNull();
+      assertThat( itemsProperty.getType() ).isEqualTo( "array" );
+      final Schema itemsInner = itemsProperty.getItems();
+      assertThat( itemsInner ).isNotNull();
+      assertThat( itemsInner.get$ref() ).isEqualTo( "#/components/schemas/" + aspect.getName() );
 
       assertThat( pagingSchema.getProperties() ).containsKeys(
             "totalItems",
@@ -701,8 +701,41 @@ public class AspectModelOpenApiGeneratorTest {
             "currentPage"
       );
 
-      assertThat( openApi.getComponents().getSchemas().get( aspect.getName() ) )
-            .isNotNull();
+      assertThat( openApi.getComponents().getSchemas().get( aspect.getName() ) ).isNotNull();
+   }
+
+   @Test
+   void testPropertyWithDescriptionInCollection_ShouldBeWrappedInAllOf() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_COLLECTION ).aspect();
+
+      final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( true )
+            .baseUrl( TEST_BASE_URL )
+            .resourcePath( TEST_RESOURCE_PATH )
+            .locale( Locale.ENGLISH )
+            .build();
+
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
+      final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
+      final OpenAPI openApi = result.getOpenAPI();
+
+      final Schema<?> schema = openApi.getComponents().getSchemas().get( aspect.getName() );
+      assertThat( schema ).isNotNull();
+
+      final Schema<?> property = (Schema<?>) schema.getProperties().get( "testProperty" );
+      assertThat( property ).isNotNull();
+
+      assertThat( property.get$ref() ).isNull();
+
+      assertThat( property.getDescription() ).isEqualTo( "This is a test property." );
+
+      final List<Schema> allOfSchemas = property.getAllOf();
+      assertThat( allOfSchemas ).isNotNull().hasSize( 1 );
+      assertThat( allOfSchemas.get( 0 ).get$ref() ).isEqualTo( "#/components/schemas/TestCollection" );
+
+      if ( property.getExtensions() != null && property.getExtensions().containsKey( "x-comment" ) ) {
+         assertThat( property.getExtensions().get( "x-comment" ).toString() ).contains( "http://example.com/" );
+      }
    }
 
    private void assertSpecificationIsValid( final JsonNode jsonNode, final String json, final Aspect aspect ) throws IOException {
