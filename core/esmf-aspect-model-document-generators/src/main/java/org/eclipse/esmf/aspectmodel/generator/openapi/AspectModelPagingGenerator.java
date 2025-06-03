@@ -157,7 +157,7 @@ class AspectModelPagingGenerator {
       schemaNode.set( AspectModelOpenApiGenerator.FIELD_PAGING_SCHEMA, node );
 
       final ObjectNode itemNode = (ObjectNode) node.get( "properties" ).get( "items" );
-      itemNode.put( "$ref", "#/components/schemas/" + aspect.getName() );
+      itemNode.set( "items", FACTORY.objectNode().put( "$ref", "#/components/schemas/" + aspect.getName() ) );
    }
 
    private PagingOption resolvePagingOption( final Aspect aspect, final PagingOption selectedPagingOption ) {

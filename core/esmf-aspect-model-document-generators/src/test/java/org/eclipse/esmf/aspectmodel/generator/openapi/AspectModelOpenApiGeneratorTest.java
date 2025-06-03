@@ -716,11 +716,11 @@ class AspectModelOpenApiGeneratorTest {
       assertThat( pagingSchema ).isNotNull();
 
       final Schema itemsProperty = (Schema) pagingSchema.getProperties().get( "items" );
-      assertThat( itemsProperty.get$ref() )
-            .isEqualTo( "#/components/schemas/" + aspect.getName() );
 
-      assertThat( itemsProperty.getType() ).isNull();
-      assertThat( itemsProperty.getItems() ).isNull();
+      assertThat( itemsProperty.getType() ).isEqualTo( "array" );
+      final Schema itemsInner = itemsProperty.getItems();
+      assertThat( itemsInner ).isNotNull();
+      assertThat( itemsInner.get$ref() ).isEqualTo( "#/components/schemas/" + aspect.getName() );
 
       assertThat( pagingSchema.getProperties() ).containsKeys(
             "totalItems",
@@ -729,8 +729,41 @@ class AspectModelOpenApiGeneratorTest {
             "currentPage"
       );
 
-      assertThat( openApi.getComponents().getSchemas().get( aspect.getName() ) )
-            .isNotNull();
+      assertThat( openApi.getComponents().getSchemas().get( aspect.getName() ) ).isNotNull();
+   }
+
+   @Test
+   void testPropertyWithDescriptionInCollection_ShouldBeWrappedInAllOf() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_COLLECTION ).aspect();
+
+      final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( true )
+            .baseUrl( TEST_BASE_URL )
+            .resourcePath( TEST_RESOURCE_PATH )
+            .locale( Locale.ENGLISH )
+            .build();
+
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
+      final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
+      final OpenAPI openApi = result.getOpenAPI();
+
+      final Schema<?> schema = openApi.getComponents().getSchemas().get( aspect.getName() );
+      assertThat( schema ).isNotNull();
+
+      final Schema<?> property = (Schema<?>) schema.getProperties().get( "testProperty" );
+      assertThat( property ).isNotNull();
+
+      assertThat( property.get$ref() ).isNull();
+
+      assertThat( property.getDescription() ).isEqualTo( "This is a test property." );
+
+      final List<Schema> allOfSchemas = property.getAllOf();
+      assertThat( allOfSchemas ).isNotNull().hasSize( 1 );
+      assertThat( allOfSchemas.get( 0 ).get$ref() ).isEqualTo( "#/components/schemas/TestCollection" );
+
+      if ( property.getExtensions() != null && property.getExtensions().containsKey( "x-comment" ) ) {
+         assertThat( property.getExtensions().get( "x-comment" ).toString() ).contains( "http://example.com/" );
+      }
    }
 
    @Test
