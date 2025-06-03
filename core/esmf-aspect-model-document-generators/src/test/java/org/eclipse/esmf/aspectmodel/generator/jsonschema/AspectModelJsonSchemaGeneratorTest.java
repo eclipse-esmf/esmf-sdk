@@ -674,7 +674,8 @@ class AspectModelJsonSchemaGeneratorTest {
       final DocumentContext context = JsonPath.parse( schema.toString() );
 
       assertThat( context.<String> read( "$['properties']['testProperty']['description']" ) ).isEqualTo( "This is a test property." );
-      assertThat( context.<String> read( "$['properties']['testProperty']['allOf'][0]['$ref']" ) ).isEqualTo( "#/components/schemas/TestSet" );
+      assertThat( context.<String> read( "$['properties']['testProperty']['allOf'][0]['$ref']" ) ).isEqualTo(
+            "#/components/schemas/TestSet" );
       assertThat( context.<String> read( "$['components']['schemas']['TestSet']['type']" ) ).isEqualTo( "array" );
       assertThat(
             context.<String> read( "$['components']['schemas']['TestSet']['" + AspectModelJsonSchemaGenerator.SAMM_EXTENSION + "']" ) )
@@ -939,7 +940,8 @@ class AspectModelJsonSchemaGeneratorTest {
 
       assertThat( context.<String> read( "$['components']['schemas']['ExtendingTestEntity']['allOf'][0]['$ref']" ) )
             .isEqualTo( "#/components/schemas/AbstractTestEntity" );
-      assertThat( context.<String> read( "$['components']['schemas']['ExtendingTestEntity']['properties']['entityProperty']['allOf'][0]['$ref']" ) )
+      assertThat( context.<String> read(
+            "$['components']['schemas']['ExtendingTestEntity']['properties']['entityProperty']['allOf'][0]['$ref']" ) )
             .isEqualTo( "#/components/schemas/" + text );
       assertThat( context.<String> read(
             "$['components']['schemas']['ExtendingTestEntity']['" + AspectModelJsonSchemaGenerator.SAMM_EXTENSION + "']" ) )
@@ -950,7 +952,8 @@ class AspectModelJsonSchemaGeneratorTest {
       assertThat( context.<String> read( "$['components']['schemas']['AbstractTestEntity']['description']" ) )
             .isEqualTo( "This is an abstract test entity" );
       assertThat(
-            context.<String> read( "$['components']['schemas']['AbstractTestEntity']['properties']['abstractTestProperty']['allOf'][0]['$ref']" ) )
+            context.<String> read(
+                  "$['components']['schemas']['AbstractTestEntity']['properties']['abstractTestProperty']['allOf'][0]['$ref']" ) )
             .isEqualTo( "#/components/schemas/AbstractTestPropertyCharacteristic" );
       assertThat( context.<String> read( "$['properties']['testProperty']['allOf'][0]['$ref']" ) )
             .isEqualTo( "#/components/schemas/EntityCharacteristic" );
@@ -972,7 +975,8 @@ class AspectModelJsonSchemaGeneratorTest {
             .isEqualTo( TestModel.TEST_NAMESPACE + "ExtendingTestEntity" );
       assertThat( context.<String> read( "$['components']['schemas']['ExtendingTestEntity']['allOf'][0]['$ref']" ) )
             .isEqualTo( "#/components/schemas/AbstractTestEntity" );
-      assertThat( context.<String> read( "$['components']['schemas']['ExtendingTestEntity']['properties']['entityProperty']['allOf'][0]['$ref']" ) )
+      assertThat( context.<String> read(
+            "$['components']['schemas']['ExtendingTestEntity']['properties']['entityProperty']['allOf'][0]['$ref']" ) )
             .isEqualTo( "#/components/schemas/" + text );
       assertThat( context.<String> read(
             "$['components']['schemas']['" + text + "']['" + AspectModelJsonSchemaGenerator.SAMM_EXTENSION + "']" ) )
@@ -980,7 +984,8 @@ class AspectModelJsonSchemaGeneratorTest {
       assertThat( context.<String> read( "$['components']['schemas']['AbstractTestEntity']['description']" ) )
             .isEqualTo( "This is a abstract test entity" );
       assertThat(
-            context.<String> read( "$['components']['schemas']['AbstractTestEntity']['properties']['abstractTestProperty']['allOf'][0]['$ref']" ) )
+            context.<String> read(
+                  "$['components']['schemas']['AbstractTestEntity']['properties']['abstractTestProperty']['allOf'][0]['$ref']" ) )
             .isEqualTo( "#/components/schemas/AbstractTestPropertyCharacteristic" );
       assertThat( context.<String> read( "$['properties']['testProperty']['allOf'][0]['$ref']" ) )
             .isEqualTo( "#/components/schemas/EntityCharacteristic" );
@@ -1017,13 +1022,15 @@ class AspectModelJsonSchemaGeneratorTest {
       assertThat( context.<String> read(
             "$['components']['schemas']['AbstractTestEntity']['" + AspectModelJsonSchemaGenerator.SAMM_EXTENSION + "']" ) )
             .isEqualTo( TestModel.TEST_NAMESPACE + "AbstractTestEntity" );
-      assertThat( context.<String> read( "$['components']['schemas']['ExtendingTestEntity']['properties']['entityProperty']['allOf'][0]['$ref']" ) )
+      assertThat( context.<String> read(
+            "$['components']['schemas']['ExtendingTestEntity']['properties']['entityProperty']['allOf'][0]['$ref']" ) )
             .isEqualTo( "#/components/schemas/Text" );
       assertThat( context.<String> read(
             "$['components']['schemas']['AbstractTestEntity']['properties']['abstractTestProperty']['description']" ) )
             .isEqualTo( "This is an abstract test property" );
       assertThat(
-            context.<String> read( "$['components']['schemas']['AbstractTestEntity']['properties']['abstractTestProperty']['allOf'][0]['$ref']" ) )
+            context.<String> read(
+                  "$['components']['schemas']['AbstractTestEntity']['properties']['abstractTestProperty']['allOf'][0]['$ref']" ) )
             .isEqualTo( "#/components/schemas/AbstractTestPropertyCharacteristic" );
       assertThat( context.<String> read( "$['components']['schemas']['EntityCollectionCharacteristic']['description']" ) )
             .isEqualTo( "This is an entity collection characteristic" );
