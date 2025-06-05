@@ -267,12 +267,12 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       final Characteristic characteristic = determineCharacteristic( property );
       final String referenceNodeName = getSchemaNameForModelElement( characteristic, property );
       if ( processedProperties.contains( property ) ) {
-         return propertyNode.put( "$ref", "#/components/schemas/" + referenceNodeName );
+         return generateRefOrWrappedRef( propertyNode, referenceNodeName );
       }
       processedProperties.add( property );
       final JsonNode schemaNode = characteristic.accept( this, context );
       setNodeInRootSchema( schemaNode, referenceNodeName );
-      return propertyNode.put( "$ref", "#/components/schemas/" + referenceNodeName );
+      return generateRefOrWrappedRef( propertyNode, referenceNodeName );
    }
 
    @Override
@@ -650,6 +650,19 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
    private void addSammExtensionAttribute( final ObjectNode node, final ModelElement describedElement ) {
       if ( !describedElement.isAnonymous() ) {
          node.put( AspectModelJsonSchemaGenerator.SAMM_EXTENSION, describedElement.urn().toString() );
+      }
+   }
+
+   private ObjectNode generateRefOrWrappedRef( final ObjectNode propertyNode, final String referenceNodeName ) {
+      if ( !propertyNode.isEmpty() ) {
+         ArrayNode allOfArray = FACTORY.arrayNode();
+         ObjectNode refNode = FACTORY.objectNode();
+         refNode.put( "$ref", "#/components/schemas/" + referenceNodeName );
+         allOfArray.add( refNode );
+         propertyNode.set( "allOf", allOfArray );
+         return propertyNode;
+      } else {
+         return FACTORY.objectNode().put( "$ref", "#/components/schemas/" + referenceNodeName );
       }
    }
 }
