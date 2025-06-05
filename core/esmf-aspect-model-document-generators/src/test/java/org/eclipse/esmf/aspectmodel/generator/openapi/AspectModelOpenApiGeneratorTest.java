@@ -712,13 +712,16 @@ class AspectModelOpenApiGeneratorTest {
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
 
-      final Schema pagingSchema = openApi.getComponents().getSchemas().get( "PagingSchema" );
+      final Schema<?> pagingSchema = openApi.getComponents().getSchemas().get( "PagingSchema" );
       assertThat( pagingSchema ).isNotNull();
 
-      final Schema itemsProperty = (Schema) pagingSchema.getProperties().get( "items" );
+      final String propertyName = aspect.getProperties().get( 0 ).getName();
 
-      assertThat( itemsProperty.getType() ).isEqualTo( "array" );
-      final Schema itemsInner = itemsProperty.getItems();
+      final Schema<?> property = (Schema<?>) pagingSchema.getProperties().get( propertyName );
+      assertThat( property ).isNotNull();
+      assertThat( property.getType() ).isEqualTo( "array" );
+
+      final Schema<?> itemsInner = property.getItems();
       assertThat( itemsInner ).isNotNull();
       assertThat( itemsInner.get$ref() ).isEqualTo( "#/components/schemas/" + aspect.getName() );
 
