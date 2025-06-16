@@ -301,8 +301,8 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
           server-id: ossrh
-          server-username: OSSRH_USERNAME
-          server-password: OSSRH_TOKEN
+          server-username: CENTRAL_SONATYPE_TOKEN_USERNAME
+          server-password: CENTRAL_SONATYPE_TOKEN_PASSWORD
           overwrite-settings: false
 
       # Required to run the mvn:versions, since enforcer plugin
@@ -315,6 +315,15 @@ jobs:
           components: 'native-image,js'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'false'
+
+      - name: Configure GPG
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          gpg-private-key: GPG_PRIVATE_KEY
+          gpg-passphrase: GPG_PASSPHRASE
+          overwrite-settings: false
 
       - name: Fetch Linux Artifacts
         uses: actions/download-artifact@v4
@@ -419,23 +428,23 @@ jobs:
       # is the undocumented rc-list-profiles command of the
       # nexus-staging-maven-plugin:
       # mvn org.sonatype.plugins:nexus-staging-maven-plugin:1.6.13:rc-list-profiles -DnexusUrl=https://oss.sonatype.org/ -DserverId=ossrh
-      - name: Release to OSSRH/Maven Central
+      - name: Release to Maven Central
         if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
         run: |
-          mkdir deploy
-          mv nexus-staging deploy
-          cd deploy
-          mvn org.sonatype.plugins:nexus-staging-maven-plugin:1.6.13:deploy-staged-repository \
-            -DnexusUrl=https://oss.sonatype.org/ \
-            -DserverId=ossrh \
-            -DrepositoryDirectory=nexus-staging \
-            -DstagingProfileId=7e73217781f2e
+          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean deploy -Psign
+#        run: |
+#          mkdir deploy
+#          mv nexus-staging deploy
+#          cd deploy
+#          mvn org.sonatype.plugins:nexus-staging-maven-plugin:1.6.13:deploy-staged-repository \
+#            -DnexusUrl=https://oss.sonatype.org/ \
+#            -DserverId=ossrh \
+#            -DrepositoryDirectory=nexus-staging \
+#            -DstagingProfileId=7e73217781f2e
         env:
-          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
-          # Workaround for https://issues.sonatype.org/browse/OSSRH-66257
-          # as described in https://stackoverflow.com/a/70157413
-          MAVEN_OPTS: --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_SONATYPE_TOKEN_USERNAME }}
+          CENTRAL_TOKEN: ${{ secrets.CENTRAL_SONATYPE_TOKEN_PASSWORD }}
+          PGP_KEY_PASSWORD: ${{ secrets.GPG_PRIVATE_KEY }}
 
       # Milestone release: Write settings to deploy to Github repo
       - name: Write settings.xml
