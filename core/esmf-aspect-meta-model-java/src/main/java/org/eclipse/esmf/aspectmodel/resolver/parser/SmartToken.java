@@ -152,8 +152,7 @@ public final class SmartToken {
 
    @Override
    public String toString() {
-      return "SmartToken[" +
-            "token=" + token + ']';
+      return "SmartToken[token=" + token + ']';
    }
 
    public Token getToken() {
