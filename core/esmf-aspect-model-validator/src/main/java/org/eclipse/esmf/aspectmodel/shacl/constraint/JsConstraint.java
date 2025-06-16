@@ -33,7 +33,7 @@ import org.eclipse.esmf.aspectmodel.shacl.constraint.js.JsTerm;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.js.TermFactory;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.JsConstraintViolation;
-import org.eclipse.esmf.aspectmodel.shacl.violation.ProcessingViolation;
+import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 
 import org.apache.jena.rdf.model.RDFNode;

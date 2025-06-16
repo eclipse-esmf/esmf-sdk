@@ -39,6 +39,11 @@ public record InvalidValueViolation( EvaluationContext context, RDFNode allowed,
    }
 
    @Override
+   public RDFNode highlight() {
+      return actual();
+   }
+
+   @Override
    public <T> T accept( final Visitor<T> visitor ) {
       return visitor.visitInvalidValueViolation( this );
    }

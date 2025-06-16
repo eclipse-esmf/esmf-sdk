@@ -17,6 +17,8 @@ import java.util.Set;
 
 import org.eclipse.esmf.aspectmodel.shacl.constraint.UniqueLangConstraint;
 
+import org.apache.jena.rdf.model.RDFNode;
+
 /**
  * Violation of a {@link UniqueLangConstraint}
  *
@@ -35,6 +37,11 @@ public record UniqueLanguageViolation( EvaluationContext context, Set<String> du
    public String violationSpecificMessage() {
       return String.format( "Property %s on %s uses language tag that has been used already: %s.",
             context.propertyName(), context.elementName(), duplicates );
+   }
+
+   @Override
+   public RDFNode highlight() {
+      return context().property().get();
    }
 
    @Override

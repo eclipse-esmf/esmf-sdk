@@ -61,8 +61,7 @@ public class CopyFileWithIncreasedNamespaceVersion extends StructuralChange {
                   + namespace.namespaceMainPart() + "/" + nextVersion.toString()
                   + sourceLocation.substring( locationIndex + locationPart.length() ) );
 
-      final AspectModelUrn newUrn = AspectModelUrn.fromUrn(
-            String.format( "urn:samm:%s:%s", namespace.namespaceMainPart(), nextVersion ) );
+      final AspectModelUrn newUrn = AspectModelUrn.fromParts( namespace.namespaceMainPart(), nextVersion.toString() );
 
       changes = new ChangeGroup(
             "Copy file " + show( file ) + " to new version " + nextVersion,

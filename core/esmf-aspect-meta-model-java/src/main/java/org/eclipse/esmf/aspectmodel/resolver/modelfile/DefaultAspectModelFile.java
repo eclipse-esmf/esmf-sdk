@@ -19,6 +19,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Namespace;
 
@@ -50,6 +51,11 @@ public final class DefaultAspectModelFile implements AspectModelFile {
    @Override
    public Model sourceModel() {
       return sourceModel;
+   }
+
+   @Override
+   public String sourceRepresentation() {
+      return AspectSerializer.INSTANCE.aspectModelFileToString( this );
    }
 
    @Override
@@ -94,7 +100,7 @@ public final class DefaultAspectModelFile implements AspectModelFile {
 
    @Override
    public String toString() {
-      return sourceLocation().map( URI::toString ).orElse( "(unknown file)" );
+      return humanReadableLocation();
    }
 
    public void setElements( final List<ModelElement> elements ) {

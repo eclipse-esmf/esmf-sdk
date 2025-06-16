@@ -18,13 +18,17 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
+import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.AspectModel;
 
+import io.vavr.control.Either;
 import org.apache.commons.io.FilenameUtils;
 
 /**
@@ -33,14 +37,18 @@ import org.apache.commons.io.FilenameUtils;
 public class FileInputHandler extends AbstractInputHandler {
    private final File inputFile;
 
-   FileInputHandler( final String input, final ResolverConfigurationMixin resolverConfig, final boolean details ) {
-      super( input, resolverConfig, details );
+   FileInputHandler( final String input, final ResolverConfigurationMixin resolverConfig, final boolean details, final boolean validate ) {
+      super( input, resolverConfig, details, validate );
       inputFile = absoluteFile( new File( input ) );
    }
 
    @Override
    public AspectModel loadAspectModel() {
-      return applyAspectModelLoader( aspectModelLoader -> aspectModelLoader.load( inputFile ) );
+      final Function<AspectModelLoader, AspectModel> loaderFunction = validate
+            ? ( (Function<AspectModelLoader, Either<List<Violation>, AspectModel>>) loader ->
+            loader.withValidation( validator ).load( inputFile ) ).andThen( this::getAspectModelOrPrintValidationReport )
+            : ( aspectModelLoader -> aspectModelLoader.load( inputFile ) );
+      return applyAspectModelLoader( loaderFunction );
    }
 
    @Override

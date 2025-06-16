@@ -13,6 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.resolver.modelfile;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
@@ -35,6 +36,7 @@ import org.eclipse.esmf.samm.KnownVersion;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Streams;
 import io.vavr.Tuple2;
+import org.apache.commons.io.IOUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
@@ -74,13 +76,15 @@ public enum MetaModelFile implements AspectModelFile {
    private final MetaModelFileType metaModelFileType;
    private final Model sourceModel;
    private final String filename;
+   private final URL sourceUrl;
 
    MetaModelFile( final String section, final String filename, final RdfNamespace rdfNamespace,
          final MetaModelFileType metaModelFileType ) {
       this.filename = filename;
       this.rdfNamespace = rdfNamespace;
       this.metaModelFileType = metaModelFileType;
-      sourceModel = TurtleLoader.loadTurtle( url( section, filename ) )
+      sourceUrl = url( section, filename );
+      sourceModel = TurtleLoader.loadTurtle( sourceUrl )
             .map( model -> {
                final Set<Tuple2<Statement, Statement>> changeSet = determineSammUrlsToReplace( model );
                changeSet.forEach( urlReplacement -> {
@@ -140,6 +144,17 @@ public enum MetaModelFile implements AspectModelFile {
    @Override
    public Model sourceModel() {
       return sourceModel;
+   }
+
+   @Override
+   public String sourceRepresentation() {
+      try {
+         final ByteArrayOutputStream out = new ByteArrayOutputStream();
+         IOUtils.copy( sourceUrl.openStream(), out );
+         return out.toString();
+      } catch ( final IOException exception ) {
+         throw new AspectLoadingException( "Unable to load meta model file " + sourceUrl );
+      }
    }
 
    @Override
@@ -219,7 +234,7 @@ public enum MetaModelFile implements AspectModelFile {
             }
          }
          return jarUrl == null ? urls.get( 0 ) : jarUrl;
-      } catch ( final IOException e ) {
+      } catch ( final IOException exception ) {
          throw new AspectLoadingException( "Could not resolve meta model file: " + filename );
       }
    }

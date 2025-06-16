@@ -44,7 +44,6 @@ import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException
 import org.eclipse.esmf.aspectmodel.resolver.fs.ModelsRoot;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFileBuilder;
-import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
 import org.eclipse.esmf.aspectmodel.serializer.SerializationException;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.versionupdate.MetaModelVersionMigrator;
@@ -307,7 +306,7 @@ public class NamespacePackage implements ResolutionStrategy, Artifact<URI, byte[
             }
             for ( final AspectModelFile file : namespaceEntry.getValue() ) {
                final String filePath = "%s/%s/%s".formatted( namespace.namespaceMainPart(), namespace.version(), outputFileName( file ) );
-               final byte[] fileContent = AspectSerializer.INSTANCE.aspectModelFileToString( file ).getBytes( StandardCharsets.UTF_8 );
+               final byte[] fileContent = file.sourceRepresentation().getBytes( StandardCharsets.UTF_8 );
                addFile( out, filePath, fileContent );
             }
          }

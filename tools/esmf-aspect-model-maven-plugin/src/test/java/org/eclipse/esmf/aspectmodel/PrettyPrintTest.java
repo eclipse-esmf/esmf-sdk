@@ -34,7 +34,7 @@ public class PrettyPrintTest extends AspectModelMojoTest {
       final Mojo prettyPrint = getMojo( "prettyprint-pom-invalid-aspect-model", "prettyPrint" );
       assertThatCode( prettyPrint::execute )
             .isInstanceOf( MojoExecutionException.class )
-            .hasMessageContaining( "Syntax error in line 17, column 2" );
+            .hasMessageContaining( "Error at line 17 column 3" );
       assertThat( generatedFilePath( "Aspect.ttl" ) ).doesNotExist();
    }
 }

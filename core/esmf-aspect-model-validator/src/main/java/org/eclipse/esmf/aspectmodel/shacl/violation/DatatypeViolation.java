@@ -19,11 +19,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.esmf.aspectmodel.resolver.parser.TokenRegistry;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.DatatypeConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.fix.Fix;
 import org.eclipse.esmf.aspectmodel.shacl.fix.ReplaceValue;
 
 import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
 
@@ -56,6 +59,16 @@ public record DatatypeViolation( EvaluationContext context, String allowedTypeUr
       }
       return String.format( "%s uses data type %s, but only %s is allowed.",
             context.elementName(), context.shortUri( actualTypeUri ), context.shortUri( allowedTypeUri ) );
+   }
+
+   @Override
+   public RDFNode highlight() {
+      return context().offendingStatements().stream()
+            .findFirst()
+            .map( Statement::getObject )
+            .or( () -> context().property().map( p -> p.as( RDFNode.class ) ) )
+            .filter( rdfNode -> TokenRegistry.getToken( rdfNode.asNode() ).isPresent() )
+            .orElseGet( () -> context().element() );
    }
 
    @Override

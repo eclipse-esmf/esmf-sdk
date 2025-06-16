@@ -215,7 +215,7 @@ public class ShaclValidator {
          // >= 1 exists, a violation must be emitted even though no value for the property exists
          if ( reachableNodes.isEmpty() && constraint instanceof MinCountConstraint ) {
             final Optional<Property> property = propertyShape.path() instanceof PredicatePath
-                  ? Optional.of( resolvedModel.createProperty( ((PredicatePath) propertyShape.path()).predicate().getURI() ) )
+                  ? Optional.of( resolvedModel.createProperty( ( (PredicatePath) propertyShape.path() ).predicate().getURI() ) )
                   : Optional.empty();
             final EvaluationContext context = new EvaluationContext( element, nodeShape, Optional.of( propertyShape ),
                   property, parentContext, List.of(), this, resolvedModel );

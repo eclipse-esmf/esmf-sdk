@@ -91,7 +91,7 @@ public class AssertTest {
       assertThat( characteristic ).hasSourceFile( MetaModelFile.CHARACTERISTIC_INSTANCES );
       assertThat( characteristic ).sourceFile()
             .isEqualTo( MetaModelFile.CHARACTERISTIC_INSTANCES )
-            .hasLocationMatching( uri -> uri.toString().startsWith( "urn:samm:" ) );
+            .hasLocationMatching( uri -> uri.toString().startsWith( AspectModelUrn.PROTOCOL_AND_NAMESPACE_PREFIX ) );
 
       final Namespace namespace = aspect.getSourceFile().namespace();
       assertThat( namespace ).contains( aspect );

@@ -22,6 +22,7 @@ import static org.eclipse.esmf.test.shared.AspectModelAsserts.ASPECT_MODEL_FILE;
 import static org.eclipse.esmf.test.shared.AspectModelAsserts.assertThat;
 
 import java.io.File;
+import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.eclipse.esmf.aspectmodel.AspectLoadingException;
@@ -64,12 +65,13 @@ class AspectModelResolverTest {
 
    @Test
    void testLoadModelWithNoEmptyLineAfterHeaderCommentBlock() {
+      final URI inputLocation = URI.create( "testmodel:inmemory" );
       assertThat( AspectModelFileLoader.load( """
             #
             # Test copyright
             #
             @prefix : <urn:samm:com.xyz:0.0.1#> .
-            """ ) )
+            """, inputLocation ) )
             .headerComment().hasSize( 3 ).matches( list -> list.get( 1 ).contains( "Test copyright" ) );
       assertThat( AspectModelFileLoader.load( """
             #
@@ -77,16 +79,7 @@ class AspectModelResolverTest {
             #
             
             @prefix : <urn:samm:com.xyz:0.0.1#> .
-            """ ) )
-            .headerComment().hasSize( 3 ).matches( list -> list.get( 1 ).contains( "Test copyright" ) );
-      assertThat( AspectModelFileLoader.load( """
-            #
-            # Test copyright
-            #
-            
-            # Another comment
-            @prefix : <urn:samm:com.xyz:0.0.1#> .
-            """ ) )
+            """, inputLocation ) )
             .headerComment().hasSize( 3 ).matches( list -> list.get( 1 ).contains( "Test copyright" ) );
       assertThat( AspectModelFileLoader.load( """
             #
@@ -94,9 +87,18 @@ class AspectModelResolverTest {
             #
             
             # Another comment
+            @prefix : <urn:samm:com.xyz:0.0.1#> .
+            """, inputLocation ) )
+            .headerComment().hasSize( 3 ).matches( list -> list.get( 1 ).contains( "Test copyright" ) );
+      assertThat( AspectModelFileLoader.load( """
+            #
+            # Test copyright
+            #
+            
+            # Another comment
             
             @prefix : <urn:samm:com.xyz:0.0.1#> .
-            """ ) )
+            """, inputLocation ) )
             .headerComment().hasSize( 3 ).matches( list -> list.get( 1 ).contains( "Test copyright" ) );
    }
 
@@ -167,7 +169,7 @@ class AspectModelResolverTest {
       final ResolutionStrategy inMemoryStrategy = new FromLoadedFileStrategy( AspectModelFileLoader.load(
             AspectModelResolverTest.class.getResourceAsStream(
                   "/" + KnownVersion.getLatest().toString().toLowerCase()
-                        + "/org.eclipse.esmf.test/1.0.0/Test.ttl" ) ) );
+                        + "/org.eclipse.esmf.test/1.0.0/Test.ttl" ), URI.create( "testmodel:inmemory" ) ) );
       final EitherStrategy inMemoryResolutionStrategy = new EitherStrategy( urnStrategy, inMemoryStrategy );
 
       final AspectModelUrn testUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "AnotherTest" );
@@ -240,7 +242,7 @@ class AspectModelResolverTest {
       } )
             .isInstanceOf( AspectLoadingException.class )
             .hasMessageContaining(
-                  "Aspect model file testmodel:invalid/org.eclipse.esmf.test/1.0.0/InvalidAspectWithTwoAspects.ttl contains 2 "
+                  "Aspect Model file testmodel:invalid/org.eclipse.esmf.test/1.0.0/InvalidAspectWithTwoAspects.ttl contains 2 "
                         + "aspects, but may only contain one." );
    }
 }

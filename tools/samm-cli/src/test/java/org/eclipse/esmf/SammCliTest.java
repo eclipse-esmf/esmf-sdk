@@ -33,17 +33,22 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspect.AspectValidateCommand;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher;
 import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher.ExecutionResult;
-import org.eclipse.esmf.aspectmodel.shacl.violation.InvalidSyntaxViolation;
+import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
+import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
+import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
+import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.InvalidTestAspect;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
-import org.eclipse.esmf.test.TestSharedAspect;
 import org.eclipse.esmf.test.TestSharedModel;
 
+import io.vavr.control.Either;
 import org.apache.commons.io.FileUtils;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.exception.TikaException;
@@ -291,7 +296,6 @@ class SammCliTest {
    void testAspectFromGitHubButRepoNotActuallyContainingFile() {
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect",
             defaultInputUrn, "validate", "--github", "eclipse-esmf/esmf-parent" );
-      assertThat( result.stdout() ).contains( "No file containing the definition" ).contains( "could be resolved" );
       assertThat( result.stdout() ).contains( "Repository does not contain any file that contains the element" );
       assertThat( result.stderr() ).isEmpty();
    }
@@ -1534,18 +1538,24 @@ class SammCliTest {
    }
 
    @Test
-   void testPackageExportForNamespace() {
-      final TestModel testModel = TestSharedAspect.ASPECT_WITH_COLLECTION_ENTITY;
+   void testPackageExportForNamespace() throws IOException {
+      // Set up models root
+      final Path modelFileLocation = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
+            .resolve( testModel.getUrn().getVersion() );
+      Files.createDirectories( modelFileLocation );
+      final File targetModelFile = modelFileLocation.resolve( testModel.getName() + ".ttl" ).toFile();
+      FileUtils.copyFile( new File( defaultInputFile ), targetModelFile );
+
       final String namespaceUrn = testModel.getUrn().getNamespaceIdentifier();
-      final String modelsRoot = inputFile( testModel ).getParentFile().getParentFile().getParentFile()
-            .getAbsolutePath();
       final Path outputFile = outputDirectory.resolve( "package.zip" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "package",
-            namespaceUrn, "export", "--models-root", modelsRoot, "--output", outputFile.toFile().getAbsolutePath() );
+            namespaceUrn, "export", "--models-root", outputDirectory.toFile().getAbsolutePath(), "--output",
+            outputFile.toFile().getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
       assertThat( outputFile ).exists();
       assertThat( contentType( outputFile.toFile() ) ).isEqualTo( MediaType.application( "zip" ) );
+      assertThat( outputFile ).isNotEmptyFile();
    }
 
    @Test

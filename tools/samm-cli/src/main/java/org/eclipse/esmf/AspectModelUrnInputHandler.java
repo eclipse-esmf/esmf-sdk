@@ -15,14 +15,18 @@ package org.eclipse.esmf;
 
 import java.net.URI;
 import java.util.List;
+import java.util.function.Function;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
+import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.ModelElement;
 
+import io.vavr.control.Either;
 import io.vavr.control.Try;
 
 /**
@@ -31,8 +35,9 @@ import io.vavr.control.Try;
 public class AspectModelUrnInputHandler extends AbstractInputHandler {
    private final AspectModelUrn urn;
 
-   public AspectModelUrnInputHandler( final String input, final ResolverConfigurationMixin resolverConfig, final boolean details ) {
-      super( input, resolverConfig, details );
+   public AspectModelUrnInputHandler( final String input, final ResolverConfigurationMixin resolverConfig, final boolean details,
+         final boolean validate ) {
+      super( input, resolverConfig, details, validate );
       urn = urnFromInput( input );
    }
 
@@ -63,15 +68,25 @@ public class AspectModelUrnInputHandler extends AbstractInputHandler {
    }
 
    public static boolean appliesToInput( final String input ) {
-      return input.startsWith( "urn:samm:" );
+      return input.startsWith( AspectModelUrn.PROTOCOL_AND_NAMESPACE_PREFIX );
    }
 
    @Override
    public AspectModel loadAspectModel() {
-      // Does the URN denote a namespace?
-      return urn.getName().isEmpty()
-            ? applyAspectModelLoader( aspectModelLoader -> aspectModelLoader.loadNamespace( urn ) )
-            : applyAspectModelLoader( aspectModelLoader -> aspectModelLoader.load( urn ) );
+      final boolean urnDenotesNamespace = urn.getName().isEmpty();
+      final Function<AspectModelLoader, AspectModel> loaderFunction;
+      if ( validate ) {
+         loaderFunction = ( (Function<AspectModelLoader, Either<List<Violation>, AspectModel>>) loader ->
+               ( urnDenotesNamespace
+                     ? loader.withValidation( validator ).loadNamespace( urn )
+                     : loader.withValidation( validator ).load( urn ) ) )
+               .andThen( this::getAspectModelOrPrintValidationReport );
+      } else {
+         loaderFunction = urnDenotesNamespace
+               ? aspectModelLoader -> aspectModelLoader.loadNamespace( urn )
+               : aspectModelLoader -> aspectModelLoader.load( urn );
+      }
+      return applyAspectModelLoader( loaderFunction );
    }
 
    @Override

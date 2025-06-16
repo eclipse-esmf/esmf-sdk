@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -11,7 +11,10 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.aspectmodel.shacl.violation;
+package org.eclipse.esmf.aspectmodel.validation;
+
+import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
+import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 
 /**
  * Meta violation: The validation was unsuccessful, for example because the model could not be loaded or not be resolved
@@ -33,7 +36,7 @@ public record ProcessingViolation( String violationSpecificMessage, Throwable ca
 
    @Override
    public String message() {
-      return violationSpecificMessage;
+      return violationSpecificMessage();
    }
 
    @Override

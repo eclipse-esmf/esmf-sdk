@@ -69,8 +69,8 @@ public class StructuredModelsRoot extends ModelsRoot {
             return path.map( Path::toFile )
                   .filter( file -> file.getName().endsWith( ".ttl" ) )
                   .filter( file -> VersionNumber.tryParse( file.getParentFile().getName() )
-                        .flatMap( versionNumber -> AspectModelUrn.from( String.format( "urn:samm:%s:%s",
-                              file.getParentFile().getParentFile().getName(), versionNumber ) ) ).isSuccess() )
+                        .flatMap( versionNumber -> AspectModelUrn.from(
+                              file.getParentFile().getParentFile().getName(), versionNumber.toString() ) ).isSuccess() )
                   .sorted( Comparator.comparing( File::getName ) )
                   .map( File::getAbsoluteFile )
                   .map( File::toURI )

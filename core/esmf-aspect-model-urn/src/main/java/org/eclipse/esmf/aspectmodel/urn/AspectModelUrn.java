@@ -42,6 +42,7 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
    public static final String VERSION_REGEX = "^(\\d+\\.)(\\d+\\.)(\\*|\\d+)$";
    public static final String VALID_PROTOCOL = "urn";
    public static final String VALID_NAMESPACE_IDENTIFIER = "samm";
+   public static final String PROTOCOL_AND_NAMESPACE_PREFIX = VALID_PROTOCOL + ":" + VALID_NAMESPACE_IDENTIFIER + ":";
    public static final int MAX_URN_LENGTH = 256;
    public static final int ASPECT_NAME_INDEX = 4;
 
@@ -205,7 +206,7 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
     * @return the Aspect Model URN or a {@link UrnSyntaxException}
     */
    public static Try<AspectModelUrn> from( final String namespaceMainPart, final String versionNumber ) {
-      return from( "%s:%s:%s%s".formatted( VALID_PROTOCOL, VALID_NAMESPACE_IDENTIFIER, namespaceMainPart, versionNumber ) );
+      return from( "%s:%s:%s:%s".formatted( VALID_PROTOCOL, VALID_NAMESPACE_IDENTIFIER, namespaceMainPart, versionNumber ) );
    }
 
    /**
@@ -218,7 +219,7 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
     */
    public static Try<AspectModelUrn> from( final String namespaceMainPart, final String versionNumber, final String modelElementName ) {
       return from(
-            "%s:%s:%s%s#%s".formatted( VALID_PROTOCOL, VALID_NAMESPACE_IDENTIFIER, namespaceMainPart, versionNumber, modelElementName ) );
+            "%s:%s:%s:%s#%s".formatted( VALID_PROTOCOL, VALID_NAMESPACE_IDENTIFIER, namespaceMainPart, versionNumber, modelElementName ) );
    }
 
    /**
@@ -230,7 +231,7 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
     * @throws UrnSyntaxException if {@code urn} is not valid
     */
    public static AspectModelUrn fromParts( final String namespaceMainPart, final String versionNumber ) {
-      return fromUrn( "%s:%s:%s%s".formatted( VALID_PROTOCOL, VALID_NAMESPACE_IDENTIFIER, namespaceMainPart, versionNumber ) );
+      return fromUrn( "%s:%s:%s:%s".formatted( VALID_PROTOCOL, VALID_NAMESPACE_IDENTIFIER, namespaceMainPart, versionNumber ) );
    }
 
    /**
@@ -464,7 +465,7 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
     */
    private static void checkUrn( final boolean expression, final String errorMessage, final Object... errorMessageArguments ) {
       if ( !expression ) {
-         String msg = formatSimple( errorMessage, errorMessageArguments );
+         final String msg = formatSimple( errorMessage, errorMessageArguments );
          throw new UrnSyntaxException( msg );
       }
    }

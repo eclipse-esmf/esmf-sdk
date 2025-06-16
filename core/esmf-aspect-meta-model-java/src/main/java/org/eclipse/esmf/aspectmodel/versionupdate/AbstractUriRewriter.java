@@ -13,10 +13,11 @@
 
 package org.eclipse.esmf.aspectmodel.versionupdate;
 
+import static org.eclipse.esmf.aspectmodel.StreamUtil.asMap;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
 import org.eclipse.esmf.samm.KnownVersion;
@@ -29,7 +30,6 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
 
 /**
  * Abstract migration function that is used to apply a change to all URIs in a model
@@ -53,17 +53,19 @@ public abstract class AbstractUriRewriter extends AbstractSammMigrator {
          return resource;
       }
 
-      return rewriteUri( resource.getURI(), oldToNewNamespaces ).map( ResourceFactory::createResource ).orElse( resource );
+      return rewriteUri( resource.getURI(), oldToNewNamespaces ).map( uriref ->
+            resource.getModel().createResource( uriref ) ).orElse( resource );
    }
 
    protected Property updateProperty( final Property property, final Map<String, String> oldToNewNamespaces ) {
-      return rewriteUri( property.getURI(), oldToNewNamespaces ).map( ResourceFactory::createProperty ).orElse( property );
+      return rewriteUri( property.getURI(), oldToNewNamespaces ).map( uriref ->
+            property.getModel().createProperty( uriref ) ).orElse( property );
    }
 
    protected Literal updateLiteral( final Literal literal, final Map<String, String> oldToNewNamespaces ) {
       return Optional.ofNullable( literal.getDatatypeURI() )
             .flatMap( uri -> rewriteUri( uri, oldToNewNamespaces ) )
-            .map( uri -> ResourceFactory.createTypedLiteral( literal.getLexicalForm(), NodeFactory.getType( uri ) ) )
+            .map( uri -> literal.getModel().createTypedLiteral( literal.getLexicalForm(), NodeFactory.getType( uri ) ) )
             .orElse( literal );
    }
 
@@ -104,7 +106,7 @@ public abstract class AbstractUriRewriter extends AbstractSammMigrator {
          final Map<String, String> oldToNewNamespaces ) {
       return sourceModel.getNsPrefixMap().keySet().stream().map( prefix ->
                   Map.<String, String> entry( prefix, targetPrefixes.getOrDefault( prefix, sourceModel.getNsPrefixURI( prefix ) ) ) )
-            .collect( Collectors.toMap( Map.Entry::getKey, Map.Entry::getValue ) );
+            .collect( asMap() );
    }
 
    @Override

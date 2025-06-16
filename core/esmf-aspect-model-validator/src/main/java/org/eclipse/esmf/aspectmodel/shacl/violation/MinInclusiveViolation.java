@@ -16,6 +16,7 @@ package org.eclipse.esmf.aspectmodel.shacl.violation;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.MinInclusiveConstraint;
 
 import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.RDFNode;
 
 /**
  * Violation of a {@link MinInclusiveConstraint}
@@ -36,6 +37,11 @@ public record MinInclusiveViolation( EvaluationContext context, Literal min, Lit
    public String violationSpecificMessage() {
       return String.format( "Property %s on %s has value %s, but it must be greater than or equal to %s.",
             context.propertyName(), context.elementName(), context.value( actual ), context.value( min ) );
+   }
+
+   @Override
+   public RDFNode highlight() {
+      return actual();
    }
 
    @Override

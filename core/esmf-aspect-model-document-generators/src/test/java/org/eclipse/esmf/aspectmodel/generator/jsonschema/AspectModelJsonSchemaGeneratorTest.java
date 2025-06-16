@@ -832,7 +832,7 @@ class AspectModelJsonSchemaGeneratorTest {
             .isEqualTo( TestModel.TEST_NAMESPACE + "EvaluationResults" );
 
       assertThat( context.<String> read( "$['components']['schemas']['ResultNoStatus']['properties']['average']"
-            + "['description']" ) ).isEqualTo( "Some artifical average value" );
+            + "['description']" ) ).isEqualTo( "Some artificial average value" );
       assertThat( context.<Integer> read( "$['components']['schemas']['ResultNoStatus']['properties']['average']"
             + "['enum'][0]" ) ).isEqualTo( 3 );
       assertThat( context.<String> read( "$['components']['schemas']['ResultNoStatus']['properties']['numericCode']"

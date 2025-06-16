@@ -15,6 +15,8 @@ package org.eclipse.esmf;
 
 import static picocli.CommandLine.Spec.Target.MIXEE;
 
+import java.util.stream.Stream;
+
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
@@ -23,6 +25,7 @@ import ch.qos.logback.classic.filter.ThresholdFilter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.ConsoleAppender;
 import org.apache.jena.shared.LockMRSW;
+import org.apache.jena.sparql.core.mem.PMapQuadTable;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
@@ -53,14 +56,10 @@ public class LoggingMixin {
 
    public Level calcLogLevel() {
       return switch ( getVerbosity().length ) {
-         case 0:
-            yield Level.OFF;
-         case 1:
-            yield Level.INFO;
-         case 2:
-            yield Level.DEBUG;
-         default:
-            yield Level.TRACE;
+         case 0 -> Level.OFF;
+         case 1 -> Level.INFO;
+         case 2 -> Level.DEBUG;
+         default -> Level.TRACE;
       };
    }
 
@@ -71,9 +70,11 @@ public class LoggingMixin {
       root.detachAndStopAllAppenders();
       root.setLevel( level );
 
-      // In any case disable messages from this particularly spammy and unhelpful logger
-      final Logger lockMrsw = loggerContext.getLogger( LockMRSW.class );
-      lockMrsw.setLevel( Level.OFF );
+      // In any case disable messages from these particularly spammy and unhelpful loggers
+      Stream.of( LockMRSW.class, PMapQuadTable.class ).forEach( loggerClass -> {
+         final Logger logger = loggerContext.getLogger( loggerClass );
+         logger.setLevel( Level.OFF );
+      } );
 
       if ( level == Level.OFF ) {
          return;

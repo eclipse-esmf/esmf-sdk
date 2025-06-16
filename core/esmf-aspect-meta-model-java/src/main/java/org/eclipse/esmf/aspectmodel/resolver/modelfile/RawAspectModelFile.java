@@ -56,7 +56,7 @@ public record RawAspectModelFile(
 
    @Override
    public String toString() {
-      return sourceLocation().map( URI::toString ).orElse( "(unknown file)" );
+      return humanReadableLocation();
    }
 
    @Override

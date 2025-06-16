@@ -86,7 +86,7 @@ import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 
 /**
- * Used as part of the loading process in the {@link AspectModelLoader}, it creates instance for the the {@link ModelElement}s
+ * Used as part of the loading process in the {@link AspectModelLoader}, it creates instance for the {@link ModelElement}s
  * in an AspectModel.
  */
 public class ModelElementFactory extends AttributeValueRetriever {

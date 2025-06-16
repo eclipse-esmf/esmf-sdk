@@ -16,6 +16,8 @@ package org.eclipse.esmf.aspectmodel.shacl.violation;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.Constraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.NotConstraint;
 
+import org.apache.jena.rdf.model.RDFNode;
+
 /**
  * Violation of a {@link NotConstraint}
  *
@@ -37,6 +39,11 @@ public record NotViolation( EvaluationContext context, Constraint negatedConstra
             context.propertyName(), context.elementName() )
             : String.format( "Expected violation of constraint %s on element %s, but it did not occur.", negatedConstraint.name(),
             context.elementName() );
+   }
+
+   @Override
+   public RDFNode highlight() {
+      return context().property().isPresent() ? context().property().get() : context().element();
    }
 
    @Override

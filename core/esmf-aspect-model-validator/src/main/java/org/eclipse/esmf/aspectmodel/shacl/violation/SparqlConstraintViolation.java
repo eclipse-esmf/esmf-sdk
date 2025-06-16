@@ -15,7 +15,9 @@ package org.eclipse.esmf.aspectmodel.shacl.violation;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
+import org.eclipse.esmf.aspectmodel.resolver.parser.TokenRegistry;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.SparqlConstraint;
 
 import org.apache.jena.rdf.model.Literal;
@@ -58,6 +60,15 @@ public record SparqlConstraintViolation( EvaluationContext context, String const
                .replace( "{$" + entry.getKey() + "}", value );
       }
       return interpolatedMessage;
+   }
+
+   @Override
+   public RDFNode highlight() {
+      return Stream.of( "highlight", "this" )
+            .flatMap( binding -> Optional.ofNullable( bindings().get( binding ) ).stream() )
+            .filter( highlightNode -> TokenRegistry.getToken( highlightNode.asNode() ).isPresent() )
+            .findFirst()
+            .orElse( context().element() );
    }
 
    @Override

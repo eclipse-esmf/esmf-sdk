@@ -25,6 +25,12 @@ public class SammNs {
    public static final SAMMC SAMMC = new SAMMC( KnownVersion.getLatest() );
    public static final SAMME SAMME = new SAMME( KnownVersion.getLatest(), SAMM );
    public static final UNIT UNIT = new UNIT( KnownVersion.getLatest(), SAMM );
+   public static final RdfNamespace RDF = new SimpleRdfNamespace( "rdf", org.apache.jena.vocabulary.RDF.getURI() );
+   public static final RdfNamespace RDFS = new SimpleRdfNamespace( "rdfs", org.apache.jena.vocabulary.RDFS.getURI() );
+   public static final RdfNamespace XSD = new SimpleRdfNamespace( "xsd", org.apache.jena.vocabulary.XSD.getURI() );
+
+   private SammNs() {
+   }
 
    /**
     * All SAMM-specific metamodel RDF namespaces
@@ -33,5 +39,14 @@ public class SammNs {
     */
    public static Stream<RdfNamespace> sammNamespaces() {
       return Stream.of( SAMM, SAMMC, SAMME, UNIT );
+   }
+
+   /**
+    * All "well-known" RDF namespaces
+    *
+    * @return the namespaces
+    */
+   public static Stream<RdfNamespace> wellKnownNamespaces() {
+      return Stream.concat( sammNamespaces(), Stream.of( RDF, RDFS, XSD ) );
    }
 }
