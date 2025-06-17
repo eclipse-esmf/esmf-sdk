@@ -217,7 +217,7 @@ class GenerationResult {
    }
 
    private TypeToken typeTokenToCheck( final Object fieldTypeOrTypeName ) {
-      TypeToken typeToCheck = null;
+      TypeToken typeToCheck;
       if ( fieldTypeOrTypeName instanceof TypeToken ) {
          typeToCheck = ( (TypeToken) fieldTypeOrTypeName );
       } else {

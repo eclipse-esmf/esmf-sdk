@@ -42,6 +42,11 @@ public record EqualsViolation( EvaluationContext context, Property otherProperty
    }
 
    @Override
+   public RDFNode highlight() {
+      return actualValue();
+   }
+
+   @Override
    public <T> T accept( final Visitor<T> visitor ) {
       return visitor.visitEqualsViolation( this );
    }

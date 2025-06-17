@@ -56,7 +56,7 @@ public class FlatModelsRoot extends ModelsRoot {
       return paths()
             .filter( path -> {
                try ( final Stream<String> lines = Files.lines( path ) ) {
-                  return lines.takeWhile( line -> line.startsWith( "@prefix" ) )
+                  return lines.takeWhile( line -> line.startsWith( "#" ) || line.startsWith( "@prefix" ) )
                         .anyMatch( line -> line.startsWith( "@prefix : " ) && line.endsWith( "<" + namespace.getUrnPrefix() + "> ." ) );
                } catch ( final IOException e ) {
                   return false;

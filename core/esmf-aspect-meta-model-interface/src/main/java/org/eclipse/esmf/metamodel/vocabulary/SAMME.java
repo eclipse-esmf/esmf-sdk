@@ -15,7 +15,6 @@ package org.eclipse.esmf.metamodel.vocabulary;
 
 import java.util.stream.Stream;
 
-import org.eclipse.esmf.metamodel.QuantityKind;
 import org.eclipse.esmf.samm.KnownVersion;
 
 import org.apache.jena.rdf.model.Property;

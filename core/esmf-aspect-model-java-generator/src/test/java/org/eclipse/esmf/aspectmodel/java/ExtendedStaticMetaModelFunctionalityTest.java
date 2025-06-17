@@ -138,7 +138,7 @@ public class ExtendedStaticMetaModelFunctionalityTest extends StaticMetaModelGen
 
       final Object nestedEntityInstance1 = ConstructorUtils.invokeConstructor( nestedEntityClass, "nested-entity-string-1" );
       final Object nestedEntityInstance2 = ConstructorUtils.invokeConstructor( nestedEntityClass, "nested-entity-string-2" );
-      final Object entityInstance = ConstructorUtils.invokeConstructor( entityClass, Short.valueOf( (short) 123 ),
+      final Object entityInstance = ConstructorUtils.invokeConstructor( entityClass, (short) 123,
             List.of( nestedEntityInstance1, nestedEntityInstance2 ) );
       final Object aspectInstance = ConstructorUtils.invokeConstructor( aspectClass, entityInstance );
 

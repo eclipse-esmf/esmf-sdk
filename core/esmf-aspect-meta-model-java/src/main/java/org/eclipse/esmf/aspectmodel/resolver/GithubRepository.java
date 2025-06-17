@@ -14,6 +14,7 @@
 package org.eclipse.esmf.aspectmodel.resolver;
 
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
@@ -66,7 +67,7 @@ public record GithubRepository(
       final String theHost = host().equals( "github.com" ) ? "api.github.com" : host();
       final String url = "https://%s/repos/%s/%s/zipball/%s".formatted( theHost, owner(), repository(), branchOrTag().name() );
       try {
-         return new URL( url );
+         return URI.create( url ).toURL();
       } catch ( final MalformedURLException exception ) {
          throw new ModelResolutionException( "Constructed GitHub URL is invalid: " + url );
       }

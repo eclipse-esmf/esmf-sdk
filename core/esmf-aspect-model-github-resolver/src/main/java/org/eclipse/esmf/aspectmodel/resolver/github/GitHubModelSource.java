@@ -24,7 +24,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.zip.ZipFile;
 
@@ -111,14 +110,13 @@ public class GitHubModelSource implements ModelSource {
                return Stream.empty();
             }
             final String[] parts = path.split( "/" );
-            if ( parts.length < 3
-                  || AspectModelUrn.from( "urn:samm:" + parts[parts.length - 3] + ":" + parts[parts.length - 2] ).isFailure() ) {
+            if ( parts.length < 3 || AspectModelUrn.from( parts[parts.length - 3], parts[parts.length - 2] ).isFailure() ) {
                LOG.debug( "Tried to load file {} but the path contains no valid URN structure", zipEntry.getName() );
                return Stream.<AspectModelFile> empty();
             }
             final URI uri = URI.create( sourceUrl( path ) );
             final Try<RawAspectModelFile> file = Try.of( () -> zipFile.getInputStream( zipEntry ) )
-                  .map( inputStream -> AspectModelFileLoader.load( inputStream, Optional.of( uri ) ) );
+                  .map( inputStream -> AspectModelFileLoader.load( inputStream, uri ) );
             if ( file.isFailure() ) {
                LOG.debug( "Tried to load {}, but it failed", uri );
             }

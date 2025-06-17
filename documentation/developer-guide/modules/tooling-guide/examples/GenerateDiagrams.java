@@ -14,7 +14,6 @@
 package examples;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Locale;
 
 // tag::imports[]

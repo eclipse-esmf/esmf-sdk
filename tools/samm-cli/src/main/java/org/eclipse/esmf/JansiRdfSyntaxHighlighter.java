@@ -30,80 +30,55 @@ public class JansiRdfSyntaxHighlighter implements RdfTextFormatter {
    private static final Ansi.Color STRING_COLOR = Ansi.Color.MAGENTA;
    private static final Ansi.Color LANG_COLOR = Ansi.Color.CYAN;
 
-   private final StringBuilder builder = new StringBuilder();
-
    @Override
-   public void reset() {
-      builder.setLength( 0 );
+   public String formatIri( final String iri ) {
+      return coloredFragment( IRI_COLOR, iri );
    }
 
    @Override
-   public String getResult() {
-      return builder.toString();
+   public String formatDirective( final String directive ) {
+      return coloredFragment( DIRECTIVE_COLOR, directive );
    }
 
    @Override
-   public RdfTextFormatter formatIri( final String iri ) {
-      builder.append( coloredFragment( IRI_COLOR, iri ) );
-      return this;
+   public String formatPrefix( final String prefix ) {
+      return coloredFragment( PREFIX_COLOR, prefix );
    }
 
    @Override
-   public RdfTextFormatter formatDirective( final String directive ) {
-      builder.append( coloredFragment( DIRECTIVE_COLOR, directive ) );
-      return this;
+   public String formatName( final String name ) {
+      return ansi().fgBright( PREFIX_COLOR ).a( name ).reset().toString();
    }
 
    @Override
-   public RdfTextFormatter formatPrefix( final String prefix ) {
-      builder.append( coloredFragment( PREFIX_COLOR, prefix ) );
-      return this;
+   public String formatString( final String string ) {
+      return coloredFragment( STRING_COLOR, string );
    }
 
    @Override
-   public RdfTextFormatter formatName( final String name ) {
-      builder.append( ansi().fgBright( PREFIX_COLOR ).a( name ).reset().toString() );
-      return this;
+   public String formatLangTag( final String langTag ) {
+      return coloredFragment( LANG_COLOR, langTag );
    }
 
    @Override
-   public RdfTextFormatter formatString( final String string ) {
-      builder.append( coloredFragment( STRING_COLOR, string ) );
-      return this;
+   public String formatDefault( final String text ) {
+      return ansi().a( text ).toString();
    }
 
    @Override
-   public RdfTextFormatter formatLangTag( final String langTag ) {
-      builder.append( coloredFragment( LANG_COLOR, langTag ) );
-      return this;
+   public String formatPrimitive( final String primitive ) {
+      return switch ( primitive ) {
+         case "<", ">" -> coloredFragment( IRI_COLOR, primitive );
+         case ":" -> coloredFragment( PREFIX_COLOR, primitive );
+         case "@", "(", ")" -> coloredFragment( DIRECTIVE_COLOR, primitive );
+         case "\"", "a" -> coloredFragment( STRING_COLOR, primitive );
+         default -> ansi().a( primitive ).toString();
+      };
    }
 
    @Override
-   public RdfTextFormatter formatDefault( final String text ) {
-      builder.append( ansi().a( text ).toString() );
-      return this;
-   }
-
-   @Override
-   public RdfTextFormatter formatPrimitive( final String primitive ) {
-      switch ( primitive ) {
-         case "<" -> builder.append( coloredFragment( IRI_COLOR, primitive ) );
-         case ">" -> builder.append( coloredFragment( IRI_COLOR, primitive ) );
-         case ":" -> builder.append( coloredFragment( PREFIX_COLOR, primitive ) );
-         case "@" -> builder.append( coloredFragment( DIRECTIVE_COLOR, primitive ) );
-         case "\"" -> builder.append( coloredFragment( STRING_COLOR, primitive ) );
-         case "(" -> builder.append( coloredFragment( DIRECTIVE_COLOR, primitive ) );
-         case ")" -> builder.append( coloredFragment( DIRECTIVE_COLOR, primitive ) );
-         case "a" -> builder.append( coloredFragment( STRING_COLOR, primitive ) );
-         default -> builder.append( ansi().a( primitive ).toString() );
-      }
-      return this;
-   }
-
-   @Override
-   public RdfTextFormatter formatError( final String text ) {
-      builder.append( coloredFragment( ERROR_COLOR, text ) );
-      return this;
+   public String formatError( final String text ) {
+      return coloredFragment( ERROR_COLOR, text );
    }
 
    private String coloredFragment( final Ansi.Color color, final String fragment ) {

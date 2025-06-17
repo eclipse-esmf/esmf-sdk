@@ -26,7 +26,19 @@ import org.eclipse.esmf.metamodel.AspectModel;
  * An InputHandler knows how to load Aspect Models, Aspects etc. depending on a certain type of given input.
  */
 public interface InputHandler {
+   /**
+    * Loads the AspectModel given the input
+    *
+    * @return the AspectModel
+    */
    AspectModel loadAspectModel();
+
+   /**
+    * Loads the AspectModel given the input and validates it
+    *
+    * @return the validation message
+    */
+   String validateAspectModel();
 
    /**
     * Loads the single Aspect given in the input if there is one, otherwise will return a {@link NoSuchElementException}.

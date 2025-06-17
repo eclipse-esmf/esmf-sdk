@@ -13,9 +13,20 @@
 
 package org.eclipse.esmf.aspectmodel.shacl.violation;
 
+import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.resolver.parser.SmartToken;
+import org.eclipse.esmf.aspectmodel.resolver.parser.TokenRegistry;
 import org.eclipse.esmf.aspectmodel.shacl.fix.Fix;
+import org.eclipse.esmf.aspectmodel.validation.CycleViolation;
+import org.eclipse.esmf.aspectmodel.validation.InvalidLexicalValueViolation;
+import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
+import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
+
+import org.apache.jena.rdf.model.RDFNode;
 
 /**
  * Represents a single violation raised by one or more SHACL shapes against an RDF model.
@@ -25,12 +36,47 @@ import org.eclipse.esmf.aspectmodel.shacl.fix.Fix;
  * implement {@link Visitor} and call {@link #accept(Visitor)} on the violation(s).
  */
 public interface Violation {
+   /**
+    * The error code that identifies this type of violation
+    */
    String errorCode();
 
+   /**
+    * The evaluation context providing information about the source location, context element etc. if available.
+    *
+    * @return the evalauation context if available, or null
+    */
    EvaluationContext context();
 
+   /**
+    * The message specific to this violation
+    */
    String violationSpecificMessage();
 
+   /**
+    * The RDF node this violation focusses on
+    */
+   default RDFNode highlight() {
+      return context().element();
+   }
+
+   /**
+    * The logical location of the input (e.g., {@link AspectModelFile}) the violation applies to if known
+    */
+   default Optional<URI> sourceLocation() {
+      return Optional.ofNullable( highlight() ).map( RDFNode::asNode )
+            .flatMap( TokenRegistry::getToken )
+            .map( SmartToken::getOriginatingFile )
+            .flatMap( AspectModelFile::sourceLocation );
+   }
+
+   /**
+    * Accepts a {@link Visitor}
+    *
+    * @param visitor the visitor
+    * @param <T> the visitor's return type
+    * @return the visitor's result
+    */
    <T> T accept( Visitor<T> visitor );
 
    enum AppliesTo {
@@ -45,6 +91,14 @@ public interface Violation {
       }
 
       default T visitInvalidSyntaxViolation( final InvalidSyntaxViolation violation ) {
+         return visit( violation );
+      }
+
+      default T visitInvalidLexicalValueViolation( final InvalidLexicalValueViolation violation ) {
+         return visit( violation );
+      }
+
+      default T visitCycleViolation( final CycleViolation violation ) {
          return visit( violation );
       }
 

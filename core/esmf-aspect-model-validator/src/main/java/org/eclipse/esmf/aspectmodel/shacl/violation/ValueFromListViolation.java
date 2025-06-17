@@ -43,6 +43,11 @@ public record ValueFromListViolation( EvaluationContext context, List<RDFNode> a
    }
 
    @Override
+   public RDFNode highlight() {
+      return actual();
+   }
+
+   @Override
    public <T> T accept( final Visitor<T> visitor ) {
       return visitor.visitValueFromListViolation( this );
    }

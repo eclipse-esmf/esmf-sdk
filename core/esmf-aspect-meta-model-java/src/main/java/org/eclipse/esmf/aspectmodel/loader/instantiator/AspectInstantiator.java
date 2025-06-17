@@ -14,7 +14,6 @@
 package org.eclipse.esmf.aspectmodel.loader.instantiator;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.esmf.aspectmodel.loader.Instantiator;
@@ -24,7 +23,6 @@ import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Event;
 import org.eclipse.esmf.metamodel.Operation;
 import org.eclipse.esmf.metamodel.Property;
-import org.eclipse.esmf.metamodel.characteristic.Collection;
 import org.eclipse.esmf.metamodel.impl.DefaultAspect;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 

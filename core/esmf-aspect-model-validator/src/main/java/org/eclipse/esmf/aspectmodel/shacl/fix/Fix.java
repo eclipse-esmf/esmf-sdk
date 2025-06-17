@@ -28,7 +28,9 @@ public interface Fix {
    interface Visitor<T> {
       T visit( Fix fix );
 
-      T visitReplaceValue( ReplaceValue replaceValue );
+      default T visitReplaceValue( final ReplaceValue replaceValue ) {
+         return visit( replaceValue );
+      }
    }
 }
 

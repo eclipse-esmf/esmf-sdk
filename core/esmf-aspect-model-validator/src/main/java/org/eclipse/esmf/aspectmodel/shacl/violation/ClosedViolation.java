@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.ClosedConstraint;
 
 import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
 
 /**
  * Violation of a {@link ClosedConstraint}
@@ -58,6 +59,11 @@ public record ClosedViolation( EvaluationContext context, Set<Property> allowedP
 
       return String.format( "%s is used on %s. It is not allowed there; %s.",
             context.shortUri( actual.getURI() ), context.elementName(), allowedText );
+   }
+
+   @Override
+   public RDFNode highlight() {
+      return actual();
    }
 
    @Override

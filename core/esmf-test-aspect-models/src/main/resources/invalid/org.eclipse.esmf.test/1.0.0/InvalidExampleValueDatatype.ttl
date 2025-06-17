@@ -21,6 +21,6 @@
    samm:operations ( ) .
 
 :stringProperty a samm:Property ;
-   samm:exampleValue "3"^^xsd:int ;
+   samm:exampleValue "1234"^^xsd:int ;
    samm:characteristic samm-c:Text .
 

@@ -13,6 +13,8 @@
 
 package org.eclipse.esmf.substitution;
 
+import static org.eclipse.esmf.aspectmodel.StreamUtil.asMap;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -123,7 +125,7 @@ public class AdminShellConfig {
                final String[] parts = entry.split( "->" );
                return Map.entry( keyDeserializer.apply( parts[0] ), valueDeserializer.apply( parts[1] ) );
             } )
-            .collect( Collectors.toMap( Map.Entry::getKey, Map.Entry::getValue ) );
+            .collect( asMap() );
    }
 
    private static <T> ReflectionHelper.ImplementationInfo<T> deserializeImplementationInfo( final String info ) {

@@ -240,7 +240,8 @@ public class ClasspathStrategy implements ResolutionStrategy {
                   }
                   // filePath should now look like org.eclipse.esmf.example/1.0.0/File.ttl
                   final String[] parts = filePath.split( "/" );
-                  if ( parts.length != 3 || AspectModelUrn.from( "urn:samm:" + parts[0] + ":" + parts[1] ).isFailure() ) {
+                  if ( parts.length != 3
+                        || AspectModelUrn.from( AspectModelUrn.PROTOCOL_AND_NAMESPACE_PREFIX + parts[0] + ":" + parts[1] ).isFailure() ) {
                      return Stream.empty();
                   }
                   return Stream.of( resourceUrl( modelsRoot + "/" + parts[0] + "/" + parts[1], parts[2] ) ).map( this::toUri );

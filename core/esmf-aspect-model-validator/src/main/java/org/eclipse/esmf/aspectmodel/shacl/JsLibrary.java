@@ -15,7 +15,7 @@ package org.eclipse.esmf.aspectmodel.shacl;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
@@ -32,7 +32,7 @@ public class JsLibrary {
 
       final StringBuilder code = new StringBuilder();
       for ( final String libraryUrl : libraryUrls ) {
-         try ( final InputStream inputStream = new URL( libraryUrl ).openStream() ) {
+         try ( final InputStream inputStream = URI.create( libraryUrl ).toURL().openStream() ) {
             code.append( new String( inputStream.readAllBytes(), StandardCharsets.UTF_8 ) );
             code.append( "\n" );
          } catch ( final IOException exception ) {

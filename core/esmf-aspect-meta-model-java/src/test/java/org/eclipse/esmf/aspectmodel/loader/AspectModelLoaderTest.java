@@ -17,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.eclipse.esmf.test.shared.AspectModelAsserts.assertThat;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -25,20 +26,17 @@ import java.util.stream.Collectors;
 
 import org.eclipse.esmf.aspectmodel.AspectLoadingException;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.ValueParsingException;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
-import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
+import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFileBuilder;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.ModelElement;
-import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.test.InvalidTestAspect;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -74,7 +72,7 @@ class AspectModelLoaderTest {
    @Test
    void testAspectModelWithInvalidUri() {
       assertThatThrownBy( () -> TestResources.load( InvalidTestAspect.INVALID_URI ) )
-            .isInstanceOfSatisfying( ParserException.class, parserException -> {
+            .isInstanceOfSatisfying( ValueParsingException.class, parserException -> {
                assertThat( parserException.getMessage() ).contains( "invalid with spaces" );
                assertThat( parserException.getLine() ).isNotEqualTo( -1 ).isNotEqualTo( 0 );
                assertThat( parserException.getColumn() ).isNotEqualTo( -1 ).isNotEqualTo( 0 );
@@ -113,12 +111,22 @@ class AspectModelLoaderTest {
 
    @Test
    void testLoadMultipleFilesWithOverlappingRdfStatements() {
-      final AspectModelFile file1 = TestResources.load( TestAspect.ASPECT_WITH_PROPERTY ).files().iterator().next();
-      final AspectModelFile file2 = TestResources.load( TestAspect.ASPECT_WITH_PROPERTY ).files().iterator().next();
-      final AspectModel aspectModel = new AspectModelLoader().loadAspectModelFiles( List.of( file1, file2 ) );
-      final Resource aspect = aspectModel.mergedModel().createResource( TestAspect.ASPECT_WITH_PROPERTY.getUrn().toString() );
-      final List<Statement> propertiesAssertions = aspectModel.mergedModel()
-            .listStatements( aspect, SammNs.SAMM.properties(), (RDFNode) null ).toList();
-      assertThat( propertiesAssertions ).hasSize( 1 );
+      final AspectModelFile rawFile1 = TestResources.load( TestAspect.ASPECT_WITH_PROPERTY ).files().iterator().next();
+      final AspectModelFile file1 = RawAspectModelFileBuilder.builder()
+            .sourceLocation( Optional.of( URI.create( rawFile1.sourceLocation().get() + "-first-instance" ) ) )
+            .sourceModel( rawFile1.sourceModel() )
+            .headerComment( rawFile1.headerComment() )
+            .build();
+      final AspectModelFile rawFile2 = TestResources.load( TestAspect.ASPECT_WITH_PROPERTY ).files().iterator().next();
+      final AspectModelFile file2 = RawAspectModelFileBuilder.builder()
+            .sourceLocation( Optional.of( URI.create( rawFile2.sourceLocation().get() + "-second-instance" ) ) )
+            .sourceModel( rawFile2.sourceModel() )
+            .headerComment( rawFile2.headerComment() )
+            .build();
+      assertThatThrownBy( () -> {
+         new AspectModelLoader().loadAspectModelFiles( List.of( file1, file2 ) );
+      } ).isInstanceOfSatisfying( AspectLoadingException.class, exception -> {
+         assertThat( exception ).hasMessageContaining( "Duplicate definition" );
+      } );
    }
 }

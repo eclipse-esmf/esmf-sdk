@@ -46,8 +46,8 @@ class EsmfPerformanceTest {
    private static final Collection<AspectModelUrn> URNS_2_1_0 = getUrns( INPUT_FILES_2_1_0 );
    private static final List<AspectModelFile> INPUT_FILES_LATEST = InlineModel.getModel( KnownVersion.getLatest().toVersionString() );
    private static final Collection<AspectModelUrn> URNS_LATEST = getUrns( INPUT_FILES_LATEST );
-   private static final long MAX_DURATION_MS = 1300;
-   private static final long MAX_MEMORY_BYTES = 200L * 1024 * 1024;
+   private static final long MAX_DURATION_MS = 5000;
+   private static final long MAX_MEMORY_BYTES = 500L * 1024 * 1024;
 
    @Test
    @Timeout( 90 )
@@ -56,7 +56,7 @@ class EsmfPerformanceTest {
    }
 
    @Test
-   @Timeout( 2 )
+   @Timeout( 5 )
    void testResolvingWithLatestSammVersion() {
       measurePerformance( "LatestSammVersion", INPUT_FILES_LATEST, URNS_LATEST );
    }

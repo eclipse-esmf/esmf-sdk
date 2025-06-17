@@ -748,7 +748,7 @@ public class SHACL implements RdfNamespace {
 
    /**
     * A constraint component that can be used to verify that the set of value nodes
-    * is disjoint with the the set of nodes that have the focus node as subject
+    * is disjoint with the set of nodes that have the focus node as subject
     * and the value of a given property as predicate.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
