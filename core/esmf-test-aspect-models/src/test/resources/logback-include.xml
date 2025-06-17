@@ -23,6 +23,7 @@
    <logger name="org.apache.jena.util" level="OFF"/>
    <logger name="org.apache.jena.shared" level="OFF"/>
    <logger name="org.apache.jena.shared.LockMRSW" level="OFF"/>
+   <logger name="org.apache.jena.sparql" level="OFF"/>
 
    <root level="warn">
       <appender-ref ref="console"/>

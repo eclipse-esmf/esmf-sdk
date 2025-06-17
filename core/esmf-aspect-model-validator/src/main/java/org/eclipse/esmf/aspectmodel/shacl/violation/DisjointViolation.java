@@ -40,6 +40,11 @@ public record DisjointViolation( EvaluationContext context, Property otherProper
    }
 
    @Override
+   public RDFNode highlight() {
+      return context().property().get();
+   }
+
+   @Override
    public <T> T accept( final Visitor<T> visitor ) {
       return visitor.visitDisjointViolation( this );
    }

@@ -29,6 +29,7 @@ import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.aspectmodel.resolver.parser.SmartToken;
 import org.eclipse.esmf.aspectmodel.resolver.parser.TokenRegistry;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.buildtime.template.VersionInfo;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
@@ -310,6 +311,7 @@ public class PrettyPrinter {
     *
     * @param input the input string
     */
+   @SuppressWarnings( "UnnecessaryUnicodeEscape" )
    private void escapeStringAndAppendToBuilder( final String input, final StringBuilder builder ) {
       final String escapedSpecialCharacters = StringEscapeUtils.escapeJava( input );
       // The following replaces unicode escape sequences such as \uABCD with the corresponding unicode character
@@ -468,7 +470,7 @@ public class PrettyPrinter {
       public Object visitURI( final Node_URI it, final String uri ) {
          final String suri = model.shortForm( uri );
          if ( uri.equals( suri ) ) {
-            return uri.startsWith( "urn:samm:" ) && !uri.contains( "#" )
+            return uri.startsWith( AspectModelUrn.PROTOCOL_AND_NAMESPACE_PREFIX ) && !uri.contains( "#" )
                   ? "<" + uri + "#>"
                   : "<" + uri + ">";
          } else {

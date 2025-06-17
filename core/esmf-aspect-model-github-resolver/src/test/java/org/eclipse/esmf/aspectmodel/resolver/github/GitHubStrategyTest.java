@@ -106,8 +106,7 @@ public class GitHubStrategyTest {
 
    @Test
    void testResolveFromZipFile() throws IOException {
-      final ResolutionStrategy gitHubStrategy = new GitHubStrategy( esmfSdk,
-            "core/esmf-test-aspect-models/src/main/resources/valid" );
+      final ResolutionStrategy gitHubStrategy = new GitHubStrategy( esmfSdk, "core/esmf-test-aspect-models/src/main/resources/valid" );
 
       final File tempFile = outputDirectory.resolve( "temp.zip" ).toFile();
       final InputStream testZipFileInputStream = getClass().getClassLoader().getResourceAsStream( "github-export.zip" );

@@ -21,6 +21,7 @@ import org.eclipse.esmf.aspectmodel.shacl.constraint.JsConstraint;
 import org.apache.jena.graph.Node_Blank;
 import org.apache.jena.graph.Node_Literal;
 import org.apache.jena.graph.Node_URI;
+import org.apache.jena.rdf.model.RDFNode;
 
 /**
  * Violation of a {@link JsConstraint}. Represents the violation of a SHACL JavaScript constraint. It provides references to the used
@@ -66,6 +67,11 @@ public record JsConstraintViolation( EvaluationContext context, String constrain
          interpolatedMessage = interpolatedMessage.replaceAll( "\\{[$?]" + entry.getKey() + "\\}", value );
       }
       return interpolatedMessage;
+   }
+
+   @Override
+   public RDFNode highlight() {
+      return context().property().isPresent() ? context().property().get() : context().element();
    }
 
    @Override

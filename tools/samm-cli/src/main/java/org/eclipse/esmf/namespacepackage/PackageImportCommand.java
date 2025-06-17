@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.http.HttpResponse;
@@ -123,7 +124,7 @@ public class PackageImportCommand extends AbstractCommand {
       }
 
       try {
-         final URL url = new URL( path );
+         final URL url = URI.create( path ).toURL();
          LOG.debug( "Trying to download {}", url );
          final Map<String, String> headers = Map.of( "Accept", "application/zip" );
          final HttpResponse<byte[]> httpResponse = new Download().downloadFileAsResponse( url, headers );

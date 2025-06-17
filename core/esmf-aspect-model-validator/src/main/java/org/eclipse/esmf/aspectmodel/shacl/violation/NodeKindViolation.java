@@ -16,6 +16,8 @@ package org.eclipse.esmf.aspectmodel.shacl.violation;
 import org.eclipse.esmf.aspectmodel.shacl.Shape;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.NodeKindConstraint;
 
+import org.apache.jena.rdf.model.RDFNode;
+
 /**
  * Violation of a {@link NodeKindConstraint}
  *
@@ -47,6 +49,11 @@ public record NodeKindViolation( EvaluationContext context, Shape.NodeKind allow
             actualNodeKind.humanReadable(), allowedNodeKind.humanReadable() )
             : String.format( "Element %s is %s, but it must be %s.",
             context.elementName(), actualNodeKind.humanReadable(), allowedNodeKind.humanReadable() );
+   }
+
+   @Override
+   public RDFNode highlight() {
+      return context().property().isPresent() ? context().property().get() : context().element();
    }
 
    @Override

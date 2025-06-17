@@ -16,7 +16,6 @@ package org.eclipse.esmf.aspectmodel.generator.diagram;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import org.eclipse.esmf.metamodel.Aspect;

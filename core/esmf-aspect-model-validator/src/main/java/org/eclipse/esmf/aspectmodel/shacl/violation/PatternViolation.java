@@ -15,6 +15,8 @@ package org.eclipse.esmf.aspectmodel.shacl.violation;
 
 import org.eclipse.esmf.aspectmodel.shacl.constraint.PatternConstraint;
 
+import org.apache.jena.rdf.model.RDFNode;
+
 /**
  * Violation of a {@link PatternConstraint}
  *
@@ -34,6 +36,11 @@ public record PatternViolation( EvaluationContext context, String actual, String
    public String violationSpecificMessage() {
       return String.format( "Property %s on %s has value %s, which does not match the required pattern %s.",
             context.propertyName(), context.elementName(), actual, pattern );
+   }
+
+   @Override
+   public RDFNode highlight() {
+      return context().property().get();
    }
 
    @Override

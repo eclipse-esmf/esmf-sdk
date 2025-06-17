@@ -13,6 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.generator.diagram;
 
+import static org.eclipse.esmf.aspectmodel.StreamUtil.asMap;
 import static org.graphper.api.Html.table;
 import static org.graphper.api.Html.td;
 
@@ -33,7 +34,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.generator.AspectGenerator;
@@ -191,7 +191,7 @@ public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[],
                final Node node = Node.builder().color( Color.BLACK ).table( table ).build();
                return new AbstractMap.SimpleEntry<>( box, node );
             } )
-            .collect( Collectors.toMap( Map.Entry::getKey, Map.Entry::getValue ) );
+            .collect( asMap() );
       boxMap.values().forEach( graphvizBuilder::addNode );
       diagram.getEdges()
             .stream()

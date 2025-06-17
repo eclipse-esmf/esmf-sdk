@@ -37,8 +37,16 @@ import org.apache.jena.rdf.model.Statement;
  * @param validator the validator
  * @param resolvedModel the model being evaluated
  */
-public record EvaluationContext( Resource element, Shape shape, Optional<Shape.Property> propertyShape, Optional<Property> property,
-      Optional<EvaluationContext> parentContext, List<Statement> offendingStatements, ShaclValidator validator, Model resolvedModel ) {
+public record EvaluationContext(
+      Resource element,
+      Shape shape,
+      Optional<Shape.Property> propertyShape,
+      Optional<Property> property,
+      Optional<EvaluationContext> parentContext,
+      List<Statement> offendingStatements,
+      ShaclValidator validator,
+      Model resolvedModel
+) {
    public EvaluationContext withProperty( final Property newProperty ) {
       return new EvaluationContext( element(), shape(), propertyShape(), Optional.of( newProperty ),
             parentContext(), offendingStatements(), validator(), resolvedModel() );

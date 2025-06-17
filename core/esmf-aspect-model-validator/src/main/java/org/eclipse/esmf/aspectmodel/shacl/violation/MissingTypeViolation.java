@@ -13,6 +13,8 @@
 
 package org.eclipse.esmf.aspectmodel.shacl.violation;
 
+import org.apache.jena.rdf.model.RDFNode;
+
 /**
  * Violation that is emitted when the value of a property is missing a type, but it's required
  *
@@ -29,6 +31,11 @@ public record MissingTypeViolation( EvaluationContext context ) implements Viola
    @Override
    public String violationSpecificMessage() {
       return String.format( "Could not determine type of %s.", context.elementName() );
+   }
+
+   @Override
+   public RDFNode highlight() {
+      return context().element();
    }
 
    @Override

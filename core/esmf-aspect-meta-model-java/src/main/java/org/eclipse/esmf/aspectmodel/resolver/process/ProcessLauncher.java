@@ -41,7 +41,7 @@ public abstract class ProcessLauncher<T> implements Function<ProcessLauncher<T>.
       final ExecutionResult result = apply( arguments );
       if ( result.exitStatus() != 0 ) {
          throw new ProcessExecutionException(
-               "Execution failed (status %d):\nstdout:%s\nstderr:%s".formatted( result.exitStatus, result.stdout(), result.stderr() ) );
+               "Execution failed (status %d):\nstdout:%n%s\nstderr:%n%s".formatted( result.exitStatus, result.stdout(), result.stderr() ) );
       }
       return result;
    }

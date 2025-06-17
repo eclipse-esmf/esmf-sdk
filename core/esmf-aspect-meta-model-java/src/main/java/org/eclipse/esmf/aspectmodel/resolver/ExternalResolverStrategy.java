@@ -37,7 +37,7 @@ public class ExternalResolverStrategy implements ResolutionStrategy {
                ? command.replace( "URN", aspectModelUrn.toString() )
                : command + " " + aspectModelUrn.toString();
          final String result = CommandExecutor.executeCommand( commandWithParameters );
-         return AspectModelFileLoader.load( result );
+         return AspectModelFileLoader.load( result, URI.create( "input:stdin" ) );
       } catch ( final ModelResolutionException exception ) {
          final ModelResolutionException.LoadingFailure failure = new ModelResolutionException.LoadingFailure(
                aspectModelUrn, "The output of '" + command + "'", "Command evaluation failed", exception );

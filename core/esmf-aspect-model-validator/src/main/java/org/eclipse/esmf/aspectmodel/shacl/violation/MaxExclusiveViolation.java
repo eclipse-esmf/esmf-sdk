@@ -16,6 +16,7 @@ package org.eclipse.esmf.aspectmodel.shacl.violation;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.MaxExclusiveConstraint;
 
 import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.RDFNode;
 
 /**
  * Violation of a {@link MaxExclusiveConstraint}
@@ -36,6 +37,11 @@ public record MaxExclusiveViolation( EvaluationContext context, Literal max, Lit
    public String violationSpecificMessage() {
       return String.format( "Property %s on %s has value %s, but it must be less than %s.",
             context.propertyName(), context.elementName(), context.value( actual ), context.value( max ) );
+   }
+
+   @Override
+   public RDFNode highlight() {
+      return actual();
    }
 
    @Override

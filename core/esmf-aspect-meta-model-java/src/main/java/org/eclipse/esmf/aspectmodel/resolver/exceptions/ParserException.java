@@ -13,6 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.resolver.exceptions;
 
+import java.net.URI;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,16 +33,19 @@ public class ParserException extends RuntimeException {
    private final String sourceDocument;
    private final long line;
    private final long column;
+   private final URI sourceLocation;
 
    /**
     * Constructor: Parse a RiotException
     *
     * @param exception the cause
     * @param sourceDocument the source document
+    * @param location the source location
     */
-   public ParserException( final RiotException exception, final String sourceDocument ) {
+   public ParserException( final RiotException exception, final String sourceDocument, final URI location ) {
       super( getRiotMessage( exception.getMessage() ).orElse( "Syntax error: " + exception.getMessage() ), exception );
       this.sourceDocument = sourceDocument;
+      sourceLocation = location;
       final Matcher matcher = PATTERN.matcher( exception.getMessage() );
       if ( matcher.find() ) {
          line = Long.parseLong( matcher.group( 1 ) );
@@ -60,11 +64,13 @@ public class ParserException extends RuntimeException {
     * @param message the message
     * @param sourceDocument the source document
     */
-   public ParserException( final long line, final long column, final String message, final String sourceDocument ) {
+   public ParserException( final long line, final long column, final String message, final String sourceDocument,
+         final URI sourceLocation ) {
       super( message );
       this.sourceDocument = sourceDocument;
       this.line = line;
       this.column = column;
+      this.sourceLocation = sourceLocation;
    }
 
    private static Optional<String> getRiotMessage( final String riotMessage ) {
@@ -85,5 +91,9 @@ public class ParserException extends RuntimeException {
 
    public long getColumn() {
       return column;
+   }
+
+   public URI getSourceLocation() {
+      return sourceLocation;
    }
 }

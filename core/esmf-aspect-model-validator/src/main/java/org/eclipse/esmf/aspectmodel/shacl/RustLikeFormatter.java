@@ -13,14 +13,19 @@
 
 package org.eclipse.esmf.aspectmodel.shacl;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
+import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.parser.PlainTextFormatter;
 import org.eclipse.esmf.aspectmodel.resolver.parser.RdfTextFormatter;
 import org.eclipse.esmf.aspectmodel.resolver.parser.SmartToken;
@@ -50,12 +55,13 @@ public class RustLikeFormatter {
    private SmartToken highlightToken;
    private int currentColumn;
    private final RdfTextFormatter textFormatter;
+   private StringBuffer buffer;
 
    // some statements (like anonymous nodes or lists) can be handled out-of-order, so we remember them to not go over them twice
    private final Set<Statement> seen = new HashSet<>();
    private List<Statement> candidateStatements;
 
-   // The parsed model does not contain all the original tokens ( braces in lists, semicolons between statements etc.). But as we want to
+   // The parsed model does not contain all the original tokens (braces in lists, semicolons between statements etc.). But as we want to
    // achieve as nice and natural formatting as possible, we look at the available information to achieve the proper spacing.
    private List<Integer> knownPositions;
 
@@ -73,20 +79,25 @@ public class RustLikeFormatter {
    }
 
    public String constructDetailedMessage( final RDFNode highlight, final String message, @Nullable final Model rawModel ) {
-      final Model sourceModel = rawModel == null ? highlight.getModel() : rawModel;
       highlightToken = extractToken( highlight );
-
       if ( highlightToken == null ) {
          // without meaningful position information (line/col), we are not able to provide any additional context/details
          return message;
       }
+      final Optional<AspectModelFile> sourceFile = Optional.ofNullable( highlightToken.getOriginatingFile() );
+      final Model sourceModel = sourceFile
+            .map( AspectModelFile::sourceModel )
+            .or( () -> Optional.ofNullable( rawModel ) )
+            .orElse( highlight.getModel() );
 
       candidateStatements = sourceModel.listStatements()
-            .filterDrop( statement -> Objects.equals( statement.getPredicate(),
-                  RDF.rest ) ) // internal Jena list bookkeeping, nothing interesting for us
+            // internal Jena list bookkeeping, nothing interesting for us
+            .filterDrop( statement -> Objects.equals( statement.getPredicate(), RDF.rest ) )
             .filterKeep( statement -> spansLine( statement, highlightToken.line() ) )
             .toList();
-      return formatError( message );
+
+      return formatError( highlightToken.content(), formatStatements(), highlightToken.line(), highlightToken.column(), message,
+            sourceFile.flatMap( AspectModelFile::sourceLocation ) );
    }
 
    public RdfTextFormatter getFormatter() {
@@ -104,22 +115,40 @@ public class RustLikeFormatter {
       return nodePosition != null && nodePosition.line() == lineNumber;
    }
 
-   private String formatError( final String errorMessage ) {
-      final int prefixWidth = String.valueOf( highlightToken.line() ).length() + 1;
-      final String prefix = " ".repeat( prefixWidth ) + "| ";
-      return errorStyle(
-            String.format( "%s> Error at line %d column %d%n", "-".repeat( prefixWidth ), highlightToken.line(), highlightToken.column() ) )
-            + prefix + System.lineSeparator()
-            + highlightToken.line() + " | " + formatStatements() + System.lineSeparator()
-            + prefix + " ".repeat( highlightToken.column() ) + errorStyle(
-            "^".repeat( highlightToken.content().length() ) + " " + errorMessage ) + System.lineSeparator()
-            + prefix + System.lineSeparator();
+   public String formatError( final String token, final String line, final int lineNumber, final int columnNumber,
+         final String errorMessage ) {
+      return formatError( token, line, lineNumber, columnNumber, errorMessage, Optional.empty() );
    }
 
-   private String errorStyle( final String plainText ) {
-      textFormatter.reset();
-      textFormatter.formatError( plainText );
-      return textFormatter.getResult();
+   public String formatError( final int tokenLength, final Map<Integer, String> lines, final int lineNumber, final int columnNumber,
+         final String errorMessage, final Optional<URI> sourceLocation ) {
+      final int prefixWidth = lines.keySet().stream().mapToInt( lineNo -> String.valueOf( lineNo ).length() + 1 ).max().orElse( 0 );
+      final String source = sourceLocation
+            .map( URI::toString )
+            .map( location -> " in " + textFormatter.formatName( location ) )
+            .orElse( "" );
+      final String prefix = " ".repeat( prefixWidth ) + "| ";
+      final StringBuilder builder = new StringBuilder();
+      builder.append( textFormatter.formatError( String.format( "%s> Error at line %d column %d", "-".repeat( prefixWidth ),
+            lineNumber, columnNumber ) ) );
+      builder.append( source ).append( System.lineSeparator() );
+      builder.append( prefix ).append( System.lineSeparator() );
+      lines.entrySet().stream().sorted( Map.Entry.comparingByKey() ).forEach( entry -> {
+         final int currentLine = entry.getKey();
+         builder.append( String.format( "%" + ( prefixWidth - 1 ) + "d", currentLine ) ).append( " | " ).append( entry.getValue() )
+               .append( System.lineSeparator() );
+         if ( currentLine == lineNumber ) {
+            builder.append( prefix ).append( " ".repeat( columnNumber ) )
+                  .append( textFormatter.formatError( "^".repeat( tokenLength ) + " " + errorMessage ) ).append( System.lineSeparator() );
+         }
+      } );
+      builder.append( prefix ).append( System.lineSeparator() );
+      return builder.toString();
+   }
+
+   public String formatError( final String token, final String line, final int lineNumber, final int columnNumber,
+         final String errorMessage, final Optional<URI> sourceLocation ) {
+      return formatError( token.length(), Map.of( lineNumber, line ), lineNumber, columnNumber, errorMessage, sourceLocation );
    }
 
    private String formatStatements() {
@@ -134,9 +163,9 @@ public class RustLikeFormatter {
             .map( SmartToken::column )
             .toList();
 
-      textFormatter.reset();
+      buffer = new StringBuffer();
       inDocumentOrder.forEach( this::formatStatement );
-      return textFormatter.getResult();
+      return buffer.toString();
    }
 
    // model.listStatements() returns the statements in random order, but we want to format them as they appear in the source document,
@@ -156,6 +185,9 @@ public class RustLikeFormatter {
       } else {
          t1 = includeSubject( s1 );
          t2 = includeSubject( s2 );
+      }
+      if ( t1 == null || t2 == null ) {
+         return 0;
       }
       final int res = Integer.compare( t1.line(), t2.line() );
       return ( res != 0 ) ? res : Integer.compare( t1.column(), t2.column() );
@@ -344,15 +376,81 @@ public class RustLikeFormatter {
    }
 
    private void formatText( final SmartToken token ) {
-      currentColumn += token.structureContent( textFormatter );
+      currentColumn += structureContent( token );
+   }
+
+   /**
+    * Format the content of a token in a structured manner.
+    *
+    * @param token the token to format
+    * @return the length of the UNFORMATTED content
+    */
+   protected int structureContent( final SmartToken token ) {
+      final Function<RdfTextFormatter, String> getFormattedContent = formatter -> {
+         return switch ( token.type() ) {
+            case IRI -> formatter.formatPrimitive( "<" )
+                  + formatter.formatIri( token.image() )
+                  + formatter.formatPrimitive( ">" );
+            case DIRECTIVE -> formatter.formatPrimitive( "@" ) + formatter.formatDirective( token.image() );
+            case PREFIXED_NAME -> formatter.formatPrefix( Optional.ofNullable( token.image() ).orElse( "" ) )
+                  + formatter.formatPrimitive( ":" )
+                  + formatter.formatName( Optional.ofNullable( token.image2() ).orElse( "" ) );
+            case LT -> formatter.formatPrimitive( "<" );
+            case GT -> formatter.formatPrimitive( ">" );
+            case LE -> formatter.formatPrimitive( "<=" );
+            case GE -> formatter.formatPrimitive( ">=" );
+            case LOGICAL_AND -> formatter.formatPrimitive( "&&" );
+            case LOGICAL_OR -> formatter.formatPrimitive( "||" );
+            case LT2 -> formatter.formatPrimitive( "<<" );
+            case GT2 -> formatter.formatPrimitive( ">>" );
+            case DOT -> formatter.formatPrimitive( "." );
+            case COMMA -> formatter.formatPrimitive( "," );
+            case SEMICOLON -> formatter.formatPrimitive( ";" );
+            case LBRACE -> formatter.formatPrimitive( "{" );
+            case RBRACE -> formatter.formatPrimitive( "}" );
+            case LPAREN -> formatter.formatPrimitive( "(" );
+            case RPAREN -> formatter.formatPrimitive( ")" );
+            case LBRACKET -> formatter.formatPrimitive( "[" );
+            case RBRACKET -> formatter.formatPrimitive( "]" );
+            case EQUALS -> formatter.formatPrimitive( "=" );
+            case EQUIVALENT -> formatter.formatPrimitive( "==" );
+            case PLUS -> formatter.formatPrimitive( "+" );
+            case MINUS -> formatter.formatPrimitive( "-" );
+            case STAR -> formatter.formatPrimitive( "*" );
+            case SLASH -> formatter.formatPrimitive( "/" );
+            case RSLASH -> formatter.formatPrimitive( "\\" );
+            case STRING -> formatter.formatPrimitive( "\"" )
+                  + formatter.formatString( token.image() )
+                  + formatter.formatPrimitive( "\"" );
+            case LITERAL_LANG -> formatter.formatPrimitive( "\"" )
+                  + formatter.formatString( token.image() )
+                  + formatter.formatPrimitive( "\"" )
+                  + formatter.formatPrimitive( "@" )
+                  + formatter.formatLangTag( token.image2() );
+            case LITERAL_DT -> formatter.formatPrimitive( "\"" )
+                  + formatter.formatString( token.image() )
+                  + formatter.formatPrimitive( "\"" )
+                  + formatter.formatPrimitive( "^^" )
+                  + formatter.formatPrefix( token.subToken2().getImage() )
+                  + formatter.formatPrimitive( ":" )
+                  + formatter.formatName( token.subToken2().getImage2() );
+            default -> formatter.formatDefault( token.image() );
+         };
+      };
+
+      buffer.append( getFormattedContent.apply( textFormatter ) );
+      return getFormattedContent.apply( new PlainTextFormatter() ).length();
    }
 
    private void formatText( final String reconstructedText ) {
-      reconstructedText.chars().forEach( chr -> textFormatter.formatPrimitive( String.valueOf( (char) chr ) ) );
+      reconstructedText.chars().forEach( chr -> buffer.append( textFormatter.formatPrimitive( String.valueOf( (char) chr ) ) ) );
       currentColumn += reconstructedText.length();
    }
 
    private static SmartToken extractToken( final RDFNode rdfNode ) {
-      return TokenRegistry.getToken( rdfNode.asNode() ).orElse( null );
+      return Optional.ofNullable( rdfNode )
+            .map( RDFNode::asNode )
+            .flatMap( TokenRegistry::getToken )
+            .orElse( null );
    }
 }

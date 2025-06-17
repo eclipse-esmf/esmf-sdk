@@ -67,7 +67,7 @@ class AasToAspectModelGeneratorTest {
             fail( "Translation of " + aasxFile.getName() + " yielded no Aspects" );
          }
          final String result = AspectSerializer.INSTANCE.aspectToString( aspects.iterator().next() );
-         final AspectModel aspectModel = new AspectModelLoader().load( new ByteArrayInputStream( result.getBytes() ) );
+         final AspectModel aspectModel = new AspectModelLoader().load( new ByteArrayInputStream( result.getBytes() ), aasxFile.toURI() );
 
          aspectModel.elements().forEach( element -> {
             if ( element instanceof Property || element instanceof Operation || element instanceof Unit ) {

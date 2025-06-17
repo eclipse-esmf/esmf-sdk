@@ -43,8 +43,7 @@ class AspectModelUrnTest {
    @Test
    void createFromValidUrnMaxLength() throws URISyntaxException {
       final String namespace = Strings.repeat( "x", 62 );
-      final URI validUrn = new URI(
-            "urn:samm:" + namespace + ".test:1.0.0#Errors" );
+      final URI validUrn = new URI( "urn:samm:" + namespace + ".test:1.0.0#Errors" );
       final AspectModelUrn aspectModelUrn = AspectModelUrn.fromUrn( validUrn );
 
       assertModelElementUrn( aspectModelUrn, "Errors", namespace + ".test" );

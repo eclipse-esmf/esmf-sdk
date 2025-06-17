@@ -21,9 +21,6 @@ import org.eclipse.esmf.samm.KnownVersion;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.RDFS;
-import org.apache.jena.vocabulary.XSD;
 
 /**
  * Abstracts an RDF namespace
@@ -60,9 +57,9 @@ public interface RdfNamespace {
       result.put( samme.getShortForm(), samme.getNamespace() );
       final UNIT unit = new UNIT( metaModelVersion, samm );
       result.put( unit.getShortForm(), unit.getNamespace() );
-      result.put( "rdf", RDF.getURI() );
-      result.put( "rdfs", RDFS.getURI() );
-      result.put( "xsd", XSD.getURI() );
+      result.put( SammNs.RDF.getShortForm(), SammNs.RDF.getNamespace() );
+      result.put( SammNs.RDFS.getShortForm(), SammNs.RDFS.getNamespace() );
+      result.put( SammNs.XSD.getShortForm(), SammNs.XSD.getNamespace() );
       return result;
    }
 
@@ -72,9 +69,9 @@ public interface RdfNamespace {
       result.put( SammNs.SAMMC.getShortForm(), SammNs.SAMMC.getNamespace() );
       result.put( SammNs.SAMME.getShortForm(), SammNs.SAMME.getNamespace() );
       result.put( SammNs.UNIT.getShortForm(), SammNs.UNIT.getNamespace() );
-      result.put( "rdf", RDF.getURI() );
-      result.put( "rdfs", RDFS.getURI() );
-      result.put( "xsd", XSD.getURI() );
+      result.put( SammNs.RDF.getShortForm(), SammNs.RDF.getNamespace() );
+      result.put( SammNs.RDFS.getShortForm(), SammNs.RDFS.getNamespace() );
+      result.put( SammNs.XSD.getShortForm(), SammNs.XSD.getNamespace() );
       return result;
    }
 }

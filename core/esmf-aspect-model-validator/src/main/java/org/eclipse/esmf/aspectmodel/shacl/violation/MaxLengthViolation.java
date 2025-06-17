@@ -15,6 +15,8 @@ package org.eclipse.esmf.aspectmodel.shacl.violation;
 
 import org.eclipse.esmf.aspectmodel.shacl.constraint.MaxLengthConstraint;
 
+import org.apache.jena.rdf.model.RDFNode;
+
 /**
  * Violation of a {@link MaxLengthConstraint}
  *
@@ -34,6 +36,11 @@ public record MaxLengthViolation( EvaluationContext context, int max, int actual
    public String violationSpecificMessage() {
       return String.format( "Property %s on %s has length %s, but its length must be less than or equal to %s.",
             context.propertyName(), context.elementName(), actual, max );
+   }
+
+   @Override
+   public RDFNode highlight() {
+      return context().property().get();
    }
 
    @Override

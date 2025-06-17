@@ -16,16 +16,21 @@ package org.eclipse.esmf;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.GitHubFileLocation;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.github.GitHubStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.github.GithubModelSourceConfig;
 import org.eclipse.esmf.aspectmodel.resolver.github.GithubModelSourceConfigBuilder;
+import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.AspectModel;
+
+import io.vavr.control.Either;
 
 /**
  * The GitHubUrlInputHandler knows how to load an Aspect Model from a given URL which points to a location in a models root
@@ -35,8 +40,9 @@ public class GitHubUrlInputHandler extends AbstractInputHandler {
    private final String url;
    private final GitHubFileLocation location;
 
-   public GitHubUrlInputHandler( final String input, final ResolverConfigurationMixin resolverConfig, final boolean details ) {
-      super( input, resolverConfig, details );
+   public GitHubUrlInputHandler( final String input, final ResolverConfigurationMixin resolverConfig, final boolean details,
+         final boolean validate ) {
+      super( input, resolverConfig, details, validate );
       location = GitHubFileLocation.parse( input ).orElseThrow( () ->
             new CommandException( "Input URL format is not supported: " + input ) );
       url = input;
@@ -66,10 +72,13 @@ public class GitHubUrlInputHandler extends AbstractInputHandler {
 
    @Override
    public AspectModel loadAspectModel() {
-      final AspectModelUrn urn = AspectModelUrn.from(
-                  "urn:samm:%s:%s#%s".formatted( location.namespaceMainPart(), location.version(), expectedAspectName() ) )
+      final AspectModelUrn urn = AspectModelUrn.from( location.namespaceMainPart(), location.version(), expectedAspectName() )
             .getOrElseThrow( () -> new CommandException( "Could not construct valid Aspect Model URN from input URL: " + url ) );
-      return applyAspectModelLoader( aspectModelLoader -> aspectModelLoader.load( urn ) );
+      final Function<AspectModelLoader, AspectModel> loaderFunction = validate
+            ? ( (Function<AspectModelLoader, Either<List<Violation>, AspectModel>>) loader ->
+            loader.withValidation( validator ).load( urn ) ).andThen( this::getAspectModelOrPrintValidationReport )
+            : ( aspectModelLoader -> aspectModelLoader.load( urn ) );
+      return applyAspectModelLoader( loaderFunction );
    }
 
    @Override

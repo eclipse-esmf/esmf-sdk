@@ -15,11 +15,11 @@ package org.eclipse.esmf.aspectmodel;
 
 import static java.util.stream.Collectors.toSet;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
@@ -29,9 +29,13 @@ import org.eclipse.esmf.aspectmodel.urn.ElementType;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import com.google.common.collect.Streams;
+import org.apache.jena.graph.Node;
+import org.apache.jena.query.Dataset;
+import org.apache.jena.query.DatasetFactory;
 import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -47,6 +51,9 @@ import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
 
 public class RdfUtil {
+   private RdfUtil() {
+   }
+
    public static Model getModelElementDefinition( final Resource element ) {
       final Model result = ModelFactory.createDefaultModel();
       element.getModel().listStatements( element, null, (RDFNode) null ).toList().forEach( statement -> {
@@ -72,19 +79,12 @@ public class RdfUtil {
    }
 
    public static Set<AspectModelUrn> getAllUrnsInModel( final Model model ) {
-      return Streams.stream( model.listStatements().mapWith( statement -> {
-         final Stream<String> subjectUri = statement.getSubject().isURIResource()
-               ? Stream.of( statement.getSubject().getURI() )
-               : Stream.empty();
-         final Stream<String> propertyUri = Stream.of( statement.getPredicate().getURI() );
-         final Stream<String> objectUri = statement.getObject().isURIResource()
-               ? Stream.of( statement.getObject().asResource().getURI() )
-               : Stream.empty();
-
-         return Stream.of( subjectUri, propertyUri, objectUri )
-               .flatMap( Function.identity() )
-               .flatMap( urn -> AspectModelUrn.from( urn ).toJavaOptional().stream() );
-      } ) ).flatMap( Function.identity() ).collect( toSet() );
+      return Streams.stream( model.listStatements() )
+            .flatMap( statement -> Stream.of( statement.getSubject(), statement.getPredicate(), statement.getObject() ) )
+            .filter( RDFNode::isURIResource )
+            .map( node -> node.asResource().getURI() )
+            .flatMap( urn -> AspectModelUrn.from( urn ).toJavaOptional().stream() )
+            .collect( toSet() );
    }
 
    public static void cleanPrefixes( final Model model ) {
@@ -134,7 +134,8 @@ public class RdfUtil {
          if ( !model.getNsPrefixMap().containsKey( prefix )
                && !model.getNsPrefixMap().containsValue( uri )
                && !uri.equals( XSD.NS )
-               && ( !uri.startsWith( "urn:samm:" ) || AspectModelUrn.fromUrn( uri + "x" ).getElementType() == ElementType.NONE )
+               && ( !uri.startsWith( AspectModelUrn.PROTOCOL_AND_NAMESPACE_PREFIX )
+               || AspectModelUrn.fromUrn( uri + "x" ).getElementType() == ElementType.NONE )
          ) {
             model.setNsPrefix( prefix, uri );
          }
@@ -209,5 +210,49 @@ public class RdfUtil {
       for ( final Map.Entry<String, String> prefixEntry : modelToMerge.getNsPrefixMap().entrySet() ) {
          target.setNsPrefix( prefixEntry.getKey(), prefixEntry.getValue() );
       }
+   }
+
+   /**
+    * Creates a merged view of a multiple RDF models: The resulting model will contain new Resource/Property/Literal objects
+    * which are based on the same {@link Node}s from the originating models
+    *
+    * @param models the models to create the view for, each identified by a URI
+    * @return the merged view
+    */
+   public static Model mergedView( final Map<URI, Model> models ) {
+      final Dataset dataset = DatasetFactory.createTxnMem();
+      dataset.begin( ReadWrite.WRITE );
+      try {
+         for ( final Map.Entry<URI, Model> entry : models.entrySet() ) {
+            dataset.addNamedModel( entry.getKey().toString(), entry.getValue() );
+         }
+         dataset.commit();
+      } finally {
+         dataset.end();
+      }
+
+      final Model result = dataset.getUnionModel();
+      for ( final Map.Entry<URI, Model> entry : models.entrySet() ) {
+         result.setNsPrefixes( entry.getValue().getNsPrefixMap() );
+      }
+
+      return result;
+   }
+
+   /**
+    * Create an RDF short name ("curie") from a URI with a "well-known" namespace, i.e., samm, samm-c, samm-e, unit, xsd, rdf or rdfs.
+    * For example, for "http://www.w3.org/2001/XMLSchema#float" the result is "xsd:float". For URIs from other/unknown namespaces,
+    * the URI is returned as-is.
+    *
+    * @param uri The URI
+    * @return the corresponding curie
+    */
+   @SuppressWarnings( "JavadocLinkAsPlainText" )
+   public static String curie( final String uri ) {
+      return SammNs.wellKnownNamespaces()
+            .filter( ns -> uri.startsWith( ns.getNamespace() ) )
+            .map( ns -> "%s:%s".formatted( ns.getShortForm(), uri.replace( ns.getNamespace(), "" ) ) )
+            .findFirst()
+            .orElse( uri );
    }
 }

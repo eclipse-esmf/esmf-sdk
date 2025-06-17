@@ -14,21 +14,16 @@
 package org.eclipse.esmf.aspectmodel.edit.change;
 
 import java.net.URI;
-import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.Change;
 
 public abstract class AbstractChange implements Change {
    protected String show( final AspectModelFile aspectModelFile ) {
-      return show( aspectModelFile.sourceLocation() );
+      return aspectModelFile.humanReadableLocation();
    }
 
    protected String show( final URI sourceLocation ) {
       return sourceLocation.toString();
-   }
-
-   protected String show( final Optional<URI> sourceLocation ) {
-      return sourceLocation.map( this::show ).orElse( "(unknown file)" );
    }
 }

@@ -34,7 +34,7 @@ public class GenerateDocumentationTest extends AspectModelMojoTest {
       final Mojo generateDocumentation = getMojo( "generate-documentation-pom-invalid-aspect-model", "generateDocumentation" );
       assertThatCode( generateDocumentation::execute )
             .isInstanceOf( MojoExecutionException.class )
-            .hasMessageContaining( "Syntax error in line 17, column 2" );
+            .hasMessageContaining( "Error at line 17 column 3" );
       assertThat( generatedFilePath( "Aspect_en.html" ) ).doesNotExist();
    }
 }

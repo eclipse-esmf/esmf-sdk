@@ -13,24 +13,33 @@
 
 package org.eclipse.esmf.aspectmodel;
 
+import java.net.URI;
+
+import org.apache.jena.rdf.model.Resource;
+
+/**
+ * Failure to parse a RDF literal
+ */
 public class ValueParsingException extends RuntimeException {
-   private final String type;
+   private final Resource type;
    private final Object value;
    private long line;
    private long column;
+   private URI sourceLocation;
+   private String sourceDocument;
 
-   public ValueParsingException( final String type, final Object value ) {
+   public ValueParsingException( final Resource type, final Object value ) {
       this.type = type;
       this.value = value;
    }
 
-   public ValueParsingException( final String type, final Object value, final Throwable cause ) {
+   public ValueParsingException( final Resource type, final Object value, final Throwable cause ) {
       super( cause );
       this.type = type;
       this.value = value;
    }
 
-   public String getType() {
+   public Resource getType() {
       return type;
    }
 
@@ -54,5 +63,21 @@ public class ValueParsingException extends RuntimeException {
 
    public long getColumn() {
       return column;
+   }
+
+   public String getSourceDocument() {
+      return sourceDocument;
+   }
+
+   public URI getSourceLocation() {
+      return sourceLocation;
+   }
+
+   public void setSourceDocument( final String sourceDocument ) {
+      this.sourceDocument = sourceDocument;
+   }
+
+   public void setSourceLocation( final URI sourceLocation ) {
+      this.sourceLocation = sourceLocation;
    }
 }

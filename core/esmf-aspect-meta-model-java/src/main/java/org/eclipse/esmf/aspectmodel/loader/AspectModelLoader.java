@@ -23,11 +23,15 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -47,10 +51,12 @@ import org.eclipse.esmf.aspectmodel.resolver.fs.FlatModelsRoot;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.DefaultAspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.MetaModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFile;
+import org.eclipse.esmf.aspectmodel.resolver.parser.TokenRegistry;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.urn.ElementType;
 import org.eclipse.esmf.aspectmodel.urn.UrnSyntaxException;
+import org.eclipse.esmf.aspectmodel.validation.Validator;
 import org.eclipse.esmf.aspectmodel.versionupdate.MetaModelVersionMigrator;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectModel;
@@ -61,11 +67,14 @@ import org.eclipse.esmf.metamodel.impl.DefaultNamespace;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import com.google.common.collect.Streams;
+import io.vavr.control.Either;
+import io.vavr.control.Try;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
 import org.slf4j.Logger;
@@ -84,6 +93,7 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
    };
 
    private final ResolutionStrategy resolutionStrategy;
+   private Consumer<Model> mergedModelValidator = model -> {};
 
    /**
     * Default constructor. When encountering model elements not defined in the current file, this will use the default strategy of looking
@@ -118,6 +128,141 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
       } else {
          resolutionStrategy = new EitherStrategy( resolutionStrategies );
       }
+   }
+
+   /**
+    * An interface to the AspectModelValidator that validates RDF graphs of the single files before instantiating {@link ModelElement}s
+    *
+    * @param <P> the "problem" type that describes loading or validation failures
+    * @param <C> the "collection of problem" type that constitutes a validation report
+    */
+   public class AspectModelLoaderWithValidation<P, C extends Collection<? super P>> {
+      private final Validator<P, C> validator;
+
+      private AspectModelLoaderWithValidation( final Validator<P, C> validator ) {
+         this.validator = validator;
+      }
+
+      /**
+       * Set up the per-file validator, then delegate a loading call to a real implementation.
+       *
+       * @param loader the real loading function
+       * @param argument the argument for the delegation function
+       * @param <T> the type of the delegation function argument
+       * @return the validation report on failure ({@link Try.Failure}) or the Aspect Model on success ({@link Try.Success})
+       */
+      private <T> Either<C, AspectModel> callInternalLoader( final Function<T, AspectModel> loader, final T argument ) {
+         mergedModelValidator = model -> {
+            final C result = validator.validateModel( model );
+            if ( !result.isEmpty() ) {
+               throw validator.cancelValidation( result );
+            }
+         };
+         return validator.loadModel( () -> loader.apply( argument ) );
+      }
+
+      /**
+       * Set up the per-file validator, then delegate a loading call to a real implementation.
+       *
+       * @param loader the real loading function
+       * @param argument1 the first argument for the delegation function
+       * @param argument2 the second argument for the delegation function
+       * @param <T> the type of the first delegation function argument
+       * @param <U> the type of the second delegation function argument
+       * @return the validation report on failure ({@link Try.Failure}) or the Aspect Model on success ({@link Try.Success})
+       */
+      private <T, U> Either<C, AspectModel> callInternalLoader( final BiFunction<T, U, AspectModel> loader, final T argument1,
+            final U argument2 ) {
+         mergedModelValidator = identifiedModel -> {
+            final C result = validator.validateModel( identifiedModel );
+            if ( !result.isEmpty() ) {
+               throw validator.cancelValidation( result );
+            }
+         };
+         return validator.loadModel( () -> loader.apply( argument1, argument2 ) );
+      }
+
+      /**
+       * Sets up validation, then delegates to {@link AspectModelLoader#load(File)}
+       */
+      public Either<C, AspectModel> load( final File file ) {
+         return callInternalLoader( AspectModelLoader.this::load, file );
+      }
+
+      /**
+       * Sets up validation, then delegates to {@link AspectModelLoader#load(Collection)}
+       */
+      public Either<C, AspectModel> load( final Collection<File> files ) {
+         return callInternalLoader( AspectModelLoader.this::load, files );
+      }
+
+      /**
+       * Sets up validation, then delegates to {@link AspectModelLoader#load(AspectModelUrn)}
+       */
+      public Either<C, AspectModel> load( final AspectModelUrn aspectModelUrn ) {
+         return callInternalLoader( AspectModelLoader.this::load, aspectModelUrn );
+      }
+
+      /**
+       * Sets up validation, then delegates to {@link AspectModelLoader#loadNamespace(AspectModelUrn)}
+       */
+      public Either<C, AspectModel> loadNamespace( final AspectModelUrn namespaceUrn ) {
+         return callInternalLoader( AspectModelLoader.this::loadNamespace, namespaceUrn );
+      }
+
+      /**
+       * Sets up validation, then delegates to {@link AspectModelLoader#loadUrns(Collection)}
+       */
+      public Either<C, AspectModel> loadUrns( final Collection<AspectModelUrn> urns ) {
+         return callInternalLoader( AspectModelLoader.this::loadUrns, urns );
+      }
+
+      /**
+       * Sets up validation, then delegates to {@link AspectModelLoader#load(InputStream, URI)}
+       */
+      public Either<C, AspectModel> load( final InputStream inputStream, final URI sourceLocation ) {
+         return callInternalLoader( AspectModelLoader.this::load, inputStream, sourceLocation );
+      }
+
+      /**
+       * Sets up validation, then delegates to {@link AspectModelLoader#loadNamespacePackage(File)}
+       */
+      public Either<C, AspectModel> loadNamespacePackage( final File namespacePackage ) {
+         return callInternalLoader( AspectModelLoader.this::loadNamespacePackage, namespacePackage );
+      }
+
+      /**
+       * Sets up validation, then delegates to {@link AspectModelLoader#loadNamespacePackage(byte[], URI)}
+       */
+      public Either<C, AspectModel> loadNamespacePackage( final byte[] binaryContent, final URI location ) {
+         return callInternalLoader( AspectModelLoader.this::loadNamespacePackage, binaryContent, location );
+      }
+
+      /**
+       * Sets up validation, then delegates to {@link AspectModelLoader#loadNamespacePackage(InputStream, URI)}
+       */
+      public Either<C, AspectModel> loadNamespacePackage( final InputStream inputStream, final URI location ) {
+         return callInternalLoader( AspectModelLoader.this::loadNamespacePackage, inputStream, location );
+      }
+
+      /**
+       * Sets up validation, then delegates to {@link AspectModelLoader#loadAspectModelFiles(Collection)}
+       */
+      public Either<C, AspectModel> loadAspectModelFiles( final Collection<AspectModelFile> inputFiles ) {
+         return callInternalLoader( AspectModelLoader.this::loadAspectModelFiles, inputFiles );
+      }
+   }
+
+   /**
+    * Returns a view to the AspectModelLoader that will not only perform loading operations but also validate loaded files
+    *
+    * @param validator the validator to use
+    * @param <P> the "problem" type that describes loading or validation failures
+    * @param <C> the "collection of problem" type that constitutes a validation report
+    * @return the view to this AspectModelLoader
+    */
+   public <P, C extends Collection<? super P>> AspectModelLoaderWithValidation<P, C> withValidation( final Validator<P, C> validator ) {
+      return new AspectModelLoaderWithValidation<>( validator );
    }
 
    /**
@@ -185,13 +330,31 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
    }
 
    /**
-    * Load an Aspect Model (.ttl) from an input stream and optionally set the source location for this input. For loading
+    * Load an Aspect Model (.ttl) from an input stream and set the source location for this input. For loading
     * an Aspect Model Namespace Package (.zip), use {@link #loadNamespacePackage(InputStream, URI)} instead.
     *
     * @param inputStream the input stream
     * @param sourceLocation the source location for the model
     * @return the Aspect Model
     */
+   public AspectModel load( final InputStream inputStream, final URI sourceLocation ) {
+      final AspectModelFile rawFile = AspectModelFileLoader.load( inputStream, sourceLocation );
+      final AspectModelFile migratedModel = migrate( rawFile );
+      final LoaderContext loaderContext = new LoaderContext();
+      resolve( List.of( migratedModel ), loaderContext );
+      return loadAspectModelFiles( loaderContext.loadedFiles() );
+   }
+
+   /**
+    * Load an Aspect Model (.ttl) from an input stream and optionally set the source location for this input. For loading
+    * an Aspect Model Namespace Package (.zip), use {@link #loadNamespacePackage(InputStream, URI)} instead.
+    *
+    * @param inputStream the input stream
+    * @param sourceLocation the source location for the model
+    * @return the Aspect Model
+    * @deprecated Use {@link #load(InputStream, URI)} instead
+    */
+   @Deprecated( forRemoval = true )
    public AspectModel load( final InputStream inputStream, final Optional<URI> sourceLocation ) {
       final AspectModelFile rawFile = AspectModelFileLoader.load( inputStream, sourceLocation );
       final AspectModelFile migratedModel = migrate( rawFile );
@@ -205,7 +368,9 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
     *
     * @param inputStream the input stream
     * @return the Aspect Model
+    * @deprecated Use {@link #load(InputStream, URI)} instead
     */
+   @Deprecated( forRemoval = true )
    public AspectModel load( final InputStream inputStream ) {
       return load( inputStream, Optional.empty() );
    }
@@ -283,11 +448,12 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
    private record LoaderContext(
          Set<String> resolvedUrns,
          Set<AspectModelFile> loadedFiles,
+         Set<URI> loadedSourceLocations,
          Deque<String> unresolvedUrns,
          Deque<AspectModelFile> unresolvedFiles
    ) {
       private LoaderContext() {
-         this( new HashSet<>(), new HashSet<>(), new ArrayDeque<>(), new ArrayDeque<>() );
+         this( new HashSet<>(), new HashSet<>(), new HashSet<>(), new ArrayDeque<>(), new ArrayDeque<>() );
       }
    }
 
@@ -295,11 +461,11 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
     * Adapter that enables the resolver to handle URNs with the legacy "urn:bamm:" prefix.
     *
     * @param urn the URN to clean up
-    * @return the original URN (if using valid urn:samm: scheme) or the the cleaned up URN
+    * @return the original URN (if using valid urn:samm: scheme) or the cleaned up URN
     */
    private String replaceLegacyBammUrn( final String urn ) {
       if ( urn.startsWith( "urn:bamm:" ) ) {
-         return urn.replace( "urn:bamm:", "urn:samm:" );
+         return urn.replace( "urn:bamm:", AspectModelUrn.PROTOCOL_AND_NAMESPACE_PREFIX );
       }
       return urn;
    }
@@ -307,7 +473,7 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
    private boolean containsType( final Model model, final String urn ) {
       if ( model.contains( model.createResource( urn ), RDF.type, (RDFNode) null ) ) {
          return true;
-      } else if ( urn.startsWith( "urn:samm:" ) ) {
+      } else if ( urn.startsWith( AspectModelUrn.PROTOCOL_AND_NAMESPACE_PREFIX ) ) {
          // when deriving a URN from file (via "fileToUrn" method - mainly in samm-cli scenarios),
          // we assume new "samm" format, but could actually have been the old "bamm"
          return model.contains( model.createResource( toLegacyBammUrn( urn ) ), RDF.type, (RDFNode) null );
@@ -316,8 +482,8 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
    }
 
    private String toLegacyBammUrn( final String urn ) {
-      if ( urn.startsWith( "urn:samm:" ) ) {
-         return urn.replace( "urn:samm:", "urn:bamm:" );
+      if ( urn.startsWith( AspectModelUrn.PROTOCOL_AND_NAMESPACE_PREFIX ) ) {
+         return urn.replace( AspectModelUrn.PROTOCOL_AND_NAMESPACE_PREFIX, "urn:bamm:" );
       }
       return urn;
    }
@@ -351,26 +517,26 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
             .map( Statement::getSubject )
             .filter( Resource::isURIResource )
             .map( Resource::getURI )
-            .filter( uri -> uri.startsWith( "urn:samm:" ) )
+            .filter( uri -> uri.startsWith( AspectModelUrn.PROTOCOL_AND_NAMESPACE_PREFIX ) )
             .forEach( urn -> context.resolvedUrns().add( urn ) );
 
       RdfUtil.getAllUrnsInModel( modelFile.sourceModel() ).stream()
             .map( AspectModelUrn::toString )
             .filter( urn -> !context.resolvedUrns().contains( urn ) )
-            .filter( urn -> !urn.startsWith( XSD.NS ) )
-            .filter( urn -> !urn.startsWith( RDF.uri ) )
-            .filter( urn -> !urn.startsWith( SammNs.SAMM.getNamespace() ) )
-            .filter( urn -> !urn.startsWith( SammNs.SAMMC.getNamespace() ) )
-            .filter( urn -> !urn.startsWith( SammNs.SAMME.getNamespace() ) )
-            .filter( urn -> !urn.startsWith( SammNs.UNIT.getNamespace() ) )
+            .filter( urn -> !SammNs.wellKnownNamespaces().map( rdfNamespace -> urn.startsWith( rdfNamespace.getNamespace() ) )
+                  .toList().contains( true ) )
             .forEach( urn -> context.unresolvedUrns().add( urn ) );
    }
 
    private void markModelFileAsLoaded( final AspectModelFile modelFile, final LoaderContext context ) {
-      if ( !context.loadedFiles().contains( modelFile ) ) {
-         context.loadedFiles().add( modelFile );
-         urnsFromModelNeedResolution( modelFile, context );
+      if ( context.loadedFiles().contains( modelFile )
+            || modelFile.sourceLocation().map( location -> context.loadedSourceLocations().contains( location ) ).orElse( false ) ) {
+         return;
       }
+
+      context.loadedFiles().add( modelFile );
+      modelFile.sourceLocation().ifPresent( sourceLocation -> context.loadedSourceLocations().add( sourceLocation ) );
+      urnsFromModelNeedResolution( modelFile, context );
    }
 
    private void resolve( final List<AspectModelFile> inputFiles, final LoaderContext context ) {
@@ -421,7 +587,8 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
    public boolean containsDefinition( final AspectModelFile aspectModelFile, final AspectModelUrn urn ) {
       final Model model = aspectModelFile.sourceModel();
       if ( model.getNsPrefixMap().values().stream().anyMatch( prefixUri -> prefixUri.startsWith( "urn:bamm:" ) ) ) {
-         final boolean result = model.contains( model.createResource( urn.toString().replace( "urn:samm:", "urn:bamm:" ) ), RDF.type,
+         final boolean result = model.contains(
+               model.createResource( urn.toString().replace( AspectModelUrn.PROTOCOL_AND_NAMESPACE_PREFIX, "urn:bamm:" ) ), RDF.type,
                (RDFNode) null );
          LOG.debug( "Checking if model contains {}: {}", urn, result );
          return result;
@@ -440,6 +607,28 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
       return new DefaultAspectModel( new ArrayList<>(), ModelFactory.createDefaultModel(), new ArrayList<>() );
    }
 
+   private Model buildMergedModel( final Collection<AspectModelFile> files ) {
+      final Map<String, AspectModelFile> definedElements = new HashMap<>();
+      final Map<URI, Model> graphContent = new HashMap<>();
+      graphContent.put( URI.create( SammNs.SAMM.getUri() ), MetaModelFile.metaModelDefinitions() );
+      for ( final AspectModelFile file : files ) {
+         for ( final StmtIterator iterator = file.sourceModel().listStatements( null, RDF.type, (RDFNode) null ); iterator.hasNext(); ) {
+            final Resource subject = iterator.next().getSubject();
+            Optional.ofNullable( subject.getURI() )
+                  .flatMap( uri -> Optional.ofNullable( definedElements.get( uri ) ) )
+                  .ifPresent( fileWithPreviousDefinition -> {
+                     throw new AspectLoadingException( "Duplicate definition of %s in both %s and %s".formatted(
+                           subject.getURI(), file.humanReadableLocation(), fileWithPreviousDefinition.humanReadableLocation() ) );
+                  } );
+            definedElements.put( subject.getURI(), file );
+         }
+
+         final URI graphName = file.sourceLocation().orElse( URI.create( "inmemory:graph:" + file.sourceModel().hashCode() ) );
+         graphContent.put( graphName, file.sourceModel() );
+      }
+      return RdfUtil.mergedView( graphContent );
+   }
+
    /**
     * Creates a new Aspect Model from a collection of {@link AspectModelFile}s. The AspectModelFiles can be {@link RawAspectModelFile}
     * (i.e., not contain {@link ModelElement} instances yet); this method takes care of instantiating the model elements.
@@ -451,11 +640,14 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
       final Collection<AspectModelFile> migratedInputs = inputFiles.stream()
             .map( this::migrate )
             .toList();
-      final Model mergedModel = ModelFactory.createDefaultModel();
+
       for ( final AspectModelFile file : migratedInputs ) {
-         RdfUtil.mergeModel( mergedModel, file.sourceModel() );
+         file.sourceModel().getGraph().stream().flatMap( triple ->
+                     Stream.of( triple.getSubject(), triple.getPredicate(), triple.getObject() ) )
+               .forEach( node -> TokenRegistry.getToken( node ).ifPresent( token -> token.setOriginatingFile( file ) ) );
       }
-      mergedModel.add( MetaModelFile.metaModelDefinitions() );
+      final Model mergedModel = buildMergedModel( migratedInputs );
+      mergedModelValidator.accept( mergedModel );
 
       final List<ModelElement> elements = new ArrayList<>();
       final List<AspectModelFile> files = new ArrayList<>();
@@ -484,8 +676,8 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
       for ( final AspectModelFile file : files ) {
          if ( file.aspects().size() > 1 ) {
             throw new AspectLoadingException(
-                  "Aspect model file " + file.sourceLocation().map( location -> location + " " ).orElse( "" ) + "contains " + file.aspects()
-                        .size() + " aspects, but may only contain one." );
+                  "Aspect Model file " + file.humanReadableLocation() + " contains " + file.aspects().size()
+                        + " aspects, but may only contain one." );
          }
       }
       return new DefaultAspectModel( files, mergedModel, elements );

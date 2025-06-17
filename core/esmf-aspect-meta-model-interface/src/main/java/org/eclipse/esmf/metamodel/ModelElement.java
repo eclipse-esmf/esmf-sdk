@@ -19,7 +19,6 @@ import static org.eclipse.esmf.metamodel.Namespace.ANONYMOUS;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
-import org.eclipse.esmf.samm.KnownVersion;
 
 /**
  * The ModelElement interface provides all facilities that all Aspect Model elements have.

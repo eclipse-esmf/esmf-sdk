@@ -16,7 +16,6 @@ package org.eclipse.esmf.metamodel.characteristic;
 import java.util.List;
 
 import org.eclipse.esmf.metamodel.Characteristic;
-import org.eclipse.esmf.metamodel.Property;
 
 /**
  * @since SAMM 1.0.0
