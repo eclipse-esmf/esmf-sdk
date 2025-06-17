@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.eclipse.esmf.buildtime.Aas4jClassSetup;
 import org.eclipse.esmf.substitution.AdminShellConfig;
 
 import org.eclipse.digitaltwin.aas4j.v3.model.LangStringTextType;

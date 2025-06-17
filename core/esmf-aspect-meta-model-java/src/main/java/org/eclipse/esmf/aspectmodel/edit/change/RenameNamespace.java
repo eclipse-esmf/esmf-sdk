@@ -127,7 +127,7 @@ public class RenameNamespace extends EditAspectModel {
          // Handle object
          if ( statement.getObject().isURIResource() ) {
             final String objectUri = statement.getObject().asResource().getURI();
-            if ( objectUri.startsWith( from.toString() + "#" ) ) {
+            if ( objectUri.startsWith( from + "#" ) ) {
                addObject = addModel.createResource( to.toString() + objectUri.substring( from.toString().length() ) );
                removeObject = addModel.createResource( objectUri );
             } else {

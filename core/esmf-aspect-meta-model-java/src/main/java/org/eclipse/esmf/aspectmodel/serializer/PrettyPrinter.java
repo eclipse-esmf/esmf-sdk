@@ -311,6 +311,7 @@ public class PrettyPrinter {
     *
     * @param input the input string
     */
+   @SuppressWarnings( "UnnecessaryUnicodeEscape" )
    private void escapeStringAndAppendToBuilder( final String input, final StringBuilder builder ) {
       final String escapedSpecialCharacters = StringEscapeUtils.escapeJava( input );
       // The following replaces unicode escape sequences such as \uABCD with the corresponding unicode character

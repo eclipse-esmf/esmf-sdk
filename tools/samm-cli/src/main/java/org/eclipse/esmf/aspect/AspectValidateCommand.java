@@ -17,8 +17,6 @@ import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.ResolverConfigurationMixin;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
 @CommandLine.Command(
@@ -32,7 +30,6 @@ import picocli.CommandLine;
 @SuppressWarnings( "UseOfSystemOutOrSystemErr" )
 public class AspectValidateCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "validate";
-   private static final Logger LOG = LoggerFactory.getLogger( AspectValidateCommand.class );
 
    @CommandLine.ParentCommand
    private AspectCommand parentCommand;

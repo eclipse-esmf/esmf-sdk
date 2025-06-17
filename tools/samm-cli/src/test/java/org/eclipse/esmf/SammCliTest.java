@@ -32,23 +32,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.eclipse.esmf.aspect.AspectValidateCommand;
-import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher;
 import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher.ExecutionResult;
-import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
-import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
-import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
-import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.InvalidTestAspect;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
 import org.eclipse.esmf.test.TestSharedModel;
 
-import io.vavr.control.Either;
 import org.apache.commons.io.FileUtils;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.exception.TikaException;

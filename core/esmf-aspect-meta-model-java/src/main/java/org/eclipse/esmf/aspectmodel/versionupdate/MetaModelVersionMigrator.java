@@ -129,7 +129,7 @@ public class MetaModelVersionMigrator implements UnaryOperator<AspectModelFile> 
       }
       if ( sourceVersion.greaterThan( LATEST_SAMM ) ) {
          throw new InvalidVersionException( "Aspect Meta Model version %s in source model %sis not supported".formatted( sourceVersion,
-               modelFile.sourceLocation().map( l -> l.toString() + " " ).orElse( "" ) ) );
+               modelFile.sourceLocation().map( l -> l + " " ).orElse( "" ) ) );
       }
 
       final Model migratedModel = migrate( migrators, sourceVersion, LATEST_SAMM, modelFile.sourceModel() );
