@@ -177,8 +177,7 @@ public class NamespacePackage implements ResolutionStrategy, Artifact<URI, byte[
       try ( final ZipInputStream inputStream = new ZipInputStream( new ByteArrayInputStream( content ) ) ) {
          for ( ZipEntry entry = inputStream.getNextEntry(); entry != null; entry = inputStream.getNextEntry() ) {
             if ( entry.getName().startsWith( modelsRoot ) && entry.getName().endsWith( ".ttl" ) ) {
-               final RawAspectModelFile rawFile = AspectModelFileLoader.load( inputStream,
-                     Optional.of( constructLocationForFile( entry.getName() ) ) );
+               final RawAspectModelFile rawFile = AspectModelFileLoader.load( inputStream, constructLocationForFile( entry.getName() ) );
                builder.add( rawFile );
             }
          }
