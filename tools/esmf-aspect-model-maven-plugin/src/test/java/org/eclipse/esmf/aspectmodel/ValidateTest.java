@@ -33,7 +33,7 @@ public class ValidateTest extends AspectModelMojoTest {
       final Mojo validate = getMojo( "validate-pom-invalid-aspect-model", "validate" );
       assertThatCode( validate::execute )
             .isInstanceOf( MojoExecutionException.class )
-            .hasMessageContaining( "Syntax error in line 17, column 2" );
+            .hasMessageContaining( "Error at line 17 column 3" );
    }
 
    @Test
