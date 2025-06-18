@@ -103,7 +103,7 @@ jobs:
           release_version=${{ github.event.inputs.release_version }}
 
           # Actual build of core SDK
-          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean deploy -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60 -DaltDeploymentRepository=local::default::file://nexus-staging -Psign
+          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
           # Build samm-cli executable jar and run integration tests
           unset JAVA_TOOL_OPTIONS
           mvn -B -pl tools/samm-cli clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
@@ -137,7 +137,7 @@ jobs:
         with:
           name: linux-artifacts
           path: |
-            nexus-staging/
+            /
             samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz
             samm-cli-${{ github.event.inputs.release_version }}.jar
             samm-cli-${{ github.event.inputs.release_version }}-javadoc.jar
@@ -303,6 +303,8 @@ jobs:
           server-id: ossrh
           server-username: CENTRAL_SONATYPE_TOKEN_USERNAME
           server-password: CENTRAL_SONATYPE_TOKEN_PASSWORD
+          gpg-private-key: GPG_PRIVATE_KEY
+          gpg-passphrase: GPG_PASSPHRASE
           overwrite-settings: false
 
       # Required to run the mvn:versions, since enforcer plugin
@@ -315,15 +317,6 @@ jobs:
           components: 'native-image,js'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'false'
-
-      - name: Configure GPG
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '21'
-          gpg-private-key: GPG_PRIVATE_KEY
-          gpg-passphrase: GPG_PASSPHRASE
-          overwrite-settings: false
 
       - name: Fetch Linux Artifacts
         uses: actions/download-artifact@v4
