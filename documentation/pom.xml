@@ -138,12 +138,19 @@
             </executions>
          </plugin>
 
+<!--         <plugin>-->
+<!--            <groupId>org.sonatype.plugins</groupId>-->
+<!--            <artifactId>nexus-staging-maven-plugin</artifactId>-->
+<!--            <configuration>-->
+<!--               <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>-->
+<!--            </configuration>-->
+<!--         </plugin>-->
+
          <plugin>
-            <groupId>org.sonatype.plugins</groupId>
-            <artifactId>nexus-staging-maven-plugin</artifactId>
-            <configuration>
-               <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
-            </configuration>
+            <groupId>org.sonatype.central</groupId>
+            <artifactId>central-publishing-maven-plugin</artifactId>
+            <version>0.7.0</version>
+            <extensions>true</extensions>
          </plugin>
 
          <plugin>
