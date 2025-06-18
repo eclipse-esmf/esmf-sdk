@@ -102,7 +102,7 @@ jobs:
           
           release_version=${{ github.event.inputs.release_version }}
 
-          # Actual build of core SDK
+          # Actual build of core SDK 
           mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
           # Build samm-cli executable jar and run integration tests
           unset JAVA_TOOL_OPTIONS
@@ -137,7 +137,6 @@ jobs:
         with:
           name: linux-artifacts
           path: |
-            /
             samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz
             samm-cli-${{ github.event.inputs.release_version }}.jar
             samm-cli-${{ github.event.inputs.release_version }}-javadoc.jar
@@ -424,7 +423,7 @@ jobs:
       - name: Release to Maven Central
         if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
         run: |
-          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean deploy -Psign
+          mvn -B -pl '!org.eclipse.esmf:samm-cli,!org.eclipse.esmf:documentation' clean deploy -Psign
 #        run: |
 #          mkdir deploy
 #          mv nexus-staging deploy

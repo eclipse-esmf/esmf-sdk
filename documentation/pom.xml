@@ -151,9 +151,6 @@
             <artifactId>central-publishing-maven-plugin</artifactId>
             <version>0.7.0</version>
             <extensions>true</extensions>
-            <configuration>
-               <skipPublishing>true</skipPublishing>
-            </configuration>
          </plugin>
 
          <plugin>
