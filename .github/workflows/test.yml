@@ -1,6 +1,14 @@
 name: Test
 
 on:
+  push:
+    branches:
+      - "pipeline-test"
+  pull_request:
+    branches:
+      - "main"
+    paths:
+      - ".github/workflows/test.yaml"
   workflow_dispatch:
 
 jobs:
