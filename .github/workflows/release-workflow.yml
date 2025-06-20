@@ -428,7 +428,7 @@ jobs:
       - name: Release to Maven Central
         if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
         run: |
-          token_header=$(printf "$CENTRAL_USERNAME:$CENTRAL_PASSWORD" | base64)
+          token_header=$(printf "$CENTRAL_USERNAME:$CENTRAL_TOKEN" | base64)
           curl --request POST \
           --header "Authorization: Bearer $token_header" \
           --form bundle=@central-bundle.zip \
