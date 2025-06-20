@@ -17,5 +17,5 @@ jobs:
     steps:
       - name: Debug
         run: |
-          echo -n "${CENTRAL_SONATYPE_TOKEN_USERNAME}" | base64
-          echo -n "${CENTRAL_SONATYPE_TOKEN_PASSWORD}" | base64
+          echo -n "${{ secrets.CENTRAL_SONATYPE_TOKEN_USERNAME }}" | base64
+          echo -n "${{ secrets.CENTRAL_SONATYPE_TOKEN_PASSWORD }}" | base64
