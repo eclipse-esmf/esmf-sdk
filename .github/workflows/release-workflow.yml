@@ -98,18 +98,19 @@ jobs:
         run: |
           export MAVEN_OPTS="-Xmx4096m"
           export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
+          release_version=${{ github.event.inputs.release_version }}
+
           # Required for reactor dependencies
           mvn clean install -DskipTests -Dmaven.javadoc.skip=true
-          mvn versions:set -DnewVersion=${{ github.event.inputs.release_version }}
+          mvn versions:set -DnewVersion=${release_version}
           mvn versions:commit
-
-          release_version=${{ github.event.inputs.release_version }}
 
           # Actual build of core SDK
           mvn -B -pl '!org.eclipse.esmf:samm-cli' clean deploy -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60 -Psign
 
           # Create Maven Central upload bundle
           pushd target/central-deferred
+          rm -rf org/eclipse/esmf/documentation
           zip -r -9 ../../central-bundle.zip .
           popd
 
