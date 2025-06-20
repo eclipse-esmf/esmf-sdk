@@ -109,7 +109,9 @@ jobs:
           mvn -B -pl '!org.eclipse.esmf:samm-cli' clean deploy -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60 -Psign
 
           # Create Maven Central upload bundle
-          pushd target/central-deferred
+          pushd target/central-staging
+          echo "Contents of $(pwd):"
+          ls -lR
           rm -rf org/eclipse/esmf/documentation
           zip -r -9 ../../central-bundle.zip .
           popd

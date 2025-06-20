@@ -314,7 +314,6 @@
                <publishingServerId>central</publishingServerId>
                <autoPublish>false</autoPublish>
                <skipPublishing>true</skipPublishing>
-               <outputDirectory>central-publishing</outputDirectory>
                <outputFilename>central-bundle.zip</outputFilename>
             </configuration>
          </plugin>
