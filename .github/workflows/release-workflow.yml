@@ -63,9 +63,12 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '21'
+          server-id: central
           # The following variables are defined in https://github.com/eclipse-esmf/.eclipsefdn/blob/main/otterdog/eclipse-esmf.jsonnet
           gpg-private-key: ${{ secrets.PGP_KEY }}
           gpg-passphrase: PGP_KEY_PASSWORD
+          server-username: CENTRAL_SONATYPE_TOKEN_USERNAME
+          server-password: CENTRAL_SONATYPE_TOKEN_PASSWORD
           overwrite-settings: false
 
       - name: Setup JDK
