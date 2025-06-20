@@ -158,7 +158,7 @@ jobs:
           java-version: '21.0.6'
           distribution: 'graalvm'
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          native-image-job-reports: 'true'
+          native-image-job-reports: 'false'
 
       - name: Cache Maven packages
         uses: actions/cache@v4
