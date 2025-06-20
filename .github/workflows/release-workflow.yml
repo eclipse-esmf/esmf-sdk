@@ -112,7 +112,7 @@ jobs:
           pushd target/central-staging
           echo "Contents of $(pwd):"
           ls -lR
-          rm -rf org/eclipse/esmf/documentation
+          rm -rf org/eclipse/esmf/esmf-documentation
           zip -r -9 ../../central-bundle.zip .
           popd
 
