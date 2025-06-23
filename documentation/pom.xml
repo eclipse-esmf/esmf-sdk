@@ -102,17 +102,6 @@
 
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-jar-plugin</artifactId>
-            <executions>
-               <execution>
-                  <id>default-jar</id>
-                  <phase/>
-               </execution>
-            </executions>
-         </plugin>
-
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-source-plugin</artifactId>
             <configuration>
                <skipSource>true</skipSource>
@@ -136,21 +125,6 @@
                   <phase>none</phase>
                </execution>
             </executions>
-         </plugin>
-
-<!--         <plugin>-->
-<!--            <groupId>org.sonatype.plugins</groupId>-->
-<!--            <artifactId>nexus-staging-maven-plugin</artifactId>-->
-<!--            <configuration>-->
-<!--               <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>-->
-<!--            </configuration>-->
-<!--         </plugin>-->
-
-         <plugin>
-            <groupId>org.sonatype.central</groupId>
-            <artifactId>central-publishing-maven-plugin</artifactId>
-            <version>0.7.0</version>
-            <extensions>true</extensions>
          </plugin>
 
          <plugin>
