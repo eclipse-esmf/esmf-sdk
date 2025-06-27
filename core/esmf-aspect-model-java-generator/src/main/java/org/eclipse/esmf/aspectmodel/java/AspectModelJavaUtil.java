@@ -473,7 +473,10 @@ public class AspectModelJavaUtil {
          final Resource typeResource = ResourceFactory.createResource( type.getUrn() );
          final Class<?> result = SammXsdType.getJavaTypeForMetaModelType( typeResource );
          codeGenerationConfig.importTracker().importExplicit( result );
-         return valueInitializer.apply( typeResource, value );
+         final String initializer = valueInitializer.apply( typeResource, value );
+         return property.isOptional()
+               ? optionalExpression( initializer, codeGenerationConfig )
+               : initializer;
       } ).orElseThrow( () -> new CodeGenerationException(
             "The Either Characteristic is not allowed for Properties used as elements in a StructuredValue" ) );
    }
@@ -668,10 +671,18 @@ public class AspectModelJavaUtil {
             .filter( Type::isScalar )
             .map( type -> XSD.xboolean.getURI().equals( type.getUrn() ) )
             .orElse( false );
-      return ( isBooleanType ? "is" : "get" ) + StringUtils.capitalize( property.getPayloadName() );
+      return (isBooleanType ? "is" : "get") + StringUtils.capitalize( property.getPayloadName() );
    }
 
    public static String codeGeneratorName() {
       return "esmf-sdk " + VersionInfo.ESMF_SDK_VERSION;
+   }
+
+   public static String optionalExpression(
+         final String expression,
+         final JavaCodeGenerationConfig codeGenerationConfig
+   ) {
+      codeGenerationConfig.importTracker().importExplicit( Optional.class );
+      return "Optional.of(" + expression + ")";
    }
 }

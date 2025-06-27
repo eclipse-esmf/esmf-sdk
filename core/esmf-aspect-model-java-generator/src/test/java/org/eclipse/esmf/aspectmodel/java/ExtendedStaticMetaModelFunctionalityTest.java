@@ -31,7 +31,7 @@ import org.eclipse.esmf.test.TestAspect;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.junit.jupiter.api.Test;
 
-public class ExtendedStaticMetaModelFunctionalityTest extends StaticMetaModelGeneratorTest {
+class ExtendedStaticMetaModelFunctionalityTest extends StaticMetaModelGeneratorTest {
    @Test
    void testComputedProperties() throws IOException, ReflectiveOperationException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_EXTENDED_ENUMS;
