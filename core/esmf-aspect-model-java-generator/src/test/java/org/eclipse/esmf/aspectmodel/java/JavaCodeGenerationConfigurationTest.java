@@ -22,14 +22,14 @@ import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
 
 import org.junit.jupiter.api.Test;
 
-public class JavaCodeGenerationConfigurationTest {
+class JavaCodeGenerationConfigurationTest {
    final String currentWorkingDirectory = System.getProperty( "user.dir" );
    private final File templateLibFile = Path.of( currentWorkingDirectory, "/templates", "/test-macro-lib.vm" ).toFile();
    private final File emptyTemplateLibFile = Path.of( "" ).toFile();
    private final File nonExistingTemplateLibPath = Path.of( "/templates", "/non-existing.vm" ).toFile();
 
    @Test
-   public void testValidTemplateLibConfig() {
+   void testValidTemplateLibConfig() {
       assertThatCode( () ->
             JavaCodeGenerationConfigBuilder.builder()
                   .enableJacksonAnnotations( true )
@@ -54,7 +54,7 @@ public class JavaCodeGenerationConfigurationTest {
    }
 
    @Test
-   public void testTemplateLibConfigMissingFile() {
+   void testTemplateLibConfigMissingFile() {
       assertThatCode( () ->
             JavaCodeGenerationConfigBuilder.builder()
                   .enableJacksonAnnotations( true )
@@ -67,7 +67,7 @@ public class JavaCodeGenerationConfigurationTest {
    }
 
    @Test
-   public void testTemplateLibConfigNonExistingFile() {
+   void testTemplateLibConfigNonExistingFile() {
       assertThatCode( () ->
             JavaCodeGenerationConfigBuilder.builder()
                   .enableJacksonAnnotations( true )
