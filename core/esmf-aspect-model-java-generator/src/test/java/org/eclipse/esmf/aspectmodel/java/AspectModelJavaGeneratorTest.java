@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
+
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -63,7 +64,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
-public class AspectModelJavaGeneratorTest {
+class AspectModelJavaGeneratorTest {
    private Collection<JavaGenerator> getGenerators( final TestAspect testAspect, final JavaCodeGenerationConfig config ) {
       final Aspect aspect = TestResources.load( testAspect ).aspect();
       return List.of( new AspectModelJavaGenerator( aspect, config ) );
@@ -238,6 +239,26 @@ public class AspectModelJavaGeneratorTest {
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithOptionalProperties", expectedFieldsForAspectClass, new HashMap<>() );
       assertConstructor( result, "AspectWithOptionalProperties", expectedFieldsForAspectClass );
+   }
+
+   @Test
+   void testGenerateAspectWithOptionalPropertyAndEntityWithSeparateFiles() throws IOException {
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+            .put( "productionPeriod", "Optional<ProductionPeriodEntity>" )
+            .build();
+
+      final TestAspect aspect = TestAspect.ASPECT_WITH_OPTIONAL_PROPERTIES_AND_ENTITY_WITH_SEPARATE_FILES;
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect ) );
+
+      result.assertNumberOfFiles( 2 );
+      result.assertFields( "AspectWithOptionalPropertiesAndEntityWithSeparateFiles", expectedFieldsForAspectClass, new HashMap<>() );
+      assertConstructor( result, "AspectWithOptionalPropertiesAndEntityWithSeparateFiles", expectedFieldsForAspectClass );
+
+      CompilationUnit unit = result.compilationUnits.get( "ProductionPeriodEntity" );
+      ConstructorDeclaration constructor = unit.findFirst( ConstructorDeclaration.class )
+            .orElseThrow( () -> new AssertionError( "Constructor not found in ProductionPeriodEntity" ) );
+      String constructorBody = constructor.getBody().toString();
+      assertThat( constructorBody ).contains( "Optional.of(_datatypeFactory.newXMLGregorianCalendarDate(" );
    }
 
    @Test
