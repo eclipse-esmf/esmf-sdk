@@ -29,7 +29,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class AspectModelJavaUtilTest extends PropertyBasedTest {
+class AspectModelJavaUtilTest extends PropertyBasedTest {
    private boolean isValidJavaIdentifier( final String value ) {
       if ( value == null || value.isEmpty() ) {
          return false;
@@ -45,7 +45,7 @@ public class AspectModelJavaUtilTest extends PropertyBasedTest {
    }
 
    @Property
-   public boolean generatedEnumKeysAreValidJavaIdentifiers( @ForAll( "anyValidTypeValuePair" ) final Tuple.Tuple2<Type, Value> tuple ) {
+   boolean generatedEnumKeysAreValidJavaIdentifiers( @ForAll( "anyValidTypeValuePair" ) final Tuple.Tuple2<Type, Value> tuple ) {
       final String result = AspectModelJavaUtil.generateEnumKey( tuple.get2() );
       return isValidJavaIdentifier( result );
    }
