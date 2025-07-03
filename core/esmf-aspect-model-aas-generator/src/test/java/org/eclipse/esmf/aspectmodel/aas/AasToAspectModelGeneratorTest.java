@@ -57,6 +57,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 class AasToAspectModelGeneratorTest {
+
    @ParameterizedTest
    @MethodSource( "idtaSubmodelFiles" )
    void testIdtaAasxFilesCanBeTranslated( final File aasxFile ) {
