@@ -21,9 +21,9 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-public class UnitGenerationTest {
+class UnitGenerationTest {
    @Test
-   public void testUnitFromName() {
+   void testUnitFromName() {
       final Optional<Unit> optionalUnit = Units.fromName( "degreeCelsius" );
       final Unit unit = optionalUnit.get();
       assertThat( unit )
@@ -33,19 +33,19 @@ public class UnitGenerationTest {
    }
 
    @Test
-   public void testUnitWithoutReferenceUnit() {
+   void testUnitWithoutReferenceUnit() {
       final Unit ampere = Units.fromName( "ampere" ).get();
       assertThat( ampere ).hasNoReferenceUnit();
    }
 
    @Test
-   public void testUnitFromcode() {
+   void testUnitFromcode() {
       final Unit unit = Units.fromCode( "A97" ).get();
       assertThat( unit ).isEqualTo( Units.fromName( "hectopascal" ).get() );
    }
 
    @Test
-   public void testUnitFromSymbol() {
+   void testUnitFromSymbol() {
       // Unit with unique symbol
       assertThat( Units.fromSymbol( "kg" ) ).containsExactly( Units.fromName( "kilogram" ).get() );
 
@@ -54,7 +54,7 @@ public class UnitGenerationTest {
    }
 
    @Test
-   public void testUnitsWithQuantityKind() {
+   void testUnitsWithQuantityKind() {
       final Set<Unit> units = Units.unitsWithQuantityKind( QuantityKinds.DISTANCE );
       assertThat( units ).containsAnyOf( Units.fromName( "nanometre" ).get(), Units.fromName( "metre" ).get(),
             Units.fromName( "kilometre" ).get(), Units.fromName( "foot" ).get(), Units.fromName( "lightYear" ).get() );
@@ -63,12 +63,12 @@ public class UnitGenerationTest {
    }
 
    @Test
-   public void testGeneratedQuantityKinds() {
+   void testGeneratedQuantityKinds() {
       assertThat( QuantityKinds.values().length ).isGreaterThanOrEqualTo( 80 );
    }
 
    @Test
-   public void testQuantityKindFromName() {
+   void testQuantityKindFromName() {
       final QuantityKind quantityKind = QuantityKinds.fromName( "distance" ).get();
       assertThat( quantityKind ).hasName( "distance" ).hasLabel( "distance" );
    }
