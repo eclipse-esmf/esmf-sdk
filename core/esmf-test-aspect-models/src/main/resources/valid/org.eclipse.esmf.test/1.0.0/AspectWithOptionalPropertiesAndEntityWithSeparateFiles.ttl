@@ -22,8 +22,7 @@
    samm:preferredName "Minimal Vehicle Type Aspect"@en ;
    samm:description "Simplified aspect containing only ProductionPeriodEntity as an optional property."@en ;
    samm:properties ( [ samm:property :productionPeriod; samm:optional true ] ) ;
-   samm:operations ( ) ;
-   samm:events ( ) .
+   samm:operations ( ) .
 
 :productionPeriod a samm:Property ;
    samm:preferredName "Production Period"@en ;
@@ -56,7 +55,7 @@
    samm:preferredName "Year with Optional Month"@en ;
    samm:dataType xsd:string ;
    samm-c:deconstructionRule "^([0-9]{4})(?:-(0[1-9]|1[0-2]))?" ;
-   samm-c:elements ( "^" :year "-" :month "$" ) .
+   samm-c:elements ( "^" :year "-" [ samm:property :month; samm:optional true ] "$" ) .
 
 :YearAndOptionalMonthRegex a samm-c:RegularExpressionConstraint ;
    samm:value "^([0-9]{4})(?:-(0[1-9]|1[0-2]))?" .
@@ -65,7 +64,6 @@
    samm:characteristic :YearCharacteristic .
 
 :month a samm:Property ;
-   samm:optional true ;
    samm:characteristic :MonthCharacteristic .
 
 :YearCharacteristic a samm:Characteristic ;
