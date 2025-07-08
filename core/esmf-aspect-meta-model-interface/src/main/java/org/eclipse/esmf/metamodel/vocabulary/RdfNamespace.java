@@ -57,9 +57,9 @@ public interface RdfNamespace {
       result.put( samme.getShortForm(), samme.getNamespace() );
       final UNIT unit = new UNIT( metaModelVersion, samm );
       result.put( unit.getShortForm(), unit.getNamespace() );
-      result.put( SammNs.RDF.getShortForm(), SammNs.RDF.getNamespace() );
-      result.put( SammNs.RDFS.getShortForm(), SammNs.RDFS.getNamespace() );
-      result.put( SammNs.XSD.getShortForm(), SammNs.XSD.getNamespace() );
+      result.put( SammNs.RDF().getShortForm(), SammNs.RDF().getNamespace() );
+      result.put( SammNs.RDFS().getShortForm(), SammNs.RDFS().getNamespace() );
+      result.put( SammNs.XSD().getShortForm(), SammNs.XSD().getNamespace() );
       return result;
    }
 
@@ -69,9 +69,9 @@ public interface RdfNamespace {
       result.put( SammNs.SAMMC.getShortForm(), SammNs.SAMMC.getNamespace() );
       result.put( SammNs.SAMME.getShortForm(), SammNs.SAMME.getNamespace() );
       result.put( SammNs.UNIT.getShortForm(), SammNs.UNIT.getNamespace() );
-      result.put( SammNs.RDF.getShortForm(), SammNs.RDF.getNamespace() );
-      result.put( SammNs.RDFS.getShortForm(), SammNs.RDFS.getNamespace() );
-      result.put( SammNs.XSD.getShortForm(), SammNs.XSD.getNamespace() );
+      result.put( SammNs.RDF().getShortForm(), SammNs.RDF().getNamespace() );
+      result.put( SammNs.RDFS().getShortForm(), SammNs.RDFS().getNamespace() );
+      result.put( SammNs.XSD().getShortForm(), SammNs.XSD().getNamespace() );
       return result;
    }
 }
