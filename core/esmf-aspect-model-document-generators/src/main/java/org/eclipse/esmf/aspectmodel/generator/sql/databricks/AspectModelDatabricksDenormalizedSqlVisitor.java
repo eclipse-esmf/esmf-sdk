@@ -301,7 +301,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
                     ? Optional.ofNullable( Optional.ofNullable( context.forceDescriptionFromElement() ).orElse( property )
                     .getDescription( config.commentLanguage() ) )
                     : Optional.empty();
-            columns.append( column( columnPrefix, typeDef, property.isOptional(), comment) )
+            columns.append( column( columnPrefix, typeDef, property.isOptional(), comment ) )
                   .append( lineDelimiter );
          } else if ( type instanceof ComplexType ) {
             columns.append( processComplexType( type.as( ComplexType.class ), context, columnPrefix, type.is( DefaultList.class ) ) );
