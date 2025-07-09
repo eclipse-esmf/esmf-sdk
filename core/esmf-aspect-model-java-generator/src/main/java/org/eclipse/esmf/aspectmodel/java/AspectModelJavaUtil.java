@@ -685,26 +685,32 @@ public class AspectModelJavaUtil {
       codeGenerationConfig.importTracker().importExplicit( Optional.class );
       codeGenerationConfig.importTracker().importExplicit( DatatypeConstants.class );
 
+      // Enhanced pattern to match both Integer and Long valueOf calls
       final Pattern pattern = java.util.regex.Pattern.compile(
-            "Integer\\s*\\.\\s*valueOf\\s*\\(\\s*matcher\\s*\\.\\s*group\\s*\\(\\s*(\\d+)\\s*\\)\\s*\\)"
+            "(Integer|Long)\\s*\\.\\s*valueOf\\s*\\(\\s*matcher\\s*\\.\\s*group\\s*\\(\\s*(\\d+)\\s*\\)\\s*\\)"
       );
       Matcher matcher = pattern.matcher( expression );
       matcher.reset();
       boolean hasMatch = matcher.find();
 
       if ( hasMatch ) {
-         final String groupNum = matcher.group( 1 ).trim(); // Trim any captured whitespace
+         final String numberType = matcher.group( 1 ).trim(); // "Integer" or "Long"
+         final String groupNum = matcher.group( 2 ).trim(); // Group number
          final String target = matcher.group( 0 ); // The entire matched string
          final String modifiedExpression = expression.replace( target, "v" );
 
          return "Optional.ofNullable(matcher.group(" + groupNum + "))"
                + ".filter(v -> !v.isEmpty())"
-               + ".map(v -> Integer.valueOf(v))"
+               + ".map(v -> " + numberType + ".valueOf(v))"
                + ".map(v -> "
                + modifiedExpression
                + ")";
       }
 
-      return expression;
+      // If no specific pattern matched, wrap the entire expression in Optional.of()
+      // This handles cases where the expression doesn't follow the matcher.group pattern
+      return "Optional.ofNullable("
+            + expression
+            + ")";
    }
 }

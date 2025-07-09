@@ -624,9 +624,9 @@ class AspectModelJavaGeneratorTest {
    void testGenerateAspectWithStructuredValue() throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
             .put( "date", XMLGregorianCalendar.class )
-            .put( "year", Long.class )
-            .put( "month", Long.class )
-            .put( "day", Long.class )
+            .put( "year", new TypeToken<Optional<Long>>(){}.getType() )
+            .put( "month", new TypeToken<Optional<Long>>(){}.getType() )
+            .put( "day", new TypeToken<Optional<Long>>(){}.getType() )
             .build();
 
       final ImmutableMap<String, Object> expectedConstructorArguments = ImmutableMap.<String, Object> builder()
