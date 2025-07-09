@@ -55,7 +55,7 @@
    samm:preferredName "Year with Optional Month"@en ;
    samm:dataType xsd:string ;
    samm-c:deconstructionRule "^([0-9]{4})(?:-(0[1-9]|1[0-2]))?" ;
-   samm-c:elements ( "^" :year "-" [ samm:property :month; samm:optional true ] "$" ) .
+   samm-c:elements ( "^" :year "-" :month "$" ) .
 
 :YearAndOptionalMonthRegex a samm-c:RegularExpressionConstraint ;
    samm:value "^([0-9]{4})(?:-(0[1-9]|1[0-2]))?" .
@@ -64,6 +64,7 @@
    samm:characteristic :YearCharacteristic .
 
 :month a samm:Property ;
+   samm:optional true ;
    samm:characteristic :MonthCharacteristic .
 
 :YearCharacteristic a samm:Characteristic ;

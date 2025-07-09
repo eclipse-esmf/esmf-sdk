@@ -258,7 +258,9 @@ class AspectModelJavaGeneratorTest {
       ConstructorDeclaration constructor = unit.findFirst( ConstructorDeclaration.class )
             .orElseThrow( () -> new AssertionError( "Constructor not found in ProductionPeriodEntity" ) );
       String constructorBody = constructor.getBody().toString();
-      assertThat( constructorBody ).contains( "Optional.of(_datatypeFactory.newXMLGregorianCalendarDate(" );
+      assertThat( constructorBody ).contains( "Optional.ofNullable(" );
+      assertThat( constructorBody ).contains( ".filter(v -> v != null)" );
+      assertThat( constructorBody ).contains( "_datatypeFactory.newXMLGregorianCalendarDate(" );
    }
 
    @Test

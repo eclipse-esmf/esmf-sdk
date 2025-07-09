@@ -28,6 +28,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import javax.xml.datatype.DatatypeConstants;
+
 import org.eclipse.esmf.aspectmodel.VersionInfo;
 import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
 import org.eclipse.esmf.aspectmodel.visitor.AspectStreamTraversalVisitor;
@@ -474,9 +476,7 @@ public class AspectModelJavaUtil {
          final Class<?> result = SammXsdType.getJavaTypeForMetaModelType( typeResource );
          codeGenerationConfig.importTracker().importExplicit( result );
          final String initializer = valueInitializer.apply( typeResource, value );
-         return property.isOptional()
-               ? optionalExpression( initializer, codeGenerationConfig )
-               : initializer;
+         return optionalExpression( initializer, codeGenerationConfig );
       } ).orElseThrow( () -> new CodeGenerationException(
             "The Either Characteristic is not allowed for Properties used as elements in a StructuredValue" ) );
    }
@@ -683,6 +683,21 @@ public class AspectModelJavaUtil {
          final JavaCodeGenerationConfig codeGenerationConfig
    ) {
       codeGenerationConfig.importTracker().importExplicit( Optional.class );
-      return "Optional.of(" + expression + ")";
+      codeGenerationConfig.importTracker().importExplicit( DatatypeConstants.class );
+
+      // Check if this is for XMLGregorianCalendar date handling
+      if ( expression.contains( "matcher.group(1)" ) && expression.contains( "XMLGregorianCalendarDate" ) ) {
+         return "Optional.ofNullable(matcher.group(1))" +
+               ".filter(v -> v != null)" +
+               ".map(v -> Integer.valueOf(v))" +
+               ".map(v -> _datatypeFactory.newXMLGregorianCalendarDate(v, " +
+               "DatatypeConstants.FIELD_UNDEFINED, " +
+               "DatatypeConstants.FIELD_UNDEFINED, " +
+               "DatatypeConstants.FIELD_UNDEFINED))";
+      }
+
+      // Default case - use ofNullable with empty check
+      return "Optional.ofNullable(" + expression + ")" +
+            ".filter(v -> v != null)";
    }
 }
