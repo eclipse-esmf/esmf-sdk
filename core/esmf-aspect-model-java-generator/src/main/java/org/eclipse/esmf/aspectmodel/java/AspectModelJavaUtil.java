@@ -24,6 +24,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -685,19 +687,26 @@ public class AspectModelJavaUtil {
       codeGenerationConfig.importTracker().importExplicit( Optional.class );
       codeGenerationConfig.importTracker().importExplicit( DatatypeConstants.class );
 
-      // Check if this is for XMLGregorianCalendar date handling
-      if ( expression.contains( "matcher.group(1)" ) && expression.contains( "XMLGregorianCalendarDate" ) ) {
-         return "Optional.ofNullable(matcher.group(1))" +
-               ".filter(v -> v != null)" +
-               ".map(v -> Integer.valueOf(v))" +
-               ".map(v -> _datatypeFactory.newXMLGregorianCalendarDate(v, " +
-               "DatatypeConstants.FIELD_UNDEFINED, " +
-               "DatatypeConstants.FIELD_UNDEFINED, " +
-               "DatatypeConstants.FIELD_UNDEFINED))";
+      final Pattern pattern = java.util.regex.Pattern.compile(
+            "Integer\\s*\\.\\s*valueOf\\s*\\(\\s*matcher\\s*\\.\\s*group\\s*\\(\\s*(\\d+)\\s*\\)\\s*\\)"
+      );
+      Matcher matcher = pattern.matcher( expression );
+      matcher.reset();
+      boolean hasMatch = matcher.find();
+
+      if ( hasMatch ) {
+         final String groupNum = matcher.group( 1 ).trim(); // Trim any captured whitespace
+         final String target = matcher.group( 0 ); // The entire matched string
+         final String modifiedExpression = expression.replace( target, "v" );
+
+         return "Optional.ofNullable(matcher.group(" + groupNum + "))"
+               + ".filter(v -> v != null)"
+               + ".map(v -> Integer.valueOf(v))"
+               + ".map(v -> "
+               + modifiedExpression
+               + ")";
       }
 
-      // Default case - use ofNullable with empty check
-      return "Optional.ofNullable(" + expression + ")" +
-            ".filter(v -> v != null)";
+      return expression;
    }
 }
