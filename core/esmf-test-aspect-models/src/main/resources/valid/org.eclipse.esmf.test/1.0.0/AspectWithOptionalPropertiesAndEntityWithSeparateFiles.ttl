@@ -64,7 +64,6 @@
    samm:characteristic :YearCharacteristic .
 
 :month a samm:Property ;
-   samm:optional true ;
    samm:characteristic :MonthCharacteristic .
 
 :YearCharacteristic a samm:Characteristic ;
