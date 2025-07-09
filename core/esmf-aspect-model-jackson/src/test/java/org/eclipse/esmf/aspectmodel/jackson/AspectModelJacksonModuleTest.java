@@ -57,11 +57,11 @@ import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import org.junit.jupiter.api.Test;
 
-public class AspectModelJacksonModuleTest {
+class AspectModelJacksonModuleTest {
    private static final String PACKAGE = "org.eclipse.esmf.test";
 
    @Test
-   public void testAspectWithMultiLanguageText() throws Exception {
+   void testAspectWithMultiLanguageText() throws Exception {
       final Object instance = generateInstance( TestAspect.ASPECT_WITH_MULTI_LANGUAGE_TEXT );
       final Class<?> clazz = instance.getClass();
       final LangString prop = getValue( clazz, instance, "prop", LangString.class );
@@ -70,7 +70,7 @@ public class AspectModelJacksonModuleTest {
    }
 
    @Test
-   public void testAspectWithSimpleTypes() throws Exception {
+   void testAspectWithSimpleTypes() throws Exception {
       final Object instance = generateInstance( TestAspect.ASPECT_WITH_SIMPLE_TYPES );
       final Class<?> clazz = instance.getClass();
 
@@ -93,7 +93,7 @@ public class AspectModelJacksonModuleTest {
    }
 
    @Test
-   public void testAspectWithCollection() throws Exception {
+   void testAspectWithCollection() throws Exception {
       final Object instance = generateInstance( TestAspect.ASPECT_WITH_COLLECTIONS );
       final Class<?> clazz = instance.getClass();
 
@@ -109,7 +109,7 @@ public class AspectModelJacksonModuleTest {
    }
 
    @Test
-   public void testAspectWithEntity() throws Exception {
+   void testAspectWithEntity() throws Exception {
       final Object instance = generateInstance( TestAspect.ASPECT_WITH_SIMPLE_ENTITY );
       final Class<?> clazz = instance.getClass();
 
@@ -123,7 +123,7 @@ public class AspectModelJacksonModuleTest {
    }
 
    @Test
-   public void testAspectWithOptionalProperties() throws Exception {
+   void testAspectWithOptionalProperties() throws Exception {
       final Object instance = generateInstance( TestAspect.ASPECT_WITH_OPTIONAL_PROPERTIES );
       final Class<?> clazz = instance.getClass();
 
@@ -137,7 +137,7 @@ public class AspectModelJacksonModuleTest {
    }
 
    @Test
-   public void testAspectWithStructuredValue() throws Exception {
+   void testAspectWithStructuredValue() throws Exception {
       final Object instance = generateInstance( TestAspect.ASPECT_WITH_NUMERIC_STRUCTURED_VALUE );
       final Class<?> clazz = instance.getClass();
 
@@ -146,18 +146,21 @@ public class AspectModelJacksonModuleTest {
       assertThat( date.getMonth() ).isEqualTo( 1 );
       assertThat( date.getDay() ).isEqualTo( 20 );
 
-      final Long year = getValue( clazz, instance, "year", Long.class );
-      assertThat( year ).isEqualTo( 2020L );
+      final Optional<Long> yearOptional = getValue( clazz, instance, "year", Optional.class );
+      assertThat( yearOptional ).isPresent();
+      assertThat( yearOptional.get() ).isEqualTo( 2020L );
 
-      final Long month = getValue( clazz, instance, "month", Long.class );
-      assertThat( month ).isEqualTo( 1 );
+      final Optional<Long> monthOptional = getValue( clazz, instance, "month", Optional.class );
+      assertThat( monthOptional ).isPresent();
+      assertThat( monthOptional.get() ).isEqualTo( 1L );
 
-      final Long day = getValue( clazz, instance, "day", Long.class );
-      assertThat( day ).isEqualTo( 20 );
+      final Optional<Long> dayOptional = getValue( clazz, instance, "day", Optional.class );
+      assertThat( dayOptional ).isPresent();
+      assertThat( dayOptional.get() ).isEqualTo( 20L );
    }
 
    @Test
-   public void testAspectWithEnumeration() throws Exception {
+   void testAspectWithEnumeration() throws Exception {
       final Object instance = generateInstance( TestAspect.ASPECT_WITH_STRING_ENUMERATION );
       final Class<?> clazz = instance.getClass();
 
@@ -172,7 +175,7 @@ public class AspectModelJacksonModuleTest {
    }
 
    @Test
-   public void testAspectWithEntityEnumeration() throws Exception {
+   void testAspectWithEntityEnumeration() throws Exception {
       final Object instance = generateInstance(
             Tuple.of( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_WITH_NOT_EXISTING_ENUM, "AspectWithEntityEnumeration" ) );
       final Class<?> clazz = instance.getClass();
@@ -191,14 +194,14 @@ public class AspectModelJacksonModuleTest {
    }
 
    @Test
-   public void testAspectWithEntityEnumerationWithNotExistingEnum() {
+   void testAspectWithEntityEnumerationWithNotExistingEnum() {
       assertThatExceptionOfType( EnumAttributeNotFoundException.class ).isThrownBy( () ->
                   generateInstance( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_WITH_NOT_EXISTING_ENUM ) )
             .withMessageContainingAll( "Tried to parse value", "but there is no enum field like that" );
    }
 
    @Test
-   public void testAspectWithEntityEnumerationAndNotInPayloadProperties() throws Exception {
+   void testAspectWithEntityEnumerationAndNotInPayloadProperties() throws Exception {
       final Object instance = generateInstance( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_AND_NOT_IN_PAYLOAD_PROPERTIES );
       final Class<?> clazz = instance.getClass();
       final Field enumerationField = clazz.getDeclaredField( "systemState" );
@@ -216,7 +219,7 @@ public class AspectModelJacksonModuleTest {
    }
 
    @Test
-   public void testAspectWithEitherWithComplexTypes() throws Exception {
+   void testAspectWithEitherWithComplexTypes() throws Exception {
       final Object instance = generateInstance( TestAspect.ASPECT_WITH_EITHER_WITH_COMPLEX_TYPES );
       final Class<?> clazz = instance.getClass();
       final Field testProperty = clazz.getDeclaredField( "testProperty" );

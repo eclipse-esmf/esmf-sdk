@@ -24,10 +24,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
+import javax.xml.datatype.DatatypeConstants;
 import org.eclipse.esmf.aspectmodel.VersionInfo;
 import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
 import org.eclipse.esmf.aspectmodel.visitor.AspectStreamTraversalVisitor;
@@ -473,7 +475,8 @@ public class AspectModelJavaUtil {
          final Resource typeResource = ResourceFactory.createResource( type.getUrn() );
          final Class<?> result = SammXsdType.getJavaTypeForMetaModelType( typeResource );
          codeGenerationConfig.importTracker().importExplicit( result );
-         return valueInitializer.apply( typeResource, value );
+         final String initializer = valueInitializer.apply( typeResource, value );
+         return optionalExpression( initializer, codeGenerationConfig );
       } ).orElseThrow( () -> new CodeGenerationException(
             "The Either Characteristic is not allowed for Properties used as elements in a StructuredValue" ) );
    }
@@ -668,10 +671,46 @@ public class AspectModelJavaUtil {
             .filter( Type::isScalar )
             .map( type -> XSD.xboolean.getURI().equals( type.getUrn() ) )
             .orElse( false );
-      return ( isBooleanType ? "is" : "get" ) + StringUtils.capitalize( property.getPayloadName() );
+      return (isBooleanType ? "is" : "get") + StringUtils.capitalize( property.getPayloadName() );
    }
 
    public static String codeGeneratorName() {
       return "esmf-sdk " + VersionInfo.ESMF_SDK_VERSION;
+   }
+
+   public static String optionalExpression(
+         final String expression,
+         final JavaCodeGenerationConfig codeGenerationConfig
+   ) {
+      codeGenerationConfig.importTracker().importExplicit( Optional.class );
+      codeGenerationConfig.importTracker().importExplicit( DatatypeConstants.class );
+
+      // Enhanced pattern to match both Integer and Long valueOf calls
+      final Pattern pattern = java.util.regex.Pattern.compile(
+            "(Integer|Long)\\s*\\.\\s*valueOf\\s*\\(\\s*matcher\\s*\\.\\s*group\\s*\\(\\s*(\\d+)\\s*\\)\\s*\\)"
+      );
+      Matcher matcher = pattern.matcher( expression );
+      matcher.reset();
+      boolean hasMatch = matcher.find();
+
+      if ( hasMatch ) {
+         final String numberType = matcher.group( 1 ).trim(); // "Integer" or "Long"
+         final String groupNum = matcher.group( 2 ).trim(); // Group number
+         final String target = matcher.group( 0 ); // The entire matched string
+         final String modifiedExpression = expression.replace( target, "v" );
+
+         return "Optional.ofNullable(matcher.group(" + groupNum + "))"
+               + ".filter(v -> !v.isEmpty())"
+               + ".map(v -> " + numberType + ".valueOf(v))"
+               + ".map(v -> "
+               + modifiedExpression
+               + ")";
+      }
+
+      // If no specific pattern matched, wrap the entire expression in Optional.of()
+      // This handles cases where the expression doesn't follow the matcher.group pattern
+      return "Optional.ofNullable("
+            + expression
+            + ")";
    }
 }
