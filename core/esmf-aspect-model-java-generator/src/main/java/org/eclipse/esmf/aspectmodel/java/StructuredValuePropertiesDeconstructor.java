@@ -14,6 +14,7 @@
 package org.eclipse.esmf.aspectmodel.java;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,6 +23,7 @@ import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.HasProperties;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.characteristic.StructuredValue;
+import org.eclipse.esmf.metamodel.impl.DefaultProperty;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -116,6 +118,18 @@ public class StructuredValuePropertiesDeconstructor {
       return deconstructionSets.stream()
             .map( DeconstructionSet::elementProperties )
             .flatMap( List::stream )
+            .map( property -> (Property) new DefaultProperty(
+                  MetaModelBaseAttributes.builder()
+                        .fromModelElement( property )
+                        .build(),
+                  property.getCharacteristic(),
+                  property.getExampleValue(),
+                  true, // making it optional
+                  property.isNotInPayload(),
+                  Optional.of( property.getPayloadName() ),
+                  property.isAbstract(),
+                  property.getExtends()
+            ) )
             .toList();
    }
 

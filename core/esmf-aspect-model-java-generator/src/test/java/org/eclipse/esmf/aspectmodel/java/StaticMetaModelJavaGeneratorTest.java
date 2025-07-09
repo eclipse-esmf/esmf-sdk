@@ -40,6 +40,7 @@ import org.eclipse.esmf.test.TestSharedAspect;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.reflect.TypeToken;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -332,9 +333,9 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
       result.assertFields( "MetaAspectWithNumericStructuredValue",
             fieldAssertions( "MetaAspectWithNumericStructuredValue" )
                   .put( "_datatypeFactory", DatatypeFactory.class )
-                  .put( "YEAR", TypeTokens.staticProperty( aspectClass, Long.class ) )
-                  .put( "MONTH", TypeTokens.staticProperty( aspectClass, Long.class ) )
-                  .put( "DAY", TypeTokens.staticProperty( aspectClass, Long.class ) )
+                  .put( "YEAR", TypeTokens.staticContainerProperty( aspectClass, Long.class, new TypeToken<Optional<Long>>() {} ) )
+                  .put( "MONTH", TypeTokens.staticContainerProperty( aspectClass, Long.class, new TypeToken<Optional<Long>>() {} ) )
+                  .put( "DAY", TypeTokens.staticContainerProperty( aspectClass, Long.class, new TypeToken<Optional<Long>>() {} ) )
                   .put( "DATE", TypeTokens.staticProperty( aspectClass, XMLGregorianCalendar.class ) ).build(), new HashMap<>() );
    }
 
