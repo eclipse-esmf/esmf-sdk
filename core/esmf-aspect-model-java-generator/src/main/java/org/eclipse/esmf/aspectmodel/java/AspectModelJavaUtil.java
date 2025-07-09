@@ -698,7 +698,7 @@ public class AspectModelJavaUtil {
          final String modifiedExpression = expression.replace( target, "v" );
 
          return "Optional.ofNullable(matcher.group(" + groupNum + "))"
-               + ".filter(v -> v != null)"
+               + ".filter(v -> !v.isEmpty())"
                + ".map(v -> Integer.valueOf(v))"
                + ".map(v -> "
                + modifiedExpression
