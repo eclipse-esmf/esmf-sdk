@@ -196,6 +196,9 @@ of model resolution] for more information.
                                    | _--decimal-precision, -dp_ : The precision to use for Databricks decimal columns
                                      (default: 10). See also notes in
                                      the xref:java-aspect-tooling.adoc#databricks-type-mapping[Databricks type mapping].     |
+                                   | _--decimal-scale, -ds_ : The scale to use for Databricks decimal columns
+                                     (default: 0). See also notes in
+                                     the xref:java-aspect-tooling.adoc#databricks-type-mapping[Databricks type mapping].     |
                                    | _--custom-column, -col_ : Additional custom column definition, e.g. for databricks following the pattern `column_name DATATYPE [NOT NULL] [COMMENT 'custom']`. This parameter can be repeated for multiple columns.                                                  | `samm aspect AspectModel.ttl to sql --custom-column "column_name STRING NOT NULL COMMENT 'custom'"`
 .5+| [[aspect-to-aas]] aspect <model> to aas | Generate an Asset Administration Shell (AAS) submodel template from an
                                      Aspect Model                                                                            | `samm aspect AspectModel.ttl to aas`

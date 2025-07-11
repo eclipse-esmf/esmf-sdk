@@ -49,6 +49,7 @@ public class GenerateSql extends AbstractGenerator {
                   .includeTableComment( true )       // optional
                   .includeColumnComments( true )     // optional
                   .decimalPrecision( 10 )            // optional
+                  .decimalScale( 0 )                 // optional
                   .customColumns( List.of(           // optional
                         DatabricksColumnDefinitionBuilder.builder()
                               .name( "custom_column" )
