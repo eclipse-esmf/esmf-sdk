@@ -25,7 +25,7 @@ import picocli.CommandLine;
 
 @CommandLine.Command(
       name = AspectToJsonCommand.COMMAND_NAME,
-      description = "Generate OpenAPI JSON specification for an Aspect Model",
+      description = "Generate example JSON payload data for an Aspect Model",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",
       optionListHeading = "%n@|bold Options|@:%n"
