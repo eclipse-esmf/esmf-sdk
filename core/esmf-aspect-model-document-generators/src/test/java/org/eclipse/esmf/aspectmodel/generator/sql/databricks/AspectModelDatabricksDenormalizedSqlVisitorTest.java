@@ -140,7 +140,7 @@ class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase
    void testAspectWithEither() {
       assertThat( sql( TestAspect.ASPECT_WITH_EITHER ) ).isEqualTo( """
             CREATE TABLE IF NOT EXISTS aspect_with_either (
-              test_property__left STRING COMMENT 'Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.'
+              test_property__left STRING COMMENT 'Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.',
               test_property__right BOOLEAN COMMENT 'Represents a boolean value (i.e. a "flag").'
             )
             TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEither');
@@ -151,7 +151,7 @@ class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase
    void testAspectWithEitherWithComplexTypes() {
       assertThat( sql( TestAspect.ASPECT_WITH_EITHER_WITH_COMPLEX_TYPES ) ).isEqualTo( """
             CREATE TABLE IF NOT EXISTS aspect_with_either_with_complex_types (
-              test_property__left__result STRING COMMENT 'Left Type Characteristic'
+              test_property__left__result STRING COMMENT 'Left Type Characteristic',
               test_property__right__error STRING COMMENT 'Right Type Characteristic'
             )
             TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEitherWithComplexTypes');
@@ -280,7 +280,7 @@ class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase
               test_either_property__left__test_int INT COMMENT 'Left type Characteristic',
               test_either_property__left__test_float FLOAT COMMENT 'Left type Characteristic',
               test_either_property__left__test_local_date_time TIMESTAMP COMMENT 'Left type Characteristic',
-              test_either_property__left__random_value STRING COMMENT 'Left type Characteristic'
+              test_either_property__left__random_value STRING COMMENT 'Left type Characteristic',
               test_either_property__right__test_string STRING COMMENT 'Right type Characteristic',
               test_either_property__right__test_int INT COMMENT 'Right type Characteristic',
               test_either_property__right__test_float FLOAT COMMENT 'Right type Characteristic',

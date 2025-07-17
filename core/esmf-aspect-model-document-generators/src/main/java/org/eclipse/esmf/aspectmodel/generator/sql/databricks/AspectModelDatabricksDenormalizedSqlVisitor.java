@@ -209,7 +209,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
             .forceOptional( true )
             .forceDescriptionFromElement( either.getRight() )
             .build() );
-      return leftResult + "\n" + ( rightResult.startsWith( "  " ) ? "" : "  " ) + rightResult;
+      return leftResult + ( leftResult.isBlank() ? "" : ",\n" ) + ( rightResult.startsWith( "  " ) ? "" : "  " ) + rightResult;
    }
 
    @Override
