@@ -1,0 +1,42 @@
+# Copyright (c) 2025 Contributors to the Eclipse Foundation
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+@prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#> .
+
+:AspectWithUpwardTransitionInNestedEntity a samm:Aspect ;
+   samm:properties ( :firstLevelProperty ) ;
+   samm:operations ( ) .
+
+:firstLevelProperty a samm:Property ;
+   samm:characteristic :FirstLevelCharacteristics .
+
+:FirstLevelCharacteristics a samm-c:List ;
+   samm:dataType :FirstLevelEntity .
+
+:FirstLevelEntity a samm:Entity ;
+   samm:properties ( :secondLevelProperty1 :secondLevelProperty2 ) .
+
+:secondLevelProperty1 a samm:Property ;
+   samm:characteristic :SecondLevelCharacteristics .
+
+:secondLevelProperty2 a samm:Property ;
+   samm:characteristic samm-c:Text .
+
+:SecondLevelCharacteristics a samm:Characteristic ;
+   samm:dataType :SecondLevelEntity .
+
+:SecondLevelEntity a samm:Entity ;
+   samm:properties ( :thirdLevelProperty ) .
+
+:thirdLevelProperty a samm:Property ;
+   samm:characteristic samm-c:Text .

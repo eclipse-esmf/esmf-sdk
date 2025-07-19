@@ -142,10 +142,12 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
       final StringBuilder result = new StringBuilder();
       final Consumer<String> appendLine = line -> {
          if ( !line.isBlank() ) {
-            if ( !result.isEmpty() ) {
+            // Turning entire result into String for checking its contents can be ineffective,
+            // so we pick up the minimum substring here though it's verbose a bit.
+            if ( !result.isEmpty() && !result.substring( result.length() < 4 ? 0 : result.length() - 4 ).stripTrailing().endsWith( "," ) ) {
                result.append( ",\n" );
             }
-            if ( !line.startsWith( "  " ) ) {
+            if ( !line.startsWith( "  " ) && ( result.length() < 2 || !result.substring( result.length() - 2 ).equals( "  " ) ) ) {
                result.append( "  " );
             }
             result.append( line );
@@ -168,7 +170,10 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
 
    @Override
    public String visitAspect( final Aspect aspect, final Context context ) {
-      final String columnDeclarations = visitStructureElement( aspect, context );
+      String columnDeclarations = visitStructureElement( aspect, context );
+      if ( columnDeclarations.endsWith( ",\n  " ) ) {
+         columnDeclarations = columnDeclarations.substring( 0, columnDeclarations.length() - 4 );
+      }
       final String comment = config.includeTableComment()
             ? Optional.ofNullable( aspect.getDescription( config.commentLanguage() ) ).map( description ->
             new DatabricksCommentDefinition( description ) + "\n" ).orElse( "" )
@@ -308,10 +313,6 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
             columns.append( processComplexType( type.as( ComplexType.class ), context, columnPrefix, type.is( DefaultList.class ) ) );
          }
       } );
-
-      if ( !columns.isEmpty() && columns.toString().endsWith( ",\n  " ) ) {
-         columns.setLength( columns.length() - 4 ); // Remove last ",\n  "
-      }
 
       return columns.toString();
    }
