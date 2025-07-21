@@ -24,6 +24,7 @@ import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
@@ -68,6 +69,24 @@ public class AspectModelSqlGeneratorTest {
          assertThat( result ).contains( "TBLPROPERTIES ('x-samm-aspect-model-urn'='" );
          assertThat( result ).doesNotContain( "ARRAY<ARRAY" );
          assertThat( result ).doesNotContain( "COMMENT" );
+      } ).doesNotThrowAnyException();
+   }
+
+   @Test
+   void testDatabricksGenerationDecimalPrecisionAndScale() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_TYPES ).aspect();
+      assertThatCode( () -> {
+         final DatabricksSqlGenerationConfig dialectSpecificConfig = DatabricksSqlGenerationConfigBuilder.builder()
+                 .decimalPrecision( 38 )
+                 .decimalScale( 38 )
+                 .build();
+         final SqlArtifact sqlArtifact = new AspectModelSqlGenerator( aspect, SqlGenerationConfigBuilder.builder()
+                 .dialect( SqlGenerationConfig.Dialect.DATABRICKS )
+                 .dialectSpecificConfig( dialectSpecificConfig )
+                 .build() ).singleResult();
+         final String result = sqlArtifact.getContent();
+
+         assertThat( result ).contains( "DECIMAL(38,38)" );
       } ).doesNotThrowAnyException();
    }
 }

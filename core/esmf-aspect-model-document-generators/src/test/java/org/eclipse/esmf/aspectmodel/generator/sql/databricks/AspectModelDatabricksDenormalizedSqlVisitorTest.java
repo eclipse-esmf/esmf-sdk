@@ -189,7 +189,7 @@ class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase
       assertThat( sql( TestAspect.ASPECT_WITH_ENTITY_INSTANCE_WITH_SCALAR_LIST_PROPERTY ) ).isEqualTo( """
             CREATE TABLE IF NOT EXISTS aspect_with_entity_instance_with_scalar_list_property (
               test_property__code SMALLINT NOT NULL,
-              test_property__test_list ARRAY<DECIMAL> NOT NULL
+              test_property__test_list ARRAY<DECIMAL(10)> NOT NULL
             )
             TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEntityInstanceWithScalarListProperty');
             """ );
@@ -369,7 +369,7 @@ class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase
    void testAspectWithOptionalProperties() {
       assertThat( sql( TestAspect.ASPECT_WITH_OPTIONAL_PROPERTIES ) ).isEqualTo( """
             CREATE TABLE IF NOT EXISTS aspect_with_optional_properties (
-              number_property DECIMAL,
+              number_property DECIMAL(10),
               timestamp_property TIMESTAMP NOT NULL
             )
             TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithOptionalProperties');
@@ -446,7 +446,7 @@ class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase
               date_time_property TIMESTAMP NOT NULL,
               date_time_stamp_property TIMESTAMP NOT NULL,
               day_time_duration STRING NOT NULL,
-              decimal_property DECIMAL(10) NOT NULL,
+              decimal_property DECIMAL(10,0) NOT NULL,
               double_property DOUBLE NOT NULL,
               duration_property STRING NOT NULL,
               float_property FLOAT NOT NULL,
@@ -457,7 +457,7 @@ class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase
               g_year_property STRING NOT NULL,
               hex_binary_property BINARY NOT NULL,
               int_property INT NOT NULL,
-              integer_property DECIMAL NOT NULL,
+              integer_property DECIMAL(10) NOT NULL,
               lang_string_property STRING NOT NULL,
               long_property BIGINT NOT NULL,
               negative_integer_property DECIMAL(10) NOT NULL,
@@ -469,7 +469,7 @@ class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase
               time_property STRING NOT NULL,
               unsigned_byte_property SMALLINT NOT NULL,
               unsigned_int_property BIGINT NOT NULL,
-              unsigned_long_property DECIMAL NOT NULL,
+              unsigned_long_property DECIMAL(10) NOT NULL,
               unsigned_short_property INT NOT NULL,
               year_month_duration_property STRING NOT NULL
             )

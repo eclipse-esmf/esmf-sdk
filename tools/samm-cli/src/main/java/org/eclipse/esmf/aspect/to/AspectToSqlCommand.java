@@ -90,6 +90,12 @@ public class AspectToSqlCommand extends AbstractCommand {
    private int decimalPrecision = DatabricksSqlGenerationConfig.DECIMAL_DEFAULT_PRECISION;
 
    @CommandLine.Option(
+           names = { "--decimal-scale", "-ds" },
+           description =
+                   "The scale to use for Databricks decimal columns, between 0 and the value of precision. (default: ${DEFAULT-VALUE})" )
+   private int decimalScale = DatabricksSqlGenerationConfig.DECIMAL_DEFAULT_SCALE;
+
+   @CommandLine.Option(
          names = { "--custom-column", "-col" },
          description = "Custom column to add to the table, can be repeated for multiple columns",
          converter = DatabricksColumnDefinitionTypeConverter.class )
@@ -130,6 +136,7 @@ public class AspectToSqlCommand extends AbstractCommand {
                   .includeColumnComments( includeColumnComments )
                   .createTableCommandPrefix( tableCommandPrefix )
                   .decimalPrecision( decimalPrecision )
+                  .decimalScale( decimalScale )
                   .customColumns( customColumns )
                   .build();
       final SqlGenerationConfig sqlConfig = new SqlGenerationConfig( dialect, strategy, generatorConfig );

@@ -38,6 +38,7 @@ public record DatabricksSqlGenerationConfig(
       boolean includeColumnComments,
       Locale commentLanguage,
       int decimalPrecision,
+      int decimalScale,
       List<DatabricksColumnDefinition> customColumns
 ) implements SqlGenerationConfig.DialectSpecificConfig {
    public static final String DEFAULT_TABLE_COMMAND_PREFIX = "CREATE TABLE IF NOT EXISTS";
@@ -45,13 +46,15 @@ public record DatabricksSqlGenerationConfig(
    public static final int DECIMAL_DEFAULT_PRECISION = 10;
    // As defined in https://docs.databricks.com/en/sql/language-manual/data-types/decimal-type.html
    public static final int DECIMAL_MAX_PRECISION = 38;
+   // As defined in https://docs.databricks.com/en/sql/language-manual/data-types/decimal-type.html
+   public static final int DECIMAL_DEFAULT_SCALE = 0;
    public static final boolean DEFAULT_INCLUDE_TABLE_COMMENT = true;
    public static final boolean DEFAULT_INCLUDE_COLUMN_COMMENTS = true;
    public static final Locale DEFAULT_COMMENT_LANGUAGE = Locale.ENGLISH;
 
    public DatabricksSqlGenerationConfig() {
       this( DEFAULT_TABLE_COMMAND_PREFIX, DEFAULT_INCLUDE_TABLE_COMMENT, DEFAULT_INCLUDE_COLUMN_COMMENTS, DEFAULT_COMMENT_LANGUAGE,
-            DECIMAL_DEFAULT_PRECISION, List.of() );
+            DECIMAL_DEFAULT_PRECISION, DECIMAL_DEFAULT_SCALE, List.of() );
    }
 
    public DatabricksSqlGenerationConfig {
@@ -63,6 +66,12 @@ public record DatabricksSqlGenerationConfig(
       }
       if ( decimalPrecision > DECIMAL_MAX_PRECISION ) {
          decimalPrecision = DECIMAL_MAX_PRECISION;
+      }
+      if ( decimalScale < 0 ) {
+         decimalScale = DECIMAL_DEFAULT_SCALE;
+      }
+      if ( decimalScale > decimalPrecision ) {
+         decimalScale = decimalPrecision;
       }
       if ( commentLanguage == null ) {
          commentLanguage = DEFAULT_COMMENT_LANGUAGE;
