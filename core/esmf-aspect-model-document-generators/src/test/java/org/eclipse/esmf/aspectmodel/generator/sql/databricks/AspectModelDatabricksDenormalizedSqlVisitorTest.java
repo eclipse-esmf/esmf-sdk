@@ -533,4 +533,16 @@ class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase
             TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithPropertyWithPayloadName');
             """ );
    }
+
+   @Test
+   void testAspectWithUpwardTransitionInNestedEntity() {
+      assertThat( sql( TestAspect.ASPECT_WITH_UPWARD_TRANSITION_IN_NESTED_ENTITY ) ).isEqualTo( """
+            CREATE TABLE IF NOT EXISTS aspect_with_upward_transition_in_nested_entity (
+              first_level_property__second_level_property1__third_level_property_id BIGINT NOT NULL,
+              first_level_property__second_level_property1__third_level_property STRING NOT NULL,
+              first_level_property__second_level_property2 STRING NOT NULL
+            )
+            TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithUpwardTransitionInNestedEntity');
+            """ );
+   }
 }
