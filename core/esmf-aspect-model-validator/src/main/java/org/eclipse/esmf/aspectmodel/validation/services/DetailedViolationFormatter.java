@@ -141,6 +141,9 @@ public class DetailedViolationFormatter extends ViolationFormatter {
             builder.append( String.format( "  - %s%n", fix.description() ) );
          }
       }
+      // Add documentation link
+      builder.append( " documentation: https://eclipse-esmf.github.io/esmf-developer-guide/tooling-guide/error-codes.html"
+            + violation.errorCode().toLowerCase().replace( "_", "-" ) );
       builder.append( indent( additionalAttributesSupplier.get(), 2 ) );
       if ( violation.context() != null ) {
          builder.append( String.format( "  caused-by-shape:%n" ) );
