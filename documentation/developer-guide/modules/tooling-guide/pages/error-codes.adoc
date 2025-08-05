@@ -5,6 +5,27 @@
 
 This reference describes all error codes and validation results that can be produced by the ESMF SDK when loading, parsing, or validating Aspect Models.
 
+== Table of Contents
+
+* <<error-code-format,Error Code Format>>
+* <<error-categories,Error Categories>>
+* <<meta-violations,Meta-violations>>
+* <<shacl-violations,SHACL Constraint Violations>>
+** <<datatype-violations,Data Type Violations>>
+** <<cardinality-violations,Cardinality Violations>>
+** <<constraint-violations,Value Constraint Violations>>
+** <<structure-violations,Structure and Relationship Violations>>
+** <<enumeration-violations,Enumeration and Choice Violations>>
+** <<samm-specific-violations,SAMM-Specific Violations>>
+* <<error-contexts,Error Contexts>>
+* <<error-message-format,Error Message Format>>
+* <<accessing-error-information,Accessing Error Information>>
+* <<error-resolution,Error Resolution Guide>>
+* <<best-practices,Best Practices>>
+* <<integration-examples,Integration Examples>>
+* <<version-compatibility,Version Compatibility>>
+* <<troubleshooting,Troubleshooting>>
+
 [[error-code-format]]
 == Error Code Format
 
@@ -169,7 +190,7 @@ Context information:
   Element: :ElementName
   Property: :propertyName
   File: model.ttl:15:23
-  
+
 Suggestion: Specific guidance for fixing the error.
 ```
 
@@ -262,11 +283,11 @@ Each error code includes specific guidance in the error message. Common patterns
 public class CustomViolationFormatter implements Violation.Visitor<String> {
     @Override
     public String visit(DatatypeViolation violation) {
-        return String.format("ERR_TYPE: Fix data type for %s (Line %d)", 
-            violation.context().element(), 
+        return String.format("ERR_TYPE: Fix data type for %s (Line %d)",
+            violation.context().element(),
             violation.context().sourceLocation().line());
     }
-    
+
     // ... other visitor methods
 }
 ----
@@ -277,7 +298,7 @@ public class CustomViolationFormatter implements Violation.Visitor<String> {
 ----
 Map<String, List<Violation>> errorsByCode = violations.stream()
     .collect(Collectors.groupingBy(Violation::errorCode));
-    
+
 // Handle each error type separately
 List<Violation> dataTypeErrors = errorsByCode.get("ERR_TYPE");
 List<Violation> cardinalityErrors = errorsByCode.get("ERR_MAX_COUNT");
