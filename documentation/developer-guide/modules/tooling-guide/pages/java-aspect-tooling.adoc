@@ -346,6 +346,39 @@ different structure can implement the `Violation.Visitor` Interface with a suita
 type `(String` used as an example here) and use the visitor to handle the different types of
 Violations in a type-safe way.
 
+=== Custom Error Formatting
+
+In order to access validation violations in a type-safe way, implement the interface 
+`org.eclipse.esmf.aspectmodel.shacl.violation.Violation.Visitor`. This allows you to handle each 
+violation type specifically and format error messages according to your application's requirements.
+
+++++
+<details>
+<summary>Show used imports</summary>
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$CustomViolationFormatter.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$CustomViolationFormatter.java[tags=custom-formatter]
+----
+
+=== Error Aggregation
+
+For applications that need to process multiple violations efficiently, you can group errors by type 
+for batch processing:
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$CustomViolationFormatter.java[tags=error-aggregation]
+----
+
 The `AspectModelValidator` also provides the `loadModel(Supplier<AspectModel>)` method that can be used in
 conjunction with `() -> new AspectModeLoader().load(...)` to have exceptions that might be created during the
 Aspect Model loading process, for example due to model resolution failures or syntax errors in the input
