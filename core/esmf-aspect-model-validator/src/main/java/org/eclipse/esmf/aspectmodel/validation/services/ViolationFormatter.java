@@ -42,6 +42,9 @@ public class ViolationFormatter implements Function<List<Violation>, String>, Vi
    protected final String additionalHints;
    protected final RustLikeFormatter formatter;
 
+   private static final String ERROR_CODES_DOC_LINK = "https://eclipse-esmf.github.io/esmf-developer-guide/tooling-guide/error-codes.html";
+   private static final String ERROR_CODES_DOC_STRING = "For more information, see: documentation: " + ERROR_CODES_DOC_LINK;
+
    public ViolationFormatter( final String additionalHints ) {
       this( new PlainTextFormatter(), additionalHints );
    }
@@ -93,7 +96,7 @@ public class ViolationFormatter implements Function<List<Violation>, String>, Vi
                      .append( possibleFix.description() );
             }
             // Add documentation link
-            builder.append( String.format( "  > For more information, see: https://eclipse-esmf.github.io/esmf-sdk/tooling-guide/error-codes.html#%s%n", 
+            builder.append( String.format( ERROR_CODES_DOC_STRING + "#%s%n",
                   errorCode.toLowerCase().replace( "_", "-" ) ) );
             builder.append( System.lineSeparator() );
          }
@@ -108,7 +111,7 @@ public class ViolationFormatter implements Function<List<Violation>, String>, Vi
             final String enhancedMessage = String.format( "[%s] %s", errorCode, violation.message() );
             builder.append( String.format( "> %s%n", enhancedMessage ) );
             // Add documentation link for context-free violations
-            builder.append( "  > For more information, see: documentation: https://eclipse-esmf.github.io/esmf-developer-guide/tooling-guide/error-codes.html"
+            builder.append( ERROR_CODES_DOC_STRING
                   + errorCode.toLowerCase().replace( "_", "-" ) );
          } else {
             final String errorCode = violation.errorCode();
@@ -116,7 +119,7 @@ public class ViolationFormatter implements Function<List<Violation>, String>, Vi
             builder.append( String.format( "> %s: %n", enhancedMessage ) );
             builder.append( indent( violation.accept( this ), 2 ) ).append( System.lineSeparator() );
             // Add documentation link
-            builder.append( "  > For more information, see: documentation: https://eclipse-esmf.github.io/esmf-developer-guide/tooling-guide/error-codes.html"
+            builder.append( ERROR_CODES_DOC_STRING
                   + errorCode.toLowerCase().replace( "_", "-" ) );
          }
          builder.append( System.lineSeparator() );

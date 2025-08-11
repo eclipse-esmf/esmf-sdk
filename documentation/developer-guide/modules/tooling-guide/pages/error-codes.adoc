@@ -5,26 +5,6 @@
 
 This reference describes all error codes and validation results that can be produced by the ESMF SDK when loading, parsing, or validating Aspect Models.
 
-== Table of Contents
-
-* <<error-code-format,Error Code Format>>
-* <<error-categories,Error Categories>>
-* <<meta-violations,Meta-violations>>
-* <<shacl-violations,SHACL Constraint Violations>>
-** <<datatype-violations,Data Type Violations>>
-** <<cardinality-violations,Cardinality Violations>>
-** <<constraint-violations,Value Constraint Violations>>
-** <<structure-violations,Structure and Relationship Violations>>
-** <<enumeration-violations,Enumeration and Choice Violations>>
-** <<samm-specific-violations,SAMM-Specific Violations>>
-* <<error-contexts,Error Contexts>>
-* <<error-message-format,Error Message Format>>
-* <<accessing-error-information,Accessing Error Information>>
-* <<error-resolution,Error Resolution Guide>>
-* <<best-practices,Best Practices>>
-* <<integration-examples,Integration Examples>>
-* <<version-compatibility,Version Compatibility>>
-* <<troubleshooting,Troubleshooting>>
 
 [[error-code-format]]
 == Error Code Format
@@ -54,16 +34,26 @@ Errors are categorized into three main types:
 
 Meta-violations occur during the initial loading and processing of Aspect Models before detailed validation begins.
 
-[width="100%",options="header",cols="15,25,60"]
-|===
-| Error Code | Error Name | Description
-| `ERR_SYNTAX` | Syntax Error | The source file contains invalid RDF/Turtle syntax that prevents parsing.
-| `ERR_PROCESSING` | Processing Error | General processing failure during model loading or resolution.
-| `ERR_CYCLE` | Circular Reference | The model contains circular references that cannot be resolved.
-| `ERR_RESOLUTION` | Resolution Failure | A referenced model element could not be found or loaded.
-| `ERR_NAMESPACE` | Namespace Error | Invalid or inconsistent namespace declarations.
-| `ERR_URN` | URN Format Error | Malformed or invalid URN syntax.
-|===
+[[ERR-SYNTAX]]
+=== ERR_SYNTAX - Syntax Error
+
+The source file contains invalid RDF/Turtle syntax that prevents parsing.
+
+**Resolution:** Check namespace declarations and ensure consistency across files. Verify proper RDF/Turtle syntax including correct use of prefixes, semicolons, and periods.
+
+[[ERR-PROCESSING]]
+=== ERR_PROCESSING - Processing Error
+
+General processing failure during model loading or resolution.
+
+**Resolution:** Check file accessibility, format validity, and dependencies. Ensure all referenced files and namespaces are available and correctly specified.
+
+[[ERR-CYCLE]]
+=== ERR_CYCLE - Circular Reference
+
+The model contains circular references that cannot be resolved.
+
+**Resolution:** Break the circular dependency by restructuring the model relationships. Review element dependencies to identify and eliminate circular references.
 
 [[shacl-violations]]
 == SHACL Constraint Violations
@@ -73,13 +63,14 @@ SHACL violations are detected during detailed validation of Aspect Models agains
 [[datatype-violations]]
 === Data Type Violations
 
-[width="100%",options="header",cols="15,25,60"]
-|===
-| Error Code | Error Name | Description
-| `ERR_TYPE` | Data Type Violation | A property uses an incorrect data type for its context.
-| `ERR_LITERAL_TYPE` | Literal Type Mismatch | A literal value does not match its declared data type.
-| `ERR_LANGUAGE_TAG` | Language Tag Error | Missing or invalid language tags on multilingual properties.
-|===
+[[ERR-TYPE]]
+==== ERR_TYPE - Data Type Violation
+
+A property uses an incorrect data type for its context.
+
+See https://www.w3.org/TR/shacl/#DatatypeConstraintComponent[sh:datatype] for more information on the SHACL constraint component.
+
+**Resolution:** Check the SAMM specification for allowed data types for each property. Ensure the data type matches the expected type for the specific property context.
 
 **Example:**
 ```
@@ -89,78 +80,141 @@ ERR_TYPE: Property :speed on :Vehicle uses data type :string, but only :decimal 
 [[cardinality-violations]]
 === Cardinality Violations
 
-[width="100%",options="header",cols="15,25,60"]
-|===
-| Error Code | Error Name | Description
-| `ERR_MAX_COUNT` | Maximum Count Exceeded | A property is used more times than allowed.
-| `ERR_MIN_COUNT` | Minimum Count Missing | A required property is missing or used fewer times than required.
-| `ERR_EXACTLY_ONE` | Exactly One Required | A property must be used exactly once but appears zero or multiple times.
-|===
+[[ERR-MAX-COUNT]]
+==== ERR_MAX_COUNT - Maximum Count Exceeded
+
+A property is used more times than allowed.
+
+See https://www.w3.org/TR/shacl/#MaxCountConstraintComponent[sh:maxCount] for more information on the SHACL constraint component.
+
+**Resolution:** Remove duplicate property declarations to ensure each property appears only the maximum allowed number of times.
 
 **Example:**
 ```
 ERR_MAX_COUNT: Property :description is used 3 times on :Aspect, but may only be used 1 time.
 ```
 
+[[ERR-MIN-COUNT]]
+==== ERR_MIN_COUNT - Minimum Count Missing
+
+A required property is missing or used fewer times than required.
+
+See https://www.w3.org/TR/shacl/#MinCountConstraintComponent[sh:minCount] for more information on the SHACL constraint component.
+
+**Resolution:** Add the missing required properties to meet the minimum count requirement. Verify that all mandatory properties are present and properly defined.
+
 [[constraint-violations]]
 === Value Constraint Violations
 
-[width="100%",options="header",cols="15,25,60"]
-|===
-| Error Code | Error Name | Description
-| `ERR_PATTERN` | Pattern Violation | A value does not match the required regular expression pattern.
-| `ERR_MAX_LENGTH` | Maximum Length Exceeded | A string value exceeds the maximum allowed length.
-| `ERR_MIN_LENGTH` | Minimum Length Required | A string value is shorter than the minimum required length.
-| `ERR_MAX_INCLUSIVE` | Maximum Value Exceeded | A numeric value exceeds the maximum allowed value (inclusive).
-| `ERR_MIN_INCLUSIVE` | Minimum Value Required | A numeric value is below the minimum required value (inclusive).
-| `ERR_MAX_EXCLUSIVE` | Maximum Value Exceeded | A numeric value exceeds the maximum allowed value (exclusive).
-| `ERR_MIN_EXCLUSIVE` | Minimum Value Required | A numeric value is below the minimum required value (exclusive).
-|===
+[[ERR-PATTERN]]
+==== ERR_PATTERN - Pattern Violation
+
+A value does not match the required regular expression pattern.
+
+See https://www.w3.org/TR/shacl/#PatternConstraintComponent[sh:pattern] for more information on the SHACL constraint component.
+
+**Resolution:** Ensure values match the required format (e.g., version numbers should follow semantic versioning format, URN format for identifiers). Check the pattern requirements in the SAMM specification.
 
 **Example:**
 ```
 ERR_PATTERN: Property :version on :Aspect has value "1.0", which does not match the required pattern "^\d+\.\d+\.\d+$".
 ```
 
+[[ERR-MAX-LENGTH]]
+==== ERR_MAX_LENGTH - Maximum Length Exceeded
+
+A string value exceeds the maximum allowed length.
+
+See https://www.w3.org/TR/shacl/#MaxLengthConstraintComponent[sh:maxLength] for more information on the SHACL constraint component.
+
+**Resolution:** Shorten the string value to fit within the maximum allowed length constraint.
+
+[[ERR-MIN-LENGTH]]
+==== ERR_MIN_LENGTH - Minimum Length Required
+
+A string value is shorter than the minimum required length.
+
+See https://www.w3.org/TR/shacl/#MinLengthConstraintComponent[sh:minLength] for more information on the SHACL constraint component.
+
+**Resolution:** Extend the string value to meet the minimum required length constraint.
+
+[[ERR-MAX-INCLUSIVE]]
+==== ERR_MAX_INCLUSIVE - Maximum Value Exceeded
+
+A numeric value exceeds the maximum allowed value (inclusive).
+
+See https://www.w3.org/TR/shacl/#MaxInclusiveConstraintComponent[sh:maxInclusive] for more information on the SHACL constraint component.
+
+**Resolution:** Reduce the numeric value to be less than or equal to the maximum allowed value.
+
+[[ERR-MIN-INCLUSIVE]]
+==== ERR_MIN_INCLUSIVE - Minimum Value Required
+
+A numeric value is below the minimum required value (inclusive).
+
+See https://www.w3.org/TR/shacl/#MinInclusiveConstraintComponent[sh:minInclusive] for more information on the SHACL constraint component.
+
+**Resolution:** Increase the numeric value to be greater than or equal to the minimum required value.
+
+[[ERR-MAX-EXCLUSIVE]]
+==== ERR_MAX_EXCLUSIVE - Maximum Value Exceeded
+
+A numeric value exceeds the maximum allowed value (exclusive).
+
+See https://www.w3.org/TR/shacl/#MaxExclusiveConstraintComponent[sh:maxExclusive] for more information on the SHACL constraint component.
+
+**Resolution:** Reduce the numeric value to be strictly less than the maximum allowed value.
+
+[[ERR-MIN-EXCLUSIVE]]
+==== ERR_MIN_EXCLUSIVE - Minimum Value Required
+
+A numeric value is below the minimum required value (exclusive).
+
+See https://www.w3.org/TR/shacl/#MinExclusiveConstraintComponent[sh:minExclusive] for more information on the SHACL constraint component.
+
+**Resolution:** Increase the numeric value to be strictly greater than the minimum required value.
+
 [[structure-violations]]
 === Structure and Relationship Violations
 
-[width="100%",options="header",cols="15,25,60"]
-|===
-| Error Code | Error Name | Description
-| `ERR_SHAPE` | SHACL Shape Violation | The model element does not conform to its required SHACL shape.
-| `ERR_CLASS` | Class Violation | An element does not belong to the required class.
-| `ERR_PROPERTY_SHAPE` | Property Shape Violation | A property does not conform to its required shape constraints.
-| `ERR_NODE_KIND` | Node Kind Violation | An element has the wrong node kind (IRI, Literal, BlankNode).
-| `ERR_CLOSED_SHAPE` | Closed Shape Violation | A closed shape contains unexpected properties.
-|===
+[[ERR-CLASS]]
+==== ERR_CLASS - Class Violation
+
+An element does not belong to the required class.
+
+See https://www.w3.org/TR/shacl/#ClassConstraintComponent[sh:class] for more information on the SHACL constraint component.
+
+**Resolution:** Verify that all referenced elements are properly defined and accessible. Check that the element has the correct rdf:type declaration for the expected class.
 
 [[enumeration-violations]]
 === Enumeration and Choice Violations
 
-[width="100%",options="header",cols="15,25,60"]
-|===
-| Error Code | Error Name | Description
-| `ERR_IN` | Value Not In Enumeration | A value is not in the allowed list of enumeration values.
-| `ERR_QUALIFIED_VALUE_SHAPE` | Qualified Value Shape Violation | A value does not match the required qualified value shape.
-| `ERR_OR` | OR Constraint Violation | None of the alternative constraints in an OR condition are satisfied.
-| `ERR_AND` | AND Constraint Violation | Not all required constraints in an AND condition are satisfied.
-| `ERR_NOT` | NOT Constraint Violation | A constraint that should not be satisfied is satisfied.
-|===
+[[ERR-IN]]
+==== ERR_IN - Value Not In Enumeration
 
-[[samm-specific-violations]]
-=== SAMM-Specific Violations
+A value is not in the allowed list of enumeration values.
 
-[width="100%",options="header",cols="15,25,60"]
-|===
-| Error Code | Error Name | Description
-| `ERR_ASPECT_PROPERTIES` | Aspect Properties Error | An Aspect has invalid or missing properties.
-| `ERR_CHARACTERISTIC_DATATYPE` | Characteristic Data Type Error | A Characteristic uses an invalid data type.
-| `ERR_ENTITY_PROPERTIES` | Entity Properties Error | An Entity has invalid property definitions.
-| `ERR_OPERATION_SIGNATURE` | Operation Signature Error | An Operation has an invalid input/output signature.
-| `ERR_UNIT_REFERENCE` | Unit Reference Error | Invalid reference to a unit definition.
-| `ERR_COLLECTION_ELEMENT` | Collection Element Error | Invalid element type in a collection characteristic.
-|===
+See https://www.w3.org/TR/shacl/#InConstraintComponent[sh:in] for more information on the SHACL constraint component.
+
+**Resolution:** Use only values from the allowed enumeration list. Check the SAMM specification or model definition for the complete list of permitted values.
+
+[[ERR-OR]]
+==== ERR_OR - OR Constraint Violation
+
+None of the alternative constraints in an OR condition are satisfied.
+
+See https://www.w3.org/TR/shacl/#OrConstraintComponent[sh:or] for more information on the SHACL constraint component.
+
+**Resolution:** Modify the element to satisfy at least one of the alternative constraints in the OR condition. Review each alternative constraint to determine which one is most appropriate for your use case.
+
+[[ERR-NOT]]
+==== ERR_NOT - NOT Constraint Violation
+
+A constraint that should not be satisfied is satisfied.
+
+See https://www.w3.org/TR/shacl/#NotConstraintComponent[sh:not] for more information on the SHACL constraint component.
+
+**Resolution:** Modify the element to violate the negated constraint. The element should not satisfy the condition specified in the NOT constraint.
 
 [[error-contexts]]
 == Error Contexts
@@ -177,22 +231,6 @@ Each error includes contextual information to help locate and resolve the issue:
 | **Location** | File name, line number, and column position
 | **Shape** | The SHACL shape that detected the violation
 |===
-
-[[error-message-format]]
-== Error Message Format
-
-Error messages follow a consistent format:
-
-```
-[ERROR_CODE] Description of the specific error condition.
-
-Context information:
-  Element: :ElementName
-  Property: :propertyName
-  File: model.ttl:15:23
-
-Suggestion: Specific guidance for fixing the error.
-```
 
 [[accessing-error-information]]
 == Accessing Error Information
@@ -212,129 +250,10 @@ for (Violation violation : violations) {
 }
 ----
 
-=== Command Line Interface
-
-The SAMM CLI provides error information in two formats:
-
-**Standard Format** (default):
-```bash
-samm aspect model.ttl validate
-```
-
-**Detailed Format** (with `--details` flag):
-```bash
-samm aspect model.ttl validate --details
-```
-
-The detailed format includes:
-- Complete error context
-- SHACL shape information
-- Suggested fixes
-- Source file locations
-
 [[error-resolution]]
 == Error Resolution Guide
 
-=== Common Resolution Strategies
 
-[width="100%",options="header",cols="30,70"]
-|===
-| Error Pattern | Resolution Strategy
-| **Data Type Errors** | Check the SAMM specification for allowed data types for each property
-| **Cardinality Errors** | Verify that required properties are present and optional properties are not duplicated
-| **Pattern Violations** | Ensure values match the required format (e.g., version numbers, URN format)
-| **Reference Errors** | Verify that all referenced elements are properly defined and accessible
-| **Namespace Issues** | Check namespace declarations and ensure consistency across files
-|===
-
-=== Error-Specific Guidance
-
-Each error code includes specific guidance in the error message. Common patterns include:
-
-- **Missing Elements**: Add the required property or element
-- **Invalid Values**: Correct the value to match the expected format or constraint
-- **Reference Issues**: Ensure referenced elements exist and are accessible
-- **Structural Problems**: Reorganize the model to match the required structure
-
-[[best-practices]]
-== Best Practices
-
-=== Model Development
-
-1. **Validate Early**: Run validation frequently during model development
-2. **Use Detailed Output**: Enable detailed error reporting for comprehensive feedback
-3. **Address Errors Systematically**: Start with meta-violations before fixing constraint violations
-4. **Test Edge Cases**: Verify models with boundary values and optional properties
-
-=== Error Handling
-
-1. **Programmatic Handling**: Use the visitor pattern for type-safe error handling
-2. **User-Friendly Messages**: Transform technical errors into user-friendly guidance
-3. **Logging**: Log error codes and context for troubleshooting
-4. **Documentation**: Link to this reference in error messages where appropriate
-
-[[integration-examples]]
-== Integration Examples
-
-=== Custom Error Formatting
-
-[source,java]
-----
-public class CustomViolationFormatter implements Violation.Visitor<String> {
-    @Override
-    public String visit(DatatypeViolation violation) {
-        return String.format("ERR_TYPE: Fix data type for %s (Line %d)",
-            violation.context().element(),
-            violation.context().sourceLocation().line());
-    }
-
-    // ... other visitor methods
-}
-----
-
-=== Error Aggregation
-
-[source,java]
-----
-Map<String, List<Violation>> errorsByCode = violations.stream()
-    .collect(Collectors.groupingBy(Violation::errorCode));
-
-// Handle each error type separately
-List<Violation> dataTypeErrors = errorsByCode.get("ERR_TYPE");
-List<Violation> cardinalityErrors = errorsByCode.get("ERR_MAX_COUNT");
-----
-
-=== Web API Error Response
-
-[source,java]
-----
-{
-    "success": false,
-    "errors": [
-        {
-            "code": "ERR_TYPE",
-            "message": "Property :speed uses incorrect data type",
-            "element": ":Vehicle",
-            "property": ":speed",
-            "line": 15,
-            "column": 23,
-            "suggestion": "Change data type to :decimal"
-        }
-    ]
-}
-----
-
-[[version-compatibility]]
-== Version Compatibility
-
-Error codes are maintained across ESMF SDK versions with the following guarantee:
-
-- **Stable Codes**: Existing error codes will not change meaning
-- **New Codes**: New error codes may be added in minor versions
-- **Deprecated Codes**: Codes are deprecated before removal (with migration guidance)
-- **Documentation**: This reference is updated with each release
-
-For version-specific error code information, see the release notes and migration guides.
 
 [[troubleshooting]]
 == Troubleshooting
@@ -360,5 +279,3 @@ For version-specific error code information, see the release notes and migration
 
 For additional support:
 - ESMF SDK GitHub Issues: https://github.com/eclipse-esmf/esmf-sdk/issues
-- SAMM Specification: https://eclipse-esmf.github.io/samm-specification/
-- Community Forum: https://github.com/eclipse-esmf/esmf-sdk/discussions
