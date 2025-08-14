@@ -285,6 +285,10 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       final SubmodelElement element = context.getPropertyResult();
       element.setSupplementalSemanticIds( updateGlobalReferenceWithSeeReferences( element, property ) );
 
+      if ( !property.getPayloadName().isEmpty() ) {
+         element.setIdShort( property.getPayloadName() );
+      }
+
       recursiveProperty.remove( property );
 
       return Optional.of( element );
