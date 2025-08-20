@@ -31,7 +31,7 @@
 #else
     #set( $propertyType = $util.getPropertyType( $property, false, $codeGenerationConfig ) )
     #if( $property.getExtends().isPresent() )@Override #end
-public $returnType $methodName( final $propertyType $property.getPayloadName() ) {
+public $returnType $methodName( final   $propertyType $property.getPayloadName() ) {
     this.$property.getPayloadName() = $property.getPayloadName();
 #if( !$codeGenerationConfig.setterStyle().name().equals( "STANDARD" ) )
     return this;

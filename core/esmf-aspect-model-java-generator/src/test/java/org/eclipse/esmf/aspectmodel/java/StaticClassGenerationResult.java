@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,6 +33,7 @@ import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.stmt.Statement;
 
 public class StaticClassGenerationResult extends GenerationResult {
@@ -142,5 +144,45 @@ public class StaticClassGenerationResult extends GenerationResult {
                .replace( "\r", "" ).replace( "\n", "" );
          assertThat( actualBody ).isEqualTo( expectedBody );
       } );
+   }
+
+   /**
+    * Allows the assertion of method bodies for static meta properties in a generated meta class.
+    *
+    * Method bodies are asserted in a relaxed way:
+    * <ul>
+    *    <li>all whitespace is trimmed before comparing</li>
+    *    <li>the given method body may also be just a part of the full method body, i.e. the check is performed using .contains()</li>
+    * </ul>
+    *
+    * @param className the name of the meta class
+    * @param propertyName the name of the property (given in CONSTANT_CASE)
+    * @param expectedMethodBodies the expected (partial) contents of the static meta property methods, where the key is the method name
+    */
+   public void assertStaticMetaPropertyMethods( final String className, final String propertyName,
+         final Map<String, String> expectedMethodBodies ) {
+      assertThat( compilationUnits ).containsKey( className );
+
+      final List<FieldDeclaration> fields = compilationUnits.get( className ).findAll( FieldDeclaration.class );
+      for ( final FieldDeclaration field : fields ) {
+         final String fieldName = field.resolve().getName();
+         if ( !propertyName.equals( fieldName ) ) {
+            continue;
+         }
+
+         assertThat( field.getVariables()
+               .stream()
+               .map( VariableDeclarator::getInitializer )
+               .flatMap( Optional::stream )
+               .filter( exp -> exp instanceof ObjectCreationExpr )
+               .map( ObjectCreationExpr.class::cast )
+               .flatMap(
+                     oc -> oc.getChildNodes().stream().filter( n -> n instanceof MethodDeclaration ).map( MethodDeclaration.class::cast ) )
+               .anyMatch( md -> md.getBody()
+                     .map( b -> b.getStatements().stream().anyMatch(
+                           s -> expectedMethodBodies.containsKey( md.getName().toString() ) && s.toString().trim()
+                                 .contains( expectedMethodBodies.get( md.getName().toString() ).trim() ) ) )
+                     .orElse( false ) ) ).isTrue();
+      }
    }
 }

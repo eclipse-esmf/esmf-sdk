@@ -192,6 +192,14 @@ public Class<$propertyType> getPropertyType() {
     return object.$getterName();
     }
 
+    #if ( $codeGenerationConfig.enableSetters() )
+    #set( $setterName = $util.setterName( $property, $codeGenerationConfig ) )
+    @Override
+    public void setValue( ${element.getName()} object, $propertyType value ) {
+    object.$setterName( value );
+    }
+    #end
+
     #if( $util.hasUnit( $property.getCharacteristic().get() ) )
         $codeGenerationConfig.importTracker().importExplicit( $Unit )
         $codeGenerationConfig.importTracker().importExplicit( $Units )

@@ -25,6 +25,7 @@ import org.eclipse.esmf.metamodel.Aspect;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +33,12 @@ import org.slf4j.LoggerFactory;
 public class GenerateStaticJavaClasses extends CodeGenerationMojo {
    public static final String MAVEN_GOAL = "generateStaticJavaClasses";
    private static final Logger LOG = LoggerFactory.getLogger( GenerateStaticJavaClasses.class );
+
+   @Parameter( defaultValue = "false" )
+   protected boolean enableSetters;
+
+   @Parameter( defaultValue = "standard" )
+   protected String setterStyle;
 
    @Override
    public void executeGeneration() throws MojoExecutionException {
@@ -45,6 +52,8 @@ public class GenerateStaticJavaClasses extends CodeGenerationMojo {
                .templateLibFile( templateLibFile )
                .namePrefix( namePrefix )
                .namePostfix( namePostfix )
+               .enableSetters( enableSetters )
+               .setterStyle( getEnumConstant( JavaCodeGenerationConfig.SetterStyle.class, setterStyle, "STANDARD" ) )
                .build();
          new StaticMetaModelJavaGenerator( aspect, config ).generateThrowing( javaFileNameMapper( outputDirectory ) );
       }

@@ -15,7 +15,6 @@ package org.eclipse.esmf.aspectmodel;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfig;
@@ -23,7 +22,6 @@ import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.java.pojo.AspectModelJavaGenerator;
 import org.eclipse.esmf.metamodel.Aspect;
 
-import org.apache.commons.lang3.EnumUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -108,13 +106,5 @@ public class GenerateJavaClasses extends CodeGenerationMojo {
          }
       }
       LOG.info( "Successfully generated Java classes for Aspect Models." );
-   }
-
-   private static <T extends Enum<T>> T getEnumConstant( final Class<T> enumClass, final String constant, final String defaultConstant ) {
-      final var sanitizedConstant = Optional.ofNullable( constant )
-            .map( c -> c.toUpperCase().replace( "-", "_" ) )
-            .orElse( defaultConstant );
-
-      return EnumUtils.getEnum( enumClass, sanitizedConstant );
    }
 }
