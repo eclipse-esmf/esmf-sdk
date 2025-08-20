@@ -23,6 +23,7 @@ import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.java.pojo.AspectModelJavaGenerator;
 import org.eclipse.esmf.metamodel.Aspect;
 
+import org.apache.commons.lang3.EnumUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -44,6 +45,12 @@ public class GenerateJavaClasses extends CodeGenerationMojo {
    @Parameter( defaultValue = "deduction" )
    protected String jsonTypeInfo;
 
+   @Parameter( defaultValue = "false" )
+   protected boolean enableSetters;
+
+   @Parameter( defaultValue = "standard" )
+   protected String setterStyle;
+
    /**
     * Default constructor used by Maven plugin instantiation
     */
@@ -59,7 +66,9 @@ public class GenerateJavaClasses extends CodeGenerationMojo {
          final boolean executeLibraryMacros,
          final String stripNamespace,
          final String namePrefix,
-         final String namePostfix
+         final String namePostfix,
+         final boolean enableSetters,
+         final String setterStyle
    ) {
       this.disableJacksonAnnotations = disableJacksonAnnotations;
       this.disableJacksonAnnotationJsonFormatShapeObject = disableJacksonAnnotationJsonFormatShapeObject;
@@ -70,6 +79,8 @@ public class GenerateJavaClasses extends CodeGenerationMojo {
       this.stripNamespace = stripNamespace;
       this.namePrefix = namePrefix;
       this.namePostfix = namePostfix;
+      this.enableSetters = enableSetters;
+      this.setterStyle = setterStyle;
    }
 
    @Override
@@ -82,13 +93,14 @@ public class GenerateJavaClasses extends CodeGenerationMojo {
             final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
                   .enableJacksonAnnotations( !disableJacksonAnnotations )
                   .enableJacksonAnnotationJsonFormatShapeObject( !disableJacksonAnnotationJsonFormatShapeObject )
-                  .jsonTypeInfo( JavaCodeGenerationConfig.JsonTypeInfoType.valueOf(
-                        Optional.ofNullable( jsonTypeInfo ).map( String::toUpperCase ).orElse( "DEDUCTION" ) ) )
+                  .jsonTypeInfo( getEnumConstant( JavaCodeGenerationConfig.JsonTypeInfoType.class, jsonTypeInfo, "DEDUCTION" ) )
                   .packageName( determinePackageName( aspect ) )
                   .executeLibraryMacros( executeLibraryMacros )
                   .templateLibFile( templateLibFile )
                   .namePrefix( namePrefix )
                   .namePostfix( namePostfix )
+                  .enableSetters( enableSetters )
+                  .setterStyle( getEnumConstant( JavaCodeGenerationConfig.SetterStyle.class, setterStyle, "STANDARD" ) )
                   .build();
             new AspectModelJavaGenerator( aspect, config ).generateThrowing( javaFileNameMapper( outputDirectory ) );
          } catch ( final Exception exception ) {
@@ -96,5 +108,13 @@ public class GenerateJavaClasses extends CodeGenerationMojo {
          }
       }
       LOG.info( "Successfully generated Java classes for Aspect Models." );
+   }
+
+   private static <T extends Enum<T>> T getEnumConstant( final Class<T> enumClass, final String constant, final String defaultConstant ) {
+      final var sanitizedConstant = Optional.ofNullable( constant )
+            .map( c -> c.toUpperCase().replace( "-", "_" ) )
+            .orElse( defaultConstant );
+
+      return EnumUtils.getEnum( enumClass, sanitizedConstant );
    }
 }

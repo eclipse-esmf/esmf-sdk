@@ -13,10 +13,12 @@
 #parse( "java-pojo-property-lib.vm" )
 #parse( "java-pojo-constructor-lib.vm" )
 #parse( "java-pojo-getter-lib.vm" )
+#parse( "java-pojo-setter-lib.vm" )
 #parse( "java-pojo-equals-method-lib.vm" )
 #parse( "java-pojo-hashcode-method-lib.vm" )
 
 #macro( javaPojoClassBody )
+#set( $className = ${util.generateClassName( $element, $codeGenerationConfig )}+${util.genericClassSignature( $element )} )
 /**
 * Generated class for $element.getPreferredName( $localeEn ) (${elementUrn}).
 *#if ( $element.getDescription( $localeEn ) ) $element.getDescription( $localeEn )#end
@@ -29,7 +31,7 @@ ${util.determineCollectionAspectClassDefinition( $element, $codeGenerationConfig
 ${util.generateAbstractEntityClassAnnotations( $complexElement, $codeGenerationConfig, $extendingEntities )}
 ${util.determineComplexTypeClassDefinition( $complexElement, $codeGenerationConfig )}
 #else
-public class ${util.generateClassName( $element, $codeGenerationConfig )}${util.genericClassSignature( $element )} {
+public class ${className} {
 #end
 #foreach( $property in $element.properties )
     #javaPojoProperty( $property )
@@ -43,6 +45,9 @@ public class ${util.generateClassName( $element, $codeGenerationConfig )}${util.
 #foreach( $property in $element.properties )
     #set( $index = $foreach.count - 1 )
     #javaPojoGetter( $property, $index )
+#if ( $codeGenerationConfig.enableSetters() )
+    #javaPojoSetter( $property, $index, $className )
+#end
 #end
 #foreach( $property in $deconstructor.allProperties )
     #javaPojoGetter( $property, 0 )
