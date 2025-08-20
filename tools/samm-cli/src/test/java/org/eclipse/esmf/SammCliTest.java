@@ -684,6 +684,57 @@ class SammCliTest {
    }
 
    @Test
+   void testAspectToJavaWithSetters() {
+      final File outputDir = outputDirectory.toFile();
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
+            "--output-directory", outputDir.getAbsolutePath(), "--custom-resolver", resolverCommand(), "--enable-setters" );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+
+      final File directory = Paths.get( outputDir.getAbsolutePath(), "org", "eclipse", "esmf", "test" ).toFile();
+      assertThat( directory ).exists();
+      assertThat( directory ).isDirectoryContaining(
+            file -> file.getName().equals( "AspectWithEntity.java" ) || file.getName().equals( "TestEntity.java" ) );
+
+      final File sourceFile = directory.toPath().resolve( "AspectWithEntity.java" ).toFile();
+      assertThat( sourceFile ).content().contains( "public void setTestProperty( final TestEntity testProperty )" );
+   }
+
+   @Test
+   void testAspectToJavaWithFluentSetters() {
+      final File outputDir = outputDirectory.toFile();
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
+            "--output-directory", outputDir.getAbsolutePath(), "--custom-resolver", resolverCommand(), "--enable-setters", "--setter-style", "FLUENT" );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+
+      final File directory = Paths.get( outputDir.getAbsolutePath(), "org", "eclipse", "esmf", "test" ).toFile();
+      assertThat( directory ).exists();
+      assertThat( directory ).isDirectoryContaining(
+            file -> file.getName().equals( "AspectWithEntity.java" ) || file.getName().equals( "TestEntity.java" ) );
+
+      final File sourceFile = directory.toPath().resolve( "AspectWithEntity.java" ).toFile();
+      assertThat( sourceFile ).content().contains( "public AspectWithEntity setTestProperty( final TestEntity testProperty )" );
+   }
+
+   @Test
+   void testAspectToJavaWithFluentCompactSetters() {
+      final File outputDir = outputDirectory.toFile();
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
+            "--output-directory", outputDir.getAbsolutePath(), "--custom-resolver", resolverCommand(), "--enable-setters", "--setter-style", "FLUENT_COMPACT" );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+
+      final File directory = Paths.get( outputDir.getAbsolutePath(), "org", "eclipse", "esmf", "test" ).toFile();
+      assertThat( directory ).exists();
+      assertThat( directory ).isDirectoryContaining(
+            file -> file.getName().equals( "AspectWithEntity.java" ) || file.getName().equals( "TestEntity.java" ) );
+
+      final File sourceFile = directory.toPath().resolve( "AspectWithEntity.java" ).toFile();
+      assertThat( sourceFile ).content().contains( "public AspectWithEntity testProperty( final TestEntity testProperty )" );
+   }
+
+   @Test
    void testAspectToJavaStaticWithDefaultPackageName() {
       final File outputDir = outputDirectory.toFile();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
