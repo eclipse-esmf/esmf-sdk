@@ -155,6 +155,7 @@ public class StaticClassGenerationResult extends GenerationResult {
     *    <li>the given method body may also be just a part of the full method body, i.e. the check is performed using .contains()</li>
     * </ul>
     * </p>
+    *
     * @param className the name of the meta class
     * @param propertyName the name of the property (given in CONSTANT_CASE)
     * @param expectedMethodBodies the expected (partial) contents of the static meta property methods, where the key is the method name
