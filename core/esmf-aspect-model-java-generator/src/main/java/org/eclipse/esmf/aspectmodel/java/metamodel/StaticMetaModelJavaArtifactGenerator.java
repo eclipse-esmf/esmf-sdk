@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+
 import javax.annotation.processing.Generated;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
@@ -235,7 +236,7 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
 
       final String generatedSource = new TemplateEngine( context, engineConfiguration ).apply( "java-static-class" );
       try {
-         return new JavaArtifact( Roaster.format( generatedSource ), "Meta" + element.getName(),
+         return new JavaArtifact( Roaster.format( generatedSource ), "Meta" + AspectModelJavaUtil.generateClassName( element, config ),
                config.packageName() );
       } catch ( final Exception exception ) {
          throw new CodeGenerationException( generatedSource, exception );

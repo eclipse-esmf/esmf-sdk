@@ -1,0 +1,41 @@
+#**
+ ~ Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+ ~
+ ~ See the AUTHORS file(s) distributed with this work for additional
+ ~ information regarding authorship.
+ ~
+ ~ This Source Code Form is subject to the terms of the Mozilla Public
+ ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+ ~ file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ ~
+ ~ SPDX-License-Identifier: MPL-2.0
+ *#
+
+#macro( javaPojoSetter $property $propertyIndex $className )
+
+#set( $methodName = $util.setterName( $property, $codeGenerationConfig ) )
+#if ( $codeGenerationConfig.setterStyle().name().equals( "STANDARD" ) )
+#set( $returnType = "void" )
+#else
+#set( $returnType = $className )
+#end
+/**
+* Sets a new value for $property.getPreferredName( $localeEn )
+#if( !$codeGenerationConfig.setterStyle().name().equals( "STANDARD" ) )
+*
+* @return {@code this} for chaining
+#end
+*/
+#if( $property.isAbstract() )
+    public abstract ${returnType} $methodName( $propertyType $property.getPayloadName() );
+#else
+    #set( $propertyType = $util.getPropertyType( $property, false, $codeGenerationConfig ) )
+    #if( $property.getExtends().isPresent() )@Override #end
+public $returnType $methodName( final   $propertyType $property.getPayloadName() ) {
+    this.$property.getPayloadName() = $property.getPayloadName();
+#if( !$codeGenerationConfig.setterStyle().name().equals( "STANDARD" ) )
+    return this;
+#end
+}
+#end
+#end

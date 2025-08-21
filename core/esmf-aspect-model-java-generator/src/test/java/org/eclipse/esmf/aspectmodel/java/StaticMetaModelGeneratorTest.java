@@ -53,13 +53,16 @@ abstract class StaticMetaModelGeneratorTest {
       return List.of( pojoGenerator, staticGenerator );
    }
 
-   Collection<JavaGenerator> getGenerators( final TestAspect testAspect ) {
+   Collection<JavaGenerator> getGenerators( final TestAspect testAspect, final boolean enableSetters,
+         final JavaCodeGenerationConfig.SetterStyle setterStyle ) {
       final AspectModel aspectModel = TestResources.load( testAspect );
       final Aspect aspect = aspectModel.aspect();
       final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
             .enableJacksonAnnotations( false )
             .executeLibraryMacros( false )
             .packageName( aspect.urn().getNamespaceMainPart() )
+            .enableSetters( enableSetters )
+            .setterStyle( setterStyle )
             .build();
       final JavaGenerator pojoGenerator = new AspectModelJavaGenerator( aspect, config );
       final JavaGenerator staticGenerator = new StaticMetaModelJavaGenerator( aspect, config );

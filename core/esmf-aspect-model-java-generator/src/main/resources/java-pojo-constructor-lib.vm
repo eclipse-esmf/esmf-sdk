@@ -49,6 +49,12 @@
     }
     #end
     }
+
+    #if ( $codeGenerationConfig.enableSetters() )
+    public ${util.generateClassName( $element, $codeGenerationConfig )}() {
+        super();
+    }
+    #end
 #end
 
 #macro( javaPojoConstructor )

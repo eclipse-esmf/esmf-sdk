@@ -116,6 +116,20 @@ The Java Class of the element contained _within_ the container.
 |`someStringValue` (using the getter, e.g. `object.getTestString()`)
 |===
 
+Mutating element instances is also possible if the code generator was run with setter creation enabled.
+Be aware of the fact, that the mutator methods are _always present_, but will throw an `UnsupportedOperationException` if no
+setters have been generated!
+
+[%autowidth]
+|===
+|Method |Description |Return Type |Sample call
+
+|`setValue(Movement object, PropertyType value)`
+|Updates the property value of the given element instance
+|`void`
+|`SPEED.setValue(movementInstance, 12.0f)`
+|===
+
 === Types of Static Properties
 
 Different kinds of Static Properties exist to reflect all possible elements within an Aspect Model:

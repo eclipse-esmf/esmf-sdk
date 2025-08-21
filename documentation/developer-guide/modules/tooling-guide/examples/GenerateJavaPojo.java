@@ -39,6 +39,8 @@ public class GenerateJavaPojo {
       final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
             .enableJacksonAnnotations( true )
             .packageName( "com.example.mycompany" ) // if left out, package is taken from Aspect's namespace
+            .enableSetters( true ) // if left out, setters are not generated
+            .setterStyle( JavaCodeGenerationConfig.SetterStyle.FLUENT ) // if left out, "STANDARD" setter style is used
             .build();
       final AspectModelJavaGenerator generator = new AspectModelJavaGenerator( aspectModel.aspect(), config );
       generator.generate( qualifiedName -> {

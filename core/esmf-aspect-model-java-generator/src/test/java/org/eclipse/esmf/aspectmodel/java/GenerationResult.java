@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
 import javax.annotation.processing.Generated;
 
 import com.github.javaparser.ParseResult;
@@ -46,7 +47,6 @@ import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
@@ -190,7 +190,7 @@ class GenerationResult {
    }
 
    void assertMethodBody( final String className, final String methodName, final boolean override,
-         final Optional<PrimitiveType> expectedReturnType,
+         final Optional<? extends com.github.javaparser.ast.type.Type> expectedReturnType,
          final int expectedNumberOfParameters, final List<String> expectedMethodBody ) {
       final Optional<MethodDeclaration> possibleMethodDeclaration = compilationUnits.get( className )
             .findAll( MethodDeclaration.class ).stream()
@@ -219,7 +219,7 @@ class GenerationResult {
    private TypeToken typeTokenToCheck( final Object fieldTypeOrTypeName ) {
       TypeToken typeToCheck;
       if ( fieldTypeOrTypeName instanceof TypeToken ) {
-         typeToCheck = ( (TypeToken) fieldTypeOrTypeName );
+         typeToCheck = ((TypeToken) fieldTypeOrTypeName);
       } else {
          typeToCheck = TypeToken.of( (Type) fieldTypeOrTypeName );
       }
@@ -240,11 +240,11 @@ class GenerationResult {
                      entry.getKey().toString().equals( toResolve.getClassNameToResolve() ) )
                .findAny().map( Map.Entry::getValue ).orElseThrow( () -> new RuntimeException( e ) );
       }
-      if ( !toResolve.getToResolve().isReferenceType() || ( (ResolvedReferenceType) toResolve.getToResolve() )
+      if ( !toResolve.getToResolve().isReferenceType() || ((ResolvedReferenceType) toResolve.getToResolve())
             .getTypeParametersMap().isEmpty() ) {
          return TypeResolution.resolved( rawType );
       }
-      final Type[] typeParameters = ( (ResolvedReferenceType) toResolve.getToResolve() )
+      final Type[] typeParameters = ((ResolvedReferenceType) toResolve.getToResolve())
             .getTypeParametersMap()
             .stream()
             .map( pair -> pair.b )

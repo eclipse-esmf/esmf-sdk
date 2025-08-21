@@ -171,6 +171,8 @@ are replaced using `packageName` | `String` | none | {nok}
 | `skip` | Skip execution of plugin and generation | `Boolean` | `false` | {nok}
 | `namePrefix` | Name prefix for generated Aspect, Entity Java classes | `String` | none | {nok}
 | `namePostfix` | Name postfix for generated Aspect, Entity Java classes | `String` | none | {nok}
+| `enableSetters` | Enable setters for generated Aspect, Entity Java classes | `Boolean` | `false` | {nok}
+| `setterStyle` | The desired style of the generated setters, one of `STANDARD`, `FLUENT` or `FLUENT_COMPACT`. | `String` | `STANDARD` | {nok}
 |===
 
 [[generate-static-meta-classes]]

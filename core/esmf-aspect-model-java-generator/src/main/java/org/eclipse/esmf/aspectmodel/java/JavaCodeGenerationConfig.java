@@ -27,10 +27,12 @@ import io.soabase.recordbuilder.core.RecordBuilder;
  * @param jsonTypeInfo Corresponds to com.fasterxml.jackson.annotation.JsonTypeInfo.Id and selects which JsonTypeInfo kind is used
  * @param packageName the package name that classes should be created in
  * @param importTracker the instance of the tracker that tracks imports during code generation
- * @param executeLibraryMacros determines whether template macros given in templateLibFile should be evaluatated
+ * @param executeLibraryMacros determines whether template macros given in templateLibFile should be evaluated
  * @param templateLibFile a file containing velocity macros overriding sections in the default code templates
  * @param namePrefix custom class name prefix
  * @param namePostfix custom class name postfix
+ * @param enableSetters controls whether setters should be generated for the properties of the generated Java classes
+ * @param setterStyle the style of setters to be generated, if {@code enableSetters} is true
  */
 @RecordBuilder
 public record JavaCodeGenerationConfig(
@@ -42,10 +44,16 @@ public record JavaCodeGenerationConfig(
       boolean executeLibraryMacros,
       File templateLibFile,
       String namePrefix,
-      String namePostfix
+      String namePostfix,
+      boolean enableSetters,
+      SetterStyle setterStyle
 ) implements GenerationConfig {
    public enum JsonTypeInfoType {
       NONE, CLASS, MINIMAL_CLASS, NAME, SIMPLE_NAME, DEDUCTION, CUSTOM
+   }
+
+   public enum SetterStyle {
+      STANDARD, FLUENT, FLUENT_COMPACT
    }
 
    public JavaCodeGenerationConfig {
@@ -61,7 +69,7 @@ public record JavaCodeGenerationConfig(
       if ( importTracker == null ) {
          importTracker = new ImportTracker();
       }
-      if ( executeLibraryMacros && ( templateLibFile == null || templateLibFile.toString().isEmpty() ) ) {
+      if ( executeLibraryMacros && (templateLibFile == null || templateLibFile.toString().isEmpty()) ) {
          throw new CodeGenerationException( "Missing configuration. Please provide path to velocity template library file." );
       }
       if ( executeLibraryMacros && !templateLibFile.exists() ) {
@@ -72,6 +80,9 @@ public record JavaCodeGenerationConfig(
       }
       if ( namePostfix == null ) {
          namePostfix = "";
+      }
+      if ( setterStyle == null ) {
+         setterStyle = SetterStyle.STANDARD;
       }
    }
 }

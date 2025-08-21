@@ -103,6 +103,19 @@ public class AspectToJavaCommand extends AbstractCommand {
          description = "Print detailed reports on errors" )
    private boolean details = false;
 
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--enable-setters", "-enableSetters" },
+         description = "Generate setter methods in Aspect, Entity Java classes" )
+   private boolean enableSetters = false;
+
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option( names = { "--setter-style", "-setterStyle" },
+         description = "The style of setters to generate, one of STANDARD, FLUENT, FLUENT_COMPACT. Default: STANDARD",
+         converter = SetterStyleConverter.class
+   )
+   private JavaCodeGenerationConfig.SetterStyle setterStyle;
+
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
 
@@ -118,6 +131,15 @@ public class AspectToJavaCommand extends AbstractCommand {
          return value == null
                ? JavaCodeGenerationConfig.JsonTypeInfoType.DEDUCTION
                : JavaCodeGenerationConfig.JsonTypeInfoType.valueOf( value.toUpperCase() );
+      }
+   }
+
+   static class SetterStyleConverter implements CommandLine.ITypeConverter<JavaCodeGenerationConfig.SetterStyle> {
+      @Override
+      public JavaCodeGenerationConfig.SetterStyle convert( final String value ) throws Exception {
+         return value == null
+               ? JavaCodeGenerationConfig.SetterStyle.STANDARD
+               : JavaCodeGenerationConfig.SetterStyle.valueOf( value.toUpperCase() );
       }
    }
 
@@ -151,6 +173,8 @@ public class AspectToJavaCommand extends AbstractCommand {
             .packageName( pkgName )
             .namePrefix( namePrefix )
             .namePostfix( namePostfix )
+            .enableSetters( enableSetters )
+            .setterStyle( setterStyle )
             .build();
    }
 

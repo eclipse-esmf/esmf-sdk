@@ -15,7 +15,6 @@ package org.eclipse.esmf.aspectmodel;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfig;
@@ -31,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Mojo( name = GenerateJavaClasses.MAVEN_GOAL, defaultPhase = LifecyclePhase.GENERATE_SOURCES )
-public class GenerateJavaClasses extends CodeGenerationMojo {
+public class GenerateJavaClasses extends JavaCodeGenerationMojo {
    public static final String MAVEN_GOAL = "generateJavaClasses";
    private static final Logger LOG = LoggerFactory.getLogger( GenerateJavaClasses.class );
 
@@ -59,7 +58,9 @@ public class GenerateJavaClasses extends CodeGenerationMojo {
          final boolean executeLibraryMacros,
          final String stripNamespace,
          final String namePrefix,
-         final String namePostfix
+         final String namePostfix,
+         final boolean enableSetters,
+         final String setterStyle
    ) {
       this.disableJacksonAnnotations = disableJacksonAnnotations;
       this.disableJacksonAnnotationJsonFormatShapeObject = disableJacksonAnnotationJsonFormatShapeObject;
@@ -70,6 +71,8 @@ public class GenerateJavaClasses extends CodeGenerationMojo {
       this.stripNamespace = stripNamespace;
       this.namePrefix = namePrefix;
       this.namePostfix = namePostfix;
+      this.enableSetters = enableSetters;
+      this.setterStyle = setterStyle;
    }
 
    @Override
@@ -82,13 +85,14 @@ public class GenerateJavaClasses extends CodeGenerationMojo {
             final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
                   .enableJacksonAnnotations( !disableJacksonAnnotations )
                   .enableJacksonAnnotationJsonFormatShapeObject( !disableJacksonAnnotationJsonFormatShapeObject )
-                  .jsonTypeInfo( JavaCodeGenerationConfig.JsonTypeInfoType.valueOf(
-                        Optional.ofNullable( jsonTypeInfo ).map( String::toUpperCase ).orElse( "DEDUCTION" ) ) )
+                  .jsonTypeInfo( getEnumConstant( JavaCodeGenerationConfig.JsonTypeInfoType.class, jsonTypeInfo, "DEDUCTION" ) )
                   .packageName( determinePackageName( aspect ) )
                   .executeLibraryMacros( executeLibraryMacros )
                   .templateLibFile( templateLibFile )
                   .namePrefix( namePrefix )
                   .namePostfix( namePostfix )
+                  .enableSetters( enableSetters )
+                  .setterStyle( getEnumConstant( JavaCodeGenerationConfig.SetterStyle.class, setterStyle, "STANDARD" ) )
                   .build();
             new AspectModelJavaGenerator( aspect, config ).generateThrowing( javaFileNameMapper( outputDirectory ) );
          } catch ( final Exception exception ) {

@@ -47,6 +47,7 @@ import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.resolution.types.ResolvedArrayType;
 import com.github.javaparser.resolution.types.ResolvedPrimitiveType;
@@ -104,7 +105,9 @@ class AspectModelJavaGeneratorTest {
       return List.of( new AspectModelJavaGenerator( aspectModel.aspect(), config ) );
    }
 
-   private Collection<JavaGenerator> getGenerators( final TestAspect testAspect, final String namePrefix, final String namePostfix ) {
+   private Collection<JavaGenerator> getGenerators( final TestAspect testAspect, final String namePrefix, final String namePostfix,
+         final boolean enableSetters, final
+         JavaCodeGenerationConfig.SetterStyle setterStyle ) {
       final AspectModel aspectModel = TestResources.load( testAspect );
       final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
             .enableJacksonAnnotations( true )
@@ -112,6 +115,8 @@ class AspectModelJavaGeneratorTest {
             .packageName( aspectModel.aspect().urn().getNamespaceMainPart() )
             .namePrefix( namePrefix )
             .namePostfix( namePostfix )
+            .enableSetters( enableSetters )
+            .setterStyle( setterStyle )
             .build();
       return List.of( new AspectModelJavaGenerator( aspectModel.aspect(), config ) );
    }
@@ -624,9 +629,9 @@ class AspectModelJavaGeneratorTest {
    void testGenerateAspectWithStructuredValue() throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
             .put( "date", XMLGregorianCalendar.class )
-            .put( "year", new TypeToken<Optional<Long>>(){}.getType() )
-            .put( "month", new TypeToken<Optional<Long>>(){}.getType() )
-            .put( "day", new TypeToken<Optional<Long>>(){}.getType() )
+            .put( "year", new TypeToken<Optional<Long>>() {}.getType() )
+            .put( "month", new TypeToken<Optional<Long>>() {}.getType() )
+            .put( "day", new TypeToken<Optional<Long>>() {}.getType() )
             .build();
 
       final ImmutableMap<String, Object> expectedConstructorArguments = ImmutableMap.<String, Object> builder()
@@ -1183,7 +1188,7 @@ class AspectModelJavaGeneratorTest {
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_PROPERTY;
       final GenerationResult result = TestContext.generateAspectCode()
-            .apply( getGenerators( aspect, "Base", "Postfix" ) );
+            .apply( getGenerators( aspect, "Base", "Postfix", false, null ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "BaseAspectWithPropertyPostfix", expectedFieldsForAspectClass, new HashMap<>() );
       assertConstructor( result, "BaseAspectWithPropertyPostfix", expectedFieldsForAspectClass );
@@ -1197,9 +1202,50 @@ class AspectModelJavaGeneratorTest {
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_ENTITY;
       final GenerationResult result = TestContext.generateAspectCode()
-            .apply( getGenerators( aspect, "Base", "Postfix" ) );
+            .apply( getGenerators( aspect, "Base", "Postfix", false, null ) );
       result.assertNumberOfFiles( 2 );
       result.assertFields( "BaseAspectWithEntityPostfix", expectedFieldsForAspectClass, new HashMap<>() );
       assertConstructor( result, "BaseAspectWithEntityPostfix", expectedFieldsForAspectClass );
+   }
+
+   @Test
+   void testGenerateAspectWithStandardSetters() throws IOException {
+      final TestAspect aspect = TestAspect.ASPECT_WITH_ENTITY;
+      final GenerationResult result = TestContext.generateAspectCode()
+            .apply( getGenerators( aspect, null, null, true, JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
+      result.assertNumberOfFiles( 2 );
+
+      result.assertMethodBody( "AspectWithEntity", "setTestProperty", false, Optional.empty(), 1,
+            List.of( "this.testProperty=testProperty;" ) );
+      result.assertMethodBody( "TestEntity", "setEntityProperty", false, Optional.empty(), 1,
+            List.of( "this.entityProperty=entityProperty;" ) );
+   }
+
+   @Test
+   void testGenerateAspectWithFluentSetters() throws IOException {
+      final TestAspect aspect = TestAspect.ASPECT_WITH_ENTITY;
+      final GenerationResult result = TestContext.generateAspectCode()
+            .apply( getGenerators( aspect, null, null, true, JavaCodeGenerationConfig.SetterStyle.FLUENT ) );
+      result.assertNumberOfFiles( 2 );
+
+      result.assertMethodBody( "AspectWithEntity", "setTestProperty", false, Optional.of( new ClassOrInterfaceType( "AspectWithEntity" ) ),
+            1,
+            List.of( "this.testProperty=testProperty;", "returnthis;" ) );
+      result.assertMethodBody( "TestEntity", "setEntityProperty", false, Optional.of( new ClassOrInterfaceType( "TestEntity" ) ), 1,
+            List.of( "this.entityProperty=entityProperty;", "returnthis;" ) );
+   }
+
+   @Test
+   void testGenerateAspectWithCompactFluentSetters() throws IOException {
+      final TestAspect aspect = TestAspect.ASPECT_WITH_ENTITY;
+      final GenerationResult result = TestContext.generateAspectCode()
+            .apply( getGenerators( aspect, null, null, true, JavaCodeGenerationConfig.SetterStyle.FLUENT_COMPACT ) );
+      result.assertNumberOfFiles( 2 );
+
+      result.assertMethodBody( "AspectWithEntity", "testProperty", false, Optional.of( new ClassOrInterfaceType( "AspectWithEntity" ) ),
+            1,
+            List.of( "this.testProperty=testProperty;", "returnthis;" ) );
+      result.assertMethodBody( "TestEntity", "entityProperty", false, Optional.of( new ClassOrInterfaceType( "TestEntity" ) ), 1,
+            List.of( "this.entityProperty=entityProperty;", "returnthis;" ) );
    }
 }
