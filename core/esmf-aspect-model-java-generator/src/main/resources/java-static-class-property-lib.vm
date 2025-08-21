@@ -59,6 +59,7 @@
 
 #macro( javaStaticClassProperty $property $codeGenerationConfig $element )
 #set( $propertyType = $util.getPropertyType( $property, $codeGenerationConfig ) )
+#set( $containingClass = $util.generateClassName( $element, $codeGenerationConfig ) )
 
 ## public static final $type $property = (definition)
 #if( $Trait.isAssignableFrom( $property.getCharacteristic().get().getClass() ) )
@@ -66,31 +67,31 @@
     #if( $util.hasContainerType( $property ) )
         $codeGenerationConfig.importTracker().importExplicit( $StaticConstraintContainerProperty )
         #set( $containedType = $util.getCharacteristicJavaType( $property, $codeGenerationConfig ) )
-        #propertyDeclaration() StaticConstraintContainerProperty<${element.getName()}, $containedType, $propertyType, #getCharacteristicClassName()>
-          $util.toConstant( $property.getName() ) = #staticProperty( $property $codeGenerationConfig );
+        #propertyDeclaration() StaticConstraintContainerProperty<$containingClass, $containedType, $propertyType, #getCharacteristicClassName()>
+          $util.toConstant( $property.getName() ) = #staticProperty( $property $containingClass $codeGenerationConfig );
     #elseif( $util.hasUnit( $property.getCharacteristic().get() ) )
         $codeGenerationConfig.importTracker().importExplicit( $StaticConstraintUnitProperty )
         $codeGenerationConfig.importTracker().importExplicit( $Unit )
-        #propertyDeclaration() StaticConstraintUnitProperty<${element.getName()}, $propertyType, #getCharacteristicClassName()>
-          $util.toConstant( $property.getName() ) = #staticProperty( $property $codeGenerationConfig );
+        #propertyDeclaration() StaticConstraintUnitProperty<$containingClass, $propertyType, #getCharacteristicClassName()>
+          $util.toConstant( $property.getName() ) = #staticProperty( $property $containingClass $codeGenerationConfig );
     #else
-        #propertyDeclaration() StaticConstraintProperty<${element.getName()}, $propertyType, #getCharacteristicClassName()>
-          $util.toConstant( $property.getName() ) = #staticProperty( $property $codeGenerationConfig );
+        #propertyDeclaration() StaticConstraintProperty<$containingClass, $propertyType, #getCharacteristicClassName()>
+          $util.toConstant( $property.getName() ) = #staticProperty( $property $containingClass $codeGenerationConfig );
     #end
 #else
     #if( $util.hasContainerType( $property ) && !$propertyType.startsWith( "Map" ) )
         $codeGenerationConfig.importTracker().importExplicit( $StaticContainerProperty )
         #set( $containedType = $util.getCharacteristicJavaType( $property, $codeGenerationConfig ) )
-        #propertyDeclaration() StaticContainerProperty<${element.getName()}, $containedType, java.util.$propertyType> $util.toConstant( $property.getName() ) =
-          #staticProperty( $property $codeGenerationConfig );
+        #propertyDeclaration() StaticContainerProperty<$containingClass, $containedType, java.util.$propertyType> $util.toConstant( $property.getName() ) =
+          #staticProperty( $property $containingClass $codeGenerationConfig );
     #elseif( $util.hasUnit( $property.getCharacteristic().get() ) )
         $codeGenerationConfig.importTracker().importExplicit( $StaticUnitProperty )
         $codeGenerationConfig.importTracker().importExplicit( $Unit )
-        #propertyDeclaration() StaticUnitProperty<${element.getName()}, $propertyType> $util.toConstant( $property.getName() ) =
-          #staticProperty( $property $codeGenerationConfig );
+        #propertyDeclaration() StaticUnitProperty<$containingClass, $propertyType> $util.toConstant( $property.getName() ) =
+          #staticProperty( $property $containingClass $codeGenerationConfig );
     #else
-        #propertyDeclaration() StaticProperty<${element.getName()}, $propertyType> $util.toConstant( $property.getName() ) =
-          #staticProperty( $property $codeGenerationConfig );
+        #propertyDeclaration() StaticProperty<$containingClass, $propertyType> $util.toConstant( $property.getName() ) =
+          #staticProperty( $property $containingClass $codeGenerationConfig );
     #end
 #end
 
@@ -98,7 +99,7 @@
 
 ## -------------------------------------------------
 
-#macro( staticProperty $property $codeGenerationConfig )
+#macro( staticProperty $property $containingClass $codeGenerationConfig )
     #set( $propertyType = $util.getPropertyType( $property, $codeGenerationConfig ) )
 
     ## new $type(
@@ -107,25 +108,25 @@
         #if( $util.hasContainerType( $property ) )
             $codeGenerationConfig.importTracker().importExplicit( $StaticConstraintContainerProperty )
             #set( $containedType = $util.getCharacteristicJavaType( $property, $codeGenerationConfig ) )
-            new StaticConstraintContainerProperty<${element.getName()}, $containedType, $propertyType, #getCharacteristicClassName()>(
+            new StaticConstraintContainerProperty<$containingClass, $containedType, $propertyType, #getCharacteristicClassName()>(
         #elseif( $util.hasUnit( $property.getCharacteristic().get() ) )
             $codeGenerationConfig.importTracker().importExplicit( $StaticConstraintUnitProperty )
             $codeGenerationConfig.importTracker().importExplicit( $Unit )
-            new StaticConstraintUnitProperty<${element.getName()}, $propertyType, #getCharacteristicClassName()>(
+            new StaticConstraintUnitProperty<$containingClass, $propertyType, #getCharacteristicClassName()>(
         #else
-            new StaticConstraintProperty<${element.getName()}, $propertyType, #getCharacteristicClassName()>(
+            new StaticConstraintProperty<$containingClass, $propertyType, #getCharacteristicClassName()>(
         #end
     #else
         #if( $util.hasContainerType( $property ) && !$propertyType.startsWith( "Map" ) )
             $codeGenerationConfig.importTracker().importExplicit( $StaticContainerProperty )
             #set( $containedType = $util.getCharacteristicJavaType( $property, $codeGenerationConfig ) )
-        new StaticContainerProperty<${element.getName()}, $containedType, $propertyType> (
+        new StaticContainerProperty<$containingClass, $containedType, $propertyType> (
         #elseif( $util.hasUnit( $property.getCharacteristic().get() ) )
             $codeGenerationConfig.importTracker().importExplicit( $StaticUnitProperty )
             $codeGenerationConfig.importTracker().importExplicit( $Unit )
-        new StaticUnitProperty<${element.getName()}, $propertyType>(
+        new StaticUnitProperty<$containingClass, $propertyType>(
         #else
-        new StaticProperty<${element.getName()}, $propertyType>(
+        new StaticProperty<$containingClass, $propertyType>(
         #end
     #end
 
@@ -140,7 +141,7 @@ Optional.of("$property.getPayloadName()"),
     #if ( $property.getExtends().isEmpty() )
         Optional.empty()
     #else
-        Optional.of( #staticProperty( $property.getExtends().get(), $codeGenerationConfig ) )
+        Optional.of( #staticProperty( $property.getExtends().get(), $containingClass, $codeGenerationConfig ) )
     #end
 ) {
 
@@ -175,8 +176,8 @@ public Class<$propertyType> getPropertyType() {
 }
 
     @Override
-    public Class<${element.getName()}> getContainingType() {
-    return ${element.getName()}.class;
+    public Class<$containingClass> getContainingType() {
+    return ${containingClass}.class;
     }
 
     #if( $util.hasContainerType( $property ) && !$propertyType.startsWith( "Map" ) )
@@ -188,14 +189,14 @@ public Class<$propertyType> getPropertyType() {
 
     #set( $getterName = $util.getterName( $property ) )
     @Override
-    public $propertyType getValue(${element.getName()} object) {
+    public $propertyType getValue($containingClass object) {
     return object.$getterName();
     }
 
     #if ( $codeGenerationConfig.enableSetters() )
     #set( $setterName = $util.setterName( $property, $codeGenerationConfig ) )
     @Override
-    public void setValue( ${element.getName()} object, $propertyType value ) {
+    public void setValue( $containingClass object, $propertyType value ) {
     object.$setterName( value );
     }
     #end

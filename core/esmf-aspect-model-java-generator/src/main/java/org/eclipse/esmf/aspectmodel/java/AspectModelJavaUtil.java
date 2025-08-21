@@ -40,6 +40,7 @@ import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Entity;
 import org.eclipse.esmf.metamodel.HasProperties;
+import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.StructureElement;
@@ -196,7 +197,7 @@ public class AspectModelJavaUtil {
          if ( characteristic instanceof Collection ) {
             final String collectionType = determineCollectionType( (Collection) characteristic, false, codeGenerationConfig );
             final String dataType = getDataType( characteristic.getDataType(), codeGenerationConfig.importTracker(), codeGenerationConfig );
-            return String.format( "public class %s implements CollectionAspect<%s,%s>", element.getName(), collectionType, dataType );
+            return String.format( "public class %s implements CollectionAspect<%s,%s>", generateClassName( element, codeGenerationConfig ), collectionType, dataType );
          }
       }
       throw error.get();
@@ -576,7 +577,7 @@ public class AspectModelJavaUtil {
       return generics.isEmpty() ? "" : "<" + generics + ">";
    }
 
-   public static String generateClassName( final StructureElement element, final JavaCodeGenerationConfig config ) {
+   public static String generateClassName( final ModelElement element, final JavaCodeGenerationConfig config ) {
       if ( (!config.namePrefix().isBlank() || !config.namePostfix().isBlank()) && element.is( StructureElement.class ) ) {
          return config.namePrefix() + element.getName() + config.namePostfix();
       }
