@@ -197,7 +197,8 @@ public class AspectModelJavaUtil {
          if ( characteristic instanceof Collection ) {
             final String collectionType = determineCollectionType( (Collection) characteristic, false, codeGenerationConfig );
             final String dataType = getDataType( characteristic.getDataType(), codeGenerationConfig.importTracker(), codeGenerationConfig );
-            return String.format( "public class %s implements CollectionAspect<%s,%s>", generateClassName( element, codeGenerationConfig ), collectionType, dataType );
+            return String.format( "public class %s implements CollectionAspect<%s,%s>", generateClassName( element, codeGenerationConfig ),
+                  collectionType, dataType );
          }
       }
       throw error.get();
