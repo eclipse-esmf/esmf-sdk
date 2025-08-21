@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Mojo( name = GenerateJavaClasses.MAVEN_GOAL, defaultPhase = LifecyclePhase.GENERATE_SOURCES )
-public class GenerateJavaClasses extends CodeGenerationMojo {
+public class GenerateJavaClasses extends JavaCodeGenerationMojo {
    public static final String MAVEN_GOAL = "generateJavaClasses";
    private static final Logger LOG = LoggerFactory.getLogger( GenerateJavaClasses.class );
 
@@ -42,12 +42,6 @@ public class GenerateJavaClasses extends CodeGenerationMojo {
 
    @Parameter( defaultValue = "deduction" )
    protected String jsonTypeInfo;
-
-   @Parameter( defaultValue = "false" )
-   protected boolean enableSetters;
-
-   @Parameter( defaultValue = "standard" )
-   protected String setterStyle;
 
    /**
     * Default constructor used by Maven plugin instantiation

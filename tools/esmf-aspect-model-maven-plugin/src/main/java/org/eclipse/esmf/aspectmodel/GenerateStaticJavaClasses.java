@@ -25,20 +25,13 @@ import org.eclipse.esmf.metamodel.Aspect;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Mojo( name = GenerateStaticJavaClasses.MAVEN_GOAL, defaultPhase = LifecyclePhase.GENERATE_SOURCES )
-public class GenerateStaticJavaClasses extends CodeGenerationMojo {
+public class GenerateStaticJavaClasses extends JavaCodeGenerationMojo {
    public static final String MAVEN_GOAL = "generateStaticJavaClasses";
    private static final Logger LOG = LoggerFactory.getLogger( GenerateStaticJavaClasses.class );
-
-   @Parameter( defaultValue = "false" )
-   protected boolean enableSetters;
-
-   @Parameter( defaultValue = "standard" )
-   protected String setterStyle;
 
    @Override
    public void executeGeneration() throws MojoExecutionException {

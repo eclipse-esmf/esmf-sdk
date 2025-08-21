@@ -148,13 +148,13 @@ public class StaticClassGenerationResult extends GenerationResult {
 
    /**
     * Allows the assertion of method bodies for static meta properties in a generated meta class.
-    *
+    * <p>
     * Method bodies are asserted in a relaxed way:
     * <ul>
     *    <li>all whitespace is trimmed before comparing</li>
     *    <li>the given method body may also be just a part of the full method body, i.e. the check is performed using .contains()</li>
     * </ul>
-    *
+    * </p>
     * @param className the name of the meta class
     * @param propertyName the name of the property (given in CONSTANT_CASE)
     * @param expectedMethodBodies the expected (partial) contents of the static meta property methods, where the key is the method name
@@ -174,10 +174,12 @@ public class StaticClassGenerationResult extends GenerationResult {
                .stream()
                .map( VariableDeclarator::getInitializer )
                .flatMap( Optional::stream )
-               .filter( exp -> exp instanceof ObjectCreationExpr )
+               .filter( ObjectCreationExpr.class::isInstance )
                .map( ObjectCreationExpr.class::cast )
-               .flatMap(
-                     oc -> oc.getChildNodes().stream().filter( n -> n instanceof MethodDeclaration ).map( MethodDeclaration.class::cast ) )
+               .flatMap( oc -> oc.getChildNodes()
+                     .stream()
+                     .filter( MethodDeclaration.class::isInstance )
+                     .map( MethodDeclaration.class::cast ) )
                .anyMatch( md -> md.getBody()
                      .map( b -> b.getStatements().stream().anyMatch(
                            s -> expectedMethodBodies.containsKey( md.getName().toString() ) && s.toString().trim()

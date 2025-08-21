@@ -704,7 +704,8 @@ class SammCliTest {
    void testAspectToJavaWithFluentSetters() {
       final File outputDir = outputDirectory.toFile();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
-            "--output-directory", outputDir.getAbsolutePath(), "--custom-resolver", resolverCommand(), "--enable-setters", "--setter-style", "FLUENT" );
+            "--output-directory", outputDir.getAbsolutePath(), "--custom-resolver", resolverCommand(), "--enable-setters", "--setter-style",
+            "FLUENT" );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
 
@@ -721,7 +722,8 @@ class SammCliTest {
    void testAspectToJavaWithFluentCompactSetters() {
       final File outputDir = outputDirectory.toFile();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
-            "--output-directory", outputDir.getAbsolutePath(), "--custom-resolver", resolverCommand(), "--enable-setters", "--setter-style", "FLUENT_COMPACT" );
+            "--output-directory", outputDir.getAbsolutePath(), "--custom-resolver", resolverCommand(), "--enable-setters", "--setter-style",
+            "FLUENT_COMPACT" );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
 
@@ -1642,7 +1644,7 @@ class SammCliTest {
     * Returns the File object for a test model file
     */
    private File inputFile( final TestModel testModel ) {
-      final boolean isValid = !( testModel instanceof InvalidTestAspect );
+      final boolean isValid = !(testModel instanceof InvalidTestAspect);
       final String resourcePath = String.format(
             "%s/../../core/esmf-test-aspect-models/src/main/resources/%s/org.eclipse.esmf.test/1.0.0/%s.ttl",
             System.getProperty( "user.dir" ), isValid ? "valid" : "invalid", testModel.getName() );
@@ -1693,8 +1695,8 @@ class SammCliTest {
       // are not resolved to the file system but to the jar)
       try {
          final String resolverScript = new File(
-               System.getProperty( "user.dir" ) + "/target/test-classes/model_resolver" + ( OS.WINDOWS.isCurrentOs()
-                     ? ".bat" : ".sh" ) ).getCanonicalPath();
+               System.getProperty( "user.dir" ) + "/target/test-classes/model_resolver" + (OS.WINDOWS.isCurrentOs()
+                     ? ".bat" : ".sh") ).getCanonicalPath();
          final String modelsRoot = new File( System.getProperty( "user.dir" ) + "/target/classes/valid" ).getCanonicalPath();
          final String metaModelVersion = KnownVersion.getLatest().toString().toLowerCase();
          return resolverScript + " " + modelsRoot + " " + metaModelVersion;

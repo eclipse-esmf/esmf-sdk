@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
+
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -463,7 +464,7 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
       final String expectedTestPropertyCharacteristicConstructorCall =
             """
                   new DefaultEnumeration(MetaModelBaseAttributes.builder().withUrn(AspectModelUrn.fromUrn(NAMESPACE + "TestEnumeration")).build(), new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer"), new ArrayList<Value>() {
-
+                  
                       {
                           add(new DefaultScalarValue(MetaModelBaseAttributes.builder().build(), new BigInteger("1"), new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer")));
                           add(new DefaultScalarValue(MetaModelBaseAttributes.builder().build(), new BigInteger("2"), new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer")));
@@ -680,7 +681,8 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, true,
             JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
 
-      result.assertStaticMetaPropertyMethods( "MetaAspectWithEntity", "TEST_PROPERTY", Map.of("setValue","object.setTestProperty(value)") );
+      result.assertStaticMetaPropertyMethods( "MetaAspectWithEntity", "TEST_PROPERTY",
+            Map.of( "setValue", "object.setTestProperty(value)" ) );
    }
 
    @Test
@@ -689,6 +691,6 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, true,
             JavaCodeGenerationConfig.SetterStyle.FLUENT_COMPACT ) );
 
-      result.assertStaticMetaPropertyMethods( "MetaAspectWithEntity", "TEST_PROPERTY", Map.of("setValue","object.testProperty(value)") );
+      result.assertStaticMetaPropertyMethods( "MetaAspectWithEntity", "TEST_PROPERTY", Map.of( "setValue", "object.testProperty(value)" ) );
    }
 }

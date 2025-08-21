@@ -81,7 +81,7 @@ public record JavaCodeGenerationConfig(
       if ( namePostfix == null ) {
          namePostfix = "";
       }
-      if (setterStyle == null ) {
+      if ( setterStyle == null ) {
          setterStyle = SetterStyle.STANDARD;
       }
    }
