@@ -14,11 +14,14 @@
 package org.eclipse.esmf.aspectmodel.java;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.eclipse.esmf.staticmetamodel.ComputedProperty;
 import org.eclipse.esmf.staticmetamodel.StaticContainerProperty;
@@ -30,6 +33,9 @@ import org.eclipse.esmf.test.TestAspect;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class ExtendedStaticMetaModelFunctionalityTest extends StaticMetaModelGeneratorTest {
    @Test
@@ -253,10 +259,8 @@ public class ExtendedStaticMetaModelFunctionalityTest extends StaticMetaModelGen
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, false,
             JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
 
-      final Class<?> aspectClass = findGeneratedClass( result, "AspectWithNestedEntityList" );
       final Class<?> entityClass = findGeneratedClass( result, "TestFirstEntity" );
       final Class<?> nestedEntityClass = findGeneratedClass( result, "TestSecondEntity" );
-      final Class<?> metaAspectClass = findGeneratedClass( result, "MetaAspectWithNestedEntityList" );
       final Class<?> metaEntity = findGeneratedClass( result, "MetaTestFirstEntity" );
       final Class<?> metaNestedEntity = findGeneratedClass( result, "MetaTestSecondEntity" );
 
@@ -289,5 +293,42 @@ public class ExtendedStaticMetaModelFunctionalityTest extends StaticMetaModelGen
       assertThat( entities.stream().filter( matchNestedEntityStringAny ) ).containsExactlyInAnyOrder( e1, e2 );
       assertThat( entities.stream().filter( matchNestedEntityStringAll ) ).containsExactly( e1 );
       assertThat( entities.stream().filter( matchNestedEntityStringAnyWithNoneMatching ) ).isEmpty();
+   }
+
+   @ParameterizedTest( name = "{0}" )
+   @MethodSource( "mutatePropertiesInput" )
+   void testMutatePropertiesThroughStaticProperties( final String testName, final boolean generateSetters,
+         final JavaCodeGenerationConfig.SetterStyle setterStyle,
+         final boolean expectException ) throws IOException, ReflectiveOperationException {
+      final TestAspect aspect = TestAspect.ASPECT_WITH_PROPERTY;
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, generateSetters,
+            setterStyle ) );
+
+      final Class<?> aspectClass = findGeneratedClass( result, "AspectWithProperty" );
+      final Class<?> metaAspectClass = findGeneratedClass( result, "MetaAspectWithProperty" );
+
+      final StaticProperty<Object, Object> testProperty = (StaticProperty<Object, Object>) metaAspectClass.getField( "TEST_PROPERTY" )
+            .get( null );
+
+      final String originalValue = "SOMEVALUE";
+      final String changedValue = "CHANGEDVALUE";
+      final Object aspectInstance = ConstructorUtils.invokeConstructor( aspectClass, "SOMEVALUE" );
+
+      assertThat( testProperty.getValue( aspectInstance ) ).isEqualTo( originalValue );
+      if ( expectException ) {
+         assertThatThrownBy( () -> testProperty.setValue( aspectInstance, changedValue ) ).isInstanceOf(
+               UnsupportedOperationException.class );
+      } else {
+         testProperty.setValue( aspectInstance, changedValue );
+         assertThat( testProperty.getValue( aspectInstance ) ).isEqualTo( changedValue );
+      }
+   }
+
+   static Stream<Arguments> mutatePropertiesInput() {
+      return Stream.of(
+            arguments( "Setters disabled, should fail with exception", false, null, true ),
+            arguments( "Setters STANDARD, should succeed", true, JavaCodeGenerationConfig.SetterStyle.STANDARD, false ),
+            arguments( "Setters FLUENT, should succeed", true, JavaCodeGenerationConfig.SetterStyle.FLUENT, false ),
+            arguments( "Setters FLUENT_COMPACT, should succeed", true, JavaCodeGenerationConfig.SetterStyle.FLUENT_COMPACT, false ) );
    }
 }

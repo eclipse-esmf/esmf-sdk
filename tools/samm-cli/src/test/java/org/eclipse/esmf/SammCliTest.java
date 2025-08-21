@@ -697,7 +697,7 @@ class SammCliTest {
             file -> file.getName().equals( "AspectWithEntity.java" ) || file.getName().equals( "TestEntity.java" ) );
 
       final File sourceFile = directory.toPath().resolve( "AspectWithEntity.java" ).toFile();
-      assertThat( sourceFile ).content().contains( "public void setTestProperty( final TestEntity testProperty )" );
+      assertThat( sourceFile ).content().contains( "public void setTestProperty(final TestEntity testProperty)" );
    }
 
    @Test
@@ -715,7 +715,7 @@ class SammCliTest {
             file -> file.getName().equals( "AspectWithEntity.java" ) || file.getName().equals( "TestEntity.java" ) );
 
       final File sourceFile = directory.toPath().resolve( "AspectWithEntity.java" ).toFile();
-      assertThat( sourceFile ).content().contains( "public AspectWithEntity setTestProperty( final TestEntity testProperty )" );
+      assertThat( sourceFile ).content().contains( "public AspectWithEntity setTestProperty(final TestEntity testProperty)" );
    }
 
    @Test
@@ -733,7 +733,7 @@ class SammCliTest {
             file -> file.getName().equals( "AspectWithEntity.java" ) || file.getName().equals( "TestEntity.java" ) );
 
       final File sourceFile = directory.toPath().resolve( "AspectWithEntity.java" ).toFile();
-      assertThat( sourceFile ).content().contains( "public AspectWithEntity testProperty( final TestEntity testProperty )" );
+      assertThat( sourceFile ).content().contains( "public AspectWithEntity testProperty(final TestEntity testProperty)" );
    }
 
    @Test
