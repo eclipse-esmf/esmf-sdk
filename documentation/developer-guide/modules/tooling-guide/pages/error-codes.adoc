@@ -232,50 +232,28 @@ Each error includes contextual information to help locate and resolve the issue:
 | **Shape** | The SHACL shape that detected the violation
 |===
 
-[[accessing-error-information]]
-== Accessing Error Information
-
-=== Programmatic Access
-
-When using the Java API, errors are available through the `Violation` interface:
-
-[source,java]
-----
-List<Violation> violations = validator.validateModel(aspectModel);
-for (Violation violation : violations) {
-    String errorCode = violation.errorCode();
-    String message = violation.message();
-    EvaluationContext context = violation.context();
-    List<Fix> fixes = violation.fixes();
-}
-----
-
-[[error-resolution]]
-== Error Resolution Guide
-
-
-
 [[troubleshooting]]
 == Troubleshooting
 
 === Common Issues
 
-**Error Not Listed**: If you encounter an error code not documented here, check:
-- ESMF SDK version compatibility
-- Update to the latest documentation
-- Report missing documentation via GitHub issues
+* **Error Not Listed**: If you encounter an error code not documented here, check:
+** ESMF SDK version compatibility;
+** Update to the latest documentation;
+** Report missing documentation via GitHub issues.
 
-**Inconsistent Error Messages**: Ensure you're using compatible versions of:
-- ESMF SDK
-- SAMM specification
-- Validation tools
+* **Inconsistent Error Messages**: Ensure you're using compatible versions of:
+** ESMF SDK;
+** SAMM specification;
+** Validation tools.
 
-**Performance Issues**: For large models with many errors:
-- Process errors in batches
-- Use streaming validation where available
-- Consider model restructuring
+* **Performance Issues**: For large models with many errors:
+** Process errors in batches;
+** Use streaming validation where available;
+** Consider model restructuring.
 
 === Getting Help
 
 For additional support:
-- ESMF SDK GitHub Issues: https://github.com/eclipse-esmf/esmf-sdk/issues
+
+* **ESMF SDK GitHub Issues**: https://github.com/eclipse-esmf/esmf-sdk/issues
