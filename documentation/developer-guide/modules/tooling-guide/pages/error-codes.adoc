@@ -1,0 +1,259 @@
+:page-partial:
+
+[[error-codes]]
+= Error Codes and Validation Results
+
+This reference describes all error codes and validation results that can be produced by the ESMF SDK when loading, parsing, or validating Aspect Models.
+
+
+[[error-code-format]]
+== Error Code Format
+
+All error codes follow the format `ERR_*` where `*` is a descriptive identifier. Error codes are designed to be:
+
+* **Unique**: Each error condition has a specific code
+* **Persistent**: Error codes remain stable across versions
+* **Descriptive**: The code name indicates the type of error
+* **Actionable**: Each error includes specific guidance for resolution
+
+[[error-categories]]
+== Error Categories
+
+Errors are categorized into three main types:
+
+[width="100%",options="header",cols="20,80"]
+|===
+| Category | Description
+| **Meta-violations** | High-level errors during model loading, parsing, or resolution
+| **SHACL Violations** | Constraint violations detected during validation
+| **Processing Errors** | System-level errors during SDK operations
+|===
+
+[[meta-violations]]
+== Meta-violations
+
+Meta-violations occur during the initial loading and processing of Aspect Models before detailed validation begins.
+
+[[ERR-SYNTAX]]
+=== ERR_SYNTAX - Syntax Error
+
+The source file contains invalid RDF/Turtle syntax that prevents parsing.
+
+**Resolution:** Check namespace declarations and ensure consistency across files. Verify proper RDF/Turtle syntax including correct use of prefixes, semicolons, and periods.
+
+[[ERR-PROCESSING]]
+=== ERR_PROCESSING - Processing Error
+
+General processing failure during model loading or resolution.
+
+**Resolution:** Check file accessibility, format validity, and dependencies. Ensure all referenced files and namespaces are available and correctly specified.
+
+[[ERR-CYCLE]]
+=== ERR_CYCLE - Circular Reference
+
+The model contains circular references that cannot be resolved.
+
+**Resolution:** Break the circular dependency by restructuring the model relationships. Review element dependencies to identify and eliminate circular references.
+
+[[shacl-violations]]
+== SHACL Constraint Violations
+
+SHACL violations are detected during detailed validation of Aspect Models against the SAMM metamodel constraints.
+
+[[datatype-violations]]
+=== Data Type Violations
+
+[[ERR-TYPE]]
+==== ERR_TYPE - Data Type Violation
+
+A property uses an incorrect data type for its context.
+
+See https://www.w3.org/TR/shacl/#DatatypeConstraintComponent[sh:datatype] for more information on the SHACL constraint component.
+
+**Resolution:** Check the SAMM specification for allowed data types for each property. Ensure the data type matches the expected type for the specific property context.
+
+**Example:**
+```
+ERR_TYPE: Property :speed on :Vehicle uses data type :string, but only :decimal is allowed.
+```
+
+[[cardinality-violations]]
+=== Cardinality Violations
+
+[[ERR-MAX-COUNT]]
+==== ERR_MAX_COUNT - Maximum Count Exceeded
+
+A property is used more times than allowed.
+
+See https://www.w3.org/TR/shacl/#MaxCountConstraintComponent[sh:maxCount] for more information on the SHACL constraint component.
+
+**Resolution:** Remove duplicate property declarations to ensure each property appears only the maximum allowed number of times.
+
+**Example:**
+```
+ERR_MAX_COUNT: Property :description is used 3 times on :Aspect, but may only be used 1 time.
+```
+
+[[ERR-MIN-COUNT]]
+==== ERR_MIN_COUNT - Minimum Count Missing
+
+A required property is missing or used fewer times than required.
+
+See https://www.w3.org/TR/shacl/#MinCountConstraintComponent[sh:minCount] for more information on the SHACL constraint component.
+
+**Resolution:** Add the missing required properties to meet the minimum count requirement. Verify that all mandatory properties are present and properly defined.
+
+[[constraint-violations]]
+=== Value Constraint Violations
+
+[[ERR-PATTERN]]
+==== ERR_PATTERN - Pattern Violation
+
+A value does not match the required regular expression pattern.
+
+See https://www.w3.org/TR/shacl/#PatternConstraintComponent[sh:pattern] for more information on the SHACL constraint component.
+
+**Resolution:** Ensure values match the required format (e.g., version numbers should follow semantic versioning format, URN format for identifiers). Check the pattern requirements in the SAMM specification.
+
+**Example:**
+```
+ERR_PATTERN: Property :version on :Aspect has value "1.0", which does not match the required pattern "^\d+\.\d+\.\d+$".
+```
+
+[[ERR-MAX-LENGTH]]
+==== ERR_MAX_LENGTH - Maximum Length Exceeded
+
+A string value exceeds the maximum allowed length.
+
+See https://www.w3.org/TR/shacl/#MaxLengthConstraintComponent[sh:maxLength] for more information on the SHACL constraint component.
+
+**Resolution:** Shorten the string value to fit within the maximum allowed length constraint.
+
+[[ERR-MIN-LENGTH]]
+==== ERR_MIN_LENGTH - Minimum Length Required
+
+A string value is shorter than the minimum required length.
+
+See https://www.w3.org/TR/shacl/#MinLengthConstraintComponent[sh:minLength] for more information on the SHACL constraint component.
+
+**Resolution:** Extend the string value to meet the minimum required length constraint.
+
+[[ERR-MAX-INCLUSIVE]]
+==== ERR_MAX_INCLUSIVE - Maximum Value Exceeded
+
+A numeric value exceeds the maximum allowed value (inclusive).
+
+See https://www.w3.org/TR/shacl/#MaxInclusiveConstraintComponent[sh:maxInclusive] for more information on the SHACL constraint component.
+
+**Resolution:** Reduce the numeric value to be less than or equal to the maximum allowed value.
+
+[[ERR-MIN-INCLUSIVE]]
+==== ERR_MIN_INCLUSIVE - Minimum Value Required
+
+A numeric value is below the minimum required value (inclusive).
+
+See https://www.w3.org/TR/shacl/#MinInclusiveConstraintComponent[sh:minInclusive] for more information on the SHACL constraint component.
+
+**Resolution:** Increase the numeric value to be greater than or equal to the minimum required value.
+
+[[ERR-MAX-EXCLUSIVE]]
+==== ERR_MAX_EXCLUSIVE - Maximum Value Exceeded
+
+A numeric value exceeds the maximum allowed value (exclusive).
+
+See https://www.w3.org/TR/shacl/#MaxExclusiveConstraintComponent[sh:maxExclusive] for more information on the SHACL constraint component.
+
+**Resolution:** Reduce the numeric value to be strictly less than the maximum allowed value.
+
+[[ERR-MIN-EXCLUSIVE]]
+==== ERR_MIN_EXCLUSIVE - Minimum Value Required
+
+A numeric value is below the minimum required value (exclusive).
+
+See https://www.w3.org/TR/shacl/#MinExclusiveConstraintComponent[sh:minExclusive] for more information on the SHACL constraint component.
+
+**Resolution:** Increase the numeric value to be strictly greater than the minimum required value.
+
+[[structure-violations]]
+=== Structure and Relationship Violations
+
+[[ERR-CLASS]]
+==== ERR_CLASS - Class Violation
+
+An element does not belong to the required class.
+
+See https://www.w3.org/TR/shacl/#ClassConstraintComponent[sh:class] for more information on the SHACL constraint component.
+
+**Resolution:** Verify that all referenced elements are properly defined and accessible. Check that the element has the correct rdf:type declaration for the expected class.
+
+[[enumeration-violations]]
+=== Enumeration and Choice Violations
+
+[[ERR-IN]]
+==== ERR_IN - Value Not In Enumeration
+
+A value is not in the allowed list of enumeration values.
+
+See https://www.w3.org/TR/shacl/#InConstraintComponent[sh:in] for more information on the SHACL constraint component.
+
+**Resolution:** Use only values from the allowed enumeration list. Check the SAMM specification or model definition for the complete list of permitted values.
+
+[[ERR-OR]]
+==== ERR_OR - OR Constraint Violation
+
+None of the alternative constraints in an OR condition are satisfied.
+
+See https://www.w3.org/TR/shacl/#OrConstraintComponent[sh:or] for more information on the SHACL constraint component.
+
+**Resolution:** Modify the element to satisfy at least one of the alternative constraints in the OR condition. Review each alternative constraint to determine which one is most appropriate for your use case.
+
+[[ERR-NOT]]
+==== ERR_NOT - NOT Constraint Violation
+
+A constraint that should not be satisfied is satisfied.
+
+See https://www.w3.org/TR/shacl/#NotConstraintComponent[sh:not] for more information on the SHACL constraint component.
+
+**Resolution:** Modify the element to violate the negated constraint. The element should not satisfy the condition specified in the NOT constraint.
+
+[[error-contexts]]
+== Error Contexts
+
+Each error includes contextual information to help locate and resolve the issue:
+
+[width="100%",options="header",cols="25,75"]
+|===
+| Context Element | Description
+| **Element** | The specific model element where the error occurred
+| **Property** | The property path involved in the error
+| **Value** | The actual value that caused the error
+| **Expected** | The expected value or constraint
+| **Location** | File name, line number, and column position
+| **Shape** | The SHACL shape that detected the violation
+|===
+
+[[troubleshooting]]
+== Troubleshooting
+
+=== Common Issues
+
+* **Error Not Listed**: If you encounter an error code not documented here, check:
+** ESMF SDK version compatibility;
+** Update to the latest documentation;
+** Report missing documentation via GitHub issues.
+
+* **Inconsistent Error Messages**: Ensure you're using compatible versions of:
+** ESMF SDK;
+** SAMM specification;
+** Validation tools.
+
+* **Performance Issues**: For large models with many errors:
+** Process errors in batches;
+** Use streaming validation where available;
+** Consider model restructuring.
+
+=== Getting Help
+
+For additional support:
+
+* **ESMF SDK GitHub Issues**: https://github.com/eclipse-esmf/esmf-sdk/issues

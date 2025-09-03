@@ -18,6 +18,8 @@ import java.io.File;
 import java.util.List;
 
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.shacl.fix.Fix;
+import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
 import org.eclipse.esmf.aspectmodel.validation.services.DetailedViolationFormatter;
@@ -38,11 +40,20 @@ public class ValidateAspectModel {
                   new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) );
       // tag::validate[]
 
+      // tag::violations[]
       final List<Violation> violations = new AspectModelValidator().validateModel( aspectModel );
       if ( violations.isEmpty() ) {
          // Aspect Model is valid!
          return;
+      } else {
+         for (Violation violation : violations) {
+            String errorCode = violation.errorCode();
+            String message = violation.message();
+            EvaluationContext context = violation.context();
+            List<Fix> fixes = violation.fixes();
+         }
       }
+      // end::violations[]
 
       final String validationReport = new ViolationFormatter().apply( violations ); // <1>
       final String detailedReport = new DetailedViolationFormatter().apply( violations );
