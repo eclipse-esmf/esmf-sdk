@@ -107,7 +107,7 @@ of model resolution] for more information.
                                    | _--language, -l_ : the language from the model for which the diagram should be
                                        generated (default: en)                                                               |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements | `samm aspect AspectModel.ttl to svg --custom-resolver "java -jar resolver.jar"`
-.12+| [[aspect-to-java]] aspect <model> to java | Generate Java classes from an Aspect Model                                 | `samm aspect AspectModel.ttl to java`
+.14+| [[aspect-to-java]] aspect <model> to java | Generate Java classes from an Aspect Model                                 | `samm aspect AspectModel.ttl to java`
                                    | _--output-directory, -d_ : output directory to write files to (default:
                                        current directory)                                                                    |
                                    | _--package-name, -pn_ : package to use for generated Java classes                       | `samm aspect AspectModel.ttl to java -pn org.company.product`
@@ -125,6 +125,8 @@ of model resolution] for more information.
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
                                    | _--name-prefix, -namePrefix_ : name prefix for generated Aspect, Entity Java classes    | `samm aspect AspectModel.ttl to java -namePrefix "Prefix"`
                                    | _--name-postfix, -namePostfix_ : name postfix for generated Aspect, Entity Java classes | `samm aspect AspectModel.ttl to java -namePostfix "Postfix"`
+                                   | _--enable-setters, -enableSetters_ : whether setters should be generated for Aspect, Entity Java classes    | `samm aspect AspectModel.ttl to java --enable-setters`
+                                   | _--setter-style, -setterStyle_ : the style of setters to generate for Aspect, Entity Java classes | `samm aspect AspectModel.ttl to java --enable-setters --setter-style "FLUENT"`
 .21+| [[aspect-to-openapi]] aspect <model> to openapi | Generate https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification
                                      for an Aspect Model                                                                     | `samm aspect AspectModel.ttl to openapi -j`
                                    | _--output, -o_ : output file path (default: stdout)                                     |

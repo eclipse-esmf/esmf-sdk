@@ -758,6 +758,19 @@ https://en.wikipedia.org/wiki/Jackson_(API)[Jackson] annotations should be gener
 mapping function passed to the generation method takes a `QualifiedName` instead of a String, so that you can decide how
 to handle the package structure of the class.
 
+By default, POJO classes are generated without setters. If setters are desired, use `enableSetters( true )` on the
+generator config. Three setter styles are supported:
+
+[width="100%", options="header", cols="33,67"]
+|===
+| Setter style | Example output
+| `STANDARD` (the default, if not explicitly set)  | `void setTheProperty( final String theProperty )`
+| `FLUENT`  | `TheClass setTheProperty( final String theProperty )`
+| `FLUENT_COMPACT`  | `TheClass theProperty( final String theProperty )`
+|===
+
+The `FLUENT_*` styles allow for method chaining, so that POJO instances can be written in a more compact way.
+
 ++++
 <details>
 <summary>Show used imports</summary>

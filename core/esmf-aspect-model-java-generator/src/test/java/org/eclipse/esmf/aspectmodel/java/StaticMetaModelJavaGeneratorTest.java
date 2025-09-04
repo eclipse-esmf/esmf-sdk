@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
+
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -55,7 +56,8 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
    @EnumSource( value = TestAspect.class )
    void testCodeGeneration( final TestAspect testAspect ) {
       assertThatCode( () -> {
-         final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( testAspect ) );
+         final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( testAspect, false,
+               JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
          final Pattern uninterpolatedTemplate = Pattern.compile( "\\$[a-zA-Z]" );
          result.compilationUnits.values().forEach( compilationUnit -> {
             // Check that all template variables have been replaced. If Velocity fails to insert a value (because evaluation of the
@@ -80,7 +82,8 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
    @Test
    void testGenerateStaticMetaModelWithOptionalProperties() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_OPTIONAL_PROPERTIES_WITH_ENTITY;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, false,
+            JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
 
       final Class<?> aspectClass = findGeneratedClass( result, "AspectWithOptionalPropertiesWithEntity" );
       final Class<?> entityClass = findGeneratedClass( result, "TestEntity" );
@@ -108,7 +111,8 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
    @Test
    void testGenerateStaticMetaModelWithExtendedEnums() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_EXTENDED_ENUMS;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, false,
+            JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
 
       final Class<?> aspectClass = findGeneratedClass( result, "AspectWithExtendedEnums" );
       final Class<?> evaluationResultClass = findGeneratedClass( result, "EvaluationResult" );
@@ -139,7 +143,8 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
    @Test
    void testGenerateStaticMetaModelWithEither() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_EITHER_WITH_COMPLEX_TYPES;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, false,
+            JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
 
       final Class<?> leftEntityClass = findGeneratedClass( result, "LeftEntity" );
       final Class<?> rightEntityClass = findGeneratedClass( result, "RightEntity" );
@@ -164,7 +169,8 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
    @Test
    void testGenerateStaticMetaModelWithMeasurement() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_MEASUREMENT;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, false,
+            JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
       result.assertNumberOfFiles( 2 );
       result.assertFields( "MetaAspectWithMeasurement",
             fieldAssertions( "MetaAspectWithMeasurement" )
@@ -176,7 +182,8 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
    @Test
    void testGenerateStaticMetaModelWithExtendedEntityAssertProperties() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_EXTENDED_ENTITY;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, false,
+            JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
 
       final Class<?> testEntityClass = findGeneratedClass( result, "TestEntity" );
 
@@ -191,7 +198,8 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
    @Test
    void testGenerateStaticMetaModelWithRecursiveAspectWithOptional() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_RECURSIVE_PROPERTY_WITH_OPTIONAL;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, false,
+            JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
 
       final Class<?> aspectClass = findGeneratedClass( result, "AspectWithRecursivePropertyWithOptional" );
       final Class<?> testEntityClass = findGeneratedClass( result, "TestEntity" );
@@ -210,7 +218,8 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
    @Test
    void testGenerateStaticMetaModelWithDuration() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_DURATION;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, false,
+            JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
       result.assertNumberOfFiles( 2 );
       result.assertFields( "MetaAspectWithDuration",
             fieldAssertions( "MetaAspectWithDuration" )
@@ -222,7 +231,8 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
    @Test
    void testGenerateStaticMetaModelWithCurie() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_CURIE;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, false,
+            JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
 
       final Class<?> aspectClass = findGeneratedClass( result, "AspectWithCurie" );
 
@@ -237,7 +247,8 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
    @Test
    void testGenerateStaticMetaModelWithBinary() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_BINARY;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, false,
+            JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
       result.assertNumberOfFiles( 2 );
       result.assertFields( "MetaAspectWithBinary",
             fieldAssertions( "MetaAspectWithBinary" )
@@ -249,7 +260,8 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
    @Test
    void testGenerateStaticMetaModelWithState() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_STATE;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, false,
+            JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
 
       final Class<?> aspectClass = findGeneratedClass( result, "AspectWithState" );
       final Class<?> testStateClass = findGeneratedClass( result, "TestState" );
@@ -290,7 +302,8 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
    @Test
    void testGenerateStaticMetaModelWithConstraints() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_CONSTRAINTS;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, false,
+            JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
 
       final Class<?> aspectClass = findGeneratedClass( result, "AspectWithConstraints" );
 
@@ -324,7 +337,8 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
    @Test
    void testGenerateStaticMetaModelWithStructuredValue() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_NUMERIC_STRUCTURED_VALUE;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, false,
+            JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
 
       final Class<?> aspectClass = findGeneratedClass( result, "AspectWithNumericStructuredValue" );
 
@@ -342,7 +356,8 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
    @Test
    void testGenerateStaticMetaModelWithErrorCollection() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_ERROR_COLLECTION;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, false,
+            JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
 
       final Class<?> aspectClass = findGeneratedClass( result, "AspectWithErrorCollection" );
       final Class<?> errorEntityClass = findGeneratedClass( result, "Error" );
@@ -367,7 +382,8 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
    @Test
    void testGenerateStaticMetaModelWithCollectionAndSimpleElementCharacteristic() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_COLLECTION_AND_SIMPLE_ELEMENT_CHARACTERISTIC;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, false,
+            JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
       result.assertNumberOfFiles( 2 );
 
       result.assertFields( "MetaAspectWithCollectionAndSimpleElementCharacteristic",
@@ -380,7 +396,8 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
    @Test
    void testGenerateStaticMetaModelWithCollectionAndElementCharacteristic() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_COLLECTION_AND_ELEMENT_CHARACTERISTIC;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, false,
+            JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
 
       final Class<?> aspectClass = findGeneratedClass( result, "AspectWithCollectionAndElementCharacteristic" );
       final Class<?> testEntityClass = findGeneratedClass( result, "TestEntity" );
@@ -397,7 +414,8 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
    @Test
    void testGenerateStaticMetaModelWithFixedPointConstraints() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_FIXED_POINT;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, false,
+            JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
       result.assertNumberOfFiles( 2 );
 
       result.assertFields( "MetaAspectWithFixedPoint",
@@ -410,7 +428,8 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
    @Test
    void testGenerateStaticMetaModelWithComplexEntityCollectionEnumeration() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_COMPLEX_ENTITY_COLLECTION_ENUM;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, false,
+            JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
 
       final Class<?> aspectClass = findGeneratedClass( result, "AspectWithComplexEntityCollectionEnum" );
       final Class<?> enumerationClass = findGeneratedClass( result, "MyEnumerationOne" );
@@ -438,13 +457,14 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
    @Test
    void testCharacteristicInstantiationForEnums() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_ENUM_AND_OPTIONAL_ENUM_PROPERTIES;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, false,
+            JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
       result.assertNumberOfFiles( 3 );
 
       final String expectedTestPropertyCharacteristicConstructorCall =
             """
                   new DefaultEnumeration(MetaModelBaseAttributes.builder().withUrn(AspectModelUrn.fromUrn(NAMESPACE + "TestEnumeration")).build(), new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer"), new ArrayList<Value>() {
-
+                  
                       {
                           add(new DefaultScalarValue(MetaModelBaseAttributes.builder().build(), new BigInteger("1"), new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer")));
                           add(new DefaultScalarValue(MetaModelBaseAttributes.builder().build(), new BigInteger("2"), new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer")));
@@ -460,7 +480,8 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
    @Test
    void testAspectWithPropertyWithPayloadName() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_PROPERTY_WITH_PAYLOAD_NAME;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, false,
+            JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
       result.assertNumberOfFiles( 2 );
 
       final String expectedPayloadNameArgument = "Optional.of(\"test\")";
@@ -472,7 +493,8 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
    @Test
    void testAspectWithBlankNode() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_BLANK_NODE;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, false,
+            JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
       result.assertNumberOfFiles( 2 );
 
       result.assertFields( "MetaAspectWithBlankNode",
@@ -484,7 +506,8 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
    @Test
    void testCharacteristicInstantiationForQuantifiableWithoutUnit() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_QUANTIFIABLE_WITHOUT_UNIT;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, false,
+            JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
       result.assertNumberOfFiles( 2 );
 
       final String expectedTestPropertyCharacteristicConstructorCall =
@@ -503,7 +526,8 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
    @Test
    void testCharacteristicInstantiationForPropertyWithExampleValue() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_COLLECTION;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, false,
+            JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
 
       result.assertNumberOfFiles( 2 );
 
@@ -535,7 +559,8 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
    @Test
    void testCharacteristicInstantiationForQuantifiableWithUnit() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_QUANTIFIABLE_WITH_UNIT;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, false,
+            JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
       result.assertNumberOfFiles( 2 );
 
       final String expectedTestPropertyCharacteristicConstructorCall =
@@ -550,7 +575,8 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
    @Test
    void testGenerateStaticMetaModelForAspectModelWithAbstractEntity() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_ABSTRACT_ENTITY;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, false,
+            JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
       result.assertNumberOfFiles( 6 );
 
       final String expectedTestPropertyCharacteristicConstructorCall =
@@ -582,7 +608,8 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
    @Test
    void testGenerateStaticMetaModelForAspectModelWithCollectionWithAbstractEntity() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, false,
+            JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
       result.assertNumberOfFiles( 6 );
 
       final String expectedTestPropertyCharacteristicConstructorCall =
@@ -604,7 +631,8 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
    @Test
    void testGenerateStaticMetaModelWithoutFileHeader() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_COMPLEX_ENUM;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, false,
+            JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
       final CompilationUnit aspectClass = result.compilationUnits.get( TestAspect.ASPECT_WITH_COMPLEX_ENUM.getName() );
       assertThat( aspectClass.getComment() ).isEmpty();
       final CompilationUnit enumeration = result.compilationUnits.get( "EvaluationResults" );
@@ -638,11 +666,31 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
    @Test
    void testGenerateStaticMetaModelWithUmlauts() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_UMLAUT_DESCRIPTION;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, false,
+            JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
 
       result.assertMethodBody( "MetaAspectWithUmlautDescription", "getDescriptions", true, Optional.empty(), 0,
             List.of(
                   "returnnewHashSet<>(){{add(newLangString(\"ImWortEntitätisteinUmlaut\",Locale.forLanguageTag(\"de\")));add(newLangString"
                         + "(\"Thisisatestdescription\",Locale.forLanguageTag(\"en\")));}};" ) );
+   }
+
+   @Test
+   void testStaticMetaModelWithSetters() throws IOException {
+      final TestAspect aspect = TestAspect.ASPECT_WITH_ENTITY;
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, true,
+            JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
+
+      result.assertStaticMetaPropertyMethods( "MetaAspectWithEntity", "TEST_PROPERTY",
+            Map.of( "setValue", "object.setTestProperty(value)" ) );
+   }
+
+   @Test
+   void testStaticMetaModelWithFluentCompactSetters() throws IOException {
+      final TestAspect aspect = TestAspect.ASPECT_WITH_ENTITY;
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, true,
+            JavaCodeGenerationConfig.SetterStyle.FLUENT_COMPACT ) );
+
+      result.assertStaticMetaPropertyMethods( "MetaAspectWithEntity", "TEST_PROPERTY", Map.of( "setValue", "object.testProperty(value)" ) );
    }
 }
