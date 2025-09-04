@@ -8,9 +8,9 @@ APIs.
 
 ## Decision Drivers
 
-* Sufficient expressiveness for the task at hand
-* Good Java integration, since the engine is to be embedded in the Java code base
-* Beneficial: Good tool support (editing from editors/IDEs, in particular Intellij IDEA)
+* Sufficient expressiveness for the task at hand.
+* Good Java integration, since the engine is to be embedded in the Java code base.
+* Beneficial: Good tool support (editing from editors/IDEs, in particular Intellij IDEA).
 
 ## Considered Options
 
