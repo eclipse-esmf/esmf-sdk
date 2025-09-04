@@ -29,7 +29,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
 import javax.xml.datatype.DatatypeConstants;
 
 import org.eclipse.esmf.aspectmodel.VersionInfo;
