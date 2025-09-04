@@ -42,6 +42,9 @@ public class ViolationFormatter implements Function<List<Violation>, String>, Vi
    protected final String additionalHints;
    protected final RustLikeFormatter formatter;
 
+   private static final String ERROR_CODES_DOC_LINK = "https://eclipse-esmf.github.io/esmf-developer-guide/tooling-guide/error-codes.html";
+   private static final String ERROR_CODES_DOC_STRING = "For more information, see: documentation: " + ERROR_CODES_DOC_LINK;
+
    public ViolationFormatter( final String additionalHints ) {
       this( new PlainTextFormatter(), additionalHints );
    }
@@ -84,11 +87,17 @@ public class ViolationFormatter implements Function<List<Violation>, String>, Vi
          final List<Violation> elementViolations = entry.getValue();
          builder.append( String.format( "> %s :%n", textFormatter.formatName( elementName ) ) );
          for ( final Violation violation : elementViolations ) {
+            // Include error code in the violation message
+            final String errorCode = violation.errorCode();
+            final String enhancedMessage = String.format( "[%s] %s", errorCode, violation.message() );
             builder.append( indent( violation.accept( this ), 2 ) ).append( System.lineSeparator() );
             for ( final Fix possibleFix : violation.fixes() ) {
                builder.append( "  > Possible fix: " )
                      .append( possibleFix.description() );
             }
+            // Add documentation link
+            builder.append( String.format( ERROR_CODES_DOC_STRING + "#%s%n",
+                  errorCode.toLowerCase().replace( "_", "-" ) ) );
             builder.append( System.lineSeparator() );
          }
          builder.append( System.lineSeparator() );
@@ -98,10 +107,20 @@ public class ViolationFormatter implements Function<List<Violation>, String>, Vi
          if ( violation instanceof final ProcessingViolation processingViolation ) {
             builder.append( processingViolation.accept( this ) );
          } else if ( violation.violationSpecificMessage() == null || violation.violationSpecificMessage().equals( violation.message() ) ) {
-            builder.append( String.format( "> %s%n", violation.message() ) );
+            final String errorCode = violation.errorCode();
+            final String enhancedMessage = String.format( "[%s] %s", errorCode, violation.message() );
+            builder.append( String.format( "> %s%n", enhancedMessage ) );
+            // Add documentation link for context-free violations
+            builder.append( ERROR_CODES_DOC_STRING
+                  + errorCode.toLowerCase().replace( "_", "-" ) );
          } else {
-            builder.append( String.format( "> %s: %n", violation.message() ) );
+            final String errorCode = violation.errorCode();
+            final String enhancedMessage = String.format( "[%s] %s", errorCode, violation.message() );
+            builder.append( String.format( "> %s: %n", enhancedMessage ) );
             builder.append( indent( violation.accept( this ), 2 ) ).append( System.lineSeparator() );
+            // Add documentation link
+            builder.append( ERROR_CODES_DOC_STRING
+                  + errorCode.toLowerCase().replace( "_", "-" ) );
          }
          builder.append( System.lineSeparator() );
       }
@@ -111,7 +130,9 @@ public class ViolationFormatter implements Function<List<Violation>, String>, Vi
 
    @Override
    public String visit( final Violation violation ) {
-      return formatter.constructDetailedMessage( violation.highlight(), violation.message(), violation.context().element().getModel() );
+      final String errorCode = violation.errorCode();
+      final String enhancedMessage = String.format( "[%s] %s", errorCode, violation.message() );
+      return formatter.constructDetailedMessage( violation.highlight(), enhancedMessage, violation.context().element().getModel() );
    }
 
    @Override

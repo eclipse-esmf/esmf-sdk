@@ -1,4 +1,6 @@
 * xref:samm-cli.adoc[SAMM CLI]
 * xref:java-aspect-tooling.adoc[Java APIs for Aspect Models]
 * xref:maven-plugin.adoc[Maven Plugin]
+* xref:error-codes.adoc[Error Codes and Validation Results]
+* xref:best-practices.adoc[Best Practices]
 * xref:bamm-migration.adoc[Migration from BAMM]

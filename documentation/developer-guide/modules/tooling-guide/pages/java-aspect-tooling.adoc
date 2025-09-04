@@ -356,6 +356,63 @@ To include the model validator, use the following dependencies:
 
 include::esmf-developer-guide:ROOT:partial$esmf-aspect-model-validator-artifact.adoc[]
 
+=== Custom Error Formatting
+
+In order to access validation violations in a type-safe way, implement the interface
+`org.eclipse.esmf.aspectmodel.shacl.violation.Violation.Visitor`. This allows you to handle each
+violation type specifically and format error messages according to your application's requirements.
+
+++++
+<details>
+<summary>Show used imports</summary>
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$CustomViolationFormatter.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$CustomViolationFormatter.java[tags=custom-formatter]
+----
+
+=== Programmatic Access
+
+When using the Java API, errors are available through the `Violation` interface:
+
+[source,java]
+++++
+<details>
+<summary>Show used imports</summary>
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$ValidateAspectModel.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$ValidateAspectModel.java[tags=violations]
+----
+
+
+=== Error Aggregation
+
+For applications that need to process multiple violations efficiently, you can group errors by type
+for batch processing:
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$CustomViolationFormatter.java[tags=error-aggregation]
+----
+
+
 [[generating-documentation]]
 == Generating Documentation for Aspect Models
 
