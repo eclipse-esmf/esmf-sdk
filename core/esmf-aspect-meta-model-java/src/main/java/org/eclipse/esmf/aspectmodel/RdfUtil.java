@@ -78,6 +78,17 @@ public class RdfUtil {
       return result;
    }
 
+   public static Set<AspectModelUrn> getAllUrnsInModelExceptOnlyReferencedBySee( final Model model ) {
+      return Streams.stream( model.listStatements() )
+            .flatMap( statement -> statement.getPredicate().equals( SammNs.SAMM.see() )
+                  ? Stream.of( statement.getSubject() )
+                  : Stream.of( statement.getSubject(), statement.getPredicate(), statement.getObject() ) )
+            .filter( RDFNode::isURIResource )
+            .map( node -> node.asResource().getURI() )
+            .flatMap( urn -> AspectModelUrn.from( urn ).toJavaOptional().stream() )
+            .collect( toSet() );
+   }
+
    public static Set<AspectModelUrn> getAllUrnsInModel( final Model model ) {
       return Streams.stream( model.listStatements() )
             .flatMap( statement -> Stream.of( statement.getSubject(), statement.getPredicate(), statement.getObject() ) )
