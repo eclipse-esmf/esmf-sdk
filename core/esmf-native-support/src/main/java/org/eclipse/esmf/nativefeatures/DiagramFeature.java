@@ -257,6 +257,8 @@ public class DiagramFeature implements Feature {
       Native.forClass( java.awt.GraphicsEnvironment.class )
             .registerMethodForJni( "getLocalGraphicsEnvironment" )
             .registerMethodForJni( "isHeadless" );
+      Native.forClass( "java.awt.GraphicsEnvironment$LocalGE" )
+            .registerClassForReflection();
       Native.forClass( java.awt.event.KeyEvent.class )
             .registerFieldsForJni( "isProxyActive" );
       Native.forClass( java.awt.geom.AffineTransform.class )
