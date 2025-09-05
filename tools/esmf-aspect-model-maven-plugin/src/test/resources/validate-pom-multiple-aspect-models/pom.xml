@@ -33,7 +33,7 @@
                   <include>urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithBlankNode</include>
                   <include>urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithComplexSet</include>
                   <include>urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithList</include>
-                  <include>urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithSee</include>
+                  <include>urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithSeeAttribute</include>
                </includes>
             </configuration>
          </plugin>
