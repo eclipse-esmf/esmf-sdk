@@ -34,6 +34,7 @@ import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.InvalidTestAspect;
+import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
 import org.eclipse.esmf.test.TestResources;
 
@@ -244,5 +245,12 @@ class AspectModelResolverTest {
             .hasMessageContaining(
                   "Aspect Model file testmodel:invalid/org.eclipse.esmf.test/1.0.0/InvalidAspectWithTwoAspects.ttl contains 2 "
                         + "aspects, but may only contain one." );
+   }
+
+   @Test
+   void testSeeReferencesAreNotResolved() {
+      assertThatCode( () -> {
+         TestResources.load( TestAspect.ASPECT_WITH_SEE_TO_ELEMENT );
+      } ).doesNotThrowAnyException();
    }
 }

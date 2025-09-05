@@ -520,7 +520,7 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
             .filter( uri -> uri.startsWith( AspectModelUrn.PROTOCOL_AND_NAMESPACE_PREFIX ) )
             .forEach( urn -> context.resolvedUrns().add( urn ) );
 
-      RdfUtil.getAllUrnsInModel( modelFile.sourceModel() ).stream()
+      RdfUtil.getAllUrnsInModelExceptOnlyReferencedBySee( modelFile.sourceModel() ).stream()
             .map( AspectModelUrn::toString )
             .filter( urn -> !context.resolvedUrns().contains( urn ) )
             .filter( urn -> !SammNs.wellKnownNamespaces().map( rdfNamespace -> urn.startsWith( rdfNamespace.getNamespace() ) )

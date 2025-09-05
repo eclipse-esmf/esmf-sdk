@@ -50,10 +50,10 @@ class AspectModelInstantiatorTest extends AbstractAspectModelInstantiatorTest {
 
    @Test
    void testAspectTransformationExpectSuccess() {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_SEE );
-      final AspectModelUrn expectedAspectModelUrn = TestAspect.ASPECT_WITH_SEE.getUrn();
-      assertBaseAttributes( aspect, expectedAspectModelUrn, "AspectWithSee", "Test Aspect With See",
-            "This is a test description", "http://example.com/" );
+      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_SEE_ATTRIBUTE );
+      final AspectModelUrn expectedAspectModelUrn = TestAspect.ASPECT_WITH_SEE_ATTRIBUTE.getUrn();
+      assertBaseAttributes( aspect, expectedAspectModelUrn, "AspectWithSeeAttribute", "Test Aspect",
+            "This is a test Aspect.", "http://example.com/" );
    }
 
    @Test
