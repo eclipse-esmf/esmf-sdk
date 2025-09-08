@@ -14,14 +14,23 @@
 package org.eclipse.esmf.aspectmodel.resolver.fs;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 public abstract class ModelsRoot {
+
+   private static final Logger LOG = LoggerFactory.getLogger( ModelsRoot.class );
+   private static final File EMPTY_FILE = new File( "" );
    private final Path root;
 
    protected ModelsRoot( final Path root ) {
@@ -43,6 +52,19 @@ public abstract class ModelsRoot {
    public abstract Path directoryForNamespace( final AspectModelUrn urn );
 
    public File determineAspectModelFile( final AspectModelUrn urn ) {
-      return directoryForNamespace( urn ).resolve( urn.getName() + ".ttl" ).toFile();
+      Path path = directoryForNamespace( urn ).resolve( urn.getName() + ".ttl" );
+      return resolveByCanonicalPath( path );
+   }
+
+   private static File resolveByCanonicalPath( Path path ) {
+      File file = path.toFile();
+      try {
+         if ( Objects.equals( path.toString(), file.getCanonicalPath() ) ) {
+            return file;
+         }
+      } catch ( IOException exception ) {
+         LOG.error( "Error resolving canonical path for file: {}", file.getPath(), exception );
+      }
+      return EMPTY_FILE;
    }
 }
