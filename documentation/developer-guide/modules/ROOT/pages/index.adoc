@@ -1,6 +1,6 @@
-= ESMF SDK Developer Guide
+= JAVA SDK
 
-The ESMF SDK Developer Guide helps you to get up-and-running with the ESMF SDK developed within the
+The JAVA SDK Developer Guide helps you to get up-and-running with the ESMF SDK developed within the
 Eclipse Semantic Modeling Framework (ESMF). It covers all possible scenarios, no matter whether you
 are planning to build a solution with the SDK, model your Aspect data, implement your own customized
 Aspect or want to integrate existing assets and systems.

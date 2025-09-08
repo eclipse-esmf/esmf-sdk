@@ -1,5 +1,5 @@
 name: esmf-developer-guide
-title: ESMF SDK Developer Guide
+title: JAVA SDK & SAMM CLI
 version: 'master'
 start_page: ROOT:index.adoc
 nav:

@@ -1,0 +1,233 @@
+:page-partial:
+
+[[generating-java-code]]
+= Generating Java Code for Aspect Models
+
+Java code can be generated from an Aspect model in two ways:
+
+. The generated code represents the Aspect payload. Aspects and Entities become Java classes; their Properties become
+fields in the classes. Characteristics are not first-class elements, but are implicitly represented by the usage of
+corresponding data types (e.g. using `java.util.Set` as the type for the `Set` Characteristic of a Property) or
+`javax.validation` annotations. The generated classes can be used in a straightforward fashion, but they do not contain
+information about the underlying Aspect model such as its version number. Parts of the Aspect model that have no
+representation in its corresponding JSON payload are not part of those classes either, in particular descriptions and
+preferred names. These classes are called POJOs (Plain Old Java Objects), as they do not contain logic but serve mainly as data containers.
+
+. The generated code represents the Aspect model itself: It is a type-safe variant of the model and includes every
+information that is also present in the model such as Characteristics, descriptions including language tags and original
+XSD data types. It is however not intended to store payload corresponding to an Aspect. Theses classes are called static
+meta classes, because they are created at compile time (_static_) and talk about the structure of the information, not
+the information itself (_meta_).
+
+Depending on the use case, you would either use one or both of the types simultaneously.
+
+To include the Java generator, use the following dependencies:
+
+include::esmf-developer-guide:ROOT:partial$esmf-aspect-model-java-generator-artifact.adoc[]
+
+[[type-mapping]]
+== Type Mapping
+
+In the Java code generated from an Aspect model, the scalar Aspect model
+xref:samm-specification:ROOT:datatypes.adoc#data-types[data types] are mapped to native Java types. The following table
+lists the correspondences.
+
+[width="100%", options="header", cols="50,50"]
+|===
+| Aspect model type | Java native type
+| `xsd:string`  | `java.lang.String`
+| `xsd:boolean` | `java.lang.Boolean`
+| `xsd:decimal` | `java.math.BigDecimal`
+| `xsd:integer` | `java.math.BigDecimal`
+| `xsd:double` | `java.lang.Double`
+| `xsd:float` | `java.lang.Float`
+| `xsd:date` |  `javax.xml.datatype.XMLGregorianCalendar`
+| `xsd:time` |  `javax.xml.datatype.XMLGregorianCalendar`
+| `xsd:dateTime` |  `javax.xml.datatype.XMLGregorianCalendar`
+| `xsd:dateTimeStamp` |  `javax.xml.datatype.XMLGregorianCalendar`
+| `xsd:gYear` |  `javax.xml.datatype.XMLGregorianCalendar`
+| `xsd:gMonth` |  `javax.xml.datatype.XMLGregorianCalendar`
+| `xsd:gDay` | `javax.xml.datatype.XMLGregorianCalendar`
+| `xsd:gYearMonth` |  `javax.xml.datatype.XMLGregorianCalendar`
+| `xsd:gMonthDay` |  `javax.xml.datatype.XMLGregorianCalendar`
+| `xsd:duration` | `javax.xml.datatype.Duration`
+| `xsd:yearMonthDuration` | `javax.xml.datatype.Duration`
+| `xsd:dayTimeDuration` | `javax.xml.datatype.Duration`
+| `xsd:byte` | `java.lang.Byte`
+| `xsd:short` | `java.lang.Short`
+| `xsd:int` | `java.lang.Integer`
+| `xsd:long` | `java.lang.Long`
+| `xsd:unsignedByte` | `java.lang.Short`
+| `xsd:unsignedShort` | `java.lang.Integer`
+| `xsd:unsignedInt` | `java.lang.Long`
+| `xsd:unsignedLong` | `java.math.BigInteger`
+| `xsd:positiveInteger` | `java.math.BigInteger`
+| `xsd:nonNegativeInteger` | `java.math.BigInteger`
+| `xsd:negativeInteger` | `java.math.BigInteger`
+| `xsd:nonPositiveInteger` | `java.math.BigInteger`
+| `xsd:hexBinary` | `byte[]`
+| `xsd:base64Binary` | `byte[]`
+| `xsd:anyURI` | `java.net.URI`
+| `samm:curie` | `org.eclipse.esmf.metamodel.datatypes.Curie`
+|===
+
+[[generating-pojos]]
+== Generating POJOs
+
+POJO generation is straightforward; there are two minor differences to the generation of documentation artifacts.
+Firstly, when instantiating the generator, you pass a flag indicating whether
+https://en.wikipedia.org/wiki/Jackson_(API)[Jackson] annotations should be generated in the class. Secondly, the name
+mapping function passed to the generation method takes a `QualifiedName` instead of a String, so that you can decide how
+to handle the package structure of the class.
+
+By default, POJO classes are generated without setters. If setters are desired, use `enableSetters( true )` on the
+generator config. Three setter styles are supported:
+
+[width="100%", options="header", cols="33,67"]
+|===
+| Setter style | Example output
+| `STANDARD` (the default, if not explicitly set)  | `void setTheProperty( final String theProperty )`
+| `FLUENT`  | `TheClass setTheProperty( final String theProperty )`
+| `FLUENT_COMPACT`  | `TheClass theProperty( final String theProperty )`
+|===
+
+The `FLUENT_*` styles allow for method chaining, so that POJO instances can be written in a more compact way.
+
+++++
+<details>
+<summary>Show used imports</summary>
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateJavaPojo.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateJavaPojo.java[tags=generate]
+----
+
+[[generating-static-meta-classes]]
+== Generating Static Meta Classes
+
+For the generation of static meta classes, consider the following example:
+
+++++
+<details>
+<summary>Show used imports</summary>
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateJavaStaticClass.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateJavaStaticClass.java[tags=generate]
+----
+
+To use the generated static meta classes, you need the following additional dependency:
+
+include::esmf-developer-guide:ROOT:partial$esmf-aspect-static-meta-model-java-artifact.adoc[]
+
+[[providing-custom-macros-for-code-generation]]
+=== Providing Custom Macros for Code Generation
+
+It is possible to change predefined sections of the generated classes by providing custom https://velocity.apache.org/[Velocity] templates; see the https://velocity.apache.org/engine/2.3/user-guide.html[Velocity User Guide] for more information.
+The custom macros must be defined in a single template file.
+The path to the template file as well as its name may be passed as arguments to the code generation, e.g. using the xref:samm-cli.adoc#samm-cli[SAMM-CLI].
+
+Custom macros may be provided for the following sections:
+
+[width="100%",options="header"]
+|===
+| Section | Macro Name | Default Macro Provided
+| Copyright Licence Header | fileHeader | {nok}
+|===
+
+NOTE: When using custom macros, macros for all sections above must be provided.
+
+Example:
+
+[source,indent=0]
+----
+include::example$sample-file-header.vm[]
+----
+
+[[generating-sql]]
+== Generating SQL for Aspect Models
+
+Using the Aspect Model SQL generator, an SQL script can be generated that sets up a table for data
+corresponding to the Aspect. The current implementation provides support for the
+https://docs.databricks.com/en/sql/language-manual/index.html[Databricks SQL] dialect and a mapping
+strategy that uses a denormalized table, i.e., the table contains one column for each Property used
+in the Aspect Model (or any of its transitively referenced Entities).
+
+++++
+<details>
+<summary>Show used imports</summary>
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateSql.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateSql.java[tags=generate]
+----
+
+[[databricks-type-mapping]]
+=== Databricks Type Mapping
+
+xref:samm-specification:ROOT:datatypes.adoc#data-types[Data types] in the Aspect Model are mapped to Databricks types using the following correspondences:
+
+[width="100%", options="header", cols="33,33,33"]
+|===
+| Aspect model type | Databricks SQL type | Note
+| `xsd:string`  | `STRING` |
+| `xsd:boolean` | `BOOLEAN` |
+| `xsd:decimal` | `DECIMAL` | While xsd:decimal is by definition unbounded, DECIMAL's default
+  precision is 10 digits and can be up to 38. if we assume values larger than that can appear
+in the data, the Aspect Models using xsd:decimal should also use a xref:samm-specification:ROOT:characteristics.adoc#fixed-point-constraint[samm-c:FixedPointConstraint] accordingly.
+| `xsd:integer` | `DECIMAL` | As opposed to xsd:int, xsd:integer has arbitrary precision, i.e. DECIMAL is needed.
+| `xsd:double` | `DOUBLE` |
+| `xsd:float` | `FLOAT` |
+| `xsd:date` | `STRING` | `DATE` can not be used, because it does not retain timezone information.
+| `xsd:time` | `STRING` |
+| `xsd:dateTime` | `STRING` |
+| `xsd:dateTimeStamp` | `TIMESTAMP` |
+| `xsd:gYear` | `STRING` |
+| `xsd:gMonth` | `STRING` |
+| `xsd:gDay` | `STRING` |
+| `xsd:gYearMonth` | `STRING` |
+| `xsd:gMonthDay` | `STRING` |
+| `xsd:duration` | `STRING` |
+| `xsd:yearMonthDuration` | `STRING` |
+| `xsd:dayTimeDuration` | `STRING` |
+| `xsd:byte` | `TINYINT` |
+| `xsd:short` | `SMALLINT` |
+| `xsd:int` | `INT` |
+| `xsd:long` | `BIGINT` |
+| `xsd:unsignedByte` | `SMALLINT` |
+| `xsd:unsignedShort` | `INT` |
+| `xsd:unsignedInt` | `BIGINT` |
+| `xsd:unsignedLong` | `DECIMAL` |
+| `xsd:positiveInteger` | `DECIMAL` |
+| `xsd:nonNegativeInteger` | `DECIMAL` |
+| `xsd:negativeInteger` | `DECIMAL` |
+| `xsd:nonPositiveInteger` | `DECIMAL` |
+| `xsd:hexBinary` | `BINARY` |
+| `xsd:base64Binary` | `BINARY` |
+| `xsd:anyURI` | `STRING` |
+| `samm:curie` | `STRING` |
+|===
