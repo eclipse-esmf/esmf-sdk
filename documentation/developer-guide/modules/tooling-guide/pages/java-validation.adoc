@@ -1,0 +1,106 @@
+:page-partial:
+
+[[validating-aspect-models]]
+= Validating Aspect Models
+
+Aspect Models are validated using the `AspectModelValidator`. Validation returns a list of
+`Violation`s. A violation has a human-readable message and a unique error code and provides access
+to the `EvaluationContext` which contains references to the model element that caused the
+violation and the SHACL shape that triggered the violation.
+
+Each possible type of violation is a subtype of the `Violation` interface and provides additional
+context information specific to this type, for example, the `MinLengthViolation` provides `int min`
+(the allowed length) and `int actual` (the length that was encountered in the model).
+
+Consider the following example:
+
+++++
+<details>
+<summary>Show used imports</summary>
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$ValidateAspectModel.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$ValidateAspectModel.java[tags=validate]
+----
+
+<1> To format the validation result into an human-readable form, use the `ViolationFormatter` or the
+`DetailedViolationFormatter`. Note that those are only intended for text-based interfaces such as
+CLIs.
+<2> Every application dealing with validation results that needs to transform the results into some
+different structure can implement the `Violation.Visitor` Interface with a suitable target
+type `(String` used as an example here) and use the visitor to handle the different types of
+Violations in a type-safe way.
+
+The `AspectModelValidator` also provides the `loadModel(Supplier<AspectModel>)` method that can be used in
+conjunction with `() -> new AspectModeLoader().load(...)` to have exceptions that might be created during the
+Aspect Model loading process, for example due to model resolution failures or syntax errors in the input
+files, be turned into a `List<Violation>` that can be passed to the aforementioned violation formatters. This
+allows for custom structured handling of problems that occur during model loading.
+
+To include the model validator, use the following dependencies:
+
+include::esmf-developer-guide:ROOT:partial$esmf-aspect-model-validator-artifact.adoc[]
+
+== Custom Error Formatting
+
+In order to access validation violations in a type-safe way, implement the interface
+`org.eclipse.esmf.aspectmodel.shacl.violation.Violation.Visitor`. This allows you to handle each
+violation type specifically and format error messages according to your application's requirements.
+
+++++
+<details>
+<summary>Show used imports</summary>
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$CustomViolationFormatter.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$CustomViolationFormatter.java[tags=custom-formatter]
+----
+
+== Programmatic Access
+
+When using the Java API, errors are available through the `Violation` interface:
+
+[source,java]
+++++
+<details>
+<summary>Show used imports</summary>
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$ValidateAspectModel.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$ValidateAspectModel.java[tags=violations]
+----
+
+
+== Error Aggregation
+
+For applications that need to process multiple violations efficiently, you can group errors by type
+for batch processing:
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$CustomViolationFormatter.java[tags=error-aggregation]
+----

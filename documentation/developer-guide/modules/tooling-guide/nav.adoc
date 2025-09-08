@@ -1,6 +1,12 @@
 * xref:samm-cli.adoc[SAMM CLI]
-* xref:java-aspect-tooling.adoc[Java APIs for Aspect Models]
 * xref:maven-plugin.adoc[Maven Plugin]
+* Java APIs for Aspect Models
+xref:java-aspect-tooling.adoc[Getting Started & Loading]
+xref:java-model-creation.adoc[Creating & Modifying Models]
+xref:java-validation.adoc[Validation]
+xref:java-code-generation.adoc[Code Generation]
+xref:java-documentation-generation.adoc[Documentation Generation]
+xref:java-aas-mapping.adoc[AAS Integration]
 * xref:error-codes.adoc[Error Codes and Validation Results]
 * xref:best-practices.adoc[Best Practices]
 * xref:bamm-migration.adoc[Migration from BAMM]
