@@ -56,7 +56,7 @@ public abstract class ModelsRoot {
       return resolveByCanonicalPath( path );
    }
 
-   private static File resolveByCanonicalPath( Path path ) {
+   private static File resolveByCanonicalPath( final Path path ) {
       File file = path.toFile();
       try {
          if ( Objects.equals( path.toString(), file.getCanonicalPath() ) ) {
