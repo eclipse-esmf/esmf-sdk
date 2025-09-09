@@ -59,7 +59,7 @@ public abstract class ModelsRoot {
    private static File resolveByCanonicalPath( final Path path ) {
       File file = path.toFile();
       try {
-         if ( Objects.equals( path.toString(), file.getCanonicalPath() ) ) {
+         if ( Objects.equals( path.normalize().toString(), file.getCanonicalPath() ) ) {
             return file;
          }
       } catch ( IOException exception ) {

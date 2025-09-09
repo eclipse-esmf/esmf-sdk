@@ -19,7 +19,20 @@ class ModelsRootTest {
 
       File result = invokeResolveByCanonicalPath( testPath );
 
-      assertThat( result ).isEqualTo( testPath.toFile() );
+      assertThat( result )
+            .matches( File::exists )
+            .isEqualTo( testPath.toFile() );
+   }
+
+   @Test
+   void resolveByCanonicalPathShouldReturnFileWhenCanonicalPathMatchesForSpecificPath() throws Exception {
+      Path testPath = Paths.get( "src/test/resources/resolve_empty/../resolve", "Aspect.ttl" ).toAbsolutePath();
+
+      File result = invokeResolveByCanonicalPath( testPath );
+
+      assertThat( result )
+            .matches( File::exists )
+            .isEqualTo( testPath.toFile() );
    }
 
    @Test
