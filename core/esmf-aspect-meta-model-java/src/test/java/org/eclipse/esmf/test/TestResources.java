@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -34,6 +34,14 @@ public class TestResources {
    }
 
    public static AspectModel load( final TestModel model ) {
+      final String path = String.format( "valid/%s/%s/%s.ttl", model.getUrn().getNamespaceMainPart(), model.getUrn().getVersion(),
+            model.getName() );
+      final InputStream inputStream = TestResources.class.getClassLoader().getResourceAsStream( path );
+      final ResolutionStrategy testModelsResolutionStrategy = new ClasspathStrategy( "valid" );
+      return new AspectModelLoader( testModelsResolutionStrategy ).load( inputStream, URI.create( "testmodel:" + path ) );
+   }
+
+   public static AspectModel load( final OrderingTestAspect model ) {
       final String path = String.format( "valid/%s/%s/%s.ttl", model.getUrn().getNamespaceMainPart(), model.getUrn().getVersion(),
             model.getName() );
       final InputStream inputStream = TestResources.class.getClassLoader().getResourceAsStream( path );
