@@ -1,5 +1,5 @@
 name: esmf-developer-guide
-title: JAVA SDK & SAMM CLI
+title: Java SDK and SAMM CLI
 version: 'master'
 start_page: ROOT:index.adoc
 nav:

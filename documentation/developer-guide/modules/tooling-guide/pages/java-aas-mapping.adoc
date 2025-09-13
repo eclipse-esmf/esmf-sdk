@@ -18,9 +18,8 @@ allows AAS submodels to be described with rich semantics, as it is possible with
 == Details of the Mapping Concept
 
 In the following section, the mapping rules applied by the generator are explained. The rules apply
-to https://eclipse-esmf.github.io/samm-specification/2.0.0/index.html[SAMM v2.0.0] and
-https://www.plattform-i40.de/IP/Redaktion/EN/Downloads/Publikation/Details_of_the_Asset_Administration_Shell_Part1_V3.html[AAS
-Specification Part 1 V3.0RC01].
+to xref:2.0.0@samm-specification:ROOT:index.adoc[SAMM v2.0.0] and
+https://industrialdigitaltwin.io/aas-specifications/IDTA-01001/v3.0/index.html[AAS Specification Part 1 V3.0].
 
 [cols="1,1,2"]
 |===

@@ -845,7 +845,7 @@ In this section, a detailed description of the mapping between individual Aspect
 To make it easier to follow, the mapping is explained based on a concrete example, divided into logically coherent blocks.
 Please bear in mind that these blocks are snippets or fragments of a larger whole; viewed in isolation they do not necessarily form a valid or meaningful Aspect Model or AsyncAPI specification.
 
-==== Naming and versioning
+==== Naming and Versioning
 
 Please consider the following model fragment, with the attention focused on the numbered elements:
 
