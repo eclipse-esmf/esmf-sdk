@@ -51,6 +51,17 @@ public abstract class ModelsRoot {
 
    public abstract Path directoryForNamespace( final AspectModelUrn urn );
 
+   /**
+    * Determines the aspect model file for the given {@link AspectModelUrn}.
+    *
+    * <p>Constructs the file path by resolving the namespace directory.
+    * Validates the file using its canonical path.
+    *
+    * <p>Returns an empty file if the resolution fails.
+    *
+    * @param urn the {@link AspectModelUrn} representing the aspect model.
+    * @return the resolved {@link File}, or an empty file if resolution fails.
+    */
    public File determineAspectModelFile( final AspectModelUrn urn ) {
       Path path = directoryForNamespace( urn ).resolve( urn.getName() + ".ttl" );
       return resolveByCanonicalPath( path );

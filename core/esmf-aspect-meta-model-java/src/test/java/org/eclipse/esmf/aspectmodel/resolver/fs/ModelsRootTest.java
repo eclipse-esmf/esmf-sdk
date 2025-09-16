@@ -58,7 +58,7 @@ class ModelsRootTest {
    }
 
    @Test
-   void resolveByCanonicalPathShouldReturnEmptyFileWhenIOExceptionOccurs() throws Exception {
+   void resolveByCanonicalPathShouldReturnEmptyFileWhenIoExceptionOccurs() throws Exception {
       Path pathCausingIOException = Paths.get( "pathCausingIOException" );
 
       File result = invokeResolveByCanonicalPath( pathCausingIOException );
