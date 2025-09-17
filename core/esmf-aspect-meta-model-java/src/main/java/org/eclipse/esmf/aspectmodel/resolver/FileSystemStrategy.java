@@ -95,6 +95,9 @@ public class FileSystemStrategy implements ResolutionStrategy {
          final RawAspectModelFile loadedFile = tryFile.get();
          if ( resolutionStrategySupport.containsDefinition( loadedFile, aspectModelUrn ) ) {
             return loadedFile;
+         } else {
+            checkedLocations.add( new ModelResolutionException.LoadingFailure( aspectModelUrn, namedResourceFile.getAbsolutePath(),
+                  "File does not contain the element definition" ) );
          }
       } else {
          checkedLocations.add( new ModelResolutionException.LoadingFailure( aspectModelUrn, namedResourceFile.getAbsolutePath(),
