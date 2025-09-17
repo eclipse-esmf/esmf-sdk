@@ -59,9 +59,9 @@ class ModelsRootTest {
 
    @Test
    void resolveByCanonicalPathShouldReturnEmptyFileWhenIoExceptionOccurs() throws Exception {
-      Path pathCausingIOException = Paths.get( "pathCausingIOException" );
+      Path pathCausingIoException = Paths.get( "pathCausingIoException" );
 
-      File result = invokeResolveByCanonicalPath( pathCausingIOException );
+      File result = invokeResolveByCanonicalPath( pathCausingIoException );
 
       assertThat( result ).isEqualTo( EMPTY_FILE );
    }
