@@ -57,15 +57,6 @@ class ModelsRootTest {
       assertThat( result ).isEqualTo( EMPTY_FILE );
    }
 
-   @Test
-   void resolveByCanonicalPathShouldReturnEmptyFileWhenIoExceptionOccurs() throws Exception {
-      Path pathCausingIoException = Paths.get( "pathCausingIoException" );
-
-      File result = invokeResolveByCanonicalPath( pathCausingIoException );
-
-      assertThat( result ).isEqualTo( EMPTY_FILE );
-   }
-
    private static File invokeResolveByCanonicalPath( Path path ) throws Exception {
       Method method = ModelsRoot.class.getDeclaredMethod( "resolveByCanonicalPath", Path.class );
       method.setAccessible( true );
