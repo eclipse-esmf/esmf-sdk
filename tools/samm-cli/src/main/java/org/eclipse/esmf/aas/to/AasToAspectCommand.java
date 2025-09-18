@@ -1,3 +1,16 @@
+/*
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
+ *
+ * See the AUTHORS file(s) distributed with this work for additional
+ * information regarding authorship.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * SPDX-License-Identifier: MPL-2.0
+ */
+
 package org.eclipse.esmf.aas.to;
 
 import java.io.BufferedWriter;
@@ -43,13 +56,13 @@ public class AasToAspectCommand extends AbstractCommand {
          names = { "--output-directory", "-d" },
          description = "Output directory to write files to"
    )
-   private String outputPath = ".";
+   private final String outputPath = ".";
 
    @CommandLine.Option(
          names = { "--submodel-template", "-s" },
          description = "Select the submodel template(s) to include, as returned by the aas list command"
    )
-   private List<Integer> selectedOptions = new ArrayList<>();
+   private final List<Integer> selectedOptions = new ArrayList<>();
 
    @CommandLine.Mixin
    private LoggingMixin loggingMixin;
@@ -58,7 +71,7 @@ public class AasToAspectCommand extends AbstractCommand {
    public void run() {
       final String path = parentCommand.parentCommand.getInput();
       final String extension = FilenameUtils.getExtension( path );
-      if ( !extension.equals( "xml" ) && !extension.equals( "json" ) && !extension.equals( "aasx" ) ) {
+      if ( !"xml".equals( extension ) && !"json".equals( extension ) && !"aasx".equals( extension ) ) {
          throw new CommandException( "Input file name must be an .xml, .aasx or .json file" );
       }
       generateAspects( AasToAspectModelGenerator.fromFile( new File( path ) ) );
@@ -76,12 +89,12 @@ public class AasToAspectCommand extends AbstractCommand {
 
       for ( final Aspect aspect : filteredAspects ) {
          final String aspectString = AspectSerializer.INSTANCE.aspectToString( aspect );
-         final File targetFile = modelsRoot.determineAspectModelFile( aspect.urn() );
-         LOG.info( "Writing {}", targetFile.getAbsolutePath() );
-         final File directory = targetFile.getParentFile();
+         final File directory = modelsRoot.directoryForNamespace( aspect.urn() ).toFile();
          if ( !directory.exists() && !directory.mkdirs() ) {
             throw new CommandException( "Could not create directory: " + directory.getAbsolutePath() );
          }
+         final File targetFile = modelsRoot.determineAspectModelFile( aspect.urn() );
+         LOG.info( "Writing {}", targetFile.getAbsolutePath() );
          try ( final Writer writer = new BufferedWriter( new FileWriter( targetFile ) ) ) {
             writer.write( aspectString );
          } catch ( final IOException exception ) {

@@ -84,7 +84,7 @@ public class FileSystemStrategy implements ResolutionStrategy {
    public AspectModelFile apply( final AspectModelUrn aspectModelUrn, final ResolutionStrategySupport resolutionStrategySupport ) {
       final List<ModelResolutionException.LoadingFailure> checkedLocations = new ArrayList<>();
 
-      final File namedResourceFile = modelsRoot.determineAspectModelFile( aspectModelUrn );
+      final File namedResourceFile = modelsRoot.resolveAspectModelFile( aspectModelUrn );
       if ( namedResourceFile.exists() ) {
          final Try<RawAspectModelFile> tryFile = Try.of( () -> AspectModelFileLoader.load( namedResourceFile ) );
          if ( tryFile.isFailure() ) {
