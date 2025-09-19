@@ -589,14 +589,18 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
    @Override
    public boolean containsDefinition( final AspectModelFile aspectModelFile, final AspectModelUrn urn ) {
       final Model model = aspectModelFile.sourceModel();
+      boolean result = model.contains( model.createResource( urn.toString() ), RDF.type, (RDFNode) null );
+      if ( result ) {
+         LOG.debug( "Checking if model contains {}: {}", urn, result );
+         return result;
+      }
       if ( model.getNsPrefixMap().values().stream().anyMatch( prefixUri -> prefixUri.startsWith( "urn:bamm:" ) ) ) {
-         final boolean result = model.contains(
+         result = model.contains(
                model.createResource( urn.toString().replace( AspectModelUrn.PROTOCOL_AND_NAMESPACE_PREFIX, "urn:bamm:" ) ), RDF.type,
                (RDFNode) null );
          LOG.debug( "Checking if model contains {}: {}", urn, result );
          return result;
       }
-      final boolean result = model.contains( model.createResource( urn.toString() ), RDF.type, (RDFNode) null );
       LOG.debug( "Checking if model contains {}: {}", urn, result );
       return result;
    }
