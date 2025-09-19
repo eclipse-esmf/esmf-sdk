@@ -56,13 +56,13 @@ public class AasToAspectCommand extends AbstractCommand {
          names = { "--output-directory", "-d" },
          description = "Output directory to write files to"
    )
-   private final String outputPath = ".";
+   private String outputPath = ".";
 
    @CommandLine.Option(
          names = { "--submodel-template", "-s" },
          description = "Select the submodel template(s) to include, as returned by the aas list command"
    )
-   private final List<Integer> selectedOptions = new ArrayList<>();
+   private List<Integer> selectedOptions = new ArrayList<>();
 
    @CommandLine.Mixin
    private LoggingMixin loggingMixin;
