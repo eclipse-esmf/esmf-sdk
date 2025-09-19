@@ -22,7 +22,6 @@
    samm:events ( ) .
 
 :test a samm:Property ;
-   samm:name "test property" ;
    samm:characteristic :TestCharacteristic .
 
 :TestCharacteristic a samm:Characteristic ;
