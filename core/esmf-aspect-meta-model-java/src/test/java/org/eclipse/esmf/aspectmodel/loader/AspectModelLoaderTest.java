@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -20,6 +20,7 @@ import static org.eclipse.esmf.test.shared.AspectModelAsserts.assertThat;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -34,16 +35,19 @@ import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.test.InvalidTestAspect;
+import org.eclipse.esmf.test.OrderingTestAspect;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 class AspectModelLoaderTest {
    @ParameterizedTest
-   @EnumSource( value = TestAspect.class )
+   @EnumSource( TestAspect.class )
    void testLoadAspectModelsSourceFilesArePresent( final TestAspect testAspect ) {
       final AspectModel aspectModel = TestResources.load( testAspect );
       for ( final ModelElement element : aspectModel.elements() ) {
@@ -90,11 +94,11 @@ class AspectModelLoaderTest {
       assertThat( entities ).extracting( "AbstractTestEntity" ).isInstanceOf( AbstractEntity.class );
       final AbstractEntity abstractEntity = (AbstractEntity) entities.get( "AbstractTestEntity" );
       assertThat( entities ).extracting( "testEntityOne" ).isInstanceOfSatisfying( ComplexType.class, type -> {
-         org.assertj.core.api.Assertions.assertThat( type ).extracting( ComplexType::getExtends ).extracting( Optional::get )
+         Assertions.assertThat( type ).extracting( ComplexType::getExtends ).extracting( Optional::get )
                .isSameAs( abstractEntity );
       } );
       assertThat( entities ).extracting( "testEntityTwo" ).isInstanceOfSatisfying( ComplexType.class, type ->
-            org.assertj.core.api.Assertions.assertThat( type ).extracting( ComplexType::getExtends ).extracting( Optional::get )
+            Assertions.assertThat( type ).extracting( ComplexType::getExtends ).extracting( Optional::get )
                   .isSameAs( abstractEntity ) );
    }
 
@@ -128,5 +132,16 @@ class AspectModelLoaderTest {
       } ).isInstanceOfSatisfying( AspectLoadingException.class, exception -> {
          assertThat( exception ).hasMessageContaining( "Duplicate definition" );
       } );
+   }
+
+   @RepeatedTest( 10 )
+   void testAspectUploadOrdering() {
+      final OrderingTestAspect aspectName = OrderingTestAspect.ASPECT;
+      final AspectModel aspectModel = TestResources.load( aspectName );
+      assertThat( aspectModel ).aspects()
+            .filteredOn( aspect -> Objects.equals( aspectName.getName(), aspect.getName() ) )
+            .first()
+            .satisfies(
+                  aspect -> assertThat( aspect.urn().toString() ).isEqualTo( "urn:samm:org.eclipse.esmf.test.ordering:1.0.0#Aspect" ) );
    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -38,6 +38,7 @@ import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.InvalidTestAspect;
+import org.eclipse.esmf.test.OrderingTestAspect;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
 import org.eclipse.esmf.test.TestSharedModel;
@@ -49,6 +50,7 @@ import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.condition.DisabledOnOs;
@@ -72,7 +74,7 @@ class SammCliTest {
    private final String defaultInputUrn = testModel.getUrn().toString();
    private final String defaultModelsRoot = inputFile( testModel ).toPath().getParent().getParent().getParent().toFile().getAbsolutePath();
 
-   Path outputDirectory = null;
+   Path outputDirectory;
 
    @BeforeEach
    void beforeEach() throws IOException {
@@ -87,7 +89,7 @@ class SammCliTest {
 
    @AfterEach
    void afterEach() {
-      if ( outputDirectory != null ) {
+      if ( null != outputDirectory ) {
          final File outputDir = outputDirectory.toFile();
          if ( outputDir.exists() && outputDir.isDirectory() ) {
             // Recursively delete temporary directory
@@ -138,7 +140,7 @@ class SammCliTest {
 
    @Test
    void testNonExistingFile() {
-      final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile + "x", "validate" );
+      final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile + 'x', "validate" );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).contains( "File not found" );
       assertThat( result.stderr() ).doesNotContain( "CommandException" );
@@ -146,7 +148,7 @@ class SammCliTest {
 
    @Test
    void testNonExistingFileWithDebugLogLevel() {
-      final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile + "x", "validate", "-vvv" );
+      final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile + 'x', "validate", "-vvv" );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).contains( "File not found" );
       assertThat( result.stderr() ).contains( "CommandException" );
@@ -306,7 +308,7 @@ class SammCliTest {
    @Test
    void testAspectValidateWithRelativePath() {
       final File workingDirectory = new File( defaultInputFile ).getParentFile();
-      final String relativeFileName = "." + File.separator + new File( defaultInputFile ).getName();
+      final String relativeFileName = '.' + File.separator + new File( defaultInputFile ).getName();
 
       final ExecutionResult result = sammCli.apply( List.of( "--disable-color", "aspect", relativeFileName, "validate" ), Optional.empty(),
             workingDirectory );
@@ -471,6 +473,17 @@ class SammCliTest {
       assertThat( contentType( result.stdoutRaw() ) ).isEqualTo( MediaType.text( "plain" ) );
    }
 
+   @RepeatedTest( 10 )
+   void testAspectToAasJsonToStdoutContentAspectUploadOrdering() {
+      final String input = inputFile( OrderingTestAspect.ASPECT ).getAbsolutePath();
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "to", "aas", "--format",
+            "xml" );
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( result.stdout() )
+            .contains( "<aas:id>urn:samm:org.eclipse.esmf.test.ordering:1.0.0#Aspect</aas:id>" )
+            .doesNotContain( "<aas:id>urn:samm:org.eclipse.esmf.test.ordering.dependency:1.0.0#Aspect</aas:id>" );
+   }
+
    @Test
    void testAasToAspectModel() {
       // First create the AAS XML file we want to read
@@ -495,7 +508,7 @@ class SammCliTest {
       assertThat( directory ).isDirectoryContaining( file -> file.getName().equals( expectedAspectModelFileName ) );
 
       final File sourceFile = directory.toPath().resolve( expectedAspectModelFileName ).toFile();
-      assertThat( sourceFile ).content().contains( ":" + testModel.getName() + " a samm:Aspect" );
+      assertThat( sourceFile ).content().contains( ':' + testModel.getName() + " a samm:Aspect" );
    }
 
    @Test
@@ -535,7 +548,7 @@ class SammCliTest {
       assertThat( directory ).isDirectoryContaining( file -> file.getName().equals( expectedAspectModelFileName ) );
 
       final File sourceFile = directory.toPath().resolve( expectedAspectModelFileName ).toFile();
-      assertThat( sourceFile ).content().contains( ":" + testModel.getName() + " a samm:Aspect" );
+      assertThat( sourceFile ).content().contains( ':' + testModel.getName() + " a samm:Aspect" );
    }
 
    @Test
@@ -582,6 +595,16 @@ class SammCliTest {
       assertThat( result.stderr() ).isEmpty();
    }
 
+   @RepeatedTest( 10 )
+   void testAspectToHtmlToStdoutContentAspectUploadOrdering() {
+      final String input = inputFile( OrderingTestAspect.ASPECT ).getAbsolutePath();
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "to", "html" );
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( result.stdout() )
+            .contains( "<div class='pb-4'>urn:samm:org.eclipse.esmf.test.ordering:1.0.0#Aspect</div>" )
+            .doesNotContain( "<div class='pb-4'>urn:samm:org.eclipse.esmf.test.ordering.dependency:1.0.0#Aspect</div>" );
+   }
+
    @Test
    void testAspectToJavaWithDefaultPackageName() {
       final File outputDir = outputDirectory.toFile();
@@ -594,7 +617,7 @@ class SammCliTest {
       final File directory = Paths.get( outputDir.getAbsolutePath(), "org", "eclipse", "esmf", "test" ).toFile();
       assertThat( directory ).exists();
       assertThat( directory ).isDirectoryContaining(
-            file -> file.getName().equals( "AspectWithEntity.java" ) || file.getName().equals( "TestEntity.java" ) );
+            file -> "AspectWithEntity.java".equals( file.getName() ) || "TestEntity.java".equals( file.getName() ) );
 
       final File sourceFile = directory.toPath().resolve( "AspectWithEntity.java" ).toFile();
       assertThat( sourceFile ).content().contains( "@JsonCreator" );
@@ -612,7 +635,7 @@ class SammCliTest {
       final File directory = Paths.get( outputDir.getAbsolutePath(), "com", "example", "foo" ).toFile();
       assertThat( directory ).exists();
       assertThat( directory ).isDirectoryContaining(
-            file -> file.getName().equals( "AspectWithEntity.java" ) || file.getName().equals( "TestEntity.java" ) );
+            file -> "AspectWithEntity.java".equals( file.getName() ) || "TestEntity.java".equals( file.getName() ) );
    }
 
    @Test
@@ -626,7 +649,7 @@ class SammCliTest {
       final File directory = Paths.get( outputDir.getAbsolutePath(), "org", "eclipse", "esmf", "test" ).toFile();
       assertThat( directory ).exists();
       assertThat( directory ).isDirectoryContaining(
-            file -> file.getName().equals( "AspectWithEntity.java" ) || file.getName().equals( "TestEntity.java" ) );
+            file -> "AspectWithEntity.java".equals( file.getName() ) || "TestEntity.java".equals( file.getName() ) );
 
       final File sourceFile = directory.toPath().resolve( "AspectWithEntity.java" ).toFile();
       assertThat( sourceFile ).content().doesNotContain( "@JsonCreator" );
@@ -644,7 +667,7 @@ class SammCliTest {
       final File directory = Paths.get( outputDir.getAbsolutePath(), "org", "eclipse", "esmf", "test" ).toFile();
       assertThat( directory ).exists();
       assertThat( directory ).isDirectoryContaining(
-            file -> file.getName().equals( "AspectWithEntity.java" ) || file.getName().equals( "TestEntity.java" ) );
+            file -> "AspectWithEntity.java".equals( file.getName() ) || "TestEntity.java".equals( file.getName() ) );
 
       final File sourceFile = directory.toPath().resolve( "AspectWithEntity.java" ).toFile();
       assertThat( sourceFile ).content().contains( "@JsonCreator" );
@@ -666,7 +689,7 @@ class SammCliTest {
       final File directory = Paths.get( outputDir.getAbsolutePath(), "org", "eclipse", "esmf", "test" ).toFile();
       assertThat( directory ).exists();
       assertThat( directory ).isDirectoryContaining(
-            file -> file.getName().equals( "AspectWithEntity.java" ) || file.getName().equals( "TestEntity.java" ) );
+            file -> "AspectWithEntity.java".equals( file.getName() ) || "TestEntity.java".equals( file.getName() ) );
 
       final String expectedCopyright = String.format( "Copyright (c) %s Test Inc. All rights reserved", LocalDate.now().getYear() );
       final File sourceFile = directory.toPath().resolve( "AspectWithEntity.java" ).toFile();
@@ -694,7 +717,7 @@ class SammCliTest {
       final File directory = Paths.get( outputDir.getAbsolutePath(), "org", "eclipse", "esmf", "test" ).toFile();
       assertThat( directory ).exists();
       assertThat( directory ).isDirectoryContaining(
-            file -> file.getName().equals( "AspectWithEntity.java" ) || file.getName().equals( "TestEntity.java" ) );
+            file -> "AspectWithEntity.java".equals( file.getName() ) || "TestEntity.java".equals( file.getName() ) );
 
       final File sourceFile = directory.toPath().resolve( "AspectWithEntity.java" ).toFile();
       assertThat( sourceFile ).content().contains( "public void setTestProperty(final TestEntity testProperty)" );
@@ -712,7 +735,7 @@ class SammCliTest {
       final File directory = Paths.get( outputDir.getAbsolutePath(), "org", "eclipse", "esmf", "test" ).toFile();
       assertThat( directory ).exists();
       assertThat( directory ).isDirectoryContaining(
-            file -> file.getName().equals( "AspectWithEntity.java" ) || file.getName().equals( "TestEntity.java" ) );
+            file -> "AspectWithEntity.java".equals( file.getName() ) || "TestEntity.java".equals( file.getName() ) );
 
       final File sourceFile = directory.toPath().resolve( "AspectWithEntity.java" ).toFile();
       assertThat( sourceFile ).content().contains( "public AspectWithEntity setTestProperty(final TestEntity testProperty)" );
@@ -730,7 +753,7 @@ class SammCliTest {
       final File directory = Paths.get( outputDir.getAbsolutePath(), "org", "eclipse", "esmf", "test" ).toFile();
       assertThat( directory ).exists();
       assertThat( directory ).isDirectoryContaining(
-            file -> file.getName().equals( "AspectWithEntity.java" ) || file.getName().equals( "TestEntity.java" ) );
+            file -> "AspectWithEntity.java".equals( file.getName() ) || "TestEntity.java".equals( file.getName() ) );
 
       final File sourceFile = directory.toPath().resolve( "AspectWithEntity.java" ).toFile();
       assertThat( sourceFile ).content().contains( "public AspectWithEntity testProperty(final TestEntity testProperty)" );
@@ -747,7 +770,7 @@ class SammCliTest {
       final File directory = Paths.get( outputDir.getAbsolutePath(), "org", "eclipse", "esmf", "test" ).toFile();
       assertThat( directory ).exists();
       assertThat( directory ).isDirectoryContaining(
-            file -> file.getName().equals( "MetaAspectWithEntity.java" ) || file.getName().equals( "MetaTestEntity.java" ) );
+            file -> "MetaAspectWithEntity.java".equals( file.getName() ) || "MetaTestEntity.java".equals( file.getName() ) );
 
       final File sourceFile = directory.toPath().resolve( "MetaAspectWithEntity.java" ).toFile();
       assertThat( sourceFile ).content().contains( "package org.eclipse.esmf.test;" );
@@ -765,7 +788,7 @@ class SammCliTest {
       final File directory = Paths.get( outputDir.getAbsolutePath(), "com", "example", "foo" ).toFile();
       assertThat( directory ).exists();
       assertThat( directory ).isDirectoryContaining(
-            file -> file.getName().equals( "MetaAspectWithEntity.java" ) || file.getName().equals( "MetaTestEntity.java" ) );
+            file -> "MetaAspectWithEntity.java".equals( file.getName() ) || "MetaTestEntity.java".equals( file.getName() ) );
 
       final File sourceFile = directory.toPath().resolve( "MetaAspectWithEntity.java" ).toFile();
       assertThat( sourceFile ).content().contains( "package com.example.foo;" );
@@ -783,7 +806,7 @@ class SammCliTest {
       final File directory = Paths.get( outputDir.getAbsolutePath(), "org", "eclipse", "esmf", "test" ).toFile();
       assertThat( directory ).exists();
       assertThat( directory ).isDirectoryContaining(
-            file -> file.getName().equals( "MetaAspectWithEntity.java" ) || file.getName().equals( "MetaTestEntity.java" ) );
+            file -> "MetaAspectWithEntity.java".equals( file.getName() ) || "MetaTestEntity.java".equals( file.getName() ) );
 
       final File sourceFile = directory.toPath().resolve( "MetaAspectWithEntity.java" ).toFile();
       assertThat( sourceFile ).content().contains( "package org.eclipse.esmf.test;" );
@@ -804,7 +827,7 @@ class SammCliTest {
       final File directory = Paths.get( outputDir.getAbsolutePath(), "org", "eclipse", "esmf", "test" ).toFile();
       assertThat( directory ).exists();
       assertThat( directory ).isDirectoryContaining(
-            file -> file.getName().equals( "MetaAspectWithEntity.java" ) || file.getName().equals( "MetaTestEntity.java" ) );
+            file -> "MetaAspectWithEntity.java".equals( file.getName() ) || "MetaTestEntity.java".equals( file.getName() ) );
 
       final File sourceFile = directory.toPath().resolve( "MetaAspectWithEntity.java" ).toFile();
       final String expectedCopyright = String.format( "Copyright (c) %s Test Inc. All rights reserved", LocalDate.now().getYear() );
@@ -1630,7 +1653,7 @@ class SammCliTest {
    /**
     * Returns the File object for a test namespace package file
     */
-   private File inputFile( final String filename ) {
+   private static File inputFile( final String filename ) {
       final String resourcePath = String.format( "%s/../../core/esmf-test-aspect-models/src/main/resources/packages/%s",
             System.getProperty( "user.dir" ), filename );
       try {
@@ -1643,11 +1666,20 @@ class SammCliTest {
    /**
     * Returns the File object for a test model file
     */
-   private File inputFile( final TestModel testModel ) {
+   private static File inputFile( final TestModel testModel ) {
       final boolean isValid = !(testModel instanceof InvalidTestAspect);
-      final String resourcePath = String.format(
-            "%s/../../core/esmf-test-aspect-models/src/main/resources/%s/org.eclipse.esmf.test/1.0.0/%s.ttl",
-            System.getProperty( "user.dir" ), isValid ? "valid" : "invalid", testModel.getName() );
+      final boolean isOrdering = testModel instanceof OrderingTestAspect;
+
+      final String resourcePath;
+      if ( isOrdering ) {
+         resourcePath = String.format(
+               "%s/../../core/esmf-test-aspect-models/src/main/resources/valid/org.eclipse.esmf.test.ordering/1.0.0/%s.ttl",
+               System.getProperty( "user.dir" ), testModel.getName() );
+      } else {
+         resourcePath = String.format(
+               "%s/../../core/esmf-test-aspect-models/src/main/resources/%s/org.eclipse.esmf.test/1.0.0/%s.ttl",
+               System.getProperty( "user.dir" ), isValid ? "valid" : "invalid", testModel.getName() );
+      }
 
       try {
          return new File( resourcePath ).getCanonicalFile();
@@ -1663,7 +1695,7 @@ class SammCliTest {
       return outputDirectory.toAbsolutePath().resolve( filename ).toFile();
    }
 
-   private void writeToFile( final File file, final String content ) {
+   private static void writeToFile( final File file, final String content ) {
       try {
          final BufferedWriter writer = new BufferedWriter( new FileWriter( file ) );
          writer.write( content );
@@ -1673,7 +1705,7 @@ class SammCliTest {
       }
    }
 
-   private MediaType contentType( final byte[] input ) {
+   private MediaType contentType( final byte... input ) {
       try {
          return new TikaConfig().getDetector().detect( new BufferedInputStream( new ByteArrayInputStream( input ) ), new Metadata() );
       } catch ( final IOException | TikaException exception ) {
@@ -1681,7 +1713,7 @@ class SammCliTest {
       }
    }
 
-   private MediaType contentType( final File file ) {
+   private static MediaType contentType( final File file ) {
       try {
          return new TikaConfig().getDetector().detect( new BufferedInputStream( new FileInputStream( file ) ), new Metadata() );
       } catch ( final IOException | TikaException exception ) {
@@ -1689,7 +1721,7 @@ class SammCliTest {
       }
    }
 
-   private String resolverCommand() {
+   private static String resolverCommand() {
       // Note that the following code must not use .class/.getClass()/.getClassLoader() but only operate on the file system level,
       // since otherwise it will break when running the test suite from the maven build (where tests are run from the jar and resources
       // are not resolved to the file system but to the jar)
@@ -1699,7 +1731,7 @@ class SammCliTest {
                      ? ".bat" : ".sh") ).getCanonicalPath();
          final String modelsRoot = new File( System.getProperty( "user.dir" ) + "/target/classes/valid" ).getCanonicalPath();
          final String metaModelVersion = KnownVersion.getLatest().toString().toLowerCase();
-         return resolverScript + " " + modelsRoot + " " + metaModelVersion;
+         return resolverScript + ' ' + modelsRoot + ' ' + metaModelVersion;
       } catch ( final IOException exception ) {
          throw new RuntimeException( exception );
       }
