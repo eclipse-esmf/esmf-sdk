@@ -1,0 +1,194 @@
+:page-partial:
+
+[[generating-documentation]]
+= Generating Documentation for Aspect Models
+
+Different types of artifacts can be generated from an Aspect model. All corresponding generators are included in the
+following dependency:
+
+include::esmf-developer-guide:ROOT:partial$esmf-aspect-model-document-generators-artifact.adoc[]
+
+The documentation generation APIs provide methods that take as an argument a `Function<String, java.io.OutputStream>`.
+This is a mapping function that takes a file name as an input (which is determined by the respective generator) and
+returns a corresponding `OutputStream`, for example (but not necessarily) a `FileOutputStream`. By providing this
+function when calling the generator method, you can control where the output is written to, even when the generator
+creates multiple files. For the code examples in the following subsections, we assume that the following method is
+defined for calling the generators:
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$AbstractGenerator.java[tags=outputStream]
+----
+
+[[generating-diagrams]]
+== Generating SVG or PNG Diagrams
+
+Using the `AspectModelDiagramGenerator`, automatically layouted diagrams can be created for Aspect models in
+the formats PNG and SVG.
+
+++++
+<details>
+<summary>Show used imports</summary>
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateDiagrams.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateDiagrams.java[tags=generate]
+----
+
+<1> The diagram generator is initialized with the loaded model and the
+generation configuration.
+<2> The generation takes the output stream for the output file name as input and
+writes the generated diagram to the output stream.
+
+[[generating-html-documentation]]
+== Generating HTML Documentation
+
+A HTML reference documentation for an Aspect model can be generated as shown in the following code sample. The
+documentation contains an overview diagram and describes the model elements as specified in the Aspect model. Preferred
+names and descriptions in the respective language from the Aspect model are shown in the resulting document as part of
+each model element.
+
+++++
+<details>
+<summary>Show used imports</summary>
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateHtml.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateHtml.java[tags=generate]
+----
+
+<1> HTML generation can be controlled via options.
+<2> The HTML generator is initialized with the context consisting of the loaded RDF model and the
+selected Aspect.
+
+[[generating-sample-json-payload]]
+== Generating Sample JSON Payload
+
+The sample JSON payload generator is used to create a valid JSON payload for an Aspect model as it could be returned by
+an Aspect that implements that Aspect model. This follows the
+xref:samm-specification:ROOT:payloads.adoc#mapping-to-json[mapping rules] as defined in the Meta Model specification.
+The generator uses `samm:exampleValue`s of Properties if present, otherwise random values corresponding to the
+respective data types are generated.
+
+++++
+<details>
+<summary>Show used imports</summary>
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateJsonPayload.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateJsonPayload.java[tags=generate]
+----
+
+== Generating JSON Schema
+
+The JSON schema generator creates a https://json-schema.org/[JSON Schema] that describes the payload for an Aspect model
+as it could be returned by an Aspect that implements that Aspect model.
+
+++++
+<details>
+<summary>Show used imports</summary>
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateJsonSchema.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateJsonSchema.java[tags=generate]
+----
+
+== Generating OpenAPI Specification
+
+The OpenAPI specification generator creates either a https://json-schema.org/[JSON Schema] or a https://yaml.org/[Yaml Spec]
+that specifies an Aspect regarding to the https://github.com/OAI/OpenAPI-Specification/[OpenApi specification].
+The currently used versions corresponds https://json-schema.org/specification-links.html#draft-4[Draft 4] of the JSON Schema specification,
+and https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md[3.0.1].
+
+++++
+<details>
+<summary>Show used imports</summary>
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateOpenApi.java[tags=imports]
+----
+++++
+</details>
+++++
+
+.Generate OpenAPI YAML
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateOpenApi.java[tags=generateYaml]
+----
+
+.Generate OpenAPI JSON
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateOpenApi.java[tags=generateJson]
+----
+
+NOTE: For Enumerations with complex data types, the values are modelled as instances of the Entity defined as the
+Enumeration's data type (see xref:samm-specification:ROOT:modeling-guidelines.adoc#declaring-enumerations[Declaring
+Enumerations] for more information). In case the Entity instances contain Properties with a sorted collection as their
+data type, the order of the values of said collection in the Entity instances is not preserved in the generated OpenAPI
+specification. Preserving this order in OpenAPI is not possible at this point.
+
+== Generating AsyncAPI Specification
+
+The AsyncAPI specification generator creates either a https://json-schema.org/[JSON Schema] or a https://yaml.org/[Yaml Spec]
+that specifies an Aspect regarding to the https://www.asyncapi.com/en[AsyncApi specification].
+The currently used versions correspond to https://json-schema.org/specification-links.html#draft-4[Draft 4] of the JSON Schema specification,
+and https://github.com/asyncapi/spec/blob/master/spec/asyncapi.md[3.0.0] of the AsyncAPI specification.
+
+++++
+<details>
+<summary>Show used imports</summary>
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateAsyncApi.java[tags=imports]
+----
+++++
+</details>
+++++
+
+.Generate AsyncAPI YAML
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateAsyncApi.java[tags=generateYaml]
+----
+
+.Generate AsyncAPI JSON
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateAsyncApi.java[tags=generateJson]
+----
