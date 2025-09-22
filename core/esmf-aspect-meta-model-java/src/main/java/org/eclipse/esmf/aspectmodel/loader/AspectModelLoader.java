@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.JarURLConnection;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
@@ -25,6 +26,7 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -121,7 +123,7 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
     */
    public AspectModelLoader( final List<ResolutionStrategy> resolutionStrategies ) {
       TurtleLoader.init();
-      if ( resolutionStrategies.size() == 1 ) {
+      if ( 1 == resolutionStrategies.size() ) {
          resolutionStrategy = resolutionStrategies.get( 0 );
       } else if ( resolutionStrategies.isEmpty() ) {
          resolutionStrategy = DEFAULT_STRATEGY.get();
@@ -416,7 +418,7 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
     * {@code https://example.com/package.zip}, the files in the package will have a location URI such as
     * {@code jar:file:/some/path/package.zip!/com.example.namespace/1.0.0/AspectModel.ttl} or
     * {@code jar:https://example.com/package.zip!/com.example.namespace/1.0.0/AspectModel.ttl}, respectively, as described in
-    * the JavaDoc for {@link java.net.JarURLConnection}.
+    * the JavaDoc for {@link JarURLConnection}.
     *
     * @param location the source location
     * @param inputStream the input stream to load the ZIP content from
@@ -453,7 +455,7 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
          Deque<AspectModelFile> unresolvedFiles
    ) {
       private LoaderContext() {
-         this( new HashSet<>(), new HashSet<>(), new HashSet<>(), new ArrayDeque<>(), new ArrayDeque<>() );
+         this( new HashSet<>(), new LinkedHashSet<>(), new HashSet<>(), new ArrayDeque<>(), new ArrayDeque<>() );
       }
    }
 
@@ -473,7 +475,8 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
    private boolean containsType( final Model model, final String urn ) {
       if ( model.contains( model.createResource( urn ), RDF.type, (RDFNode) null ) ) {
          return true;
-      } else if ( urn.startsWith( AspectModelUrn.PROTOCOL_AND_NAMESPACE_PREFIX ) ) {
+      }
+      if ( urn.startsWith( AspectModelUrn.PROTOCOL_AND_NAMESPACE_PREFIX ) ) {
          // when deriving a URN from file (via "fileToUrn" method - mainly in samm-cli scenarios),
          // we assume new "samm" format, but could actually have been the old "bamm"
          return model.contains( model.createResource( toLegacyBammUrn( urn ) ), RDF.type, (RDFNode) null );
@@ -495,7 +498,7 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
 
       try {
          final AspectModelUrn aspectModelUrn = AspectModelUrn.fromUrn( replaceLegacyBammUrn( urn ) );
-         if ( aspectModelUrn.getElementType() != ElementType.NONE ) {
+         if ( ElementType.NONE != aspectModelUrn.getElementType() ) {
             return Optional.empty();
          }
          final AspectModelFile resolutionResult = resolutionStrategy.apply( aspectModelUrn, this );
@@ -586,14 +589,18 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
    @Override
    public boolean containsDefinition( final AspectModelFile aspectModelFile, final AspectModelUrn urn ) {
       final Model model = aspectModelFile.sourceModel();
+      boolean result = model.contains( model.createResource( urn.toString() ), RDF.type, (RDFNode) null );
+      if ( result ) {
+         LOG.debug( "Checking if model contains {}: {}", urn, result );
+         return result;
+      }
       if ( model.getNsPrefixMap().values().stream().anyMatch( prefixUri -> prefixUri.startsWith( "urn:bamm:" ) ) ) {
-         final boolean result = model.contains(
+         result = model.contains(
                model.createResource( urn.toString().replace( AspectModelUrn.PROTOCOL_AND_NAMESPACE_PREFIX, "urn:bamm:" ) ), RDF.type,
                (RDFNode) null );
          LOG.debug( "Checking if model contains {}: {}", urn, result );
          return result;
       }
-      final boolean result = model.contains( model.createResource( urn.toString() ), RDF.type, (RDFNode) null );
       LOG.debug( "Checking if model contains {}: {}", urn, result );
       return result;
    }
@@ -674,7 +681,7 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
             .findFirst()
             .ifPresent( aspect -> mergedModel.setNsPrefix( "", aspect.urn().getUrnPrefix() ) );
       for ( final AspectModelFile file : files ) {
-         if ( file.aspects().size() > 1 ) {
+         if ( 1 < file.aspects().size() ) {
             throw new AspectLoadingException(
                   "Aspect Model file " + file.humanReadableLocation() + " contains " + file.aspects().size()
                         + " aspects, but may only contain one." );
@@ -709,7 +716,7 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
          MetaModelBaseAttributes namespaceDefinition = null;
          AspectModelFile fileContainingNamespaceDefinition = null;
          final List<ModelElement> elementsForUrn = elementsGroupedByNamespaceUrn.get( namespaceUrn );
-         if ( elementsForUrn != null ) {
+         if ( null != elementsForUrn ) {
             for ( final ModelElement element : elementsForUrn ) {
                final AspectModelFile elementFile = element.getSourceFile();
                if ( elementFile.sourceModel().contains( null, RDF.type, SammNs.SAMM.Namespace() ) ) {
