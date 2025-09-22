@@ -9,5 +9,4 @@
 ** xref:java-static-meta-classes.adoc[Using Java Static Meta Classes]
 * xref:java-aas-mapping.adoc[AAS Integration]
 * xref:error-codes.adoc[Error Codes and Validation Results]
-* xref:best-practices.adoc[Best Practices]
 * xref:bamm-migration.adoc[Migration from BAMM]
