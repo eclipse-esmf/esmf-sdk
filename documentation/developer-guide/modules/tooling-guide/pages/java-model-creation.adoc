@@ -1,0 +1,105 @@
+:page-partial:
+
+[[creating-and-modifying-aspect-models]]
+= Creating and Modifying Aspect Models
+
+[[creating-aspect-models]]
+== Programmatically Creating Aspect Models
+
+In certain situations, particularly for test code, it is desirable to programmatically create an
+Aspect Model. For this, the `SammBuilder` class can be used. It provides static builder methods for
+all model element types, e.g., `aspect()`, `property()` and so on. Using the `Elements.*` static
+import allows easy access to predefined model elements such as `samm_c.Text`. The `DataTypes.*`
+static import allows access to all valid SAMM data types, such as `xsd.integer`, `xsd.dateTime` and
+`samm.curie`.
+
+[source,java,indent=0]
+----
+include::example$SammBuilderDemo.java[tags=imports]
+----
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$SammBuilderDemo.java[tags=sammBuilder]
+----
+
+[TIP]
+=====
+
+When you use https://assertj.github.io/doc/[AssertJ] for testing, you can add a dependency to the
+tests jar provided by the `esmf-aspect-meta-model-java` module:
+
+include::esmf-developer-guide:ROOT:partial$esmf-aspect-meta-model-java-tests.adoc[]
+
+Add a static import to `org.eclipse.esmf.test.shared.AspectModelAsserts.assertThat` to your test
+code, then you can use custom fluent assertions similar to the `SammBuilder`, for asserting
+properties of an Aspect Model:
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$AssertJ.java[tags=assertj]
+----
+=====
+
+Overloaded `assertThat()` methods are provided for all Aspect Model Elements, e.g., `Aspect`,
+`Property`, `Characteristic`, `Trait`, etc., as well as for `AspectModel` and `AspectModel`.
+
+[[modifying-and-creating-aspect-models]]
+== Modifying Aspect Models
+
+You can use the `AspectChangeManager` to modify an Aspect Model. Each modifying operation performed
+on an Aspect Model is called a _change_. Instances of classes that implement the `Change` interface
+can be passed to the `AspectChangeManager` `applyChange()` method. Available `Change`s
+include renaming Aspect Model files or Model elements, adding and removing Aspect Model files and
+moving Aspect Model elements to other or new files in the same or another namespace.
+
+++++
+<details>
+<summary>Show used imports</summary>
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$EditAspectModel.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$EditAspectModel.java[tags=editModel]
+----
+
+[[serializing-an-aspect-model]]
+== Serializing a Java Aspect Model into a RDF/Turtle Aspect Model
+
+The serialize an Aspect into its corresponding RDF/Turtle representation, you can use the `AspectSerializer`,
+as demonstrated in the example below:
+
+++++
+<details>
+<summary>Show used imports</summary>
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$SerializeAspectModel.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$SerializeAspectModel.java[tags=serialize]
+----
+
+Alternatively, you can also serialize a complete `AspectModelFile`:
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$SerializeAspectModel.java[tags=serializeFile]
+----
+
+To include the serializer, use the following dependency:
+
+include::esmf-developer-guide:ROOT:partial$esmf-aspect-meta-model-java-artifact.adoc[]
