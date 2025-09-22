@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -454,7 +455,7 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
          Deque<AspectModelFile> unresolvedFiles
    ) {
       private LoaderContext() {
-         this( new HashSet<>(), new HashSet<>(), new HashSet<>(), new ArrayDeque<>(), new ArrayDeque<>() );
+         this( new HashSet<>(), new LinkedHashSet<>(), new HashSet<>(), new ArrayDeque<>(), new ArrayDeque<>() );
       }
    }
 
