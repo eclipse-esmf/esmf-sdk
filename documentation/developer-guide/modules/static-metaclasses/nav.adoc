@@ -1,3 +1,0 @@
-* xref:index.adoc[Using Java Static Meta Classes]
-** xref:basic-usage.adoc[Basic Usage]
-** xref:advanced-usage.adoc[Advanced Usage]

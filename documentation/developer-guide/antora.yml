@@ -4,4 +4,3 @@ version: 'master'
 start_page: ROOT:index.adoc
 nav:
   - modules/tooling-guide/nav.adoc
-  - modules/static-metaclasses/nav.adoc
