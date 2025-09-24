@@ -468,7 +468,7 @@ public class AspectModelJavaUtil {
    public static List<Property> getPropertiesInPayload( final HasProperties element ) {
       final Predicate<Property> notInPayload = Property::isNotInPayload;
       final Predicate<Property> inPayload = notInPayload.negate();
-      return element.getProperties().stream().filter( inPayload ).toList();
+      return element.getProperties().stream().filter( inPayload ).collect( Collectors.toList() );
    }
 
    public static String generateInitializer( final Property property, final String value,
