@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -327,7 +327,7 @@ public class AspectModelJavaUtil {
       return dataType.map( type -> {
          final Type actualDataType = dataType.get();
          if ( actualDataType instanceof ComplexType ) {
-            final String complexDataType = ((ComplexType) actualDataType).getName();
+            final String complexDataType = actualDataType.getName();
             if ( (!codeGenerationConfig.namePrefix().isBlank() || !codeGenerationConfig.namePostfix().isBlank()) ) {
                return codeGenerationConfig.namePrefix() + complexDataType + codeGenerationConfig.namePostfix();
             }
@@ -351,8 +351,8 @@ public class AspectModelJavaUtil {
    }
 
    public static Class<?> getDataTypeClass( final Type dataType ) {
-      if ( dataType instanceof ComplexType ) {
-         return ((ComplexType) dataType).getClass();
+      if ( dataType instanceof final ComplexType complexType ) {
+         return complexType.getClass();
       }
 
       final Resource typeResource = ResourceFactory.createResource( dataType.getUrn() );
@@ -468,7 +468,7 @@ public class AspectModelJavaUtil {
    public static List<Property> getPropertiesInPayload( final HasProperties element ) {
       final Predicate<Property> notInPayload = Property::isNotInPayload;
       final Predicate<Property> inPayload = notInPayload.negate();
-      return element.getProperties().stream().filter( inPayload ).collect( Collectors.toList() );
+      return element.getProperties().stream().filter( inPayload ).toList();
    }
 
    public static String generateInitializer( final Property property, final String value,
@@ -701,9 +701,9 @@ public class AspectModelJavaUtil {
       final Pattern pattern = java.util.regex.Pattern.compile(
             "(Integer|Long)\\s*\\.\\s*valueOf\\s*\\(\\s*matcher\\s*\\.\\s*group\\s*\\(\\s*(\\d+)\\s*\\)\\s*\\)"
       );
-      Matcher matcher = pattern.matcher( expression );
+      final Matcher matcher = pattern.matcher( expression );
       matcher.reset();
-      boolean hasMatch = matcher.find();
+      final boolean hasMatch = matcher.find();
 
       if ( hasMatch ) {
          final String numberType = matcher.group( 1 ).trim(); // "Integer" or "Long"
@@ -724,5 +724,29 @@ public class AspectModelJavaUtil {
       return "Optional.ofNullable("
             + expression
             + ")";
+   }
+
+   public static boolean needsValidAnnotation( final Property property ) {
+      return isNonPrimitiveCharacteristic( property.getCharacteristic() );
+   }
+
+   private static boolean isNonPrimitiveCharacteristic( final Optional<Characteristic> optionalCharacteristic ) {
+
+      final Characteristic characteristic = optionalCharacteristic.orElseThrow( () ->
+            new CodeGenerationException( "Can not determine type of missing Characteristic" ) );
+
+      if ( characteristic.is( Either.class ) ) {
+         final boolean isEntityLeft = isNonPrimitiveCharacteristic(
+               optionalCharacteristic.map( c -> c.as( Either.class ) ).map( Either::getLeft ) );
+         final boolean isEntityRight = isNonPrimitiveCharacteristic(
+               optionalCharacteristic.map( c -> c.as( Either.class ) ).map( Either::getRight ) );
+         return isEntityLeft || isEntityRight;
+      }
+
+      final Type type = optionalCharacteristic
+            .flatMap( Characteristic::getDataType )
+            .orElseThrow( () -> new CodeGenerationException( "Failed to determine Java data type for empty model type" ) );
+
+      return type.is( Entity.class );
    }
 }

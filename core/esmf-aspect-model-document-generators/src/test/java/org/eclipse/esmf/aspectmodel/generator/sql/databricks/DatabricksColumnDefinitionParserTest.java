@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -41,6 +41,7 @@ class DatabricksColumnDefinitionParserTest extends DatabricksTestBase {
             .collect( Collectors.joining( "\n" ) );
       assertThat( sql.lines()
             .filter( line -> line.startsWith( "  " ) )
+            .map( line -> "  " + line.trim() )
             .map( line -> line.replaceAll( ",$", "" ) )
             .collect( Collectors.joining( "\n" ) ) )
             .isEqualTo( parsedAndSerializedSql );

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -204,7 +204,8 @@ public enum TestAspect implements TestModel {
    ENTITY_INSTANCE_TEST4,
    MODEL_WITH_BLANK_AND_ADDITIONAL_NODES,
    MODEL_WITH_BROKEN_CYCLES,
-   ASPECT_WITH_ANY_VALUE_DECLARATIONS;
+   ASPECT_WITH_ANY_VALUE_DECLARATIONS,
+   ASPECT_WITH_VALID_ANNOTATION_TEST;
 
    @Override
    public String getName() {
