@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
-
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -259,13 +258,13 @@ class AspectModelJavaGeneratorTest {
       result.assertFields( "AspectWithOptionalPropertiesAndEntityWithSeparateFiles", expectedFieldsForAspectClass, new HashMap<>() );
       assertConstructor( result, "AspectWithOptionalPropertiesAndEntityWithSeparateFiles", expectedFieldsForAspectClass );
 
-      CompilationUnit unit = result.compilationUnits.get( "ProductionPeriodEntity" );
-      ConstructorDeclaration constructor = unit.findFirst( ConstructorDeclaration.class )
+      final CompilationUnit unit = result.compilationUnits.get( "ProductionPeriodEntity" );
+      final ConstructorDeclaration constructor = unit.findFirst( ConstructorDeclaration.class )
             .orElseThrow( () -> new AssertionError( "Constructor not found in ProductionPeriodEntity" ) );
-      String constructorBody = constructor.getBody().toString();
-      assertThat( constructorBody ).contains( "Optional.ofNullable(" );
-      assertThat( constructorBody ).contains( ".filter(v -> !v.isEmpty())" );
-      assertThat( constructorBody ).contains( "_datatypeFactory.newXMLGregorianCalendarDate(" );
+      final String constructorBody = constructor.getBody().toString();
+      assertThat( constructorBody ).contains( "Optional.ofNullable(" )
+            .contains( ".filter(v -> !v.isEmpty())" )
+            .contains( "_datatypeFactory.newXMLGregorianCalendarDate(" );
    }
 
    @Test
@@ -345,9 +344,7 @@ class AspectModelJavaGeneratorTest {
 
       result.assertFields( "EvaluationResult", expectedFieldsForEvaluationResults, ImmutableMap.<String, String> builder()
             .put( "average", "" )
-            .put( "numericCode", "@NotNull" )
-            .put( "description", "" )
-            .put( "nestedResult", "@NotNull" )
+            .put( "numericCode", "@NotNull" ).put( "description", "" ).put( "nestedResult", "@Valid@NotNull" )
             .build()
       );
       result.assertConstructor( "EvaluationResult", expectedFieldsForEvaluationResults, new HashMap<>() );
@@ -1247,5 +1244,31 @@ class AspectModelJavaGeneratorTest {
             List.of( "this.testProperty=testProperty;", "returnthis;" ) );
       result.assertMethodBody( "TestEntity", "entityProperty", false, Optional.of( new ClassOrInterfaceType( "TestEntity" ) ), 1,
             List.of( "this.entityProperty=entityProperty;", "returnthis;" ) );
+   }
+
+   @Test
+   void testValidAnnotationRules() throws IOException {
+      final ImmutableMap<String, Object> expectedFieldsForEvaluationResults = ImmutableMap.<String, Object> builder()
+            .put( "entity", "TestEntity" )
+            .put( "collectionEntity", "Collection<TestEntity>" )
+            .put( "optionalEntity", "Optional<TestEntity>" )
+            .put( "testProperty", String.class )
+            .put( "collectionTestProperty", "Collection<String>" )
+            .put( "optionalTestProperty", "Optional<String>" )
+            .build();
+
+      final TestAspect aspect = TestAspect.ASPECT_WITH_VALID_ANNOTATION_TEST;
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect ) );
+
+      result.assertNumberOfFiles( 2 );
+      result.assertFields( "AspectWithValidAnnotationTest", expectedFieldsForEvaluationResults,
+            ImmutableMap.<String, String> builder()
+                  .put( "entity", "@Valid@NotNull" )
+                  .put( "collectionEntity", "@Valid@NotNull" )
+                  .put( "optionalEntity", "@Valid" )
+                  .put( "testProperty", "@NotNull" )
+                  .put( "collectionTestProperty", "@NotNull" )
+                  .put( "optionalTestProperty", "" )
+                  .build() );
    }
 }
