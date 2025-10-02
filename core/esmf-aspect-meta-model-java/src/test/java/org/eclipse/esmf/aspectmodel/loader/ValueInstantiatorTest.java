@@ -22,6 +22,7 @@ import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.datatype.LangString;
 
 import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.RDF;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -37,7 +38,7 @@ class ValueInstantiatorTest {
       // Arrange
       String lexicalRepresentation = "hello";
       String languageTag = "";
-      String datatypeUri = "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString";
+      String datatypeUri = RDF.langString.getURI();
       ValueInstantiator valueInstantiator = new ValueInstantiator();
 
       // Act
@@ -52,7 +53,7 @@ class ValueInstantiatorTest {
       // Arrange
       String lexicalRepresentation = "hello";
       String languageTag = "en";
-      String datatypeUri = "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString";
+      String datatypeUri = RDF.langString.getURI();
       ValueInstantiator valueInstantiator = new ValueInstantiator();
 
       // Act
