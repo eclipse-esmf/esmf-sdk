@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -75,17 +75,22 @@ public class AttributeValueRetriever {
     * the assertion on the current element will be on a lower list index. Duplicate attribute assertions are removed and only the assertion
     * with the highest precedence will be returned (bottom-most in the inheritance tree), this includes multiple assertions for the same
     * attribute with rdf:langString values with the same language tag. For example:
+    *
     * <p>
     * :SuperEntity a samm:AbstractEntity ;
     * samm:description "I'm abstract"@en ;
     * samm:description "Ich bin abstrakt"@de ;
     * samm:properties () .
-    * </p><p>
+    * </p>
+    *
+    * <p>
     * :MyEntity a samm:Entity ;
     * samm:extends :SuperEntity ;
     * samm:description "I'm concrete"@en ;
     * samm:properties () .
-    * </p><p>
+    * </p>
+    *
+    * <p>
     * Here, attributeValues( :MyEntity, samm:description ) will return:
     * List( Statement( :MyEntity samm:description "I'm contrete"@en ),
     * Statement( :SuperEntity samm:description "Ich bin abstrakt"@de ) )
