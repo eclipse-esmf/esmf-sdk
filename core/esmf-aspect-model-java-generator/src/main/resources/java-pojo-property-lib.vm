@@ -13,6 +13,10 @@
 #macro( javaPojoProperty $property )
     #if( !$property.isAbstract() )
         #set( $propertyType = $util.getPropertyType( $property, true, $codeGenerationConfig ) )
+        #if( $util.needsValidAnnotation( $property ) )
+            $codeGenerationConfig.importTracker().importExplicit( $Valid )
+        @Valid
+        #end
         #if( !$property.isOptional() && !$property.isNotInPayload() )
             $codeGenerationConfig.importTracker().importExplicit( $NotNull )
         @NotNull

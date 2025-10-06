@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -36,8 +36,9 @@ public class AspectModelJavaGenerator extends JavaGenerator {
 
    @Override
    public Stream<Artifact<QualifiedName, String>> generate() {
-      final Set<ComplexType> structureElements = elements( ComplexType.class ).filter( element ->
-            element.getExtends().isPresent() ).collect( Collectors.toSet() );
+      final Set<ComplexType> structureElements = elements( ComplexType.class )
+            .filter( element -> element.getExtends().isPresent() )
+            .collect( Collectors.toSet() );
       return Stream.of(
                   applyArtifactGenerator( Aspect.class, new StructureElementJavaArtifactGenerator<>(), config ),
                   applyArtifactGenerator( ComplexType.class, new StructureElementJavaArtifactGenerator<>( structureElements ), config ),

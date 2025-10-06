@@ -1,3 +1,16 @@
+<!--
+  ~ Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
+  ~
+  ~ See the AUTHORS file(s) distributed with this work for additional
+  ~ information regarding authorship.
+  ~
+  ~ This Source Code Form is subject to the terms of the Mozilla Public
+  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~ file, You can obtain one at https://mozilla.org/MPL/2.0/.
+  ~
+  ~ SPDX-License-Identifier: MPL-2.0
+  -->
+
 <code_scheme name="esmf-codestyle" version="173">
   <option name="LINE_SEPARATOR" value="&#10;" />
   <option name="RIGHT_MARGIN" value="160" />
@@ -28,7 +41,6 @@
         <package name="" withSubpackages="true" static="true" />
         <emptyLine />
         <package name="java" withSubpackages="true" static="false" />
-        <emptyLine />
         <package name="javax" withSubpackages="true" static="false" />
         <emptyLine />
         <package name="org.eclipse.esmf" withSubpackages="true" static="false" />

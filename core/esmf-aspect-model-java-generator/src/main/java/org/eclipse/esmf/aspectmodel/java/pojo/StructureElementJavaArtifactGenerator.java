@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -49,6 +49,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableMap;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.ResourceFactory;
@@ -115,6 +116,7 @@ public class StructureElementJavaArtifactGenerator<E extends StructureElement> i
             .put( "localeEn", Locale.ENGLISH )
             .put( "Matcher", Matcher.class )
             .put( "NotNull", NotNull.class )
+            .put( "Valid", Valid.class )
             .put( "Object", Object.class )
             .put( "ResourceFactory", ResourceFactory.class )
             .put( "Scalar", Scalar.class )
