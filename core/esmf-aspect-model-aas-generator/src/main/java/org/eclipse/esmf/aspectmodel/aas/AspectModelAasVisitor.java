@@ -285,9 +285,12 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       final SubmodelElement element = context.getPropertyResult();
       element.setSupplementalSemanticIds( updateGlobalReferenceWithSeeReferences( element, property ) );
 
-      if ( !property.getPayloadName().isEmpty() ) {
+      if ( !property.getPayloadName().isEmpty()
+            && !( element instanceof SubmodelElementList )
+            && !( element instanceof SubmodelElementCollection ) ) {
          element.setIdShort( property.getPayloadName() );
       }
+
 
       recursiveProperty.remove( property );
 
@@ -318,6 +321,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
             .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
             .value( submodelElements )
             .supplementalSemanticIds( buildGlobalReferenceForSeeReferences( entity ) )
+            .semanticId( null )
             .build();
    }
 
@@ -573,7 +577,8 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
                .orderRelevant( false );
 
          if ( !collection.isAnonymous() ) {
-            submodelBuilder.semanticId( buildReferenceForCollection( collection.urn().getUrn().toString() ) );
+            final String propertyUrn = DEFAULT_MAPPER.determineIdentifierFor( property );
+            submodelBuilder.semanticId( buildReferenceForCollection( propertyUrn ) );
          }
 
          return submodelBuilder.build();
@@ -590,6 +595,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
                               .map( ArrayNode.class::cast )
                               .map( arrayNode -> ( final Property property ) -> {
                                  final List<SubmodelElement> values = getValues( collection, property, context, arrayNode );
+                                 final String propertyUrn = DEFAULT_MAPPER.determineIdentifierFor( property );
                                  return new DefaultSubmodelElementList.Builder()
                                        .idShort( property.getName() )
                                        .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
@@ -597,6 +603,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
                                        .value( values )
                                        .typeValueListElement( AasSubmodelElements.SUBMODEL_ELEMENT )
                                        .orderRelevant( false )
+                                       .semanticId( buildReferenceForCollection( propertyUrn ) )
                                        .build();
                               } ) )
                   .orElse( defaultBuilder );

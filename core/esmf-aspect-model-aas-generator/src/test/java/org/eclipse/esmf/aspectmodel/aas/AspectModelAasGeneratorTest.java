@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -48,6 +50,7 @@ import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
 import org.eclipse.digitaltwin.aas4j.v3.model.KeyTypes;
 import org.eclipse.digitaltwin.aas4j.v3.model.MultiLanguageProperty;
 import org.eclipse.digitaltwin.aas4j.v3.model.Property;
+import org.eclipse.digitaltwin.aas4j.v3.model.Reference;
 import org.eclipse.digitaltwin.aas4j.v3.model.ReferenceTypes;
 import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
@@ -432,6 +435,44 @@ class AspectModelAasGeneratorTest {
       assertThat( environment.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
       assertThat( environment.getSubmodels().get( 0 ).getSubmodelElements().get( 0 ).getIdShort() ).isEqualTo( property.getIdShort() );
    }
+
+   @Test
+   void testSubmodelListSemanticIdIsPropertyUrnEntityCollection() throws DeserializationException {
+      final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_ENTITY_COLLECTION );
+
+      assertThat( env.getSubmodels() ).hasSize( 1 );
+      final Submodel sm = env.getSubmodels().getFirst();
+      assertThat( sm.getSubmodelElements() ).hasSize( 1 );
+      assertThat( sm.getSubmodelElements().getFirst() ).isInstanceOf( SubmodelElementList.class );
+
+      final SubmodelElementList sml = (SubmodelElementList) sm.getSubmodelElements().getFirst();
+
+      assertThat( sml.getSemanticId() ).isNotNull();
+      assertThat( sml.getSemanticId().getKeys() ).isNotEmpty();
+      assertThat( sml.getSemanticId().getKeys().getFirst().getValue() )
+            .isEqualTo( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty" );
+      assertThat( sml.getSemanticId().getKeys().getFirst().getValue() )
+            .isNotEqualTo( "urn:samm:org.eclipse.esmf.test:1.0.0#TestCollection" );
+   }
+
+   @Test
+   void testSubmodelCollectionInsideSubmodelListHasNoSemanticId() throws DeserializationException {
+      final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_ENTITY_LIST );
+      final Submodel sm = env.getSubmodels().getFirst();
+      final SubmodelElementList sml = ( SubmodelElementList ) sm.getSubmodelElements().getFirst();
+
+      final List<SubmodelElement> values = sml.getValue();
+      assertThat( values ).isNotEmpty();
+      assertThat( values.getFirst() ).isInstanceOf( SubmodelElementCollection.class );
+
+      final SubmodelElementCollection smc = ( SubmodelElementCollection ) values.getFirst();
+
+      assertThat( smc.getSemanticId() ).isNull();
+
+      final List<Reference> supp = smc.getSupplementalSemanticIds();
+      assertThat( supp == null || supp.isEmpty() ).isTrue();
+   }
+
 
    private void checkDataSpecificationIec61360( final Set<String> semanticIds, final Environment env ) {
       semanticIds.forEach( semanticId -> getDataSpecificationIec61360( semanticId, env ) );
