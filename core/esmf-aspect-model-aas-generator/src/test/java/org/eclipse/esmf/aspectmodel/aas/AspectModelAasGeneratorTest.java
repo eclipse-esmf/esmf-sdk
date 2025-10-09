@@ -473,6 +473,35 @@ class AspectModelAasGeneratorTest {
       assertThat( supp == null || supp.isEmpty() ).isTrue();
    }
 
+   @Test
+   void testSubmodelListSemanticIdSsPropertyUrnAndSmlSmcIdShortAreEntityName() throws DeserializationException {
+      final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_ENTITY_COLLECTION );
+
+      assertThat( env.getSubmodels() ).hasSize( 1 );
+      final Submodel sm = env.getSubmodels().getFirst();
+      assertThat( sm.getSubmodelElements() ).hasSize( 1 );
+      assertThat( sm.getSubmodelElements().getFirst() ).isInstanceOf( SubmodelElementList.class );
+
+      final SubmodelElementList sml = (SubmodelElementList) sm.getSubmodelElements().getFirst();
+
+      // (1) Identifier of the SML = URN of the property (not the characteristic)
+      assertThat( sml.getSemanticId() ).isNotNull();
+      assertThat( sml.getSemanticId().getKeys() ).isNotEmpty();
+      assertThat( sml.getSemanticId().getKeys().get( 0 ).getValue() )
+            .isEqualTo( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty" );
+
+      // (3) idShort of SML = Entity name
+      assertThat( sml.getIdShort() ).isEqualTo( "TestEntity" );
+
+      assertThat( sml.getValue() ).isNotEmpty();
+      assertThat( sml.getValue().get( 0 ) ).isInstanceOf( SubmodelElementCollection.class );
+      final SubmodelElementCollection smc = (SubmodelElementCollection) sml.getValue().get( 0 );
+
+      // (3) idShort of SMC = idShort of SML = Entity name
+      assertThat( smc.getIdShort() ).isEqualTo( "TestEntity" );
+      assertThat( smc.getIdShort() ).isEqualTo( sml.getIdShort() );
+   }
+
 
    private void checkDataSpecificationIec61360( final Set<String> semanticIds, final Environment env ) {
       semanticIds.forEach( semanticId -> getDataSpecificationIec61360( semanticId, env ) );

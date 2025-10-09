@@ -316,7 +316,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
          final Context context ) {
       final List<SubmodelElement> submodelElements = visitProperties( entity.getAllProperties(), context );
       return new DefaultSubmodelElementCollection.Builder()
-            .idShort( property.getName() )
+            .idShort( entity.getName() )
             .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
             .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
             .value( submodelElements )
@@ -566,9 +566,14 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
    }
 
    private <T extends Collection> Environment visitCollectionProperty( final T collection, final Context context ) {
+      final String listIdShort = collection.getDataType()
+            .filter( Entity.class::isInstance )
+            .map( ModelElement::getName )
+            .orElse( null );
+
       final SubmodelElementBuilder defaultBuilder = property -> {
          final DefaultSubmodelElementList.Builder submodelBuilder = new DefaultSubmodelElementList.Builder()
-               .idShort( property.getName() )
+               .idShort( listIdShort != null ? listIdShort : property.getName() )
                .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
                .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
                .value( List.of( decideOnMapping( property, context ) ) )
@@ -597,7 +602,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
                                  final List<SubmodelElement> values = getValues( collection, property, context, arrayNode );
                                  final String propertyUrn = DEFAULT_MAPPER.determineIdentifierFor( property );
                                  return new DefaultSubmodelElementList.Builder()
-                                       .idShort( property.getName() )
+                                       .idShort( listIdShort != null ? listIdShort : property.getName() )
                                        .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
                                        .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
                                        .value( values )
