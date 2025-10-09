@@ -285,9 +285,12 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       final SubmodelElement element = context.getPropertyResult();
       element.setSupplementalSemanticIds( updateGlobalReferenceWithSeeReferences( element, property ) );
 
-      if ( !property.getPayloadName().isEmpty() ) {
+      if ( !property.getPayloadName().isEmpty()
+            && !( element instanceof SubmodelElementList )
+            && !( element instanceof SubmodelElementCollection ) ) {
          element.setIdShort( property.getPayloadName() );
       }
+
 
       recursiveProperty.remove( property );
 
@@ -313,11 +316,12 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
          final Context context ) {
       final List<SubmodelElement> submodelElements = visitProperties( entity.getAllProperties(), context );
       return new DefaultSubmodelElementCollection.Builder()
-            .idShort( property.getName() )
+            .idShort( entity.getName() )
             .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
             .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
             .value( submodelElements )
             .supplementalSemanticIds( buildGlobalReferenceForSeeReferences( entity ) )
+            .semanticId( null )
             .build();
    }
 
@@ -562,9 +566,14 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
    }
 
    private <T extends Collection> Environment visitCollectionProperty( final T collection, final Context context ) {
+      final String listIdShort = collection.getDataType()
+            .filter( Entity.class::isInstance )
+            .map( ModelElement::getName )
+            .orElse( null );
+
       final SubmodelElementBuilder defaultBuilder = property -> {
          final DefaultSubmodelElementList.Builder submodelBuilder = new DefaultSubmodelElementList.Builder()
-               .idShort( property.getName() )
+               .idShort( listIdShort != null ? listIdShort : property.getName() )
                .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
                .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
                .value( List.of( decideOnMapping( property, context ) ) )
@@ -573,7 +582,8 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
                .orderRelevant( false );
 
          if ( !collection.isAnonymous() ) {
-            submodelBuilder.semanticId( buildReferenceForCollection( collection.urn().getUrn().toString() ) );
+            final String propertyUrn = DEFAULT_MAPPER.determineIdentifierFor( property );
+            submodelBuilder.semanticId( buildReferenceForCollection( propertyUrn ) );
          }
 
          return submodelBuilder.build();
@@ -590,13 +600,15 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
                               .map( ArrayNode.class::cast )
                               .map( arrayNode -> ( final Property property ) -> {
                                  final List<SubmodelElement> values = getValues( collection, property, context, arrayNode );
+                                 final String propertyUrn = DEFAULT_MAPPER.determineIdentifierFor( property );
                                  return new DefaultSubmodelElementList.Builder()
-                                       .idShort( property.getName() )
+                                       .idShort( listIdShort != null ? listIdShort : property.getName() )
                                        .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
                                        .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
                                        .value( values )
                                        .typeValueListElement( AasSubmodelElements.SUBMODEL_ELEMENT )
                                        .orderRelevant( false )
+                                       .semanticId( buildReferenceForCollection( propertyUrn ) )
                                        .build();
                               } ) )
                   .orElse( defaultBuilder );
