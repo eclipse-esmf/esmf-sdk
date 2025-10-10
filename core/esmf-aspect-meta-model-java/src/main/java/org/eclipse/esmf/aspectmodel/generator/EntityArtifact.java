@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -14,13 +14,13 @@
 package org.eclipse.esmf.aspectmodel.generator;
 
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.Entity;
 
 /**
- * Result of a generation process that generates an Aspect
+ * Result of a generation process that generates an Entity
  */
-public class AspectArtifact extends StructureElementArtifact<Aspect> {
-   public AspectArtifact( final AspectModelUrn urn, final Aspect aspect ) {
-      super( urn, aspect );
+public class EntityArtifact extends StructureElementArtifact<Entity> {
+   public EntityArtifact( final AspectModelUrn urn, final Entity modelElement ) {
+      super( urn, modelElement );
    }
 }
