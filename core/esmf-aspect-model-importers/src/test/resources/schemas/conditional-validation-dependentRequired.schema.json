@@ -1,0 +1,20 @@
+{
+  "$id": "https://example.com/conditional-validation-dependentRequired.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Conditional Validation with dependentRequired",
+  "type": "object",
+  "properties": {
+    "foo": {
+      "type": "boolean"
+    },
+    "bar": {
+      "type": "string"
+    }
+  },
+  "dependentRequired": {
+    "foo": [
+      "bar"
+    ]
+  }
+}
+

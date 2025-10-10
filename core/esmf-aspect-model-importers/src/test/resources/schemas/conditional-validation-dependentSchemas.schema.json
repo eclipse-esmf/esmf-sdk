@@ -1,0 +1,28 @@
+{
+  "$id": "https://example.com/conditional-validation-dependentSchemas.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Conditional Validation with dependentSchemas",
+  "type": "object",
+  "properties": {
+    "foo": {
+      "type": "boolean"
+    },
+    "propertiesCount": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "dependentSchemas": {
+    "foo": {
+      "required": [
+        "propertiesCount"
+      ],
+      "properties": {
+        "propertiesCount": {
+          "minimum": 7
+        }
+      }
+    }
+  }
+}
+
