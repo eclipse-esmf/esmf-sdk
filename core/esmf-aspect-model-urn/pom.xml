@@ -37,22 +37,12 @@
          <artifactId>jackson-annotations</artifactId>
       </dependency>
       <dependency>
-         <groupId>com.fasterxml.jackson.core</groupId>
-         <artifactId>jackson-core</artifactId>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
          <groupId>io.vavr</groupId>
          <artifactId>vavr</artifactId>
       </dependency>
       <dependency>
          <groupId>org.slf4j</groupId>
          <artifactId>slf4j-api</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>com.fasterxml.jackson.core</groupId>
-         <artifactId>jackson-databind</artifactId>
-         <scope>test</scope>
       </dependency>
 
       <!-- Test dependencies -->
@@ -69,6 +59,16 @@
       <dependency>
          <groupId>net.jqwik</groupId>
          <artifactId>jqwik</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>com.fasterxml.jackson.core</groupId>
+         <artifactId>jackson-core</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>com.fasterxml.jackson.core</groupId>
+         <artifactId>jackson-databind</artifactId>
          <scope>test</scope>
       </dependency>
    </dependencies>

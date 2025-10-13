@@ -43,12 +43,14 @@ import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.metamodel.vocabulary.SimpleRdfNamespace;
 import org.eclipse.esmf.test.TestModel;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Streams;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Test;
@@ -99,7 +101,6 @@ public class JsonSchemaImporterTest {
          final JsonSchemaToAspect jsonSchemaToAspect = new JsonSchemaToAspect( jsonNode, config );
          final AspectArtifact aspectArtifact = jsonSchemaToAspect.generate().findFirst().orElseThrow();
          final Aspect aspect = aspectArtifact.getContent();
-         //         System.out.println( AspectSerializer.INSTANCE.aspectToString( aspect ) );
       } ).doesNotThrowAnyException();
 
       assertThatCode( () -> {
@@ -117,6 +118,99 @@ public class JsonSchemaImporterTest {
                         "Property " + property.getURI() + " must not have more than one Characteristic" ).isOne();
                } );
       } ).doesNotThrowAnyException();
+   }
+
+   @Test
+   void testReuseProperties() throws JsonProcessingException {
+      final String schema = """
+            {
+              "$id": "https://example.com/duplicate-properties.schema.json",
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "title": "Person",
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "address": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "required": [
+                      "name"
+                    ]
+                  },
+                  "required": [
+                    "name",
+                    "address"
+                  ]
+                }
+              }
+            }
+            """;
+
+      final JsonNode jsonNode = objectMapper.readTree( schema );
+      final AspectGenerationConfig config = AspectGenerationConfigBuilder.builder()
+            .aspectModelUrn( AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "Test" ) )
+            .build();
+      final JsonSchemaToAspect jsonSchemaToAspect = new JsonSchemaToAspect( jsonNode, config );
+      final AspectArtifact aspectArtifact = jsonSchemaToAspect.generate().findFirst().orElseThrow();
+      final Aspect aspect = aspectArtifact.getContent();
+
+      final List<String> propertyNames = aspect.getProperties().stream().map( ModelElement::getName ).toList();
+      assertThat( propertyNames ).contains( "name", "address" );
+   }
+
+   @Test
+   void testPreventNameClashes() throws JsonProcessingException {
+      final String schema = """
+            {
+              "$id": "https://example.com/duplicate-properties.schema.json",
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "title": "Person",
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "address": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ]
+                }
+              },
+              "required": [
+                "name",
+                "address"
+              ]
+            }
+            """;
+
+      final JsonNode jsonNode = objectMapper.readTree( schema );
+      final AspectGenerationConfig config = AspectGenerationConfigBuilder.builder()
+            .aspectModelUrn( AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "Test" ) )
+            .build();
+      final JsonSchemaToEntity jsonSchemaToAspect = new JsonSchemaToEntity( jsonNode, config );
+      final EntityArtifact entityArtifact = jsonSchemaToAspect.generate().findFirst().orElseThrow();
+      final Entity entity = entityArtifact.getContent();
+      final Model model = createModelForElement( entity );
+      System.out.println( AspectSerializer.INSTANCE.modelElementToString( entity ) );
+
+      final List<String> propertyNames = Streams.stream( model.listStatements( null, RDF.type, SammNs.SAMM.Property() ) )
+            .map( Statement::getSubject )
+            .map( Resource::getURI )
+            .map( AspectModelUrn::fromUrn )
+            .map( AspectModelUrn::getName )
+            .toList();
+      assertThat( propertyNames ).contains( "name", "address", "addressName" );
    }
 
    private Model createModelForElement( final ModelElement element ) {

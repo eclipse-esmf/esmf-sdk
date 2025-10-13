@@ -62,6 +62,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -103,54 +104,61 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
    /**
     * Defined in RFC 5321
     */
-   private static final String EMAIL_REGEX = "^([a-zA-Z0-9\\+\\._\\/&!][-a-zA-Z0-9\\+\\._\\/&!]*)@(([a-zA-Z0-9][-a-zA-Z0-9]*\\.)"
-         + "([-a-zA-Z0-9]+\\.)*[a-zA-Z]{2,})$";
+   private static final Pattern EMAIL_REGEX = Pattern.compile( "^([a-zA-Z0-9+._/&!][-a-zA-Z0-9+._/&!]*)@("
+         + "([a-zA-Z0-9][-a-zA-Z0-9]*\\.)([-a-zA-Z0-9]+\\.)*[a-zA-Z]{2,})$" );
 
    /**
-    * Defined in RFC 6531 and implemented in <a href="https://gist.github.com/baker-ling/3b4b014ee809aa9732f9873fe060c098">gist</a>
+    * Defined in RFC 6531 and implemented in <a href="https://gist.github.com/baker-ling/3b4b014ee809aa9732f9873fe060c098">gist</a>.
+    * Adapted for use in Java: (1) removed redundant escapes, (2) added character ranges to match case-insensitive (instead of i flag);
+    * replaced Unicode code point references from \\u to \\x.
     */
-   private static final String IDN_EMAIL_REGEX = "^(?<localPart>(?<dotString>[0-9a-zA-Z!#$%&'*+\\-\\/=?^_`\\{|\\}~\\u{80}-\\u{10FFFF}]+(\\"
-         + ".[0-9a-zA-Z!#$%&'*+\\-\\/=?^_`\\{|\\}~\\u{80}-\\u{10FFFF}]+)*)|(?<quotedString>\""
-         + "([\\x20-\\x21\\x23-\\x5B\\x5D-\\x7E\\u{80}-\\u{10FFFF}]|\\\\[\\x20-\\x7E])*\"))(?<!.{64,})@(?<domainOrAddressLiteral>"
-         + "(?<addressLiteral>\\[((?<IPv4>\\d{1,3}(\\.\\d{1,3}){3})|(?<IPv6Full>IPv6:[0-9a-fA-F]{1,4}(:[0-9a-fA-F]{1,4}){7})|"
-         + "(?<IPv6Comp>IPv6:([0-9a-fA-F]{1,4}(:[0-9a-fA-F]{1,4}){0,5})?::([0-9a-fA-F]{1,4}(:[0-9a-fA-F]{1,4}){0,5})?)|"
-         + "(?<IPv6v4Full>IPv6:[0-9a-fA-F]{1,4}(:[0-9a-fA-F]{1,4}){5}:\\d{1,3}(\\.\\d{1,3}){3})|(?<IPv6v4Comp>IPv6:([0-9a-fA-F]{1,4}"
-         + "(:[0-9a-fA-F]{1,4}){0,3})?::([0-9a-fA-F]{1,4}(:[0-9a-fA-F]{1,4}){0,3}:)?\\d{1,3}(\\.\\d{1,3}){3})|"
-         + "(?<generalAddressLiteral>[a-zA-Z0-9\\-]*[[a-zA-Z0-9]:[\\x21-\\x5A\\x5E-\\x7E]+))\\])|(?<Domain>(?!.{256,})("
-         + "([0-9a-zA-Z\\u{80}-\\u{10FFFF}]([0-9a-zA-Z\\-\\u{80}-\\u{10FFFF}]*[0-9a-zA-Z\\u{80}-\\u{10FFFF}])?))(\\."
-         + "([0-9a-zA-Z\\u{80}-\\u{10FFFF}]([0-9a-zA-Z\\-\\u{80}-\\u{10FFFF}]*[0-9a-zA-Z\\u{80}-\\u{10FFFF}])?))*))$";
+   private static final Pattern IDN_EMAIL_REGEX = Pattern.compile(
+         "^(?<localPart>(?<dotString>[0-9a-zA-Z!#$%&'*+\\-/=?^_`{|}~\\x{80}-\\x{10FFFF}]+(\\"
+               + ".[0-9a-zA-Z!#$%&'*+\\-/=?^_`{|}~\\x{80}-\\x{10FFFF}]+)*)|(?<quotedString>\""
+               + "([\\x20-\\x21\\x23-\\x5B\\x5D-\\x7E\\x{80}-\\x{10FFFF}]|\\\\[\\x20-\\x7E])*\"))(?<!.{64,})@(?<domainOrAddressLiteral>"
+               + "(?<addressLiteral>\\[((?<IPv4>\\d{1,3}(\\.\\d{1,3}){3})|(?<IPv6Full>IPv6:[0-9a-fA-F]{1,4}(:[0-9a-fA-F]{1,4}){7})|"
+               + "(?<IPv6Comp>IPv6:([0-9a-fA-F]{1,4}(:[0-9a-fA-F]{1,4}){0,5})?::([0-9a-fA-F]{1,4}(:[0-9a-fA-F]{1,4}){0,5})?)|"
+               + "(?<IPv6v4Full>IPv6:[0-9a-fA-F]{1,4}(:[0-9a-fA-F]{1,4}){5}:\\d{1,3}(\\.\\d{1,3}){3})|(?<IPv6v4Comp>IPv6:([0-9a-fA-F]{1,4}"
+               + "(:[0-9a-fA-F]{1,4}){0,3})?::([0-9a-fA-F]{1,4}(:[0-9a-fA-F]{1,4}){0,3}:)?\\d{1,3}(\\.\\d{1,3}){3})|"
+               + "(?<generalAddressLiteral>[a-zA-Z0-9\\-]*\\[[a-zA-Z0-9]:[\\x21-\\x5A\\x5E-\\x7E]+))])|(?<Domain>(?!.{256,})"
+               + "([0-9a-zA-Z\\x{80}-\\x{10FFFF}]([0-9a-zA-Z\\-\\x{80}-\\x{10FFFF}]*[0-9a-zA-Z\\x{80}-\\x{10FFFF}])?)(\\."
+               + "([0-9a-zA-Z\\x{80}-\\x{10FFFF}]([0-9a-zA-Z\\-\\x{80}-\\x{10FFFF}]*[0-9a-zA-Z\\x{80}-\\x{10FFFF}])?))*))$" );
 
    /**
     * Defined in RFC 2673
     */
-   private static final String IPV4_REGEX = "^(((?!25?[6-9])[12]\\d|[1-9])?\\d\\.?\\b){4}$";
+   private static final Pattern IPV4_REGEX = Pattern.compile( "^(((?!25?[6-9])[12]\\d|[1-9])?\\d\\.?\\b){4}$" );
 
    /**
-    * Defined in RFC 4291 section 2.2 and implemented in <a href="https://stackoverflow.com/a/17871737/12105820">this post</a>
+    * Defined in RFC 4291 section 2.2 and implemented in <a href="https://stackoverflow.com/a/17871737/12105820">this post</a>.
+    * Adapted: Simplified groupings (e.g., {7,7} -> {7})
     */
-   private static final String IPV6_REGEX = "^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,"
-         + "6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|"
-         + "([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:("
-         + "(:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:)"
-         + "{0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:("
-         + "(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$";
+   private static final Pattern IPV6_REGEX = Pattern.compile(
+         "^(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,"
+               + "6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|"
+               + "([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:("
+               + "(:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]+|::(ffff(:0{1,4})"
+               + "?:)?((25[0-5]|(2[0-4]|1?[0-9])?[0-9])\\.){3}(25[0-5]|(2[0-4]|1?[0-9])?[0-9])|([0-9a-fA-F]{1,4}:){1,"
+               + "4}:((25[0-5]|(2[0-4]|1?[0-9])?[0-9])\\.){3}(25[0-5]|(2[0-4]|1?[0-9])?[0-9]))$" );
 
    /**
     * Defined in RFC 1123
     */
-   private static final String HOSTNAME_REGEX = "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$";
+   private static final Pattern HOSTNAME_REGEX = Pattern.compile( "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$" );
 
    /**
     * Defined in RFC 4122
     */
-   private static final String UUID_REGEX = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$";
+   private static final Pattern UUID_REGEX = Pattern.compile(
+         "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$" );
 
    /**
     * Defined in RFC 6570 and implemented in <a href="https://stackoverflow.com/a/61645285/12105820">this post</a>
     */
-   private static final String URI_TEMPLATE_REGEX = "^([^\\x00-\\x20\\x7f\"'%<>\\\\^`{|}]|%[0-9A-Fa-f]{2}|{[+#./;?&=,!@|]?("
-         + "(\\w|%[0-9A-Fa-f]{2})(\\.?(\\w|%[0-9A-Fa-f]{2}))*(:[1-9]\\d{0,3}|\\*)?)(,((\\w|%[0-9A-Fa-f]{2})(\\.?(\\w|%[0-9A-Fa-f]{2}))*"
-         + "(:[1-9]\\d{0,3}|\\*)?))*})*$";
+   private static final Pattern URI_TEMPLATE_REGEX = Pattern.compile(
+         "^([^\\x00-\\x20\\x7f\"'%<>\\\\^`{|}]|%[0-9A-Fa-f]{2}|\\{[+#./;?&=,!@|]?("
+               + "(\\w|%[0-9A-Fa-f]{2})(\\.?(\\w|%[0-9A-Fa-f]{2}))*(:[1-9]\\d{0,3}|\\*)?)(,((\\w|%[0-9A-Fa-f]{2})(\\.?"
+               + "(\\w|%[0-9A-Fa-f]{2}))*(:[1-9]\\d{0,3}|\\*)?))*})*$" );
 
    protected static final String TODO_COMMENT = "TODO";
 
@@ -172,11 +180,26 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
       }
    }
 
+   protected record Path( List<String> elements ) {
+      protected Path() {
+         this( List.of() );
+      }
+
+      public Path with( final String element ) {
+         return new Path( Stream.concat( elements.stream(), Stream.of( element ) ).toList() );
+      }
+   }
+
    protected record Context(
-         Map<AspectModelUrn, ModelElement> generatedElements
+         Map<AspectModelUrn, ModelElement> generatedElements,
+         List<String> path
    ) {
       protected Context() {
-         this( new HashMap<>() );
+         this( new HashMap<>(), List.of() );
+      }
+
+      public Context withPath( final String element ) {
+         return new Context( generatedElements(), Stream.concat( path().stream(), Stream.of( element ) ).toList() );
       }
    }
 
@@ -258,19 +281,14 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
             .or( () -> jsonProperty( node, $DEFS ) )
             .stream()
             .flatMap( propertyNode -> Streams.stream( propertyNode.fields() ) )
-            .map( field -> {
-               final AspectModelUrn propertyUrn = buildPropertyUrn( field.getKey() );
-               final ModelElement modelElement = context.generatedElements().get( propertyUrn );
-               if ( modelElement instanceof final Property property ) {
-                  return property;
-               }
-               return buildProperty( field, determineRequiredProperties( node ), context );
-            } )
+            .map( field -> buildProperty( field, determineRequiredProperties( node ), context ) )
             .toList();
    }
 
    protected String escapeLocalName( final String elementName ) {
-      return elementName.replace( "$", "" );
+      return CaseFormat.LOWER_UNDERSCORE.to( CaseFormat.LOWER_CAMEL,
+            elementName.replace( "$", "" )
+                  .replaceAll( "[^a-zA-Z]", "_" ) );
    }
 
    protected record ConstraintsAndImpliedType( List<Constraint> contraints, Scalar type ) {}
@@ -470,7 +488,7 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
 
       if ( jsonType.equals( OBJECT.key() ) ) {
          return singleEntity()
-               .dataType( buildEntity( propertyNode, propertyName, context ) )
+               .dataType( buildEntity( propertyNode, propertyName, context.withPath( propertyName ) ) )
                .build();
       }
 
@@ -513,7 +531,8 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
    }
 
    protected Entity buildEntity( final JsonNode item, final String propertyName, final Context context ) {
-      return entity( config.aspectModelUrn().withName( determinEntityName( propertyName ) ) )
+      final String entityName = determinEntityName( propertyName );
+      return entity( config.aspectModelUrn().withName( entityName ) )
             .description( determineDescription( item ).orElse( null ) )
             .properties( buildPropertiesList( item, context ) )
             .build();
@@ -562,17 +581,50 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
       return config.aspectModelUrn().withName( escapeLocalName( propertyName ) );
    }
 
+   protected boolean characteristicsAreLogicallyEquivalent( final Characteristic characteristic1, final Characteristic characteristic2 ) {
+      if ( characteristic1 == null || characteristic2 == null ) {
+         return false;
+      }
+      if ( !characteristic1.isAnonymous() || !characteristic2.isAnonymous() && characteristic1.urn().equals( characteristic2.urn() ) ) {
+         return true;
+      }
+      return characteristic1.getClass().isAssignableFrom( characteristic2.getClass() )
+            && characteristic1.getDataType().equals( characteristic2.getDataType() )
+            && characteristic1.getPreferredNames().equals( characteristic2.getPreferredNames() )
+            && characteristic1.getDescriptions().equals( characteristic2.getDescriptions() )
+            && characteristic1.getSee().equals( characteristic2.getSee() );
+   }
+
    protected Property buildProperty( final Map.Entry<String, JsonNode> field, final Set<String> requiredProperties,
          final Context context ) {
-      final String propertyName = field.getKey();
+      final String preliminaryPropertyName = field.getKey();
       final JsonNode propertyNode = field.getValue();
 
       final Optional<JsonNode> refNode = jsonProperty( propertyNode, $REF );
       if ( refNode.isPresent() ) {
-         return buildProperty( Map.entry( propertyName, resolveRef( refNode.get().asText() ) ), requiredProperties, context );
+         return buildProperty( Map.entry( preliminaryPropertyName, resolveRef( refNode.get().asText() ) ), requiredProperties, context );
       }
 
-      final Characteristic characteristic = buildCharacteristic( propertyNode, propertyName, context );
+      final Characteristic characteristic = buildCharacteristic( propertyNode, preliminaryPropertyName, context );
+      final AspectModelUrn preliminaryPropertyUrn = buildPropertyUrn( preliminaryPropertyName );
+      final ModelElement previouslyGeneratedElement = context.generatedElements().get( preliminaryPropertyUrn );
+      final String propertyName;
+      final AspectModelUrn propertyUrn;
+      if ( previouslyGeneratedElement instanceof final Property previouslyGeneratedProperty ) {
+         if ( characteristicsAreLogicallyEquivalent( previouslyGeneratedProperty.getCharacteristic().orElse( null ),
+               characteristic ) ) {
+            return previouslyGeneratedProperty;
+         }
+
+         // Another Property with the same name but a different Characteristic was previously generated.
+         // So we need another name.
+         propertyName = StringUtils.uncapitalize( context.path().stream().map( StringUtils::capitalize )
+               .collect( Collectors.joining( "", "", StringUtils.capitalize( preliminaryPropertyName ) ) ) );
+         propertyUrn = config.aspectModelUrn().withName( propertyName );
+      } else {
+         propertyName = preliminaryPropertyName;
+         propertyUrn = preliminaryPropertyUrn;
+      }
 
       final Optional<ScalarValue> exampleValue = jsonProperty( propertyNode, EXAMPLES )
             .filter( JsonNode::isArray )
@@ -582,13 +634,13 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
                   ? Optional.of( value( example.asText(), scalar ) )
                   : Optional.empty() );
 
-      final AspectModelUrn propertyUrn = buildPropertyUrn( propertyName );
       final Property result = property( propertyUrn )
             .preferredName( determinePreferredName( propertyName ) )
             .description( determineDescription( propertyNode ).orElse( null ) )
             .characteristic( characteristic )
             .exampleValue( exampleValue.orElse( null ) )
             .optional( !requiredProperties.contains( propertyName ) )
+            .payloadName( propertyName.equals( preliminaryPropertyName ) ? null : preliminaryPropertyName )
             .build();
       context.generatedElements().put( propertyUrn, result );
       return result;

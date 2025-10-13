@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -46,6 +47,7 @@ import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.QuantityKinds;
 import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.ScalarValue;
+import org.eclipse.esmf.metamodel.StructureElement;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Unit;
 import org.eclipse.esmf.metamodel.Value;
@@ -115,7 +117,7 @@ public class SammBuilder {
     * @param <SELF> the self type
     * @param <ACTUAL> the element type
     */
-   protected abstract static class Builder<SELF extends Builder<SELF, ACTUAL>, ACTUAL> {
+   public abstract static class Builder<SELF extends Builder<SELF, ACTUAL>, ACTUAL> {
       protected final SELF myself;
       protected final java.util.Set<LangString> preferredNames = new HashSet<>();
       protected final java.util.Set<LangString> descriptions = new HashSet<>();
@@ -127,37 +129,58 @@ public class SammBuilder {
       }
 
       public SELF preferredName( final String preferredName ) {
+         if ( preferredName == null ) {
+            return myself;
+         }
          return preferredName( preferredName, Locale.ENGLISH );
       }
 
       public SELF preferredName( final String preferredName, final Locale language ) {
+         if ( preferredName == null || language == null ) {
+            return myself;
+         }
          return preferredName( new LangString( preferredName, language ) );
       }
 
       public SELF preferredName( final LangString preferredName ) {
-         preferredNames.add( preferredName );
+         if ( preferredName != null ) {
+            preferredNames.add( preferredName );
+         }
          return myself;
       }
 
       public SELF description( final String description ) {
+         if ( description == null ) {
+            return myself;
+         }
          return description( description, Locale.ENGLISH );
       }
 
       public SELF description( final String description, final Locale language ) {
+         if ( description == null || language == null ) {
+            return myself;
+         }
          return description( new LangString( description, language ) );
       }
 
       public SELF description( final LangString description ) {
-         descriptions.add( description );
+         if ( description != null ) {
+            descriptions.add( description );
+         }
          return myself;
       }
 
       public SELF see( final URI uri ) {
+         if ( uri == null ) {
+            return myself;
+         }
          return see( uri.toASCIIString() );
       }
 
       public SELF see( final String uri ) {
-         see.add( uri );
+         if ( uri != null ) {
+            see.add( uri );
+         }
          return myself;
       }
 
@@ -172,7 +195,7 @@ public class SammBuilder {
     * @param <SELF> the self type
     * @param <ACTUAL> the element type
     */
-   protected abstract static class OptionallyNamedElementBuilder<SELF extends OptionallyNamedElementBuilder<SELF, ACTUAL>,
+   public abstract static class OptionallyNamedElementBuilder<SELF extends OptionallyNamedElementBuilder<SELF, ACTUAL>,
          ACTUAL extends ModelElement> extends Builder<SELF, ACTUAL> {
       protected final AspectModelUrn urn;
 
@@ -205,7 +228,7 @@ public class SammBuilder {
     * @param <SELF> the self type
     * @param <ACTUAL> the element type
     */
-   protected abstract static class NamedElementBuilder<SELF extends NamedElementBuilder<SELF, ACTUAL>,
+   public abstract static class NamedElementBuilder<SELF extends NamedElementBuilder<SELF, ACTUAL>,
          ACTUAL extends ModelElement> extends Builder<SELF, ACTUAL> {
       protected final AspectModelUrn urn;
 
@@ -226,12 +249,47 @@ public class SammBuilder {
    }
 
    /**
+    * Builder for {@link StructureElement}
+    *
+    * @param <SELF> the self type
+    * @param <T> the type of StructureElement, e.g. {@link Aspect} or {@link Entity}
+    */
+   public abstract static class StructureElementBuilder<SELF extends StructureElementBuilder<SELF, T>, T extends StructureElement>
+         extends NamedElementBuilder<SELF, T> {
+      private final java.util.List<Property> properties = new ArrayList<>();
+
+      protected StructureElementBuilder( final Class<?> selfType, final AspectModelUrn urn ) {
+         super( selfType, urn );
+      }
+
+      public SELF property( final Property property ) {
+         if ( property != null ) {
+            properties.add( property );
+         }
+         return myself;
+      }
+
+      public SELF properties( final Iterable<Property> properties ) {
+         if ( properties == null ) {
+            return myself;
+         }
+         for ( final Property property : properties ) {
+            property( property );
+         }
+         return myself;
+      }
+
+      protected java.util.List<Property> properties() {
+         return properties;
+      }
+   }
+
+   /**
     * Builder for {@link Aspect}
     *
     * @param <SELF> the self type
     */
-   public static class AspectBuilder<SELF extends AspectBuilder<SELF>> extends NamedElementBuilder<SELF, Aspect> {
-      private final java.util.List<Property> properties = new ArrayList<>();
+   public static class AspectBuilder<SELF extends AspectBuilder<SELF>> extends StructureElementBuilder<SELF, Aspect> {
       private final java.util.List<Operation> operations = new ArrayList<>();
       private final java.util.List<Event> events = new ArrayList<>();
 
@@ -239,24 +297,43 @@ public class SammBuilder {
          super( AspectBuilder.class, urn );
       }
 
-      public SELF property( final Property property ) {
-         properties.add( property );
+      public SELF operation( final Operation operation ) {
+         if ( operation != null ) {
+            operations.add( operation );
+         }
          return myself;
       }
 
-      public SELF operation( final Operation operation ) {
-         operations.add( operation );
+      public SELF operations( final Iterable<Operation> operations ) {
+         if ( operations == null ) {
+            return myself;
+         }
+         for ( final Operation operation : operations ) {
+            operation( operation );
+         }
          return myself;
       }
 
       public SELF event( final Event event ) {
-         events.add( event );
+         if ( event != null ) {
+            events.add( event );
+         }
+         return myself;
+      }
+
+      public SELF events( final Iterable<Event> events ) {
+         if ( events == null ) {
+            return myself;
+         }
+         for ( final Event event : events ) {
+            event( event );
+         }
          return myself;
       }
 
       @Override
       public Aspect build() {
-         return new DefaultAspect( baseAttributes(), properties, operations, events );
+         return new DefaultAspect( baseAttributes(), properties(), operations, events );
       }
    }
 
@@ -265,28 +342,24 @@ public class SammBuilder {
     *
     * @param <SELF> the self type
     */
-   public static class EntityBuilder<SELF extends EntityBuilder<SELF>> extends NamedElementBuilder<SELF, Entity> {
-      private final java.util.List<Property> properties = new ArrayList<>();
+   public static class EntityBuilder<SELF extends EntityBuilder<SELF>> extends StructureElementBuilder<SELF, Entity> {
       private ComplexType superType;
 
       public EntityBuilder( final AspectModelUrn urn ) {
          super( EntityBuilder.class, urn );
       }
 
-      public SELF property( final Property property ) {
-         properties.add( property );
-         return myself;
-      }
-
       @SuppressWarnings( "NewMethodNamingConvention" )
       public SELF extends_( final ComplexType superType ) {
-         this.superType = superType;
+         if ( superType != null ) {
+            this.superType = superType;
+         }
          return myself;
       }
 
       @Override
       public Entity build() {
-         return new DefaultEntity( baseAttributes(), properties, Optional.ofNullable( superType ), java.util.List.of(), null );
+         return new DefaultEntity( baseAttributes(), properties(), Optional.ofNullable( superType ), java.util.List.of(), null );
       }
    }
 
@@ -304,7 +377,9 @@ public class SammBuilder {
       }
 
       public SELF dataType( final Entity type ) {
-         dataType = type;
+         if ( type != null ) {
+            dataType = type;
+         }
          return myself;
       }
 
@@ -355,7 +430,9 @@ public class SammBuilder {
          if ( !dataType.getAllProperties().contains( property ) ) {
             throw new AspectModelBuildingException( "Property " + property + " is not part of Entity type " + dataType );
          }
-         assertions.put( property, value );
+         if ( property != null && value != null ) {
+            assertions.put( property, value );
+         }
          return myself;
       }
 
@@ -385,11 +462,16 @@ public class SammBuilder {
       }
 
       public SELF characteristic( final Characteristic characteristic ) {
-         this.characteristic = characteristic;
+         if ( characteristic != null ) {
+            this.characteristic = characteristic;
+         }
          return myself;
       }
 
       public SELF exampleValue( final ScalarValue exampleValue ) {
+         if ( exampleValue == null ) {
+            return myself;
+         }
          if ( characteristic == null ) {
             throw new AspectModelBuildingException( "Property is missing a characteristic" );
          }
@@ -423,7 +505,9 @@ public class SammBuilder {
       }
 
       public SELF payloadName( final String payloadName ) {
-         this.payloadName = payloadName;
+         if ( payloadName != null ) {
+            this.payloadName = payloadName;
+         }
          return myself;
       }
 
@@ -440,7 +524,9 @@ public class SammBuilder {
       @SuppressWarnings( { "NewMethodNamingConvention", "checkstyle:MemberName" } )
       public SELF extends_(
             @SuppressWarnings( { "MethodParameterNamingConvention", "checkstyle:ParameterName" } ) final Property extends_ ) {
-         this.extends_ = extends_;
+         if ( extends_ != null ) {
+            this.extends_ = extends_;
+         }
          return myself;
       }
 
@@ -476,7 +562,9 @@ public class SammBuilder {
       }
 
       public SELF dataType( final Type type ) {
-         dataType = type;
+         if ( type != null ) {
+            dataType = type;
+         }
          return myself;
       }
 
@@ -504,12 +592,26 @@ public class SammBuilder {
       }
 
       public SELF baseCharacteristic( final Characteristic baseCharacteristic ) {
-         this.baseCharacteristic = baseCharacteristic;
+         if ( baseCharacteristic != null ) {
+            this.baseCharacteristic = baseCharacteristic;
+         }
          return myself;
       }
 
       public SELF constraint( final Constraint constraint ) {
-         constraints.add( constraint );
+         if ( constraint != null ) {
+            constraints.add( constraint );
+         }
+         return myself;
+      }
+
+      public SELF constraints( final Iterable<Constraint> constraints ) {
+         if ( constraints == null ) {
+            return myself;
+         }
+         for ( final Constraint constraint : constraints ) {
+            constraint( constraint );
+         }
          return myself;
       }
 
@@ -541,12 +643,16 @@ public class SammBuilder {
       }
 
       public SELF unit( final Unit unit ) {
-         this.unit = unit;
+         if ( unit != null ) {
+            this.unit = unit;
+         }
          return myself;
       }
 
       public SELF dataType( final Type type ) {
-         dataType = type;
+         if ( type != null ) {
+            dataType = type;
+         }
          return myself;
       }
 
@@ -574,12 +680,16 @@ public class SammBuilder {
       }
 
       public SELF unit( final Unit unit ) {
-         this.unit = unit;
+         if ( unit != null ) {
+            this.unit = unit;
+         }
          return myself;
       }
 
       public SELF dataType( final Type type ) {
-         this.type = type;
+         if ( type != null ) {
+            this.type = type;
+         }
          return myself;
       }
 
@@ -610,11 +720,16 @@ public class SammBuilder {
       }
 
       public SELF dataType( final Type type ) {
-         dataType = type;
+         if ( type != null ) {
+            dataType = type;
+         }
          return myself;
       }
 
       public <T extends Value, C extends java.util.Collection<T>> SELF values( final C values ) {
+         if ( values == null ) {
+            return myself;
+         }
          for ( final Value value : values ) {
             value( value );
          }
@@ -622,6 +737,9 @@ public class SammBuilder {
       }
 
       public SELF values( final Value... values ) {
+         if ( values == null ) {
+            return myself;
+         }
          for ( final Value value : values ) {
             value( value );
          }
@@ -631,6 +749,9 @@ public class SammBuilder {
       public SELF value( final Value value ) {
          if ( dataType == null ) {
             throw new AspectModelBuildingException( "Enumeration is missing a type" );
+         }
+         if ( value == null ) {
+            return myself;
          }
          if ( !value.getType().isTypeOrSubtypeOf( dataType ) ) {
             throw new AspectModelBuildingException( "Value " + value + "'s type is not and no subtype of " + dataType );
@@ -670,6 +791,9 @@ public class SammBuilder {
          if ( dataType == null ) {
             throw new AspectModelBuildingException( "State is missing a type" );
          }
+         if ( defaultValue == null ) {
+            return myself;
+         }
          if ( !defaultValue.getType().isTypeOrSubtypeOf( dataType ) ) {
             throw new AspectModelBuildingException( "Default value " + defaultValue + "'s type is not and no subtype of " + dataType );
          }
@@ -678,11 +802,16 @@ public class SammBuilder {
       }
 
       public SELF dataType( final Type type ) {
-         dataType = type;
+         if ( type != null ) {
+            dataType = type;
+         }
          return myself;
       }
 
       public <T extends Value, C extends java.util.Collection<T>> SELF values( final C values ) {
+         if ( values == null ) {
+            return myself;
+         }
          for ( final Value value : values ) {
             value( value );
          }
@@ -690,6 +819,9 @@ public class SammBuilder {
       }
 
       public SELF values( final Value... values ) {
+         if ( values == null ) {
+            return myself;
+         }
          for ( final Value value : values ) {
             value( value );
          }
@@ -699,6 +831,9 @@ public class SammBuilder {
       public SELF value( final Value value ) {
          if ( dataType == null ) {
             throw new AspectModelBuildingException( "State is missing a type" );
+         }
+         if ( value == null ) {
+            return myself;
          }
          if ( !value.getType().isTypeOrSubtypeOf( dataType ) ) {
             throw new AspectModelBuildingException( "Value " + value + "'s type is not and no subtype of " + dataType );
@@ -737,6 +872,9 @@ public class SammBuilder {
       }
 
       public SELF unit( final Unit unit ) {
+         if ( unit == null ) {
+            return myself;
+         }
          if ( !unit.getQuantityKinds().contains( QuantityKinds.TIME ) ) {
             throw new AspectModelBuildingException( "Unit of Duration must have the quantity kind 'time'" );
          }
@@ -745,7 +883,9 @@ public class SammBuilder {
       }
 
       public SELF dataType( final Type type ) {
-         dataType = type;
+         if ( type != null ) {
+            dataType = type;
+         }
          return myself;
       }
 
@@ -759,14 +899,55 @@ public class SammBuilder {
    }
 
    /**
+    * Base builder for collections
+    *
+    * @param <SELF> the self type
+    * @param <T> the collection type
+    */
+   public static abstract class BaseCollectionBuilder<SELF extends BaseCollectionBuilder<SELF, T>, T extends Collection>
+         extends OptionallyNamedElementBuilder<SELF, T> {
+      protected Type dataType;
+      protected Characteristic elementCharacteristic;
+
+      protected BaseCollectionBuilder( final Class<?> selfType ) {
+         super( selfType );
+      }
+
+      protected BaseCollectionBuilder( final Class<?> selfType, final AspectModelUrn urn ) {
+         super( selfType, urn );
+      }
+
+      protected void validateBeforeBuild() {
+         if ( dataType == null && elementCharacteristic == null ) {
+            throw new AspectModelBuildingException( myself.getClass().getName() + " must have dataType or elementCharacteristic" );
+         }
+         if ( dataType != null && elementCharacteristic != null ) {
+            throw new AspectModelBuildingException(
+                  myself.getClass().getName() + " must not have both dataType and elementCharacteristic" );
+         }
+      }
+
+      public SELF dataType( final Type type ) {
+         if ( type != null ) {
+            dataType = type;
+         }
+         return myself;
+      }
+
+      public SELF elementCharacteristic( final Characteristic elementCharacteristic ) {
+         if ( elementCharacteristic != null ) {
+            this.elementCharacteristic = elementCharacteristic;
+         }
+         return myself;
+      }
+   }
+
+   /**
     * Builder for {@link Collection}
     *
     * @param <SELF> the self type
     */
-   public static class CollectionBuilder<SELF extends CollectionBuilder<SELF>> extends OptionallyNamedElementBuilder<SELF, Collection> {
-      private Type dataType;
-      private Characteristic elementCharacteristic;
-
+   public static class CollectionBuilder<SELF extends CollectionBuilder<SELF>> extends BaseCollectionBuilder<SELF, Collection> {
       public CollectionBuilder() {
          super( CollectionBuilder.class );
       }
@@ -775,21 +956,9 @@ public class SammBuilder {
          super( CollectionBuilder.class, urn );
       }
 
-      public SELF dataType( final Type type ) {
-         dataType = type;
-         return myself;
-      }
-
-      public SELF elementCharacteristic( final Characteristic elementCharacteristic ) {
-         this.elementCharacteristic = elementCharacteristic;
-         return myself;
-      }
-
       @Override
       public Collection build() {
-         if ( dataType != null && elementCharacteristic != null ) {
-            throw new AspectModelBuildingException( "Collection must not have both dataType and elementCharacteristic" );
-         }
+         validateBeforeBuild();
          return new DefaultCollection( baseAttributes(), Optional.ofNullable( dataType ), Optional.ofNullable( elementCharacteristic ) );
       }
    }
@@ -799,10 +968,7 @@ public class SammBuilder {
     *
     * @param <SELF> the self type
     */
-   public static class ListBuilder<SELF extends ListBuilder<SELF>> extends OptionallyNamedElementBuilder<SELF, List> {
-      private Type dataType;
-      private Characteristic elementCharacteristic;
-
+   public static class ListBuilder<SELF extends ListBuilder<SELF>> extends BaseCollectionBuilder<SELF, List> {
       public ListBuilder() {
          super( ListBuilder.class );
       }
@@ -811,21 +977,9 @@ public class SammBuilder {
          super( ListBuilder.class, urn );
       }
 
-      public SELF dataType( final Type type ) {
-         dataType = type;
-         return myself;
-      }
-
-      public SELF elementCharacteristic( final Characteristic elementCharacteristic ) {
-         this.elementCharacteristic = elementCharacteristic;
-         return myself;
-      }
-
       @Override
       public List build() {
-         if ( dataType != null && elementCharacteristic != null ) {
-            throw new AspectModelBuildingException( "List must not have both dataType and elementCharacteristic" );
-         }
+         validateBeforeBuild();
          return new DefaultList( baseAttributes(), Optional.ofNullable( dataType ), Optional.ofNullable( elementCharacteristic ) );
       }
    }
@@ -835,10 +989,7 @@ public class SammBuilder {
     *
     * @param <SELF> the self type
     */
-   public static class SetBuilder<SELF extends SetBuilder<SELF>> extends OptionallyNamedElementBuilder<SELF, Set> {
-      private Type dataType;
-      private Characteristic elementCharacteristic;
-
+   public static class SetBuilder<SELF extends SetBuilder<SELF>> extends BaseCollectionBuilder<SELF, Set> {
       public SetBuilder() {
          super( SetBuilder.class );
       }
@@ -847,21 +998,9 @@ public class SammBuilder {
          super( SetBuilder.class, urn );
       }
 
-      public SELF dataType( final Type type ) {
-         dataType = type;
-         return myself;
-      }
-
-      public SELF elementCharacteristic( final Characteristic elementCharacteristic ) {
-         this.elementCharacteristic = elementCharacteristic;
-         return myself;
-      }
-
       @Override
       public Set build() {
-         if ( dataType != null && elementCharacteristic != null ) {
-            throw new AspectModelBuildingException( "Set must not have both dataType and elementCharacteristic" );
-         }
+         validateBeforeBuild();
          return new DefaultSet( baseAttributes(), Optional.ofNullable( dataType ), Optional.ofNullable( elementCharacteristic ) );
       }
    }
@@ -871,10 +1010,7 @@ public class SammBuilder {
     *
     * @param <SELF> the self type
     */
-   public static class SortedSetBuilder<SELF extends SortedSetBuilder<SELF>> extends OptionallyNamedElementBuilder<SELF, SortedSet> {
-      private Type dataType;
-      private Characteristic elementCharacteristic;
-
+   public static class SortedSetBuilder<SELF extends SortedSetBuilder<SELF>> extends BaseCollectionBuilder<SELF, SortedSet> {
       public SortedSetBuilder() {
          super( SortedSetBuilder.class );
       }
@@ -883,21 +1019,9 @@ public class SammBuilder {
          super( SortedSetBuilder.class, urn );
       }
 
-      public SELF dataType( final Type type ) {
-         dataType = type;
-         return myself;
-      }
-
-      public SELF elementCharacteristic( final Characteristic elementCharacteristic ) {
-         this.elementCharacteristic = elementCharacteristic;
-         return myself;
-      }
-
       @Override
       public SortedSet build() {
-         if ( dataType != null && elementCharacteristic != null ) {
-            throw new AspectModelBuildingException( "SortedSet must not have both dataType and elementCharacteristic" );
-         }
+         validateBeforeBuild();
          return new DefaultSortedSet( baseAttributes(), Optional.ofNullable( dataType ), Optional.ofNullable( elementCharacteristic ) );
       }
    }
@@ -919,6 +1043,9 @@ public class SammBuilder {
       }
 
       public SELF dataType( final Entity entity ) {
+         if ( entity == null ) {
+            return myself;
+         }
          if ( !entity.isTypeOrSubtypeOf( samm_e.TimeSeriesEntity ) ) {
             throw new AspectModelBuildingException( "Datatype of TimeSeries must extend samm-e:TimeSeriesEntity" );
          }
@@ -952,7 +1079,9 @@ public class SammBuilder {
       }
 
       public SELF dataType( final Type type ) {
-         dataType = type;
+         if ( type != null ) {
+            dataType = type;
+         }
          return myself;
       }
 
@@ -980,12 +1109,16 @@ public class SammBuilder {
       }
 
       public SELF left( final Characteristic characteristic ) {
-         left = characteristic;
+         if ( characteristic != null ) {
+            left = characteristic;
+         }
          return myself;
       }
 
       public SELF right( final Characteristic characteristic ) {
-         right = characteristic;
+         if ( characteristic != null ) {
+            right = characteristic;
+         }
          return myself;
       }
 
@@ -1019,7 +1152,9 @@ public class SammBuilder {
       }
 
       public SELF dataType( final Type type ) {
-         dataType = type;
+         if ( type != null ) {
+            dataType = type;
+         }
          return myself;
       }
 
@@ -1049,6 +1184,9 @@ public class SammBuilder {
       }
 
       public SELF dataType( final Type type ) {
+         if ( type == null ) {
+            return myself;
+         }
          if ( !( type instanceof final Scalar scalar ) || !scalar.hasStringLikeValueSpace() ) {
             throw new AspectModelBuildingException( "StructuredValue must have a dataType with a string-like value space" );
          }
@@ -1057,6 +1195,9 @@ public class SammBuilder {
       }
 
       public SELF deconstructionRule( final String deconstructionRule ) {
+         if ( deconstructionRule == null ) {
+            return myself;
+         }
          try {
             Pattern.compile( deconstructionRule );
          } catch ( final Exception exception ) {
@@ -1067,6 +1208,9 @@ public class SammBuilder {
       }
 
       public <C extends java.util.Collection<Object>> SELF elements( final C elements ) {
+         if ( elements == null ) {
+            return myself;
+         }
          for ( final Object value : elements ) {
             element( value );
          }
@@ -1074,6 +1218,9 @@ public class SammBuilder {
       }
 
       public SELF values( final Object... elements ) {
+         if ( elements == null ) {
+            return myself;
+         }
          for ( final Object value : elements ) {
             element( value );
          }
@@ -1081,6 +1228,9 @@ public class SammBuilder {
       }
 
       public SELF element( final Object element ) {
+         if ( element == null ) {
+            return myself;
+         }
          if ( !( element instanceof String || element instanceof Property ) ) {
             throw new AspectModelBuildingException( "StructuredValue's element list may only contain Strings and Properties" );
          }
@@ -1112,7 +1262,9 @@ public class SammBuilder {
       }
 
       public SELF languageCode( final Locale languageCode ) {
-         this.languageCode = languageCode;
+         if ( languageCode != null ) {
+            this.languageCode = languageCode;
+         }
          return myself;
       }
 
@@ -1140,7 +1292,9 @@ public class SammBuilder {
       }
 
       public SELF languageCode( final Locale languageCode ) {
-         this.languageCode = languageCode;
+         if ( languageCode != null ) {
+            this.languageCode = languageCode;
+         }
          return myself;
       }
 
@@ -1171,16 +1325,23 @@ public class SammBuilder {
       }
 
       public SELF minValue( final ScalarValue minValue ) {
-         this.minValue = minValue;
+         if ( minValue != null ) {
+            this.minValue = minValue;
+         }
          return myself;
       }
 
       public SELF maxValue( final ScalarValue maxValue ) {
-         this.maxValue = maxValue;
+         if ( maxValue != null ) {
+            this.maxValue = maxValue;
+         }
          return myself;
       }
 
       public SELF lowerBound( final BoundDefinition lowerBound ) {
+         if ( lowerBound == null ) {
+            return myself;
+         }
          final java.util.List<BoundDefinition> allowedBounds = java.util.List.of( BoundDefinition.OPEN, BoundDefinition.AT_LEAST,
                BoundDefinition.GREATER_THAN );
          if ( !allowedBounds.contains( lowerBound ) ) {
@@ -1192,6 +1353,9 @@ public class SammBuilder {
       }
 
       public SELF upperBound( final BoundDefinition upperBound ) {
+         if ( upperBound == null ) {
+            return myself;
+         }
          final java.util.List<BoundDefinition> allowedBounds = java.util.List.of( BoundDefinition.OPEN, BoundDefinition.AT_MOST,
                BoundDefinition.LESS_THAN );
          if ( !allowedBounds.contains( upperBound ) ) {
@@ -1242,7 +1406,9 @@ public class SammBuilder {
       }
 
       public SELF value( final Charset encoding ) {
-         this.encoding = encoding;
+         if ( encoding != null ) {
+            this.encoding = encoding;
+         }
          return myself;
       }
 
@@ -1271,12 +1437,16 @@ public class SammBuilder {
       }
 
       public SELF minValue( final BigInteger minValue ) {
-         this.minValue = minValue;
+         if ( minValue != null ) {
+            this.minValue = minValue;
+         }
          return myself;
       }
 
       public SELF maxValue( final BigInteger maxValue ) {
-         this.maxValue = maxValue;
+         if ( maxValue != null ) {
+            this.maxValue = maxValue;
+         }
          return myself;
       }
 
@@ -1306,11 +1476,22 @@ public class SammBuilder {
          super( RegularExpressionConstraintBuilder.class, urn );
       }
 
+      public SELF value( final Pattern regularExpression ) {
+         if ( regularExpression == null ) {
+            return myself;
+         }
+         this.regularExpression = regularExpression.pattern();
+         return myself;
+      }
+
       public SELF value( final String regularExpression ) {
+         if ( regularExpression == null ) {
+            return myself;
+         }
          try {
             Pattern.compile( regularExpression );
          } catch ( final Exception exception ) {
-            throw new AspectModelBuildingException( "RegularExpressionConstraints's regular expression is invalid" );
+            throw new AspectModelBuildingException( "RegularExpressionConstraints's regular expression is invalid: " + regularExpression );
          }
          this.regularExpression = regularExpression;
          return myself;
@@ -1341,12 +1522,16 @@ public class SammBuilder {
       }
 
       public SELF scale( final Integer scale ) {
-         this.scale = scale;
+         if ( scale != null ) {
+            this.scale = scale;
+         }
          return myself;
       }
 
       public SELF integer( final Integer integer ) {
-         this.integer = integer;
+         if ( integer != null ) {
+            this.integer = integer;
+         }
          return myself;
       }
 
@@ -1363,15 +1548,15 @@ public class SammBuilder {
    }
 
    public static <T extends EntityInstanceBuilder<T>> EntityInstanceBuilder<T> entityInstance( final AspectModelUrn urn ) {
-      return new EntityInstanceBuilder<>( urn );
+      return new EntityInstanceBuilder<>( Objects.requireNonNull( urn ) );
    }
 
    public static <T extends EntityInstanceBuilder<T>> EntityInstanceBuilder<T> entityInstance( final String urn ) {
-      return entityInstance( AspectModelUrn.fromUrn( urn ) );
+      return entityInstance( AspectModelUrn.fromUrn( Objects.requireNonNull( urn ) ) );
    }
 
    public static ScalarValue value( final String stringValue ) {
-      return new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), stringValue, xsd.string );
+      return new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), Objects.requireNonNull( stringValue ), xsd.string );
    }
 
    public static ScalarValue value( final boolean booleanValue ) {
@@ -1389,6 +1574,9 @@ public class SammBuilder {
    /* Intentionally no value(int) method here, because an int value could imply different XSD types */
 
    public static ScalarValue value( final Object value, final Scalar type ) {
+      if ( value == null || type == null ) {
+         throw new AspectModelBuildingException( "Value and type must not be null" );
+      }
       final MetaModelBaseAttributes metaModelBaseAttributes;
 
       if ( value instanceof final ModelElement modelElement ) {
@@ -1403,7 +1591,7 @@ public class SammBuilder {
             throw new IllegalStateException( "Non-anonymous ModelElement must have a URN: " + modelElement );
          }
 
-         if ( modelElement instanceof ScalarValue scalarValue ) {
+         if ( modelElement instanceof final ScalarValue scalarValue ) {
             builder
                   .withPreferredNames( scalarValue.getPreferredNames() )
                   .withDescriptions( scalarValue.getDescriptions() )
@@ -1421,6 +1609,7 @@ public class SammBuilder {
       return new DefaultScalarValue( metaModelBaseAttributes, value, dataTypeByUri( type.getUrn() ) );
    }
 
+   @SafeVarargs
    public static <T> java.util.List<ScalarValue> values( final Scalar type, final T... values ) {
       final java.util.List<ScalarValue> result = new ArrayList<>();
       for ( final T value : values ) {
@@ -1430,55 +1619,61 @@ public class SammBuilder {
    }
 
    public static ScalarValue value( final String lexicalValue, final Scalar type ) {
+      if ( lexicalValue == null || type == null ) {
+         throw new AspectModelBuildingException( "Value and type must not be null" );
+      }
       return new ValueInstantiator().buildScalarValue( lexicalValue, null, type.getUrn() )
             .orElseThrow( () -> new AspectModelBuildingException( "Value '" + lexicalValue + "' is invalid for type " + type ) );
    }
 
    public static ScalarValue value( final String text, final Locale language ) {
+      if ( text == null || language == null ) {
+         throw new AspectModelBuildingException( "Test and language must not be null" );
+      }
       return new ValueInstantiator().buildScalarValue( text, language.toLanguageTag(), RDF.langString.getURI() )
             .orElseThrow( AspectModelBuildingException::new );
    }
 
    public static <SELF extends AspectBuilder<SELF>> AspectBuilder<SELF> aspect( final AspectModelUrn urn ) {
-      return new AspectBuilder<>( urn );
+      return new AspectBuilder<>( Objects.requireNonNull( urn ) );
    }
 
    public static <SELF extends AspectBuilder<SELF>> AspectBuilder<SELF> aspect( final String urn ) {
-      return aspect( AspectModelUrn.fromUrn( urn ) );
+      return aspect( AspectModelUrn.fromUrn( Objects.requireNonNull( urn ) ) );
    }
 
    public static <SELF extends AspectBuilder<SELF>> AspectBuilder<SELF> aspect( final Resource rdfResource ) {
-      if ( rdfResource.isAnon() ) {
+      if ( rdfResource == null || rdfResource.isAnon() ) {
          throw new AspectModelBuildingException( "Aspect must have a URN" );
       }
       return aspect( AspectModelUrn.fromUrn( rdfResource.getURI() ) );
    }
 
    public static <SELF extends EntityBuilder<SELF>> EntityBuilder<SELF> entity( final AspectModelUrn urn ) {
-      return new EntityBuilder<>( urn );
+      return new EntityBuilder<>( Objects.requireNonNull( urn ) );
    }
 
    public static <SELF extends EntityBuilder<SELF>> EntityBuilder<SELF> entity( final String urn ) {
-      return new EntityBuilder<>( AspectModelUrn.fromUrn( urn ) );
+      return new EntityBuilder<>( AspectModelUrn.fromUrn( Objects.requireNonNull( urn ) ) );
    }
 
    public static <SELF extends EntityBuilder<SELF>> EntityBuilder<SELF> entity( final Resource rdfResource ) {
-      if ( rdfResource.isAnon() ) {
+      if ( rdfResource == null || rdfResource.isAnon() ) {
          throw new AspectModelBuildingException( "Entity must have a URN" );
       }
       return new EntityBuilder<>( AspectModelUrn.fromUrn( rdfResource.getURI() ) );
    }
 
    public static <SELF extends PropertyBuilder<SELF>> PropertyBuilder<SELF> property( final AspectModelUrn urn ) {
-      return new PropertyBuilder<>( urn );
+      return new PropertyBuilder<>( Objects.requireNonNull( urn ) );
    }
 
    public static <SELF extends PropertyBuilder<SELF>> PropertyBuilder<SELF> property( final String urn ) {
-      return property( AspectModelUrn.fromUrn( urn ) );
+      return property( AspectModelUrn.fromUrn( Objects.requireNonNull( urn ) ) );
    }
 
    public static <SELF extends PropertyBuilder<SELF>> PropertyBuilder<SELF> property( final Resource rdfResource ) {
-      if ( rdfResource.isAnon() ) {
+      if ( rdfResource == null || rdfResource.isAnon() ) {
          throw new AspectModelBuildingException( "Property must have a URN" );
       }
       return property( AspectModelUrn.fromUrn( rdfResource.getURI() ) );
@@ -1489,15 +1684,19 @@ public class SammBuilder {
    }
 
    public static <SELF extends CharacteristicBuilder<SELF>> CharacteristicBuilder<SELF> characteristic( final AspectModelUrn urn ) {
-      return new CharacteristicBuilder<>( urn );
+      return urn == null
+            ? characteristic()
+            : new CharacteristicBuilder<>( urn );
    }
 
    public static <SELF extends CharacteristicBuilder<SELF>> CharacteristicBuilder<SELF> characteristic( final String urn ) {
-      return characteristic( AspectModelUrn.fromUrn( urn ) );
+      return urn == null
+            ? characteristic()
+            : characteristic( AspectModelUrn.fromUrn( urn ) );
    }
 
    public static <SELF extends CharacteristicBuilder<SELF>> CharacteristicBuilder<SELF> characteristic( final Resource rdfResource ) {
-      return rdfResource.isAnon()
+      return rdfResource == null || rdfResource.isAnon()
             ? characteristic()
             : characteristic( rdfResource.getURI() );
    }
@@ -1507,15 +1706,19 @@ public class SammBuilder {
    }
 
    public static <SELF extends TraitBuilder<SELF>> TraitBuilder<SELF> trait( final AspectModelUrn urn ) {
-      return new TraitBuilder<>( urn );
+      return urn == null
+            ? trait()
+            : new TraitBuilder<>( urn );
    }
 
    public static <SELF extends TraitBuilder<SELF>> TraitBuilder<SELF> trait( final String urn ) {
-      return trait( AspectModelUrn.fromUrn( urn ) );
+      return urn == null
+            ? trait()
+            : trait( AspectModelUrn.fromUrn( urn ) );
    }
 
    public static <SELF extends TraitBuilder<SELF>> TraitBuilder<SELF> trait( final Resource rdfResource ) {
-      return rdfResource.isAnon()
+      return rdfResource == null || rdfResource.isAnon()
             ? trait()
             : trait( rdfResource.getURI() );
    }
@@ -1525,15 +1728,19 @@ public class SammBuilder {
    }
 
    public static <SELF extends QuantifiableBuilder<SELF>> QuantifiableBuilder<SELF> quantifiable( final AspectModelUrn urn ) {
-      return new QuantifiableBuilder<>( urn );
+      return urn == null
+            ? quantifiable()
+            : new QuantifiableBuilder<>( urn );
    }
 
    public static <SELF extends QuantifiableBuilder<SELF>> QuantifiableBuilder<SELF> quantifiable( final String urn ) {
-      return quantifiable( AspectModelUrn.fromUrn( urn ) );
+      return urn == null
+            ? quantifiable()
+            : quantifiable( AspectModelUrn.fromUrn( urn ) );
    }
 
    public static <SELF extends QuantifiableBuilder<SELF>> QuantifiableBuilder<SELF> quantifiable( final Resource rdfResource ) {
-      return rdfResource.isAnon()
+      return rdfResource == null || rdfResource.isAnon()
             ? quantifiable()
             : quantifiable( rdfResource.getURI() );
    }
@@ -1543,15 +1750,19 @@ public class SammBuilder {
    }
 
    public static <SELF extends MeasurementBuilder<SELF>> MeasurementBuilder<SELF> measurement( final AspectModelUrn urn ) {
-      return new MeasurementBuilder<>( urn );
+      return urn == null
+            ? measurement()
+            : new MeasurementBuilder<>( urn );
    }
 
    public static <SELF extends MeasurementBuilder<SELF>> MeasurementBuilder<SELF> measurement( final String urn ) {
-      return measurement( AspectModelUrn.fromUrn( urn ) );
+      return urn == null
+            ? measurement()
+            : measurement( AspectModelUrn.fromUrn( urn ) );
    }
 
    public static <SELF extends MeasurementBuilder<SELF>> MeasurementBuilder<SELF> measurement( final Resource rdfResource ) {
-      return rdfResource.isAnon()
+      return rdfResource == null || rdfResource.isAnon()
             ? measurement()
             : measurement( rdfResource.getURI() );
    }
@@ -1561,15 +1772,19 @@ public class SammBuilder {
    }
 
    public static <SELF extends EnumerationBuilder<SELF>> EnumerationBuilder<SELF> enumeration( final AspectModelUrn urn ) {
-      return new EnumerationBuilder<>( urn );
+      return urn == null
+            ? enumeration()
+            : new EnumerationBuilder<>( urn );
    }
 
    public static <SELF extends EnumerationBuilder<SELF>> EnumerationBuilder<SELF> enumeration( final String urn ) {
-      return enumeration( AspectModelUrn.fromUrn( urn ) );
+      return urn == null
+            ? enumeration()
+            : enumeration( AspectModelUrn.fromUrn( urn ) );
    }
 
    public static <SELF extends EnumerationBuilder<SELF>> EnumerationBuilder<SELF> enumeration( final Resource rdfResource ) {
-      return rdfResource.isAnon()
+      return rdfResource == null || rdfResource.isAnon()
             ? enumeration()
             : enumeration( rdfResource.getURI() );
    }
@@ -1579,15 +1794,19 @@ public class SammBuilder {
    }
 
    public static <SELF extends StateBuilder<SELF>> StateBuilder<SELF> state( final AspectModelUrn urn ) {
-      return new StateBuilder<>( urn );
+      return urn == null
+            ? state()
+            : new StateBuilder<>( urn );
    }
 
    public static <SELF extends StateBuilder<SELF>> StateBuilder<SELF> state( final String urn ) {
-      return state( AspectModelUrn.fromUrn( urn ) );
+      return urn == null
+            ? state()
+            : state( AspectModelUrn.fromUrn( urn ) );
    }
 
    public static <SELF extends StateBuilder<SELF>> StateBuilder<SELF> state( final Resource rdfResource ) {
-      return rdfResource.isAnon()
+      return rdfResource == null || rdfResource.isAnon()
             ? state()
             : state( rdfResource.getURI() );
    }
@@ -1597,15 +1816,19 @@ public class SammBuilder {
    }
 
    public static <SELF extends DurationBuilder<SELF>> DurationBuilder<SELF> duration( final AspectModelUrn urn ) {
-      return new DurationBuilder<>( urn );
+      return urn == null
+            ? duration()
+            : new DurationBuilder<>( urn );
    }
 
    public static <SELF extends DurationBuilder<SELF>> DurationBuilder<SELF> duration( final String urn ) {
-      return duration( AspectModelUrn.fromUrn( urn ) );
+      return urn == null
+            ? duration()
+            : duration( AspectModelUrn.fromUrn( urn ) );
    }
 
    public static <SELF extends DurationBuilder<SELF>> DurationBuilder<SELF> duration( final Resource rdfResource ) {
-      return rdfResource.isAnon()
+      return rdfResource == null || rdfResource.isAnon()
             ? duration()
             : duration( rdfResource.getURI() );
    }
@@ -1615,15 +1838,19 @@ public class SammBuilder {
    }
 
    public static <SELF extends CollectionBuilder<SELF>> CollectionBuilder<SELF> collection( final AspectModelUrn urn ) {
-      return new CollectionBuilder<>( urn );
+      return urn == null
+            ? collection()
+            : new CollectionBuilder<>( urn );
    }
 
    public static <SELF extends CollectionBuilder<SELF>> CollectionBuilder<SELF> collection( final String urn ) {
-      return collection( AspectModelUrn.fromUrn( urn ) );
+      return urn == null
+            ? collection()
+            : collection( AspectModelUrn.fromUrn( urn ) );
    }
 
    public static <SELF extends CollectionBuilder<SELF>> CollectionBuilder<SELF> collection( final Resource rdfResource ) {
-      return rdfResource.isAnon()
+      return rdfResource == null || rdfResource.isAnon()
             ? collection()
             : collection( rdfResource.getURI() );
    }
@@ -1633,15 +1860,19 @@ public class SammBuilder {
    }
 
    public static <SELF extends ListBuilder<SELF>> ListBuilder<SELF> list( final AspectModelUrn urn ) {
-      return new ListBuilder<>( urn );
+      return urn == null
+            ? list()
+            : new ListBuilder<>( urn );
    }
 
    public static <SELF extends ListBuilder<SELF>> ListBuilder<SELF> list( final String urn ) {
-      return list( AspectModelUrn.fromUrn( urn ) );
+      return urn == null
+            ? list()
+            : list( AspectModelUrn.fromUrn( urn ) );
    }
 
    public static <SELF extends ListBuilder<SELF>> ListBuilder<SELF> list( final Resource rdfResource ) {
-      return rdfResource.isAnon()
+      return rdfResource == null || rdfResource.isAnon()
             ? list()
             : list( rdfResource.getURI() );
    }
@@ -1651,15 +1882,19 @@ public class SammBuilder {
    }
 
    public static <SELF extends SetBuilder<SELF>> SetBuilder<SELF> set( final AspectModelUrn urn ) {
-      return new SetBuilder<>( urn );
+      return urn == null
+            ? set()
+            : new SetBuilder<>( urn );
    }
 
    public static <SELF extends SetBuilder<SELF>> SetBuilder<SELF> set( final String urn ) {
-      return set( AspectModelUrn.fromUrn( urn ) );
+      return urn == null
+            ? set()
+            : set( AspectModelUrn.fromUrn( urn ) );
    }
 
    public static <SELF extends SetBuilder<SELF>> SetBuilder<SELF> set( final Resource rdfResource ) {
-      return rdfResource.isAnon()
+      return rdfResource == null || rdfResource.isAnon()
             ? set()
             : set( rdfResource.getURI() );
    }
@@ -1669,15 +1904,19 @@ public class SammBuilder {
    }
 
    public static <SELF extends SortedSetBuilder<SELF>> SortedSetBuilder<SELF> sortedSet( final AspectModelUrn urn ) {
-      return new SortedSetBuilder<>( urn );
+      return urn == null
+            ? sortedSet()
+            : new SortedSetBuilder<>( urn );
    }
 
    public static <SELF extends SortedSetBuilder<SELF>> SortedSetBuilder<SELF> sortedSet( final String urn ) {
-      return sortedSet( AspectModelUrn.fromUrn( urn ) );
+      return urn == null
+            ? sortedSet()
+            : sortedSet( AspectModelUrn.fromUrn( urn ) );
    }
 
    public static <SELF extends SortedSetBuilder<SELF>> SortedSetBuilder<SELF> sortedSet( final Resource rdfResource ) {
-      return rdfResource.isAnon()
+      return rdfResource == null || rdfResource.isAnon()
             ? sortedSet()
             : sortedSet( rdfResource.getURI() );
    }
@@ -1687,15 +1926,19 @@ public class SammBuilder {
    }
 
    public static <SELF extends TimeSeriesBuilder<SELF>> TimeSeriesBuilder<SELF> timeSeries( final AspectModelUrn urn ) {
-      return new TimeSeriesBuilder<>( urn );
+      return urn == null
+            ? timeSeries()
+            : new TimeSeriesBuilder<>( urn );
    }
 
    public static <SELF extends TimeSeriesBuilder<SELF>> TimeSeriesBuilder<SELF> timeSeries( final String urn ) {
-      return timeSeries( AspectModelUrn.fromUrn( urn ) );
+      return urn == null
+            ? timeSeries()
+            : timeSeries( AspectModelUrn.fromUrn( urn ) );
    }
 
    public static <SELF extends TimeSeriesBuilder<SELF>> TimeSeriesBuilder<SELF> timeSeries( final Resource rdfResource ) {
-      return rdfResource.isAnon()
+      return rdfResource == null || rdfResource.isAnon()
             ? timeSeries()
             : timeSeries( rdfResource.getURI() );
    }
@@ -1705,15 +1948,19 @@ public class SammBuilder {
    }
 
    public static <SELF extends CodeBuilder<SELF>> CodeBuilder<SELF> code( final AspectModelUrn urn ) {
-      return new CodeBuilder<>( urn );
+      return urn == null
+            ? code()
+            : new CodeBuilder<>( urn );
    }
 
    public static <SELF extends CodeBuilder<SELF>> CodeBuilder<SELF> code( final String urn ) {
-      return code( AspectModelUrn.fromUrn( urn ) );
+      return urn == null
+            ? code()
+            : code( AspectModelUrn.fromUrn( urn ) );
    }
 
    public static <SELF extends CodeBuilder<SELF>> CodeBuilder<SELF> code( final Resource rdfResource ) {
-      return rdfResource.isAnon()
+      return rdfResource == null || rdfResource.isAnon()
             ? code()
             : code( rdfResource.getURI() );
    }
@@ -1723,15 +1970,19 @@ public class SammBuilder {
    }
 
    public static <SELF extends EitherBuilder<SELF>> EitherBuilder<SELF> either( final AspectModelUrn urn ) {
-      return new EitherBuilder<>( urn );
+      return urn == null
+            ? either()
+            : new EitherBuilder<>( urn );
    }
 
    public static <SELF extends EitherBuilder<SELF>> EitherBuilder<SELF> either( final String urn ) {
-      return either( AspectModelUrn.fromUrn( urn ) );
+      return urn == null
+            ? either()
+            : either( AspectModelUrn.fromUrn( urn ) );
    }
 
    public static <SELF extends EitherBuilder<SELF>> EitherBuilder<SELF> either( final Resource rdfResource ) {
-      return rdfResource.isAnon()
+      return rdfResource == null || rdfResource.isAnon()
             ? either()
             : either( rdfResource.getURI() );
    }
@@ -1741,15 +1992,19 @@ public class SammBuilder {
    }
 
    public static <SELF extends SingleEntityBuilder<SELF>> SingleEntityBuilder<SELF> singleEntity( final AspectModelUrn urn ) {
-      return new SingleEntityBuilder<>( urn );
+      return urn == null
+            ? singleEntity()
+            : new SingleEntityBuilder<>( urn );
    }
 
    public static <SELF extends SingleEntityBuilder<SELF>> SingleEntityBuilder<SELF> singleEntity( final String urn ) {
-      return singleEntity( AspectModelUrn.fromUrn( urn ) );
+      return urn == null
+            ? singleEntity()
+            : singleEntity( AspectModelUrn.fromUrn( urn ) );
    }
 
    public static <SELF extends SingleEntityBuilder<SELF>> SingleEntityBuilder<SELF> singleEntity( final Resource rdfResource ) {
-      return rdfResource.isAnon()
+      return rdfResource == null || rdfResource.isAnon()
             ? singleEntity()
             : singleEntity( rdfResource.getURI() );
    }
@@ -1759,15 +2014,19 @@ public class SammBuilder {
    }
 
    public static <SELF extends StructuredValueBuilder<SELF>> StructuredValueBuilder<SELF> structuredValue( final AspectModelUrn urn ) {
-      return new StructuredValueBuilder<>( urn );
+      return urn == null
+            ? structuredValue()
+            : new StructuredValueBuilder<>( urn );
    }
 
    public static <SELF extends StructuredValueBuilder<SELF>> StructuredValueBuilder<SELF> structuredValue( final String urn ) {
-      return structuredValue( AspectModelUrn.fromUrn( urn ) );
+      return urn == null
+            ? structuredValue()
+            : structuredValue( AspectModelUrn.fromUrn( urn ) );
    }
 
    public static <SELF extends StructuredValueBuilder<SELF>> StructuredValueBuilder<SELF> structuredValue( final Resource rdfResource ) {
-      return rdfResource.isAnon()
+      return rdfResource == null || rdfResource.isAnon()
             ? structuredValue()
             : structuredValue( rdfResource.getURI() );
    }
@@ -1778,16 +2037,20 @@ public class SammBuilder {
 
    public static <SELF extends LanguageConstraintBuilder<SELF>> LanguageConstraintBuilder<SELF> languageConstraint(
          final AspectModelUrn urn ) {
-      return new LanguageConstraintBuilder<>( urn );
+      return urn == null
+            ? languageConstraint()
+            : new LanguageConstraintBuilder<>( urn );
    }
 
    public static <SELF extends LanguageConstraintBuilder<SELF>> LanguageConstraintBuilder<SELF> languageConstraint( final String urn ) {
-      return languageConstraint( AspectModelUrn.fromUrn( urn ) );
+      return urn == null
+            ? languageConstraint()
+            : languageConstraint( AspectModelUrn.fromUrn( urn ) );
    }
 
    public static <SELF extends LanguageConstraintBuilder<SELF>> LanguageConstraintBuilder<SELF> languageConstraint(
          final Resource rdfResource ) {
-      return rdfResource.isAnon()
+      return rdfResource == null || rdfResource.isAnon()
             ? languageConstraint()
             : languageConstraint( rdfResource.getURI() );
    }
@@ -1797,15 +2060,19 @@ public class SammBuilder {
    }
 
    public static <SELF extends LocaleConstraintBuilder<SELF>> LocaleConstraintBuilder<SELF> localeConstraint( final AspectModelUrn urn ) {
-      return new LocaleConstraintBuilder<>( urn );
+      return urn == null
+            ? localeConstraint()
+            : new LocaleConstraintBuilder<>( urn );
    }
 
    public static <SELF extends LocaleConstraintBuilder<SELF>> LocaleConstraintBuilder<SELF> localeConstraint( final String urn ) {
-      return localeConstraint( AspectModelUrn.fromUrn( urn ) );
+      return urn == null
+            ? localeConstraint()
+            : localeConstraint( AspectModelUrn.fromUrn( urn ) );
    }
 
    public static <SELF extends LocaleConstraintBuilder<SELF>> LocaleConstraintBuilder<SELF> localeConstraint( final Resource rdfResource ) {
-      return rdfResource.isAnon()
+      return rdfResource == null || rdfResource.isAnon()
             ? localeConstraint()
             : localeConstraint( rdfResource.getURI() );
    }
@@ -1815,15 +2082,19 @@ public class SammBuilder {
    }
 
    public static <SELF extends RangeConstraintBuilder<SELF>> RangeConstraintBuilder<SELF> rangeConstraint( final AspectModelUrn urn ) {
-      return new RangeConstraintBuilder<>( urn );
+      return urn == null
+            ? rangeConstraint()
+            : new RangeConstraintBuilder<>( urn );
    }
 
    public static <SELF extends RangeConstraintBuilder<SELF>> RangeConstraintBuilder<SELF> rangeConstraint( final String urn ) {
-      return rangeConstraint( AspectModelUrn.fromUrn( urn ) );
+      return urn == null
+            ? rangeConstraint()
+            : rangeConstraint( AspectModelUrn.fromUrn( urn ) );
    }
 
    public static <SELF extends RangeConstraintBuilder<SELF>> RangeConstraintBuilder<SELF> rangeConstraint( final Resource rdfResource ) {
-      return rdfResource.isAnon()
+      return rdfResource == null || rdfResource.isAnon()
             ? rangeConstraint()
             : rangeConstraint( rdfResource.getURI() );
    }
@@ -1834,16 +2105,20 @@ public class SammBuilder {
 
    public static <SELF extends EncodingConstraintBuilder<SELF>> EncodingConstraintBuilder<SELF> encodingConstraint(
          final AspectModelUrn urn ) {
-      return new EncodingConstraintBuilder<>( urn );
+      return urn == null
+            ? encodingConstraint()
+            : new EncodingConstraintBuilder<>( urn );
    }
 
    public static <SELF extends EncodingConstraintBuilder<SELF>> EncodingConstraintBuilder<SELF> encodingConstraint( final String urn ) {
-      return encodingConstraint( AspectModelUrn.fromUrn( urn ) );
+      return urn == null
+            ? encodingConstraint()
+            : encodingConstraint( AspectModelUrn.fromUrn( urn ) );
    }
 
    public static <SELF extends EncodingConstraintBuilder<SELF>> EncodingConstraintBuilder<SELF> encodingConstraint(
          final Resource rdfResource ) {
-      return rdfResource.isAnon()
+      return rdfResource == null || rdfResource.isAnon()
             ? encodingConstraint()
             : encodingConstraint( rdfResource.getURI() );
    }
@@ -1854,16 +2129,20 @@ public class SammBuilder {
 
    public static <SELF extends LengthConstraintBuilder<SELF>> LengthConstraintBuilder<SELF> lengthConstraint(
          final AspectModelUrn urn ) {
-      return new LengthConstraintBuilder<>( urn );
+      return urn == null
+            ? lengthConstraint()
+            : new LengthConstraintBuilder<>( urn );
    }
 
    public static <SELF extends LengthConstraintBuilder<SELF>> LengthConstraintBuilder<SELF> lengthConstraint( final String urn ) {
-      return lengthConstraint( AspectModelUrn.fromUrn( urn ) );
+      return urn == null
+            ? lengthConstraint()
+            : lengthConstraint( AspectModelUrn.fromUrn( urn ) );
    }
 
    public static <SELF extends LengthConstraintBuilder<SELF>> LengthConstraintBuilder<SELF> lengthConstraint(
          final Resource rdfResource ) {
-      return rdfResource.isAnon()
+      return rdfResource == null || rdfResource.isAnon()
             ? lengthConstraint()
             : lengthConstraint( rdfResource.getURI() );
    }
@@ -1881,7 +2160,9 @@ public class SammBuilder {
    public static <SELF extends RegularExpressionConstraintBuilder<SELF>> RegularExpressionConstraintBuilder<SELF>
          regularExpressionConstraint( final AspectModelUrn urn ) {
       //@formatter:on
-      return new RegularExpressionConstraintBuilder<>( urn );
+      return urn == null
+            ? regularExpressionConstraint()
+            : new RegularExpressionConstraintBuilder<>( urn );
    }
 
    @SuppressWarnings( "IncorrectFormatting" )
@@ -1889,7 +2170,9 @@ public class SammBuilder {
    public static <SELF extends RegularExpressionConstraintBuilder<SELF>> RegularExpressionConstraintBuilder<SELF>
          regularExpressionConstraint( final String urn ) {
       //@formatter:on
-      return regularExpressionConstraint( AspectModelUrn.fromUrn( urn ) );
+      return urn == null
+            ? regularExpressionConstraint()
+            : regularExpressionConstraint( AspectModelUrn.fromUrn( urn ) );
    }
 
    @SuppressWarnings( "IncorrectFormatting" )
@@ -1897,7 +2180,7 @@ public class SammBuilder {
    public static <SELF extends RegularExpressionConstraintBuilder<SELF>> RegularExpressionConstraintBuilder<SELF>
          regularExpressionConstraint( final Resource rdfResource ) {
       //@formatter:on
-      return rdfResource.isAnon()
+      return rdfResource == null || rdfResource.isAnon()
             ? regularExpressionConstraint()
             : regularExpressionConstraint( rdfResource.getURI() );
    }
@@ -1908,17 +2191,21 @@ public class SammBuilder {
 
    public static <SELF extends FixedPointConstraintBuilder<SELF>> FixedPointConstraintBuilder<SELF> fixedPointConstraint(
          final AspectModelUrn urn ) {
-      return new FixedPointConstraintBuilder<>( urn );
+      return urn == null
+            ? fixedPointConstraint()
+            : new FixedPointConstraintBuilder<>( urn );
    }
 
    public static <SELF extends FixedPointConstraintBuilder<SELF>> FixedPointConstraintBuilder<SELF> fixedPointConstraint(
          final String urn ) {
-      return fixedPointConstraint( AspectModelUrn.fromUrn( urn ) );
+      return urn == null
+            ? fixedPointConstraint()
+            : fixedPointConstraint( AspectModelUrn.fromUrn( urn ) );
    }
 
    public static <SELF extends FixedPointConstraintBuilder<SELF>> FixedPointConstraintBuilder<SELF> fixedPointConstraint(
          final Resource rdfResource ) {
-      return rdfResource.isAnon()
+      return rdfResource == null || rdfResource.isAnon()
             ? fixedPointConstraint()
             : fixedPointConstraint( rdfResource.getURI() );
    }
