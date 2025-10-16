@@ -532,6 +532,9 @@ public class SammBuilder {
 
       @Override
       public Property build() {
+         if ( !isAbstract && characteristic == null ) {
+            throw new AspectModelBuildingException( "Characteristic of non-abstract Property must not be empty" );
+         }
          return new DefaultProperty(
                baseAttributes(),
                Optional.ofNullable( characteristic ),

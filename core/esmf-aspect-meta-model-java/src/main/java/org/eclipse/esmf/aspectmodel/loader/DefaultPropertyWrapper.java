@@ -80,7 +80,7 @@ public class DefaultPropertyWrapper extends DefaultProperty {
       this.property = property;
    }
 
-   public void setPayloadName( String payloadName ) {
+   public void setPayloadName( final String payloadName ) {
       this.payloadName = payloadName;
    }
 }

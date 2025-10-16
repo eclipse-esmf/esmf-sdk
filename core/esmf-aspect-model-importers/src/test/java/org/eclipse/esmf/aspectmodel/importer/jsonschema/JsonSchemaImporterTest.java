@@ -16,17 +16,16 @@ package org.eclipse.esmf.aspectmodel.importer.jsonschema;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.RdfUtil;
@@ -62,21 +61,44 @@ public class JsonSchemaImporterTest {
    private static final String SCHEMAS_LOCATION = "schemas";
    final ObjectMapper objectMapper = new ObjectMapper();
 
+   private JsonNode loadSchema( final String schemaName ) {
+      try {
+         final String resourcePath = "/" + SCHEMAS_LOCATION + "/" + schemaName.replace( "https://example.com/", "" );
+         final URL resource = JsonSchemaImporterTest.class.getResource( resourcePath );
+         final File file = new File( resource.toURI() );
+         return objectMapper.readTree( file );
+      } catch ( final Exception exception ) {
+         fail();
+         return null;
+      }
+   }
+
    @Test
-   void testTranslateCycloneDxBom() throws URISyntaxException, IOException {
-      final URI uri = Objects.requireNonNull( JsonSchemaImporterTest.class.getResource( "/schemas/cycleonedx-bom-1.6.schema.json" ) )
-            .toURI();
-      final File file = new File( uri );
-      final JsonNode jsonNode = objectMapper.readTree( file );
+   void testTranslateCycloneDxBom() {
+      final JsonNode jsonNode = loadSchema( "cyclonedx-bom-1.6.schema.json" );
+      assertThat( jsonNode ).isNotNull();
+      final JsonNode spdx = loadSchema( "spdx.schema.json" );
+      assertThat( spdx ).isNotNull();
+      final JsonNode jsf = loadSchema( "jsf-0.82.schema.json" );
+      assertThat( jsf ).isNotNull();
+      final JsonNode jsfDefs = jsf.get( "definitions" );
       final AspectGenerationConfig config = AspectGenerationConfigBuilder.builder()
             .aspectModelUrn( AspectModelUrn.fromParts( "org.eclipse.esmf.example", "1.0.0", "TestAspect" ) )
+            .customRefResolver( ref -> {
+               return switch ( ref ) {
+                  case "spdx.schema.json" -> spdx;
+                  case "jsf-0.82.schema.json#/definitions/signature" -> jsfDefs.get( "signature" );
+                  case "#/definitions/signer" -> jsfDefs.get( "signer" );
+                  case "#/definitions/keyType" -> jsfDefs.get( "keyType" );
+                  case "#/definitions/publicKey" -> jsfDefs.get( "publicKey" );
+                  default -> null;
+               };
+            } )
             .build();
       final JsonSchemaToAspect jsonSchemaToAspect = new JsonSchemaToAspect( jsonNode, config );
-      assertThatCode( () -> {
-         final AspectArtifact aspectArtifact = jsonSchemaToAspect.generate().findFirst().orElseThrow();
-         final Aspect aspect = aspectArtifact.getContent();
-         System.out.println( AspectSerializer.INSTANCE.aspectToString( aspect ) );
-      } ).doesNotThrowAnyException();
+      final AspectArtifact aspectArtifact = jsonSchemaToAspect.generate().findFirst().orElseThrow();
+      final Aspect aspect = aspectArtifact.getContent();
+      System.out.println( AspectSerializer.INSTANCE.aspectToString( aspect ) );
    }
 
    @ParameterizedTest
@@ -85,16 +107,7 @@ public class JsonSchemaImporterTest {
       final JsonNode jsonNode = objectMapper.readTree( schemaFile );
       final AspectGenerationConfig config = AspectGenerationConfigBuilder.builder()
             .aspectModelUrn( AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "Test" ) )
-            .customRefResolver( ref -> {
-               try {
-                  final String resourcePath = "/" + SCHEMAS_LOCATION + "/" + ref.replace( "https://example.com/", "" );
-                  final URL resource = JsonSchemaImporterTest.class.getResource( resourcePath );
-                  final File file = new File( resource.toURI() );
-                  return objectMapper.readTree( file );
-               } catch ( final Exception exception ) {
-                  return null;
-               }
-            } )
+            .customRefResolver( this::loadSchema )
             .addTodo( true )
             .build();
       assertThatCode( () -> {
@@ -226,6 +239,14 @@ public class JsonSchemaImporterTest {
       try ( final Stream<Path> stream = Files.walk( Paths.get( resource.toURI() ) ) ) {
          final List<Arguments> list = stream.filter( Files::isRegularFile )
                .filter( file -> file.getFileName().toString().endsWith( ".schema.json" ) )
+               .filter( file -> {
+                  // Exclude: This schema does not declare a type attribute
+                  return !file.getFileName().toString().equals( "enumerated-values.schema.json" );
+               } )
+               .filter( file -> {
+                  // Exclude: File is handled in separate test
+                  return !file.getFileName().toString().contains( "cyclonedx-bom-1.6.schema.json" );
+               } )
                .map( Path::toFile )
                .map( file -> Arguments.of( Named.of( file.getName(), file ) ) )
                .toList();

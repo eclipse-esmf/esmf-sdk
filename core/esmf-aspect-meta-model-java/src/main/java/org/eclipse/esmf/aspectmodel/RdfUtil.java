@@ -14,20 +14,24 @@
 package org.eclipse.esmf.aspectmodel;
 
 import static java.util.stream.Collectors.toSet;
+import static org.eclipse.esmf.aspectmodel.StreamUtil.asMap;
 
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.esmf.aspectmodel.resolver.modelfile.MetaModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.urn.ElementType;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Streams;
 import org.apache.jena.graph.Node;
 import org.apache.jena.query.Dataset;
@@ -48,6 +52,7 @@ import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.riot.RDFWriter;
 import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
 import org.apache.jena.vocabulary.XSD;
 
 public class RdfUtil {
@@ -151,6 +156,66 @@ public class RdfUtil {
             model.setNsPrefix( prefix, uri );
          }
       } );
+   }
+
+   /**
+    * Remove redundant type assertions: If {@code :x a :y} and {@code :x a :z} are asserted, and {@code :z} is a subtype of {@code :y},
+    * remove the {@code :x a :y} assertion
+    *
+    * @param model the model
+    */
+   public static void cleanRedundantTypeAssertions( final Model model ) {
+      final Model modelToCheck = ModelFactory.createDefaultModel();
+      modelToCheck.add( model );
+      modelToCheck.add( MetaModelFile.metaModelDefinitions() );
+      final Map<Resource, List<Resource>> elementsWithMultipleTypeAssertions = Streams.stream(
+                  modelToCheck.listStatements( null, RDF.type, (RDFNode) null ) )
+            .collect( Collectors.groupingBy( Statement::getSubject ) )
+            .entrySet()
+            .stream()
+            .filter( entry -> entry.getValue().size() > 1 )
+            .map( entry -> Map.entry( entry.getKey(), entry.getValue().stream().map( Statement::getResource ).toList() ) )
+            .collect( asMap() );
+      for ( final Map.Entry<Resource, List<Resource>> entry : elementsWithMultipleTypeAssertions.entrySet() ) {
+         final Resource subject = entry.getKey();
+         final List<Resource> types = entry.getValue();
+         for ( final List<Resource> permutations : Lists.cartesianProduct( types, types ) ) {
+            final Resource typeA = permutations.get( 0 );
+            final Resource typeB = permutations.get( 1 );
+            if ( !typeA.equals( typeB ) && isTypeOrSubtypeOf( typeA, typeB ) ) {
+               model.remove( subject, RDF.type, typeB );
+            }
+         }
+      }
+   }
+
+   /**
+    * Checks whether type1 is the same or a subtype of type2, i.e., whether {@code ?type1 rdfs:subClassOf* ?type2}.
+    *
+    * @param type1 the first type
+    * @param type2 the second type
+    * @return true if type1 is a transitive subtype
+    */
+   public static boolean isTypeOrSubtypeOf( final Resource type1, final Resource type2 ) {
+      Resource typeInHierarchy = type1;
+      while ( typeInHierarchy != null ) {
+         if ( type2.equals( typeInHierarchy ) ) {
+            return true;
+         }
+         typeInHierarchy = typeInHierarchy.getPropertyResourceValue( RDFS.subClassOf );
+      }
+      return false;
+   }
+
+   /**
+    * Checks if a given element is of a given type or one of its subtypes, i.e., whether {@code ?element/rdf:type/rdfs:subClassOf* ?type}
+    *
+    * @param element the resource
+    * @param type the type
+    * @return true if element has the type or its subtypes
+    */
+   public static boolean isTypeOfOrSubtypeOf( final Resource element, final Resource type ) {
+      return isTypeOrSubtypeOf( element.getPropertyResourceValue( RDF.type ), type );
    }
 
    /**

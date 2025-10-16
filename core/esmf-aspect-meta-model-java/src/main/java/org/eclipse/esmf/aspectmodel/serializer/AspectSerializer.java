@@ -148,6 +148,7 @@ public class AspectSerializer {
       final RdfNamespace namespace = new SimpleRdfNamespace( "", element.urn().getUrnPrefix() );
       final Model rdfModel = element.accept( new RdfModelCreatorVisitor( namespace ), null ).model();
       RdfUtil.cleanPrefixes( rdfModel );
+      RdfUtil.cleanRedundantTypeAssertions( rdfModel );
       final AspectModel aspectModel = new AspectModelLoader().loadAspectModelFiles(
             List.of( RawAspectModelFileBuilder.builder().sourceModel( rdfModel ).build() ) );
       final AspectModelFile newSourceFile = aspectModel.files().getFirst();
