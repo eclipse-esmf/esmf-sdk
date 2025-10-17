@@ -13,35 +13,35 @@
 
 package org.eclipse.esmf.aspectmodel.importer.jsonschema;
 
-import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaImporter.JsonSchemaVocabulary.$ANCHOR;
-import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaImporter.JsonSchemaVocabulary.$COMMENT;
-import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaImporter.JsonSchemaVocabulary.$DEFS;
-import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaImporter.JsonSchemaVocabulary.$REF;
-import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaImporter.JsonSchemaVocabulary.ANY_OF;
-import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaImporter.JsonSchemaVocabulary.ARRAY;
-import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaImporter.JsonSchemaVocabulary.BOOLEAN;
-import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaImporter.JsonSchemaVocabulary.DESCRIPTION;
-import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaImporter.JsonSchemaVocabulary.ENUM;
-import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaImporter.JsonSchemaVocabulary.EXAMPLES;
-import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaImporter.JsonSchemaVocabulary.EXCLUSIVE_MAXIMUM;
-import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaImporter.JsonSchemaVocabulary.EXCLUSIVE_MINIMUM;
-import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaImporter.JsonSchemaVocabulary.FORMAT;
-import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaImporter.JsonSchemaVocabulary.INTEGER;
-import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaImporter.JsonSchemaVocabulary.ITEMS;
-import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaImporter.JsonSchemaVocabulary.MAXIMUM;
-import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaImporter.JsonSchemaVocabulary.MAX_LENGTH;
-import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaImporter.JsonSchemaVocabulary.MINIMUM;
-import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaImporter.JsonSchemaVocabulary.MIN_LENGTH;
-import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaImporter.JsonSchemaVocabulary.NUMBER;
-import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaImporter.JsonSchemaVocabulary.OBJECT;
-import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaImporter.JsonSchemaVocabulary.ONE_OF;
-import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaImporter.JsonSchemaVocabulary.PATTERN;
-import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaImporter.JsonSchemaVocabulary.PROPERTIES;
-import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaImporter.JsonSchemaVocabulary.REQUIRED;
-import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaImporter.JsonSchemaVocabulary.STRING;
-import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaImporter.JsonSchemaVocabulary.TITLE;
-import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaImporter.JsonSchemaVocabulary.TYPE;
-import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaImporter.JsonSchemaVocabulary.UNIQUE_ITEMS;
+import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaVocabulary.$ANCHOR;
+import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaVocabulary.$COMMENT;
+import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaVocabulary.$DEFS;
+import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaVocabulary.$REF;
+import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaVocabulary.ANY_OF;
+import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaVocabulary.ARRAY;
+import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaVocabulary.BOOLEAN;
+import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaVocabulary.DESCRIPTION;
+import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaVocabulary.ENUM;
+import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaVocabulary.EXAMPLES;
+import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaVocabulary.EXCLUSIVE_MAXIMUM;
+import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaVocabulary.EXCLUSIVE_MINIMUM;
+import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaVocabulary.FORMAT;
+import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaVocabulary.INTEGER;
+import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaVocabulary.ITEMS;
+import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaVocabulary.MAXIMUM;
+import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaVocabulary.MAX_LENGTH;
+import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaVocabulary.MINIMUM;
+import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaVocabulary.MIN_LENGTH;
+import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaVocabulary.NUMBER;
+import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaVocabulary.OBJECT;
+import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaVocabulary.ONE_OF;
+import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaVocabulary.PATTERN;
+import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaVocabulary.PROPERTIES;
+import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaVocabulary.REQUIRED;
+import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaVocabulary.STRING;
+import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaVocabulary.TITLE;
+import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaVocabulary.TYPE;
+import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaVocabulary.UNIQUE_ITEMS;
 import static org.eclipse.esmf.metamodel.DataTypes.xsd;
 import static org.eclipse.esmf.metamodel.builder.SammBuilder.characteristic;
 import static org.eclipse.esmf.metamodel.builder.SammBuilder.either;
@@ -66,7 +66,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -91,6 +90,9 @@ import org.eclipse.esmf.metamodel.StructureElement;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.builder.AspectModelBuildingException;
 import org.eclipse.esmf.metamodel.builder.SammBuilder;
+import org.eclipse.esmf.metamodel.constraint.LengthConstraint;
+import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
+import org.eclipse.esmf.metamodel.constraint.RegularExpressionConstraint;
 import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -113,95 +115,7 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
       Generator<JsonNode, AspectModelUrn, T, AspectGenerationConfig, A> {
    private static final Logger LOG = LoggerFactory.getLogger( JsonSchemaImporter.class );
 
-   /**
-    * Defined in RFC 5321
-    */
-   private static final Pattern EMAIL_REGEX = Pattern.compile( "^([a-zA-Z0-9+._/&!][-a-zA-Z0-9+._/&!]*)@("
-         + "([a-zA-Z0-9][-a-zA-Z0-9]*\\.)([-a-zA-Z0-9]+\\.)*[a-zA-Z]{2,})$" );
-
-   /**
-    * Defined in RFC 6531 and implemented in <a href="https://gist.github.com/baker-ling/3b4b014ee809aa9732f9873fe060c098">gist</a>.
-    * Adapted for use in Java: (1) removed redundant escapes, (2) added character ranges to match case-insensitive (instead of i flag);
-    * replaced Unicode code point references from \\u to \\x.
-    */
-   private static final Pattern IDN_EMAIL_REGEX = Pattern.compile(
-         "^(?<localPart>(?<dotString>[0-9a-zA-Z!#$%&'*+\\-/=?^_`{|}~\\x{80}-\\x{10FFFF}]+(\\"
-               + ".[0-9a-zA-Z!#$%&'*+\\-/=?^_`{|}~\\x{80}-\\x{10FFFF}]+)*)|(?<quotedString>\""
-               + "([\\x20-\\x21\\x23-\\x5B\\x5D-\\x7E\\x{80}-\\x{10FFFF}]|\\\\[\\x20-\\x7E])*\"))(?<!.{64,})@(?<domainOrAddressLiteral>"
-               + "(?<addressLiteral>\\[((?<IPv4>\\d{1,3}(\\.\\d{1,3}){3})|(?<IPv6Full>IPv6:[0-9a-fA-F]{1,4}(:[0-9a-fA-F]{1,4}){7})|"
-               + "(?<IPv6Comp>IPv6:([0-9a-fA-F]{1,4}(:[0-9a-fA-F]{1,4}){0,5})?::([0-9a-fA-F]{1,4}(:[0-9a-fA-F]{1,4}){0,5})?)|"
-               + "(?<IPv6v4Full>IPv6:[0-9a-fA-F]{1,4}(:[0-9a-fA-F]{1,4}){5}:\\d{1,3}(\\.\\d{1,3}){3})|(?<IPv6v4Comp>IPv6:([0-9a-fA-F]{1,4}"
-               + "(:[0-9a-fA-F]{1,4}){0,3})?::([0-9a-fA-F]{1,4}(:[0-9a-fA-F]{1,4}){0,3}:)?\\d{1,3}(\\.\\d{1,3}){3})|"
-               + "(?<generalAddressLiteral>[a-zA-Z0-9\\-]*\\[[a-zA-Z0-9]:[\\x21-\\x5A\\x5E-\\x7E]+))])|(?<Domain>(?!.{256,})"
-               + "([0-9a-zA-Z\\x{80}-\\x{10FFFF}]([0-9a-zA-Z\\-\\x{80}-\\x{10FFFF}]*[0-9a-zA-Z\\x{80}-\\x{10FFFF}])?)(\\."
-               + "([0-9a-zA-Z\\x{80}-\\x{10FFFF}]([0-9a-zA-Z\\-\\x{80}-\\x{10FFFF}]*[0-9a-zA-Z\\x{80}-\\x{10FFFF}])?))*))$" );
-
-   /**
-    * Defined in RFC 2673
-    */
-   private static final Pattern IPV4_REGEX = Pattern.compile( "^(((?!25?[6-9])[12]\\d|[1-9])?\\d\\.?\\b){4}$" );
-
-   /**
-    * Defined in RFC 4291 section 2.2 and implemented in <a href="https://stackoverflow.com/a/17871737/12105820">this post</a>.
-    * Adapted: Simplified groupings (e.g., {7,7} -> {7})
-    */
-   private static final Pattern IPV6_REGEX = Pattern.compile(
-         "^(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,"
-               + "6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|"
-               + "([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:("
-               + "(:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]+|::(ffff(:0{1,4})"
-               + "?:)?((25[0-5]|(2[0-4]|1?[0-9])?[0-9])\\.){3}(25[0-5]|(2[0-4]|1?[0-9])?[0-9])|([0-9a-fA-F]{1,4}:){1,"
-               + "4}:((25[0-5]|(2[0-4]|1?[0-9])?[0-9])\\.){3}(25[0-5]|(2[0-4]|1?[0-9])?[0-9]))$" );
-
-   /**
-    * Defined in RFC 1123
-    */
-   private static final Pattern HOSTNAME_REGEX = Pattern.compile( "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$" );
-
-   /**
-    * Defined in RFC 4122
-    */
-   private static final Pattern UUID_REGEX = Pattern.compile(
-         "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$" );
-
-   /**
-    * Defined in RFC 6570 and implemented in <a href="https://stackoverflow.com/a/61645285/12105820">this post</a>
-    */
-   private static final Pattern URI_TEMPLATE_REGEX = Pattern.compile(
-         "^([^\\x00-\\x20\\x7f\"'%<>\\\\^`{|}]|%[0-9A-Fa-f]{2}|\\{[+#./;?&=,!@|]?("
-               + "(\\w|%[0-9A-Fa-f]{2})(\\.?(\\w|%[0-9A-Fa-f]{2}))*(:[1-9]\\d{0,3}|\\*)?)(,((\\w|%[0-9A-Fa-f]{2})(\\.?"
-               + "(\\w|%[0-9A-Fa-f]{2}))*(:[1-9]\\d{0,3}|\\*)?))*})*$" );
-
    protected static final String TODO_COMMENT = "TODO";
-
-   public enum JsonSchemaVocabulary {
-      $ANCHOR, $COMMENT, $DEFS, $REF, ANY_OF, ARRAY, BOOLEAN, DESCRIPTION, ENUM, EXAMPLES, EXCLUSIVE_MAXIMUM, EXCLUSIVE_MINIMUM, FORMAT,
-      INTEGER, ITEMS, MAXIMUM, MAX_LENGTH, MINIMUM, MIN_LENGTH, NUMBER, OBJECT, ONE_OF, PATTERN, PROPERTIES, REQUIRED, STRING, TITLE, TYPE,
-      UNIQUE_ITEMS;
-
-      public String key() {
-         return CaseFormat.LOWER_UNDERSCORE.to( CaseFormat.LOWER_CAMEL, toString().toLowerCase() );
-      }
-   }
-
-   public enum JsonSchemaFormat {
-      DATE, DATE_TIME, DURATION, EMAIL, HOSTNAME, IDN_EMAIL, IDN_HOSTNAME, IPV4, IPV6, IRI, IRI_REFERENCE, JSON_POINTER, REGEX,
-      RELATIVE_JSON_POINTER, TIME, URI, URI_REFERENCE, URI_TEMPLATE, UUID;
-
-      public String key() {
-         return toString().toLowerCase().replace( "_", "-" );
-      }
-   }
-
-   protected record Path( List<String> elements ) {
-      protected Path() {
-         this( List.of() );
-      }
-
-      public Path with( final String element ) {
-         return new Path( Stream.concat( elements.stream(), Stream.of( element ) ).toList() );
-      }
-   }
 
    protected record Context(
          Map<AspectModelUrn, ModelElement> generatedElements,
@@ -322,149 +236,26 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
                   .replaceAll( "[^a-zA-Z0-9]", "_" ) );
    }
 
-   protected record ConstraintsAndImpliedType( List<Constraint> contraints, Scalar type ) {}
-
-   protected ConstraintsAndImpliedType buildConstraints( final JsonNode propertyNode, final String propertyName,
-         final String jsonType ) {
-      final List<Constraint> constraints = new ArrayList<>();
-
+   protected Optional<RegularExpressionConstraint> buildRegularExpressionConstraint( final JsonNode propertyNode ) {
       final String pattern = jsonProperty( propertyNode, PATTERN ).map( JsonNode::textValue ).orElse( null );
-      final JsonSchemaFormat format = jsonProperty( propertyNode, FORMAT )
-            .map( JsonNode::textValue )
-            .flatMap( formatString -> Try.of( () ->
-                  JsonSchemaFormat.valueOf( formatString.toUpperCase().replace( "-", "_" ) ) ).toJavaOptional() )
-            .orElse( null );
+      return pattern != null
+            ? Optional.of( regularExpressionConstraint().value( pattern ).build() )
+            : Optional.empty();
+   }
 
-      // RegularExpressionConstraint
-      if ( pattern != null ) {
-         constraints.add( regularExpressionConstraint().value( pattern ).build() );
-      }
-
-      final Scalar type;
-      switch ( format ) {
-         case null:
-            type = Optional.ofNullable( Map.of(
-                  STRING.key(), xsd.string,
-                  NUMBER.key(), xsd.double_,
-                  INTEGER.key(), xsd.integer,
-                  BOOLEAN.key(), xsd.boolean_
-            ).get( jsonType ) ).orElseThrow( () ->
-                  new AspectImportException( "Unknown type for '" + propertyName + "': " + jsonType ) );
-            break;
-         case DATE:
-            type = xsd.date;
-            break;
-         case DATE_TIME:
-            type = xsd.dateTimeStamp;
-            break;
-         case TIME:
-            type = xsd.time;
-            break;
-         case DURATION:
-            type = xsd.duration;
-            break;
-         case EMAIL:
-            type = xsd.string;
-            constraints.add(
-                  regularExpressionConstraint()
-                        .preferredName( "email address" )
-                        .description( "Matches email addresses as defined in RFC 5321 section 4.1.2" )
-                        .see( "https://www.rfc-editor.org/rfc/rfc5321.html#section-4.1.2" )
-                        .value( EMAIL_REGEX )
-                        .build() );
-            break;
-         case IDN_EMAIL:
-            type = xsd.string;
-            constraints.add(
-                  regularExpressionConstraint()
-                        .preferredName( "internationalized email address" )
-                        .description( "Matches international email addresses as defined in RFC 6531 section 3.3" )
-                        .see( "https://datatracker.ietf.org/doc/html/rfc6531#section-3.3" )
-                        .value( IDN_EMAIL_REGEX )
-                        .build() );
-            break;
-         case HOSTNAME:
-            type = xsd.string;
-            constraints.add(
-                  regularExpressionConstraint()
-                        .preferredName( "hostname" )
-                        .description( "Matches hostnames as defined in RFC 1123" )
-                        .see( "https://www.rfc-editor.org/rfc/rfc1123.html" )
-                        .value( HOSTNAME_REGEX )
-                        .build() );
-            break;
-         case IDN_HOSTNAME:
-            type = xsd.string;
-            constraints.add(
-                  regularExpressionConstraint()
-                        .preferredName( "internationalized host name" )
-                        .description(
-                              "Matches hostnames as defined in RFC 1123 or internationalized hostnames as defined by RFC 5890 section 2.3"
-                                    + ".2.3" )
-                        .see( "https://www.rfc-editor.org/rfc/rfc1123.html" )
-                        .see( "https://www.rfc-editor.org/rfc/rfc5890.html#section-2.3.2.3" )
-                        .value( HOSTNAME_REGEX )
-                        .build() );
-            break;
-         case IPV4:
-            type = xsd.string;
-            constraints.add(
-                  regularExpressionConstraint()
-                        .preferredName( "IPv4 address" )
-                        .description( "Matches IPv4 addresses as defined in RFC 2763 section 3.2" )
-                        .see( "https://www.rfc-editor.org/rfc/rfc2673.html#section-3.2" )
-                        .value( IPV4_REGEX )
-                        .build() );
-            break;
-         case IPV6:
-            type = xsd.string;
-            constraints.add(
-                  regularExpressionConstraint()
-                        .preferredName( "IPv6 address" )
-                        .description( "Matches IPv6 addresses as defined in RFC 4291 section 2.2" )
-                        .see( "https://www.rfc-editor.org/rfc/rfc4291.html#section-2.2" )
-                        .value( IPV6_REGEX )
-                        .build() );
-            break;
-         case URI, URI_REFERENCE, IRI, IRI_REFERENCE:
-            type = xsd.anyURI;
-            break;
-         case UUID:
-            type = xsd.string;
-            constraints.add(
-                  regularExpressionConstraint()
-                        .preferredName( "universally unique identifier (UUID)" )
-                        .description( "Matches UUIDs as defined by RFC 4122" )
-                        .see( "https://www.rfc-editor.org/rfc/rfc4122.html" )
-                        .value( UUID_REGEX )
-                        .build() );
-            break;
-         case URI_TEMPLATE:
-            type = xsd.string;
-            constraints.add(
-                  regularExpressionConstraint()
-                        .preferredName( "URI template" )
-                        .description( "Matches URI templates as defined by RFC 6570" )
-                        .see( "https://www.rfc-editor.org/rfc/rfc6570.html" )
-                        .value( URI_TEMPLATE_REGEX )
-                        .build() );
-            break;
-         default:
-            type = xsd.string;
-      }
-
-      // LengthConstraint
+   protected Optional<LengthConstraint> buildLengthConstraint( final JsonNode propertyNode ) {
       final Optional<Integer> minLength = jsonProperty( propertyNode, MIN_LENGTH )
             .map( JsonNode::intValue );
       final Optional<Integer> maxLength = jsonProperty( propertyNode, MAX_LENGTH )
             .map( JsonNode::intValue );
-      if ( minLength.isPresent() || maxLength.isPresent() ) {
-         constraints.add( lengthConstraint()
-               .minValue( minLength.map( BigInteger::valueOf ).orElse( null ) )
-               .maxValue( maxLength.map( BigInteger::valueOf ).orElse( null ) ).build() );
-      }
+      return minLength.isPresent() || maxLength.isPresent()
+            ? Optional.of( lengthConstraint()
+            .minValue( minLength.map( BigInteger::valueOf ).orElse( null ) )
+            .maxValue( maxLength.map( BigInteger::valueOf ).orElse( null ) ).build() )
+            : Optional.empty();
+   }
 
-      // RangeConstraint
+   protected Optional<RangeConstraint> buildRangeConstraint( final JsonNode propertyNode, final Scalar type ) {
       final Optional<String> minimum = jsonProperty( propertyNode, MINIMUM )
             .map( JsonNode::asText );
       final Optional<String> maximum = jsonProperty( propertyNode, MAXIMUM )
@@ -478,14 +269,49 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
                .map( JsonNode::booleanValue )
                .map( value -> value ? BoundDefinition.LESS_THAN : BoundDefinition.AT_MOST )
                .orElse( BoundDefinition.OPEN );
-         constraints.add( rangeConstraint()
+         return Optional.of( rangeConstraint()
                .minValue( minimum.map( m -> value( m, type ) ).orElse( null ) )
                .maxValue( maximum.map( m -> value( m, type ) ).orElse( null ) )
                .lowerBound( lowerBound )
                .upperBound( upperBound )
                .build() );
       }
-      return new ConstraintsAndImpliedType( constraints, type );
+      return Optional.empty();
+   }
+
+   protected Optional<JsonSchemaFormat> determineFormat( final JsonNode propertyNode ) {
+      return jsonProperty( propertyNode, FORMAT )
+            .map( JsonNode::textValue )
+            .flatMap( formatString -> Try.of(
+                        () -> JsonSchemaFormat.valueOf( formatString.toUpperCase().replace( "-", "_" ) ) )
+                  .toJavaOptional() );
+   }
+
+   protected Scalar determinePropertyType( final JsonNode propertyNode, final String propertyName, final String jsonType ) {
+      return determineFormat( propertyNode )
+            .map( format -> switch ( format ) {
+               case DATE -> xsd.date;
+               case DATE_TIME -> xsd.dateTimeStamp;
+               case TIME -> xsd.time;
+               case DURATION -> xsd.duration;
+               case URI, URI_REFERENCE, IRI, IRI_REFERENCE -> xsd.anyURI;
+               default -> xsd.string;
+            } ).or( () -> Optional.ofNullable( Map.of(
+                  STRING.key(), xsd.string,
+                  NUMBER.key(), xsd.double_,
+                  INTEGER.key(), xsd.integer,
+                  BOOLEAN.key(), xsd.boolean_
+            ).get( jsonType ) ) )
+            .orElseThrow( () -> new AspectImportException( "Unknown type for '" + propertyName + "': " + jsonType ) );
+   }
+
+   protected List<Constraint> buildConstraints( final JsonNode propertyNode, final Scalar type ) {
+      return Stream.of(
+            determineFormat( propertyNode ).flatMap( JsonSchemaFormat::getRegularExpressionConstraint ),
+            buildRegularExpressionConstraint( propertyNode ),
+            buildLengthConstraint( propertyNode ),
+            buildRangeConstraint( propertyNode, type )
+      ).<Constraint> flatMap( Optional::stream ).toList();
    }
 
    protected String determinEntityName( final String propertyName ) {
@@ -667,9 +493,8 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
                .build();
       }
 
-      final ConstraintsAndImpliedType constraintsAndImpliedType = buildConstraints( propertyNode, propertyName, jsonType );
-      final List<Constraint> constraints = constraintsAndImpliedType.contraints();
-      final Scalar type = constraintsAndImpliedType.type();
+      final Scalar type = determinePropertyType( propertyNode, propertyName, jsonType );
+      final List<Constraint> constraints = buildConstraints( propertyNode, type );
 
       final Characteristic baseCharacteristic;
       final Optional<JsonNode> enumNode = jsonProperty( propertyNode, ENUM );

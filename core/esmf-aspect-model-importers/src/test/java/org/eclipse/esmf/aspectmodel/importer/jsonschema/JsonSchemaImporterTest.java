@@ -84,15 +84,13 @@ public class JsonSchemaImporterTest {
       final JsonNode jsfDefs = jsf.get( "definitions" );
       final AspectGenerationConfig config = AspectGenerationConfigBuilder.builder()
             .aspectModelUrn( AspectModelUrn.fromParts( "org.eclipse.esmf.example", "1.0.0", "TestAspect" ) )
-            .customRefResolver( ref -> {
-               return switch ( ref ) {
-                  case "spdx.schema.json" -> spdx;
-                  case "jsf-0.82.schema.json#/definitions/signature" -> jsfDefs.get( "signature" );
-                  case "#/definitions/signer" -> jsfDefs.get( "signer" );
-                  case "#/definitions/keyType" -> jsfDefs.get( "keyType" );
-                  case "#/definitions/publicKey" -> jsfDefs.get( "publicKey" );
-                  default -> null;
-               };
+            .customRefResolver( ref -> switch ( ref ) {
+               case "spdx.schema.json" -> spdx;
+               case "jsf-0.82.schema.json#/definitions/signature" -> jsfDefs.get( "signature" );
+               case "#/definitions/signer" -> jsfDefs.get( "signer" );
+               case "#/definitions/keyType" -> jsfDefs.get( "keyType" );
+               case "#/definitions/publicKey" -> jsfDefs.get( "publicKey" );
+               default -> null;
             } )
             .build();
       final JsonSchemaToAspect jsonSchemaToAspect = new JsonSchemaToAspect( jsonNode, config );
