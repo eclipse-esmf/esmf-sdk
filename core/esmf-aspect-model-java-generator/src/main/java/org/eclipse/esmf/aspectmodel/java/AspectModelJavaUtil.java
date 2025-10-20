@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -29,7 +29,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.VersionInfo;
-import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
+import org.eclipse.esmf.aspectmodel.generator.exception.CodeGenerationException;
 import org.eclipse.esmf.aspectmodel.visitor.AspectStreamTraversalVisitor;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.Characteristic;
@@ -322,7 +322,7 @@ public class AspectModelJavaUtil {
       return dataType.map( type -> {
          final Type actualDataType = dataType.get();
          if ( actualDataType instanceof ComplexType ) {
-            final String complexDataType = ( (ComplexType) actualDataType ).getName();
+            final String complexDataType = actualDataType.getName();
             if ( ( !codeGenerationConfig.namePrefix().isBlank() || !codeGenerationConfig.namePostfix().isBlank() ) ) {
                return codeGenerationConfig.namePrefix() + complexDataType + codeGenerationConfig.namePostfix();
             }
