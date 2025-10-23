@@ -1550,6 +1550,55 @@ public class SammBuilder {
       }
    }
 
+   /**
+    * Builder for {@link ScalarValue}
+    *
+    * @param <SELF> the self type
+    */
+   public static class ScalarValueBuilder<SELF extends ScalarValueBuilder<SELF>> extends OptionallyNamedElementBuilder<SELF, ScalarValue> {
+      private String lexicalValue;
+      private Scalar type;
+      private Locale languageTag;
+
+      public ScalarValueBuilder() {
+         super( ScalarValueBuilder.class );
+      }
+
+      public ScalarValueBuilder( final AspectModelUrn urn ) {
+         super( ScalarValueBuilder.class, urn );
+      }
+
+      public SELF lexicalValue( final String lexicalValue ) {
+         this.lexicalValue = lexicalValue;
+         return myself;
+      }
+
+      public SELF type( final Scalar type ) {
+         this.type = type;
+         return myself;
+      }
+
+      public SELF languageTag( final Locale languageTag ) {
+         this.languageTag = languageTag;
+         return myself;
+      }
+
+      @Override
+      public ScalarValue build() {
+         if ( lexicalValue == null ) {
+            throw new AspectModelBuildingException( "Value must not be null" );
+         }
+         if ( languageTag != null ) {
+            return new ValueInstantiator().buildLanguageString( baseAttributes(), lexicalValue, languageTag.toLanguageTag() );
+         }
+         if ( type == null ) {
+            throw new AspectModelBuildingException( "Type must not be null" );
+         }
+         return new ValueInstantiator().buildScalarValue( baseAttributes(), lexicalValue, null, type.getUrn() )
+               .orElseThrow( () -> new AspectModelBuildingException( "Value '" + lexicalValue + "' is invalid for type " + type ) );
+      }
+   }
+
    public static <T extends EntityInstanceBuilder<T>> EntityInstanceBuilder<T> entityInstance( final AspectModelUrn urn ) {
       return new EntityInstanceBuilder<>( Objects.requireNonNull( urn ) );
    }
@@ -1558,20 +1607,28 @@ public class SammBuilder {
       return entityInstance( AspectModelUrn.fromUrn( Objects.requireNonNull( urn ) ) );
    }
 
+   public static <T extends ScalarValueBuilder<T>> ScalarValueBuilder<T> value() {
+      return new ScalarValueBuilder<>();
+   }
+
+   public static <T extends ScalarValueBuilder<T>> ScalarValueBuilder<T> value( final AspectModelUrn urn ) {
+      return new ScalarValueBuilder<>( urn );
+   }
+
    public static ScalarValue value( final String stringValue ) {
-      return new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), Objects.requireNonNull( stringValue ), xsd.string );
+      return new DefaultScalarValue( MetaModelBaseAttributes.empty(), Objects.requireNonNull( stringValue ), xsd.string );
    }
 
    public static ScalarValue value( final boolean booleanValue ) {
-      return new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), booleanValue, xsd.boolean_ );
+      return new DefaultScalarValue( MetaModelBaseAttributes.empty(), booleanValue, xsd.boolean_ );
    }
 
    public static ScalarValue value( final float floatValue ) {
-      return new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), floatValue, xsd.float_ );
+      return new DefaultScalarValue( MetaModelBaseAttributes.empty(), floatValue, xsd.float_ );
    }
 
    public static ScalarValue value( final double doubleValue ) {
-      return new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), doubleValue, xsd.double_ );
+      return new DefaultScalarValue( MetaModelBaseAttributes.empty(), doubleValue, xsd.double_ );
    }
 
    /* Intentionally no value(int) method here, because an int value could imply different XSD types */

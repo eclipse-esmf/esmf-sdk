@@ -109,6 +109,15 @@ public class MetaModelBaseAttributes implements HasDescription {
    }
 
    /**
+    * Returns a new "empty" base attributes object, implying an anonymous model element with no base attributes.
+    *
+    * @return a new empty base attributes object
+    */
+   public static MetaModelBaseAttributes empty() {
+      return MetaModelBaseAttributes.builder().build();
+   }
+
+   /**
     * Creates an instance of MetaModelBaseAttributes by copying them from a given element.
     *
     * @param modelElement the named model element to copy the base attributes from

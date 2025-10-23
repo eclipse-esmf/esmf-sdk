@@ -38,6 +38,14 @@ public class ValueInstantiator {
     * @return the ScalarValue instance or empty if the lexical representation can not be parsed according to the datatype
     */
    public Optional<ScalarValue> buildScalarValue( final String lexicalRepresentation, final String languageTag, final String datatypeUri ) {
+      return buildScalarValue( MetaModelBaseAttributes.empty(), lexicalRepresentation, languageTag, datatypeUri );
+   }
+
+   /**
+    * Creates new instances of {@link ScalarValue} from the value representation in RDF, with base attributes
+    */
+   public Optional<ScalarValue> buildScalarValue( final MetaModelBaseAttributes baseAttributes, final String lexicalRepresentation,
+         final String languageTag, final String datatypeUri ) {
       // rdf:langString needs special handling here:
       // 1. A custom parser for rdf:langString values can not be registered with Jena, because it would only receive from Jena during
       // parsing the lexical representation of the value without the language tag (this is handled specially in Jena).
@@ -45,20 +53,25 @@ public class ValueInstantiator {
       // .xsd.impl.RDFLangString but _not_ org.eclipse.esmf.metamodel.datatypes.LangString as we would like to.
       // 3. So we construct an instance of LangString here from the RDFLangString.
       if ( datatypeUri.equals( RDF.langString.getURI() ) ) {
-         return Optional.of( buildLanguageString( lexicalRepresentation, languageTag ) );
+         return Optional.of( buildLanguageString( baseAttributes, lexicalRepresentation, languageTag ) );
       }
 
       return SammXsdType.ALL_TYPES.stream()
             .filter( type -> type.getURI().equals( datatypeUri ) )
             .map( type -> type.parse( lexicalRepresentation ) )
             .<ScalarValue> map(
-                  value -> new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), value, new DefaultScalar( datatypeUri ) ) )
+                  value -> new DefaultScalarValue( baseAttributes, value, new DefaultScalar( datatypeUri ) ) )
             .findAny();
    }
 
-   public ScalarValue buildLanguageString( final String lexicalRepresentation, final String languageTag ) {
+   public ScalarValue buildLanguageString( final MetaModelBaseAttributes baseAttributes, final String lexicalRepresentation,
+         final String languageTag ) {
       final LangString langString = new LangString( lexicalRepresentation, Locale.forLanguageTag( languageTag ) );
       final Scalar type = new DefaultScalar( RDF.langString.getURI() );
-      return new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), langString, type );
+      return new DefaultScalarValue( baseAttributes, langString, type );
+   }
+
+   public ScalarValue buildLanguageString( final String lexicalRepresentation, final String languageTag ) {
+      return buildLanguageString( MetaModelBaseAttributes.empty(), lexicalRepresentation, languageTag );
    }
 }

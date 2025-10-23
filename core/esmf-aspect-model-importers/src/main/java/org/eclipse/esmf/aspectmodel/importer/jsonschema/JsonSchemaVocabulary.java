@@ -15,11 +15,12 @@ package org.eclipse.esmf.aspectmodel.importer.jsonschema;
 
 import com.google.common.base.CaseFormat;
 
-public enum JsonSchemaVocabulary {
+public enum JsonSchemaVocabulary implements JsonAttribute {
    $ANCHOR, $COMMENT, $DEFS, $REF, ANY_OF, ARRAY, BOOLEAN, DESCRIPTION, ENUM, EXAMPLES, EXCLUSIVE_MAXIMUM, EXCLUSIVE_MINIMUM, FORMAT,
    INTEGER, ITEMS, MAXIMUM, MAX_LENGTH, MINIMUM, MIN_LENGTH, NUMBER, OBJECT, ONE_OF, PATTERN, PROPERTIES, REQUIRED, STRING, TITLE, TYPE,
    UNIQUE_ITEMS;
 
+   @Override
    public String key() {
       return CaseFormat.LOWER_UNDERSCORE.to( CaseFormat.LOWER_CAMEL, toString().toLowerCase() );
    }

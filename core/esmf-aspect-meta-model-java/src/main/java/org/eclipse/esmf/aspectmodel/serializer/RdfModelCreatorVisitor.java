@@ -536,19 +536,32 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    public ElementModel visitScalarValue( final ScalarValue value, final ModelElement context ) {
       final Model model = ModelFactory.createDefaultModel();
       final Type type = value.getType();
+      final Literal literal;
       if ( type.getUrn().equals( RDF.langString.getURI() ) ) {
          final LangString langString = (LangString) value.getValue();
-         final Literal literal = ResourceFactory.createLangLiteral( langString.getValue(), langString.getLanguageTag().toLanguageTag() );
+         literal = ResourceFactory.createLangLiteral( langString.getValue(), langString.getLanguageTag().toLanguageTag() );
+      } else {
+         final Optional<RDFDatatype> targetType = SammXsdType.ALL_TYPES.stream()
+               .filter( dataType -> dataType.getURI().equals( type.getUrn() ) ).findAny();
+         if ( targetType.isEmpty() || type.getUrn().equals( XSD.xstring.getURI() ) ) {
+            literal = ResourceFactory.createStringLiteral( value.getValue().toString() );
+         } else {
+            literal = ResourceFactory.createTypedLiteral( targetType.get().unparse( value.getValue() ), targetType.get() );
+         }
+      }
+
+      if ( value.isAnonymous() && value.getDescriptions().isEmpty() && value.getPreferredNames().isEmpty() && value.getSee().isEmpty() ) {
+         // Value is anonymous and has no base attributes set: Create a Literal
          return new ElementModel( model, Optional.of( literal ) );
       }
 
-      final Optional<RDFDatatype> targetType = SammXsdType.ALL_TYPES.stream()
-            .filter( dataType -> dataType.getURI().equals( type.getUrn() ) ).findAny();
-      if ( targetType.isEmpty() || type.getUrn().equals( XSD.xstring.getURI() ) ) {
-         return new ElementModel( model, Optional.of( ResourceFactory.createStringLiteral( value.getValue().toString() ) ) );
-      }
-      return new ElementModel( model,
-            Optional.of( ResourceFactory.createTypedLiteral( targetType.get().unparse( value.getValue() ), targetType.get() ) ) );
+      // Create a separate RDF node for the value.
+      // Don't use getElementResource() here because we do not want to cache and reuse anonymous samm:Value resources.
+      final Resource resource = value.isAnonymous() ? createResource() : createResource( value.urn().toString() );
+      model.add( resource, RDF.type, SammNs.SAMM.Value() );
+      model.add( serializeDescriptions( resource, value ) );
+      model.add( resource, SammNs.SAMM.value(), literal );
+      return new ElementModel( model, Optional.of( resource ) );
    }
 
    @Override
@@ -728,7 +741,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       }
 
       if ( !isLocalElement( property ) ) {
-         return new ElementModel( model, Optional.empty() );
+         return ElementModel.EMPTY;
       }
 
       final Resource resource = getElementResource( property );

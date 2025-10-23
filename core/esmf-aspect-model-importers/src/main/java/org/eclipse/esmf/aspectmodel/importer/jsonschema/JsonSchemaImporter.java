@@ -13,6 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.importer.jsonschema;
 
+import static org.eclipse.esmf.aspectmodel.StreamUtil.asMap;
 import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaVocabulary.$ANCHOR;
 import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaVocabulary.$COMMENT;
 import static org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaVocabulary.$DEFS;
@@ -89,6 +90,9 @@ import org.eclipse.esmf.metamodel.StructureElement;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.builder.AspectModelBuildingException;
 import org.eclipse.esmf.metamodel.builder.SammBuilder;
+import org.eclipse.esmf.metamodel.characteristic.Enumeration;
+import org.eclipse.esmf.metamodel.characteristic.SingleEntity;
+import org.eclipse.esmf.metamodel.characteristic.Trait;
 import org.eclipse.esmf.metamodel.constraint.LengthConstraint;
 import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
 import org.eclipse.esmf.metamodel.constraint.RegularExpressionConstraint;
@@ -114,6 +118,11 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
       Generator<JsonNode, AspectModelUrn, T, AspectGenerationConfig, A> {
    private static final Logger LOG = LoggerFactory.getLogger( JsonSchemaImporter.class );
    protected static final String TODO_COMMENT = "TODO";
+
+   /**
+    * The attribute that can be added parallel to enums that describes their values, as used by CycloneDX schema
+    */
+   protected static final JsonAttribute META_ENUM = new JsonAttribute.Named( "meta:enum" );
    protected final Map<String, Characteristic> schemaCharacteristicsByPath = new HashMap<>();
    protected final Map<JsonNode, Characteristic> schemaCharacteristicsByNode = new HashMap<>();
    protected final Map<String, Collection<DefaultCharacteristicWrapper>> schemaCharacteristicsInProgress = new HashMap<>();
@@ -180,19 +189,18 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
    protected T buildElement() {
       final JsonNode schema = getFocus();
       final Context context = new Context();
-      final T result = elementBuilder()
+      return elementBuilder()
             .preferredName( determinePreferredName( schema, config.aspectModelUrn().getName() ) )
             .description( determineDescription( schema ).orElse( null ) )
             .properties( buildPropertiesList( schema, context ) )
             .build();
-      return result;
    }
 
    protected JsonNode root() {
       return getFocus();
    }
 
-   protected Optional<JsonNode> jsonProperty( final JsonNode node, final JsonSchemaVocabulary property ) {
+   protected Optional<JsonNode> jsonProperty( final JsonNode node, final JsonAttribute property ) {
       return Optional.ofNullable( node.get( property.key() ) );
    }
 
@@ -401,46 +409,7 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
    protected Characteristic buildCharacteristic( final JsonNode propertyNode, final String propertyName, final Context context ) {
       final Optional<JsonNode> refNode = jsonProperty( propertyNode, $REF );
       if ( refNode.isPresent() ) {
-         // Prevent infinite recursion: If the Property being referenced is already in the process of being constructed,
-         // return a forward reference instead.
-         final String reference = refNode.get().asText();
-         final Characteristic schemaCharacteristic = schemaCharacteristicsByPath.get( reference );
-         final String characteristicName = StringUtils.capitalize( determineElementNameForSchema( reference ) ) + "Characteristic";
-         final AspectModelUrn characteristicUrn = buildCharacteristicUrn( characteristicName );
-         // Characteristic for named schema was already constructed
-         if ( schemaCharacteristic != null ) {
-            final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.builder()
-                  .withUrn( characteristicUrn )
-                  .build();
-            final DefaultCharacteristicWrapper defaultCharacteristicWrapper = new DefaultCharacteristicWrapper( baseAttributes );
-            defaultCharacteristicWrapper.setWrappedCharacteristic( schemaCharacteristic );
-            return defaultCharacteristicWrapper;
-         }
-
-         // The Characteristic for the referenced schema is currently being constructed
-         if ( schemaCharacteristicsInProgress.containsKey( reference ) ) {
-            final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.builder()
-                  .withUrn( characteristicUrn )
-                  .build();
-            final DefaultCharacteristicWrapper defaultCharacteristicWrapper = new DefaultCharacteristicWrapper( baseAttributes );
-            schemaCharacteristicsInProgress.get( reference ).add( defaultCharacteristicWrapper );
-            return defaultCharacteristicWrapper;
-         }
-
-         // No Characteristic exists yet for the referenced schema. Create one.
-         final Collection<DefaultCharacteristicWrapper> forwardReferences = new ArrayList<>();
-         schemaCharacteristicsInProgress.put( reference, forwardReferences );
-         final Characteristic result = buildCharacteristic( resolveRef( refNode.get().asText() ), propertyName,
-               context.withCharacteristicUrn( characteristicUrn ) );
-         // If this is the end of the recursion, update the forward references with the created Characteristic
-         if ( !( result instanceof DefaultCharacteristicWrapper ) ) {
-            schemaCharacteristicsByPath.put( reference, result );
-            for ( final DefaultCharacteristicWrapper p : forwardReferences ) {
-               p.setWrappedCharacteristic( result );
-            }
-            schemaCharacteristicsInProgress.remove( reference );
-         }
-         return result;
+         return buildCharacteristicFromReferencedSchema( refNode.get(), propertyName, context );
       }
 
       final Optional<String> jsonTypeName = jsonProperty( propertyNode, TYPE )
@@ -467,82 +436,149 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
 
       final String jsonType = jsonTypeName.get();
       if ( jsonType.equals( ARRAY.key() ) ) {
-         if ( propertyNode.isArray() ) {
-            return buildCharacteristicForArraySchema( Lists.newArrayList( propertyNode.elements() ), propertyName,
-                  context.withNoCharacteristicUrn() );
-         }
-
-         final boolean uniqueItems = jsonProperty( propertyNode, UNIQUE_ITEMS )
-               .map( JsonNode::asBoolean )
-               .orElse( false );
-         final Optional<JsonNode> items = jsonProperty( propertyNode, ITEMS );
-         final Optional<JsonNode> oneOfOrAnyOf = jsonProperty( propertyNode, ONE_OF ).or( () -> jsonProperty( propertyNode, ANY_OF ) );
-         final Characteristic elementCharacteristic;
-         if ( items.isEmpty() && oneOfOrAnyOf.isPresent() ) {
-            elementCharacteristic = buildEither( propertyName, Lists.newArrayList( oneOfOrAnyOf.get().elements() ),
-                  context.withNoCharacteristicUrn() );
-         } else if ( items.isPresent() ) {
-            elementCharacteristic = buildCharacteristic( items.get(), propertyName + "Element", context.withNoCharacteristicUrn() );
-         } else {
-            throw new AspectImportException(
-                  "Property node for '" + propertyName + "' is of type array, but is missing an items property" );
-         }
-         return ( uniqueItems ? sortedSet( context.characteristicUrn() ) : list( context.characteristicUrn() ) )
-               .preferredName( determinePreferredName( propertyNode ).orElse( null ) )
-               .description( todoComment().orElse( null ) )
-               .elementCharacteristic( elementCharacteristic )
-               .build();
+         return buildCollection( propertyNode, propertyName, context );
       }
 
       if ( jsonType.equals( OBJECT.key() ) ) {
-         return singleEntity( context.characteristicUrn() )
-               .preferredName( determinePreferredName( propertyNode ).orElse( null ) )
-               .description( todoComment().orElse( null ) )
-               .dataType( buildEntity( propertyNode, propertyName, context.withPath( propertyName ).withNoCharacteristicUrn() ) )
-               .build();
+         return buildSingleEntity( propertyNode, propertyName, context );
       }
 
-      final Scalar type = determinePropertyType( propertyNode, propertyName, jsonType );
-      final List<Constraint> constraints = buildConstraints( propertyNode, type );
-
-      final Characteristic baseCharacteristic;
+      final Scalar scalarType = determinePropertyType( propertyNode, propertyName, jsonType );
+      final List<Constraint> constraints = buildConstraints( propertyNode, scalarType );
       final Optional<JsonNode> enumNode = jsonProperty( propertyNode, ENUM );
-      if ( enumNode.isPresent() ) {
-         final List<ScalarValue> values = Streams.stream( enumNode.get().elements() )
-               .map( node -> value( node.asText(), type ) )
-               .toList();
-         baseCharacteristic = enumeration( context.characteristicUrn() )
-               .dataType( type )
-               .preferredName( determinePreferredName( propertyNode ).orElse( null ) )
-               .description( todoComment().orElse( null ) )
-               .values( values )
+      final Characteristic baseCharacteristic = enumNode.isPresent()
+            ? buildEnumeration( propertyNode, enumNode.get(), scalarType, context )
+            : buildPlainCharacteristic( propertyNode, scalarType, context );
+      return constraints.isEmpty()
+            ? baseCharacteristic
+            : buildTrait( propertyNode, baseCharacteristic, constraints, context );
+   }
+
+   protected Characteristic buildCharacteristicFromReferencedSchema( final JsonNode refNode, final String propertyName,
+         final Context context ) {
+      // Prevent infinite recursion: If the Property being referenced is already in the process of being constructed,
+      // return a forward reference instead.
+      final String reference = refNode.asText();
+      final Characteristic schemaCharacteristic = schemaCharacteristicsByPath.get( reference );
+      final String characteristicName = StringUtils.capitalize( determineElementNameForSchema( reference ) ) + "Characteristic";
+      final AspectModelUrn characteristicUrn = buildCharacteristicUrn( characteristicName );
+      // Characteristic for named schema was already constructed
+      if ( schemaCharacteristic != null ) {
+         final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.builder()
+               .withUrn( characteristicUrn )
                .build();
+         final DefaultCharacteristicWrapper defaultCharacteristicWrapper = new DefaultCharacteristicWrapper( baseAttributes );
+         defaultCharacteristicWrapper.setWrappedCharacteristic( schemaCharacteristic );
+         return defaultCharacteristicWrapper;
+      }
+
+      // The Characteristic for the referenced schema is currently being constructed
+      if ( schemaCharacteristicsInProgress.containsKey( reference ) ) {
+         final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.builder()
+               .withUrn( characteristicUrn )
+               .build();
+         final DefaultCharacteristicWrapper defaultCharacteristicWrapper = new DefaultCharacteristicWrapper( baseAttributes );
+         schemaCharacteristicsInProgress.get( reference ).add( defaultCharacteristicWrapper );
+         return defaultCharacteristicWrapper;
+      }
+
+      // No Characteristic exists yet for the referenced schema. Create one.
+      final Collection<DefaultCharacteristicWrapper> forwardReferences = new ArrayList<>();
+      schemaCharacteristicsInProgress.put( reference, forwardReferences );
+      final Characteristic result = buildCharacteristic( resolveRef( refNode.asText() ), propertyName,
+            context.withCharacteristicUrn( characteristicUrn ) );
+      // If this is the end of the recursion, update the forward references with the created Characteristic
+      if ( !( result instanceof DefaultCharacteristicWrapper ) ) {
+         schemaCharacteristicsByPath.put( reference, result );
+         for ( final DefaultCharacteristicWrapper p : forwardReferences ) {
+            p.setWrappedCharacteristic( result );
+         }
+         schemaCharacteristicsInProgress.remove( reference );
+      }
+      return result;
+   }
+
+   protected Characteristic buildCollection( final JsonNode propertyNode, final String propertyName, final Context context ) {
+      if ( propertyNode.isArray() ) {
+         return buildCharacteristicForArraySchema( Lists.newArrayList( propertyNode.elements() ), propertyName,
+               context.withNoCharacteristicUrn() );
+      }
+
+      final boolean uniqueItems = jsonProperty( propertyNode, UNIQUE_ITEMS )
+            .map( JsonNode::asBoolean )
+            .orElse( false );
+      final Optional<JsonNode> items = jsonProperty( propertyNode, ITEMS );
+      final Optional<JsonNode> oneOfOrAnyOf = jsonProperty( propertyNode, ONE_OF ).or( () -> jsonProperty( propertyNode, ANY_OF ) );
+      final Characteristic elementCharacteristic;
+      if ( items.isEmpty() && oneOfOrAnyOf.isPresent() ) {
+         elementCharacteristic = buildEither( propertyName, Lists.newArrayList( oneOfOrAnyOf.get().elements() ),
+               context.withNoCharacteristicUrn() );
+      } else if ( items.isPresent() ) {
+         elementCharacteristic = buildCharacteristic( items.get(), propertyName + "Element", context.withNoCharacteristicUrn() );
       } else {
-         baseCharacteristic = characteristic( context.characteristicUrn() )
-               .dataType( type )
-               .preferredName( determinePreferredName( propertyNode ).orElse( null ) )
-               .description( todoComment().orElse( null ) )
-               .build();
+         throw new AspectImportException(
+               "Property node for '" + propertyName + "' is of type array, but is missing an items property" );
       }
+      return ( uniqueItems ? sortedSet( context.characteristicUrn() ) : list( context.characteristicUrn() ) )
+            .preferredName( determinePreferredName( propertyNode ).orElse( null ) )
+            .description( todoComment().orElse( null ) )
+            .elementCharacteristic( elementCharacteristic )
+            .build();
+   }
 
-      Characteristic characteristic = null;
-      if ( !constraints.isEmpty() ) {
-         final AspectModelUrn traitUrn = Optional.ofNullable( context.characteristicUrn() )
-               .map( urn -> urn.withName( urn.getName() + "Trait" ) )
-               .orElse( null );
-         characteristic = trait( traitUrn )
-               .preferredName( determinePreferredName( propertyNode ).orElse( null ) )
-               .description( todoComment().orElse( null ) )
-               .baseCharacteristic( baseCharacteristic )
-               .constraints( constraints )
-               .build();
-      }
+   protected SingleEntity buildSingleEntity( final JsonNode propertyNode, final String propertyName, final Context context ) {
+      return singleEntity( context.characteristicUrn() )
+            .preferredName( determinePreferredName( propertyNode ).orElse( null ) )
+            .description( todoComment().orElse( null ) )
+            .dataType( buildEntity( propertyNode, propertyName, context.withPath( propertyName ).withNoCharacteristicUrn() ) )
+            .build();
+   }
 
-      if ( characteristic == null ) {
-         characteristic = baseCharacteristic;
-      }
+   protected Characteristic buildPlainCharacteristic( final JsonNode propertyNode, final Scalar type, final Context context ) {
+      return characteristic( context.characteristicUrn() )
+            .dataType( type )
+            .preferredName( determinePreferredName( propertyNode ).orElse( null ) )
+            .description( todoComment().orElse( null ) )
+            .build();
+   }
 
-      return characteristic;
+   protected Enumeration buildEnumeration( final JsonNode propertyNode, final JsonNode enumNode, final Scalar type,
+         final Context context ) {
+      final Map<String, String> valueDescriptions = jsonProperty( propertyNode, META_ENUM )
+            .stream()
+            .flatMap( node -> Streams.stream( node.fields() ) )
+            .map( entry -> Map.entry( entry.getKey(), entry.getValue().asText() ) )
+            .collect( asMap() );
+
+      final List<ScalarValue> values = Streams.stream( enumNode.elements() )
+            .map( node -> {
+               final String enumValue = node.asText();
+               return value()
+                     .description( valueDescriptions.get( enumValue ) )
+                     .lexicalValue( enumValue )
+                     .type( type )
+                     .build();
+            } )
+            .toList();
+      return enumeration( context.characteristicUrn() )
+            .dataType( type )
+            .preferredName( determinePreferredName( propertyNode ).orElse( null ) )
+            .description( todoComment().orElse( null ) )
+            .values( values )
+            .build();
+   }
+
+   protected Trait buildTrait( final JsonNode propertyNode, final Characteristic baseCharacteristic, final List<Constraint> constraints,
+         final Context context ) {
+      final AspectModelUrn traitUrn = Optional.ofNullable( context.characteristicUrn() )
+            .map( urn -> urn.withName( urn.getName() + "Trait" ) )
+            .orElse( null );
+      return trait( traitUrn )
+            .preferredName( determinePreferredName( propertyNode ).orElse( null ) )
+            .description( todoComment().orElse( null ) )
+            .baseCharacteristic( baseCharacteristic )
+            .constraints( constraints )
+            .build();
    }
 
    protected Entity buildEntity( final JsonNode item, final String propertyName, final Context context ) {
