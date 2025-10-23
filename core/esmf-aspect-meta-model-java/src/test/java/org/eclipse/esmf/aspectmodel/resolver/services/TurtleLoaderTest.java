@@ -43,7 +43,7 @@ public class TurtleLoaderTest {
          final Try<Model> tryModel = TurtleLoader.loadTurtle( new ByteArrayInputStream( MODEL.getBytes( StandardCharsets.UTF_8 ) ) );
          assertThat( tryModel.isFailure() ).isTrue();
          assertThat( tryModel.getCause() ).isInstanceOfSatisfying( ParserException.class, parserException -> {
-            assertThat( parserException.getMessage() ).contains( "[line: 2, col: 13] Undefined prefix: aPrefix" );
+            assertThat( parserException.getMessage() ).contains( "Undefined prefix: aPrefix" );
          } );
       } ).doesNotThrowAnyException();
    }

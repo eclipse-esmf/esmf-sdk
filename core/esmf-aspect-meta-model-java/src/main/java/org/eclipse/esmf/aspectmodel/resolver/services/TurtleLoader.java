@@ -17,12 +17,15 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.eclipse.esmf.aspectmodel.ValueParsingException;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
 import org.eclipse.esmf.aspectmodel.resolver.parser.ReaderRiotTurtle;
 import org.eclipse.esmf.metamodel.datatype.SammXsdType;
@@ -83,34 +86,42 @@ public final class TurtleLoader {
    }
 
    /**
+    * Loads a Turtle model from a String containing RDF/Turtle and keeps track of the logical source location
+    *
+    * @param modelContent the model content
+    * @param location the location of the input source
+    * @return the model on success, a corresponding exception otherwise
+    */
+   public static Try<Model> loadTurtle( @Nonnull final String modelContent, @Nullable final URI location ) {
+      init();
+      try ( final InputStream turtleInputStream = new ByteArrayInputStream( modelContent.getBytes( StandardCharsets.UTF_8 ) ) ) {
+         final Model streamModel = RDFParser.create()
+               .factory( new FactoryRDFStd() )
+               .source( turtleInputStream )
+               .lang( Lang.TURTLE )
+               .toModel();
+         return Try.success( streamModel );
+      } catch ( final ValueParsingException exception ) {
+         // This is thrown by the custom value parsers in SammXsdType
+         exception.setSourceDocument( modelContent );
+         exception.setSourceLocation( location );
+         throw exception;
+      } catch ( final RiotException exception ) {
+         // Thrown by Jena for regular syntax errors
+         return Try.failure( new ParserException( exception, modelContent, location ) );
+      } catch ( final IOException exception ) {
+         return Try.failure( exception );
+      }
+   }
+
+   /**
     * Loads a Turtle model from a String containing RDF/Turtle
     *
     * @param modelContent The model content
     * @return The model on success, a corresponding exception otherwise
     */
    public static Try<Model> loadTurtle( @Nullable final String modelContent ) {
-      Objects.requireNonNull( modelContent, "Model content must not be null." );
-      init();
-      try ( final InputStream turtleInputStream = new ByteArrayInputStream( modelContent.getBytes( StandardCharsets.UTF_8 ) ) ) {
-         final Model streamModel = RDFParser.create()
-               // Make sure to NOT use FactoryRDFCaching because it will return the same objects for nodes appearing
-               // in different places of a source document, which would break functionality of the TokenRegistry.
-               .factory( new FactoryRDFStd() )
-               .source( turtleInputStream )
-               .lang( Lang.TURTLE )
-               .toModel();
-         return Try.success( streamModel );
-      } catch ( final IllegalArgumentException exception ) {
-         LOG.error( "Invalid value encountered in Aspect Model.", exception );
-         final String incorrectDataTypeDefinitionMessage = "%s is not a valid value for the defined data type.";
-         final String formattedErrorMessage = String
-               .format( incorrectDataTypeDefinitionMessage, exception.getMessage() );
-         return Try.failure( new IllegalArgumentException( formattedErrorMessage ) );
-      } catch ( final IOException exception ) {
-         return Try.failure( exception );
-      } catch ( final RiotException exception ) {
-         return Try.failure( new ParserException( exception, modelContent ) );
-      }
+      return loadTurtle( Objects.requireNonNull( modelContent ), null );
    }
 
    private static void registerTurtle() {

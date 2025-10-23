@@ -18,15 +18,17 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import org.eclipse.esmf.aspectmodel.shacl.violation.ProcessingViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+import org.eclipse.esmf.aspectmodel.validation.CycleViolation;
 import org.eclipse.esmf.metamodel.vocabulary.SAMM;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
-import org.eclipse.esmf.samm.KnownVersion;
 
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
@@ -44,8 +46,8 @@ import org.apache.jena.vocabulary.RDF;
 /**
  * Cycle detector for SAMM models.
  * <br/>
- * Because of the limitations of the property paths in Sparql queries, it is impossible to realize the cycle detection together with
- * other validations via Shacl shapes.
+ * Because of the limitations of the property paths in SPARQL queries, it is impossible to realize the cycle detection together with
+ * other validations via SHACL shapes.
  * <br/>
  * According to graph theory:
  * A directed graph G is acyclic if and only if a depth-first search of G yields no back edges.
@@ -54,19 +56,9 @@ import org.apache.jena.vocabulary.RDF;
  * present in the model.
  */
 public class ModelCycleDetector {
-   static final String ERR_CYCLE_DETECTED =
-         "The Aspect Model contains a cycle which includes following properties: %s. Please remove any cycles that do not allow a finite "
-               + "json payload.";
-
-   private static final String PREFIXES = """
-         prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%1$s#>
-         prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:%1$s#>
-         prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-         """;
-
-   final Set<String> discovered = new LinkedHashSet<>();
-   final Set<String> discoveredOptionals = new HashSet<>();
-   final Set<String> finished = new HashSet<>();
+   final Set<Resource> discovered = new LinkedHashSet<>();
+   final Set<Resource> discoveredOptionals = new HashSet<>();
+   final Set<Resource> finished = new HashSet<>();
 
    private Query query;
 
@@ -101,34 +93,32 @@ public class ModelCycleDetector {
       return cycleDetectionReport;
    }
 
-   private void depthFirstTraversal( final Resource currentProperty, final BiConsumer<String, Set<String>> cycleHandler ) {
-      final Resource resolvedProperty = currentProperty.isAnon()
-            ? resolvePropertyReference( currentProperty.asResource() )
-            : currentProperty.asResource();
-      final String currentPropertyName = getUniqueName( resolvedProperty );
-      if ( finished.contains( currentPropertyName ) ) {
+   private void depthFirstTraversal( final Resource currentProperty, final BiConsumer<Resource, Set<Resource>> cycleHandler ) {
+      final Resource resolvedProperty = resolvePropertyReference( currentProperty );
+      if ( finished.contains( resolvedProperty ) ) {
          return;
       }
       final boolean isOptional = isOptionalProperty( currentProperty );
       if ( isOptional ) {
-         discoveredOptionals.add( currentPropertyName );
+         discoveredOptionals.add( resolvedProperty );
       }
 
-      if ( discovered.contains( currentPropertyName ) ) {
+      if ( discovered.contains( resolvedProperty ) ) {
          // found a back edge -> cycle detected; report it as such only if not broken by an optional property
-         if ( !optionalPropertyAtOrBelowBackEdge( currentPropertyName ) ) {
-            cycleHandler.accept( currentPropertyName, discovered );
+         if ( !optionalPropertyAtOrBelowBackEdge( resolvedProperty ) ) {
+            cycleHandler.accept( resolvedProperty, discovered );
          }
       } else {
-         discovered.add( currentPropertyName );
+         discovered.add( resolvedProperty );
 
-         final List<NextHopProperty> nextHopProperties = getDirectlyReachableProperties( model, resolvedProperty );
+         final List<NextHopProperty> nextHopProperties = getDirectlyReachableProperties( model,
+               isOptional ? resolvedProperty : currentProperty );
 
          // samm-c:Either makes the task somewhat more complicated - we need to know the status of both branches (left/right)
          // to be able to decide whether there really is a cycle or not
          if ( reachedViaEither( nextHopProperties ) ) {
-            final EitherCycleDetector leftBranch = new EitherCycleDetector( currentPropertyName, this::reportCycle );
-            final EitherCycleDetector rightBranch = new EitherCycleDetector( currentPropertyName, this::reportCycle );
+            final EitherCycleDetector leftBranch = new EitherCycleDetector( resolvedProperty, this::reportCycle );
+            final EitherCycleDetector rightBranch = new EitherCycleDetector( resolvedProperty, this::reportCycle );
             nextHopProperties.stream().filter( property -> property.eitherStatus == 1 )
                   .forEach( property -> depthFirstTraversal( property.propertyNode, leftBranch::collectCycles ) );
             nextHopProperties.stream().filter( property -> property.eitherStatus == 2 )
@@ -142,12 +132,12 @@ public class ModelCycleDetector {
             nextHopProperties.forEach( property -> depthFirstTraversal( property.propertyNode, cycleHandler ) );
          }
 
-         discovered.remove( currentPropertyName );
-         finished.add( currentPropertyName );
+         discovered.remove( resolvedProperty );
+         finished.add( resolvedProperty );
       }
 
       if ( isOptional ) {
-         discoveredOptionals.remove( currentPropertyName );
+         discoveredOptionals.remove( resolvedProperty );
       }
    }
 
@@ -155,14 +145,14 @@ public class ModelCycleDetector {
       return nextHopProperties.stream().anyMatch( property -> property.eitherStatus > 0 );
    }
 
-   private boolean optionalPropertyAtOrBelowBackEdge( final String backEdge ) {
+   private boolean optionalPropertyAtOrBelowBackEdge( final Resource backEdge ) {
       if ( discoveredOptionals.contains( backEdge ) ) {
          return true;
       }
-      final Iterator<String> path = discovered.iterator();
+      final Iterator<Resource> path = discovered.iterator();
       // first find the back edge property within the current path
       while ( path.hasNext() ) {
-         final String currentNode = path.next();
+         final Resource currentNode = path.next();
          if ( currentNode.equals( backEdge ) ) {
             break;
          }
@@ -176,54 +166,36 @@ public class ModelCycleDetector {
       return false;
    }
 
-   private Resource resolvePropertyReference( final Resource propertyNode ) {
-      final Statement prop = propertyNode.getProperty( samm.property() );
-      if ( prop != null ) {
-         return prop.getObject().asResource();
+   private Resource resolvePropertyReference( final Resource property ) {
+      if ( property.isURIResource() ) {
+         return property;
       }
-      return propertyNode;
+      return Optional.ofNullable( property.getProperty( samm.property() ) )
+            .or( () -> Optional.ofNullable( property.getProperty( samm._extends() ) ) )
+            .map( Statement::getObject )
+            .map( RDFNode::asResource )
+            .orElse( property );
    }
 
    private boolean isOptionalProperty( final Resource propertyNode ) {
       final Statement optional = propertyNode.getProperty( samm.optional() );
-      return (optional != null) && optional.getBoolean();
+      return ( optional != null ) && optional.getBoolean();
    }
 
-   private String getUniqueName( final Resource property ) {
-      // Ugly special case: when extending Entities, the property name will always be the same ([ samm:extends samm-e:value ;
-      // samm:characteristic :someChara ]),
-      // so we need a unique name in case more than one extending Entity exists in the model
-      if ( property.isAnon() ) {
-         if ( property.getProperty( samm._extends() ) != null ) {
-            return findExtendingEntityName( property ) + "|" + model.shortForm(
-                  property.getProperty( samm._extends() ).getObject().asResource().getURI() );
-         }
-         // safety net
-         return property.toString();
-      }
-
-      return model.shortForm( property.getURI() );
+   private void reportCycle( final Resource backEdgeProperty, final Set<Resource> currentPath ) {
+      reportCycle( formatCurrentCycle( backEdgeProperty, currentPath ) );
    }
 
-   private String findExtendingEntityName( final Resource extendsProperty ) {
-      return model.listSubjectsWithProperty( samm._extends() )
-            .filterKeep( entity -> entity.getProperty( samm.properties() ) != null )
-            .filterKeep( entity -> entity.getProperty( samm.properties() ).getList().contains( extendsProperty ) )
-            .mapWith( resource -> model.shortForm( resource.getURI() ) )
-            .nextOptional().orElse( extendsProperty.toString() );
-   }
-
-   private void reportCycle( final String backEdgePropertyName, final Set<String> currentPath ) {
-      reportCycle( formatCurrentCycle( backEdgePropertyName, currentPath ) );
-   }
-
-   private void reportCycle( final String cyclePath ) {
-      cycleDetectionReport.add( new ProcessingViolation( String.format( ERR_CYCLE_DETECTED, cyclePath ), null ) );
+   private void reportCycle( final List<Resource> cyclePath ) {
+      cycleDetectionReport.add( new CycleViolation( cyclePath ) );
    }
 
    @SuppressWarnings( "checkstyle:LineLength" )
    private void initializeQuery() {
-      final String currentVersionPrefixes = PREFIXES.formatted( KnownVersion.getLatest().toVersionString() );
+      final String currentVersionPrefixes = SammNs.wellKnownNamespaces()
+            .map( ns -> "prefix %s: <%s>".formatted( ns.getShortForm(), ns.getNamespace() ) )
+            .collect( Collectors.joining( "\n" ) );
+
       //noinspection LongLine
       final String queryString = String.format( """
                   %s select ?reachableProperty ?viaEither
@@ -248,8 +220,8 @@ public class ModelCycleDetector {
       query = QueryFactory.create( queryString );
    }
 
-   private static String formatCurrentCycle( final String backEdgePropertyName, final Set<String> currentPath ) {
-      return String.join( " -> ", currentPath ) + " -> " + backEdgePropertyName;
+   private static List<Resource> formatCurrentCycle( final Resource backEdgeProperty, final Set<Resource> currentPath ) {
+      return Stream.concat( currentPath.stream(), Stream.of( backEdgeProperty ) ).toList();
    }
 
    private List<NextHopProperty> getDirectlyReachableProperties( final Model model, final Resource currentProperty ) {
@@ -280,20 +252,20 @@ public class ModelCycleDetector {
    }
 
    private static class EitherCycleDetector {
-      private final String eitherPropertyName;
-      private final List<String> breakableCycles = new ArrayList<>();
-      private final BiConsumer<String, Set<String>> cycleHandler;
+      private final Resource eitherProperty;
+      private final List<Resource> breakableCycles = new ArrayList<>();
+      private final BiConsumer<Resource, Set<Resource>> cycleHandler;
 
-      EitherCycleDetector( final String eitherPropertyName, final BiConsumer<String, Set<String>> cycleHandler ) {
-         this.eitherPropertyName = eitherPropertyName;
+      EitherCycleDetector( final Resource eitherProperty, final BiConsumer<Resource, Set<Resource>> cycleHandler ) {
+         this.eitherProperty = eitherProperty;
          this.cycleHandler = cycleHandler;
       }
 
-      private void collectCycles( final String backEdgePropertyName, final Set<String> currentPath ) {
-         if ( cycleIsBreakable( backEdgePropertyName, currentPath ) ) {
-            breakableCycles.add( formatCurrentCycle( backEdgePropertyName, currentPath ) );
+      private void collectCycles( final Resource backEdgeProperty, final Set<Resource> currentPath ) {
+         if ( cycleIsBreakable( backEdgeProperty, currentPath ) ) {
+            breakableCycles.addAll( formatCurrentCycle( backEdgeProperty, currentPath ) );
          } else {  // unbreakable cycles are simply immediately reported and not retained for later evaluation
-            cycleHandler.accept( backEdgePropertyName, currentPath );
+            cycleHandler.accept( backEdgeProperty, currentPath );
          }
       }
 
@@ -302,9 +274,9 @@ public class ModelCycleDetector {
       // Consider these two examples: ( E is the Either property )
       // a -> E -> b -> c -> a : this cycle can be broken by the other branch of the Either construct
       // a -> E -> b -> c -> b : this cycle is unbreakable and can be reported immediately
-      private boolean cycleIsBreakable( final String backEdgePropertyName, final Set<String> currentPath ) {
-         final String firstInPath = currentPath.stream()
-               .filter( propertyName -> propertyName.equals( backEdgePropertyName ) || propertyName.equals( eitherPropertyName ) )
+      private boolean cycleIsBreakable( final Resource backEdgePropertyName, final Set<Resource> currentPath ) {
+         final Resource firstInPath = currentPath.stream()
+               .filter( propertyName -> propertyName.equals( backEdgePropertyName ) || propertyName.equals( eitherProperty ) )
                .findFirst().get();
          return backEdgePropertyName.equals( firstInPath );
       }
@@ -313,8 +285,8 @@ public class ModelCycleDetector {
          return !breakableCycles.isEmpty();
       }
 
-      void reportCycles( final Consumer<String> reportCycle ) {
-         breakableCycles.forEach( reportCycle );
+      void reportCycles( final Consumer<List<Resource>> reportCycle ) {
+         reportCycle.accept( breakableCycles );
       }
    }
 }

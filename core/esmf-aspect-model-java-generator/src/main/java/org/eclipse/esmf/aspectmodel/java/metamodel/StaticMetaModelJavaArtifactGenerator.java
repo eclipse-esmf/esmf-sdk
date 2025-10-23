@@ -235,7 +235,7 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
 
       final String generatedSource = new TemplateEngine( context, engineConfiguration ).apply( "java-static-class" );
       try {
-         return new JavaArtifact( Roaster.format( generatedSource ), "Meta" + element.getName(),
+         return new JavaArtifact( Roaster.format( generatedSource ), "Meta" + AspectModelJavaUtil.generateClassName( element, config ),
                config.packageName() );
       } catch ( final Exception exception ) {
          throw new CodeGenerationException( generatedSource, exception );

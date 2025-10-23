@@ -15,7 +15,6 @@ package org.eclipse.esmf.buildtime.template;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -28,10 +27,8 @@ import javax.annotation.processing.Generated;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.MetaModelFile;
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.Unit;
 import org.eclipse.esmf.metamodel.QuantityKind;
-import org.eclipse.esmf.metamodel.datatype.LangString;
 import org.eclipse.esmf.metamodel.impl.DefaultUnit;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 

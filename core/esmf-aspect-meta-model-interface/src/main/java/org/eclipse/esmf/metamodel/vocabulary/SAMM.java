@@ -12,11 +12,8 @@
  */
 package org.eclipse.esmf.metamodel.vocabulary;
 
-import java.util.List;
-
 import org.eclipse.esmf.samm.KnownVersion;
 
-import com.google.common.collect.ImmutableList;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 

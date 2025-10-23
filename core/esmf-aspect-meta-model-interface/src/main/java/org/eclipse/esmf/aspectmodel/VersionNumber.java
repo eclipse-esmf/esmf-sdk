@@ -113,9 +113,9 @@ public class VersionNumber implements Comparable<VersionNumber> {
       }
       final VersionNumberParser parser = new VersionNumberParser( versionString );
 
-      int major = 0;
-      int minor = 0;
-      int micro = 0;
+      int major;
+      int minor;
+      int micro;
 
       major = parser.parseNextDigit();
       minor = parser.parseNextDigit();

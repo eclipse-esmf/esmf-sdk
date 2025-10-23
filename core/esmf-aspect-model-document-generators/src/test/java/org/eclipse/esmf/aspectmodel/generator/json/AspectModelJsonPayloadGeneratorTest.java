@@ -147,7 +147,8 @@ class AspectModelJsonPayloadGeneratorTest {
    @ParameterizedTest
    @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
          "MODEL_WITH_BROKEN_CYCLES",
-         "ASPECT_WITH_MULTIPLE_ENTITIES_SAME_EXTEND"
+         "ASPECT_WITH_MULTIPLE_ENTITIES_SAME_EXTEND",
+         "ASPECT_WITH_OPTIONAL_PROPERTIES_AND_ENTITY_WITH_SEPARATE_FILES"
    } )
    void testDeserializationForGeneratedJson( final TestAspect testAspect ) {
       final Aspect aspect = TestResources.load( testAspect ).aspect();

@@ -62,6 +62,12 @@ public class ResolverConfigurationMixin {
             description = "Set the GitHub tag"
       )
       public String gitHubTag = null;
+
+      @CommandLine.Option(
+            names = { "--token", "-gt" },
+            description = "Set the GitHub token for the specific repository"
+      )
+      public String token = null;
    }
 
    // This option is intentionally outside the GitHubResolverOptions argument group so it can be used when resolving Aspect Models

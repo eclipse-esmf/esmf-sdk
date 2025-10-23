@@ -20,7 +20,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '21'
+          java-version: '21.0.7'
           overwrite-settings: false
 
       - name: Setup Git
@@ -42,8 +42,8 @@ jobs:
             exit 1
           fi
 
-  # The Linux build will upload the local Nexus deployment repository
-  # (i.e., what will be deployed to OSSRH/Maven Central)
+  # The Linux build will upload the local Maven Central bundle
+  # (i.e., what will be deployed to Maven Central)
   # and the Linux-specific samm-cli binary to the build artifacts
   build-linux:
     name: Linux build
@@ -62,17 +62,20 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '21'
+          java-version: '21.0.7'
+          server-id: central
+          # The following variables are defined in https://github.com/eclipse-esmf/.eclipsefdn/blob/main/otterdog/eclipse-esmf.jsonnet
           gpg-private-key: ${{ secrets.PGP_KEY }}
           gpg-passphrase: PGP_KEY_PASSWORD
+          server-username: CENTRAL_SONATYPE_TOKEN_USERNAME
+          server-password: CENTRAL_SONATYPE_TOKEN_PASSWORD
           overwrite-settings: false
 
       - name: Setup JDK
         uses: graalvm/setup-graalvm@01ed653ac833fe80569f1ef9f25585ba2811baab # v1.3.3
         with:
-          java-version: '21.0.6'
+          java-version: '21.0.7'
           distribution: 'graalvm'
-          components: 'native-image,js'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
 
@@ -89,21 +92,30 @@ jobs:
         with:
           swap-size-gb: 12
 
-      # The Linux build will prepare a local Nexus staging repository
+      # The Linux build will prepare a Maven Central upload "bundle"
       # that includes all .jars except the CLI jar
       - name: Build and run tests
         run: |
           export MAVEN_OPTS="-Xmx4096m"
           export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
-          # Required for reactor dependencies
-          mvn clean install -DskipTests -Dmaven.javadoc.skip=true
-          mvn versions:set -DnewVersion=${{ github.event.inputs.release_version }}
-          mvn versions:commit
-          
           release_version=${{ github.event.inputs.release_version }}
 
+          # Required for reactor dependencies
+          mvn clean install -DskipTests -Dmaven.javadoc.skip=true
+          mvn versions:set -DnewVersion=${release_version}
+          mvn versions:commit
+
           # Actual build of core SDK
-          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean deploy -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60 -DaltDeploymentRepository=local::default::file://nexus-staging -Psign
+          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean deploy -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60 -Psign
+
+          # Create Maven Central upload bundle
+          pushd target/central-staging
+          echo "Contents of $(pwd):"
+          ls -lR
+          rm -rf org/eclipse/esmf/esmf-documentation
+          zip -r -9 ../../central-bundle.zip .
+          popd
+
           # Build samm-cli executable jar and run integration tests
           unset JAVA_TOOL_OPTIONS
           mvn -B -pl tools/samm-cli clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
@@ -124,7 +136,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '21'
+          java-version: '21.0.7'
           overwrite-settings: false
 
       - name: Test executable jar on Temurin
@@ -137,7 +149,7 @@ jobs:
         with:
           name: linux-artifacts
           path: |
-            nexus-staging/
+            central-bundle.zip
             samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz
             samm-cli-${{ github.event.inputs.release_version }}.jar
             samm-cli-${{ github.event.inputs.release_version }}-javadoc.jar
@@ -157,11 +169,10 @@ jobs:
       - name: Setup JDK
         uses: graalvm/setup-graalvm@01ed653ac833fe80569f1ef9f25585ba2811baab # v1.3.3
         with:
-          java-version: '21.0.6'
+          java-version: '21.0.7'
           distribution: 'graalvm'
-          components: 'native-image,js'
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          native-image-job-reports: 'true'
+          native-image-job-reports: 'false'
 
       - name: Cache Maven packages
         uses: actions/cache@v4
@@ -189,20 +200,20 @@ jobs:
         run: |
           bundle="samm-bundle-$(date +%s)"
           mkdir ${bundle}
-          curl -Lo jre.tar.gz https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.6%2B7/OpenJDK21U-jre_x64_mac_hotspot_21.0.6_7.tar.gz
-          tar -xvf jre.tar.gz 
-          cp -r ./jdk-21.0.6+7-jre/Contents/Home ./${bundle}/jre
+          curl -Lo jre.tar.gz https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.7%2B6/OpenJDK21U-jre_x64_mac_hotspot_21.0.7_6.tar.gz
+          tar -xvf jre.tar.gz
+          cp -r ./jdk-21.0.7+6-jre/Contents/Home ./${bundle}/jre
           cp tools/samm-cli/target/samm-cli-${{ github.event.inputs.release_version }}.jar ./${bundle}/
-          
+
           cat <<EOF > ./${bundle}/run.sh
           #!/usr/bin/env bash
-          
+
           HERE=\${BASH_SOURCE%/*}
-          
+
           "\$HERE/jre/bin/java" -jar "\$HERE/samm-cli-${{ github.event.inputs.release_version }}.jar" "\$@"
           EOF
-          chmod +x ./${bundle}/run.sh 
-          
+          chmod +x ./${bundle}/run.sh
+
           curl -Lo warp-packer https://github.com/dgiagio/warp/releases/download/v0.3.0/macos-x64.warp-packer
           chmod +x warp-packer
           ./warp-packer --arch macos-x64 --input_dir ${bundle} --exec run.sh --output samm
@@ -232,9 +243,8 @@ jobs:
       - name: Setup JDK
         uses: graalvm/setup-graalvm@01ed653ac833fe80569f1ef9f25585ba2811baab # v1.3.3
         with:
-          java-version: '21.0.6'
+          java-version: '21.0.7'
           distribution: 'graalvm'
-          components: 'native-image,js'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
 
@@ -299,10 +309,11 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '21'
-          server-id: ossrh
-          server-username: OSSRH_USERNAME
-          server-password: OSSRH_TOKEN
+          java-version: '21.0.7'
+          server-id: central
+          # The following variables are defined in https://github.com/eclipse-esmf/.eclipsefdn/blob/main/otterdog/eclipse-esmf.jsonnet
+          server-username: CENTRAL_SONATYPE_TOKEN_USERNAME
+          server-password: CENTRAL_SONATYPE_TOKEN_PASSWORD
           overwrite-settings: false
 
       # Required to run the mvn:versions, since enforcer plugin
@@ -310,9 +321,8 @@ jobs:
       - name: Setup JDK
         uses: graalvm/setup-graalvm@01ed653ac833fe80569f1ef9f25585ba2811baab # v1.3.3
         with:
-          java-version: '21.0.6'
+          java-version: '21.0.7'
           distribution: 'graalvm'
-          components: 'native-image,js'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'false'
 
@@ -415,27 +425,17 @@ jobs:
           curl -X POST https://ci.eclipse.org/esmf/github-webhook/ -H "Content-Type: application/json" -H "X-GitHub-Event: push" -H "X-Hub-Signature: sha1=${SHA1}" -d "${DATA}"
 
       # Full release: Maven Central
-      # The (apparently) only way to retrieve the staging profile id
-      # is the undocumented rc-list-profiles command of the
-      # nexus-staging-maven-plugin:
-      # mvn org.sonatype.plugins:nexus-staging-maven-plugin:1.6.13:rc-list-profiles -DnexusUrl=https://oss.sonatype.org/ -DserverId=ossrh
-      - name: Release to OSSRH/Maven Central
+      - name: Release to Maven Central
         if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
         run: |
-          mkdir deploy
-          mv nexus-staging deploy
-          cd deploy
-          mvn org.sonatype.plugins:nexus-staging-maven-plugin:1.6.13:deploy-staged-repository \
-            -DnexusUrl=https://oss.sonatype.org/ \
-            -DserverId=ossrh \
-            -DrepositoryDirectory=nexus-staging \
-            -DstagingProfileId=7e73217781f2e
+          token_header=$(printf "$CENTRAL_USERNAME:$CENTRAL_TOKEN" | base64)
+          curl --request POST \
+          --header "Authorization: Bearer $token_header" \
+          --form bundle=@central-bundle.zip \
+          https://central.sonatype.com/api/v1/publisher/upload
         env:
-          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
-          # Workaround for https://issues.sonatype.org/browse/OSSRH-66257
-          # as described in https://stackoverflow.com/a/70157413
-          MAVEN_OPTS: --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_SONATYPE_TOKEN_USERNAME }}
+          CENTRAL_TOKEN: ${{ secrets.CENTRAL_SONATYPE_TOKEN_PASSWORD }}
 
       # Milestone release: Write settings to deploy to Github repo
       - name: Write settings.xml

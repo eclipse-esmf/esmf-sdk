@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Mojo( name = GenerateStaticJavaClasses.MAVEN_GOAL, defaultPhase = LifecyclePhase.GENERATE_SOURCES )
-public class GenerateStaticJavaClasses extends CodeGenerationMojo {
+public class GenerateStaticJavaClasses extends JavaCodeGenerationMojo {
    public static final String MAVEN_GOAL = "generateStaticJavaClasses";
    private static final Logger LOG = LoggerFactory.getLogger( GenerateStaticJavaClasses.class );
 
@@ -45,6 +45,8 @@ public class GenerateStaticJavaClasses extends CodeGenerationMojo {
                .templateLibFile( templateLibFile )
                .namePrefix( namePrefix )
                .namePostfix( namePostfix )
+               .enableSetters( enableSetters )
+               .setterStyle( getEnumConstant( JavaCodeGenerationConfig.SetterStyle.class, setterStyle, "STANDARD" ) )
                .build();
          new StaticMetaModelJavaGenerator( aspect, config ).generateThrowing( javaFileNameMapper( outputDirectory ) );
       }

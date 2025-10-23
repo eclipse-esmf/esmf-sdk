@@ -24,9 +24,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import javax.xml.datatype.DatatypeConstants;
 
 import org.eclipse.esmf.aspectmodel.VersionInfo;
 import org.eclipse.esmf.aspectmodel.generator.exception.CodeGenerationException;
@@ -36,6 +39,7 @@ import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Entity;
 import org.eclipse.esmf.metamodel.HasProperties;
+import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.StructureElement;
@@ -119,7 +123,7 @@ public class AspectModelJavaUtil {
     */
    public static boolean hasContainerType( final Property property ) {
       return property.isOptional()
-            || ( property.getEffectiveCharacteristic().map( characteristic -> characteristic.is( Collection.class ) ).orElse( false ) );
+            || (property.getEffectiveCharacteristic().map( characteristic -> characteristic.is( Collection.class ) ).orElse( false ));
    }
 
    /**
@@ -192,7 +196,8 @@ public class AspectModelJavaUtil {
          if ( characteristic instanceof Collection ) {
             final String collectionType = determineCollectionType( (Collection) characteristic, false, codeGenerationConfig );
             final String dataType = getDataType( characteristic.getDataType(), codeGenerationConfig.importTracker(), codeGenerationConfig );
-            return String.format( "public class %s implements CollectionAspect<%s,%s>", element.getName(), collectionType, dataType );
+            return String.format( "public class %s implements CollectionAspect<%s,%s>", generateClassName( element, codeGenerationConfig ),
+                  collectionType, dataType );
          }
       }
       throw error.get();
@@ -323,7 +328,7 @@ public class AspectModelJavaUtil {
          final Type actualDataType = dataType.get();
          if ( actualDataType instanceof ComplexType ) {
             final String complexDataType = actualDataType.getName();
-            if ( ( !codeGenerationConfig.namePrefix().isBlank() || !codeGenerationConfig.namePostfix().isBlank() ) ) {
+            if ( (!codeGenerationConfig.namePrefix().isBlank() || !codeGenerationConfig.namePostfix().isBlank()) ) {
                return codeGenerationConfig.namePrefix() + complexDataType + codeGenerationConfig.namePostfix();
             }
             return complexDataType;
@@ -346,8 +351,8 @@ public class AspectModelJavaUtil {
    }
 
    public static Class<?> getDataTypeClass( final Type dataType ) {
-      if ( dataType instanceof ComplexType ) {
-         return ( (ComplexType) dataType ).getClass();
+      if ( dataType instanceof final ComplexType complexType ) {
+         return complexType.getClass();
       }
 
       final Resource typeResource = ResourceFactory.createResource( dataType.getUrn() );
@@ -473,7 +478,8 @@ public class AspectModelJavaUtil {
          final Resource typeResource = ResourceFactory.createResource( type.getUrn() );
          final Class<?> result = SammXsdType.getJavaTypeForMetaModelType( typeResource );
          codeGenerationConfig.importTracker().importExplicit( result );
-         return valueInitializer.apply( typeResource, value );
+         final String initializer = valueInitializer.apply( typeResource, value );
+         return optionalExpression( initializer, codeGenerationConfig );
       } ).orElseThrow( () -> new CodeGenerationException(
             "The Either Characteristic is not allowed for Properties used as elements in a StructuredValue" ) );
    }
@@ -571,8 +577,8 @@ public class AspectModelJavaUtil {
       return generics.isEmpty() ? "" : "<" + generics + ">";
    }
 
-   public static String generateClassName( final StructureElement element, final JavaCodeGenerationConfig config ) {
-      if ( ( !config.namePrefix().isBlank() || !config.namePostfix().isBlank() ) && element.is( StructureElement.class ) ) {
+   public static String generateClassName( final ModelElement element, final JavaCodeGenerationConfig config ) {
+      if ( (!config.namePrefix().isBlank() || !config.namePostfix().isBlank()) && element.is( StructureElement.class ) ) {
          return config.namePrefix() + element.getName() + config.namePostfix();
       }
       return element.getName();
@@ -668,10 +674,79 @@ public class AspectModelJavaUtil {
             .filter( Type::isScalar )
             .map( type -> XSD.xboolean.getURI().equals( type.getUrn() ) )
             .orElse( false );
-      return ( isBooleanType ? "is" : "get" ) + StringUtils.capitalize( property.getPayloadName() );
+      return (isBooleanType ? "is" : "get") + StringUtils.capitalize( property.getPayloadName() );
+   }
+
+   public static String setterName( final Property property, final JavaCodeGenerationConfig codeGenerationConfig ) {
+      switch ( codeGenerationConfig.setterStyle() ) {
+         case FLUENT_COMPACT:
+            return StringUtils.uncapitalize( property.getPayloadName() );
+         default:
+            return "set" + StringUtils.capitalize( property.getPayloadName() );
+      }
    }
 
    public static String codeGeneratorName() {
       return "esmf-sdk " + VersionInfo.ESMF_SDK_VERSION;
+   }
+
+   public static String optionalExpression(
+         final String expression,
+         final JavaCodeGenerationConfig codeGenerationConfig
+   ) {
+      codeGenerationConfig.importTracker().importExplicit( Optional.class );
+      codeGenerationConfig.importTracker().importExplicit( DatatypeConstants.class );
+
+      // Enhanced pattern to match both Integer and Long valueOf calls
+      final Pattern pattern = java.util.regex.Pattern.compile(
+            "(Integer|Long)\\s*\\.\\s*valueOf\\s*\\(\\s*matcher\\s*\\.\\s*group\\s*\\(\\s*(\\d+)\\s*\\)\\s*\\)"
+      );
+      final Matcher matcher = pattern.matcher( expression );
+      matcher.reset();
+      final boolean hasMatch = matcher.find();
+
+      if ( hasMatch ) {
+         final String numberType = matcher.group( 1 ).trim(); // "Integer" or "Long"
+         final String groupNum = matcher.group( 2 ).trim(); // Group number
+         final String target = matcher.group( 0 ); // The entire matched string
+         final String modifiedExpression = expression.replace( target, "v" );
+
+         return "Optional.ofNullable(matcher.group(" + groupNum + "))"
+               + ".filter(v -> !v.isEmpty())"
+               + ".map(v -> " + numberType + ".valueOf(v))"
+               + ".map(v -> "
+               + modifiedExpression
+               + ")";
+      }
+
+      // If no specific pattern matched, wrap the entire expression in Optional.of()
+      // This handles cases where the expression doesn't follow the matcher.group pattern
+      return "Optional.ofNullable("
+            + expression
+            + ")";
+   }
+
+   public static boolean needsValidAnnotation( final Property property ) {
+      return isNonPrimitiveCharacteristic( property.getCharacteristic() );
+   }
+
+   private static boolean isNonPrimitiveCharacteristic( final Optional<Characteristic> optionalCharacteristic ) {
+
+      final Characteristic characteristic = optionalCharacteristic.orElseThrow( () ->
+            new CodeGenerationException( "Can not determine type of missing Characteristic" ) );
+
+      if ( characteristic.is( Either.class ) ) {
+         final boolean isEntityLeft = isNonPrimitiveCharacteristic(
+               optionalCharacteristic.map( c -> c.as( Either.class ) ).map( Either::getLeft ) );
+         final boolean isEntityRight = isNonPrimitiveCharacteristic(
+               optionalCharacteristic.map( c -> c.as( Either.class ) ).map( Either::getRight ) );
+         return isEntityLeft || isEntityRight;
+      }
+
+      final Type type = optionalCharacteristic
+            .flatMap( Characteristic::getDataType )
+            .orElseThrow( () -> new CodeGenerationException( "Failed to determine Java data type for empty model type" ) );
+
+      return type.is( Entity.class );
    }
 }

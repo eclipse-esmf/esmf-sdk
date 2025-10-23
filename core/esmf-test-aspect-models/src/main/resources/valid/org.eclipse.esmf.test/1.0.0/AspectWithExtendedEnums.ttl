@@ -53,7 +53,7 @@
 
 :average a samm:Property ;
    samm:preferredName "Average"@en ;
-   samm:description "Some artifical average value"@en ;
+   samm:description "Some artificial average value"@en ;
    samm:characteristic :BigIntegerValue .
 
 :ResultNoStatus a :EvaluationResult ;

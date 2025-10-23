@@ -15,6 +15,7 @@ package org.eclipse.esmf.aspectmodel.shacl.violation;
 
 import org.eclipse.esmf.aspectmodel.shacl.constraint.ClassConstraint;
 
+import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 
 /**
@@ -40,6 +41,11 @@ public record ClassTypeViolation( EvaluationContext context, Resource allowedCla
       return String.format( "Property %s on %s has type %s, but only %s is allowed.",
             context.propertyName(), context.elementName(), context.shortUri( actualClass().getURI() ),
             context.shortUri( allowedClass().getURI() ) );
+   }
+
+   @Override
+   public RDFNode highlight() {
+      return actualClass();
    }
 
    @Override

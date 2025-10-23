@@ -22,12 +22,13 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.Test;
 
-public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorTest {
+class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorTest {
 
    @Test
-   public void testMetaModelBaseAttributesOfGeneratedProperty() throws IOException {
+   void testMetaModelBaseAttributesOfGeneratedProperty() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_BOOLEAN;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, false,
+            JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
       result.assertNumberOfFiles( 2 );
 
       final ImmutableSet<String> expectedArguments = ImmutableSet.<String> builder()
@@ -40,9 +41,10 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
    }
 
    @Test
-   public void testMetaModelBaseAttributesOfGeneratedPropertyWithAllAttributes() throws IOException {
+   void testMetaModelBaseAttributesOfGeneratedPropertyWithAllAttributes() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_PROPERTY_WITH_ALL_BASE_ATTRIBUTES;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, false,
+            JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
       result.assertNumberOfFiles( 2 );
 
       final String expectedMetaModelBaseAttributeBuilderCall = "MetaModelBaseAttributes.builder()"
@@ -60,9 +62,10 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
    }
 
    @Test
-   public void testMetaModelBaseAttributesOfGeneratedPropertyWithPreferredNames() throws IOException {
+   void testMetaModelBaseAttributesOfGeneratedPropertyWithPreferredNames() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_PROPERTY_WITH_PREFERRED_NAMES;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, false,
+            JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
       result.assertNumberOfFiles( 2 );
 
       final String expectedMetaModelBaseAttributeBuilderCall = "MetaModelBaseAttributes.builder()"
@@ -76,10 +79,10 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
    }
 
    @Test
-   public void testMetaModelBaseAttributesOfGeneratedPropertyWithDescriptions() throws IOException {
+   void testMetaModelBaseAttributesOfGeneratedPropertyWithDescriptions() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_PROPERTY_WITH_DESCRIPTIONS;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode()
-            .apply( getGenerators( aspect ) );
+            .apply( getGenerators( aspect, false, JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
       result.assertNumberOfFiles( 2 );
 
       final String expectedMetaModelBaseAttributeBuilderCall = "MetaModelBaseAttributes.builder()"
@@ -93,10 +96,10 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
    }
 
    @Test
-   public void testMetaModelBaseAttributesOfGeneratedPropertyWithSee() throws IOException {
+   void testMetaModelBaseAttributesOfGeneratedPropertyWithSee() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_PROPERTY_WITH_SEE;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode()
-            .apply( getGenerators( aspect ) );
+            .apply( getGenerators( aspect, false, JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
       result.assertNumberOfFiles( 2 );
 
       final String expectedMetaModelBaseAttributeBuilderCall = "MetaModelBaseAttributes.builder()"
@@ -110,10 +113,10 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
    }
 
    @Test
-   public void testGeneratedMetaModelContainsRequiredMethods() throws IOException {
+   void testGeneratedMetaModelContainsRequiredMethods() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_BOOLEAN;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode()
-            .apply( getGenerators( aspect ) );
+            .apply( getGenerators( aspect, false, JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
       result.assertNumberOfFiles( 2 );
 
       final ImmutableMap<String, String> expectedMethodBodies = ImmutableMap.<String, String> builder()
@@ -132,10 +135,10 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
    }
 
    @Test
-   public void testGeneratedMetaModelContainsOptionalMethods() throws IOException {
+   void testGeneratedMetaModelContainsOptionalMethods() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_ALL_BASE_ATTRIBUTES;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode()
-            .apply( getGenerators( aspect ) );
+            .apply( getGenerators( aspect, false, JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
       result.assertNumberOfFiles( 2 );
 
       final String getPreferredNamesBody = "return new HashSet<>() {\n"
@@ -173,10 +176,10 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
    }
 
    @Test
-   public void testGeneratedMetaModelContainsGetPreferredNamesMethod() throws IOException {
+   void testGeneratedMetaModelContainsGetPreferredNamesMethod() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_PREFERRED_NAMES;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode()
-            .apply( getGenerators( aspect ) );
+            .apply( getGenerators( aspect, false, JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
       result.assertNumberOfFiles( 2 );
 
       final String getPreferredNamesBody = "return new HashSet<>() {\n"
@@ -204,10 +207,10 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
    }
 
    @Test
-   public void testGeneratedMetaModelContainsGetDescriptionsMethod() throws IOException {
+   void testGeneratedMetaModelContainsGetDescriptionsMethod() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_DESCRIPTIONS;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode()
-            .apply( getGenerators( aspect ) );
+            .apply( getGenerators( aspect, false, JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
       result.assertNumberOfFiles( 2 );
 
       final String getDescriptionsBody = "return new HashSet<>() {\n"
@@ -235,10 +238,10 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
    }
 
    @Test
-   public void testGeneratedMetaModelContainsGetSeeMethod() throws IOException {
+   void testGeneratedMetaModelContainsGetSeeMethod() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_PROPERTY_WITH_SEE;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode()
-            .apply( getGenerators( aspect ) );
+            .apply( getGenerators( aspect, false, JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
       result.assertNumberOfFiles( 2 );
 
       final ImmutableMap<String, String> expectedMethodBodies = ImmutableMap.<String, String> builder()

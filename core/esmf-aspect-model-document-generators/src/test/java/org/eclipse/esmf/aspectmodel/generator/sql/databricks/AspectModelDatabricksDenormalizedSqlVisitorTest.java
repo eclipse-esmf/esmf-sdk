@@ -140,7 +140,7 @@ class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase
    void testAspectWithEither() {
       assertThat( sql( TestAspect.ASPECT_WITH_EITHER ) ).isEqualTo( """
             CREATE TABLE IF NOT EXISTS aspect_with_either (
-              test_property__left STRING COMMENT 'Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.'
+              test_property__left STRING COMMENT 'Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.',
               test_property__right BOOLEAN COMMENT 'Represents a boolean value (i.e. a "flag").'
             )
             TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEither');
@@ -151,7 +151,7 @@ class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase
    void testAspectWithEitherWithComplexTypes() {
       assertThat( sql( TestAspect.ASPECT_WITH_EITHER_WITH_COMPLEX_TYPES ) ).isEqualTo( """
             CREATE TABLE IF NOT EXISTS aspect_with_either_with_complex_types (
-              test_property__left__result STRING COMMENT 'Left Type Characteristic'
+              test_property__left__result STRING COMMENT 'Left Type Characteristic',
               test_property__right__error STRING COMMENT 'Right Type Characteristic'
             )
             TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEitherWithComplexTypes');
@@ -189,7 +189,7 @@ class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase
       assertThat( sql( TestAspect.ASPECT_WITH_ENTITY_INSTANCE_WITH_SCALAR_LIST_PROPERTY ) ).isEqualTo( """
             CREATE TABLE IF NOT EXISTS aspect_with_entity_instance_with_scalar_list_property (
               test_property__code SMALLINT NOT NULL,
-              test_property__test_list ARRAY<DECIMAL> NOT NULL
+              test_property__test_list ARRAY<DECIMAL(10)> NOT NULL
             )
             TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEntityInstanceWithScalarListProperty');
             """ );
@@ -280,7 +280,7 @@ class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase
               test_either_property__left__test_int INT COMMENT 'Left type Characteristic',
               test_either_property__left__test_float FLOAT COMMENT 'Left type Characteristic',
               test_either_property__left__test_local_date_time TIMESTAMP COMMENT 'Left type Characteristic',
-              test_either_property__left__random_value STRING COMMENT 'Left type Characteristic'
+              test_either_property__left__random_value STRING COMMENT 'Left type Characteristic',
               test_either_property__right__test_string STRING COMMENT 'Right type Characteristic',
               test_either_property__right__test_int INT COMMENT 'Right type Characteristic',
               test_either_property__right__test_float FLOAT COMMENT 'Right type Characteristic',
@@ -369,7 +369,7 @@ class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase
    void testAspectWithOptionalProperties() {
       assertThat( sql( TestAspect.ASPECT_WITH_OPTIONAL_PROPERTIES ) ).isEqualTo( """
             CREATE TABLE IF NOT EXISTS aspect_with_optional_properties (
-              number_property DECIMAL,
+              number_property DECIMAL(10),
               timestamp_property TIMESTAMP NOT NULL
             )
             TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithOptionalProperties');
@@ -446,7 +446,7 @@ class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase
               date_time_property TIMESTAMP NOT NULL,
               date_time_stamp_property TIMESTAMP NOT NULL,
               day_time_duration STRING NOT NULL,
-              decimal_property DECIMAL(10) NOT NULL,
+              decimal_property DECIMAL(10,0) NOT NULL,
               double_property DOUBLE NOT NULL,
               duration_property STRING NOT NULL,
               float_property FLOAT NOT NULL,
@@ -457,7 +457,7 @@ class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase
               g_year_property STRING NOT NULL,
               hex_binary_property BINARY NOT NULL,
               int_property INT NOT NULL,
-              integer_property DECIMAL NOT NULL,
+              integer_property DECIMAL(10) NOT NULL,
               lang_string_property STRING NOT NULL,
               long_property BIGINT NOT NULL,
               negative_integer_property DECIMAL(10) NOT NULL,
@@ -469,7 +469,7 @@ class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase
               time_property STRING NOT NULL,
               unsigned_byte_property SMALLINT NOT NULL,
               unsigned_int_property BIGINT NOT NULL,
-              unsigned_long_property DECIMAL NOT NULL,
+              unsigned_long_property DECIMAL(10) NOT NULL,
               unsigned_short_property INT NOT NULL,
               year_month_duration_property STRING NOT NULL
             )
@@ -531,6 +531,18 @@ class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase
             )
             COMMENT 'This is a test description'
             TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithPropertyWithPayloadName');
+            """ );
+   }
+
+   @Test
+   void testAspectWithUpwardTransitionInNestedEntity() {
+      assertThat( sql( TestAspect.ASPECT_WITH_UPWARD_TRANSITION_IN_NESTED_ENTITY ) ).isEqualTo( """
+            CREATE TABLE IF NOT EXISTS aspect_with_upward_transition_in_nested_entity (
+              first_level_property__second_level_property1__third_level_property_id BIGINT NOT NULL,
+              first_level_property__second_level_property1__third_level_property STRING NOT NULL,
+              first_level_property__second_level_property2 STRING NOT NULL
+            )
+            TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithUpwardTransitionInNestedEntity');
             """ );
    }
 }

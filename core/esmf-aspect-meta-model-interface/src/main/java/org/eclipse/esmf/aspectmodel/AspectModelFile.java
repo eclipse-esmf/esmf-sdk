@@ -38,6 +38,13 @@ public interface AspectModelFile extends ModelElementGroup {
    Model sourceModel();
 
    /**
+    * Returns the RDF/Turtle representation of this Aspect Model File
+    *
+    * @return the source representation
+    */
+   String sourceRepresentation();
+
+   /**
     * The list of Strings that are contained as a comment block at the start of the file. This is often used
     * for copyright and license information.
     *
@@ -68,6 +75,16 @@ public interface AspectModelFile extends ModelElementGroup {
     * @return the source location
     */
    Optional<URI> sourceLocation();
+
+   /**
+    * Convenience method to help printing the location of a file: It returns its source location URI if present, or "unknown file"
+    * if the file does not have a source location.
+    *
+    * @return the human readable source location
+    */
+   default String humanReadableLocation() {
+      return sourceLocation().map( URI::toString ).orElse( "(unknown file)" );
+   }
 
    /**
     * Returns the local file name ("something.ttl") of this AspectModelFile, based on its source location.

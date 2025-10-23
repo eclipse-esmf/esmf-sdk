@@ -17,6 +17,8 @@ import java.util.List;
 
 import org.eclipse.esmf.aspectmodel.shacl.constraint.UniqueLangConstraint;
 
+import org.apache.jena.rdf.model.RDFNode;
+
 /**
  * Violation of a {@link UniqueLangConstraint}
  *
@@ -36,6 +38,11 @@ public record LanguageFromListViolation( EvaluationContext context, List<String>
    public String violationSpecificMessage() {
       return String.format( "Property %s on %s has language tag %s, which is not in the list of allowed languages: %s.",
             context.propertyName(), context.elementName(), actual, allowed );
+   }
+
+   @Override
+   public RDFNode highlight() {
+      return context().property().get();
    }
 
    @Override

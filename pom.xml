@@ -18,7 +18,7 @@
    <parent>
       <groupId>org.eclipse.esmf</groupId>
       <artifactId>esmf-parent</artifactId>
-      <version>20</version>
+      <version>21</version>
    </parent>
 
    <artifactId>esmf-sdk-parent</artifactId>
@@ -78,6 +78,8 @@
       <relative-native-config-path>core/esmf-native-support/src-gen/main/resources/META-INF/native-image/${project.groupId}/esmf-native-support</relative-native-config-path>
       <!-- The path to the native configs as it is reachable from the submodules -->
       <native-config-path>${project.basedir}/../../${relative-native-config-path}</native-config-path>
+      <!-- Can be removed once configured in esmf-parent -->
+      <central-publishing-maven-plugin-version>0.8.0</central-publishing-maven-plugin-version>
    </properties>
 
    <dependencyManagement>
@@ -231,6 +233,17 @@
    </dependencies>
 
    <build>
+      <!-- Can be removed once configured in esmf-parent -->
+      <pluginManagement>
+         <plugins>
+            <plugin>
+               <groupId>org.sonatype.central</groupId>
+               <artifactId>central-publishing-maven-plugin</artifactId>
+               <version>${central-publishing-maven-plugin-version}</version>
+            </plugin>
+         </plugins>
+      </pluginManagement>
+
       <plugins>
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
@@ -281,6 +294,27 @@
                      <directory>${relative-native-config-path}</directory>
                   </fileset>
                </filesets>
+            </configuration>
+         </plugin>
+
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-deploy-plugin</artifactId>
+            <version>${maven-deploy-plugin-version}</version>
+            <configuration>
+               <skip>true</skip>
+            </configuration>
+         </plugin>
+
+         <plugin>
+            <groupId>org.sonatype.central</groupId>
+            <artifactId>central-publishing-maven-plugin</artifactId>
+            <extensions>true</extensions>
+            <configuration>
+               <publishingServerId>central</publishingServerId>
+               <autoPublish>false</autoPublish>
+               <skipPublishing>true</skipPublishing>
+               <outputFilename>central-bundle.zip</outputFilename>
             </configuration>
          </plugin>
       </plugins>

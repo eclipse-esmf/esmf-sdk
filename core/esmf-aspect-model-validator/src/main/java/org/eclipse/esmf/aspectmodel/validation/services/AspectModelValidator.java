@@ -13,31 +13,40 @@
 
 package org.eclipse.esmf.aspectmodel.validation.services;
 
-import java.io.File;
-import java.util.List;
-import java.util.function.Supplier;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import static org.eclipse.esmf.aspectmodel.StreamUtil.asMap;
 
+import java.io.File;
+import java.net.URI;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
+
+import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.RdfUtil;
+import org.eclipse.esmf.aspectmodel.ValueParsingException;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.MetaModelFile;
 import org.eclipse.esmf.aspectmodel.shacl.ShaclValidator;
-import org.eclipse.esmf.aspectmodel.shacl.violation.InvalidSyntaxViolation;
-import org.eclipse.esmf.aspectmodel.shacl.violation.ProcessingViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+import org.eclipse.esmf.aspectmodel.validation.InvalidLexicalValueViolation;
+import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
+import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
+import org.eclipse.esmf.aspectmodel.validation.Validator;
 import org.eclipse.esmf.metamodel.AspectModel;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import io.vavr.control.Either;
 import org.apache.jena.query.ARQ;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 
 /**
  * Uses SHACL to validate an Aspect Model against the defined semantics of the Aspect Meta Model.
  */
-public class AspectModelValidator {
+public class AspectModelValidator implements Validator<Violation, List<Violation>> {
    private final ShaclValidator shaclValidator;
 
    /**
@@ -70,31 +79,47 @@ public class AspectModelValidator {
     * This method is an alternative to {@link AspectModelLoader#load(File)} and its siblings with the difference that on errors
     * (syntax errors, resolution errors), no exception is thrown and a {@link Violation} is created instead.
     *
-    * @param aspectModelSupplier the Aspect Model supplier
+    * @param aspectModelLoader the Aspect Model supplier
     * @return An {@link Either.Right} with the model if there are no violations, or an {@link Either.Left} with a list of
     * {@link Violation}s.
     */
-   public Either<List<Violation>, AspectModel> loadModel( final Supplier<AspectModel> aspectModelSupplier ) {
+   @Override
+   public Either<List<Violation>, AspectModel> loadModel( final Supplier<AspectModel> aspectModelLoader ) {
       final AspectModel model;
       try {
-         model = aspectModelSupplier.get();
+         model = aspectModelLoader.get();
          return Either.right( model );
-      } catch ( final ParserException exception ) { // Syntax error
-         // RiotException's message looks like this:
-         // [line: 17, col: 2 ] Triples not terminated by DOT
-         final Pattern pattern = Pattern.compile( "\\[ *line: *(\\d+), *col: *(\\d+) *] *(.*)" );
-         final Matcher matcher = pattern.matcher( exception.getMessage() );
-         if ( matcher.find() ) {
-            final long line = Long.parseLong( matcher.group( 1 ) );
-            final long column = Long.parseLong( matcher.group( 2 ) );
-            final String message = matcher.group( 3 );
-            return Either.left( List.of( new InvalidSyntaxViolation( message, exception.getSourceDocument(), line, column ) ) );
-         }
-         return Either.left(
-               List.of( new InvalidSyntaxViolation( "Syntax error: " + exception.getMessage(), exception.getSourceDocument(), -1, -1 ) ) );
-      } catch ( final Exception exception ) { // Any other exception, e.g., resolution exception
+      } catch ( final ParserException exception ) {
+         // Regular syntax errors
+         return Either.left( List.of( new InvalidSyntaxViolation(
+               exception.getMessage(), exception.getSourceDocument(), exception.getLine(), exception.getColumn(),
+               exception.getSourceLocation() ) ) );
+      } catch ( final ValueParsingException exception ) {
+         // Failure to parse value literals
+         final String sourceLine = exception.getSourceDocument().split( System.lineSeparator() )[(int) exception.getLine() - 1];
+         return Either.left( List.of( new InvalidLexicalValueViolation( exception.getType(), exception.getValue(),
+               (int) exception.getLine(), (int) exception.getColumn(), sourceLine, exception.getSourceLocation() ) ) );
+      } catch ( final CancelValidation cancelValidation ) {
+         // The validation was short-circuited by the aspectModelLoader function
+         return Either.left( cancelValidation.violations );
+      } catch ( final Exception exception ) {
+         // Any other exception, e.g., resolution exception
          return Either.left( List.of( new ProcessingViolation( exception.getMessage(), exception ) ) );
       }
+   }
+
+   private static class CancelValidation extends RuntimeException {
+      private final List<Violation> violations;
+
+      private CancelValidation( final List<Violation> violations ) {
+         this.violations = violations;
+      }
+   }
+
+   @SuppressWarnings( "unchecked" )
+   @Override
+   public <E extends RuntimeException> E cancelValidation( final List<Violation> violations ) {
+      return (E) new CancelValidation( violations );
    }
 
    /**
@@ -103,30 +128,42 @@ public class AspectModelValidator {
     * @param aspectModel the Aspect Model
     * @return a list of {@link Violation}s. An empty list indicates that the model is valid.
     */
+   @Override
    public List<Violation> validateModel( final AspectModel aspectModel ) {
-      final Model model = ModelFactory.createDefaultModel();
-      model.add( aspectModel.mergedModel() );
-      model.add( MetaModelFile.metaModelDefinitions() );
-      final List<Violation> result = validateModel( model );
+      final Model mergedModel = buildMergedModel( aspectModel.files() );
+      return validateModel( mergedModel );
+   }
 
-      if ( result.isEmpty() ) {
-         // The SHACL validation succeeded, check for cycles in the model.
-         final List<Violation> cycleDetectionReport = new ModelCycleDetector().validateModel( aspectModel.mergedModel() );
-         if ( !cycleDetectionReport.isEmpty() ) {
-            return cycleDetectionReport;
-         }
-      }
-      return result;
+   private Model buildMergedModel( final Collection<AspectModelFile> files ) {
+      final Stream<Map.Entry<URI, Model>> filesStream =
+            files.stream().map( file -> Map.entry(
+                  file.sourceLocation().orElse( URI.create( "inmemory:graph:" + file.sourceModel().hashCode() ) ),
+                  file.sourceModel() ) );
+      final Stream<Map.Entry<URI, Model>> metaModelFilesStream =
+            Stream.of( Map.entry( URI.create( SammNs.SAMM.getUri() ), MetaModelFile.metaModelDefinitions() ) );
+      final Map<URI, Model> graphContent = Stream.concat( filesStream, metaModelFilesStream ).collect( asMap() );
+      return RdfUtil.mergedView( graphContent );
    }
 
    /**
-    * Validates an Aspect Model. Note that the model needs to include the SAMM meta model definitions to yield correct validation results.
+    * Validates an Aspect Model. Note that the model needs to include the SAMM meta model definitions to yield correct validation
+    * results.
     *
     * @param model the Aspect Model
     * @return a list of {@link Violation}s. An empty list indicates that the model is valid.
     */
+   @Override
    public List<Violation> validateModel( final Model model ) {
-      return shaclValidator.validateModel( model );
+      final List<Violation> violations = shaclValidator.validateModel( model );
+      if ( violations.isEmpty() ) {
+         // The SHACL validation succeeded, check for cycles in the model.
+         final List<Violation> cycleDetectionReport = new ModelCycleDetector().validateModel( model );
+         if ( !cycleDetectionReport.isEmpty() ) {
+            return cycleDetectionReport;
+         }
+      }
+
+      return violations;
    }
 
    /**

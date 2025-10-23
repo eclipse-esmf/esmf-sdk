@@ -153,7 +153,8 @@ public class SammCli extends AbstractCommand {
                   final File exeFile = new File( executable );
                   final String directory = exeFile.getParent();
                   final String exeFileName = exeFile.getName();
-                  Runtime.getRuntime().exec( "cmd /k cd /d \"" + directory + "\" & start cmd /k " + exeFileName + " help" );
+                  Runtime.getRuntime()
+                        .exec( new String[] { "cmd", "/k", "cd", "/d", directory, "&", "start", "cmd", "/k", exeFileName, "help" } );
                   System.exit( 0 );
                } catch ( final Exception e ) {
                   // Ignore, continue as usual

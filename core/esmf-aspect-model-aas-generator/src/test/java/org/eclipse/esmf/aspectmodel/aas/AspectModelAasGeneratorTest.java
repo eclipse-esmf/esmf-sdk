@@ -360,7 +360,7 @@ class AspectModelAasGeneratorTest {
    @EnumSource( value = TestAspect.class )
    // anonymous enumeration in test has no urn for enum values but is required for Concept
    // Description referencing
-   public void testGeneration( final TestAspect testAspect ) throws DeserializationException {
+   void testGeneration( final TestAspect testAspect ) throws DeserializationException {
       final String aasXmlString = aspectToAasXml( testAspect );
       final byte[] aasXmlInput = aasXmlString.getBytes();
 
@@ -422,6 +422,15 @@ class AspectModelAasGeneratorTest {
       assertThat( environment.getConceptDescriptions().get( 1 ).getEmbeddedDataSpecifications() ).hasSize( 1 );
       assertThat( property.getDescription() ).isEmpty();
       assertThat( property.getSemanticId().getKeys().get( 0 ).getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
+   }
+
+   @Test
+   void testAspectWithPayloadName() throws DeserializationException {
+      final Environment environment = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_PROPERTY_WITH_PAYLOAD_NAME );
+
+      final Property property = (Property) environment.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
+      assertThat( environment.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
+      assertThat( environment.getSubmodels().get( 0 ).getSubmodelElements().get( 0 ).getIdShort() ).isEqualTo( property.getIdShort() );
    }
 
    private void checkDataSpecificationIec61360( final Set<String> semanticIds, final Environment env ) {

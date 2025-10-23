@@ -20,6 +20,8 @@ import java.util.stream.IntStream;
 import org.eclipse.esmf.aspectmodel.shacl.ShapeSummarizer;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.XoneConstraint;
 
+import org.apache.jena.rdf.model.RDFNode;
+
 /**
  * Violation of a {@link XoneConstraint}
  *
@@ -42,7 +44,7 @@ public record XoneViolation( EvaluationContext context, List<Violation> violatio
 
       if ( !violations().isEmpty() ) {
          return "Exactly one of the following violations"
-               + (context.property().isPresent() ? " for " + context.propertyName() : "")
+               + ( context.property().isPresent() ? " for " + context.propertyName() : "" )
                + " must be fixed: "
                + IntStream.range( 0, violations.size() )
                .mapToObj( i -> String.format( "(%d) %s", i + 1, violations().get( i ).message().replaceAll( "\\.$", "" ) ) )
@@ -57,6 +59,11 @@ public record XoneViolation( EvaluationContext context, List<Violation> violatio
             + IntStream.range( 0, constraint.shapes().size() )
             .mapToObj( i -> String.format( "(%d) %s", i + 1, constraint().shapes().get( i ).accept( summarizer ) ) )
             .collect( Collectors.joining( ", " ) ) + ".";
+   }
+
+   @Override
+   public RDFNode highlight() {
+      return context().property().isPresent() ? context().property().get() : context().element();
    }
 
    @Override

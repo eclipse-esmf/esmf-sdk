@@ -73,7 +73,7 @@ public class AspectPrettyPrintCommand extends AbstractCommand {
       final AspectModelFile aspectModelFile = getInputHandler( input ).loadAspectModelFile();
 
       if ( outputFilePath.equals( "-" ) && !overwrite ) {
-         final String formattedModel = AspectSerializer.INSTANCE.aspectModelFileToString( aspectModelFile );
+         final String formattedModel = aspectModelFile.sourceRepresentation();
          System.out.println( formattedModel );
       } else if ( overwrite ) {
          AspectSerializer.INSTANCE.write( aspectModelFile );
@@ -84,7 +84,7 @@ public class AspectPrettyPrintCommand extends AbstractCommand {
             throw new CommandException( "Can't overwrite existing file. To force overwrite, use --overwrite." );
          }
 
-         final String formattedModel = AspectSerializer.INSTANCE.aspectModelFileToString( aspectModelFile );
+         final String formattedModel = aspectModelFile.sourceRepresentation();
          try ( final OutputStream out = getStreamForFile( outputFilePath ) ) {
             out.write( formattedModel.getBytes( StandardCharsets.UTF_8 ) );
          } catch ( final IOException exception ) {

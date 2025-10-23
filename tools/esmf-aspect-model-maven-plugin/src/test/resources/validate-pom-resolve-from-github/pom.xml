@@ -41,7 +41,9 @@
                   </configuration>
                </server>
                -->
-               <githubServerId>test-github-config</githubServerId>
+               <githubServerIds>
+                  <githubServerId>test-github-config</githubServerId>
+               </githubServerIds>
             </configuration>
          </plugin>
       </plugins>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -46,6 +46,7 @@ import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.resolution.types.ResolvedArrayType;
 import com.github.javaparser.resolution.types.ResolvedPrimitiveType;
@@ -63,7 +64,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
-public class AspectModelJavaGeneratorTest {
+class AspectModelJavaGeneratorTest {
    private Collection<JavaGenerator> getGenerators( final TestAspect testAspect, final JavaCodeGenerationConfig config ) {
       final Aspect aspect = TestResources.load( testAspect ).aspect();
       return List.of( new AspectModelJavaGenerator( aspect, config ) );
@@ -103,7 +104,9 @@ public class AspectModelJavaGeneratorTest {
       return List.of( new AspectModelJavaGenerator( aspectModel.aspect(), config ) );
    }
 
-   private Collection<JavaGenerator> getGenerators( final TestAspect testAspect, final String namePrefix, final String namePostfix ) {
+   private Collection<JavaGenerator> getGenerators( final TestAspect testAspect, final String namePrefix, final String namePostfix,
+         final boolean enableSetters, final
+         JavaCodeGenerationConfig.SetterStyle setterStyle ) {
       final AspectModel aspectModel = TestResources.load( testAspect );
       final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
             .enableJacksonAnnotations( true )
@@ -111,6 +114,8 @@ public class AspectModelJavaGeneratorTest {
             .packageName( aspectModel.aspect().urn().getNamespaceMainPart() )
             .namePrefix( namePrefix )
             .namePostfix( namePostfix )
+            .enableSetters( enableSetters )
+            .setterStyle( setterStyle )
             .build();
       return List.of( new AspectModelJavaGenerator( aspectModel.aspect(), config ) );
    }
@@ -241,6 +246,28 @@ public class AspectModelJavaGeneratorTest {
    }
 
    @Test
+   void testGenerateAspectWithOptionalPropertyAndEntityWithSeparateFiles() throws IOException {
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+            .put( "productionPeriod", "Optional<ProductionPeriodEntity>" )
+            .build();
+
+      final TestAspect aspect = TestAspect.ASPECT_WITH_OPTIONAL_PROPERTIES_AND_ENTITY_WITH_SEPARATE_FILES;
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect ) );
+
+      result.assertNumberOfFiles( 2 );
+      result.assertFields( "AspectWithOptionalPropertiesAndEntityWithSeparateFiles", expectedFieldsForAspectClass, new HashMap<>() );
+      assertConstructor( result, "AspectWithOptionalPropertiesAndEntityWithSeparateFiles", expectedFieldsForAspectClass );
+
+      final CompilationUnit unit = result.compilationUnits.get( "ProductionPeriodEntity" );
+      final ConstructorDeclaration constructor = unit.findFirst( ConstructorDeclaration.class )
+            .orElseThrow( () -> new AssertionError( "Constructor not found in ProductionPeriodEntity" ) );
+      final String constructorBody = constructor.getBody().toString();
+      assertThat( constructorBody ).contains( "Optional.ofNullable(" )
+            .contains( ".filter(v -> !v.isEmpty())" )
+            .contains( "_datatypeFactory.newXMLGregorianCalendarDate(" );
+   }
+
+   @Test
    void testGenerateAspectModelWithCurie() throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
             .put( "testCurie", "Curie" )
@@ -317,9 +344,7 @@ public class AspectModelJavaGeneratorTest {
 
       result.assertFields( "EvaluationResult", expectedFieldsForEvaluationResults, ImmutableMap.<String, String> builder()
             .put( "average", "" )
-            .put( "numericCode", "@NotNull" )
-            .put( "description", "" )
-            .put( "nestedResult", "@NotNull" )
+            .put( "numericCode", "@NotNull" ).put( "description", "" ).put( "nestedResult", "@Valid@NotNull" )
             .build()
       );
       result.assertConstructor( "EvaluationResult", expectedFieldsForEvaluationResults, new HashMap<>() );
@@ -601,9 +626,9 @@ public class AspectModelJavaGeneratorTest {
    void testGenerateAspectWithStructuredValue() throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
             .put( "date", XMLGregorianCalendar.class )
-            .put( "year", Long.class )
-            .put( "month", Long.class )
-            .put( "day", Long.class )
+            .put( "year", new TypeToken<Optional<Long>>() {}.getType() )
+            .put( "month", new TypeToken<Optional<Long>>() {}.getType() )
+            .put( "day", new TypeToken<Optional<Long>>() {}.getType() )
             .build();
 
       final ImmutableMap<String, Object> expectedConstructorArguments = ImmutableMap.<String, Object> builder()
@@ -1160,7 +1185,7 @@ public class AspectModelJavaGeneratorTest {
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_PROPERTY;
       final GenerationResult result = TestContext.generateAspectCode()
-            .apply( getGenerators( aspect, "Base", "Postfix" ) );
+            .apply( getGenerators( aspect, "Base", "Postfix", false, null ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "BaseAspectWithPropertyPostfix", expectedFieldsForAspectClass, new HashMap<>() );
       assertConstructor( result, "BaseAspectWithPropertyPostfix", expectedFieldsForAspectClass );
@@ -1174,9 +1199,76 @@ public class AspectModelJavaGeneratorTest {
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_ENTITY;
       final GenerationResult result = TestContext.generateAspectCode()
-            .apply( getGenerators( aspect, "Base", "Postfix" ) );
+            .apply( getGenerators( aspect, "Base", "Postfix", false, null ) );
       result.assertNumberOfFiles( 2 );
       result.assertFields( "BaseAspectWithEntityPostfix", expectedFieldsForAspectClass, new HashMap<>() );
       assertConstructor( result, "BaseAspectWithEntityPostfix", expectedFieldsForAspectClass );
+   }
+
+   @Test
+   void testGenerateAspectWithStandardSetters() throws IOException {
+      final TestAspect aspect = TestAspect.ASPECT_WITH_ENTITY;
+      final GenerationResult result = TestContext.generateAspectCode()
+            .apply( getGenerators( aspect, null, null, true, JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
+      result.assertNumberOfFiles( 2 );
+
+      result.assertMethodBody( "AspectWithEntity", "setTestProperty", false, Optional.empty(), 1,
+            List.of( "this.testProperty=testProperty;" ) );
+      result.assertMethodBody( "TestEntity", "setEntityProperty", false, Optional.empty(), 1,
+            List.of( "this.entityProperty=entityProperty;" ) );
+   }
+
+   @Test
+   void testGenerateAspectWithFluentSetters() throws IOException {
+      final TestAspect aspect = TestAspect.ASPECT_WITH_ENTITY;
+      final GenerationResult result = TestContext.generateAspectCode()
+            .apply( getGenerators( aspect, null, null, true, JavaCodeGenerationConfig.SetterStyle.FLUENT ) );
+      result.assertNumberOfFiles( 2 );
+
+      result.assertMethodBody( "AspectWithEntity", "setTestProperty", false, Optional.of( new ClassOrInterfaceType( "AspectWithEntity" ) ),
+            1,
+            List.of( "this.testProperty=testProperty;", "returnthis;" ) );
+      result.assertMethodBody( "TestEntity", "setEntityProperty", false, Optional.of( new ClassOrInterfaceType( "TestEntity" ) ), 1,
+            List.of( "this.entityProperty=entityProperty;", "returnthis;" ) );
+   }
+
+   @Test
+   void testGenerateAspectWithCompactFluentSetters() throws IOException {
+      final TestAspect aspect = TestAspect.ASPECT_WITH_ENTITY;
+      final GenerationResult result = TestContext.generateAspectCode()
+            .apply( getGenerators( aspect, null, null, true, JavaCodeGenerationConfig.SetterStyle.FLUENT_COMPACT ) );
+      result.assertNumberOfFiles( 2 );
+
+      result.assertMethodBody( "AspectWithEntity", "testProperty", false, Optional.of( new ClassOrInterfaceType( "AspectWithEntity" ) ),
+            1,
+            List.of( "this.testProperty=testProperty;", "returnthis;" ) );
+      result.assertMethodBody( "TestEntity", "entityProperty", false, Optional.of( new ClassOrInterfaceType( "TestEntity" ) ), 1,
+            List.of( "this.entityProperty=entityProperty;", "returnthis;" ) );
+   }
+
+   @Test
+   void testValidAnnotationRules() throws IOException {
+      final ImmutableMap<String, Object> expectedFieldsForEvaluationResults = ImmutableMap.<String, Object> builder()
+            .put( "entity", "TestEntity" )
+            .put( "collectionEntity", "Collection<TestEntity>" )
+            .put( "optionalEntity", "Optional<TestEntity>" )
+            .put( "testProperty", String.class )
+            .put( "collectionTestProperty", "Collection<String>" )
+            .put( "optionalTestProperty", "Optional<String>" )
+            .build();
+
+      final TestAspect aspect = TestAspect.ASPECT_WITH_VALID_ANNOTATION_TEST;
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect ) );
+
+      result.assertNumberOfFiles( 2 );
+      result.assertFields( "AspectWithValidAnnotationTest", expectedFieldsForEvaluationResults,
+            ImmutableMap.<String, String> builder()
+                  .put( "entity", "@Valid@NotNull" )
+                  .put( "collectionEntity", "@Valid@NotNull" )
+                  .put( "optionalEntity", "@Valid" )
+                  .put( "testProperty", "@NotNull" )
+                  .put( "collectionTestProperty", "@NotNull" )
+                  .put( "optionalTestProperty", "" )
+                  .build() );
    }
 }

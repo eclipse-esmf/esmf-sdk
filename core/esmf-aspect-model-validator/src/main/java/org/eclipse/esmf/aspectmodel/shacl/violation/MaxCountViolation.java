@@ -15,6 +15,8 @@ package org.eclipse.esmf.aspectmodel.shacl.violation;
 
 import org.eclipse.esmf.aspectmodel.shacl.constraint.MaxCountConstraint;
 
+import org.apache.jena.rdf.model.RDFNode;
+
 /**
  * Violation of a {@link MaxCountConstraint}
  *
@@ -36,6 +38,11 @@ public record MaxCountViolation( EvaluationContext context, int allowed, int act
             ? String.format( "Property %s may not be used on %s.", context.propertyName(), context.elementName() )
             : String.format( "Property %s is used %d time%s on %s, but may only be used %d time%s.",
             context.propertyName(), actual, actual > 1 ? "s" : "", context.elementName(), allowed, allowed > 1 ? "s" : "" );
+   }
+
+   @Override
+   public RDFNode highlight() {
+      return allowed() == 0 ? context().element() : context().property().get();
    }
 
    @Override

@@ -13,8 +13,9 @@
 
 package org.eclipse.esmf.aspectmodel.edit.change;
 
+import static org.eclipse.esmf.aspectmodel.StreamUtil.asMap;
+
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.ChangeContext;
@@ -50,7 +51,7 @@ public abstract class EditAspectModel extends AbstractChange {
       final Map<AspectModelFile, ModelChanges> changesPerFile = changeContext.aspectModelFiles()
             .map( file -> Map.entry( file, calculateChangesForFile( file ) ) )
             .filter( entry -> entry.getValue() != ModelChanges.NONE )
-            .collect( Collectors.toMap( Map.Entry::getKey, Map.Entry::getValue ) );
+            .collect( asMap() );
 
       changesPerFile.forEach( ( file, modelChanges ) -> {
          if ( changeContext.aspectModelFiles().anyMatch( file::equals ) ) {
@@ -79,7 +80,7 @@ public abstract class EditAspectModel extends AbstractChange {
                         final Model changeModel = descriptionEntry.getValue();
                         return !changeModel.isEmpty() || !changeModel.getNsPrefixMap().isEmpty();
                      } )
-                     .collect( Collectors.toMap( Map.Entry::getKey, Map.Entry::getValue ) ) );
+                     .collect( asMap() ) );
             } ).toList() );
    }
 }

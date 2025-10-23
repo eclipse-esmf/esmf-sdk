@@ -107,7 +107,7 @@ of model resolution] for more information.
                                    | _--language, -l_ : the language from the model for which the diagram should be
                                        generated (default: en)                                                               |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements | `samm aspect AspectModel.ttl to svg --custom-resolver "java -jar resolver.jar"`
-.12+| [[aspect-to-java]] aspect <model> to java | Generate Java classes from an Aspect Model                                 | `samm aspect AspectModel.ttl to java`
+.14+| [[aspect-to-java]] aspect <model> to java | Generate Java classes from an Aspect Model                                 | `samm aspect AspectModel.ttl to java`
                                    | _--output-directory, -d_ : output directory to write files to (default:
                                        current directory)                                                                    |
                                    | _--package-name, -pn_ : package to use for generated Java classes                       | `samm aspect AspectModel.ttl to java -pn org.company.product`
@@ -125,6 +125,8 @@ of model resolution] for more information.
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
                                    | _--name-prefix, -namePrefix_ : name prefix for generated Aspect, Entity Java classes    | `samm aspect AspectModel.ttl to java -namePrefix "Prefix"`
                                    | _--name-postfix, -namePostfix_ : name postfix for generated Aspect, Entity Java classes | `samm aspect AspectModel.ttl to java -namePostfix "Postfix"`
+                                   | _--enable-setters, -enableSetters_ : whether setters should be generated for Aspect, Entity Java classes    | `samm aspect AspectModel.ttl to java --enable-setters`
+                                   | _--setter-style, -setterStyle_ : the style of setters to generate for Aspect, Entity Java classes | `samm aspect AspectModel.ttl to java --enable-setters --setter-style "FLUENT"`
 .21+| [[aspect-to-openapi]] aspect <model> to openapi | Generate https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification
                                      for an Aspect Model                                                                     | `samm aspect AspectModel.ttl to openapi -j`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
@@ -195,6 +197,9 @@ of model resolution] for more information.
                                      commands (default: `CREATE TABLE IF NOT EXISTS`)                                        |
                                    | _--decimal-precision, -dp_ : The precision to use for Databricks decimal columns
                                      (default: 10). See also notes in
+                                     the xref:java-aspect-tooling.adoc#databricks-type-mapping[Databricks type mapping].     |
+                                   | _--decimal-scale, -ds_ : The scale to use for Databricks decimal columns
+                                     (default: 0). See also notes in
                                      the xref:java-aspect-tooling.adoc#databricks-type-mapping[Databricks type mapping].     |
                                    | _--custom-column, -col_ : Additional custom column definition, e.g. for databricks following the pattern `column_name DATATYPE [NOT NULL] [COMMENT 'custom']`. This parameter can be repeated for multiple columns.                                                  | `samm aspect AspectModel.ttl to sql --custom-column "column_name STRING NOT NULL COMMENT 'custom'"`
 .5+| [[aspect-to-aas]] aspect <model> to aas | Generate an Asset Administration Shell (AAS) submodel template from an
@@ -281,9 +286,11 @@ to load. You can configure where such lookup should be done:
 * Using the `--github` switch, you can configure a location in a remote GitHub repository as models
   root, e.g., `eclipse-esmf/esmf-sdk`. Optionally, you can also provide `--github-directory` to set
   the remote directory and `--github-branch` or `--github-tag` to set the branch name or tag,
-  respectively. If the repository is private, you can also pass `--github-token` and set a
-  https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token[fine-grained
-  access token]; the token needs at least "Contents" repository read permissions.
+  respectively. If the repository is private, you can also pass `--token` to set the repository-specific GitHub token
+  or `--github-token` for a token for repository/repositories.
+  To generate a token, refer to the https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token[fine-grained
+  access token] documentation; the token must have at least "Contents" repository read permissions.
+
 
 NOTE: When using an Aspect Model URN as input to a command (such as
 `urn:samm:org.eclipse.esmf.example:1.0.0#Aspect`), you must also provide at least one of the
@@ -838,7 +845,7 @@ In this section, a detailed description of the mapping between individual Aspect
 To make it easier to follow, the mapping is explained based on a concrete example, divided into logically coherent blocks.
 Please bear in mind that these blocks are snippets or fragments of a larger whole; viewed in isolation they do not necessarily form a valid or meaningful Aspect Model or AsyncAPI specification.
 
-==== Naming and versioning
+==== Naming and Versioning
 
 Please consider the following model fragment, with the attention focused on the numbered elements:
 

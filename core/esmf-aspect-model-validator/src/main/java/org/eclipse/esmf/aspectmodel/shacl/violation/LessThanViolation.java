@@ -17,6 +17,7 @@ import org.eclipse.esmf.aspectmodel.shacl.constraint.LessThanConstraint;
 
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
 
 /**
  * Violation of a {@link LessThanConstraint}
@@ -40,6 +41,11 @@ public record LessThanViolation( EvaluationContext context, Property otherProper
       return String.format( "Property %s on %s must have a value that is less than that of %s: %s must be less than %s.",
             context.propertyName(), context.elementName(), context.shortUri( otherProperty.getURI() ), context.value( actualValue ),
             context.value( otherValue ) );
+   }
+
+   @Override
+   public RDFNode highlight() {
+      return actualValue();
    }
 
    @Override

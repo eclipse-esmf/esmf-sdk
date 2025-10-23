@@ -124,7 +124,7 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
    public static AasToAspectModelGenerator fromAasx( final InputStream inputStream ) {
       try {
          final AASXDeserializer deserializer = new AASXDeserializer( inputStream );
-         return fromEnvironment( new XmlDeserializer().read( deserializer.getXMLResourceString() ) );
+         return fromEnvironment( new XmlDeserializer().read( deserializer.getResourceString() ) );
       } catch ( final InvalidFormatException | IOException | DeserializationException exception ) {
          throw new AspectModelGenerationException( exception );
       }

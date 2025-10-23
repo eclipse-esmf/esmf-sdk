@@ -13,7 +13,10 @@
 
 package org.eclipse.esmf.aspectmodel.resolver.parser;
 
+import java.util.Objects;
 import java.util.Optional;
+
+import org.eclipse.esmf.aspectmodel.AspectModelFile;
 
 import org.apache.jena.riot.tokens.Token;
 import org.apache.jena.riot.tokens.TokenType;
@@ -21,10 +24,18 @@ import org.apache.jena.riot.tokens.TokenType;
 /**
  * Wrapper class for a {@link Token}. This provides access to the actual string representation of the token, 1-based line and
  * column information.
- *
- * @param token the token
  */
-public record SmartToken( Token token ) {
+public final class SmartToken {
+   private final Token token;
+   private AspectModelFile originatingFile;
+
+   /**
+    * @param token the token
+    */
+   public SmartToken( final Token token ) {
+      this.token = token;
+   }
+
    public TokenType type() {
       return token.getType();
    }
@@ -36,6 +47,23 @@ public record SmartToken( Token token ) {
     */
    public String image() {
       return token.getImage();
+   }
+
+   /**
+    * The lexical representation, see also {@link Token#getImage2()}.
+    *
+    * @return the lexical representation
+    */
+   public String image2() {
+      return token.getImage2();
+   }
+
+   public Token subToken1() {
+      return token.getSubToken1();
+   }
+
+   public Token subToken2() {
+      return token.getSubToken2();
    }
 
    /**
@@ -101,52 +129,41 @@ public record SmartToken( Token token ) {
       };
    }
 
-   /**
-    * Format the content of the token in a structured manner.
-    *
-    * @param formatter formatter to use for text formatting
-    * @return the length of the UNFORMATTED content
-    */
-   public int structureContent( final RdfTextFormatter formatter ) {
-      switch ( token.getType() ) {
-         case IRI -> formatter.formatPrimitive( "<" ).formatIri( token.getImage() ).formatPrimitive( ">" );
-         case DIRECTIVE -> formatter.formatPrimitive( "@" ).formatDirective( token.getImage() );
-         case PREFIXED_NAME -> formatter.formatPrefix( Optional.ofNullable( token.getImage() ).orElse( "" ) )
-               .formatPrimitive( ":" )
-               .formatName( Optional.ofNullable( token.getImage2() ).orElse( "" ) );
-         case LT -> formatter.formatPrimitive( "<" );
-         case GT -> formatter.formatPrimitive( ">" );
-         case LE -> formatter.formatPrimitive( "<=" );
-         case GE -> formatter.formatPrimitive( ">=" );
-         case LOGICAL_AND -> formatter.formatPrimitive( "&&" );
-         case LOGICAL_OR -> formatter.formatPrimitive( "||" );
-         case LT2 -> formatter.formatPrimitive( "<<" );
-         case GT2 -> formatter.formatPrimitive( ">>" );
-         case DOT -> formatter.formatPrimitive( "." );
-         case COMMA -> formatter.formatPrimitive( "," );
-         case SEMICOLON -> formatter.formatPrimitive( ";" );
-         case LBRACE -> formatter.formatPrimitive( "{" );
-         case RBRACE -> formatter.formatPrimitive( "}" );
-         case LPAREN -> formatter.formatPrimitive( "(" );
-         case RPAREN -> formatter.formatPrimitive( ")" );
-         case LBRACKET -> formatter.formatPrimitive( "[" );
-         case RBRACKET -> formatter.formatPrimitive( "]" );
-         case EQUALS -> formatter.formatPrimitive( "=" );
-         case EQUIVALENT -> formatter.formatPrimitive( "==" );
-         case PLUS -> formatter.formatPrimitive( "+" );
-         case MINUS -> formatter.formatPrimitive( "-" );
-         case STAR -> formatter.formatPrimitive( "*" );
-         case SLASH -> formatter.formatPrimitive( "/" );
-         case RSLASH -> formatter.formatPrimitive( "\\" );
-         case STRING -> formatter.formatPrimitive( "\"" ).formatString( token.getImage() ).formatPrimitive( "\"" );
-         case LITERAL_LANG -> formatter.formatPrimitive( "\"" ).formatString( token.getImage() ).formatPrimitive( "\"" )
-               .formatPrimitive( "@" ).formatLangTag( token.getImage2() );
-         case LITERAL_DT ->
-               formatter.formatPrimitive( "\"" ).formatString( token.getImage() ).formatPrimitive( "\"" ).formatPrimitive( "^^" )
-                     .formatPrefix( token.getSubToken2().getImage() ).formatPrimitive( ":" ).formatName( token.getSubToken2().getImage2() );
-         default -> formatter.formatDefault( token.getImage() );
-      }
+   public Token token() {
+      return token;
+   }
 
-      return content().length();
+   @Override
+   public boolean equals( final Object obj ) {
+      if ( obj == this ) {
+         return true;
+      }
+      if ( obj == null || obj.getClass() != getClass() ) {
+         return false;
+      }
+      final var that = (SmartToken) obj;
+      return Objects.equals( token, that.token );
+   }
+
+   @Override
+   public int hashCode() {
+      return Objects.hash( token );
+   }
+
+   @Override
+   public String toString() {
+      return "SmartToken[token=" + token + ']';
+   }
+
+   public Token getToken() {
+      return token;
+   }
+
+   public AspectModelFile getOriginatingFile() {
+      return originatingFile;
+   }
+
+   public void setOriginatingFile( final AspectModelFile originatingFile ) {
+      this.originatingFile = originatingFile;
    }
 }

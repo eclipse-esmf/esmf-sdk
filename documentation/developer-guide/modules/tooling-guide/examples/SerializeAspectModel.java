@@ -47,8 +47,7 @@ public class SerializeAspectModel {
             // end::serializeFile[]
             aspectModel.aspect().getSourceFile();
       // tag::serializeFile[]
-      final String fileString =
-            AspectSerializer.INSTANCE.aspectModelFileToString( aspectModelFile );
+      final String fileString = aspectModelFile.sourceRepresentation();
 
       // end::serializeFile[]
       assertThat( aspectString ).contains( ":Movement a samm:Aspect" );

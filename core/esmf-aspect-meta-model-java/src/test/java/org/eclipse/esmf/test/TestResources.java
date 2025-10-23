@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -15,7 +15,6 @@ package org.eclipse.esmf.test;
 
 import java.io.InputStream;
 import java.net.URI;
-import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.ClasspathStrategy;
@@ -31,7 +30,7 @@ public class TestResources {
       final InputStream inputStream = TestResources.class.getClassLoader().getResourceAsStream( path );
       final ResolutionStrategy testModelsResolutionStrategy = new ClasspathStrategy(
             "valid/" + metaModelVersion.toString().toLowerCase() );
-      return new AspectModelLoader( testModelsResolutionStrategy ).load( inputStream, Optional.of( URI.create( "testmodel:" + path ) ) );
+      return new AspectModelLoader( testModelsResolutionStrategy ).load( inputStream, URI.create( "testmodel:" + path ) );
    }
 
    public static AspectModel load( final TestModel model ) {
@@ -39,7 +38,15 @@ public class TestResources {
             model.getName() );
       final InputStream inputStream = TestResources.class.getClassLoader().getResourceAsStream( path );
       final ResolutionStrategy testModelsResolutionStrategy = new ClasspathStrategy( "valid" );
-      return new AspectModelLoader( testModelsResolutionStrategy ).load( inputStream, Optional.of( URI.create( "testmodel:" + path ) ) );
+      return new AspectModelLoader( testModelsResolutionStrategy ).load( inputStream, URI.create( "testmodel:" + path ) );
+   }
+
+   public static AspectModel load( final OrderingTestAspect model ) {
+      final String path = String.format( "valid/%s/%s/%s.ttl", model.getUrn().getNamespaceMainPart(), model.getUrn().getVersion(),
+            model.getName() );
+      final InputStream inputStream = TestResources.class.getClassLoader().getResourceAsStream( path );
+      final ResolutionStrategy testModelsResolutionStrategy = new ClasspathStrategy( "valid" );
+      return new AspectModelLoader( testModelsResolutionStrategy ).load( inputStream, URI.create( "testmodel:" + path ) );
    }
 
    public static AspectModel load( final InvalidTestAspect model ) {
@@ -49,6 +56,6 @@ public class TestResources {
       final InputStream inputStream = TestResources.class.getClassLoader().getResourceAsStream( path );
       final ResolutionStrategy testModelsResolutionStrategy = new ClasspathStrategy(
             "invalid/" + metaModelVersion.toString().toLowerCase() );
-      return new AspectModelLoader( testModelsResolutionStrategy ).load( inputStream, Optional.of( URI.create( "testmodel:" + path ) ) );
+      return new AspectModelLoader( testModelsResolutionStrategy ).load( inputStream, URI.create( "testmodel:" + path ) );
    }
 }

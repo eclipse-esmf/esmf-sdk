@@ -25,7 +25,7 @@ public static final String MODEL_ELEMENT_URN = NAMESPACE + "${element.getName()}
 
 private static String CHARACTERISTIC_NAMESPACE = "${characteristicBaseUrn}";
 
-#propertyDeclaration() Meta${element.getName()} INSTANCE = new Meta${element.getName()}();
+#propertyDeclaration() Meta${className} INSTANCE = new Meta${className}();
 
 #if( $util.isXmlDatatypeFactoryRequired( $element ) )
     $codeGenerationConfig.importTracker().importExplicit( $DatatypeConfigurationException )

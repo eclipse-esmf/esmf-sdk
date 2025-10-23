@@ -25,7 +25,8 @@ import org.eclipse.esmf.metamodel.impl.DefaultProperty;
 /**
  * Extends the SAMM {@link DefaultProperty} definition with a concrete type.
  */
-public abstract class StaticProperty<C, T> extends DefaultProperty implements PropertyTypeInformation<C, T>, PropertyAccessor<C, T> {
+public abstract class StaticProperty<C, T> extends DefaultProperty
+      implements PropertyTypeInformation<C, T>, PropertyAccessor<C, T>, PropertyMutator<C, T> {
 
    public StaticProperty(
          final MetaModelBaseAttributes metaModelBaseAttributes,
@@ -45,5 +46,10 @@ public abstract class StaticProperty<C, T> extends DefaultProperty implements Pr
       return getCharacteristic().flatMap( Characteristic::getDataType )
             .map( Type::isComplexType )
             .orElse( false );
+   }
+
+   @Override
+   public void setValue( final C object, final T value ) {
+      throw new UnsupportedOperationException( "No setter available." );
    }
 }

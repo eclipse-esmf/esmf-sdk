@@ -33,6 +33,7 @@ import org.eclipse.esmf.aspectmodel.resolver.github.GithubModelSourceConfigBuild
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
 import org.eclipse.esmf.aspectmodel.validation.services.DetailedViolationFormatter;
+import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectModel;
@@ -47,11 +48,20 @@ public abstract class AbstractInputHandler implements InputHandler {
    protected final String input;
    protected final ResolverConfigurationMixin resolverConfig;
    protected final boolean details;
+   protected final boolean validate;
+   protected final AspectModelValidator validator = new AspectModelValidator();
+   protected final ViolationFormatter violationFormatter;
 
-   public AbstractInputHandler( final String input, final ResolverConfigurationMixin resolverConfig, final boolean details ) {
+   public AbstractInputHandler( final String input, final ResolverConfigurationMixin resolverConfig, final boolean details,
+         final boolean validate ) {
       this.input = input;
       this.resolverConfig = resolverConfig;
       this.details = details;
+      this.validate = validate;
+
+      violationFormatter = details
+            ? new DetailedViolationFormatter()
+            : new ViolationFormatter( new JansiRdfSyntaxHighlighter(), "Use --details for more information." );
    }
 
    /**
@@ -90,7 +100,7 @@ public abstract class AbstractInputHandler implements InputHandler {
    }
 
    private Optional<GithubModelSourceConfig> buildGithubModelSourceConfig(
-         final ResolverConfigurationMixin.GitHubResolverOptions options, final String gitHubToken ) {
+         final ResolverConfigurationMixin.GitHubResolverOptions options, final String globalGitHubToken ) {
       if ( options.gitHubName == null ) {
          return Optional.empty();
       }
@@ -104,7 +114,7 @@ public abstract class AbstractInputHandler implements InputHandler {
       return Optional.of( GithubModelSourceConfigBuilder.builder()
             .repository( repository )
             .directory( options.gitHubDirectory )
-            .token( gitHubToken )
+            .token( options.token != null ? globalGitHubToken : options.token )
             .build() );
    }
 
@@ -113,20 +123,19 @@ public abstract class AbstractInputHandler implements InputHandler {
       return new AspectModelLoader( resolutionStrategies() );
    }
 
-   protected AspectModel applyAspectModelLoader( final Function<AspectModelLoader, AspectModel> loader ) {
-      final Either<List<Violation>, AspectModel> validModelOrViolations = new AspectModelValidator().loadModel( () ->
-            loader.apply( aspectModelLoader() ) );
+   protected AspectModel getAspectModelOrPrintValidationReport( final Either<List<Violation>, AspectModel> validModelOrViolations ) {
       if ( validModelOrViolations.isLeft() ) {
-         final List<Violation> violations = validModelOrViolations.getLeft();
-         if ( details ) {
-            System.out.println( new DetailedViolationFormatter().apply( violations ) );
-         } else {
-            System.out.println( new HighlightingViolationFormatter().apply( violations ) );
-         }
+         System.out.println( violationFormatter.apply( validModelOrViolations.getLeft() ) );
          System.exit( 1 );
          return null;
       }
       return validModelOrViolations.get();
+   }
+
+   protected AspectModel applyAspectModelLoader( final Function<AspectModelLoader, AspectModel> loader ) {
+      final Either<List<Violation>, AspectModel> validModelOrViolations = validator.loadModel( () ->
+            loader.apply( aspectModelLoader() ) );
+      return getAspectModelOrPrintValidationReport( validModelOrViolations );
    }
 
    @Override
@@ -147,5 +156,11 @@ public abstract class AbstractInputHandler implements InputHandler {
                   "Found multiple Aspects in the input " + input + ", but none is called '"
                         + expectedAspectName + "': " + aspectModel.aspects().stream().map( Aspect::getName )
                         .collect( Collectors.joining( ", " ) ) ) );
+   }
+
+   @Override
+   public String validateAspectModel() {
+      final List<Violation> violations = validator.validateModel( loadAspectModel() );
+      return violationFormatter.apply( violations );
    }
 }

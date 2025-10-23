@@ -13,14 +13,18 @@
 
 package org.eclipse.esmf.test;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.eclipse.esmf.aspectmodel.resolver.ClasspathStrategy;
+import org.eclipse.esmf.samm.KnownVersion;
 
 import org.junit.jupiter.api.Test;
 
 public class ClasspathStrategyTest {
    @Test
    void testListContents() {
-      final ClasspathStrategy classpathStrategy = new ClasspathStrategy( "samm_2_1_0" );
-      classpathStrategy.listContents().forEach( System.out::println );
+      final String directoryName = KnownVersion.getLatest().toString().toLowerCase();
+      final ClasspathStrategy classpathStrategy = new ClasspathStrategy( directoryName );
+      assertThat( classpathStrategy.listContents() ).isNotEmpty();
    }
 }

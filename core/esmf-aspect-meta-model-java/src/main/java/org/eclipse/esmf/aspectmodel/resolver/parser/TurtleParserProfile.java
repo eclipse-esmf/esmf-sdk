@@ -13,6 +13,8 @@
 
 package org.eclipse.esmf.aspectmodel.resolver.parser;
 
+import org.eclipse.esmf.aspectmodel.ValueParsingException;
+
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.graph.Graph;
 import org.apache.jena.graph.Node;
@@ -44,9 +46,15 @@ public class TurtleParserProfile implements ParserProfile {
 
    @Override
    public Node create( final Node currentGraph, final Token token ) {
-      final Node node = parserProfile.create( currentGraph, token );
-      TokenRegistry.put( node, new SmartToken( token ) );
-      return node;
+      try {
+         final Node node = parserProfile.create( currentGraph, token );
+         TokenRegistry.put( node, new SmartToken( token ) );
+         return node;
+      } catch ( final ValueParsingException exception ) {
+         exception.setLine( token.getLine() );
+         exception.setColumn( token.getColumn() );
+         throw exception;
+      }
    }
 
    @Override

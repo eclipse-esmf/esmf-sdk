@@ -87,8 +87,9 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
       databricksTypeMap = ImmutableMap.<String, DatabricksType> builder()
             .put( XSD.xstring.getURI(), DatabricksType.STRING )
             .put( XSD.xboolean.getURI(), DatabricksType.BOOLEAN )
-            .put( XSD.decimal.getURI(), new DatabricksType.DatabricksDecimal( Optional.of( config.decimalPrecision() ) ) )
-            .put( XSD.integer.getURI(), new DatabricksType.DatabricksDecimal() )
+            .put( XSD.decimal.getURI(), new DatabricksType.DatabricksDecimal( Optional.of( config.decimalPrecision() ),
+                    Optional.of( config.decimalScale() ) ) )
+            .put( XSD.integer.getURI(), new DatabricksType.DatabricksDecimal( Optional.of( config.decimalPrecision() ) ) )
             .put( XSD.xdouble.getURI(), DatabricksType.DOUBLE )
             .put( XSD.xfloat.getURI(), DatabricksType.FLOAT )
             .put( XSD.date.getURI(), DatabricksType.STRING )
@@ -110,7 +111,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
             .put( XSD.unsignedByte.getURI(), DatabricksType.SMALLINT )
             .put( XSD.unsignedShort.getURI(), DatabricksType.INT )
             .put( XSD.unsignedInt.getURI(), DatabricksType.BIGINT )
-            .put( XSD.unsignedLong.getURI(), new DatabricksType.DatabricksDecimal() )
+            .put( XSD.unsignedLong.getURI(), new DatabricksType.DatabricksDecimal( Optional.of( config.decimalPrecision() ) ) )
             .put( XSD.positiveInteger.getURI(), new DatabricksType.DatabricksDecimal( Optional.of( config.decimalPrecision() ) ) )
             .put( XSD.nonNegativeInteger.getURI(), new DatabricksType.DatabricksDecimal( Optional.of( config.decimalPrecision() ) ) )
             .put( XSD.negativeInteger.getURI(), new DatabricksType.DatabricksDecimal( Optional.of( config.decimalPrecision() ) ) )
@@ -141,10 +142,12 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
       final StringBuilder result = new StringBuilder();
       final Consumer<String> appendLine = line -> {
          if ( !line.isBlank() ) {
-            if ( !result.isEmpty() ) {
+            // Turning entire result into String for checking its contents can be ineffective,
+            // so we pick up the minimum substring here though it's verbose a bit.
+            if ( !result.isEmpty() && !result.substring( result.length() < 4 ? 0 : result.length() - 4 ).stripTrailing().endsWith( "," ) ) {
                result.append( ",\n" );
             }
-            if ( !line.startsWith( "  " ) ) {
+            if ( !line.startsWith( "  " ) && ( result.length() < 2 || !result.substring( result.length() - 2 ).equals( "  " ) ) ) {
                result.append( "  " );
             }
             result.append( line );
@@ -167,7 +170,10 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
 
    @Override
    public String visitAspect( final Aspect aspect, final Context context ) {
-      final String columnDeclarations = visitStructureElement( aspect, context );
+      String columnDeclarations = visitStructureElement( aspect, context );
+      if ( columnDeclarations.endsWith( ",\n  " ) ) {
+         columnDeclarations = columnDeclarations.substring( 0, columnDeclarations.length() - 4 );
+      }
       final String comment = config.includeTableComment()
             ? Optional.ofNullable( aspect.getDescription( config.commentLanguage() ) ).map( description ->
             new DatabricksCommentDefinition( description ) + "\n" ).orElse( "" )
@@ -208,7 +214,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
             .forceOptional( true )
             .forceDescriptionFromElement( either.getRight() )
             .build() );
-      return leftResult + "\n" + ( rightResult.startsWith( "  " ) ? "" : "  " ) + rightResult;
+      return leftResult + ( leftResult.isBlank() ? "" : ",\n" ) + ( rightResult.startsWith( "  " ) ? "" : "  " ) + rightResult;
    }
 
    @Override
@@ -297,17 +303,16 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
 
          if ( type instanceof Scalar ) {
             final String typeDef = type.accept( this, context );
-            columns.append( column( columnPrefix, typeDef, property.isOptional(),
-                        Optional.ofNullable( property.getDescription( config.commentLanguage() ) ) ) )
+            final Optional<String> comment = config.includeColumnComments()
+                    ? Optional.ofNullable( Optional.ofNullable( context.forceDescriptionFromElement() ).orElse( property )
+                    .getDescription( config.commentLanguage() ) )
+                    : Optional.empty();
+            columns.append( column( columnPrefix, typeDef, property.isOptional(), comment ) )
                   .append( lineDelimiter );
          } else if ( type instanceof ComplexType ) {
             columns.append( processComplexType( type.as( ComplexType.class ), context, columnPrefix, type.is( DefaultList.class ) ) );
          }
       } );
-
-      if ( !columns.isEmpty() && columns.toString().endsWith( ",\n  " ) ) {
-         columns.setLength( columns.length() - 4 ); // Remove last ",\n  "
-      }
 
       return columns.toString();
    }

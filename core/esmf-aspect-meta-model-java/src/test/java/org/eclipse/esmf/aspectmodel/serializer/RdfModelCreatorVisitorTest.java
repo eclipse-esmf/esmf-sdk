@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -56,7 +56,9 @@ class RdfModelCreatorVisitorTest {
          "ASPECT_WITH_TIME_SERIES",
          "ASPECT_WITH_QUANTITY",
          "ASPECT_WITH_NAMESPACE_DESCRIPTION",
-         "ASPECT_WITH_ANY_VALUE_DECLARATIONS"
+         "ASPECT_WITH_ANY_VALUE_DECLARATIONS",
+         "ASPECT_WITH_OPTIONAL_PROPERTIES_AND_ENTITY_WITH_SEPARATE_FILES",
+         "ASPECT_WITH_VALID_ANNOTATION_TEST"
    } )
    void testRdfModelCreatorVisitor( final TestAspect testAspect ) {
       final AspectModel aspectModel = TestResources.load( testAspect );

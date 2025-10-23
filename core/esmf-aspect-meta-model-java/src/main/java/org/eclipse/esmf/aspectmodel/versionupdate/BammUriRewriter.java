@@ -13,15 +13,17 @@
 
 package org.eclipse.esmf.aspectmodel.versionupdate;
 
+import static org.eclipse.esmf.aspectmodel.StreamUtil.asMap;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidVersionException;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.samm.KnownVersion;
@@ -57,7 +59,7 @@ public class BammUriRewriter extends AbstractUriRewriter {
                default -> Map.entry( prefix, rewriteUri( sourceModel.getNsPrefixURI( prefix ), oldToNewNamespaces )
                      .orElse( sourceModel.getNsPrefixURI( prefix ) ) );
             } )
-            .collect( Collectors.toMap( Map.Entry::getKey, Map.Entry::getValue ) );
+            .collect( asMap() );
    }
 
    @Override
@@ -83,7 +85,7 @@ public class BammUriRewriter extends AbstractUriRewriter {
          result = result.replace( mapEntry.getKey(), mapEntry.getValue() );
       }
       // This catches the regular (i.e., non meta-model) URNs
-      result = result.replace( "urn:bamm:", "urn:samm:" );
+      result = result.replace( "urn:bamm:", AspectModelUrn.PROTOCOL_AND_NAMESPACE_PREFIX );
       return Optional.of( result );
    }
 

@@ -14,28 +14,43 @@
 package org.eclipse.esmf.aspectmodel.resolver.parser;
 
 /**
- * Interface to allow interested parties to do structured formatting of RDF documents (for example syntax highlighting)
+ * Interface to allow interested parties to do structured formatting of RDF documents (for example syntax highlighting).
+ * Methods by default all return the original token.
  */
 public interface RdfTextFormatter {
-   void reset();
+   default String formatIri( final String iri ) {
+      return iri;
+   }
 
-   String getResult();
+   default String formatDirective( final String directive ) {
+      return directive;
+   }
 
-   RdfTextFormatter formatIri( String iri );
+   default String formatPrefix( final String prefix ) {
+      return prefix;
+   }
 
-   RdfTextFormatter formatDirective( String directive );
+   default String formatName( final String name ) {
+      return name;
+   }
 
-   RdfTextFormatter formatPrefix( String prefix );
+   default String formatString( final String string ) {
+      return string;
+   }
 
-   RdfTextFormatter formatName( String name );
+   default String formatLangTag( final String langTag ) {
+      return langTag;
+   }
 
-   RdfTextFormatter formatString( String string );
+   default String formatDefault( final String text ) {
+      return text;
+   }
 
-   RdfTextFormatter formatLangTag( String langTag );
+   default String formatPrimitive( final String primitive ) {
+      return primitive;
+   }
 
-   RdfTextFormatter formatDefault( String text );
-
-   RdfTextFormatter formatPrimitive( String primitive );
-
-   RdfTextFormatter formatError( String text );
+   default String formatError( final String text ) {
+      return text;
+   }
 }

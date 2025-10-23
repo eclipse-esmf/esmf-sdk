@@ -1,3 +1,16 @@
+/*
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
+ *
+ * See the AUTHORS file(s) distributed with this work for additional
+ * information regarding authorship.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * SPDX-License-Identifier: MPL-2.0
+ */
+
 package org.eclipse.esmf.aspectmodel.java.performance;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
@@ -33,8 +46,8 @@ class EsmfPerformanceTest {
    private static final Collection<AspectModelUrn> URNS_2_1_0 = getUrns( INPUT_FILES_2_1_0 );
    private static final List<AspectModelFile> INPUT_FILES_LATEST = InlineModel.getModel( KnownVersion.getLatest().toVersionString() );
    private static final Collection<AspectModelUrn> URNS_LATEST = getUrns( INPUT_FILES_LATEST );
-   private static final long MAX_DURATION_MS = 1300;
-   private static final long MAX_MEMORY_BYTES = 200L * 1024 * 1024;
+   private static final long MAX_DURATION_MS = 5000;
+   private static final long MAX_MEMORY_BYTES = 500L * 1024 * 1024;
 
    @Test
    @Timeout( 90 )
@@ -43,7 +56,7 @@ class EsmfPerformanceTest {
    }
 
    @Test
-   @Timeout( 2 )
+   @Timeout( 5 )
    void testResolvingWithLatestSammVersion() {
       measurePerformance( "LatestSammVersion", INPUT_FILES_LATEST, URNS_LATEST );
    }

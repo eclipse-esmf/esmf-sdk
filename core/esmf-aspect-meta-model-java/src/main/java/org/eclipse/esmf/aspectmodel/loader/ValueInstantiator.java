@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -29,6 +29,9 @@ import org.apache.jena.vocabulary.RDF;
  * Creates new instances of {@link ScalarValue} from the value representation in RDF
  */
 public class ValueInstantiator {
+
+   public static final String UNDEFINED_LANGUAGE_TAG = "und";
+
    /**
     * Creates a new scalar value from a lexical value representation.
     *
@@ -45,7 +48,7 @@ public class ValueInstantiator {
       // .xsd.impl.RDFLangString but _not_ org.eclipse.esmf.metamodel.datatypes.LangString as we would like to.
       // 3. So we construct an instance of LangString here from the RDFLangString.
       if ( datatypeUri.equals( RDF.langString.getURI() ) ) {
-         return Optional.of( buildLanguageString( lexicalRepresentation, languageTag ) );
+         return buildLanguageString( lexicalRepresentation, languageTag );
       }
 
       return SammXsdType.ALL_TYPES.stream()
@@ -56,9 +59,13 @@ public class ValueInstantiator {
             .findAny();
    }
 
-   public ScalarValue buildLanguageString( final String lexicalRepresentation, final String languageTag ) {
-      final LangString langString = new LangString( lexicalRepresentation, Locale.forLanguageTag( languageTag ) );
+   private Optional<ScalarValue> buildLanguageString( final String lexicalRepresentation, final String languageTag ) {
+      final Locale locale = Locale.forLanguageTag( languageTag );
+      if ( UNDEFINED_LANGUAGE_TAG.equals( locale.toLanguageTag() ) ) {
+         return Optional.empty();
+      }
+      final LangString langString = new LangString( lexicalRepresentation, locale );
       final Scalar type = new DefaultScalar( RDF.langString.getURI() );
-      return new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), langString, type );
+      return Optional.of( new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), langString, type ) );
    }
 }
