@@ -44,59 +44,59 @@ public class AspectToTsCommand extends AbstractCommand {
    @CommandLine.Option(
          names = { "--template-library-file", "-tlf" },
          description = "The path and name of the Velocity template file containing the macro library." )
-   private final String templateLib = "";
+   private String templateLib = "";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
          names = { "--package-name", "-pn" },
          description = "Package to use for generated TS classes" )
-   private final String packageName = "";
+   private String packageName = "";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
          names = { "--execute-library-macros", "-elm" },
          description = "Execute the macros provided in the Velocity macro library." )
-   private final boolean executeLibraryMacros = false;
+   private boolean executeLibraryMacros = false;
 
    @CommandLine.Option(
          names = { "--output-directory", "-d" },
          description = "Output directory to write files to" )
-   private final String outputPath = ".";
+   private String outputPath = ".";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
          names = { "--static", "-s" },
          description = "Generate TS domain classes for a Static Meta Model" )
-   private final boolean generateStaticMetaModelClasses = false;
+   private boolean generateStaticMetaModelClasses = false;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option( names = { "--name-prefix", "-namePrefix" },
          description = "Name prefix for generated Aspect, Entity TS classes" )
-   private final String namePrefix = "";
+   private String namePrefix = "";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option( names = { "--name-postfix", "-namePostfix" },
          description = "Name postfix for generated Aspect, Entity TS classes" )
-   private final String namePostfix = "";
+   private String namePostfix = "";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
          names = { "--details" },
          description = "Print detailed reports on errors" )
-   private final boolean details = false;
+   private boolean details = false;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
          names = { "--disable-prettier" },
          description = "Disables Prettier formatting. The generated script will be created without applying Prettier formatting." )
-   private final boolean disablePrettierFormatter = false;
+   private boolean disablePrettierFormatter = false;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
          names = { "--prettier-config" },
          description = "Specifies the path to a custom Prettier configuration file."
                + " If provided, this configuration will be used during the formatting step instead of the default setting" )
-   private final String prettierConfigPath = "";
+   private String prettierConfigPath = "";
 
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;

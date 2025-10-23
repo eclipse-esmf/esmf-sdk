@@ -1,23 +1,25 @@
-/*
- * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
- *
- * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship.
- *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at https://mozilla.org/MPL/2.0/.
- *
- * SPDX-License-Identifier: MPL-2.0
- */
-
-import { ReplacedAspectArtifact, } from './ReplacedAspectArtifact';
+import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
-import { AspectWithRecursivePropertyWithOptionalAndEntityProperty, } from './AspectWithRecursivePropertyWithOptionalAndEntityProperty';
-import { DefaultStaticProperty, } from './core/staticConstraintProperty';
-import { MetaReplacedAspectArtifact, } from './MetaReplacedAspectArtifact';
 
+
+
+
+
+
+
+
+
+
+
+
+import { AspectWithRecursivePropertyWithOptionalAndEntityProperty,} from './AspectWithRecursivePropertyWithOptionalAndEntityProperty';
+import { DefaultStaticProperty,} from './core/staticConstraintProperty';
+import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
+
+
+
+    
 
 /*
 * Generated class MetaAspectWithRecursivePropertyWithOptionalAndEntityProperty (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithRecursivePropertyWithOptionalAndEntityProperty).
@@ -27,81 +29,85 @@ import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/stati
 import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
 
 export class MetaAspectWithRecursivePropertyWithOptionalAndEntityProperty implements StaticMetaClass<AspectWithRecursivePropertyWithOptionalAndEntityProperty>, PropertyContainer<AspectWithRecursivePropertyWithOptionalAndEntityProperty> {
-    public static readonly NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
-    public static readonly MODEL_ELEMENT_URN = this.NAMESPACE + 'AspectWithRecursivePropertyWithOptionalAndEntityProperty';
+ public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
+ public static readonly  MODEL_ELEMENT_URN = this.NAMESPACE + 'AspectWithRecursivePropertyWithOptionalAndEntityProperty';
 
-    private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0';
+private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0';
 
-    public static readonly INSTANCE = new MetaAspectWithRecursivePropertyWithOptionalAndEntityProperty();
-
-
-    public static readonly TEST_PROPERTY =
-
-        new (class extends DefaultStaticProperty<AspectWithRecursivePropertyWithOptionalAndEntityProperty, ReplacedAspectArtifact> {
+ public static readonly  INSTANCE = new MetaAspectWithRecursivePropertyWithOptionalAndEntityProperty();
 
 
-            getPropertyType(): string {
+ public static readonly  TEST_PROPERTY = 
+                
+        new (class extends DefaultStaticProperty<AspectWithRecursivePropertyWithOptionalAndEntityProperty, ReplacedAspectArtifact>{
+
+    
+    getPropertyType(): string {
                 return 'ReplacedAspectArtifact';
-            }
+    }
 
-            getContainingType(): string {
-                return 'AspectWithRecursivePropertyWithOptionalAndEntityProperty';
-            }
-
-
-        })(
-            {
-                metaModelBaseAttributes: {
-                    urn: this.NAMESPACE + 'testProperty',
-                    preferredNames: [],
-                    descriptions: [],
-                    see: [],
-                },
-                characteristic: new DefaultSingleEntity({
-                    urn: this.NAMESPACE + 'TestItemCharacteristic',
-                    preferredNames: [],
-                    descriptions: [],
-                    see: [],
-                }, DefaultEntity.createDefaultEntity({
-                    urn: this.NAMESPACE + 'ReplacedAspectArtifact',
-                    preferredNames: [],
-                    descriptions: [],
-                    see: [],
-                }, MetaReplacedAspectArtifact.INSTANCE.getProperties(), Optional.empty()))
-                ,
-                exampleValue: {},
-                optional: false,
-                notInPayload: false,
-                payloadName: 'testProperty',
-                isAbstract: false,
-            });
-
-
-    getModelClass(): string {
+    getContainingType(): string {
         return 'AspectWithRecursivePropertyWithOptionalAndEntityProperty';
     }
 
-    getAspectModelUrn(): string {
-        return MetaAspectWithRecursivePropertyWithOptionalAndEntityProperty.MODEL_ELEMENT_URN;
-    }
 
-    getMetaModelVersion(): KnownVersion {
-        return KnownVersionUtils.getLatest();
-    }
+                                        })(
+        {
+        metaModelBaseAttributes : {
+urn : this.NAMESPACE + 'testProperty',
+preferredNames : [  ],
+descriptions : [  ],
+see : [  ],
+},
+    characteristic :     new DefaultSingleEntity({
+urn : this.NAMESPACE + 'TestItemCharacteristic',
+preferredNames : [  ],
+descriptions : [  ],
+see : [  ],
+}, DefaultEntity.createDefaultEntity({
+urn : this.NAMESPACE + 'ReplacedAspectArtifact',
+preferredNames : [  ],
+descriptions : [  ],
+see : [  ],
+},MetaReplacedAspectArtifact.INSTANCE.getProperties(),Optional.empty()))
+,
+    exampleValue : {},
+    optional : false,
+    notInPayload : false,
+        payloadName : 'testProperty',
+    isAbstract : false,
+    });
 
-    getName(): string {
-        return 'AspectWithRecursivePropertyWithOptionalAndEntityProperty';
-    }
-
-    getProperties(): Array<StaticProperty<AspectWithRecursivePropertyWithOptionalAndEntityProperty, any>> {
-        return [MetaAspectWithRecursivePropertyWithOptionalAndEntityProperty.TEST_PROPERTY];
-    }
-
-    getAllProperties(): Array<StaticProperty<AspectWithRecursivePropertyWithOptionalAndEntityProperty, any>> {
-        return this.getProperties();
-    }
 
 
+
+getModelClass(): string {
+return 'AspectWithRecursivePropertyWithOptionalAndEntityProperty';
 }
+
+getAspectModelUrn(): string {
+return MetaAspectWithRecursivePropertyWithOptionalAndEntityProperty .MODEL_ELEMENT_URN;
+}
+
+getMetaModelVersion(): KnownVersion {
+return KnownVersionUtils.getLatest()
+}
+
+getName(): string {
+return 'AspectWithRecursivePropertyWithOptionalAndEntityProperty';
+}
+
+                        getProperties(): Array<StaticProperty<AspectWithRecursivePropertyWithOptionalAndEntityProperty, any>> {
+return [MetaAspectWithRecursivePropertyWithOptionalAndEntityProperty.TEST_PROPERTY];
+}
+
+getAllProperties(): Array<StaticProperty<AspectWithRecursivePropertyWithOptionalAndEntityProperty, any>> {
+    return this.getProperties();
+}
+
+
+
+
+    }
 
 

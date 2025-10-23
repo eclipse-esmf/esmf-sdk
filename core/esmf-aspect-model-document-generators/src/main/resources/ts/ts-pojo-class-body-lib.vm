@@ -12,7 +12,7 @@
         #set( $complexElement = $util.castToComplexType( $element ) )
         ${util.determineComplexTypeClassDefinition( $complexElement, $codeGenerationConfig )}
     #else
-    export class $util.generateClassName($element, $codeGenerationConfig)$util.genericClassSignature($element) {
+        export class $util.generateClassName($element, $codeGenerationConfig)$util.genericClassSignature($element) {
     #end
     #foreach ($property in $element.properties)
         #tsPojoProperty($property)

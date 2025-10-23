@@ -25,10 +25,10 @@
 #end
 
 #macro( tsStaticClassProperty $property $codeGenerationConfig $element )
-    #set( $propertyType = $util.getPropertyType( $property, $codeGenerationConfig ) )
-    #set( $containingClass = $util.generateClassName( $element, $codeGenerationConfig ) )
+#set( $propertyType = $util.getPropertyType( $property, $codeGenerationConfig ) )
+#set( $containingClass = $util.generateClassName( $element, $codeGenerationConfig ) )
 
-    ## public static readonly $property = (definition)
+## public static readonly $property = (definition)
     #propertyDeclaration() $util.toConstant( $property.getName() ) = #staticProperty( $property $containingClass $codeGenerationConfig )
 
 #end
@@ -44,7 +44,7 @@
         #if( $util.hasContainerType( $property ) )
             $codeGenerationConfig.importTracker().importExplicit( 'StaticConstraintContainerProperty' , './core/staticConstraintProperty'  )
             #set( $containedType = $util.getCharacteristicTsType( $property, $codeGenerationConfig ) )
-        new (class extends StaticConstraintContainerProperty<$containingClass, $containedType, $propertyType, #getCharacteristicClassName()>{
+            new (class extends StaticConstraintContainerProperty<$containingClass, $containedType, $propertyType, #getCharacteristicClassName()>{
         #elseif( $util.hasUnit( $property.getCharacteristic().get() ) )
             $codeGenerationConfig.importTracker().importExplicit( 'StaticConstraintUnitProperty' , './core/staticConstraintProperty'  )
             $codeGenerationConfig.importTracker().importExplicit( 'Unit' , './core/staticConstraintProperty'  )
@@ -69,35 +69,34 @@
 
     ## Body })(
     #if( $Trait.isAssignableFrom( $property.getCharacteristic().get().getClass() ) )
-    getConstraints(): Array
-    <Constraint> {
-        return this.characteristic.constraints;
+        getConstraints(): Array<Constraint> {
+            return this.characteristic.constraints;
         }
         getBaseCharacteristic(): DefaultCode {
-        return this.characteristic.baseCharacteristic;
+            return this.characteristic.baseCharacteristic;
         }
     #end
 
     #set( $propertyType = $util.getPropertyType( $property, $codeGenerationConfig ) )
     getPropertyType(): string {
-    #if( $util.hasContainerType( $property ) )
-        return '${codeGenerationConfig.importTracker().getRawContainerType( $propertyType )}';
-    #else
-        #if( ${propertyType.contains( "Either" )} )
-            return 'Either';
+        #if( $util.hasContainerType( $property ) )
+            return '${codeGenerationConfig.importTracker().getRawContainerType( $propertyType )}';
         #else
-            return '${propertyType}';
+            #if( ${propertyType.contains( "Either" )} )
+                return 'Either';
+            #else
+                return '${propertyType}';
+            #end
         #end
-    #end
     }
 
     getContainingType(): string {
-    return '${containingClass}';
+        return '${containingClass}';
     }
 
     #if( $util.hasContainerType( $property ) && !$propertyType.startsWith( "Map" ) )
         getContainedType(): ${containingClass} {
-        return '${containingClass}';
+            return '${containingClass}';
         }
     #end
 
@@ -111,7 +110,7 @@
     ##        }
     ##    #end
     })(
-    {
+        {
     ## {$arg1, $arg2, ...});
     metaModelBaseAttributes : $modelVisitor.metaModelBaseAttributes( $property, $context ),
     characteristic : #propertyCharacteristic( $element, $property, $property.getCharacteristic().get(), $propertyType ),

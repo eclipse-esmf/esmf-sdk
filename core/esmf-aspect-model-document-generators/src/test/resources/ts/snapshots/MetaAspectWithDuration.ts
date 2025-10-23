@@ -1,19 +1,22 @@
-/*
- * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
- *
- * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship.
- *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at https://mozilla.org/MPL/2.0/.
- *
- * SPDX-License-Identifier: MPL-2.0
- */
 
-import { AspectWithDuration, } from './AspectWithDuration';
-import { StaticUnitProperty, Unit, } from './core/staticConstraintProperty';
 
+
+
+
+
+
+
+
+
+
+
+
+
+import { AspectWithDuration,} from './AspectWithDuration';
+import { StaticUnitProperty,Unit,} from './core/staticConstraintProperty';
+
+
+    
 
 /*
 * Generated class MetaAspectWithDuration (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithDuration).
@@ -23,86 +26,90 @@ import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/stati
 import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
 
 export class MetaAspectWithDuration implements StaticMetaClass<AspectWithDuration>, PropertyContainer<AspectWithDuration> {
-    public static readonly NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
-    public static readonly MODEL_ELEMENT_URN = this.NAMESPACE + 'AspectWithDuration';
+ public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
+ public static readonly  MODEL_ELEMENT_URN = this.NAMESPACE + 'AspectWithDuration';
 
-    private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0';
+private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0';
 
-    public static readonly INSTANCE = new MetaAspectWithDuration();
-
-
-    public static readonly TEST_PROPERTY =
+ public static readonly  INSTANCE = new MetaAspectWithDuration();
 
 
-        new (class extends StaticUnitProperty<AspectWithDuration, number> {
+ public static readonly  TEST_PROPERTY = 
+                
+            
+        new (class extends StaticUnitProperty<AspectWithDuration, number>{
 
-
-            getPropertyType(): string {
+    
+    getPropertyType(): string {
                 return 'number';
-            }
+    }
 
-            getContainingType(): string {
-                return 'AspectWithDuration';
-            }
-
-
-        })(
-            {
-                metaModelBaseAttributes: {
-                    urn: this.NAMESPACE + 'testProperty',
-                    preferredNames: [],
-                    descriptions: [],
-                    see: [],
-                },
-                characteristic: new DefaultDuration({
-                    urn: this.NAMESPACE + 'TestDuration',
-                    preferredNames: [{
-                        value: 'Test Duration',
-                        languageTag: 'en',
-                    },
-                    ],
-                    descriptions: [{
-                        value: 'This is a test Duration',
-                        languageTag: 'en',
-                    },
-                    ],
-                    see: ['http://example.com/',
-                    ],
-                }, new DefaultScalar('http://www.w3.org/2001/XMLSchema#int'), Units.fromName('kilosecond'))
-                ,
-                exampleValue: {},
-                optional: false,
-                notInPayload: false,
-                payloadName: 'testProperty',
-                isAbstract: false,
-            });
-
-
-    getModelClass(): string {
+    getContainingType(): string {
         return 'AspectWithDuration';
     }
 
-    getAspectModelUrn(): string {
-        return MetaAspectWithDuration.MODEL_ELEMENT_URN;
-    }
 
-    getMetaModelVersion(): KnownVersion {
-        return KnownVersionUtils.getLatest();
-    }
+                                        })(
+        {
+        metaModelBaseAttributes : {
+urn : this.NAMESPACE + 'testProperty',
+preferredNames : [  ],
+descriptions : [  ],
+see : [  ],
+},
+    characteristic :     new DefaultDuration({
+urn : this.NAMESPACE + 'TestDuration',
+preferredNames : [ {
+value : "Test Duration",
+languageTag : 'en',
+},
+ ],
+descriptions : [ {
+value : "This is a test Duration",
+languageTag : 'en',
+},
+ ],
+see : [ 'http://example.com/',
+ ],
+},new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),Units.fromName("kilosecond"))
+,
+    exampleValue : {},
+    optional : false,
+    notInPayload : false,
+        payloadName : 'testProperty',
+    isAbstract : false,
+    });
 
-    getName(): string {
-        return 'AspectWithDuration';
-    }
-
-    getProperties(): Array<StaticProperty<AspectWithDuration, any>> {
-        return [MetaAspectWithDuration.TEST_PROPERTY];
-    }
-
-    getAllProperties(): Array<StaticProperty<AspectWithDuration, any>> {
-        return this.getProperties();
-    }
 
 
+
+getModelClass(): string {
+return 'AspectWithDuration';
 }
+
+getAspectModelUrn(): string {
+return MetaAspectWithDuration .MODEL_ELEMENT_URN;
+}
+
+getMetaModelVersion(): KnownVersion {
+return KnownVersionUtils.getLatest()
+}
+
+getName(): string {
+return 'AspectWithDuration';
+}
+
+                        getProperties(): Array<StaticProperty<AspectWithDuration, any>> {
+return [MetaAspectWithDuration.TEST_PROPERTY];
+}
+
+getAllProperties(): Array<StaticProperty<AspectWithDuration, any>> {
+    return this.getProperties();
+}
+
+
+
+
+    }
 
 

@@ -1,20 +1,23 @@
-/*
- * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
- *
- * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship.
- *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at https://mozilla.org/MPL/2.0/.
- *
- * SPDX-License-Identifier: MPL-2.0
- */
 
-import { AspectWithPreferredNames, } from './AspectWithPreferredNames';
-import { DefaultStaticProperty, } from './core/staticConstraintProperty';
-import { LangString, } from './core/langString';
 
+
+
+
+
+
+
+
+
+
+
+
+
+import { AspectWithPreferredNames,} from './AspectWithPreferredNames';
+import { DefaultStaticProperty,} from './core/staticConstraintProperty';
+import { LangString,} from './core/langString';
+
+
+    
 
 /*
 * Generated class MetaAspectWithPreferredNames (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithPreferredNames).
@@ -24,86 +27,89 @@ import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/stati
 import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
 
 export class MetaAspectWithPreferredNames implements StaticMetaClass<AspectWithPreferredNames>, PropertyContainer<AspectWithPreferredNames> {
-    public static readonly NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
-    public static readonly MODEL_ELEMENT_URN = this.NAMESPACE + 'AspectWithPreferredNames';
+ public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
+ public static readonly  MODEL_ELEMENT_URN = this.NAMESPACE + 'AspectWithPreferredNames';
 
-    private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0';
+private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0';
 
-    public static readonly INSTANCE = new MetaAspectWithPreferredNames();
-
-
-    public static readonly TEST_BOOLEAN =
-
-        new (class extends DefaultStaticProperty<AspectWithPreferredNames, boolean> {
+ public static readonly  INSTANCE = new MetaAspectWithPreferredNames();
 
 
-            getPropertyType(): string {
+ public static readonly  TEST_BOOLEAN = 
+                
+        new (class extends DefaultStaticProperty<AspectWithPreferredNames, boolean>{
+
+    
+    getPropertyType(): string {
                 return 'boolean';
-            }
+    }
 
-            getContainingType(): string {
-                return 'AspectWithPreferredNames';
-            }
-
-
-        })(
-            {
-                metaModelBaseAttributes: {
-                    urn: this.NAMESPACE + 'testBoolean',
-                    preferredNames: [],
-                    descriptions: [],
-                    see: [],
-                },
-                characteristic: {
-                    metaModelBaseAttributes: {
-                        urn: this.NAMESPACE + 'BooleanReplacedAspectArtifact',
-                        preferredNames: [],
-                        descriptions: [],
-                        see: [],
-                    },
-                }
-                ,
-                exampleValue: {},
-                optional: false,
-                notInPayload: false,
-                payloadName: 'testBoolean',
-                isAbstract: false,
-            });
-
-
-    getModelClass(): string {
+    getContainingType(): string {
         return 'AspectWithPreferredNames';
     }
 
-    getAspectModelUrn(): string {
-        return MetaAspectWithPreferredNames.MODEL_ELEMENT_URN;
-    }
 
-    getMetaModelVersion(): KnownVersion {
-        return KnownVersionUtils.getLatest();
-    }
+                                        })(
+        {
+        metaModelBaseAttributes : {
+urn : this.NAMESPACE + 'testBoolean',
+preferredNames : [  ],
+descriptions : [  ],
+see : [  ],
+},
+    characteristic :     {
+metaModelBaseAttributes : {
+urn : this.NAMESPACE + 'BooleanReplacedAspectArtifact',
+preferredNames : [  ],
+descriptions : [  ],
+see : [  ],
+},
+}
+,
+    exampleValue : {},
+    optional : false,
+    notInPayload : false,
+        payloadName : 'testBoolean',
+    isAbstract : false,
+    });
 
-    getName(): string {
-        return 'AspectWithPreferredNames';
-    }
-
-    getProperties(): Array<StaticProperty<AspectWithPreferredNames, any>> {
-        return [MetaAspectWithPreferredNames.TEST_BOOLEAN];
-    }
-
-    getAllProperties(): Array<StaticProperty<AspectWithPreferredNames, any>> {
-        return this.getProperties();
-    }
 
 
+
+getModelClass(): string {
+return 'AspectWithPreferredNames';
+}
+
+getAspectModelUrn(): string {
+return MetaAspectWithPreferredNames .MODEL_ELEMENT_URN;
+}
+
+getMetaModelVersion(): KnownVersion {
+return KnownVersionUtils.getLatest()
+}
+
+getName(): string {
+return 'AspectWithPreferredNames';
+}
+
+                        getProperties(): Array<StaticProperty<AspectWithPreferredNames, any>> {
+return [MetaAspectWithPreferredNames.TEST_BOOLEAN];
+}
+
+getAllProperties(): Array<StaticProperty<AspectWithPreferredNames, any>> {
+    return this.getProperties();
+}
+
+        
     getPreferredNames(): Array<LangString> {
         return [
             {value: 'Aspekt Mit Boolean', languageTag: 'de'},
             {value: 'Aspect With Boolean', languageTag: 'en'},
         ];
+        }
+
+
+
     }
-
-
-}
 
 

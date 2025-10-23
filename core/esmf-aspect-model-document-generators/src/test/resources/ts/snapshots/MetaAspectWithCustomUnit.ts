@@ -1,19 +1,22 @@
-/*
- * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
- *
- * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship.
- *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at https://mozilla.org/MPL/2.0/.
- *
- * SPDX-License-Identifier: MPL-2.0
- */
 
-import { AspectWithCustomUnit, } from './AspectWithCustomUnit';
-import { StaticUnitProperty, Unit, } from './core/staticConstraintProperty';
 
+
+
+
+
+
+
+
+
+
+
+
+
+import { AspectWithCustomUnit,} from './AspectWithCustomUnit';
+import { StaticUnitProperty,Unit,} from './core/staticConstraintProperty';
+
+
+    
 
 /*
 * Generated class MetaAspectWithCustomUnit (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithCustomUnit).
@@ -23,118 +26,90 @@ import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/stati
 import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
 
 export class MetaAspectWithCustomUnit implements StaticMetaClass<AspectWithCustomUnit>, PropertyContainer<AspectWithCustomUnit> {
-    public static readonly NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
-    public static readonly MODEL_ELEMENT_URN = this.NAMESPACE + 'AspectWithCustomUnit';
+ public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
+ public static readonly  MODEL_ELEMENT_URN = this.NAMESPACE + 'AspectWithCustomUnit';
 
-    private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0';
+private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0';
 
-    public static readonly INSTANCE = new MetaAspectWithCustomUnit();
-
-
-    public static readonly TEST_PROPERTY =
+ public static readonly  INSTANCE = new MetaAspectWithCustomUnit();
 
 
-        new (class extends StaticUnitProperty<AspectWithCustomUnit, number> {
+ public static readonly  TEST_PROPERTY = 
+                
+            
+        new (class extends StaticUnitProperty<AspectWithCustomUnit, number>{
 
-
-            getPropertyType(): string {
+    
+    getPropertyType(): string {
                 return 'number';
-            }
+    }
 
-            getContainingType(): string {
-                return 'AspectWithCustomUnit';
-            }
+    getContainingType(): string {
+        return 'AspectWithCustomUnit';
+    }
 
 
-        })(
-            {
-                metaModelBaseAttributes: {
-                    urn: this.NAMESPACE + 'testProperty',
-                    preferredNames: [],
-                    descriptions: [],
-                    see: [],
-                },
-                characteristic: new DefaultQuantifiable({
-                    urn: this.NAMESPACE + 'TestQuantifiable',
-                    preferredNames: [],
-                    descriptions: [],
-                    see: [],
-                }, new DefaultScalar('http://www.w3.org/2001/XMLSchema#int'), Optional.of(new DefaultUnit({
-                    urn: this.NAMESPACE + 'normLitrePerMinute',
-                    preferredNames: [{
-                        value: 'norm litre per minute',
-                        languageTag: 'en',
-                    },
-                    ],
-                    descriptions: [],
-                    see: [],
-                }, Optional[nl / min], Optional.empty, Optional.empty, Optional.empty, new HashSet<>() { {
-    add(QuantityKinds
-
-.
-    VOLUME_FLOW_RATE;
-);
-}
-})))
+                                        })(
+        {
+        metaModelBaseAttributes : {
+urn : this.NAMESPACE + 'testProperty',
+preferredNames : [  ],
+descriptions : [  ],
+see : [  ],
+},
+    characteristic :     new DefaultQuantifiable({
+urn : this.NAMESPACE + 'TestQuantifiable',
+preferredNames : [  ],
+descriptions : [  ],
+see : [  ],
+},new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),Optional.of(new DefaultUnit({
+urn : this.NAMESPACE + 'normLitrePerMinute',
+preferredNames : [ {
+value : "norm litre per minute",
+languageTag : 'en',
+},
+ ],
+descriptions : [  ],
+see : [  ],
+},Optional[nl/min],Optional.empty,Optional.empty,Optional.empty,new HashSet<>(){{add(QuantityKinds.VOLUME_FLOW_RATE);}})))
 ,
-{
-}
-,
-false,
-    notInPayload;
-:
-false,
-    payloadName;
-:
-'testProperty',
-    isAbstract;
-:
-false,
-})
+    exampleValue : {},
+    optional : false,
+    notInPayload : false,
+        payloadName : 'testProperty',
+    isAbstract : false,
+    });
 
 
 
-getModelClass();
-:
-string;
-{
-    return 'AspectWithCustomUnit';
+
+getModelClass(): string {
+return 'AspectWithCustomUnit';
 }
 
-getAspectModelUrn();
-:
-string;
-{
-    return MetaAspectWithCustomUnit.MODEL_ELEMENT_URN;
+getAspectModelUrn(): string {
+return MetaAspectWithCustomUnit .MODEL_ELEMENT_URN;
 }
 
-getMetaModelVersion();
-:
-KnownVersion;
-{
-    return KnownVersionUtils.getLatest();
+getMetaModelVersion(): KnownVersion {
+return KnownVersionUtils.getLatest()
 }
 
-getName();
-:
-string;
-{
-    return 'AspectWithCustomUnit';
+getName(): string {
+return 'AspectWithCustomUnit';
 }
 
-getProperties();
-:
-Array < StaticProperty < AspectWithCustomUnit, any >> {
-    return [MetaAspectWithCustomUnit.TEST_PROPERTY];
-};
+                        getProperties(): Array<StaticProperty<AspectWithCustomUnit, any>> {
+return [MetaAspectWithCustomUnit.TEST_PROPERTY];
+}
 
-getAllProperties();
-:
-Array < StaticProperty < AspectWithCustomUnit, any >> {
+getAllProperties(): Array<StaticProperty<AspectWithCustomUnit, any>> {
     return this.getProperties();
-};
-
-
 }
+
+
+
+
+    }
 
 

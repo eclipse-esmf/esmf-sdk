@@ -1,19 +1,22 @@
-/*
- * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
- *
- * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship.
- *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at https://mozilla.org/MPL/2.0/.
- *
- * SPDX-License-Identifier: MPL-2.0
- */
 
-import { AspectWithConstraintWithoutSeeAttribute, } from './AspectWithConstraintWithoutSeeAttribute';
-import { DefaultStaticProperty, } from './core/staticConstraintProperty';
 
+
+
+
+
+
+
+
+
+
+
+
+
+import { AspectWithConstraintWithoutSeeAttribute,} from './AspectWithConstraintWithoutSeeAttribute';
+import { DefaultStaticProperty,} from './core/staticConstraintProperty';
+
+
+    
 
 /*
 * Generated class MetaAspectWithConstraintWithoutSeeAttribute (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithConstraintWithoutSeeAttribute).
@@ -23,158 +26,108 @@ import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/stati
 import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
 
 export class MetaAspectWithConstraintWithoutSeeAttribute implements StaticMetaClass<AspectWithConstraintWithoutSeeAttribute>, PropertyContainer<AspectWithConstraintWithoutSeeAttribute> {
-    public static readonly NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
-    public static readonly MODEL_ELEMENT_URN = this.NAMESPACE + 'AspectWithConstraintWithoutSeeAttribute';
+ public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
+ public static readonly  MODEL_ELEMENT_URN = this.NAMESPACE + 'AspectWithConstraintWithoutSeeAttribute';
 
-    private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0';
+private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0';
 
-    public static readonly INSTANCE = new MetaAspectWithConstraintWithoutSeeAttribute();
-
-
-    public static readonly TEST_PROPERTY =
-
-        new (class extends DefaultStaticProperty<AspectWithConstraintWithoutSeeAttribute, string> {
+ public static readonly  INSTANCE = new MetaAspectWithConstraintWithoutSeeAttribute();
 
 
-            getPropertyType(): string {
+ public static readonly  TEST_PROPERTY = 
+                
+        new (class extends DefaultStaticProperty<AspectWithConstraintWithoutSeeAttribute, string>{
+
+    
+    getPropertyType(): string {
                 return 'string';
-            }
+    }
 
-            getContainingType(): string {
-                return 'AspectWithConstraintWithoutSeeAttribute';
-            }
+    getContainingType(): string {
+        return 'AspectWithConstraintWithoutSeeAttribute';
+    }
 
 
-        })(
-            {
-                metaModelBaseAttributes: {
-                    urn: this.NAMESPACE + 'testProperty',
-                    preferredNames: [],
-                    descriptions: [],
-                    see: [],
-                },
-                characteristic: new DefaultTrait({
-                    urn: this.NAMESPACE + 'TestTrait',
-                    preferredNames: [],
-                    descriptions: [],
-                    see: [],
-                }, {
-                    metaModelBaseAttributes: {
-                        urn: this.CHARACTERISTIC_NAMESPACE + '#Text',
-                        preferredNames: [{
-                            value: 'Text',
-                            languageTag: 'en',
-                        },
-                        ],
-                        descriptions: [{
-                            value: 'Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.',
-                            languageTag: 'en',
-                        },
-                        ],
-                        see: [],
-                    },
-                }, new ArrayList<Constraint>() { {
-    add(
-
-    new;
-
-    DefaultLengthConstraint({
-                                isAnonymous: true,
-                                preferredNames: [{
-                                    value: 'Test Constraint',
-                                    languageTag: 'en',
-                                },
-                                ],
-                                descriptions: [{
-                                    value: 'Test Constraint',
-                                    languageTag: 'en',
-                                },
-                                ],
-                                see: [],
-                            }, Optional
-
-.
-
-    of(
-
-    new;
-
-    BigInteger(
-
-    '5';
-)),
-    Optional;
-.
-
-    of(
-
-    new;
-
-    BigInteger(
-
-    '10';
-))));
-}
-})
+                                        })(
+        {
+        metaModelBaseAttributes : {
+urn : this.NAMESPACE + 'testProperty',
+preferredNames : [  ],
+descriptions : [  ],
+see : [  ],
+},
+    characteristic :     new DefaultTrait({
+urn : this.NAMESPACE + 'TestTrait',
+preferredNames : [  ],
+descriptions : [  ],
+see : [  ],
+},{
+metaModelBaseAttributes : {
+urn : this.CHARACTERISTIC_NAMESPACE + '#Text',
+preferredNames : [ {
+value : "Text",
+languageTag : 'en',
+},
+ ],
+descriptions : [ {
+value : "Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.",
+languageTag : 'en',
+},
+ ],
+see : [  ],
+},
+},new ArrayList<Constraint>(){{add(new DefaultLengthConstraint({
+isAnonymous : true,
+preferredNames : [ {
+value : "Test Constraint",
+languageTag : 'en',
+},
+ ],
+descriptions : [ {
+value : "Test Constraint",
+languageTag : 'en',
+},
+ ],
+see : [  ],
+},Optional.of(new BigInteger( "5" )),Optional.of(new BigInteger( "10" ))));}})
 ,
-{
-}
-,
-false,
-    notInPayload;
-:
-false,
-    payloadName;
-:
-'testProperty',
-    isAbstract;
-:
-false,
-})
+    exampleValue : {},
+    optional : false,
+    notInPayload : false,
+        payloadName : 'testProperty',
+    isAbstract : false,
+    });
 
 
 
-getModelClass();
-:
-string;
-{
-    return 'AspectWithConstraintWithoutSeeAttribute';
+
+getModelClass(): string {
+return 'AspectWithConstraintWithoutSeeAttribute';
 }
 
-getAspectModelUrn();
-:
-string;
-{
-    return MetaAspectWithConstraintWithoutSeeAttribute.MODEL_ELEMENT_URN;
+getAspectModelUrn(): string {
+return MetaAspectWithConstraintWithoutSeeAttribute .MODEL_ELEMENT_URN;
 }
 
-getMetaModelVersion();
-:
-KnownVersion;
-{
-    return KnownVersionUtils.getLatest();
+getMetaModelVersion(): KnownVersion {
+return KnownVersionUtils.getLatest()
 }
 
-getName();
-:
-string;
-{
-    return 'AspectWithConstraintWithoutSeeAttribute';
+getName(): string {
+return 'AspectWithConstraintWithoutSeeAttribute';
 }
 
-getProperties();
-:
-Array < StaticProperty < AspectWithConstraintWithoutSeeAttribute, any >> {
-    return [MetaAspectWithConstraintWithoutSeeAttribute.TEST_PROPERTY];
-};
+                        getProperties(): Array<StaticProperty<AspectWithConstraintWithoutSeeAttribute, any>> {
+return [MetaAspectWithConstraintWithoutSeeAttribute.TEST_PROPERTY];
+}
 
-getAllProperties();
-:
-Array < StaticProperty < AspectWithConstraintWithoutSeeAttribute, any >> {
+getAllProperties(): Array<StaticProperty<AspectWithConstraintWithoutSeeAttribute, any>> {
     return this.getProperties();
-};
-
-
 }
+
+
+
+
+    }
 
 

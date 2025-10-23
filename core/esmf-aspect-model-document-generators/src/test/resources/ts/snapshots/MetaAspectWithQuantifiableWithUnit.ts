@@ -1,19 +1,22 @@
-/*
- * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
- *
- * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship.
- *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at https://mozilla.org/MPL/2.0/.
- *
- * SPDX-License-Identifier: MPL-2.0
- */
 
-import { AspectWithQuantifiableWithUnit, } from './AspectWithQuantifiableWithUnit';
-import { StaticUnitProperty, Unit, } from './core/staticConstraintProperty';
 
+
+
+
+
+
+
+
+
+
+
+
+
+import { AspectWithQuantifiableWithUnit,} from './AspectWithQuantifiableWithUnit';
+import { StaticUnitProperty,Unit,} from './core/staticConstraintProperty';
+
+
+    
 
 /*
 * Generated class MetaAspectWithQuantifiableWithUnit (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithQuantifiableWithUnit).
@@ -23,77 +26,81 @@ import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/stati
 import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
 
 export class MetaAspectWithQuantifiableWithUnit implements StaticMetaClass<AspectWithQuantifiableWithUnit>, PropertyContainer<AspectWithQuantifiableWithUnit> {
-    public static readonly NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
-    public static readonly MODEL_ELEMENT_URN = this.NAMESPACE + 'AspectWithQuantifiableWithUnit';
+ public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
+ public static readonly  MODEL_ELEMENT_URN = this.NAMESPACE + 'AspectWithQuantifiableWithUnit';
 
-    private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0';
+private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0';
 
-    public static readonly INSTANCE = new MetaAspectWithQuantifiableWithUnit();
-
-
-    public static readonly TEST_PROPERTY =
+ public static readonly  INSTANCE = new MetaAspectWithQuantifiableWithUnit();
 
 
-        new (class extends StaticUnitProperty<AspectWithQuantifiableWithUnit, number> {
+ public static readonly  TEST_PROPERTY = 
+                
+            
+        new (class extends StaticUnitProperty<AspectWithQuantifiableWithUnit, number>{
 
-
-            getPropertyType(): string {
+    
+    getPropertyType(): string {
                 return 'number';
-            }
+    }
 
-            getContainingType(): string {
-                return 'AspectWithQuantifiableWithUnit';
-            }
-
-
-        })(
-            {
-                metaModelBaseAttributes: {
-                    urn: this.NAMESPACE + 'testProperty',
-                    preferredNames: [],
-                    descriptions: [],
-                    see: [],
-                },
-                characteristic: new DefaultQuantifiable({
-                    urn: this.NAMESPACE + 'TestQuantifiable',
-                    preferredNames: [],
-                    descriptions: [],
-                    see: [],
-                }, new DefaultScalar('http://www.w3.org/2001/XMLSchema#float'), Units.fromName('percent'))
-                ,
-                exampleValue: {},
-                optional: false,
-                notInPayload: false,
-                payloadName: 'testProperty',
-                isAbstract: false,
-            });
-
-
-    getModelClass(): string {
+    getContainingType(): string {
         return 'AspectWithQuantifiableWithUnit';
     }
 
-    getAspectModelUrn(): string {
-        return MetaAspectWithQuantifiableWithUnit.MODEL_ELEMENT_URN;
-    }
 
-    getMetaModelVersion(): KnownVersion {
-        return KnownVersionUtils.getLatest();
-    }
+                                        })(
+        {
+        metaModelBaseAttributes : {
+urn : this.NAMESPACE + 'testProperty',
+preferredNames : [  ],
+descriptions : [  ],
+see : [  ],
+},
+    characteristic :     new DefaultQuantifiable({
+urn : this.NAMESPACE + 'TestQuantifiable',
+preferredNames : [  ],
+descriptions : [  ],
+see : [  ],
+},new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),Units.fromName("percent"))
+,
+    exampleValue : {},
+    optional : false,
+    notInPayload : false,
+        payloadName : 'testProperty',
+    isAbstract : false,
+    });
 
-    getName(): string {
-        return 'AspectWithQuantifiableWithUnit';
-    }
-
-    getProperties(): Array<StaticProperty<AspectWithQuantifiableWithUnit, any>> {
-        return [MetaAspectWithQuantifiableWithUnit.TEST_PROPERTY];
-    }
-
-    getAllProperties(): Array<StaticProperty<AspectWithQuantifiableWithUnit, any>> {
-        return this.getProperties();
-    }
 
 
+
+getModelClass(): string {
+return 'AspectWithQuantifiableWithUnit';
 }
+
+getAspectModelUrn(): string {
+return MetaAspectWithQuantifiableWithUnit .MODEL_ELEMENT_URN;
+}
+
+getMetaModelVersion(): KnownVersion {
+return KnownVersionUtils.getLatest()
+}
+
+getName(): string {
+return 'AspectWithQuantifiableWithUnit';
+}
+
+                        getProperties(): Array<StaticProperty<AspectWithQuantifiableWithUnit, any>> {
+return [MetaAspectWithQuantifiableWithUnit.TEST_PROPERTY];
+}
+
+getAllProperties(): Array<StaticProperty<AspectWithQuantifiableWithUnit, any>> {
+    return this.getProperties();
+}
+
+
+
+
+    }
 
 

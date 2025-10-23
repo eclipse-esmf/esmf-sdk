@@ -3,7 +3,7 @@
 #set( $classBody = $util.applyImports( "#tsPojoClassBody()", $codeGenerationConfig ) )
 
 #foreach( $import in $codeGenerationConfig.importTracker().getUsedTsLineImports() )
-    $import;
+$import;
 #end
 
 $classBody

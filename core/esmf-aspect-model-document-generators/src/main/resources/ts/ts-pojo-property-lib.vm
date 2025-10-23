@@ -2,7 +2,7 @@
     #if (!$property.isAbstract())
         #set ($propertyType = $util.getPropertyTypeAndAddImport($property, $codeGenerationConfig))
         #if (!$property.isOptional() && !$property.isNotInPayload())
-        // NotNull
+    // NotNull
         #end
         #if ($propertyType == 'byte[]')
         // Serialization for byte arrays
@@ -15,6 +15,6 @@
         #if (!$property.isOptional() && $Trait.isAssignableFrom($property.getCharacteristic().get().getClass()))
         // Constraints for characteristics
         #end
-        $property.getPayloadName(): $propertyType;
+    $property.getPayloadName(): $propertyType;
     #end
 #end

@@ -14,7 +14,7 @@
 #set( $classBody = $util.applyImports( "#tsEnumerationClassBody()", $codeGenerationConfig ) )
 
 #foreach( $import in $codeGenerationConfig.importTracker().getUsedTsLineImports() )
-    $import;
+$import;
 #end
 
 $classBody

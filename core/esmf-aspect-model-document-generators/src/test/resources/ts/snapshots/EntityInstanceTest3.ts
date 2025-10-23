@@ -1,26 +1,15 @@
-/*
- * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
- *
- * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship.
- *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at https://mozilla.org/MPL/2.0/.
- *
- * SPDX-License-Identifier: MPL-2.0
- */
-
-import { ReplacedAspectArtifact, } from './ReplacedAspectArtifact';
+import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 /**
- * Generated class for EntityInstanceTest3 (urn:samm:org.eclipse.esmf.test:1.0.0#EntityInstanceTest3).
- *
- * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
- */
+* Generated class for EntityInstanceTest3 (urn:samm:org.eclipse.esmf.test:1.0.0#EntityInstanceTest3).
+* 
+* Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
+*/
 
 
-export class EntityInstanceTest3 {
+
+
+        export class EntityInstanceTest3 {
     // NotNull
     aspectProperty: ReplacedAspectArtifact;
 }

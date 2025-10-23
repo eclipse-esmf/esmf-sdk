@@ -22,11 +22,11 @@ export const ${enumeration.name} = {
         $util.generateEnumKey($value) : $util.generateEnumValue($value, $codeGenerationConfig),
     #end
 
-    ##    TODO delete or covert to const
+##    TODO delete or covert to const
     #if( $State.isAssignableFrom( $enumeration.class ) )
     getDefaultValue: function () {
         #set( $state = $util.castToState( $enumeration ) )
-    return this. $util.generateEnumKey( $state.getDefaultValue() );
+        return this. $util.generateEnumKey( $state.getDefaultValue() );
     }
     #end
 } as const;
