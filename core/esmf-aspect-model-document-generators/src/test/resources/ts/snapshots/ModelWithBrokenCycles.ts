@@ -1,0 +1,34 @@
+/*
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
+ *
+ * See the AUTHORS file(s) distributed with this work for additional
+ * information regarding authorship.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * SPDX-License-Identifier: MPL-2.0
+ */
+
+import { ReplacedAspectArtifact, } from './ReplacedAspectArtifact';
+
+/**
+ * Generated class for ModelWithBrokenCycles (urn:samm:org.eclipse.esmf.test:1.0.0#ModelWithBrokenCycles).
+ *
+ * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
+ */
+
+
+import { Either, } from './core/Either';
+
+
+export class ModelWithBrokenCycles {
+    // NotNull
+    a: ReplacedAspectArtifact;
+    // NotNull
+    e: ReplacedAspectArtifact;
+    // NotNull
+    h: Either<ReplacedAspectArtifact, ReplacedAspectArtifact>;
+}
+

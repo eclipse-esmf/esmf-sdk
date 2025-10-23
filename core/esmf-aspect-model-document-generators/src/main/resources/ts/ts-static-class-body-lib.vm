@@ -1,0 +1,116 @@
+#**
+ ~ Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+ ~
+ ~ See the AUTHORS file(s) distributed with this work for additional
+ ~ information regarding authorship.
+ ~
+ ~ This Source Code Form is subject to the terms of the Mozilla Public
+ ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+ ~ file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ ~
+ ~ SPDX-License-Identifier: MPL-2.0
+ *#
+#parse( "/ts/ts-static-class-property-lib.vm" )
+
+#macro( tsStaticClassBody )
+    #set( $className = ${util.generateClassName( $element, $codeGenerationConfig )} )
+    #set( $classMetaName = "Meta" + $className )
+    #set( $path = "./" + ${className} )
+
+    $codeGenerationConfig.importTracker().importExplicit( ${className}, $path )
+
+/*
+* Generated class $classMetaName (${elementUrn}).
+* Generated "$codeGeneratorName", date = "$codeGeneratorDate"
+*/
+import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
+import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+export class $classMetaName implements StaticMetaClass<${className}>, PropertyContainer<${className}> {
+    #propertyDeclaration() NAMESPACE = '${modelUrnPrefix}';
+    #propertyDeclaration() MODEL_ELEMENT_URN = this.NAMESPACE + '${element.getName()}';
+
+private static readonly CHARACTERISTIC_NAMESPACE = '${characteristicBaseUrn}';
+
+    #propertyDeclaration() INSTANCE = new $classMetaName();
+
+    #foreach( $property in $deconstructor.getAllProperties() )
+        #tsStaticClassProperty( $property $codeGenerationConfig $element )
+    #end
+    #foreach( $property in $element.getProperties() )
+        #if ( !$property.isAbstract() )
+            #tsStaticClassProperty( $property $codeGenerationConfig $element )
+        #end
+    #end
+
+getModelClass(): string {
+return '${className}';
+}
+
+getAspectModelUrn(): string {
+return $classMetaName .MODEL_ELEMENT_URN;
+}
+
+getMetaModelVersion(): KnownVersion {
+return KnownVersionUtils.getLatest()
+}
+
+getName(): string {
+return '${className}';
+}
+
+    ##    #if( $element.getExtends().isPresent() )
+    ##        #set( $propertyTypeParameter = "? super ${className}" )
+    ##    #else
+    ##        #set( $propertyTypeParameter = ${className} )
+    ##    #end
+    ##    Do we need improve it?
+    #set( $propertyTypeParameter = ${className} )
+getProperties(): Array
+<StaticProperty<$propertyTypeParameter, any>> {
+return [${util.staticPropertiesExpression($classMetaName , $element )}];
+}
+
+getAllProperties(): Array
+<StaticProperty<$propertyTypeParameter, any>> {
+    ##      TODO implement merging with super types based on java example
+return this.getProperties();
+}
+
+    #if( !$element.getPreferredNames().isEmpty() )
+        $codeGenerationConfig.importTracker().importExplicit( 'LangString' , './core/langString' )
+    getPreferredNames(): Array
+    <LangString> {
+        return [
+        #foreach( $langString in $element.getPreferredNames() )
+            {value: '$util.escapeForLiteral( $langString.getValue() )', languageTag: '$langString.getLanguageTag().toLanguageTag()'},
+        #end
+        ];
+        }
+    #end
+
+    #if( !$element.descriptions.isEmpty() )
+        $codeGenerationConfig.importTracker().importExplicit( 'LangString' , './core/langString' )
+        getDescriptions(): Array
+    <LangString> {
+        return [
+        #foreach( $langString in $element.getDescriptions() )
+            {value: '$util.escapeForLiteral( $langString.getValue() )', languageTag: '$langString.getLanguageTag().toLanguageTag()'},
+        #end
+        ];
+        }
+    #end
+
+    #if( !$element.getSee().isEmpty() )
+        getSee(): Array
+    <String> {
+        return [
+        #foreach( $see in $element.getSee() )
+            $util.createLiteral( $see ),
+        #end
+        ];
+        }
+    #end
+
+    }
+#end

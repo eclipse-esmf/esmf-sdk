@@ -1,0 +1,9 @@
+#parse("/ts/ts-pojo-class-body-lib.vm")
+
+#set( $classBody = $util.applyImports( "#tsPojoClassBody()", $codeGenerationConfig ) )
+
+#foreach( $import in $codeGenerationConfig.importTracker().getUsedTsLineImports() )
+    $import;
+#end
+
+$classBody
