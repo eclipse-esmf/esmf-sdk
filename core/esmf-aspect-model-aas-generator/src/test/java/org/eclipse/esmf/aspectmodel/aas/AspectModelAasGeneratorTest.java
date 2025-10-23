@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
@@ -183,7 +182,7 @@ class AspectModelAasGeneratorTest {
       assertThat( env.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
       final Submodel submodel = env.getSubmodels().get( 0 );
       assertThat( submodel.getSubmodelElements().get( 0 ) ).isInstanceOfSatisfying( SubmodelElementCollection.class, collection -> {
-         assertThat( collection.getIdShort() ).isEqualTo( "testProperty" );
+         assertThat( collection.getIdShort() ).isEqualTo( "TestEntity" );
 
          final SubmodelElement property = collection.getValue().stream().findFirst().get();
          assertThat( property.getIdShort() ).isEqualTo( "entityProperty" );
