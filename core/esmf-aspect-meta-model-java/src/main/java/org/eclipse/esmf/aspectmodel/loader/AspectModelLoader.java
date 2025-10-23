@@ -624,8 +624,10 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
             Optional.ofNullable( subject.getURI() )
                   .flatMap( uri -> Optional.ofNullable( definedElements.get( uri ) ) )
                   .ifPresent( fileWithPreviousDefinition -> {
-                     throw new AspectLoadingException( "Duplicate definition of %s in both %s and %s".formatted(
-                           subject.getURI(), file.humanReadableLocation(), fileWithPreviousDefinition.humanReadableLocation() ) );
+                     throw new AspectLoadingException( file == fileWithPreviousDefinition
+                           ? "Duplicate definition of %s in file %s".formatted( subject.getURI(), file.humanReadableLocation() )
+                           : "Duplicate definition of %s in both %s and %s".formatted( subject.getURI(), file.humanReadableLocation(),
+                           fileWithPreviousDefinition.humanReadableLocation() ) );
                   } );
             definedElements.put( subject.getURI(), file );
          }

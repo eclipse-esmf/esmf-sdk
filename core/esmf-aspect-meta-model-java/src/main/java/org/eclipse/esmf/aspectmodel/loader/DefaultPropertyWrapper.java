@@ -30,37 +30,40 @@ public class DefaultPropertyWrapper extends DefaultProperty {
 
    @Override
    public String getPayloadName() {
-      return payloadName != null ? payloadName : property.getPayloadName();
+      if ( payloadName != null ) {
+         return payloadName;
+      }
+      return property == null ? super.getPayloadName() : property.getPayloadName();
    }
 
    @Override
    public Optional<ScalarValue> getExampleValue() {
-      return property.getExampleValue();
+      return property == null ? Optional.empty() : property.getExampleValue();
    }
 
    @Override
    public boolean isNotInPayload() {
-      return property.isNotInPayload();
+      return property != null && property.isNotInPayload();
    }
 
    @Override
    public boolean isOptional() {
-      return property.isOptional();
+      return property != null && property.isOptional();
    }
 
    @Override
    public boolean isAbstract() {
-      return property.isAbstract();
+      return property != null && property.isAbstract();
    }
 
    @Override
    public Optional<Property> getExtends() {
-      return property.getExtends();
+      return property == null ? Optional.empty() : property.getExtends();
    }
 
    @Override
    public Optional<Characteristic> getCharacteristic() {
-      return property.getCharacteristic();
+      return property == null ? Optional.empty() : property.getCharacteristic();
    }
 
    @Override

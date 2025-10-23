@@ -16,10 +16,10 @@ package org.eclipse.esmf.aspectmodel.importer.jsonschema;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -31,10 +31,13 @@ import java.util.stream.Stream;
 import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.aspectmodel.generator.AspectArtifact;
 import org.eclipse.esmf.aspectmodel.generator.EntityArtifact;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.resolver.AspectModelFileLoader;
 import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
 import org.eclipse.esmf.aspectmodel.serializer.RdfModelCreatorVisitor;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.Entity;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
@@ -68,7 +71,6 @@ public class JsonSchemaImporterTest {
          final File file = new File( resource.toURI() );
          return objectMapper.readTree( file );
       } catch ( final Exception exception ) {
-         fail();
          return null;
       }
    }
@@ -96,7 +98,13 @@ public class JsonSchemaImporterTest {
       final JsonSchemaToAspect jsonSchemaToAspect = new JsonSchemaToAspect( jsonNode, config );
       final AspectArtifact aspectArtifact = jsonSchemaToAspect.generate().findFirst().orElseThrow();
       final Aspect aspect = aspectArtifact.getContent();
-      System.out.println( AspectSerializer.INSTANCE.aspectToString( aspect ) );
+      final String aspectSource = AspectSerializer.INSTANCE.aspectToString( aspect );
+      System.out.println( aspectSource );
+
+      assertThatCode( () -> {
+         final AspectModel aspectModel = new AspectModelLoader().loadAspectModelFiles(
+               List.of( AspectModelFileLoader.load( aspectSource, URI.create( "inmem" ) ) ) );
+      } ).doesNotThrowAnyException();
    }
 
    @ParameterizedTest
@@ -108,27 +116,22 @@ public class JsonSchemaImporterTest {
             .customRefResolver( this::loadSchema )
             .addTodo( true )
             .build();
-      assertThatCode( () -> {
-         final JsonSchemaToAspect jsonSchemaToAspect = new JsonSchemaToAspect( jsonNode, config );
-         final AspectArtifact aspectArtifact = jsonSchemaToAspect.generate().findFirst().orElseThrow();
-         final Aspect aspect = aspectArtifact.getContent();
-      } ).doesNotThrowAnyException();
+      final JsonSchemaToAspect jsonSchemaToAspect = new JsonSchemaToAspect( jsonNode, config );
+      jsonSchemaToAspect.generate().findFirst().orElseThrow();
 
-      assertThatCode( () -> {
-         final JsonSchemaToEntity jsonSchemaToAspect = new JsonSchemaToEntity( jsonNode, config );
-         final EntityArtifact entityArtifact = jsonSchemaToAspect.generate().findFirst().orElseThrow();
-         final Entity entity = entityArtifact.getContent();
-         final Model model = createModelForElement( entity );
-         System.out.println( AspectSerializer.INSTANCE.modelElementToString( entity ) );
-         Streams.stream( model.listStatements( null, RDF.type, SammNs.SAMM.Property() ) )
-               .forEach( statement -> {
-                  final Resource property = statement.getSubject();
-                  final int numberOfCharacteristics = model.listStatements( property, SammNs.SAMM.characteristic(), (RDFNode) null )
-                        .toList().size();
-                  assertThat( numberOfCharacteristics ).as(
-                        "Property " + property.getURI() + " must not have more than one Characteristic" ).isOne();
-               } );
-      } ).doesNotThrowAnyException();
+      final JsonSchemaToEntity jsonSchemaToEntity = new JsonSchemaToEntity( jsonNode, config );
+      final EntityArtifact entityArtifact = jsonSchemaToEntity.generate().findFirst().orElseThrow();
+      final Entity entity = entityArtifact.getContent();
+      final Model model = createModelForElement( entity );
+      System.out.println( AspectSerializer.INSTANCE.modelElementToString( entity ) );
+      Streams.stream( model.listStatements( null, RDF.type, SammNs.SAMM.Property() ) )
+            .forEach( statement -> {
+               final Resource property = statement.getSubject();
+               final int numberOfCharacteristics = model.listStatements( property, SammNs.SAMM.characteristic(), (RDFNode) null )
+                     .toList().size();
+               assertThat( numberOfCharacteristics ).as(
+                     "Property " + property.getURI() + " must not have more than one Characteristic" ).isOne();
+            } );
    }
 
    @Test
@@ -148,17 +151,17 @@ public class JsonSchemaImporterTest {
                   "properties": {
                     "name": {
                       "type": "string"
-                    },
-                    "required": [
-                      "name"
-                    ]
+                    }
                   },
                   "required": [
                     "name",
                     "address"
                   ]
                 }
-              }
+              },
+              "required": [
+                "name"
+              ]
             }
             """;
 
