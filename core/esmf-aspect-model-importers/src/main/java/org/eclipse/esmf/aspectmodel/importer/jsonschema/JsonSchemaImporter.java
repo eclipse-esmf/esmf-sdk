@@ -108,25 +108,38 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Base class for translators from JSON Schema to {@link StructureElement}s
+ * Base class for translators from JSON Schema to {@link StructureElement}s. For concrete usage, see {@link JsonSchemaToAspect} and
+ * {@link JsonSchemaToEntity}.
  *
  * @param <T> the type of StructureElement, e.g., {@link Aspect} or {@link Entity}.
  * @param <A> the corresponding {@link Artifact} type
  */
 @SuppressWarnings( { "NewClassNamingConvention", "checkstyle:ClassTypeParameterName", "checkstyle:MethodTypeParameterName" } )
 public abstract class JsonSchemaImporter<T extends StructureElement, A extends Artifact<AspectModelUrn, T>> extends
-      Generator<JsonNode, AspectModelUrn, T, AspectGenerationConfig, A> {
+      Generator<JsonNode, AspectModelUrn, T, JsonSchemaImporterConfig, A> {
    private static final Logger LOG = LoggerFactory.getLogger( JsonSchemaImporter.class );
+   /**
+    * The comment that is inserted for undocumented elements
+    */
    protected static final String TODO_COMMENT = "TODO";
 
    /**
     * The attribute that can be added parallel to enums that describes their values, as used by CycloneDX schema
     */
-   protected static final JsonAttribute META_ENUM = new JsonAttribute.Named( "meta:enum" );
+   protected static final JsonProperty META_ENUM = new JsonProperty.Named( "meta:enum" );
+
+   protected final Map<AspectModelUrn, ModelElement> generatedElementsByUrn = new HashMap<>();
    protected final Map<String, Characteristic> schemaCharacteristicsByPath = new HashMap<>();
    protected final Map<JsonNode, Characteristic> schemaCharacteristicsByNode = new HashMap<>();
    protected final Map<String, Collection<DefaultCharacteristicWrapper>> schemaCharacteristicsInProgress = new HashMap<>();
 
+   /**
+    * The evaluation context when recursively traversing the schema document
+    *
+    * @param path the nested path of JSON properties pointing to the current position in the schema document
+    * @param type the JSON type of the current schema
+    * @param characteristicUrn the URN of the Characteristic to create for the current schema
+    */
    protected record Context(
          Map<AspectModelUrn, ModelElement> generatedElements,
          List<String> path,
@@ -156,7 +169,7 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
       }
    }
 
-   public JsonSchemaImporter( final JsonNode focus, final AspectGenerationConfig config ) {
+   public JsonSchemaImporter( final JsonNode focus, final JsonSchemaImporterConfig config ) {
       super( focus, config );
    }
 
@@ -196,29 +209,65 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
             .build();
    }
 
+   /**
+    * Returns the root node of the document
+    *
+    * @return the root node
+    */
    protected JsonNode root() {
       return getFocus();
    }
 
-   protected Optional<JsonNode> jsonProperty( final JsonNode node, final JsonAttribute property ) {
+   /**
+    * Gets the value of a property of a node
+    *
+    * @param node the node
+    * @param property the attribute
+    * @return the value
+    */
+   protected Optional<JsonNode> jsonProperty( final JsonNode node, final JsonProperty property ) {
       return Optional.ofNullable( node.get( property.key() ) );
    }
 
+   /**
+    * Gets the content of the "title" attribute, if present
+    *
+    * @param elementNode the node
+    * @return the title
+    */
    protected Optional<String> determinePreferredName( final JsonNode elementNode ) {
       return jsonProperty( elementNode, TITLE ).map( JsonNode::asText );
    }
 
+   /**
+    * Derives a preferredName from a node: Either its "title" attribute, or by un-camel-casing its name
+    *
+    * @param elementNode the node
+    * @param nodeName the name of the node
+    * @return the preferred name for the node
+    */
    protected String determinePreferredName( final JsonNode elementNode, final String nodeName ) {
       return determinePreferredName( elementNode )
             .orElseGet( () -> CaseFormat.LOWER_CAMEL.to( CaseFormat.LOWER_UNDERSCORE, nodeName ).replace( "_", " " ) );
    }
 
+   /**
+    * Gets the "TO DO" comment text, if the corresponding flag in the config is set
+    *
+    * @return the comment if configured, otherwise empty
+    */
    protected Optional<String> todoComment() {
       return config.addTodo()
             ? Optional.of( TODO_COMMENT )
             : Optional.empty();
    }
 
+   /**
+    * Gets a description text for the node, either from its "description" attribute or its "$comment", if present
+    *
+    * @param node the node
+    * @return the description
+    */
    protected Optional<String> determineDescription( final JsonNode node ) {
       return jsonProperty( node, DESCRIPTION )
             .or( () -> jsonProperty( node, $COMMENT ) )
@@ -226,6 +275,12 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
             .or( this::todoComment );
    }
 
+   /**
+    * Determines the set of properties that are marked as "required"
+    *
+    * @param node the node
+    * @return which properties are required
+    */
    protected Set<String> determineRequiredProperties( final JsonNode node ) {
       return jsonProperty( node, REQUIRED ).map( required ->
             Streams.stream( required.elements() )
@@ -301,6 +356,7 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
    }
 
    protected Scalar determinePropertyType( final JsonNode propertyNode, final String propertyName, final String jsonType ) {
+      //noinspection DataFlowIssue
       return determineFormat( propertyNode )
             .map( format -> switch ( format ) {
                case DATE -> xsd.date;

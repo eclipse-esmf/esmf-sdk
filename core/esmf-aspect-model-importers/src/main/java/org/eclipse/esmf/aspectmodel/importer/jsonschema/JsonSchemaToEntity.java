@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 @SuppressWarnings( { "NewClassNamingConvention", "checkstyle:ClassTypeParameterName", "checkstyle:MethodTypeParameterName" } )
 public class JsonSchemaToEntity extends JsonSchemaImporter<Entity, EntityArtifact> {
-   public JsonSchemaToEntity( final JsonNode focus, final AspectGenerationConfig config ) {
+   public JsonSchemaToEntity( final JsonNode focus, final JsonSchemaImporterConfig config ) {
       super( focus, config );
    }
 

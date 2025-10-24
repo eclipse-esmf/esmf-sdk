@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 @SuppressWarnings( { "NewClassNamingConvention", "checkstyle:ClassTypeParameterName", "checkstyle:MethodTypeParameterName" } )
 public class JsonSchemaToAspect extends JsonSchemaImporter<Aspect, AspectArtifact> {
-   public JsonSchemaToAspect( final JsonNode focus, final AspectGenerationConfig config ) {
+   public JsonSchemaToAspect( final JsonNode focus, final JsonSchemaImporterConfig config ) {
       super( focus, config );
    }
 

@@ -22,16 +22,19 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.soabase.recordbuilder.core.RecordBuilder;
 
 /**
+ * Configuration for the JSON Schema importer
+ *
  * @param aspectModelUrn the URN of the element (Aspect or Entity) to generate
- * @param addTodo determines whether descritptions with "TO DO" comments should be added to new elements
+ * @param addTodo determines whether descriptions with "TO DO" comments should be added to new elements
  * @param customRefResolver function to override resolution of "$ref" attributes
  */
 @RecordBuilder
-public record AspectGenerationConfig(
+public record JsonSchemaImporterConfig(
       AspectModelUrn aspectModelUrn,
       boolean addTodo,
       Function<String, JsonNode> customRefResolver
 ) implements GenerationConfig {
-   public AspectGenerationConfig {
+   public JsonSchemaImporterConfig( final AspectModelUrn aspectModelUrn ) {
+      this( aspectModelUrn, false, null );
    }
 }
