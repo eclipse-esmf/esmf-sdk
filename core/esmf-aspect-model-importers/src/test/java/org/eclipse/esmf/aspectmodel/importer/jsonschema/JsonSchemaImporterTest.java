@@ -85,8 +85,6 @@ public class JsonSchemaImporterTest {
 
    private AspectModel loadAsAspectModel( final ModelElement modelElement ) {
       final String modelSource = AspectSerializer.INSTANCE.modelElementToString( modelElement );
-      //      System.out.println( modelSource );
-
       final AspectModelFile file = AspectModelFileLoader.load( modelSource, URI.create( "inmemory" ) );
       final Either<List<Violation>, AspectModel> loadingResult =
             new AspectModelLoader().withValidation( new AspectModelValidator() ).loadAspectModelFiles( List.of( file ) );
