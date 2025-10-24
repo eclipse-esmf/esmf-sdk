@@ -1589,7 +1589,8 @@ public class SammBuilder {
             throw new AspectModelBuildingException( "Value must not be null" );
          }
          if ( languageTag != null ) {
-            return new ValueInstantiator().buildLanguageString( baseAttributes(), lexicalValue, languageTag.toLanguageTag() );
+            return new ValueInstantiator().buildLanguageString( baseAttributes(), lexicalValue, languageTag.toLanguageTag() )
+                  .orElseThrow( () -> new AspectModelBuildingException( "Invalid language tag" ) );
          }
          if ( type == null ) {
             throw new AspectModelBuildingException( "Type must not be null" );
