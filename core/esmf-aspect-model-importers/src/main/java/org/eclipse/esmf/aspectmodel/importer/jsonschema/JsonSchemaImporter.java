@@ -63,6 +63,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -141,27 +142,24 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
     * @param characteristicUrn the URN of the Characteristic to create for the current schema
     */
    protected record Context(
-         Map<AspectModelUrn, ModelElement> generatedElements,
          List<String> path,
          String type,
-         Map<String, Property> namedSchemaProperties,
          AspectModelUrn characteristicUrn
    ) {
       protected Context() {
-         this( new HashMap<>(), List.of(), null, new HashMap<>(), null );
+         this( List.of(), null, null );
       }
 
       public Context withPath( final String element ) {
-         return new Context( generatedElements(), Stream.concat( path().stream(), Stream.of( element ) ).toList(), type(),
-               namedSchemaProperties(), null );
+         return new Context( Stream.concat( path().stream(), Stream.of( element ) ).toList(), type(), null );
       }
 
       public Context withType( final String type ) {
-         return new Context( generatedElements(), path(), type, namedSchemaProperties(), null );
+         return new Context( path(), type, null );
       }
 
       public Context withCharacteristicUrn( final AspectModelUrn urn ) {
-         return new Context( generatedElements(), path(), type(), namedSchemaProperties(), urn );
+         return new Context( path(), type(), urn );
       }
 
       public Context withNoCharacteristicUrn() {
@@ -427,7 +425,7 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
       }
    }
 
-   public static class DefaultCharacteristicWrapper extends DefaultCharacteristic {
+   protected static class DefaultCharacteristicWrapper extends DefaultCharacteristic {
       private Characteristic wrappedCharacteristic;
 
       public DefaultCharacteristicWrapper( final MetaModelBaseAttributes metaModelBaseAttributes ) {
@@ -487,7 +485,7 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
                   context.withNoCharacteristicUrn() );
          }
          throw new AspectModelBuildingException(
-               "Property node for '" + propertyName + "' is missing the required 'type' attribute, ignoring property" );
+               "Property node for '" + propertyName + "' is missing the required 'type' property, ignoring" );
       }
 
       final String jsonType = jsonTypeName.get();
@@ -640,7 +638,7 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
    protected Entity buildEntity( final JsonNode item, final String propertyName, final Context context ) {
       final String entityName = determinEntityName( propertyName ) + "Entity";
       final AspectModelUrn entityUrn = config.aspectModelUrn().withName( entityName );
-      final ModelElement previouslyGeneratedElement = context.generatedElements().get( entityUrn );
+      final ModelElement previouslyGeneratedElement = generatedElementsByUrn.get( entityUrn );
       if ( previouslyGeneratedElement instanceof final Entity entity ) {
          return entity;
       }
@@ -650,7 +648,7 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
             .description( determineDescription( item ).orElse( null ) )
             .properties( buildPropertiesList( item, context ) )
             .build();
-      context.generatedElements().put( entityUrn, result );
+      generatedElementsByUrn.put( entityUrn, result );
       return result;
    }
 
@@ -742,27 +740,14 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
          characteristic = buildCharacteristic( propertyNode, preliminaryPropertyName, context );
       }
 
-      final AspectModelUrn preliminaryPropertyUrn = buildPropertyUrn( preliminaryPropertyName );
-      final ModelElement previouslyGeneratedElement = context.generatedElements().get( preliminaryPropertyUrn );
       final String propertyName;
       final AspectModelUrn propertyUrn;
-      if ( previouslyGeneratedElement instanceof final Property previouslyGeneratedProperty ) {
-         if ( characteristicsAreLogicallyEquivalent( previouslyGeneratedProperty.getCharacteristic().orElse( null ),
-               characteristic ) ) {
-            return previouslyGeneratedProperty;
-         }
 
-         // Another Property with the same name but a different Characteristic was previously generated.
-         // So we need another name.
-         propertyName = StringUtils.uncapitalize( context.path().stream().map( StringUtils::capitalize )
-               .collect( Collectors.joining( "", "", StringUtils.capitalize( preliminaryPropertyName ) ) ) );
-         propertyUrn = config.aspectModelUrn().withName( propertyName );
-      } else {
-         propertyName = preliminaryPropertyName;
-         propertyUrn = preliminaryPropertyUrn;
-      }
-
-      final Optional<ScalarValue> exampleValue = jsonProperty( propertyNode, EXAMPLES )
+      final AspectModelUrn preliminaryPropertyUrn = buildPropertyUrn( preliminaryPropertyName );
+      final ModelElement previouslyGeneratedElement = generatedElementsByUrn.get( preliminaryPropertyUrn );
+      final String descriptionForThisElement = determineDescription( propertyNode ).orElse( null );
+      final String preferredNameForThisElement = determinePreferredName( propertyNode, preliminaryPropertyName );
+      final Optional<ScalarValue> exampleValueForThisElement = jsonProperty( propertyNode, EXAMPLES )
             .filter( JsonNode::isArray )
             .flatMap( node -> Streams.stream( node.elements() ).findFirst() )
             .flatMap( example -> characteristic.getDataType().isPresent()
@@ -770,15 +755,40 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
                   ? Optional.of( value( example.asText(), scalar ) )
                   : Optional.empty() );
 
+      if ( previouslyGeneratedElement instanceof final Property previouslyGeneratedProperty ) {
+         final boolean descriptionsAreEqual = Optional.ofNullable( previouslyGeneratedProperty.getDescription( Locale.ENGLISH ) )
+               .map( description -> description.equals( descriptionForThisElement ) ).orElse( false );
+         final boolean preferredNamesAreEqual = Optional.ofNullable( previouslyGeneratedProperty.getPreferredName( Locale.ENGLISH ) )
+               .map( preferredName -> preferredName.equals( preferredNameForThisElement ) ).orElse( false );
+         final boolean exampleValuesAreEqual = previouslyGeneratedProperty.getExampleValue().flatMap( previousExampleValue ->
+               exampleValueForThisElement.map( exampleValue -> previousExampleValue == exampleValue ) ).orElse( false );
+         if ( descriptionsAreEqual && preferredNamesAreEqual && exampleValuesAreEqual && characteristicsAreLogicallyEquivalent(
+               previouslyGeneratedProperty.getCharacteristic().orElse( null ), characteristic ) ) {
+            return previouslyGeneratedProperty;
+         }
+
+         // Another Property with the same name but a different Characteristic was previously generated.
+         // So we need another name.
+         final String newPropertyName = StringUtils.uncapitalize( context.path().stream().map( StringUtils::capitalize )
+               .collect( Collectors.joining( "", "", StringUtils.capitalize( preliminaryPropertyName ) ) ) );
+         propertyName = newPropertyName.equals( preliminaryPropertyName )
+               ? newPropertyName + "0"
+               : newPropertyName;
+         propertyUrn = config.aspectModelUrn().withName( propertyName );
+      } else {
+         propertyName = preliminaryPropertyName;
+         propertyUrn = preliminaryPropertyUrn;
+      }
+
       final Property result = property( propertyUrn )
-            .preferredName( determinePreferredName( propertyNode, propertyName ) )
-            .description( determineDescription( propertyNode ).orElse( null ) )
+            .preferredName( preferredNameForThisElement )
+            .description( descriptionForThisElement )
             .characteristic( characteristic )
-            .exampleValue( exampleValue.orElse( null ) )
+            .exampleValue( exampleValueForThisElement.orElse( null ) )
             .optional( !requiredProperties.contains( propertyName ) )
             .payloadName( propertyName.equals( preliminaryPropertyName ) ? null : preliminaryPropertyName )
             .build();
-      context.generatedElements().put( propertyUrn, result );
+      generatedElementsByUrn.put( propertyUrn, result );
       return result;
    }
 }
