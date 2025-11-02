@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -111,6 +112,10 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
    public static final String CONCEPT_DESCRIPTION_DATA_SPECIFICATION_URL =
          "https://admin-shell.io/DataSpecificationTemplates/DataSpecificationIec61360/3/0";
 
+   private static final Pattern IRDI_BARE_PATTERN = Pattern.compile(
+         "^\\d{4}-\\d+(?:%23\\d{2}|#\\d{2})-[A-Za-z0-9-]+(?:%23\\d{3}|#\\d{3})$"
+   );
+
    /**
     * Maps Aspect types to DataTypeIEC61360 Schema types, with no explicit mapping defaulting to
     * string
@@ -175,14 +180,59 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
    }
 
    protected List<Reference> buildGlobalReferenceForSeeReferences( final ModelElement modelElement ) {
-      return modelElement.getSee().stream().map( seeReference -> (Reference) new DefaultReference.Builder()
+      return modelElement.getSee().stream()
+            .map( this::normalizeSee )
+            .flatMap( Optional::stream )
+            .map( normalized -> (Reference) new DefaultReference.Builder()
                   .type( ReferenceTypes.EXTERNAL_REFERENCE )
                   .keys( new DefaultKey.Builder()
                         .type( KeyTypes.GLOBAL_REFERENCE )
-                        .value( seeReference.startsWith( "urn:irdi:" ) ? seeReference.substring( 9 ) : seeReference )
+                        .value( normalized )
                         .build() )
                   .build() )
             .toList();
+   }
+
+   private Optional<String> normalizeSee( String seeReference ) {
+      if ( seeReference == null ) {
+         return Optional.empty();
+      }
+
+      final String trimmed = seeReference.trim();
+      if ( trimmed.isEmpty() ) {
+         return Optional.empty();
+      }
+
+      if ( trimmed.startsWith( "urn:" ) ) {
+         return Optional.of( trimmed );
+      }
+
+      if ( trimmed.startsWith( "file:" ) || trimmed.matches( "^[A-Za-z]:[\\\\/].*" ) ) {
+         final String tail = lastPathSegment( trimmed );
+         if ( IRDI_BARE_PATTERN.matcher( tail ).matches() ) {
+            final String encoded = tail.replace( "#", "%23" );
+            return Optional.of( "urn:irdi:" + encoded );
+         }
+         LOG.warn( "Ignoring local-path SEE reference: {}", trimmed );
+         return Optional.empty();
+      }
+
+      if ( IRDI_BARE_PATTERN.matcher( trimmed ).matches() ) {
+         final String encoded = trimmed.replace( "#", "%23" );
+         return Optional.of( "urn:irdi:" + encoded );
+      }
+
+      if ( trimmed.startsWith( "http://" ) || trimmed.startsWith( "https://" ) ) {
+         return Optional.of( trimmed );
+      }
+
+      LOG.warn( "SEE reference has suspicious format (neither urn/http/https nor IRDI): {}", trimmed );
+      return Optional.of( trimmed );
+   }
+
+   private static String lastPathSegment( String uri ) {
+      int idx = Math.max( uri.lastIndexOf( '/' ), uri.lastIndexOf( '\\' ) );
+      return (idx >= 0 && idx < uri.length() - 1) ? uri.substring( idx + 1 ) : uri;
    }
 
    private List<Reference> updateGlobalReferenceWithSeeReferences( final SubmodelElement submodelElement,
@@ -286,11 +336,10 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       element.setSupplementalSemanticIds( updateGlobalReferenceWithSeeReferences( element, property ) );
 
       if ( !property.getPayloadName().isEmpty()
-            && !( element instanceof SubmodelElementList )
-            && !( element instanceof SubmodelElementCollection ) ) {
+            && !(element instanceof SubmodelElementList)
+            && !(element instanceof SubmodelElementCollection) ) {
          element.setIdShort( property.getPayloadName() );
       }
-
 
       recursiveProperty.remove( property );
 
