@@ -232,7 +232,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
 
    private static String lastPathSegment( String uri ) {
       int idx = Math.max( uri.lastIndexOf( '/' ), uri.lastIndexOf( '\\' ) );
-      return (idx >= 0 && idx < uri.length() - 1) ? uri.substring( idx + 1 ) : uri;
+      return ( idx >= 0 && idx < uri.length() - 1 ) ? uri.substring( idx + 1 ) : uri;
    }
 
    private List<Reference> updateGlobalReferenceWithSeeReferences( final SubmodelElement submodelElement,
