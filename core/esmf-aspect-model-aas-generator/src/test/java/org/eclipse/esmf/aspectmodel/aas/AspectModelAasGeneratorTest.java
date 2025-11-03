@@ -270,7 +270,8 @@ class AspectModelAasGeneratorTest {
       final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_EITHER_WITH_COMPLEX_TYPES );
       assertThat( env.getSubmodels() ).hasSize( 1 );
       assertThat( env.getSubmodels().getFirst().getSubmodelElements() ).hasSize( 1 );
-      final SubmodelElementList elementCollection = ( (SubmodelElementList) env.getSubmodels().getFirst().getSubmodelElements().getFirst() );
+      final SubmodelElementList elementCollection =
+            ( (SubmodelElementList) env.getSubmodels().getFirst().getSubmodelElements().getFirst() );
       final Set<String> entityNames = Set.of( "LeftEntity", "RightEntity" );
       assertThat( elementCollection.getValue() ).as( "Neither left nor right entity contained." )
             .anyMatch( x -> entityNames.contains( x.getIdShort() ) );
