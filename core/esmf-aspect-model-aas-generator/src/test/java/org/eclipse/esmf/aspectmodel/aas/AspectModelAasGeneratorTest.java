@@ -269,11 +269,11 @@ class AspectModelAasGeneratorTest {
    void testGenerateAasxFromAspectModelWithEitherWithComplexTypes() throws DeserializationException {
       final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_EITHER_WITH_COMPLEX_TYPES );
       assertThat( env.getSubmodels() ).hasSize( 1 );
-      assertThat( env.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
-      final SubmodelElementList elementCollection = ((SubmodelElementList) env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 ));
-      final Set<String> testValues = Set.of( "testProperty", "result" );
+      assertThat( env.getSubmodels().getFirst().getSubmodelElements() ).hasSize( 1 );
+      final SubmodelElementList elementCollection = ( (SubmodelElementList) env.getSubmodels().getFirst().getSubmodelElements().getFirst() );
+      final Set<String> entityNames = Set.of( "LeftEntity", "RightEntity" );
       assertThat( elementCollection.getValue() ).as( "Neither left nor right entity contained." )
-            .anyMatch( x -> testValues.contains( x.getIdShort() ) );
+            .anyMatch( x -> entityNames.contains( x.getIdShort() ) );
 
       final Set<String> semanticIds =
             Set.of( "urn:samm:org.eclipse.esmf.test:1.0.0#result",
