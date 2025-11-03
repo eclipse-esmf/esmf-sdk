@@ -83,7 +83,7 @@ class AspectModelAasGeneratorTest {
                               .asInstanceOf( InstanceOfAssertFactories.LIST )
                               .hasSize( 2 )
                               .allSatisfy( langString ->
-                                    assertThat( List.of( "en", "de" ) ).contains( ((AbstractLangString) langString).getLanguage() ) ) ) );
+                                    assertThat( List.of( "en", "de" ) ).contains( ( (AbstractLangString) langString ).getLanguage() ) ) ) );
    }
 
    @Test
@@ -123,7 +123,7 @@ class AspectModelAasGeneratorTest {
                                                    assertThat( property ).asInstanceOf( type( Property.class ) )
                                                          .extracting( Property::getValue )
                                                          .isEqualTo( "2.25" ) ) );
-                           assertThat( ((SubmodelElementList) sme).getOrderRelevant() ).isFalse();
+                           assertThat( ( (SubmodelElementList) sme ).getOrderRelevant() ).isFalse();
                         }
                   ) );
    }
@@ -208,7 +208,7 @@ class AspectModelAasGeneratorTest {
             .satisfies( submodelElementList -> {
                assertThat( submodelElementList.getIdShort() ).isEqualTo( "testProperty" );
                assertThat( submodelElementList.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.SUBMODEL_ELEMENT_COLLECTION );
-               assertThat( (submodelElementList).getOrderRelevant() ).isFalse();
+               assertThat( ( submodelElementList ).getOrderRelevant() ).isFalse();
             } );
 
       assertThat( submodelElement.getSemanticId().getKeys().get( 0 ).getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
@@ -226,7 +226,7 @@ class AspectModelAasGeneratorTest {
             .satisfies( submodelElementList -> {
                assertThat( submodelElementList.getIdShort() ).isEqualTo( "testProperty" );
                assertThat( submodelElementList.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.SUBMODEL_ELEMENT_COLLECTION );
-               assertThat( (submodelElementList).getOrderRelevant() ).isFalse();
+               assertThat( ( submodelElementList ).getOrderRelevant() ).isFalse();
             } );
 
       assertThat( submodelElement.getSemanticId().getKeys().get( 0 ).getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
@@ -244,7 +244,7 @@ class AspectModelAasGeneratorTest {
             .satisfies( submodelElementList -> {
                assertThat( submodelElementList.getIdShort() ).isEqualTo( "testProperty" );
                assertThat( submodelElementList.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.SUBMODEL_ELEMENT_COLLECTION );
-               assertThat( (submodelElementList).getOrderRelevant() ).isFalse();
+               assertThat( ( submodelElementList ).getOrderRelevant() ).isFalse();
             } );
       assertThat( submodelElement.getSemanticId().getKeys().get( 0 ).getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
 
@@ -362,8 +362,8 @@ class AspectModelAasGeneratorTest {
 
    @ParameterizedTest
    @EnumSource( value = TestAspect.class )
-      // anonymous enumeration in test has no urn for enum values but is required for Concept
-      // Description referencing
+   // anonymous enumeration in test has no urn for enum values but is required for Concept
+   // Description referencing
    void testGeneration( final TestAspect testAspect ) throws DeserializationException {
       final String aasXmlString = aspectToAasXml( testAspect );
       final byte[] aasXmlInput = aasXmlString.getBytes();

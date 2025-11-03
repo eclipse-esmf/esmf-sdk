@@ -15,81 +15,23 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.2.0#> .
 
-#################################################################
-# ASPECT
-#################################################################
-
 :AspectWithCollection a samm:Aspect ;
    samm:preferredName "Test Aspect"@en ;
    samm:description "This is a test description"@en ;
    samm:see <http://example.com/> ;
-
-   # ВАЖНО: три свойства для разных кейсов трансляции
-   samm:properties (
-     :stringListProperty        # 1) Коллекция строк (примитивы)
-     # :massListProperty          # 2) Коллекция Quantifiable (единицы измерения)
-     :singleMassProperty        # 3) Одиночный Quantifiable (для сравнения)
-   ) ;
-
+   samm:properties ( :testProperty ) ;
    samm:operations ( ) .
 
-#################################################################
-# 1) КЕЙС: КОЛЛЕКЦИЯ ПРИМИТИВОВ (СТРОКИ)
-# В AAS это будет SubmodelElementList (или Collection),
-# где semanticId элементов = семантика "строка" (в AAS обычно без спец. semanticId),
-# а semanticId списка НЕ должен дублировать semanticId элементов.
-#################################################################
+:testProperty a samm:Property ;
+   samm:preferredName "Test Property"@en ;
+   samm:description "This is a test property."@en ;
+   samm:see <http://example.com/> ;
+   samm:see <http://example.com/me> ;
+   samm:exampleValue "Example Value" ;
+   samm:characteristic :TestCollection .
 
-:stringListProperty a samm:Property ;
-   samm:preferredName "String list property"@en ;
-   samm:description "A list of string values (primitive collection) used to test list-vs-element semanticId mapping."@en ;
-   samm:see <http://example.com/string-list> ;
-   samm:exampleValue "alpha,beta,gamma" ;
-   samm:characteristic :StringListCharacteristic .
-
-:StringListCharacteristic a samm-c:Collection ;
-   samm:preferredName "String List"@en ;
-   samm:description "Collection of primitive string values."@en ;
-   samm:see <http://example.com/char/string-list> ;
-   # Для коллекции примитивов — достаточно указать тип данных элементов:
+:TestCollection a samm-c:Collection ;
+   samm:preferredName "Test Collection"@en ;
+   samm:description "This is a test collection."@en ;
+   samm:see <http://example.com/> ;
    samm:dataType xsd:string .
-
-#################################################################
-# 2) КЕЙС: КОЛЛЕКЦИЯ QUANTIFIABLE (С ЕДИНИЦЕЙ)
-# В AAS: SubmodelElementList; КАЖДЫЙ элемент получает semanticId
-# от Quantifiable-характеристики (а не от списка).
-#################################################################
-
-:massListProperty a samm:Property ;
-   samm:preferredName "Mass list property"@en ;
-   samm:description "A list of mass measurements (Quantifiable) to verify semanticId is taken from the element type, not from the list."@en ;
-   samm:see <http://example.com/mass-list> ;
-   samm:exampleValue "12.3, 45.6, 78.9" ;
-   samm:characteristic :MassListCharacteristic .
-
-:MassListCharacteristic a samm-c:Collection ;
-   samm:preferredName "Mass List"@en ;
-   samm:description "Collection of mass values with unit."@en ;
-   samm:see <http://example.com/char/mass-list> ;
-   # ВАЖНО: используем samm-c:elementCharacteristic (правильный namespace)
-   samm-c:elementCharacteristic :MassCharacteristic .
-
-:MassCharacteristic a samm-c:Quantifiable ;
-   samm:preferredName "Mass"@en ;
-   samm:description "Mass value with kilogram unit."@en ;
-   samm:see <http://example.com/char/mass> ;
-   samm:dataType xsd:decimal ;
-   samm-c:unit unit:kilogram .
-
-#################################################################
-# 3) КЕЙС: ОДИНОЧНЫЙ QUANTIFIABLE (ДЛЯ СРАВНЕНИЯ)
-# В AAS: одиночный Property c semanticId от Quantifiable-характеристики.
-#################################################################
-
-:singleMassProperty a samm:Property ;
-   samm:preferredName "Single mass property"@en ;
-   samm:description "Single mass value (non-collection) to compare semanticId mapping with the list case above."@en ;
-   samm:see <http://example.com/single-mass> ;
-   samm:exampleValue "42.0" ;
-   samm:characteristic :MassCharacteristic .
-
