@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -45,9 +47,11 @@ import org.eclipse.digitaltwin.aas4j.v3.model.DataSpecificationIec61360;
 import org.eclipse.digitaltwin.aas4j.v3.model.DataTypeDefXsd;
 import org.eclipse.digitaltwin.aas4j.v3.model.EmbeddedDataSpecification;
 import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
+import org.eclipse.digitaltwin.aas4j.v3.model.Key;
 import org.eclipse.digitaltwin.aas4j.v3.model.KeyTypes;
 import org.eclipse.digitaltwin.aas4j.v3.model.MultiLanguageProperty;
 import org.eclipse.digitaltwin.aas4j.v3.model.Property;
+import org.eclipse.digitaltwin.aas4j.v3.model.Reference;
 import org.eclipse.digitaltwin.aas4j.v3.model.ReferenceTypes;
 import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
@@ -180,7 +184,7 @@ class AspectModelAasGeneratorTest {
       assertThat( env.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
       final Submodel submodel = env.getSubmodels().get( 0 );
       assertThat( submodel.getSubmodelElements().get( 0 ) ).isInstanceOfSatisfying( SubmodelElementCollection.class, collection -> {
-         assertThat( collection.getIdShort() ).isEqualTo( "testProperty" );
+         assertThat( collection.getIdShort() ).isEqualTo( "TestEntity" );
 
          final SubmodelElement property = collection.getValue().stream().findFirst().get();
          assertThat( property.getIdShort() ).isEqualTo( "entityProperty" );
@@ -254,7 +258,7 @@ class AspectModelAasGeneratorTest {
       assertThat( env.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
       final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
       assertThat( submodelElement ).as( "SubmodelElement is not a SubmodelElementList" ).isInstanceOf( SubmodelElementList.class );
-      assertThat( ( ( (SubmodelElementList) submodelElement ) ).getOrderRelevant() ).isFalse();
+      assertThat( (((SubmodelElementList) submodelElement)).getOrderRelevant() ).isFalse();
       assertThat( submodelElement.getIdShort() ).isEqualTo( "testProperty" );
       assertThat( submodelElement.getSemanticId().getKeys().get( 0 ).getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
 
@@ -265,11 +269,12 @@ class AspectModelAasGeneratorTest {
    void testGenerateAasxFromAspectModelWithEitherWithComplexTypes() throws DeserializationException {
       final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_EITHER_WITH_COMPLEX_TYPES );
       assertThat( env.getSubmodels() ).hasSize( 1 );
-      assertThat( env.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
-      final SubmodelElementList elementCollection = ( (SubmodelElementList) env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 ) );
-      final Set<String> testValues = Set.of( "testProperty", "result" );
+      assertThat( env.getSubmodels().getFirst().getSubmodelElements() ).hasSize( 1 );
+      final SubmodelElementList elementCollection =
+            ( (SubmodelElementList) env.getSubmodels().getFirst().getSubmodelElements().getFirst() );
+      final Set<String> entityNames = Set.of( "LeftEntity", "RightEntity" );
       assertThat( elementCollection.getValue() ).as( "Neither left nor right entity contained." )
-            .anyMatch( x -> testValues.contains( x.getIdShort() ) );
+            .anyMatch( x -> entityNames.contains( x.getIdShort() ) );
 
       final Set<String> semanticIds =
             Set.of( "urn:samm:org.eclipse.esmf.test:1.0.0#result",
@@ -289,7 +294,7 @@ class AspectModelAasGeneratorTest {
       final DataSpecificationContent dataSpecificationContent = getDataSpecificationIec61360(
             "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
 
-      assertThat( ( (DataSpecificationIec61360) dataSpecificationContent ).getUnit() ).isEqualTo( "percent" );
+      assertThat( ((DataSpecificationIec61360) dataSpecificationContent).getUnit() ).isEqualTo( "percent" );
    }
 
    @Test
@@ -431,6 +436,120 @@ class AspectModelAasGeneratorTest {
       final Property property = (Property) environment.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
       assertThat( environment.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
       assertThat( environment.getSubmodels().get( 0 ).getSubmodelElements().get( 0 ).getIdShort() ).isEqualTo( property.getIdShort() );
+   }
+
+   @Test
+   void testSubmodelListSemanticIdIsPropertyUrnEntityCollection() throws DeserializationException {
+      final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_ENTITY_COLLECTION );
+
+      assertThat( env.getSubmodels() ).hasSize( 1 );
+      final Submodel sm = env.getSubmodels().getFirst();
+      assertThat( sm.getSubmodelElements() ).hasSize( 1 );
+      assertThat( sm.getSubmodelElements().getFirst() ).isInstanceOf( SubmodelElementList.class );
+
+      final SubmodelElementList sml = (SubmodelElementList) sm.getSubmodelElements().getFirst();
+
+      assertThat( sml.getSemanticId() ).isNotNull();
+      assertThat( sml.getSemanticId().getKeys() ).isNotEmpty();
+      assertThat( sml.getSemanticId().getKeys().getFirst().getValue() )
+            .isEqualTo( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty" );
+      assertThat( sml.getSemanticId().getKeys().getFirst().getValue() )
+            .isNotEqualTo( "urn:samm:org.eclipse.esmf.test:1.0.0#TestCollection" );
+   }
+
+   @Test
+   void testSubmodelCollectionInsideSubmodelListHasNoSemanticId() throws DeserializationException {
+      final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_ENTITY_LIST );
+      final Submodel sm = env.getSubmodels().getFirst();
+      final SubmodelElementList sml = (SubmodelElementList) sm.getSubmodelElements().getFirst();
+
+      final List<SubmodelElement> values = sml.getValue();
+      assertThat( values ).isNotEmpty();
+      assertThat( values.getFirst() ).isInstanceOf( SubmodelElementCollection.class );
+
+      final SubmodelElementCollection smc = (SubmodelElementCollection) values.getFirst();
+
+      assertThat( smc.getSemanticId() ).isNull();
+
+      final List<Reference> supp = smc.getSupplementalSemanticIds();
+      assertThat( supp == null || supp.isEmpty() ).isTrue();
+   }
+
+   @Test
+   void testEntitySeeIsNormalizedToUrnIrdiAndNoFileScheme() throws DeserializationException {
+      final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_ENTITY );
+
+      assertThat( env.getSubmodels() ).hasSize( 1 );
+      final Submodel sm = env.getSubmodels().getFirst();
+
+      assertThat( sm.getSubmodelElements() ).hasSize( 1 );
+      final SubmodelElement sme = sm.getSubmodelElements().getFirst();
+      assertThat( sme ).isInstanceOf( SubmodelElementCollection.class );
+
+      final SubmodelElementCollection smc = (SubmodelElementCollection) sme;
+
+      assertThat( smc.getSemanticId() ).isNull();
+
+      final List<String> supp = smc.getSupplementalSemanticIds() == null
+            ? List.of()
+            : smc.getSupplementalSemanticIds().stream()
+            .flatMap( r -> r.getKeys().stream() )
+            .map( Key::getValue )
+            .toList();
+
+      assertThat( supp )
+            .allMatch( v -> !v.startsWith( "file:" ) && !v.matches( "^[A-Za-z]:[\\\\/].*" ) )
+            .doesNotContain( "0173-1%2302-ABG854%23003" )
+            .contains( "urn:irdi:0173-1%2306-AAA999%23001", "urn:irdi:0173-1%2302-ABG854%23003" );
+   }
+
+   @Test
+   void testEntitySeeContainsBothIrdiUrnsEvenWithOtherSeeFromProperty() throws DeserializationException {
+      final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_ENTITY );
+
+      final SubmodelElementCollection smc = (SubmodelElementCollection) env.getSubmodels()
+            .getFirst().getSubmodelElements().getFirst();
+
+      final Set<String> supp = smc.getSupplementalSemanticIds() == null
+            ? Set.of()
+            : smc.getSupplementalSemanticIds().stream()
+            .flatMap( r -> r.getKeys().stream() )
+            .map( Key::getValue )
+            .collect( Collectors.toSet() );
+
+      assertThat( supp ).contains(
+            "urn:irdi:0173-1%2302-ABG854%23003",
+            "urn:irdi:0173-1%2306-AAA999%23001"
+      );
+   }
+
+   @Test
+   void testSubmodelListSemanticIdSsPropertyUrnAndSmlSmcIdShortAreEntityName() throws DeserializationException {
+      final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_ENTITY_COLLECTION );
+
+      assertThat( env.getSubmodels() ).hasSize( 1 );
+      final Submodel sm = env.getSubmodels().getFirst();
+      assertThat( sm.getSubmodelElements() ).hasSize( 1 );
+      assertThat( sm.getSubmodelElements().getFirst() ).isInstanceOf( SubmodelElementList.class );
+
+      final SubmodelElementList sml = (SubmodelElementList) sm.getSubmodelElements().getFirst();
+
+      // (1) Identifier of the SML = URN of the property (not the characteristic)
+      assertThat( sml.getSemanticId() ).isNotNull();
+      assertThat( sml.getSemanticId().getKeys() ).isNotEmpty();
+      assertThat( sml.getSemanticId().getKeys().get( 0 ).getValue() )
+            .isEqualTo( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty" );
+
+      // (3) idShort of SML = Entity name
+      assertThat( sml.getIdShort() ).isEqualTo( "TestEntity" );
+
+      assertThat( sml.getValue() ).isNotEmpty();
+      assertThat( sml.getValue().get( 0 ) ).isInstanceOf( SubmodelElementCollection.class );
+      final SubmodelElementCollection smc = (SubmodelElementCollection) sml.getValue().get( 0 );
+
+      // (3) idShort of SMC = idShort of SML = Entity name
+      assertThat( smc.getIdShort() ).isEqualTo( "TestEntity" );
+      assertThat( smc.getIdShort() ).isEqualTo( sml.getIdShort() );
    }
 
    private void checkDataSpecificationIec61360( final Set<String> semanticIds, final Environment env ) {

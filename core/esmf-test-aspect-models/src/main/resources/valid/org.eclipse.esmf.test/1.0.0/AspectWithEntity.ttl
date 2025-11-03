@@ -37,6 +37,8 @@
 
 :TestEntity a samm:Entity ;
    samm:preferredName "Test Entity"@en ;
+   samm:see <0173-1%2302-ABG854%23003> ;
+   samm:see <urn:irdi:0173-1%2306-AAA999%23001> ;
    samm:description "This is a test entity"@en ;
    samm:properties ( :entityProperty ) .
 
