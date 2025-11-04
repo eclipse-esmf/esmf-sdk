@@ -302,6 +302,7 @@ public class AspectModelJsonPayloadGenerator extends JsonGenerator<JsonPayloadGe
       private List<Object> getCollectionValues( final BasicProperty property, final Collection collection,
             final LengthConstraint lengthConstraint ) {
          final Type dataType = collection.getDataType()
+               .or( () -> collection.getElementCharacteristic().flatMap( Characteristic::getDataType ) )
                .orElseThrow( () -> new IllegalArgumentException( "DataType for collection is required." ) );
 
          if ( dataType.is( Scalar.class ) ) {
@@ -388,11 +389,11 @@ public class AspectModelJsonPayloadGenerator extends JsonGenerator<JsonPayloadGe
             return exampleValue;
          }
 
-         private static Optional<ScalarValue> processExampleValue( Optional<ScalarValue> exampleValue ) {
+         private static Optional<ScalarValue> processExampleValue( final Optional<ScalarValue> exampleValue ) {
             return exampleValue.map( value -> {
-               if ( value instanceof ScalarValue scalarValue ) {
+               if ( value instanceof final ScalarValue scalarValue ) {
                   return scalarValue;
-               } else if ( value instanceof Value valueInstance ) {
+               } else if ( value instanceof final Value valueInstance ) {
                   return convertToScalarValue( valueInstance );
                } else {
                   throw new IllegalArgumentException( "Unexpected exampleValue type: " + value.getClass() );
@@ -400,8 +401,8 @@ public class AspectModelJsonPayloadGenerator extends JsonGenerator<JsonPayloadGe
             } );
          }
 
-         private static ScalarValue convertToScalarValue( Value value ) {
-            if ( value instanceof ScalarValue scalarValue ) {
+         private static ScalarValue convertToScalarValue( final Value value ) {
+            if ( value instanceof final ScalarValue scalarValue ) {
                return scalarValue;
             }
 
@@ -413,7 +414,7 @@ public class AspectModelJsonPayloadGenerator extends JsonGenerator<JsonPayloadGe
                         .withSee( value.getSee() )
                         .isAnonymous( value.isAnonymous() )
                         .withSourceFile( value.getSourceFile() ).build(),
-                  ( ( ScalarValue ) value).getValue(),
+                  ( (ScalarValue) value ).getValue(),
                   new DefaultScalar( value.getType().toString() )
             );
          }

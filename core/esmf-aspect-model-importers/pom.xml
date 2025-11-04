@@ -45,6 +45,16 @@
 
       <!-- Test dependencies -->
       <dependency>
+         <groupId>org.junit.jupiter</groupId>
+         <artifactId>junit-jupiter</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.assertj</groupId>
+         <artifactId>assertj-core</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
          <groupId>org.eclipse.esmf</groupId>
          <artifactId>esmf-aspect-model-validator</artifactId>
          <scope>test</scope>
@@ -55,13 +65,8 @@
          <scope>test</scope>
       </dependency>
       <dependency>
-         <groupId>org.junit.jupiter</groupId>
-         <artifactId>junit-jupiter</artifactId>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>org.assertj</groupId>
-         <artifactId>assertj-core</artifactId>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-model-document-generators</artifactId>
          <scope>test</scope>
       </dependency>
       <dependency>
@@ -75,6 +80,11 @@
       <dependency>
          <groupId>ch.qos.logback</groupId>
          <artifactId>logback-classic</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>com.github.java-json-tools</groupId>
+         <artifactId>json-schema-validator</artifactId>
          <scope>test</scope>
       </dependency>
    </dependencies>

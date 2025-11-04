@@ -1,0 +1,115 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "type": "object",
+  "components": {
+    "schemas": {
+      "aCharacteristic": {
+        "type": "object",
+        "properties": {
+          "b": {
+            "$ref": "#/components/schemas/bCharacteristic"
+          }
+        },
+        "required": [
+          "b"
+        ]
+      },
+      "bCharacteristic": {
+        "type": "object",
+        "properties": {
+          "a": {
+            "$ref": "#/components/schemas/aCharacteristic"
+          }
+        }
+      },
+      "eCharacteristic": {
+        "type": "object",
+        "properties": {
+          "f": {
+            "$ref": "#/components/schemas/fCharacteristic"
+          }
+        },
+        "required": [
+          "f"
+        ]
+      },
+      "gCharacteristic": {
+        "type": "object",
+        "properties": {
+          "e": {
+            "$ref": "#/components/schemas/eCharacteristic"
+          }
+        }
+      },
+      "fCharacteristic": {
+        "type": "object",
+        "properties": {
+          "g": {
+            "$ref": "#/components/schemas/gCharacteristic"
+          }
+        },
+        "required": [
+          "g"
+        ]
+      },
+      "iCharacteristic": {
+        "type": "string"
+      },
+      "hCharacteristic": {
+        "additionalProperties": false,
+        "properties": {
+          "left": {
+            "type": "object",
+            "properties": {
+              "h": {
+                "$ref": "#/components/schemas/hCharacteristic"
+              }
+            },
+            "required": [
+              "h"
+            ]
+          },
+          "right": {
+            "type": "object",
+            "properties": {
+              "i": {
+                "$ref": "#/components/schemas/iCharacteristic"
+              }
+            },
+            "required": [
+              "i"
+            ]
+          }
+        },
+        "oneOf": [
+          {
+            "required": [
+              "left"
+            ]
+          },
+          {
+            "required": [
+              "right"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "properties": {
+    "a": {
+      "$ref": "#/components/schemas/aCharacteristic"
+    },
+    "e": {
+      "$ref": "#/components/schemas/eCharacteristic"
+    },
+    "h": {
+      "$ref": "#/components/schemas/hCharacteristic"
+    }
+  },
+  "required": [
+    "a",
+    "e",
+    "h"
+  ]
+}
