@@ -264,6 +264,14 @@ of model resolution] for more information.
                                    | _--output, -o_ : output file path (default: stdout); as ZIP is a binary format, it is
                                        strongly recommended to output the result to a file by using the -o option or the
                                        console redirection operator '>')|
+.5+| [[import]] import <file> <URN> | Imports (i.e., translates) a file to an Aspect Model. The only currently supported
+                                      format is JSON Schema.                                                                  | `samm import MyModel.schema.json urn:org.example:1.0.0#MyModel --output-directory models`
+                                    | _-js, --json-schema_ : If the input file name does not end with .schema.json, use this
+                                      switch to force interpreting the input as JSON schema.                                  |
+                                    | _-d, --output-directory_ : output directory to write files to                           |
+                                    | _-e, --entity_ : Create an Entity instead of an Aspect from the imported schema         |
+                                    | _-t, --todo_ : Add TODO descriptions to otherwise undescribed model elements            |
+
 |===
 
 [[configuration-of-model-resolution]]
