@@ -193,8 +193,11 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
     * @param <SELF> the builder's self type
     * @return the builder
     */
-   protected abstract <SELF extends SammBuilder.StructureElementBuilder<SELF, T>>
-   SammBuilder.StructureElementBuilder<SELF, T> elementBuilder();
+   @SuppressWarnings( { "checkstyle:MethodTypeParameterName" } )
+   //@formatter:off
+   protected abstract <SELF extends SammBuilder.StructureElementBuilder<SELF, T>> SammBuilder.StructureElementBuilder<SELF, T>
+         elementBuilder();
+   //@formatter:on
 
    /**
     * Creates an {@link Artifact} for the result

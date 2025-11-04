@@ -26,7 +26,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import javax.annotation.processing.Generated;
 
 import com.github.javaparser.ParseResult;
@@ -219,7 +218,7 @@ class GenerationResult {
    private TypeToken typeTokenToCheck( final Object fieldTypeOrTypeName ) {
       TypeToken typeToCheck;
       if ( fieldTypeOrTypeName instanceof TypeToken ) {
-         typeToCheck = ((TypeToken) fieldTypeOrTypeName);
+         typeToCheck = ( (TypeToken) fieldTypeOrTypeName );
       } else {
          typeToCheck = TypeToken.of( (Type) fieldTypeOrTypeName );
       }
@@ -240,11 +239,11 @@ class GenerationResult {
                      entry.getKey().toString().equals( toResolve.getClassNameToResolve() ) )
                .findAny().map( Map.Entry::getValue ).orElseThrow( () -> new RuntimeException( e ) );
       }
-      if ( !toResolve.getToResolve().isReferenceType() || ((ResolvedReferenceType) toResolve.getToResolve())
+      if ( !toResolve.getToResolve().isReferenceType() || ( (ResolvedReferenceType) toResolve.getToResolve() )
             .getTypeParametersMap().isEmpty() ) {
          return TypeResolution.resolved( rawType );
       }
-      final Type[] typeParameters = ((ResolvedReferenceType) toResolve.getToResolve())
+      final Type[] typeParameters = ( (ResolvedReferenceType) toResolve.getToResolve() )
             .getTypeParametersMap()
             .stream()
             .map( pair -> pair.b )

@@ -32,10 +32,12 @@ public class JsonSchemaToAspect extends JsonSchemaImporter<Aspect, AspectArtifac
 
    @SuppressWarnings( "unchecked" )
    @Override
+   //@formatter:off
    protected <SELF extends SammBuilder.StructureElementBuilder<SELF, Aspect>>
-   SammBuilder.StructureElementBuilder<SELF, Aspect> elementBuilder() {
+         SammBuilder.StructureElementBuilder<SELF, Aspect> elementBuilder() {
       return (SammBuilder.StructureElementBuilder<SELF, Aspect>) aspect( config.aspectModelUrn() );
    }
+   //@formatter:on
 
    @Override
    protected AspectArtifact buildArtifact() {

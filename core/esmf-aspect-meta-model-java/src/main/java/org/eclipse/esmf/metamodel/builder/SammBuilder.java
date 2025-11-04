@@ -907,7 +907,7 @@ public class SammBuilder {
     * @param <SELF> the self type
     * @param <T> the collection type
     */
-   public static abstract class BaseCollectionBuilder<SELF extends BaseCollectionBuilder<SELF, T>, T extends Collection>
+   public abstract static class BaseCollectionBuilder<SELF extends BaseCollectionBuilder<SELF, T>, T extends Collection>
          extends OptionallyNamedElementBuilder<SELF, T> {
       protected Type dataType;
       protected Characteristic elementCharacteristic;

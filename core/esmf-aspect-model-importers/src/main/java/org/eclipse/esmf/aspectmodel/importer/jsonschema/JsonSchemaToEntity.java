@@ -32,10 +32,12 @@ public class JsonSchemaToEntity extends JsonSchemaImporter<Entity, EntityArtifac
 
    @SuppressWarnings( "unchecked" )
    @Override
+   //@formatter:off
    protected <SELF extends SammBuilder.StructureElementBuilder<SELF, Entity>>
-   SammBuilder.StructureElementBuilder<SELF, Entity> elementBuilder() {
+         SammBuilder.StructureElementBuilder<SELF, Entity> elementBuilder() {
       return (SammBuilder.StructureElementBuilder<SELF, Entity>) entity( config.aspectModelUrn() );
    }
+   //@formatter:on
 
    @Override
    protected EntityArtifact buildArtifact() {
