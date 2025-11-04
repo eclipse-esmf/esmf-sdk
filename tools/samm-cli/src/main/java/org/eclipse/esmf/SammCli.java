@@ -32,6 +32,7 @@ import org.eclipse.esmf.aspect.to.AspectToSvgCommand;
 import org.eclipse.esmf.aspectmodel.VersionInfo;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.exception.SubCommandException;
+import org.eclipse.esmf.importer.ImportCommand;
 import org.eclipse.esmf.namespacepackage.PackageCommand;
 import org.eclipse.esmf.substitution.IsWindows;
 
@@ -100,6 +101,7 @@ public class SammCli extends AbstractCommand {
             .addSubcommand( new AspectCommand() )
             .addSubcommand( new AasCommand() )
             .addSubcommand( new PackageCommand() )
+            .addSubcommand( new ImportCommand() )
             .setCaseInsensitiveEnumValuesAllowed( true )
             .setExecutionStrategy( LoggingMixin::executionStrategy );
       initialCommandLine.getHelpSectionMap().put( SECTION_KEY_COMMAND_LIST, new CustomCommandListRenderer() );

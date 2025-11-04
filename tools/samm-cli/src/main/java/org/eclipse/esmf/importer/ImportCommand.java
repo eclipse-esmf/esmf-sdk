@@ -14,7 +14,6 @@
 package org.eclipse.esmf.importer;
 
 import java.io.File;
-import java.net.URI;
 
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.AspectModelUrnConverter;
@@ -30,11 +29,9 @@ import org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaToAspect;
 import org.eclipse.esmf.aspectmodel.importer.jsonschema.JsonSchemaToEntity;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelFileLoader;
 import org.eclipse.esmf.aspectmodel.resolver.fs.ModelsRoot;
-import org.eclipse.esmf.aspectmodel.resolver.fs.StructuredModelsRoot;
 import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.exception.CommandException;
-import org.eclipse.esmf.exception.SubCommandException;
 import org.eclipse.esmf.metamodel.StructureElement;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -64,12 +61,6 @@ public class ImportCommand extends AbstractCommand {
          index = "0" )
    private String input;
 
-   @CommandLine.Option(
-         names = { "-js", "--json-schema" },
-         description = "Interpret the input file as JSON Schema"
-   )
-   private boolean jsonSchema;
-
    @CommandLine.Parameters(
          paramLabel = "URN",
          description = "Aspect Model URN of the Aspect Model element to create",
@@ -78,6 +69,12 @@ public class ImportCommand extends AbstractCommand {
          converter = AspectModelUrnConverter.class
    )
    private AspectModelUrn elementUrn;
+
+   @CommandLine.Option(
+         names = { "-js", "--json-schema" },
+         description = "Interpret the input file as JSON Schema"
+   )
+   private boolean jsonSchema;
 
    @CommandLine.Option(
          names = { "--output-directory", "-d" },
@@ -103,6 +100,12 @@ public class ImportCommand extends AbstractCommand {
    )
    private boolean entityInsteadOfAspect;
 
+   @CommandLine.Option(
+         names = { "-t", "--todo" },
+         description = "Add TODO descriptions to otherwise undescribed model elements"
+   )
+   private boolean addTodoComments;
+
    @Override
    public void run() {
       if ( !input.endsWith( ".schema.json" ) && !jsonSchema ) {
@@ -116,38 +119,21 @@ public class ImportCommand extends AbstractCommand {
          final JsonNode jsonSchema = objectMapper.readTree( file );
          final JsonSchemaImporterConfig config = JsonSchemaImporterConfigBuilder.builder()
                .aspectModelUrn( elementUrn )
-               .addTodo( true )
+               .addTodo( addTodoComments )
                .build();
          final StructureElement modelElement = entityInsteadOfAspect
                ? new JsonSchemaToEntity( jsonSchema, config ).generate().findFirst().orElseThrow().getContent()
                : new JsonSchemaToAspect( jsonSchema, config ).generate().findFirst().orElseThrow().getContent();
 
          final String modelSource = AspectSerializer.INSTANCE.modelElementToString( modelElement );
-
-         final File modelsRootLocation = new File( outputPath );
-         if ( modelsRootLocation.exists() && !modelsRootLocation.isDirectory() ) {
-            throw new SubCommandException( "Given models root is not a directory: " + modelsRootLocation );
-         }
-         mkdirs( modelsRootLocation );
-         final ModelsRoot modelsRoot = new StructuredModelsRoot( modelsRootLocation.toPath() );
-         final Change change = new AddAspectModelFile( AspectModelFileLoader.load( modelSource, URI.create( "inmemory" ) ) );
+         final ModelsRoot modelsRoot = createModelsRoot( new File( outputPath ) );
+         final File fileLocation = modelsRoot.determineAspectModelFile( elementUrn );
+         final Change change = new AddAspectModelFile( AspectModelFileLoader.load( modelSource, fileLocation.toURI() ) );
          final AspectChangeManagerConfig changeConfig = AspectChangeManagerConfigBuilder.builder().build();
          final AspectChangeManager changeContext = new AspectChangeManager( changeConfig );
          performRefactoring( changeContext, change, dryRun, force );
       } catch ( final Exception exception ) {
          throw new CommandException( exception );
-      }
-   }
-
-   private void mkdirs( final File directory ) {
-      if ( directory.exists() ) {
-         if ( directory.isDirectory() ) {
-            return;
-         }
-         throw new SubCommandException( "Could not create directory " + directory + ": It already exists but is not a directory" );
-      }
-      if ( !directory.mkdirs() ) {
-         throw new SubCommandException( "Could not create directory: " + directory );
       }
    }
 }

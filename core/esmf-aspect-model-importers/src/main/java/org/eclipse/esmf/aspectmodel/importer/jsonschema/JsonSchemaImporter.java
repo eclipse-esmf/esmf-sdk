@@ -117,7 +117,6 @@ import org.slf4j.LoggerFactory;
  * @param <T> the type of StructureElement, e.g., {@link Aspect} or {@link Entity}.
  * @param <A> the corresponding {@link Artifact} type
  */
-@SuppressWarnings( { "NewClassNamingConvention", "checkstyle:ClassTypeParameterName", "checkstyle:MethodTypeParameterName" } )
 public abstract class JsonSchemaImporter<T extends StructureElement, A extends Artifact<AspectModelUrn, T>> extends
       Generator<JsonNode, AspectModelUrn, T, JsonSchemaImporterConfig, A> {
    private static final Logger LOG = LoggerFactory.getLogger( JsonSchemaImporter.class );
