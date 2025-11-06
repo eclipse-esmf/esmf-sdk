@@ -56,14 +56,14 @@ public class AspectModelSqlGeneratorTest {
       final Aspect aspect = TestResources.load( testAspect ).aspect();
       assertThatCode( () -> {
          final DatabricksSqlGenerationConfig dialectSpecificConfig = DatabricksSqlGenerationConfigBuilder.builder()
-                 .includeTableComment( false )
-                 .includeColumnComments( false )
-                 .commentLanguage( Locale.ENGLISH )
-                 .build();
+               .includeTableComment( false )
+               .includeColumnComments( false )
+               .commentLanguage( Locale.ENGLISH )
+               .build();
          final SqlArtifact sqlArtifact = new AspectModelSqlGenerator( aspect, SqlGenerationConfigBuilder.builder()
-                 .dialect( SqlGenerationConfig.Dialect.DATABRICKS )
-                 .dialectSpecificConfig( dialectSpecificConfig )
-                 .build() ).singleResult();
+               .dialect( SqlGenerationConfig.Dialect.DATABRICKS )
+               .dialectSpecificConfig( dialectSpecificConfig )
+               .build() ).singleResult();
          final String result = sqlArtifact.getContent();
 
          assertThat( result ).contains( "TBLPROPERTIES ('x-samm-aspect-model-urn'='" );
@@ -77,13 +77,13 @@ public class AspectModelSqlGeneratorTest {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_TYPES ).aspect();
       assertThatCode( () -> {
          final DatabricksSqlGenerationConfig dialectSpecificConfig = DatabricksSqlGenerationConfigBuilder.builder()
-                 .decimalPrecision( 38 )
-                 .decimalScale( 38 )
-                 .build();
+               .decimalPrecision( 38 )
+               .decimalScale( 38 )
+               .build();
          final SqlArtifact sqlArtifact = new AspectModelSqlGenerator( aspect, SqlGenerationConfigBuilder.builder()
-                 .dialect( SqlGenerationConfig.Dialect.DATABRICKS )
-                 .dialectSpecificConfig( dialectSpecificConfig )
-                 .build() ).singleResult();
+               .dialect( SqlGenerationConfig.Dialect.DATABRICKS )
+               .dialectSpecificConfig( dialectSpecificConfig )
+               .build() ).singleResult();
          final String result = sqlArtifact.getContent();
 
          assertThat( result ).contains( "DECIMAL(38,38)" );

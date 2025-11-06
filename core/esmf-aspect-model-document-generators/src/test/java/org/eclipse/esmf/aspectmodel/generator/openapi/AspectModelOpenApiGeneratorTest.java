@@ -684,10 +684,10 @@ public class AspectModelOpenApiGeneratorTest {
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
 
-      Schema pagingSchema = openApi.getComponents().getSchemas().get( "PagingSchema" );
+      final Schema pagingSchema = openApi.getComponents().getSchemas().get( "PagingSchema" );
       assertThat( pagingSchema ).isNotNull();
 
-      Schema itemsProperty = (Schema) pagingSchema.getProperties().get( "items" );
+      final Schema itemsProperty = (Schema) pagingSchema.getProperties().get( "items" );
       assertThat( itemsProperty.get$ref() )
             .isEqualTo( "#/components/schemas/" + aspect.getName() );
 
