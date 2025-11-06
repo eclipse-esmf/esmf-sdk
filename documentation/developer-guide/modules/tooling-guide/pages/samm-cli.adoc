@@ -258,7 +258,7 @@ of model resolution] for more information.
                                    | _--force_ : When a new file is to be created but it already exists in the file system,
                                      the operation will be cancelled, unless `--force` is used.                              |
 .2+| [[package-export]] package <model or namespace URN> export | Exports an Aspect Model with its dependencies
-                                     or a complete namespace to a Namespace Package (.zip)                                   | `samm package urn:samm:org.eclipse.example.myns:1.0.0 --output package.zip` +
+                                     or a complete namespace to a Namespace Package (.zip)                                   | `samm package urn:samm:org.eclipse.example.myns:1.0.0 export --output package.zip` +
                                      {empty} +
                                      `samm package AspectModel.ttl export --output package.zip`
                                    | _--output, -o_ : output file path (default: stdout); as ZIP is a binary format, it is
