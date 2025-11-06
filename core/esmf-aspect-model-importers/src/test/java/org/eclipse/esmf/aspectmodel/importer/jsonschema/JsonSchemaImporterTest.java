@@ -99,7 +99,6 @@ public class JsonSchemaImporterTest {
    }
 
    @ParameterizedTest
-   @Execution( ExecutionMode.CONCURRENT )
    @EnumSource( value = TestAspect.class )
    void testGenerationOfValidAspectModels( final TestModel testAspect ) {
       final Aspect originalAspect = TestResources.load( testAspect ).aspect();
@@ -118,7 +117,6 @@ public class JsonSchemaImporterTest {
     * Aspect corresponds to the original schema.
     */
    @ParameterizedTest
-   @Execution( ExecutionMode.CONCURRENT )
    @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
          "ASPECT_WITH_ABSTRACT_ENTITY",
          "ASPECT_WITH_ABSTRACT_PROPERTY",
