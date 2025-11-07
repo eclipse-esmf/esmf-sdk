@@ -28,16 +28,10 @@ import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
 import javax.tools.ToolProvider;
 
+import org.eclipse.esmf.aspectmodel.java.Flags;
 import org.eclipse.esmf.aspectmodel.java.QualifiedName;
 
 public class JavaCompiler {
-   /**
-    * In order to ease debugging of unit tests that generate code, run the corresponding JVM with
-    * -Dorg.eclipse.esmf.javacompiler.writesources=true
-    * This will write the generated sources into files in src/test/java.
-    */
-   public static final String WRITE_SOURCES_PROPERTY = "org.eclipse.esmf.javacompiler.writesources";
-
    private static class DiagnosticListener implements javax.tools.DiagnosticListener<FileObject> {
       @Override
       public void report( final Diagnostic<? extends FileObject> diagnostic ) {
@@ -61,7 +55,7 @@ public class JavaCompiler {
                .map( key -> new CompilerInput( key.toString(), sources.get( key ) ) )
                .collect( Collectors.toList() );
 
-         if ( System.getProperty( WRITE_SOURCES_PROPERTY ) != null ) {
+         if ( System.getProperty( Flags.WRITE_SOURCES_PROPERTY ) != null ) {
             final String filepath = System.getProperty( "user.dir" ) + "/src/test/java/org/eclipse/esmf/test/";
             final File outputdir = new File( filepath );
             if ( !outputdir.exists() && !outputdir.mkdirs() ) {
