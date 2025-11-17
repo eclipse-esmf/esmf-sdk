@@ -312,8 +312,8 @@ will not know where to find the corresonding file(s).
 
 Every specification is based on one Aspect, which needs a separately defined server URL where the given aspect will be.
 The URL will be defined as string with the `-b` option, i.e.: https://www.example.org. The default URL, using the above
-defined `--api-base-url`, would result in https://www.example.org/api/v1/\{tenantId}/<aspectName>. By default,
-`\{tenantId}` followed by the Aspect's name is used as path, with the aspect name converted from CamelCase to
+defined `--api-base-url`, would result in https://www.example.org/api/v1/\{tenant-id}/<aspectName>. By default,
+`\{tenant-id}` followed by the Aspect's name is used as path, with the aspect name converted from CamelCase to
 kebab-case. The default path can be changed with the `--resource-path` switch. If the path is defined further, for
 example using `--resource-path "/resources/\{resourceId}"`, the resulting URL would be:
 https://www.example.org/resources/\{resourceId}.
