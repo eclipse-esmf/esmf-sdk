@@ -1,0 +1,38 @@
+{
+  "$id": "https://example.com/job-posting.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "A representation of a job posting",
+  "type": "object",
+  "required": [
+    "title",
+    "company",
+    "location",
+    "description"
+  ],
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "company": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "employmentType": {
+      "type": "string"
+    },
+    "salary": {
+      "type": "number",
+      "minimum": 0
+    },
+    "applicationDeadline": {
+      "type": "string",
+      "format": "date"
+    }
+  }
+}
+

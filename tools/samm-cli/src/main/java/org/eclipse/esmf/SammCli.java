@@ -32,7 +32,10 @@ import org.eclipse.esmf.aspect.to.AspectToSvgCommand;
 import org.eclipse.esmf.aspectmodel.VersionInfo;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.exception.SubCommandException;
+import org.eclipse.esmf.importer.ImportCommand;
 import org.eclipse.esmf.namespacepackage.PackageCommand;
+import org.eclipse.esmf.namespacepackage.PackageExportCommand;
+import org.eclipse.esmf.namespacepackage.PackageImportCommand;
 import org.eclipse.esmf.substitution.IsWindows;
 
 import org.fusesource.jansi.AnsiConsole;
@@ -100,6 +103,7 @@ public class SammCli extends AbstractCommand {
             .addSubcommand( new AspectCommand() )
             .addSubcommand( new AasCommand() )
             .addSubcommand( new PackageCommand() )
+            .addSubcommand( new ImportCommand() )
             .setCaseInsensitiveEnumValuesAllowed( true )
             .setExecutionStrategy( LoggingMixin::executionStrategy );
       initialCommandLine.getHelpSectionMap().put( SECTION_KEY_COMMAND_LIST, new CustomCommandListRenderer() );
@@ -215,10 +219,16 @@ public class SammCli extends AbstractCommand {
             List.of( "help", AasCommand.COMMAND_NAME, AasToCommand.COMMAND_NAME ) );
       final int helpAspectEditIndex = Collections.indexOfSubList( argvList,
             List.of( "help", AspectCommand.COMMAND_NAME, AspectEditCommand.COMMAND_NAME ) );
+      final int helpPackageImportIndex = Collections.indexOfSubList( argvList,
+            List.of( "help", PackageCommand.COMMAND_NAME, PackageImportCommand.COMMAND_NAME ) );
+      final int helpPackageExportIndex = Collections.indexOfSubList( argvList,
+            List.of( "help", PackageCommand.COMMAND_NAME, PackageExportCommand.COMMAND_NAME ) );
       final int helpAspectSomeIndex = Collections.indexOfSubList( argvList, List.of( "help", AspectCommand.COMMAND_NAME ) );
       final int helpAasSomeIndex = Collections.indexOfSubList( argvList, List.of( "help", AasCommand.COMMAND_NAME ) );
-      if ( helpAspectToIndex != -1 || helpAasToIndex != -1 || helpAspectEditIndex != -1 ) {
-         final int index = IntStream.of( helpAspectToIndex, helpAasToIndex, helpAspectEditIndex ).max().getAsInt();
+      if ( helpAspectToIndex != -1 || helpAasToIndex != -1 || helpAspectEditIndex != -1 || helpPackageImportIndex != -1
+            || helpPackageExportIndex != -1 ) {
+         final int index = IntStream.of( helpAspectToIndex, helpAasToIndex, helpAspectEditIndex, helpPackageImportIndex,
+               helpPackageExportIndex ).max().getAsInt();
          final List<String> customArgv = new ArrayList<>( argvList.subList( 0, index ) );
          customArgv.add( argvList.get( index + 1 ) );
          customArgv.add( "_" );

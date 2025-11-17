@@ -25,12 +25,12 @@ import org.eclipse.esmf.metamodel.CollectionValue;
  */
 public interface Collection extends Characteristic {
    /**
-    * @return a {@link boolean} which determines whether the elements in the collection are ordered.
+    * @return a boolean which determines whether the elements in the collection are ordered.
     */
    boolean isOrdered();
 
    /**
-    * @return a {@link boolean} which determines whether the collection may contain duplicate values.
+    * @return a boolean which determines whether the collection may contain duplicate values.
     */
    boolean allowsDuplicates();
 

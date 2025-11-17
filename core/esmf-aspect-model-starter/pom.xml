@@ -42,6 +42,10 @@
       </dependency>
       <dependency>
          <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-model-importers</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.esmf</groupId>
          <artifactId>esmf-aspect-model-validator</artifactId>
       </dependency>
       <dependency>

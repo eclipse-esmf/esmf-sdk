@@ -22,7 +22,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -258,7 +257,7 @@ class AspectModelAasGeneratorTest {
       assertThat( env.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
       final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
       assertThat( submodelElement ).as( "SubmodelElement is not a SubmodelElementList" ).isInstanceOf( SubmodelElementList.class );
-      assertThat( (((SubmodelElementList) submodelElement)).getOrderRelevant() ).isFalse();
+      assertThat( ( ( (SubmodelElementList) submodelElement ) ).getOrderRelevant() ).isFalse();
       assertThat( submodelElement.getIdShort() ).isEqualTo( "testProperty" );
       assertThat( submodelElement.getSemanticId().getKeys().get( 0 ).getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
 
@@ -294,7 +293,7 @@ class AspectModelAasGeneratorTest {
       final DataSpecificationContent dataSpecificationContent = getDataSpecificationIec61360(
             "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
 
-      assertThat( ((DataSpecificationIec61360) dataSpecificationContent).getUnit() ).isEqualTo( "percent" );
+      assertThat( ( (DataSpecificationIec61360) dataSpecificationContent ).getUnit() ).isEqualTo( "percent" );
    }
 
    @Test
@@ -361,10 +360,11 @@ class AspectModelAasGeneratorTest {
       assertThat( submodelElement.getValueType() ).isEqualTo( DataTypeDefXsd.INTEGER );
    }
 
+   /*
+    * Anonymous enumeration in test has no URN for enum values but is required for Concept Description referencing
+    */
    @ParameterizedTest
    @EnumSource( value = TestAspect.class )
-   // anonymous enumeration in test has no urn for enum values but is required for Concept
-   // Description referencing
    void testGeneration( final TestAspect testAspect ) throws DeserializationException {
       final String aasXmlString = aspectToAasXml( testAspect );
       final byte[] aasXmlInput = aasXmlString.getBytes();

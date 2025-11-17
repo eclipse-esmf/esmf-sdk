@@ -19,7 +19,6 @@
 @prefix : <urn:samm:org.eclipse.esmf.examples.movement:1.0.0#> .
 
 :Movement a samm:Aspect ;
-   samm:name "Movement" ;
    samm:preferredName "movement"@en ;
    samm:description "Aspect for movement information"@en ;
    samm:properties ( :isMoving :position :speed :speedLimitWarning ) ;
@@ -27,37 +26,31 @@
    samm:events ( ) .
 
 :isMoving a samm:Property ;
-   samm:name "isMoving" ;
    samm:preferredName "is moving"@en ;
    samm:description "Flag indicating whether the asset is currently moving"@en ;
    samm:characteristic samm-c:Boolean .
 
 :position a samm:Property ;
-   samm:name "position" ;
    samm:preferredName "position"@en ;
    samm:description "Indicates a position"@en ;
    samm:characteristic :SpatialPositionCharacteristic .
 
 :speed a samm:Property ;
-   samm:name "speed" ;
    samm:preferredName "speed"@en ;
    samm:description "speed of vehicle"@en ;
    samm:characteristic :Speed .
 
 :speedLimitWarning a samm:Property ;
-   samm:name "speedLimitWarning" ;
    samm:preferredName "speed limit warning"@en ;
    samm:description "Indicates if the speed limit is adhered to."@en ;
    samm:characteristic :TrafficLight .
 
 :SpatialPositionCharacteristic a samm-c:SingleEntity ;
-   samm:name "SpatialPositionCharacteristic" ;
    samm:preferredName "spatial position characteristic"@en ;
    samm:description "Represents a single position in space with optional z coordinate."@en ;
    samm:dataType :SpatialPosition .
 
 :Speed a samm-c:Measurement ;
-   samm:name "Speed" ;
    samm:preferredName "speed"@en ;
    samm:description "Scalar representation of speed of an object in kilometers per hour."@en ;
    samm:dataType xsd:float ;
@@ -70,14 +63,12 @@
    samm-c:values ( "green" "yellow" "red" ) .
 
 :SpatialPosition a samm:Entity ;
-   samm:name "SpatialPosition" ;
    samm:preferredName "spatial position"@en ;
    samm:description "Represents latitude, longitude and altitude information in the WGS84 geodetic reference datum"@en ;
    samm:see <https://www.w3.org/2003/01/geo/> ;
    samm:properties ( :latitude :longitude [ samm:property :altitude; samm:optional true ] ) .
 
 :latitude a samm:Property ;
-   samm:name "latitude" ;
    samm:preferredName "latitude"@en ;
    samm:description "latitude coordinate in space (WGS84)"@en ;
    samm:see <http://www.w3.org/2003/01/geo/wgs84_pos#lat> ;
@@ -85,7 +76,6 @@
    samm:exampleValue "9.1781"^^xsd:decimal .
 
 :longitude a samm:Property ;
-   samm:name "longitude" ;
    samm:preferredName "longitude"@en ;
    samm:description "longitude coordinate in space (WGS84)"@en ;
    samm:see <http://www.w3.org/2003/01/geo/wgs84_pos#long> ;
@@ -93,7 +83,6 @@
    samm:exampleValue "48.80835"^^xsd:decimal .
 
 :altitude a samm:Property ;
-   samm:name "altitude" ;
    samm:preferredName "altitude"@en ;
    samm:description "Elevation above sea level zero"@en ;
    samm:see <http://www.w3.org/2003/01/geo/wgs84_pos#alt> ;
@@ -101,14 +90,12 @@
    samm:exampleValue "153"^^xsd:float .
 
 :Coordinate a samm-c:Measurement ;
-   samm:name "Coordinate" ;
    samm:preferredName "coordinate"@en ;
    samm:description "Representing the geographical coordinate"@en ;
    samm:dataType xsd:decimal ;
    samm-c:unit unit:degreeUnitOfAngle .
 
 :MetresAboveMeanSeaLevel a samm-c:Measurement ;
-   samm:name "MetresAboveMeanSeaLevel" ;
    samm:preferredName "metres above mean sea level"@en ;
    samm:description "Signifies the vertical distance in reference to a historic mean sea level as a vertical datum"@en ;
    samm:see <https://en.wikipedia.org/wiki/Height_above_sea_level> ;

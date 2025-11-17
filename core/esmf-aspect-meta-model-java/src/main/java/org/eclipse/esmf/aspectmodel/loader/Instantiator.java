@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.AspectLoadingException;
+import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.Characteristic;
@@ -48,7 +49,6 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.RDFS;
 
 public abstract class Instantiator<T extends ModelElement> extends AttributeValueRetriever implements Function<Resource, T> {
    protected final ModelElementFactory modelElementFactory;
@@ -134,17 +134,6 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
                   modelElementFactory.create( Characteristic.class, elementCharacteristicResource ) );
    }
 
-   protected boolean isTypeOfOrSubtypeOf( final Resource element, final Resource type ) {
-      Resource typeInHierarchy = element.getPropertyResourceValue( RDF.type );
-      while ( typeInHierarchy != null ) {
-         if ( type.equals( typeInHierarchy ) ) {
-            return true;
-         }
-         typeInHierarchy = typeInHierarchy.getPropertyResourceValue( RDFS.subClassOf );
-      }
-      return false;
-   }
-
    /**
     * Creates a {@link Value} from a given constant value in the RDF model. This can be either a scalar, a collection or an Entity.
     * What is constructed can depend on the type of RDF node, but also on the Characteristic of the Property this value is used for.
@@ -183,13 +172,13 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
                SammNs.SAMMC.elementCharacteristic() ).map(
                Statement::getResource );
          CollectionValue.CollectionType collectionType = null;
-         if ( isTypeOfOrSubtypeOf( characteristic, SammNs.SAMMC.Set() ) ) {
+         if ( RdfUtil.isTypeOfOrSubtypeOf( characteristic, SammNs.SAMMC.Set() ) ) {
             collectionType = CollectionValue.CollectionType.SET;
-         } else if ( isTypeOfOrSubtypeOf( characteristic, SammNs.SAMMC.SortedSet() ) ) {
+         } else if ( RdfUtil.isTypeOfOrSubtypeOf( characteristic, SammNs.SAMMC.SortedSet() ) ) {
             collectionType = CollectionValue.CollectionType.SORTEDSET;
-         } else if ( isTypeOfOrSubtypeOf( characteristic, SammNs.SAMMC.List() ) ) {
+         } else if ( RdfUtil.isTypeOfOrSubtypeOf( characteristic, SammNs.SAMMC.List() ) ) {
             collectionType = CollectionValue.CollectionType.LIST;
-         } else if ( isTypeOfOrSubtypeOf( characteristic, SammNs.SAMMC.Collection() ) ) {
+         } else if ( RdfUtil.isTypeOfOrSubtypeOf( characteristic, SammNs.SAMMC.Collection() ) ) {
             collectionType = CollectionValue.CollectionType.COLLECTION;
          }
          if ( collectionType != null ) {

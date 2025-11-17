@@ -33,7 +33,6 @@ import org.eclipse.esmf.aspectmodel.edit.Change;
 import org.eclipse.esmf.aspectmodel.resolver.Download;
 import org.eclipse.esmf.aspectmodel.resolver.NamespacePackage;
 import org.eclipse.esmf.aspectmodel.resolver.fs.ModelsRoot;
-import org.eclipse.esmf.aspectmodel.resolver.fs.StructuredModelsRoot;
 import org.eclipse.esmf.exception.SubCommandException;
 
 import org.apache.commons.io.IOUtils;
@@ -93,14 +92,7 @@ public class PackageImportCommand extends AbstractCommand {
                "I don't now where to import the package to, please set a models root using -mr or --models-root" );
       }
 
-      final File modelsRootLocation = new File( resolverConfiguration.modelsRoots.get( 0 ) );
-      if ( modelsRootLocation.exists() && !modelsRootLocation.isDirectory() ) {
-         throw new SubCommandException( "Given models root is not a directory: " + modelsRootLocation );
-      }
-      mkdirs( modelsRootLocation );
-
-      // Load the Namespace Package and create a "add file" change for each file in it
-      final ModelsRoot modelsRoot = new StructuredModelsRoot( modelsRootLocation.toPath() );
+      final ModelsRoot modelsRoot = createModelsRoot( new File( resolverConfiguration.modelsRoots.getFirst() ) );
       final Change changes = loadNamespacePackageFromInput().prepareWriteToModelsRoot( modelsRoot );
       final AspectChangeManagerConfig config = AspectChangeManagerConfigBuilder.builder()
             .detailedChangeReport( details )
@@ -136,18 +128,6 @@ public class PackageImportCommand extends AbstractCommand {
          throw new SubCommandException( "Given input namespace package is neither a valid file nor URL: " + path );
       } catch ( final URISyntaxException exception ) {
          throw new SubCommandException( "Can not download files from URLs that are not also valid URIs" );
-      }
-   }
-
-   private void mkdirs( final File directory ) {
-      if ( directory.exists() ) {
-         if ( directory.isDirectory() ) {
-            return;
-         }
-         throw new SubCommandException( "Could not create directory " + directory + ": It already exists but is not a directory" );
-      }
-      if ( !directory.mkdirs() ) {
-         throw new SubCommandException( "Could not create directory: " + directory );
       }
    }
 }

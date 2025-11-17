@@ -56,7 +56,7 @@ public abstract class Generator<F, I, T, C extends GenerationConfig, A extends A
 
    /**
     * Generates artifacts from the given Aspect model. As this generation may produce multiple artifacts, the generator
-    * provides the caller with the identifer of the respective artifact via the callback function. The caller needs to
+    * provides the caller with the identifier of the respective artifact via the callback function. The caller needs to
     * provide an {@link OutputStream} for the artifact, e.g. a suitable FileOutputStream.
     *
     * @param nameMapper the callback function that maps artifact identifiers to OutputStreams

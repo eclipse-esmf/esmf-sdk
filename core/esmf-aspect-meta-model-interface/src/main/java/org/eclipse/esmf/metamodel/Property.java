@@ -42,14 +42,14 @@ public interface Property extends ModelElement {
    String getPayloadName();
 
    /**
-    * @return a {@link boolean} which determines whether the Property is optional. Properties are mandatory by default.
+    * @return a boolean which determines whether the Property is optional. Properties are mandatory by default.
     */
    default boolean isOptional() {
       return false;
    }
 
    /**
-    * @return a {@link boolean} which determines whether the Property is included in the runtime data of an Aspect.
+    * @return a boolean which determines whether the Property is included in the runtime data of an Aspect.
     *       By default Properties are included in the runtime data.
     *
     * @see
