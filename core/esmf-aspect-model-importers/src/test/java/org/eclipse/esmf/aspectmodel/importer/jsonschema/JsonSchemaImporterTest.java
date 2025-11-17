@@ -81,6 +81,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 public class JsonSchemaImporterTest {
+   private final AspectModelValidator validator = new AspectModelValidator();
    private static final String SCHEMAS_LOCATION = "schemas";
    final ObjectMapper objectMapper = new ObjectMapper();
    final AspectModelUrn testUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "Test" );
@@ -104,7 +105,7 @@ public class JsonSchemaImporterTest {
 
       final Aspect importedAspect = new JsonSchemaToAspect( jsonSchema,
             JsonSchemaImporterConfigBuilder.builder().aspectModelUrn( testUrn ).build() ).getContent();
-      final List<Violation> violations = new AspectModelValidator().validateModel( loadAsAspectModel( importedAspect ) );
+      final List<Violation> violations = validator.validateModel( loadAsAspectModel( importedAspect ) );
       assertThat( violations ).describedAs( () -> new ViolationFormatter().apply( violations ) ).isEmpty();
    }
 
@@ -311,7 +312,7 @@ public class JsonSchemaImporterTest {
 
    @ParameterizedTest
    @MethodSource( value = "schemaNames" )
-   void testTranslateJsonSchema( final String schemaName ) throws IOException {
+   void testTranslateJsonSchema( final String schemaName ) {
       final Entity entity = translateJsonSchema( schemaName );
       loadAsAspectModel( entity );
    }
@@ -412,7 +413,7 @@ public class JsonSchemaImporterTest {
       final String modelSource = AspectSerializer.INSTANCE.modelElementToString( modelElement );
       final AspectModelFile file = AspectModelFileLoader.load( modelSource, URI.create( "inmemory" ) );
       final Either<List<Violation>, AspectModel> loadingResult =
-            new AspectModelLoader().withValidation( new AspectModelValidator() ).loadAspectModelFiles( List.of( file ) );
+            new AspectModelLoader().withValidation( validator ).loadAspectModelFiles( List.of( file ) );
       return loadingResult.mapLeft( violations -> new ViolationFormatter().apply( loadingResult.getLeft() ) )
             .getOrElseThrow( report -> {
                throw new RuntimeException( report );

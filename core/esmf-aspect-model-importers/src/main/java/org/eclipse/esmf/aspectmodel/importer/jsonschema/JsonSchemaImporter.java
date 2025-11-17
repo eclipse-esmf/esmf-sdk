@@ -306,6 +306,7 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
    }
 
    protected List<Property> buildPropertiesList( final JsonNode node, final Context context ) {
+      // TODO: If the node contains only a oneOf that in turn contains "properties", handle this here
       return jsonProperty( node, PROPERTIES )
             .or( () -> jsonProperty( node, $DEFS ) )
             .stream()
