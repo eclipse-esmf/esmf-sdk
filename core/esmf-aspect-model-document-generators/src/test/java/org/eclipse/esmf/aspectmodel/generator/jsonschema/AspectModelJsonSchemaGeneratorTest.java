@@ -45,6 +45,8 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 import org.assertj.core.data.Percentage;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
@@ -125,6 +127,7 @@ class AspectModelJsonSchemaGeneratorTest {
     * @param testAspect the test aspect enum field
     */
    @ParameterizedTest
+   @Execution( ExecutionMode.CONCURRENT )
    @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
          "MODEL_WITH_BROKEN_CYCLES", // contains cycles, but all of them should be "breakable", need to be investigated
          "ASPECT_WITH_ANY_VALUE_DECLARATIONS"

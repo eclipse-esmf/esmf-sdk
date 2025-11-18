@@ -25,11 +25,14 @@ import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 public class AspectModelSqlGeneratorTest {
    @ParameterizedTest
+   @Execution( ExecutionMode.CONCURRENT )
    @EnumSource( value = TestAspect.class )
    void testDatabricksGeneration( final TestAspect testAspect ) {
       final Aspect aspect = TestResources.load( testAspect ).aspect();
@@ -51,6 +54,7 @@ public class AspectModelSqlGeneratorTest {
    }
 
    @ParameterizedTest
+   @Execution( ExecutionMode.CONCURRENT )
    @EnumSource( value = TestAspect.class )
    void testDatabricksGenerationExcludeComments( final TestAspect testAspect ) {
       final Aspect aspect = TestResources.load( testAspect ).aspect();
