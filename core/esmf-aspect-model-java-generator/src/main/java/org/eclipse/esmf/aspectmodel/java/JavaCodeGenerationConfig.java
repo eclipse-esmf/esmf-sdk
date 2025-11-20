@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -16,7 +16,7 @@ package org.eclipse.esmf.aspectmodel.java;
 import java.io.File;
 
 import org.eclipse.esmf.aspectmodel.generator.GenerationConfig;
-import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
+import org.eclipse.esmf.aspectmodel.generator.exception.CodeGenerationException;
 
 import io.soabase.recordbuilder.core.RecordBuilder;
 

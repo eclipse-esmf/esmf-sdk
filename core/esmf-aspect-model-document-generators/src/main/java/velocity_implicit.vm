@@ -34,3 +34,10 @@
 #* @vtlvariable name="list" type="org.eclipse.esmf.metamodel.characteristic.List" *#
 #* @vtlvariable name="code" type="org.eclipse.esmf.metamodel.characteristic.Code" *#
 #* @vtlvariable name="descriptionsUtils" type="org.eclipse.esmf.aspectmodel.utils.DescriptionsUtils" *#
+#* @vtlvariable name="util" type="org.eclipse.esmf.aspectmodel.generator.ts.AspectModelTsUtil" *#
+#* @vtlvariable name="codeGenerationConfig" type="org.eclipse.esmf.aspectmodel.generator.ts.TsCodeGenerationConfig" *#
+#* @vtlvariable name="modelVisitor" type="org.eclipse.esmf.aspectmodel.generator.ts.metamodel.StaticMetaModelVisitor" *#
+#* @vtlvariable name="State" type="java.lang.Class<org.eclipse.esmf.metamodel.characteristic.State>" *#
+#* @vtlvariable name="element" type="org.eclipse.esmf.metamodel.StructureElement" *#
+#* @vtlvariable name="context" type="org.eclipse.esmf.aspectmodel.generator.ts.metamodel.StaticCodeGenerationContext" *#
+

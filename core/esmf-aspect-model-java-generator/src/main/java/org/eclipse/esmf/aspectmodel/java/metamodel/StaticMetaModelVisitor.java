@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -24,12 +24,12 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.eclipse.esmf.aspectmodel.generator.exception.CodeGenerationException;
 import org.eclipse.esmf.aspectmodel.java.AspectModelJavaUtil;
 import org.eclipse.esmf.aspectmodel.java.DeconstructionSet;
 import org.eclipse.esmf.aspectmodel.java.StructuredValuePropertiesDeconstructor;
 import org.eclipse.esmf.aspectmodel.java.ValueExpressionVisitor;
 import org.eclipse.esmf.aspectmodel.java.ValueInitializer;
-import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.BoundDefinition;
@@ -480,6 +480,7 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
    public String visitLocaleConstraint( final LocaleConstraint localeConstraint, final StaticCodeGenerationContext context ) {
       context.codeGenerationConfig().importTracker().importExplicit( DefaultLocaleConstraint.class );
       context.codeGenerationConfig().importTracker().importExplicit( Locale.class );
+      // TODO is it bug?
       return "new DefaultLanguageConstraint("
             // MetaModelBaseAttributes
             + getMetaModelBaseAttributes( localeConstraint, context ) + ","
