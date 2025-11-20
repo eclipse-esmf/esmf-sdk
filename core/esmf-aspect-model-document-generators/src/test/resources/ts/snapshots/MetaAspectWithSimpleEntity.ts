@@ -1,3 +1,4 @@
+import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
 import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
@@ -14,9 +15,10 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithSimpleEntity,} from './AspectWithSimpleEntity';
+import { DefaultEntity,DefaultSingleEntity,} from './aspect-meta-model';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 
-import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
+
 
 
     
@@ -52,31 +54,29 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'entityProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultSingleEntity({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-}, DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},MetaReplacedAspectArtifact.INSTANCE.getProperties(),Optional.empty()))
+
+        null,
+    null,
+    null,
+    (() => { const defaultSingleEntity = new DefaultSingleEntity(null, 
+null, 
+null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEntityReplacedAspectArtifact; })())
+defaultSingleEntity.isAnonymousNode = true;
+ return defaultSingleEntity; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'entityProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'entityProperty',
+    false,
+    );
 
 
 

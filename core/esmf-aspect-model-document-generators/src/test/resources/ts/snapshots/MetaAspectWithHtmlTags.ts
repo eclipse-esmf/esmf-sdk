@@ -1,3 +1,4 @@
+import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
 import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
@@ -14,9 +15,10 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithHtmlTags,} from './AspectWithHtmlTags';
+import { DefaultCharacteristic,DefaultEntity,} from './aspect-meta-model';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 import { LangString,} from './core/langString';
-import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
+
 
 
 
@@ -53,32 +55,29 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testEntity',
-preferredNames : [ {
-value : "Preferred Name <input value=''/><script>alert('Boom!')</script>'/>",
-languageTag : 'en',
-},
- ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     {
-metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'ReplacedAspectArtifactCharacteristic',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-}
+
+        null,
+    null,
+    null,
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEntityReplacedAspectArtifact; })())
+defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifactCharacteristic';
+ return defaultCharacteristic; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testEntity',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testEntity',
+    false,
+    );
 
 
 
@@ -110,14 +109,14 @@ getAllProperties(): Array<StaticProperty<AspectWithHtmlTags, any>> {
         
     getPreferredNames(): Array<LangString> {
         return [
-            {value: 'Aspect With <img src=xss.png onerror=alert('Boom!')> Entity', languageTag: 'en'},
+            new LangString('Aspect With <img src=xss.png onerror=alert(\'Boom!\')> Entity', 'en'),
         ];
         }
 
         
         getDescriptions(): Array<LangString> {
         return [
-            {value: 'Aspect With <p>inside html tag</p> Entity', languageTag: 'en'},
+            new LangString('Aspect With <p>inside html tag<\/p> Entity', 'en'),
         ];
         }
 

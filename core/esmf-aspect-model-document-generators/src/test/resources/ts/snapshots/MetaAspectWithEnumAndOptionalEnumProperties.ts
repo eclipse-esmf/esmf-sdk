@@ -14,6 +14,8 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithEnumAndOptionalEnumProperties,} from './AspectWithEnumAndOptionalEnumProperties';
+import { DefaultEnumeration,DefaultScalar,} from './aspect-meta-model';
+import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
 import { DefaultStaticProperty,StaticContainerProperty,} from './core/staticConstraintProperty';
 
 
@@ -51,38 +53,25 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultEnumeration({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),new ArrayList<Value>(){{add({
-metaModelBaseAttributes : {},
-value : new BigInteger( "1" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),
-});add({
-metaModelBaseAttributes : {},
-value : new BigInteger( "2" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),
-});add({
-metaModelBaseAttributes : {},
-value : new BigInteger( "3" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),
-});}})
+
+        null,
+    null,
+    null,
+    (() => { const defaultEnumeration = new DefaultEnumeration(null, 
+null, 
+null, 
+[new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),'1'),
+new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),'2'),
+new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),'3')],new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ))
+defaultEnumeration.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEnumeration; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testProperty',
+    false,
+    );
 
 
 
@@ -100,43 +89,30 @@ type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),
         return 'AspectWithEnumAndOptionalEnumProperties';
     }
 
-        getContainedType(): AspectWithEnumAndOptionalEnumProperties {
+        getContainedType(): string {
             return 'AspectWithEnumAndOptionalEnumProperties';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'optionalTestProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultEnumeration({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),new ArrayList<Value>(){{add({
-metaModelBaseAttributes : {},
-value : new BigInteger( "1" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),
-});add({
-metaModelBaseAttributes : {},
-value : new BigInteger( "2" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),
-});add({
-metaModelBaseAttributes : {},
-value : new BigInteger( "3" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),
-});}})
+
+        null,
+    null,
+    null,
+    (() => { const defaultEnumeration = new DefaultEnumeration(null, 
+null, 
+null, 
+[new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),'1'),
+new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),'2'),
+new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),'3')],new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ))
+defaultEnumeration.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEnumeration; })()
 ,
-    exampleValue : {},
-    optional : true,
-    notInPayload : false,
-        payloadName : 'optionalTestProperty',
-    isAbstract : false,
-    });
+    false,
+    true,
+    undefined,
+        'optionalTestProperty',
+    false,
+    );
 
 
 

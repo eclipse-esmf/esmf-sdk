@@ -39,11 +39,11 @@ public class TestContext {
                "AbstractTestEntity", "YesNo", "TrafficLight", "TheEnum", "TestTimeSeriesEntity",
                "TestState", "TestScalarEnumeration", "TestQuantity", "TestFirstEntity", "TestEnumTwoCharacteristic",
                "TestEnumOneCharacteristic", "TestEnumerationTwo", "TestEnumeration", "TestEntityWithEnumOne", "TestCharacteristic",
-               "SecondTestEntity", "RightEntity", "ProductionPeriodEntity",
-               "MyEnumerationTwo", "MyEnumerationThree",
-               "MyEnumerationOne", "MyEnumerationFour",
-               "LeftEntity", "Id", "GenericEnum", "Foo", "FirstLevelEntity", "EvaluationResults",
-               "Error", "Enum2", "Enum1", "EEntity", "TestEntity", "Automation" );
+               "SecondTestEntity", "RightEntity", "ProductionPeriodEntity", "TimeSeriesEntity",
+               "MyEnumerationTwo", "MyEnumerationThree", "SystemState", "TheEntity", "ParentOfParentEntity",
+               "MyEnumerationOne", "MyEnumerationFour", "MyEntityOne", "MyEntityTwo", "MyEntityThree", "MyEntityFour",
+               "LeftEntity", "Id", "GenericEnum", "Foo", "FirstLevelEntity", "EvaluationResults", "EvaluationResult",
+               "Enum2", "Enum1", "EEntity", "ParentTestEntity", "TestEntity", "Automation" );
 
    public static ThrowingFunction<Collection<TsGenerator>, GenerationResult, IOException> generateAspectCode() {
       return generators -> {
@@ -91,11 +91,15 @@ public class TestContext {
       }
 
       // Step 3. Remove duplicate import statements for replaced artifacts and keep only one
-      final String regex = "(import \\{ ReplacedAspectArtifact,} from '\\./ReplacedAspectArtifact';)";
-      Matcher matcher = Pattern.compile( regex ).matcher( replaced );
-      if ( matcher.find() ) {
-         replaced = replaced.replaceAll( regex, "" );
-         replaced = "import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';\n" + replaced;
+      List<String> artifacts = List.of( "ReplacedAspectArtifact", "MetaReplacedAspectArtifact" );
+
+      for ( String artifact : artifacts ) {
+         final String regex = "(import \\{ " + artifact + ",} from '\\./" + artifact + "';)";
+         Matcher matcher = Pattern.compile( regex ).matcher( replaced );
+         if ( matcher.find() ) {
+            replaced = replaced.replaceAll( regex, "" );
+            replaced = "import { " + artifact + ",} from './" + artifact + "';\n" + replaced;
+         }
       }
 
       return replaced;

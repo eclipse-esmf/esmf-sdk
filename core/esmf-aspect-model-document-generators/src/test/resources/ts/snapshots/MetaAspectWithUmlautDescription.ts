@@ -61,16 +61,16 @@ getAllProperties(): Array<StaticProperty<AspectWithUmlautDescription, any>> {
         
     getPreferredNames(): Array<LangString> {
         return [
-            {value: 'Test Aspect mit Umlauten in der Beschreibung', languageTag: 'de'},
-            {value: 'Test Aspect with Umlauts within description', languageTag: 'en'},
+            new LangString('Test Aspect mit Umlauten in der Beschreibung', 'de'),
+            new LangString('Test Aspect with Umlauts within description', 'en'),
         ];
         }
 
         
         getDescriptions(): Array<LangString> {
         return [
-            {value: 'Im Wort Entität ist ein Umlaut', languageTag: 'de'},
-            {value: 'This is a test description', languageTag: 'en'},
+            new LangString('Im Wort Entität ist ein Umlaut', 'de'),
+            new LangString('This is a test description', 'en'),
         ];
         }
 

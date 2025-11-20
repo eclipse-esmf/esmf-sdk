@@ -13,6 +13,7 @@
 
 
 import { AspectWithOptionalPropertyAndConstraint,} from './AspectWithOptionalPropertyAndConstraint';
+import { DefaultCharacteristic,DefaultLengthConstraint,DefaultScalar,DefaultTrait,} from './aspect-meta-model';
 import { StaticContainerProperty,} from './core/staticConstraintProperty';
 
 
@@ -47,51 +48,40 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
         return 'AspectWithOptionalPropertyAndConstraint';
     }
 
-        getContainedType(): AspectWithOptionalPropertyAndConstraint {
+        getContainedType(): string {
             return 'AspectWithOptionalPropertyAndConstraint';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'stringProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'TestLengthConstraint',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},{
-metaModelBaseAttributes : {
-urn : this.CHARACTERISTIC_NAMESPACE + '#Text',
-preferredNames : [ {
-value : "Text",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},
-},new ArrayList<Constraint>(){{add(new DefaultLengthConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.empty(),Optional.of(new BigInteger( "3" ))));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Text';
+defaultCharacteristic.addPreferredName('en' , 'Text');
+defaultCharacteristic.addDescription('en' , 'Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.');
+ return defaultCharacteristic; })(),[(() => { const lengthConstraint = new DefaultLengthConstraint(null, 
+null, 
+null, 
+undefined,undefined,)
+lengthConstraint.isAnonymousNode = true;
+ return lengthConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'TestLengthConstraint';
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : true,
-    notInPayload : false,
-        payloadName : 'stringProperty',
-    isAbstract : false,
-    });
+    false,
+    true,
+    undefined,
+        'stringProperty',
+    false,
+    );
 
 
 

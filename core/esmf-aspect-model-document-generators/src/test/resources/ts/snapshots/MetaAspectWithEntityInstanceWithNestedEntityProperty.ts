@@ -1,3 +1,4 @@
+import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
 import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
@@ -14,9 +15,10 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithEntityInstanceWithNestedEntityProperty,} from './AspectWithEntityInstanceWithNestedEntityProperty';
+import { DefaultEntity,DefaultEnumeration,} from './aspect-meta-model';
+import { DefaultEntityInstance,} from './aspect-meta-model/default-entity-instance';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
-import { MetaNestedEntity,} from './MetaNestedEntity';
-import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
+
 
 
 
@@ -53,59 +55,37 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultEnumeration({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},MetaReplacedAspectArtifact.INSTANCE.getProperties(),Optional.empty()),new ArrayList<Value>(){{add(new DefaultEntityInstance({
-urn : this.NAMESPACE + 'ReplacedAspectArtifactInstance',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new HashMap<Property, Value>() {{put(MetaReplacedAspectArtifact.CODE,{
-metaModelBaseAttributes : {},
-value : Short.parseShort( "3" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#short" ),
-});put(MetaReplacedAspectArtifact.NESTED_ENTITY,new DefaultEntityInstance({
-urn : this.NAMESPACE + 'NestedEntityInstance',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new HashMap<Property, Value>() {{put(MetaNestedEntity.NESTED_ENTITY_PROPERTY,{
-metaModelBaseAttributes : {},
-value : "bar",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});}},DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'NestedEntity',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},MetaNestedEntity.INSTANCE.getProperties(),Optional.empty())));}},DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},MetaReplacedAspectArtifact.INSTANCE.getProperties(),Optional.empty())));}})
+
+        null,
+    null,
+    null,
+    (() => { const defaultEnumeration = new DefaultEnumeration(null, 
+null, 
+null, 
+[new DefaultEntityInstance(null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEntityReplacedAspectArtifact; })(),
+undefined)],(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEntityReplacedAspectArtifact; })())
+defaultEnumeration.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEnumeration; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testProperty',
+    false,
+    );
 
 
 

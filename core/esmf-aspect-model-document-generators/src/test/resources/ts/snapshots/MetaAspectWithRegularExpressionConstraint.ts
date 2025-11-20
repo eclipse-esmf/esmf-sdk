@@ -13,6 +13,8 @@
 
 
 import { AspectWithRegularExpressionConstraint,} from './AspectWithRegularExpressionConstraint';
+import { DefaultCharacteristic,DefaultRegularExpressionConstraint,DefaultScalar,DefaultTrait,} from './aspect-meta-model';
+import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 import { LangString,} from './core/langString';
 
@@ -50,69 +52,38 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [ {
-value : "Test Property",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "This is a test property.",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
-'http://example.com/me',
- ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'TestRegularExpressionConstraint',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},{
-metaModelBaseAttributes : {
-urn : this.CHARACTERISTIC_NAMESPACE + '#Text',
-preferredNames : [ {
-value : "Text",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},
-},new ArrayList<Constraint>(){{add(new DefaultRegularExpressionConstraint({
-isAnonymous : true,
-preferredNames : [ {
-value : "Test Regular Expression Constraint",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "This is a test regular expression constraint.",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
- ],
-},"^[0-9]*$"));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Text';
+defaultCharacteristic.addPreferredName('en' , 'Text');
+defaultCharacteristic.addDescription('en' , 'Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.');
+ return defaultCharacteristic; })(),[(() => { const regularExpressionConstraint = new DefaultRegularExpressionConstraint(null, 
+null, 
+null, 
+'^[0-9]*$')
+regularExpressionConstraint.isAnonymousNode = true;
+regularExpressionConstraint.addPreferredName('en' , 'Test Regular Expression Constraint');
+regularExpressionConstraint.addDescription('en' , 'This is a test regular expression constraint.');
+regularExpressionConstraint.addSeeReference('http:\/\/example.com\/');
+ return regularExpressionConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'TestRegularExpressionConstraint';
+ return trait; })()
 ,
-    exampleValue : {
-metaModelBaseAttributes : {},
-value : "3",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'3'),
+        'testProperty',
+    false,
+    );
 
 
 
@@ -144,20 +115,20 @@ getAllProperties(): Array<StaticProperty<AspectWithRegularExpressionConstraint, 
         
     getPreferredNames(): Array<LangString> {
         return [
-            {value: 'Test Aspect', languageTag: 'en'},
+            new LangString('Test Aspect', 'en'),
         ];
         }
 
         
         getDescriptions(): Array<LangString> {
         return [
-            {value: 'This is a test description', languageTag: 'en'},
+            new LangString('This is a test description', 'en'),
         ];
         }
 
         getSee(): Array<String> {
         return [
-            "http://example.com/",
+            'http:\/\/example.com\/',
         ];
         }
 

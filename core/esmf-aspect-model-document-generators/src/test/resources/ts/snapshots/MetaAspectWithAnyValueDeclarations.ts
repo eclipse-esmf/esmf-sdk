@@ -14,6 +14,8 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithAnyValueDeclarations,} from './AspectWithAnyValueDeclarations';
+import { DefaultEnumeration,DefaultScalar,} from './aspect-meta-model';
+import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 
 
@@ -51,60 +53,27 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'property1',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultEnumeration({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [ {
-value : "Warning Level",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Represents if speed of position change is within specification (green), within tolerance (yellow), or outside specification (red).",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),new ArrayList<Value>(){{add({
-metaModelBaseAttributes : {
-isAnonymous : true,
-preferredNames : [ {
-value : "Normal",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Indicates that the speed of position change is within specification.",
-languageTag : 'en',
-},
- ],
-see : [ 'https://en.wikipedia.org/wiki/Traffic_light',
- ],
-},
-value : "green",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});add({
-metaModelBaseAttributes : {},
-value : "red",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});add({
-metaModelBaseAttributes : {},
-value : "yellow",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});}})
+
+        null,
+    null,
+    null,
+    (() => { const defaultEnumeration = new DefaultEnumeration(null, 
+null, 
+null, 
+[new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'green'),
+new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'red'),
+new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'yellow')],new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultEnumeration.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+defaultEnumeration.addPreferredName('en' , 'Warning Level');
+defaultEnumeration.addDescription('en' , 'Represents if speed of position change is within specification (green), within tolerance (yellow), or outside specification (red).');
+ return defaultEnumeration; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'property1',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'property1',
+    false,
+    );
 
 
 

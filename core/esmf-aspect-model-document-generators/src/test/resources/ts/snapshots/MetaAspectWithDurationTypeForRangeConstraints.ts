@@ -13,7 +13,11 @@
 
 
 import { AspectWithDurationTypeForRangeConstraints,} from './AspectWithDurationTypeForRangeConstraints';
+import { BoundDefinition,} from './aspect-meta-model/bound-definition';
+import { DefaultMeasurement,DefaultQuantityKind,DefaultRangeConstraint,DefaultScalar,DefaultTrait,} from './aspect-meta-model';
+import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
+import { DefaultUnit,} from './aspect-meta-model/default-unit';
 
 
     
@@ -49,52 +53,46 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testPropertyWithDayTimeDuration',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'testWithDurationMinDurationMaxDayTimeDuration',
-preferredNames : [ {
-value : "Test Range",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test Range",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},new DefaultMeasurement({
-urn : this.NAMESPACE + 'MeasurementDayTimeDuration',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#dayTimeDuration" ),Units.fromName("hour")),new ArrayList<Constraint>(){{add(new DefaultRangeConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of({
-metaModelBaseAttributes : {},
-value : _datatypeFactory.newDuration( "P1DT5H" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#dayTimeDuration" ),
-}),Optional.of({
-metaModelBaseAttributes : {},
-value : _datatypeFactory.newDuration( "P1DT8H" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#dayTimeDuration" ),
-}),BoundDefinition.AT_LEAST,BoundDefinition.AT_MOST));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultMeasurement = new DefaultMeasurement(null, 
+null, 
+null, 
+(() => { const defaultUnit = new DefaultUnit(null, 
+null, 
+null, 
+'h','HUR','secondUnitOfTime','3600 s',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'time')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })() ])
+defaultUnit.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#hour';
+defaultUnit.addPreferredName('en' , 'hour');
+ return defaultUnit; })(),new DefaultScalar("http://www.w3.org/2001/XMLSchema#dayTimeDuration" ))
+defaultMeasurement.addAspectModelUrn = this.NAMESPACE + 'MeasurementDayTimeDuration';
+ return defaultMeasurement; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(null, 
+null, 
+null, 
+BoundDefinition.AT_MOST,BoundDefinition.AT_LEAST,new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#dayTimeDuration" ),'P1DT5H'),new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#dayTimeDuration" ),'P1DT8H'),)
+defaultRangeConstraint.isAnonymousNode = true;
+ return defaultRangeConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'testWithDurationMinDurationMaxDayTimeDuration';
+trait.addPreferredName('en' , 'Test Range');
+trait.addDescription('en' , 'Test Range');
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testPropertyWithDayTimeDuration',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testPropertyWithDayTimeDuration',
+    false,
+    );
 
 
 
@@ -114,52 +112,46 @@ type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#dayTimeDuration" ),
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testPropertyWithDuration',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'testWithDurationMinDurationMaxDuration',
-preferredNames : [ {
-value : "Test Range",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test Range",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},new DefaultMeasurement({
-urn : this.NAMESPACE + 'MeasurementDuration',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#duration" ),Units.fromName("hour")),new ArrayList<Constraint>(){{add(new DefaultRangeConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of({
-metaModelBaseAttributes : {},
-value : _datatypeFactory.newDuration( "PT1H5M0S" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#duration" ),
-}),Optional.of({
-metaModelBaseAttributes : {},
-value : _datatypeFactory.newDuration( "PT1H5M3S" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#duration" ),
-}),BoundDefinition.AT_LEAST,BoundDefinition.AT_MOST));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultMeasurement = new DefaultMeasurement(null, 
+null, 
+null, 
+(() => { const defaultUnit = new DefaultUnit(null, 
+null, 
+null, 
+'h','HUR','secondUnitOfTime','3600 s',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'time')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })() ])
+defaultUnit.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#hour';
+defaultUnit.addPreferredName('en' , 'hour');
+ return defaultUnit; })(),new DefaultScalar("http://www.w3.org/2001/XMLSchema#duration" ))
+defaultMeasurement.addAspectModelUrn = this.NAMESPACE + 'MeasurementDuration';
+ return defaultMeasurement; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(null, 
+null, 
+null, 
+BoundDefinition.AT_MOST,BoundDefinition.AT_LEAST,new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#duration" ),'PT1H5M0S'),new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#duration" ),'PT1H5M3S'),)
+defaultRangeConstraint.isAnonymousNode = true;
+ return defaultRangeConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'testWithDurationMinDurationMaxDuration';
+trait.addPreferredName('en' , 'Test Range');
+trait.addDescription('en' , 'Test Range');
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testPropertyWithDuration',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testPropertyWithDuration',
+    false,
+    );
 
 
 
@@ -179,52 +171,46 @@ type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#duration" ),
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testPropertyWithYearMonthDuration',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'testWithDurationMinDurationMaxYearMonthDuration',
-preferredNames : [ {
-value : "Test Range",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test Range",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},new DefaultMeasurement({
-urn : this.NAMESPACE + 'MeasurementYearMonthDuration',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#yearMonthDuration" ),Units.fromName("hour")),new ArrayList<Constraint>(){{add(new DefaultRangeConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of({
-metaModelBaseAttributes : {},
-value : _datatypeFactory.newDuration( "P5Y2M" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#yearMonthDuration" ),
-}),Optional.of({
-metaModelBaseAttributes : {},
-value : _datatypeFactory.newDuration( "P5Y3M" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#yearMonthDuration" ),
-}),BoundDefinition.AT_LEAST,BoundDefinition.AT_MOST));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultMeasurement = new DefaultMeasurement(null, 
+null, 
+null, 
+(() => { const defaultUnit = new DefaultUnit(null, 
+null, 
+null, 
+'h','HUR','secondUnitOfTime','3600 s',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'time')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })() ])
+defaultUnit.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#hour';
+defaultUnit.addPreferredName('en' , 'hour');
+ return defaultUnit; })(),new DefaultScalar("http://www.w3.org/2001/XMLSchema#yearMonthDuration" ))
+defaultMeasurement.addAspectModelUrn = this.NAMESPACE + 'MeasurementYearMonthDuration';
+ return defaultMeasurement; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(null, 
+null, 
+null, 
+BoundDefinition.AT_MOST,BoundDefinition.AT_LEAST,new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#yearMonthDuration" ),'P5Y2M'),new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#yearMonthDuration" ),'P5Y3M'),)
+defaultRangeConstraint.isAnonymousNode = true;
+ return defaultRangeConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'testWithDurationMinDurationMaxYearMonthDuration';
+trait.addPreferredName('en' , 'Test Range');
+trait.addDescription('en' , 'Test Range');
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testPropertyWithYearMonthDuration',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testPropertyWithYearMonthDuration',
+    false,
+    );
 
 
 

@@ -1,3 +1,4 @@
+import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
 import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
@@ -14,8 +15,10 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithOptionalPropertiesWithEntity,} from './AspectWithOptionalPropertiesWithEntity';
+import { DefaultCharacteristic,DefaultEntity,DefaultScalar,} from './aspect-meta-model';
+import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
 import { DefaultStaticProperty,StaticContainerProperty,} from './core/staticConstraintProperty';
-import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
+
 
 
 
@@ -52,40 +55,25 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testString',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     {
-metaModelBaseAttributes : {
-urn : this.CHARACTERISTIC_NAMESPACE + '#Text',
-preferredNames : [ {
-value : "Text",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},
-}
+
+        null,
+    null,
+    null,
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Text';
+defaultCharacteristic.addPreferredName('en' , 'Text');
+defaultCharacteristic.addDescription('en' , 'Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.');
+ return defaultCharacteristic; })()
 ,
-    exampleValue : {
-metaModelBaseAttributes : {},
-value : "Example Value Test",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testString',
-    isAbstract : false,
-    });
+    false,
+    false,
+    new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'Example Value Test'),
+        'testString',
+    false,
+    );
 
 
 
@@ -103,45 +91,30 @@ type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
         return 'AspectWithOptionalPropertiesWithEntity';
     }
 
-        getContainedType(): AspectWithOptionalPropertiesWithEntity {
+        getContainedType(): string {
             return 'AspectWithOptionalPropertiesWithEntity';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testOptionalString',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     {
-metaModelBaseAttributes : {
-urn : this.CHARACTERISTIC_NAMESPACE + '#Text',
-preferredNames : [ {
-value : "Text",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},
-}
+
+        null,
+    null,
+    null,
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Text';
+defaultCharacteristic.addPreferredName('en' , 'Text');
+defaultCharacteristic.addDescription('en' , 'Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.');
+ return defaultCharacteristic; })()
 ,
-    exampleValue : {
-metaModelBaseAttributes : {},
-value : "Example Value Test",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-},
-    optional : true,
-    notInPayload : false,
-        payloadName : 'testOptionalString',
-    isAbstract : false,
-    });
+    false,
+    true,
+    new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'Example Value Test'),
+        'testOptionalString',
+    false,
+    );
 
 
 
@@ -159,33 +132,34 @@ type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
         return 'AspectWithOptionalPropertiesWithEntity';
     }
 
-        getContainedType(): AspectWithOptionalPropertiesWithEntity {
+        getContainedType(): string {
             return 'AspectWithOptionalPropertiesWithEntity';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testOptionalEntity',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     {
-metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'ReplacedAspectArtifactCharacteristic',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-}
+
+        null,
+    null,
+    null,
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEntityReplacedAspectArtifact; })())
+defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifactCharacteristic';
+ return defaultCharacteristic; })()
 ,
-    exampleValue : {},
-    optional : true,
-    notInPayload : false,
-        payloadName : 'testOptionalEntity',
-    isAbstract : false,
-    });
+    false,
+    true,
+    undefined,
+        'testOptionalEntity',
+    false,
+    );
 
 
 

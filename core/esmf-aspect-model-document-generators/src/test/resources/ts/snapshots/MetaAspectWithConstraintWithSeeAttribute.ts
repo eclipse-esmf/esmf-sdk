@@ -13,6 +13,7 @@
 
 
 import { AspectWithConstraintWithSeeAttribute,} from './AspectWithConstraintWithSeeAttribute';
+import { DefaultCharacteristic,DefaultLengthConstraint,DefaultRegularExpressionConstraint,DefaultScalar,DefaultTrait,} from './aspect-meta-model';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 
 
@@ -49,55 +50,38 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'TestTrait',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},{
-metaModelBaseAttributes : {
-urn : this.CHARACTERISTIC_NAMESPACE + '#Text',
-preferredNames : [ {
-value : "Text",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},
-},new ArrayList<Constraint>(){{add(new DefaultLengthConstraint({
-isAnonymous : true,
-preferredNames : [ {
-value : "Test Constraint",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test Constraint",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
- ],
-},Optional.of(new BigInteger( "5" )),Optional.of(new BigInteger( "10" ))));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Text';
+defaultCharacteristic.addPreferredName('en' , 'Text');
+defaultCharacteristic.addDescription('en' , 'Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.');
+ return defaultCharacteristic; })(),[(() => { const lengthConstraint = new DefaultLengthConstraint(null, 
+null, 
+null, 
+5,5,)
+lengthConstraint.isAnonymousNode = true;
+lengthConstraint.addPreferredName('en' , 'Test Constraint');
+lengthConstraint.addDescription('en' , 'Test Constraint');
+lengthConstraint.addSeeReference('http:\/\/example.com\/');
+ return lengthConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'TestTrait';
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testProperty',
+    false,
+    );
 
 
 
@@ -117,56 +101,39 @@ see : [ 'http://example.com/',
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testPropertyTwo',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'TestTraitTwo',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},{
-metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'ReplacedAspectArtifactTwo',
-preferredNames : [ {
-value : "Test Characteristic Two",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test Characteristic Two",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/me2',
- ],
-},
-},new ArrayList<Constraint>(){{add(new DefaultRegularExpressionConstraint({
-isAnonymous : true,
-preferredNames : [ {
-value : "Test Constraint Two",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test Constraint Two",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/me',
- ],
-},"^[A-Z][A-Z][A-Z]$"));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifactTwo';
+defaultCharacteristic.addPreferredName('en' , 'Test Characteristic Two');
+defaultCharacteristic.addDescription('en' , 'Test Characteristic Two');
+defaultCharacteristic.addSeeReference('http:\/\/example.com\/me2');
+ return defaultCharacteristic; })(),[(() => { const regularExpressionConstraint = new DefaultRegularExpressionConstraint(null, 
+null, 
+null, 
+'^[A-Z][A-Z][A-Z]$')
+regularExpressionConstraint.isAnonymousNode = true;
+regularExpressionConstraint.addPreferredName('en' , 'Test Constraint Two');
+regularExpressionConstraint.addDescription('en' , 'Test Constraint Two');
+regularExpressionConstraint.addSeeReference('http:\/\/example.com\/me');
+ return regularExpressionConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'TestTraitTwo';
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testPropertyTwo',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testPropertyTwo',
+    false,
+    );
 
 
 

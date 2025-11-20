@@ -1,3 +1,4 @@
+import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
 import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
@@ -14,7 +15,8 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithCollectionAndElementCharacteristic,} from './AspectWithCollectionAndElementCharacteristic';
-import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
+import { DefaultCollection,DefaultEntity,DefaultSingleEntity,} from './aspect-meta-model';
+
 import { StaticContainerProperty,} from './core/staticConstraintProperty';
 
 
@@ -50,46 +52,46 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
         return 'AspectWithCollectionAndElementCharacteristic';
     }
 
-        getContainedType(): AspectWithCollectionAndElementCharacteristic {
+        getContainedType(): string {
             return 'AspectWithCollectionAndElementCharacteristic';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'items',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultCollection({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of(DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},MetaReplacedAspectArtifact.INSTANCE.getProperties(),Optional.empty())),Optional.of(new DefaultSingleEntity({
-urn : this.NAMESPACE + 'ReplacedAspectArtifactCharacteristic',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-}, DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},MetaReplacedAspectArtifact.INSTANCE.getProperties(),Optional.empty()))))
+
+        null,
+    null,
+    null,
+    (() => { const defaultCollection = new DefaultCollection(null, 
+null, 
+null, 
+true, false, (() => { const defaultSingleEntity = new DefaultSingleEntity(null, 
+null, 
+null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEntityReplacedAspectArtifact; })())
+defaultSingleEntity.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifactCharacteristic';
+ return defaultSingleEntity; })(),
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEntityReplacedAspectArtifact; })())
+defaultCollection.isAnonymousNode = true;
+ return defaultCollection; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'items',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'items',
+    false,
+    );
 
 
 

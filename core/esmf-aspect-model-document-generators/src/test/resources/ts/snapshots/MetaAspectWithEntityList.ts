@@ -1,3 +1,4 @@
+import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
 import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
@@ -14,7 +15,8 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithEntityList,} from './AspectWithEntityList';
-import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
+import { DefaultEntity,DefaultList,} from './aspect-meta-model';
+
 import { StaticContainerProperty,} from './core/staticConstraintProperty';
 
 
@@ -50,36 +52,35 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
         return 'AspectWithEntityList';
     }
 
-        getContainedType(): AspectWithEntityList {
+        getContainedType(): string {
             return 'AspectWithEntityList';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testList',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultList({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of(DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},MetaReplacedAspectArtifact.INSTANCE.getProperties(),Optional.empty())),Optional.empty())
+
+        null,
+    null,
+    null,
+    (() => { const defaultList = new DefaultList(null, 
+null, 
+null, 
+undefined,
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEntityReplacedAspectArtifact; })())
+defaultList.isAnonymousNode = true;
+ return defaultList; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testList',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testList',
+    false,
+    );
 
 
 

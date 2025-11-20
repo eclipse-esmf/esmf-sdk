@@ -1,3 +1,4 @@
+import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
 import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
@@ -14,9 +15,10 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithTimeSeries,} from './AspectWithTimeSeries';
+import { DefaultEntity,DefaultSortedSet,} from './aspect-meta-model';
 import { LangString,} from './core/langString';
-import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
-import { MetaTimeSeriesEntity,} from './MetaTimeSeriesEntity';
+
+
 import { StaticContainerProperty,} from './core/staticConstraintProperty';
 
 
@@ -52,77 +54,49 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
         return 'AspectWithTimeSeries';
     }
 
-        getContainedType(): AspectWithTimeSeries {
+        getContainedType(): string {
             return 'AspectWithTimeSeries';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [ {
-value : "Test Property",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "This is a test property.",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
-'http://example.com/me',
- ],
-},
-    characteristic :     new DefaultSortedSet({
-urn : this.NAMESPACE + 'TestTimeSeries',
-preferredNames : [ {
-value : "Test Time Series",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "This is a test time series.",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
- ],
-},Optional.of(DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [ {
-value : "Test Time Series Entity",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "This is a test time series entity.",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
- ],
-},MetaReplacedAspectArtifact.INSTANCE.getProperties(),Optional.of(DefaultAbstractEntity.createDefaultAbstractEntity({
-urn : 'urn:samm:org.eclipse.esmf.samm:entity:2.2.0#TimeSeriesEntity',
-preferredNames : [ {
-value : "Time Series Entity",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "An Entity which represents a key/value pair. The key is the timestamp when the value was recorded and the value is the value which was recorded.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},MetaTimeSeriesEntity.INSTANCE.getProperties(),Optional.empty(),List.of(AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.test:1.0.0#ReplacedAspectArtifact" )))))),Optional.empty())
+
+        null,
+    null,
+    null,
+    (() => { const defaultSortedSet = new DefaultSortedSet(null, 
+null, 
+null, 
+undefined,
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+(() => { const extendsDefaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),true,
+undefined)
+extendsDefaultEntityReplacedAspectArtifact.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:entity:2.2.0#ReplacedAspectArtifact';
+extendsDefaultEntityReplacedAspectArtifact.addPreferredName('en' , 'Time Series Entity');
+extendsDefaultEntityReplacedAspectArtifact.addDescription('en' , 'An Entity which represents a key\/value pair. The key is the timestamp when the value was recorded and the value is the value which was recorded.');
+ return extendsDefaultEntityReplacedAspectArtifact; })())
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+defaultEntityReplacedAspectArtifact.addPreferredName('en' , 'Test Time Series Entity');
+defaultEntityReplacedAspectArtifact.addDescription('en' , 'This is a test time series entity.');
+defaultEntityReplacedAspectArtifact.addSeeReference('http:\/\/example.com\/');
+ return defaultEntityReplacedAspectArtifact; })())
+defaultSortedSet.addAspectModelUrn = this.NAMESPACE + 'TestTimeSeries';
+defaultSortedSet.addPreferredName('en' , 'Test Time Series');
+defaultSortedSet.addDescription('en' , 'This is a test time series.');
+defaultSortedSet.addSeeReference('http:\/\/example.com\/');
+ return defaultSortedSet; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testProperty',
+    false,
+    );
 
 
 
@@ -154,20 +128,20 @@ getAllProperties(): Array<StaticProperty<AspectWithTimeSeries, any>> {
         
     getPreferredNames(): Array<LangString> {
         return [
-            {value: 'Test Aspect', languageTag: 'en'},
+            new LangString('Test Aspect', 'en'),
         ];
         }
 
         
         getDescriptions(): Array<LangString> {
         return [
-            {value: 'This is a test description', languageTag: 'en'},
+            new LangString('This is a test description', 'en'),
         ];
         }
 
         getSee(): Array<String> {
         return [
-            "http://example.com/",
+            'http:\/\/example.com\/',
         ];
         }
 

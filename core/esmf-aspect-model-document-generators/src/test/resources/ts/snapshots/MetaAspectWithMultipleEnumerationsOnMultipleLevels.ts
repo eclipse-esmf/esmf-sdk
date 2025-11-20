@@ -1,3 +1,4 @@
+import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
 import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
@@ -14,8 +15,10 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithMultipleEnumerationsOnMultipleLevels,} from './AspectWithMultipleEnumerationsOnMultipleLevels';
+import { DefaultEntity,DefaultEnumeration,DefaultScalar,DefaultSingleEntity,} from './aspect-meta-model';
+import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
-import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
+
 
 
 
@@ -54,38 +57,25 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testPropertyWithEnumOne',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultEnumeration({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),new ArrayList<Value>(){{add({
-metaModelBaseAttributes : {},
-value : new BigInteger( "1" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),
-});add({
-metaModelBaseAttributes : {},
-value : new BigInteger( "2" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),
-});add({
-metaModelBaseAttributes : {},
-value : new BigInteger( "3" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),
-});}})
+
+        null,
+    null,
+    null,
+    (() => { const defaultEnumeration = new DefaultEnumeration(null, 
+null, 
+null, 
+[new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),'1'),
+new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),'2'),
+new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),'3')],new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ))
+defaultEnumeration.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEnumeration; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testPropertyWithEnumOne',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testPropertyWithEnumOne',
+    false,
+    );
 
 
 
@@ -105,38 +95,25 @@ type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testPropertyWithEnumTwo',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultEnumeration({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),new ArrayList<Value>(){{add({
-metaModelBaseAttributes : {},
-value : "One",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});add({
-metaModelBaseAttributes : {},
-value : "Three",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});add({
-metaModelBaseAttributes : {},
-value : "Two",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});}})
+
+        null,
+    null,
+    null,
+    (() => { const defaultEnumeration = new DefaultEnumeration(null, 
+null, 
+null, 
+[new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'One'),
+new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'Three'),
+new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'Two')],new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultEnumeration.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEnumeration; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testPropertyWithEnumTwo',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testPropertyWithEnumTwo',
+    false,
+    );
 
 
 
@@ -156,31 +133,29 @@ type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testEntityWithEnumOne',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultSingleEntity({
-urn : this.NAMESPACE + 'ReplacedAspectArtifactCharacteristic',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-}, DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},MetaReplacedAspectArtifact.INSTANCE.getProperties(),Optional.empty()))
+
+        null,
+    null,
+    null,
+    (() => { const defaultSingleEntity = new DefaultSingleEntity(null, 
+null, 
+null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEntityReplacedAspectArtifact; })())
+defaultSingleEntity.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifactCharacteristic';
+ return defaultSingleEntity; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testEntityWithEnumOne',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testEntityWithEnumOne',
+    false,
+    );
 
 
 

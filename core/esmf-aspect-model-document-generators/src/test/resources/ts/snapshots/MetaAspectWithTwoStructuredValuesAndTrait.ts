@@ -13,6 +13,8 @@
 
 
 import { AspectWithTwoStructuredValuesAndTrait,} from './AspectWithTwoStructuredValuesAndTrait';
+import { DefaultRegularExpressionConstraint,DefaultScalar,DefaultStructuredValue,DefaultTrait,} from './aspect-meta-model';
+import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 
 
@@ -49,40 +51,37 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'startDate',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'StructuredDateWithConstraint',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultStructuredValue({
-urn : this.NAMESPACE + 'StructuredDate',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#date" ),"(\\d{4})-(\\d{2})-(\\d{2})",new ArrayList<Object>(){{add(START_DATE_YEAR);add("-");add(START_DATE_MONTH);add("-");add(START_DATE_DAY);}}),new ArrayList<Constraint>(){{add(new DefaultRegularExpressionConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},"[\\d-]*"));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultStructuredValue = new DefaultStructuredValue(null, 
+null, 
+null, 
+'(\\d{4})-(\\d{2})-(\\d{2})',[START_DATE_YEAR,
+'-',
+START_DATE_MONTH,
+'-',
+START_DATE_DAY],new DefaultScalar("http://www.w3.org/2001/XMLSchema#date" ))
+defaultStructuredValue.addAspectModelUrn = this.NAMESPACE + 'StructuredDate';
+ return defaultStructuredValue; })(),[(() => { const regularExpressionConstraint = new DefaultRegularExpressionConstraint(null, 
+null, 
+null, 
+'[\\d-]*')
+regularExpressionConstraint.isAnonymousNode = true;
+ return regularExpressionConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'StructuredDateWithConstraint';
+ return trait; })()
 ,
-    exampleValue : {
-metaModelBaseAttributes : {},
-value : _datatypeFactory.newXMLGregorianCalendar( "2019-09-27" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#date" ),
-},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'startDate',
-    isAbstract : false,
-    });
+    false,
+    false,
+    new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#date" ),new Date( ''2019-09-27'' )),
+        'startDate',
+    false,
+    );
 
 
 
@@ -102,40 +101,37 @@ type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#date" ),
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'endDate',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'StructuredDateWithConstraint',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultStructuredValue({
-urn : this.NAMESPACE + 'StructuredDate',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#date" ),"(\\d{4})-(\\d{2})-(\\d{2})",new ArrayList<Object>(){{add(END_DATE_YEAR);add("-");add(END_DATE_MONTH);add("-");add(END_DATE_DAY);}}),new ArrayList<Constraint>(){{add(new DefaultRegularExpressionConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},"[\\d-]*"));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultStructuredValue = new DefaultStructuredValue(null, 
+null, 
+null, 
+'(\\d{4})-(\\d{2})-(\\d{2})',[END_DATE_YEAR,
+'-',
+END_DATE_MONTH,
+'-',
+END_DATE_DAY],new DefaultScalar("http://www.w3.org/2001/XMLSchema#date" ))
+defaultStructuredValue.addAspectModelUrn = this.NAMESPACE + 'StructuredDate';
+ return defaultStructuredValue; })(),[(() => { const regularExpressionConstraint = new DefaultRegularExpressionConstraint(null, 
+null, 
+null, 
+'[\\d-]*')
+regularExpressionConstraint.isAnonymousNode = true;
+ return regularExpressionConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'StructuredDateWithConstraint';
+ return trait; })()
 ,
-    exampleValue : {
-metaModelBaseAttributes : {},
-value : _datatypeFactory.newXMLGregorianCalendar( "2019-09-27" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#date" ),
-},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'endDate',
-    isAbstract : false,
-    });
+    false,
+    false,
+    new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#date" ),new Date( ''2019-09-27'' )),
+        'endDate',
+    false,
+    );
 
 
 

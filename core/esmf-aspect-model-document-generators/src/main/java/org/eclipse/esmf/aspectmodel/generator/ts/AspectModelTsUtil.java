@@ -19,7 +19,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -216,19 +215,6 @@ public class AspectModelTsUtil {
       } ).orElseThrow( () -> new CodeGenerationException( "Failed to determine Ts data type for empty model type" ) );
    }
 
-   public static Class<?> getDataTypeClass( final Type dataType ) {
-      if ( dataType instanceof final ComplexType complexType ) {
-         return complexType.getClass();
-      }
-
-      final Resource typeResource = ResourceFactory.createResource( dataType.getUrn() );
-      if ( typeResource.getURI().equals( RDF.langString.getURI() ) ) {
-         return Map.class;
-      }
-      final Class<?> result = SammXsdType.getJavaTypeForMetaModelType( typeResource );
-      return result;
-   }
-
    /**
     * Convert a string given as upper or lower camel case into a constant format. For example {@code someVariable} would become
     * {@code SOME_VARIABLE}.
@@ -248,14 +234,14 @@ public class AspectModelTsUtil {
    }
 
    /**
-    * Creates a string literal with escaped double quotes around the given string. The string is escaped using
+    * Creates a string literal with escaped quotes around the given string. The string is escaped using
     * {@link #escapeForLiteral(String)}.
     *
     * @param value the string to create the literal for
     * @return the literal
     */
    public static String createLiteral( final String value ) {
-      return "\"" + escapeForLiteral( value ) + "\"";
+      return "'" + escapeForLiteral( value ) + "'";
    }
 
    /**
@@ -267,20 +253,7 @@ public class AspectModelTsUtil {
     * @return the escaped string
     */
    public static String escapeForLiteral( final String value ) {
-      return UNESCAPER.translate( StringEscapeUtils.escapeJava( value ) );
-   }
-
-   /**
-    * Takes a class body with FQCNs and replaces them with applied imports (i.e. simply use the class name).
-    */
-   //TODO potentially can be removed
-   public static String applyImports( final String body, final TsCodeGenerationConfig codeGenerationConfig ) {
-      //      String importsApplied = body;
-      //      for ( final QualifiedName oneImport : codeGenerationConfig.importTracker().getUsedImports() ) {
-      //         final String className = oneImport.modulePath().substring( oneImport.modulePath().lastIndexOf( '.' ) + 1 );
-      //         importsApplied = importsApplied.replaceAll( oneImport.modulePath(), className );
-      //      }
-      return body;
+      return UNESCAPER.translate( StringEscapeUtils.escapeEcmaScript( value ) );
    }
 
    public static List<Property> getAllProperties( final ComplexType element ) {
@@ -294,28 +267,22 @@ public class AspectModelTsUtil {
    }
 
    public static boolean doesValueNeedToBeQuoted( final String typeUrn ) {
-      return typeUrn.equals( XSD.integer.getURI() )
-            || typeUrn.equals( XSD.xshort.getURI() )
-            || typeUrn.equals( XSD.decimal.getURI() )
-            || typeUrn.equals( XSD.unsignedLong.getURI() )
-            || typeUrn.equals( XSD.positiveInteger.getURI() )
-            || typeUrn.equals( XSD.nonNegativeInteger.getURI() )
-            || typeUrn.equals( XSD.negativeInteger.getURI() )
-            || typeUrn.equals( XSD.nonPositiveInteger.getURI() )
-            || typeUrn.equals( XSD.date.getURI() )
+      return typeUrn.equals( XSD.date.getURI() )
             || typeUrn.equals( XSD.time.getURI() )
             || typeUrn.equals( XSD.dateTime.getURI() )
             || typeUrn.equals( XSD.dateTimeStamp.getURI() )
             || typeUrn.equals( XSD.gDay.getURI() )
+            || typeUrn.equals( XSD.gYear.getURI() )
             || typeUrn.equals( XSD.gMonth.getURI() )
             || typeUrn.equals( XSD.gYearMonth.getURI() )
             || typeUrn.equals( XSD.gMonthDay.getURI() )
             || typeUrn.equals( XSD.duration.getURI() )
             || typeUrn.equals( XSD.yearMonthDuration.getURI() )
-            || typeUrn.equals( XSD.dayTimeDuration.getURI() );
+            || typeUrn.equals( XSD.dayTimeDuration.getURI() )
+            || typeUrn.equals( XSD.xstring.getURI() )
+            || typeUrn.equals( XSD.anyURI.getURI() );
    }
 
-   //TODO investigate TS generics
    public static String genericClassSignature( final StructureElement element ) {
       final List<Property> properties = element.getProperties();
       final String generics = IntStream.range( 0, properties.size() )
@@ -360,7 +327,6 @@ public class AspectModelTsUtil {
       return "esmf-sdk " + VersionInfo.ESMF_SDK_VERSION;
    }
 
-   //TODO review comlex type generics
    public static String determineComplexTypeClassDefinition( final ComplexType element,
          final TsCodeGenerationConfig codeGenerationConfig ) {
       final StringBuilder classDefinitionBuilder = new StringBuilder( "export " );

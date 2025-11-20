@@ -13,6 +13,7 @@
 
 
 import { AspectWithEntityWithNestedEntityListProperty,} from './AspectWithEntityWithNestedEntityListProperty';
+import { DefaultEntity,DefaultSingleEntity,} from './aspect-meta-model';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 import { Entity,} from './Entity';
 import { MetaEntity,} from './MetaEntity';
@@ -51,40 +52,32 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultSingleEntity({
-urn : this.NAMESPACE + 'ReplacedAspectArtifactCharacteristic',
-preferredNames : [ {
-value : "Test Entity Characteristic",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "This is a test Entity Characteristic",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
- ],
-}, DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'Entity',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},MetaEntity.INSTANCE.getProperties(),Optional.empty()))
+
+        null,
+    null,
+    null,
+    (() => { const defaultSingleEntity = new DefaultSingleEntity(null, 
+null, 
+null, 
+(() => { const defaultEntityEntity = new DefaultEntity(null, 
+null, 
+null, 
+MetaEntity.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityEntity.addAspectModelUrn = this.NAMESPACE + 'Entity';
+ return defaultEntityEntity; })())
+defaultSingleEntity.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifactCharacteristic';
+defaultSingleEntity.addPreferredName('en' , 'Test Entity Characteristic');
+defaultSingleEntity.addDescription('en' , 'This is a test Entity Characteristic');
+defaultSingleEntity.addSeeReference('http:\/\/example.com\/');
+ return defaultSingleEntity; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testProperty',
+    false,
+    );
 
 
 

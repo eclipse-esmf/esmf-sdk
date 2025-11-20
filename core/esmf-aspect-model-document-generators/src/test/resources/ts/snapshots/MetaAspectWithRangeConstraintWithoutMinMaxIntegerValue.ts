@@ -13,6 +13,8 @@
 
 
 import { AspectWithRangeConstraintWithoutMinMaxIntegerValue,} from './AspectWithRangeConstraintWithoutMinMaxIntegerValue';
+import { BoundDefinition,} from './aspect-meta-model/bound-definition';
+import { DefaultCharacteristic,DefaultRangeConstraint,DefaultScalar,DefaultTrait,} from './aspect-meta-model';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 import { LangString,} from './core/langString';
 
@@ -50,82 +52,40 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testInt',
-preferredNames : [ {
-value : "Numerischer Wert",
-languageTag : 'de',
-},
-{
-value : "Test Integer Property",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Eine Property mit einem numerischen Wert.",
-languageTag : 'de',
-},
-{
-value : "A property with a numeric value.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'TestRangeConstraint',
-preferredNames : [ {
-value : "Test Range Constraint",
-languageTag : 'de',
-},
-{
-value : "Test Range Constraint",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Beschränkt einen numerischen Wert auf Werte zwischen 0 und 100.",
-languageTag : 'de',
-},
-{
-value : "Restricts a numeric value to values between 0 and 100.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},{
-metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'IntegerCharacteristic',
-preferredNames : [ {
-value : "Numerische Charakteristik",
-languageTag : 'de',
-},
-{
-value : "Integer Characteristic",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Positive Zahlen",
-languageTag : 'de',
-},
- ],
-see : [  ],
-},
-},new ArrayList<Constraint>(){{add(new DefaultRangeConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.empty(),Optional.empty(),BoundDefinition.OPEN,BoundDefinition.OPEN));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ))
+defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'IntegerCharacteristic';
+defaultCharacteristic.addPreferredName('de' , 'Numerische Charakteristik');
+defaultCharacteristic.addPreferredName('en' , 'Integer Characteristic');
+defaultCharacteristic.addDescription('de' , 'Positive Zahlen');
+ return defaultCharacteristic; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(null, 
+null, 
+null, 
+BoundDefinition.OPEN,BoundDefinition.OPEN,undefined,undefined,)
+defaultRangeConstraint.isAnonymousNode = true;
+ return defaultRangeConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'TestRangeConstraint';
+trait.addPreferredName('de' , 'Test Range Constraint');
+trait.addPreferredName('en' , 'Test Range Constraint');
+trait.addDescription('de' , 'Beschränkt einen numerischen Wert auf Werte zwischen 0 und 100.');
+trait.addDescription('en' , 'Restricts a numeric value to values between 0 and 100.');
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testInt',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testInt',
+    false,
+    );
 
 
 
@@ -157,8 +117,8 @@ getAllProperties(): Array<StaticProperty<AspectWithRangeConstraintWithoutMinMaxI
         
     getPreferredNames(): Array<LangString> {
         return [
-            {value: 'Test Aspect', languageTag: 'en'},
-            {value: 'Test Aspekt', languageTag: 'de'},
+            new LangString('Test Aspect', 'en'),
+            new LangString('Test Aspekt', 'de'),
         ];
         }
 

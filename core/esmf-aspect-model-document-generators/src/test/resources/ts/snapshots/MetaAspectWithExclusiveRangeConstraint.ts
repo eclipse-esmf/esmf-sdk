@@ -13,6 +13,9 @@
 
 
 import { AspectWithExclusiveRangeConstraint,} from './AspectWithExclusiveRangeConstraint';
+import { BoundDefinition,} from './aspect-meta-model/bound-definition';
+import { DefaultCharacteristic,DefaultRangeConstraint,DefaultScalar,DefaultTrait,} from './aspect-meta-model';
+import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 
 
@@ -49,50 +52,34 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'floatProp',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'FloatRange',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},{
-metaModelBaseAttributes : {
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-},new ArrayList<Constraint>(){{add(new DefaultRangeConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [ {
-value : "This is a floating range constraint",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},Optional.of({
-metaModelBaseAttributes : {},
-value : Float.valueOf( "12.3" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),
-}),Optional.of({
-metaModelBaseAttributes : {},
-value : Float.valueOf( "23.45" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),
-}),BoundDefinition.GREATER_THAN,BoundDefinition.LESS_THAN));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ))
+defaultCharacteristic.isAnonymousNode = true;
+ return defaultCharacteristic; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(null, 
+null, 
+null, 
+BoundDefinition.LESS_THAN,BoundDefinition.GREATER_THAN,new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),'12.3'),new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),'23.45'),)
+defaultRangeConstraint.isAnonymousNode = true;
+defaultRangeConstraint.addDescription('en' , 'This is a floating range constraint');
+ return defaultRangeConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'FloatRange';
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'floatProp',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'floatProp',
+    false,
+    );
 
 
 
@@ -112,50 +99,34 @@ type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'doubleProp',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'DoubleRange',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},{
-metaModelBaseAttributes : {
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-},new ArrayList<Constraint>(){{add(new DefaultRangeConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [ {
-value : "This is a double range constraint",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},Optional.of({
-metaModelBaseAttributes : {},
-value : Double.valueOf( "12.3" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#double" ),
-}),Optional.of({
-metaModelBaseAttributes : {},
-value : Double.valueOf( "23.45" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#double" ),
-}),BoundDefinition.GREATER_THAN,BoundDefinition.LESS_THAN));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#double" ))
+defaultCharacteristic.isAnonymousNode = true;
+ return defaultCharacteristic; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(null, 
+null, 
+null, 
+BoundDefinition.LESS_THAN,BoundDefinition.GREATER_THAN,new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#double" ),'12.3'),new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#double" ),'23.45'),)
+defaultRangeConstraint.isAnonymousNode = true;
+defaultRangeConstraint.addDescription('en' , 'This is a double range constraint');
+ return defaultRangeConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'DoubleRange';
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'doubleProp',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'doubleProp',
+    false,
+    );
 
 
 
@@ -175,50 +146,34 @@ type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#double" ),
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'decimalProp',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'DecimalRange',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},{
-metaModelBaseAttributes : {
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-},new ArrayList<Constraint>(){{add(new DefaultRangeConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [ {
-value : "This is a decimal range constraint",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},Optional.of({
-metaModelBaseAttributes : {},
-value : new BigDecimal( "12.3" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#decimal" ),
-}),Optional.of({
-metaModelBaseAttributes : {},
-value : new BigDecimal( "23.45" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#decimal" ),
-}),BoundDefinition.GREATER_THAN,BoundDefinition.LESS_THAN));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#decimal" ))
+defaultCharacteristic.isAnonymousNode = true;
+ return defaultCharacteristic; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(null, 
+null, 
+null, 
+BoundDefinition.LESS_THAN,BoundDefinition.GREATER_THAN,new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#decimal" ),'12.3'),new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#decimal" ),'23.45'),)
+defaultRangeConstraint.isAnonymousNode = true;
+defaultRangeConstraint.addDescription('en' , 'This is a decimal range constraint');
+ return defaultRangeConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'DecimalRange';
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'decimalProp',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'decimalProp',
+    false,
+    );
 
 
 
@@ -238,50 +193,34 @@ type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#decimal" ),
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'integerProp',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'IntegerRange',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},{
-metaModelBaseAttributes : {
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-},new ArrayList<Constraint>(){{add(new DefaultRangeConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [ {
-value : "This is a integer range constraint",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},Optional.of({
-metaModelBaseAttributes : {},
-value : new BigInteger( "12" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),
-}),Optional.of({
-metaModelBaseAttributes : {},
-value : new BigInteger( "23" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),
-}),BoundDefinition.GREATER_THAN,BoundDefinition.LESS_THAN));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ))
+defaultCharacteristic.isAnonymousNode = true;
+ return defaultCharacteristic; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(null, 
+null, 
+null, 
+BoundDefinition.LESS_THAN,BoundDefinition.GREATER_THAN,new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),'12'),new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),'23'),)
+defaultRangeConstraint.isAnonymousNode = true;
+defaultRangeConstraint.addDescription('en' , 'This is a integer range constraint');
+ return defaultRangeConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'IntegerRange';
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'integerProp',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'integerProp',
+    false,
+    );
 
 
 
@@ -301,46 +240,33 @@ type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'intProp',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'IntRange',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},{
-metaModelBaseAttributes : {
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-},new ArrayList<Constraint>(){{add(new DefaultRangeConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of({
-metaModelBaseAttributes : {},
-value : Integer.valueOf( "12" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),
-}),Optional.of({
-metaModelBaseAttributes : {},
-value : Integer.valueOf( "23" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),
-}),BoundDefinition.GREATER_THAN,BoundDefinition.LESS_THAN));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ))
+defaultCharacteristic.isAnonymousNode = true;
+ return defaultCharacteristic; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(null, 
+null, 
+null, 
+BoundDefinition.LESS_THAN,BoundDefinition.GREATER_THAN,new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),'12'),new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),'23'),)
+defaultRangeConstraint.isAnonymousNode = true;
+ return defaultRangeConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'IntRange';
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'intProp',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'intProp',
+    false,
+    );
 
 
 

@@ -1,3 +1,4 @@
+import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
 import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
@@ -14,8 +15,9 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithUpwardTransitionInNestedEntity,} from './AspectWithUpwardTransitionInNestedEntity';
+import { DefaultEntity,DefaultList,} from './aspect-meta-model';
 
-import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
+
 import { StaticContainerProperty,} from './core/staticConstraintProperty';
 
 
@@ -50,36 +52,35 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
         return 'AspectWithUpwardTransitionInNestedEntity';
     }
 
-        getContainedType(): AspectWithUpwardTransitionInNestedEntity {
+        getContainedType(): string {
             return 'AspectWithUpwardTransitionInNestedEntity';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'firstLevelProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultList({
-urn : this.NAMESPACE + 'FirstLevelCharacteristics',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of(DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},MetaReplacedAspectArtifact.INSTANCE.getProperties(),Optional.empty())),Optional.empty())
+
+        null,
+    null,
+    null,
+    (() => { const defaultList = new DefaultList(null, 
+null, 
+null, 
+undefined,
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEntityReplacedAspectArtifact; })())
+defaultList.addAspectModelUrn = this.NAMESPACE + 'FirstLevelCharacteristics';
+ return defaultList; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'firstLevelProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'firstLevelProperty',
+    false,
+    );
 
 
 

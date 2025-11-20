@@ -13,6 +13,7 @@
 
 
 import { AspectWithCollections,} from './AspectWithCollections';
+import { DefaultList,DefaultScalar,DefaultSet,} from './aspect-meta-model';
 import { StaticContainerProperty,} from './core/staticConstraintProperty';
 
 
@@ -47,31 +48,29 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
         return 'AspectWithCollections';
     }
 
-        getContainedType(): AspectWithCollections {
+        getContainedType(): string {
             return 'AspectWithCollections';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'setProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultSet({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" )),Optional.empty())
+
+        null,
+    null,
+    null,
+    (() => { const defaultSet = new DefaultSet(null, 
+null, 
+null, 
+undefined,
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultSet.isAnonymousNode = true;
+ return defaultSet; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'setProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'setProperty',
+    false,
+    );
 
 
 
@@ -89,31 +88,29 @@ see : [  ],
         return 'AspectWithCollections';
     }
 
-        getContainedType(): AspectWithCollections {
+        getContainedType(): string {
             return 'AspectWithCollections';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'listProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultList({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of(new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" )),Optional.empty())
+
+        null,
+    null,
+    null,
+    (() => { const defaultList = new DefaultList(null, 
+null, 
+null, 
+undefined,
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ))
+defaultList.isAnonymousNode = true;
+ return defaultList; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'listProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'listProperty',
+    false,
+    );
 
 
 

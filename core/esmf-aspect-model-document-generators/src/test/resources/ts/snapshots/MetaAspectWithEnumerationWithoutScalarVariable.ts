@@ -1,3 +1,4 @@
+import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
 import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
@@ -14,9 +15,11 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithEnumerationWithoutScalarVariable,} from './AspectWithEnumerationWithoutScalarVariable';
+import { DefaultEntity,DefaultEnumeration,} from './aspect-meta-model';
+import { DefaultEntityInstance,} from './aspect-meta-model/default-entity-instance';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 
-import { MetaEvaluationResult,} from './MetaEvaluationResult';
+
 
 
     
@@ -52,69 +55,43 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [ {
-value : "result",
-languageTag : 'en',
-},
- ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultEnumeration({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [ {
-value : "Evaluation Results",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Possible values for the evaluation of a process",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'EvaluationResult',
-preferredNames : [ {
-value : "Evaluation Result",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Possible values for the evaluation of a process",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},MetaEvaluationResult.INSTANCE.getProperties(),Optional.empty()),new ArrayList<Value>(){{add(new DefaultEntityInstance({
-urn : this.NAMESPACE + 'ResultGood',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new HashMap<Property, Value>() {{}},DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'EvaluationResult',
-preferredNames : [ {
-value : "Evaluation Result",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Possible values for the evaluation of a process",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},MetaEvaluationResult.INSTANCE.getProperties(),Optional.empty())));}})
+
+        null,
+    null,
+    null,
+    (() => { const defaultEnumeration = new DefaultEnumeration(null, 
+null, 
+null, 
+[new DefaultEntityInstance(null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+defaultEntityReplacedAspectArtifact.addPreferredName('en' , 'Evaluation Result');
+defaultEntityReplacedAspectArtifact.addDescription('en' , 'Possible values for the evaluation of a process');
+ return defaultEntityReplacedAspectArtifact; })(),
+undefined)],(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+defaultEntityReplacedAspectArtifact.addPreferredName('en' , 'Evaluation Result');
+defaultEntityReplacedAspectArtifact.addDescription('en' , 'Possible values for the evaluation of a process');
+ return defaultEntityReplacedAspectArtifact; })())
+defaultEnumeration.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+defaultEnumeration.addPreferredName('en' , 'Evaluation Results');
+defaultEnumeration.addDescription('en' , 'Possible values for the evaluation of a process');
+ return defaultEnumeration; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testProperty',
+    false,
+    );
 
 
 

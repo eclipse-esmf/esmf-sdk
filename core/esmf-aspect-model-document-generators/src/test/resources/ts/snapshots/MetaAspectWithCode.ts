@@ -13,6 +13,7 @@
 
 
 import { AspectWithCode,} from './AspectWithCode';
+import { DefaultCode,DefaultScalar,} from './aspect-meta-model';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 
 
@@ -49,38 +50,26 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     {
-metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'TestCode',
-preferredNames : [ {
-value : "Test Code",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "This is a test code.",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
- ],
-},
-dataType : new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),
-}
+
+        null,
+    null,
+    null,
+    (() => { const defaultCode = new DefaultCode(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ))
+defaultCode.addAspectModelUrn = this.NAMESPACE + 'TestCode';
+defaultCode.addPreferredName('en' , 'Test Code');
+defaultCode.addDescription('en' , 'This is a test code.');
+defaultCode.addSeeReference('http:\/\/example.com\/');
+ return defaultCode; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testProperty',
+    false,
+    );
 
 
 

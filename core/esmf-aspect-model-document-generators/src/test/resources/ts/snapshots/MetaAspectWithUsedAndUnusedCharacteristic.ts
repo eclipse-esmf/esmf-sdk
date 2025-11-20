@@ -13,6 +13,7 @@
 
 
 import { AspectWithUsedAndUnusedCharacteristic,} from './AspectWithUsedAndUnusedCharacteristic';
+import { DefaultCharacteristic,DefaultScalar,} from './aspect-meta-model';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 
 
@@ -49,38 +50,27 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     {
-metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'UsedReplacedAspectArtifact',
-preferredNames : [ {
-value : "Used Test Characteristic",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Used Test Characteristic",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
-'http://example.com/me',
- ],
-},
-}
+
+        null,
+    null,
+    null,
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'UsedReplacedAspectArtifact';
+defaultCharacteristic.addPreferredName('en' , 'Used Test Characteristic');
+defaultCharacteristic.addDescription('en' , 'Used Test Characteristic');
+defaultCharacteristic.addSeeReference('http:\/\/example.com\/');
+defaultCharacteristic.addSeeReference('http:\/\/example.com\/me');
+ return defaultCharacteristic; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testProperty',
+    false,
+    );
 
 
 

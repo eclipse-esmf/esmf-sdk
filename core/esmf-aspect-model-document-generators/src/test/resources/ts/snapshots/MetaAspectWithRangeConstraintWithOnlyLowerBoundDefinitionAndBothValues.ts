@@ -13,6 +13,9 @@
 
 
 import { AspectWithRangeConstraintWithOnlyLowerBoundDefinitionAndBothValues,} from './AspectWithRangeConstraintWithOnlyLowerBoundDefinitionAndBothValues';
+import { BoundDefinition,} from './aspect-meta-model/bound-definition';
+import { DefaultCharacteristic,DefaultRangeConstraint,DefaultScalar,DefaultTrait,} from './aspect-meta-model';
+import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 
 
@@ -49,83 +52,36 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'TestTrait',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},{
-metaModelBaseAttributes : {
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-},new ArrayList<Constraint>(){{add(new DefaultRangeConstraint({
-isAnonymous : true,
-preferredNames : [ {
-value : "Test Constraint",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test Constraint",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
- ],
-},Optional.of({
-metaModelBaseAttributes : {
-isAnonymous : true,
-preferredNames : [ {
-value : "Test Constraint",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test Constraint",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
- ],
-},
-value : new BigInteger( "5" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#nonNegativeInteger" ),
-}),Optional.of({
-metaModelBaseAttributes : {
-isAnonymous : true,
-preferredNames : [ {
-value : "Test Constraint",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test Constraint",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
- ],
-},
-value : new BigInteger( "10" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#nonNegativeInteger" ),
-}),BoundDefinition.GREATER_THAN,BoundDefinition.AT_MOST));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#nonNegativeInteger" ))
+defaultCharacteristic.isAnonymousNode = true;
+ return defaultCharacteristic; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(null, 
+null, 
+null, 
+BoundDefinition.AT_MOST,BoundDefinition.GREATER_THAN,new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#nonNegativeInteger" ),'5'),new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#nonNegativeInteger" ),'10'),)
+defaultRangeConstraint.isAnonymousNode = true;
+defaultRangeConstraint.addPreferredName('en' , 'Test Constraint');
+defaultRangeConstraint.addDescription('en' , 'Test Constraint');
+defaultRangeConstraint.addSeeReference('http:\/\/example.com\/');
+ return defaultRangeConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'TestTrait';
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testProperty',
+    false,
+    );
 
 
 

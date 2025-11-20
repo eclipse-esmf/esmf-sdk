@@ -13,7 +13,11 @@
 
 
 import { AspectWithRangeConstraintOnConstrainedNumericType,} from './AspectWithRangeConstraintOnConstrainedNumericType';
+import { BoundDefinition,} from './aspect-meta-model/bound-definition';
+import { DefaultMeasurement,DefaultQuantityKind,DefaultRangeConstraint,DefaultScalar,DefaultTrait,} from './aspect-meta-model';
+import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
+import { DefaultUnit,} from './aspect-meta-model/default-unit';
 import { LangString,} from './core/langString';
 
 
@@ -50,59 +54,95 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [ {
-value : "Test Property",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "This is a test property.",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
-'http://example.com/me',
- ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'TestRangeConstraint',
-preferredNames : [ {
-value : "Test Range Constraint",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "This is a test range constraint.",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
- ],
-},new DefaultMeasurement({
-urn : this.NAMESPACE + 'Measurement',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#short" ),Units.fromName("metrePerSecond")),new ArrayList<Constraint>(){{add(new DefaultRangeConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of({
-metaModelBaseAttributes : {},
-value : Short.parseShort( "5" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#short" ),
-}),Optional.empty(),BoundDefinition.AT_LEAST,BoundDefinition.OPEN));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultMeasurement = new DefaultMeasurement(null, 
+null, 
+null, 
+(() => { const defaultUnit = new DefaultUnit(null, 
+null, 
+null, 
+'m\/s','MTS',undefined,'m\/s',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'phase speed of electromagnetic waves')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'phase velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'phase velocity of electromagnetic waves')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'group velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'velocity (speed) on propagation of electromagnetic waves in vacuo')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'(instantaneous) sound particle velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'velocity of sound (phase velocity)')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'neutron speed')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })() ])
+defaultUnit.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#metrePerSecond';
+defaultUnit.addPreferredName('en' , 'metre per second');
+ return defaultUnit; })(),new DefaultScalar("http://www.w3.org/2001/XMLSchema#short" ))
+defaultMeasurement.addAspectModelUrn = this.NAMESPACE + 'Measurement';
+ return defaultMeasurement; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(null, 
+null, 
+null, 
+BoundDefinition.OPEN,BoundDefinition.AT_LEAST,new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#short" ),'5'),undefined,)
+defaultRangeConstraint.isAnonymousNode = true;
+ return defaultRangeConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'TestRangeConstraint';
+trait.addPreferredName('en' , 'Test Range Constraint');
+trait.addDescription('en' , 'This is a test range constraint.');
+trait.addSeeReference('http:\/\/example.com\/');
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testProperty',
+    false,
+    );
 
 
 
@@ -134,20 +174,20 @@ getAllProperties(): Array<StaticProperty<AspectWithRangeConstraintOnConstrainedN
         
     getPreferredNames(): Array<LangString> {
         return [
-            {value: 'Test Aspect', languageTag: 'en'},
+            new LangString('Test Aspect', 'en'),
         ];
         }
 
         
         getDescriptions(): Array<LangString> {
         return [
-            {value: 'This is a test description', languageTag: 'en'},
+            new LangString('This is a test description', 'en'),
         ];
         }
 
         getSee(): Array<String> {
         return [
-            "http://example.com/",
+            'http:\/\/example.com\/',
         ];
         }
 

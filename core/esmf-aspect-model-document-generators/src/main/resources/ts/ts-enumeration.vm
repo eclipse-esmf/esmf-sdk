@@ -11,7 +11,7 @@
  ~ SPDX-License-Identifier: MPL-2.0
  *#
 #parse( "ts-enumeration-class-body-lib.vm" )
-#set( $classBody = $util.applyImports( "#tsEnumerationClassBody()", $codeGenerationConfig ) )
+#set( $classBody = "#tsEnumerationClassBody()" )
 
 #foreach( $import in $codeGenerationConfig.importTracker().getUsedTsLineImports() )
 $import;

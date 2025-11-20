@@ -13,6 +13,7 @@
 
 
 import { AspectWithEitherWithoutSeeAttribute,} from './AspectWithEitherWithoutSeeAttribute';
+import { DefaultCharacteristic,} from './aspect-meta-model';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 import { Either,} from './core/Either';
 
@@ -50,36 +51,25 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     {
-metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'TestEither',
-preferredNames : [ {
-value : "Test Either",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test Either Characteristic",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},
-}
+
+        null,
+    null,
+    null,
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+undefined)
+defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'TestEither';
+defaultCharacteristic.addPreferredName('en' , 'Test Either');
+defaultCharacteristic.addDescription('en' , 'Test Either Characteristic');
+ return defaultCharacteristic; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testProperty',
+    false,
+    );
 
 
 

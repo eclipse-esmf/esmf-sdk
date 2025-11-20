@@ -13,6 +13,7 @@
 
 
 import { AspectWithMarkdownDescription,} from './AspectWithMarkdownDescription';
+import { DefaultCharacteristic,DefaultScalar,} from './aspect-meta-model';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 
 
@@ -49,40 +50,25 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'myProperty',
-preferredNames : [  ],
-descriptions : [ {
-value : "\n      This is a sample concept demonstrating **Markdown** support in samm:description.\n\n      > NOTE: This is a note block.\n      > It supports multiple lines.\n      > Here's a second line of the note.\n\n      > EXAMPLE 1: This is the first example block.\n      > It can span several lines, and supports *italic* and **bold** text.\n\n      > EXAMPLE 2: This is the second example.\n      > Also multiline, for testing multiple example entries.\n\n      > SOURCE: ISO 12345:2023, section 4.2.1\n      > with an inline [link](https://www.example.com/spec).\n\n      Unordered list:\n        * Item A\n        * Item B\n        * Item C\n\n      Ordered list:\n        1. First\n        2. Second\n        3. Third\n\n      You can also include inline links like [Visit Example](https://example.com).\n\n      Another paragraph after a blank line to simulate text flow and paragraph breaks.\n   ",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},
-    characteristic :     {
-metaModelBaseAttributes : {
-urn : this.CHARACTERISTIC_NAMESPACE + '#Text',
-preferredNames : [ {
-value : "Text",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},
-}
+
+        null,
+    null,
+    null,
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Text';
+defaultCharacteristic.addPreferredName('en' , 'Text');
+defaultCharacteristic.addDescription('en' , 'Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.');
+ return defaultCharacteristic; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'myProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'myProperty',
+    false,
+    );
 
 
 

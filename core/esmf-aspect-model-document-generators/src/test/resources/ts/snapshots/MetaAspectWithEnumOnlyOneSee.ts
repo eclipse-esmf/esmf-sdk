@@ -14,6 +14,8 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithEnumOnlyOneSee,} from './AspectWithEnumOnlyOneSee';
+import { DefaultEnumeration,DefaultScalar,} from './aspect-meta-model';
+import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 
 
@@ -52,34 +54,24 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'prop1',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultEnumeration({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),new ArrayList<Value>(){{add({
-metaModelBaseAttributes : {},
-value : "a",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});add({
-metaModelBaseAttributes : {},
-value : "b",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});}})
+
+        null,
+    null,
+    null,
+    (() => { const defaultEnumeration = new DefaultEnumeration(null, 
+null, 
+null, 
+[new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'a'),
+new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'b')],new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultEnumeration.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEnumeration; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'prop1',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'prop1',
+    false,
+    );
 
 
 
@@ -99,35 +91,25 @@ type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'prop2',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultEnumeration({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [  ],
-descriptions : [  ],
-see : [ 'https://test.com',
- ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),new ArrayList<Value>(){{add({
-metaModelBaseAttributes : {},
-value : "1",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});add({
-metaModelBaseAttributes : {},
-value : "2",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});}})
+
+        null,
+    null,
+    null,
+    (() => { const defaultEnumeration = new DefaultEnumeration(null, 
+null, 
+null, 
+[new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'1'),
+new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'2')],new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultEnumeration.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+defaultEnumeration.addSeeReference('https:\/\/test.com');
+ return defaultEnumeration; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'prop2',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'prop2',
+    false,
+    );
 
 
 

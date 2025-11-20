@@ -13,7 +13,9 @@
 
 
 import { AspectWithCustomUnitAndQuantityKind,} from './AspectWithCustomUnitAndQuantityKind';
-import { StaticUnitProperty,Unit,} from './core/staticConstraintProperty';
+import { DefaultQuantifiable,DefaultQuantityKind,DefaultScalar,} from './aspect-meta-model';
+import { DefaultUnit,} from './aspect-meta-model/default-unit';
+import { StaticUnitProperty,} from './core/staticConstraintProperty';
 
 
     
@@ -36,7 +38,6 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
  public static readonly  EMISSIONS = 
                 
-            
         new (class extends StaticUnitProperty<AspectWithCustomUnitAndQuantityKind, number>{
 
     
@@ -50,44 +51,35 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'emissions',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultQuantifiable({
-urn : this.NAMESPACE + 'Emissions',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),Optional.of(new DefaultUnit({
-urn : this.NAMESPACE + 'gCO2eqPerkWh',
-preferredNames : [ {
-value : "gram CO₂ equivalent per kWh",
-languageTag : 'en',
-},
- ],
-descriptions : [  ],
-see : [  ],
-},Optional[gCO₂eq/kWh],Optional.empty,Optional.empty,Optional.empty,new HashSet<>(){{add(new DefaultQuantityKind({
-urn : this.NAMESPACE + 'greenhouseGasEmissions',
-preferredNames : [ {
-value : "greenhouse gas emissions",
-languageTag : 'en',
-},
- ],
-descriptions : [  ],
-see : [  ],
-},"greenhouse gas emissions"));}})))
+
+        null,
+    null,
+    null,
+    (() => { const defaultQuantifiable = new DefaultQuantifiable(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),(() => { const defaultUnit = new DefaultUnit(null, 
+null, 
+null, 
+'gCO₂eq\/kWh',undefined,undefined,undefined,[ (() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'greenhouse gas emissions')
+defaultQuantityKind.addAspectModelUrn = this.NAMESPACE + 'greenhouseGasEmissions';
+defaultQuantityKind.addPreferredName('en' , 'greenhouse gas emissions');
+ return defaultQuantityKind; })() ])
+defaultUnit.addAspectModelUrn = this.NAMESPACE + 'gCO2eqPerkWh';
+defaultUnit.addPreferredName('en' , 'gram CO₂ equivalent per kWh');
+ return defaultUnit; })())
+defaultQuantifiable.addAspectModelUrn = this.NAMESPACE + 'Emissions';
+ return defaultQuantifiable; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'emissions',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'emissions',
+    false,
+    );
 
 
 

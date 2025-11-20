@@ -14,6 +14,8 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithEnumerationWithSeeAttribute,} from './AspectWithEnumerationWithSeeAttribute';
+import { DefaultEnumeration,DefaultScalar,} from './aspect-meta-model';
+import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 
 
@@ -52,43 +54,27 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultEnumeration({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [ {
-value : "Test Enumeration",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test Enumeration",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
- ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),new ArrayList<Value>(){{add({
-metaModelBaseAttributes : {},
-value : "bar",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});add({
-metaModelBaseAttributes : {},
-value : "foo",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});}})
+
+        null,
+    null,
+    null,
+    (() => { const defaultEnumeration = new DefaultEnumeration(null, 
+null, 
+null, 
+[new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'bar'),
+new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'foo')],new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultEnumeration.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+defaultEnumeration.addPreferredName('en' , 'Test Enumeration');
+defaultEnumeration.addDescription('en' , 'Test Enumeration');
+defaultEnumeration.addSeeReference('http:\/\/example.com\/');
+ return defaultEnumeration; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testProperty',
+    false,
+    );
 
 
 
@@ -108,44 +94,28 @@ type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testPropertyTwo',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultEnumeration({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [ {
-value : "Test Enumeration Two",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test Enumeration Two",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
-'http://example.com/me',
- ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),new ArrayList<Value>(){{add({
-metaModelBaseAttributes : {},
-value : "bar",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});add({
-metaModelBaseAttributes : {},
-value : "foo",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});}})
+
+        null,
+    null,
+    null,
+    (() => { const defaultEnumeration = new DefaultEnumeration(null, 
+null, 
+null, 
+[new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'bar'),
+new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'foo')],new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultEnumeration.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+defaultEnumeration.addPreferredName('en' , 'Test Enumeration Two');
+defaultEnumeration.addDescription('en' , 'Test Enumeration Two');
+defaultEnumeration.addSeeReference('http:\/\/example.com\/');
+defaultEnumeration.addSeeReference('http:\/\/example.com\/me');
+ return defaultEnumeration; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testPropertyTwo',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testPropertyTwo',
+    false,
+    );
 
 
 

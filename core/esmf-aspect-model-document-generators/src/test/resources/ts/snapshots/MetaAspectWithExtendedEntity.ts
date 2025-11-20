@@ -1,3 +1,4 @@
+import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
 import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
@@ -14,9 +15,10 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithExtendedEntity,} from './AspectWithExtendedEntity';
-import { MetaParentOfParentEntity,} from './MetaParentOfParentEntity';
-import { MetaParentReplacedAspectArtifact,} from './MetaParentReplacedAspectArtifact';
-import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
+import { DefaultEntity,DefaultSortedSet,} from './aspect-meta-model';
+
+
+
 import { StaticContainerProperty,} from './core/staticConstraintProperty';
 
 
@@ -52,56 +54,47 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
         return 'AspectWithExtendedEntity';
     }
 
-        getContainedType(): AspectWithExtendedEntity {
+        getContainedType(): string {
             return 'AspectWithExtendedEntity';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [ {
-value : "Test Property",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "This is a test property.",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
-'http://example.com/me',
- ],
-},
-    characteristic :     new DefaultSortedSet({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of(DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},MetaReplacedAspectArtifact.INSTANCE.getProperties(),Optional.of(DefaultAbstractEntity.createDefaultAbstractEntity({
-urn : this.NAMESPACE + 'ParentReplacedAspectArtifact',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},MetaParentReplacedAspectArtifact.INSTANCE.getProperties(),Optional.of(DefaultAbstractEntity.createDefaultAbstractEntity({
-urn : this.NAMESPACE + 'ParentOfParentEntity',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},MetaParentOfParentEntity.INSTANCE.getProperties(),Optional.empty(),List.of(AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.test:1.0.0#ParentReplacedAspectArtifact" )))),List.of(AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.test:1.0.0#ReplacedAspectArtifact" )))))),Optional.empty())
+
+        null,
+    null,
+    null,
+    (() => { const defaultSortedSet = new DefaultSortedSet(null, 
+null, 
+null, 
+undefined,
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+(() => { const extendsDefaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),true,
+(() => { const extendsDefaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),true,
+undefined)
+extendsDefaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return extendsDefaultEntityReplacedAspectArtifact; })())
+extendsDefaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return extendsDefaultEntityReplacedAspectArtifact; })())
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEntityReplacedAspectArtifact; })())
+defaultSortedSet.isAnonymousNode = true;
+ return defaultSortedSet; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testProperty',
+    false,
+    );
 
 
 

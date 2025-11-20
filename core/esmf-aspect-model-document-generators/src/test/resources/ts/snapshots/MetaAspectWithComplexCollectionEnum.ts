@@ -1,3 +1,4 @@
+import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
 import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
@@ -14,11 +15,13 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithComplexCollectionEnum,} from './AspectWithComplexCollectionEnum';
+import { DefaultEntity,DefaultEnumeration,} from './aspect-meta-model';
+import { DefaultEntityInstance,} from './aspect-meta-model/default-entity-instance';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
-import { MetaMyEntityFour,} from './MetaMyEntityFour';
-import { MetaMyEntityOne,} from './MetaMyEntityOne';
-import { MetaMyEntityThree,} from './MetaMyEntityThree';
-import { MetaMyEntityTwo,} from './MetaMyEntityTwo';
+
+
+
+
 
 
 
@@ -58,53 +61,37 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'myPropertyOne',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultEnumeration({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'MyEntityOne',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},MetaMyEntityOne.INSTANCE.getProperties(),Optional.empty()),new ArrayList<Value>(){{add(new DefaultEntityInstance({
-urn : this.NAMESPACE + 'entityInstanceOne',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new HashMap<Property, Value>() {{put(MetaMyEntityOne.ENTITY_PROPERTY_ONE,new DefaultCollectionValue(new ArrayList<>() {{add({
-metaModelBaseAttributes : {},
-value : "fooOne",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});add({
-metaModelBaseAttributes : {},
-value : "barOne",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});add({
-metaModelBaseAttributes : {},
-value : "bazOne",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});}},org.eclipse.esmf.metamodel.CollectionValue.CollectionType.LIST,new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" )));}},DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'MyEntityOne',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},MetaMyEntityOne.INSTANCE.getProperties(),Optional.empty())));}})
+
+        null,
+    null,
+    null,
+    (() => { const defaultEnumeration = new DefaultEnumeration(null, 
+null, 
+null, 
+[new DefaultEntityInstance(null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEntityReplacedAspectArtifact; })(),
+undefined)],(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEntityReplacedAspectArtifact; })())
+defaultEnumeration.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEnumeration; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'myPropertyOne',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'myPropertyOne',
+    false,
+    );
 
 
 
@@ -124,53 +111,37 @@ see : [  ],
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'myPropertyTwo',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultEnumeration({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'MyEntityTwo',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},MetaMyEntityTwo.INSTANCE.getProperties(),Optional.empty()),new ArrayList<Value>(){{add(new DefaultEntityInstance({
-urn : this.NAMESPACE + 'entityInstanceTwo',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new HashMap<Property, Value>() {{put(MetaMyEntityTwo.ENTITY_PROPERTY_TWO,new DefaultCollectionValue(new LinkedHashSet<>() {{add({
-metaModelBaseAttributes : {},
-value : "fooTwo",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});add({
-metaModelBaseAttributes : {},
-value : "barTwo",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});add({
-metaModelBaseAttributes : {},
-value : "bazTwo",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});}},org.eclipse.esmf.metamodel.CollectionValue.CollectionType.SET,new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" )));}},DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'MyEntityTwo',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},MetaMyEntityTwo.INSTANCE.getProperties(),Optional.empty())));}})
+
+        null,
+    null,
+    null,
+    (() => { const defaultEnumeration = new DefaultEnumeration(null, 
+null, 
+null, 
+[new DefaultEntityInstance(null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEntityReplacedAspectArtifact; })(),
+undefined)],(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEntityReplacedAspectArtifact; })())
+defaultEnumeration.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEnumeration; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'myPropertyTwo',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'myPropertyTwo',
+    false,
+    );
 
 
 
@@ -190,53 +161,37 @@ see : [  ],
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'myPropertyThree',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultEnumeration({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'MyEntityThree',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},MetaMyEntityThree.INSTANCE.getProperties(),Optional.empty()),new ArrayList<Value>(){{add(new DefaultEntityInstance({
-urn : this.NAMESPACE + 'entityInstanceThree',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new HashMap<Property, Value>() {{put(MetaMyEntityThree.ENTITY_PROPERTY_THREE,new DefaultCollectionValue(new LinkedHashSet<>() {{add({
-metaModelBaseAttributes : {},
-value : "fooThree",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});add({
-metaModelBaseAttributes : {},
-value : "barThree",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});add({
-metaModelBaseAttributes : {},
-value : "bazThree",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});}},org.eclipse.esmf.metamodel.CollectionValue.CollectionType.SORTEDSET,new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" )));}},DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'MyEntityThree',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},MetaMyEntityThree.INSTANCE.getProperties(),Optional.empty())));}})
+
+        null,
+    null,
+    null,
+    (() => { const defaultEnumeration = new DefaultEnumeration(null, 
+null, 
+null, 
+[new DefaultEntityInstance(null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEntityReplacedAspectArtifact; })(),
+undefined)],(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEntityReplacedAspectArtifact; })())
+defaultEnumeration.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEnumeration; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'myPropertyThree',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'myPropertyThree',
+    false,
+    );
 
 
 
@@ -256,53 +211,37 @@ see : [  ],
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'myPropertyFour',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultEnumeration({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'MyEntityFour',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},MetaMyEntityFour.INSTANCE.getProperties(),Optional.empty()),new ArrayList<Value>(){{add(new DefaultEntityInstance({
-urn : this.NAMESPACE + 'entityInstanceFour',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new HashMap<Property, Value>() {{put(MetaMyEntityFour.ENTITY_PROPERTY_FOUR,new DefaultCollectionValue(new ArrayList<>() {{add({
-metaModelBaseAttributes : {},
-value : "fooFour",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});add({
-metaModelBaseAttributes : {},
-value : "barFour",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});add({
-metaModelBaseAttributes : {},
-value : "bazFour",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});}},org.eclipse.esmf.metamodel.CollectionValue.CollectionType.COLLECTION,new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" )));}},DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'MyEntityFour',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},MetaMyEntityFour.INSTANCE.getProperties(),Optional.empty())));}})
+
+        null,
+    null,
+    null,
+    (() => { const defaultEnumeration = new DefaultEnumeration(null, 
+null, 
+null, 
+[new DefaultEntityInstance(null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEntityReplacedAspectArtifact; })(),
+undefined)],(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEntityReplacedAspectArtifact; })())
+defaultEnumeration.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEnumeration; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'myPropertyFour',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'myPropertyFour',
+    false,
+    );
 
 
 

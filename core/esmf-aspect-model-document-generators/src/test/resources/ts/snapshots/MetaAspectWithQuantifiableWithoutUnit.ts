@@ -13,6 +13,7 @@
 
 
 import { AspectWithQuantifiableWithoutUnit,} from './AspectWithQuantifiableWithoutUnit';
+import { DefaultQuantifiable,DefaultScalar,} from './aspect-meta-model';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 
 
@@ -49,35 +50,26 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultQuantifiable({
-urn : this.NAMESPACE + 'TestQuantifiable',
-preferredNames : [ {
-value : "Test Quantifiable",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "This is a test Quantifiable",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
- ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),Optional.empty())
+
+        null,
+    null,
+    null,
+    (() => { const defaultQuantifiable = new DefaultQuantifiable(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),undefined)
+defaultQuantifiable.addAspectModelUrn = this.NAMESPACE + 'TestQuantifiable';
+defaultQuantifiable.addPreferredName('en' , 'Test Quantifiable');
+defaultQuantifiable.addDescription('en' , 'This is a test Quantifiable');
+defaultQuantifiable.addSeeReference('http:\/\/example.com\/');
+ return defaultQuantifiable; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testProperty',
+    false,
+    );
 
 
 

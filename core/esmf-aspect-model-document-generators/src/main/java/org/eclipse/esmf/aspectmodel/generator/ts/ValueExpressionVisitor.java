@@ -26,6 +26,7 @@ import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.Value;
 import org.eclipse.esmf.metamodel.datatype.LangString;
 import org.eclipse.esmf.metamodel.datatype.SammXsdType;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
@@ -58,49 +59,43 @@ public class ValueExpressionVisitor implements AspectVisitor<String, ValueExpres
    // TODO fix it after mapping will be provided
    @Override
    public String visitScalarValue( final ScalarValue value, final Context context ) {
-      final String valueExpression = generateValueExpression( value, context );
-      if ( context.isOptional() ) {
-         return "Optional.of(" + valueExpression + ")";
-      }
-      return valueExpression;
+      return generateValueExpression( value, context );
    }
 
    private String generateValueExpression( final ScalarValue value, final Context context ) {
       final String typeUri = value.getType().as( Scalar.class ).getUrn();
       if ( typeUri.equals( RDF.langString.getURI() ) ) {
          context.codeGenerationConfig().importTracker().importExplicit( "LangString", "./core/langString" );
-         // TODO refactoring
-         //         context.codeGenerationConfig().importTracker().importExplicit( "Locale", "java.util" );
          final LangString langStringValue = (LangString) value.as( ScalarValue.class ).getValue();
-         return String.format( "new LangString(\"%s\", Locale.forLanguageTag(\"%s\"))",
+         return String.format( "new LangString('%s', '%s')",
                AspectModelTsUtil.escapeForLiteral( langStringValue.getValue() ),
                langStringValue.getLanguageTag().toLanguageTag() );
       }
-
       final Resource typeResource = ResourceFactory.createResource( typeUri );
       final Class<?> javaType = SammXsdType.getJavaTypeForMetaModelType( typeResource );
-      final String type = TsDataTypeMapping.resolveType( javaType );
-      if ( !TsDataTypeMapping.isTsType( type ) ) {
-         // TODO change path on real path to type after mapping will be provided
-         context.codeGenerationConfig().importTracker().importExplicit( type, "./" + type );
+      final String valueExpression = AspectModelTsUtil.createLiteral( value.getValue().toString() );
+      if ( typeResource.equals( SammNs.SAMM.curie() ) ) {
+         context.codeGenerationConfig().importTracker().importExplicit( "Curie", "./core/curie" );
+         return String.format( "new Curie( %s )", valueExpression );
       }
-      return valueInitializer.apply( typeResource, javaType, AspectModelTsUtil.createLiteral( value.getValue().toString() ) );
+      return valueInitializer.apply( typeResource, javaType, valueExpression );
    }
 
    @Override
    public String visitCollectionValue( final CollectionValue collection, final Context context ) {
       final Class<?> collectionClass = collection.getValues().getClass();
-      context.codeGenerationConfig().importTracker().importExplicit( TsDataTypeMapping.resolveType( collectionClass ), "asdas" );// FIX it
+      // TODO implement this logic
       final StringBuilder result = new StringBuilder();
-      result.append( "new " );
-      result.append( collectionClass.getSimpleName() );
-      result.append( "<>() {{" );
-      collection.getValues().forEach( value -> {
-         result.append( "add(" );
-         result.append( value.accept( this, context ) );
-         result.append( ");" );
-      } );
-      result.append( "}}" );
+      result.append( "undefined" );
+//      result.append( "new " );
+//      result.append( collectionClass.getSimpleName() );
+//      result.append( "<>() {{" );
+//      collection.getValues().forEach( value -> {
+//         result.append( "add(" );
+//         result.append( value.accept( this, context ) );
+//         result.append( ");" );
+//      } );
+//      result.append( "}}" );
       return result.toString();
    }
 

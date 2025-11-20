@@ -1,3 +1,4 @@
+import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
 import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
@@ -14,9 +15,10 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithValidAnnotationTest,} from './AspectWithValidAnnotationTest';
+import { DefaultCharacteristic,DefaultCollection,DefaultEntity,DefaultScalar,DefaultSingleEntity,} from './aspect-meta-model';
 import { DefaultStaticProperty,StaticContainerProperty,} from './core/staticConstraintProperty';
 import { LangString,} from './core/langString';
-import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
+
 
 
 
@@ -53,39 +55,31 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'entity',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultSingleEntity({
-urn : this.NAMESPACE + 'EntityCharacteristic',
-preferredNames : [ {
-value : "Test Entity Characteristic",
-languageTag : 'en',
-},
- ],
-descriptions : [  ],
-see : [  ],
-}, DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [ {
-value : "Test Entity",
-languageTag : 'en',
-},
- ],
-descriptions : [  ],
-see : [  ],
-},MetaReplacedAspectArtifact.INSTANCE.getProperties(),Optional.empty()))
+
+        null,
+    null,
+    null,
+    (() => { const defaultSingleEntity = new DefaultSingleEntity(null, 
+null, 
+null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+defaultEntityReplacedAspectArtifact.addPreferredName('en' , 'Test Entity');
+ return defaultEntityReplacedAspectArtifact; })())
+defaultSingleEntity.addAspectModelUrn = this.NAMESPACE + 'EntityCharacteristic';
+defaultSingleEntity.addPreferredName('en' , 'Test Entity Characteristic');
+ return defaultSingleEntity; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'entity',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'entity',
+    false,
+    );
 
 
 
@@ -103,44 +97,37 @@ see : [  ],
         return 'AspectWithValidAnnotationTest';
     }
 
-        getContainedType(): AspectWithValidAnnotationTest {
+        getContainedType(): string {
             return 'AspectWithValidAnnotationTest';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'collectionEntity',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultCollection({
-urn : this.NAMESPACE + 'TestCollection',
-preferredNames : [ {
-value : "Test Collection",
-languageTag : 'en',
-},
- ],
-descriptions : [  ],
-see : [  ],
-},Optional.of(DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [ {
-value : "Test Entity",
-languageTag : 'en',
-},
- ],
-descriptions : [  ],
-see : [  ],
-},MetaReplacedAspectArtifact.INSTANCE.getProperties(),Optional.empty())),Optional.empty())
+
+        null,
+    null,
+    null,
+    (() => { const defaultCollection = new DefaultCollection(null, 
+null, 
+null, 
+true, false, undefined,
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+defaultEntityReplacedAspectArtifact.addPreferredName('en' , 'Test Entity');
+ return defaultEntityReplacedAspectArtifact; })())
+defaultCollection.addAspectModelUrn = this.NAMESPACE + 'TestCollection';
+defaultCollection.addPreferredName('en' , 'Test Collection');
+ return defaultCollection; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'collectionEntity',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'collectionEntity',
+    false,
+    );
 
 
 
@@ -158,44 +145,36 @@ see : [  ],
         return 'AspectWithValidAnnotationTest';
     }
 
-        getContainedType(): AspectWithValidAnnotationTest {
+        getContainedType(): string {
             return 'AspectWithValidAnnotationTest';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'optionalEntity',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultSingleEntity({
-urn : this.NAMESPACE + 'EntityCharacteristic',
-preferredNames : [ {
-value : "Test Entity Characteristic",
-languageTag : 'en',
-},
- ],
-descriptions : [  ],
-see : [  ],
-}, DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [ {
-value : "Test Entity",
-languageTag : 'en',
-},
- ],
-descriptions : [  ],
-see : [  ],
-},MetaReplacedAspectArtifact.INSTANCE.getProperties(),Optional.empty()))
+
+        null,
+    null,
+    null,
+    (() => { const defaultSingleEntity = new DefaultSingleEntity(null, 
+null, 
+null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+defaultEntityReplacedAspectArtifact.addPreferredName('en' , 'Test Entity');
+ return defaultEntityReplacedAspectArtifact; })())
+defaultSingleEntity.addAspectModelUrn = this.NAMESPACE + 'EntityCharacteristic';
+defaultSingleEntity.addPreferredName('en' , 'Test Entity Characteristic');
+ return defaultSingleEntity; })()
 ,
-    exampleValue : {},
-    optional : true,
-    notInPayload : false,
-        payloadName : 'optionalEntity',
-    isAbstract : false,
-    });
+    false,
+    true,
+    undefined,
+        'optionalEntity',
+    false,
+    );
 
 
 
@@ -215,36 +194,25 @@ see : [  ],
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     {
-metaModelBaseAttributes : {
-urn : this.CHARACTERISTIC_NAMESPACE + '#Text',
-preferredNames : [ {
-value : "Text",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},
-}
+
+        null,
+    null,
+    null,
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Text';
+defaultCharacteristic.addPreferredName('en' , 'Text');
+defaultCharacteristic.addDescription('en' , 'Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.');
+ return defaultCharacteristic; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testProperty',
+    false,
+    );
 
 
 
@@ -262,35 +230,30 @@ see : [  ],
         return 'AspectWithValidAnnotationTest';
     }
 
-        getContainedType(): AspectWithValidAnnotationTest {
+        getContainedType(): string {
             return 'AspectWithValidAnnotationTest';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'collectionTestProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultCollection({
-isAnonymous : true,
-preferredNames : [ {
-value : "Collection Test Property",
-languageTag : 'en',
-},
- ],
-descriptions : [  ],
-see : [  ],
-},Optional.of(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" )),Optional.empty())
+
+        null,
+    null,
+    null,
+    (() => { const defaultCollection = new DefaultCollection(null, 
+null, 
+null, 
+true, false, undefined,
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultCollection.isAnonymousNode = true;
+defaultCollection.addPreferredName('en' , 'Collection Test Property');
+ return defaultCollection; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'collectionTestProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'collectionTestProperty',
+    false,
+    );
 
 
 
@@ -308,41 +271,30 @@ see : [  ],
         return 'AspectWithValidAnnotationTest';
     }
 
-        getContainedType(): AspectWithValidAnnotationTest {
+        getContainedType(): string {
             return 'AspectWithValidAnnotationTest';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'optionalTestProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     {
-metaModelBaseAttributes : {
-urn : this.CHARACTERISTIC_NAMESPACE + '#Text',
-preferredNames : [ {
-value : "Text",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},
-}
+
+        null,
+    null,
+    null,
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Text';
+defaultCharacteristic.addPreferredName('en' , 'Text');
+defaultCharacteristic.addDescription('en' , 'Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.');
+ return defaultCharacteristic; })()
 ,
-    exampleValue : {},
-    optional : true,
-    notInPayload : false,
-        payloadName : 'optionalTestProperty',
-    isAbstract : false,
-    });
+    false,
+    true,
+    undefined,
+        'optionalTestProperty',
+    false,
+    );
 
 
 
@@ -374,14 +326,14 @@ getAllProperties(): Array<StaticProperty<AspectWithValidAnnotationTest, any>> {
         
     getPreferredNames(): Array<LangString> {
         return [
-            {value: 'Aspect with Valid Annotation Test', languageTag: 'en'},
+            new LangString('Aspect with Valid Annotation Test', 'en'),
         ];
         }
 
         
         getDescriptions(): Array<LangString> {
         return [
-            {value: 'This aspect is used to test the @Valid annotation rules.', languageTag: 'en'},
+            new LangString('This aspect is used to test the @Valid annotation rules.', 'en'),
         ];
         }
 

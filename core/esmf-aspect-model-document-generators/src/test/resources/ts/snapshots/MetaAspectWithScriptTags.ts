@@ -1,3 +1,4 @@
+import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
 import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
@@ -14,9 +15,10 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithScriptTags,} from './AspectWithScriptTags';
+import { DefaultCharacteristic,DefaultEntity,} from './aspect-meta-model';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 import { LangString,} from './core/langString';
-import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
+
 
 
 
@@ -53,44 +55,33 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testEntity',
-preferredNames : [ {
-value : "Test preferred name with script: <script>alert('Should not be alerted');</script>",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test description with script: <script>alert('Should not be alerted');</script>",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},
-    characteristic :     {
-metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'ReplacedAspectArtifactCharacteristic',
-preferredNames : [ {
-value : "Test preferred name with script: <script>alert('Should not be alerted');</script>",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test description with script: <script>alert('Should not be alerted');</script>",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},
-}
+
+        null,
+    null,
+    null,
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+defaultEntityReplacedAspectArtifact.addPreferredName('en' , 'Test preferred name with script: <script>alert(\'Should not be alerted\');<\/script>');
+defaultEntityReplacedAspectArtifact.addDescription('en' , 'Test description with script: <script>alert(\'Should not be alerted\');<\/script>');
+ return defaultEntityReplacedAspectArtifact; })())
+defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifactCharacteristic';
+defaultCharacteristic.addPreferredName('en' , 'Test preferred name with script: <script>alert(\'Should not be alerted\');<\/script>');
+defaultCharacteristic.addDescription('en' , 'Test description with script: <script>alert(\'Should not be alerted\');<\/script>');
+ return defaultCharacteristic; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testEntity',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testEntity',
+    false,
+    );
 
 
 
@@ -122,7 +113,7 @@ getAllProperties(): Array<StaticProperty<AspectWithScriptTags, any>> {
         
     getPreferredNames(): Array<LangString> {
         return [
-            {value: 'Aspect With Entity', languageTag: 'en'},
+            new LangString('Aspect With Entity', 'en'),
         ];
         }
 

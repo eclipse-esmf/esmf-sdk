@@ -14,6 +14,9 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithCurieEnumeration,} from './AspectWithCurieEnumeration';
+import { Curie,} from './core/curie';
+import { DefaultEnumeration,DefaultScalar,} from './aspect-meta-model';
+import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 
 
@@ -51,46 +54,26 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultEnumeration({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [ {
-value : "Test Enumeration",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "This is a test for enumeration.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},new DefaultScalar("urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#curie" ),new ArrayList<Value>(){{add({
-metaModelBaseAttributes : {},
-value : new Curie( "unit:gram" ),
-type : new DefaultScalar("urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#curie" ),
-});add({
-metaModelBaseAttributes : {},
-value : new Curie( "unit:hectopascal" ),
-type : new DefaultScalar("urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#curie" ),
-});}})
+
+        null,
+    null,
+    null,
+    (() => { const defaultEnumeration = new DefaultEnumeration(null, 
+null, 
+null, 
+[new DefaultScalarValue(new DefaultScalar("urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#curie" ),new Curie( 'unit:gram' )),
+new DefaultScalarValue(new DefaultScalar("urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#curie" ),new Curie( 'unit:hectopascal' ))],new DefaultScalar("urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#curie" ))
+defaultEnumeration.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+defaultEnumeration.addPreferredName('en' , 'Test Enumeration');
+defaultEnumeration.addDescription('en' , 'This is a test for enumeration.');
+ return defaultEnumeration; })()
 ,
-    exampleValue : {
-metaModelBaseAttributes : {},
-value : new Curie( "unit:hectopascal" ),
-type : new DefaultScalar("urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#curie" ),
-},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    new DefaultScalarValue(new DefaultScalar("urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#curie" ),new Curie( 'unit:hectopascal' )),
+        'testProperty',
+    false,
+    );
 
 
 

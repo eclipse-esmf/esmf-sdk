@@ -1,3 +1,4 @@
+import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
 import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
@@ -14,10 +15,11 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithAbstractSingleEntity,} from './AspectWithAbstractSingleEntity';
+import { DefaultEntity,DefaultSingleEntity,} from './aspect-meta-model';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 
-import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
-import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
+
+
 
 
     
@@ -53,44 +55,37 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultSingleEntity({
-urn : this.NAMESPACE + 'EntityCharacteristic',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-}, DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [  ],
-descriptions : [ {
-value : "This is an abstract test entity",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},MetaReplacedAspectArtifact.INSTANCE.getProperties(),Optional.of(DefaultAbstractEntity.createDefaultAbstractEntity({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [  ],
-descriptions : [ {
-value : "This is an abstract test entity",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},MetaReplacedAspectArtifact.INSTANCE.getProperties(),Optional.empty(),List.of(AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.test:1.0.0#ReplacedAspectArtifact" ))))))
+
+        null,
+    null,
+    null,
+    (() => { const defaultSingleEntity = new DefaultSingleEntity(null, 
+null, 
+null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+(() => { const extendsDefaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),true,
+undefined)
+extendsDefaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+extendsDefaultEntityReplacedAspectArtifact.addDescription('en' , 'This is an abstract test entity');
+ return extendsDefaultEntityReplacedAspectArtifact; })())
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+defaultEntityReplacedAspectArtifact.addDescription('en' , 'This is an abstract test entity');
+ return defaultEntityReplacedAspectArtifact; })())
+defaultSingleEntity.addAspectModelUrn = this.NAMESPACE + 'EntityCharacteristic';
+ return defaultSingleEntity; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testProperty',
+    false,
+    );
 
 
 

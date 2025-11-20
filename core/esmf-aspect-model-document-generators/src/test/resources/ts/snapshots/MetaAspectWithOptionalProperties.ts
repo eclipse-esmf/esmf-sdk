@@ -13,7 +13,9 @@
 
 
 import { AspectWithOptionalProperties,} from './AspectWithOptionalProperties';
+import { DefaultCharacteristic,DefaultQuantifiable,DefaultQuantityKind,DefaultScalar,} from './aspect-meta-model';
 import { DefaultStaticProperty,StaticContainerProperty,} from './core/staticConstraintProperty';
+import { DefaultUnit,} from './aspect-meta-model/default-unit';
 
 
     
@@ -47,31 +49,249 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
         return 'AspectWithOptionalProperties';
     }
 
-        getContainedType(): AspectWithOptionalProperties {
+        getContainedType(): string {
             return 'AspectWithOptionalProperties';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'numberProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultQuantifiable({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#unsignedLong" ),Units.fromName("metre"))
+
+        null,
+    null,
+    null,
+    (() => { const defaultQuantifiable = new DefaultQuantifiable(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#unsignedLong" ),(() => { const defaultUnit = new DefaultUnit(null, 
+null, 
+null, 
+'m','MTR',undefined,'m',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'(instantaneous) sound particle displacement')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'Bohr radius')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'half-thickness')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'diffusion coefficient for neutron flux density')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'London penetration depth')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'focal distance')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'breadth')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'particle position vector')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'migration length')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'length of path')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'mean free path of phonons or electrons')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'coherence length')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'electron radius')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'thickness')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'mean free path')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'Compton wavelength')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'image distance')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'wavelength')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'distance')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'displacement vector of ion or atom')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'fundamental lattice vector')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'slowing-down length')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'half-value thickness')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'diffusion coefficient for neutron fluence rate')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'radius of curvature')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'diffusion length')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'object distance')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'height')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'nuclear radius')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'cartesian coordinates')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'radius')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'diameter')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'length')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'mean linear range')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'lattice vector')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'equilibrium position vector of ion or atom')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })() ])
+defaultUnit.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#metre';
+defaultUnit.addPreferredName('en' , 'metre');
+ return defaultUnit; })())
+defaultQuantifiable.isAnonymousNode = true;
+ return defaultQuantifiable; })()
 ,
-    exampleValue : {},
-    optional : true,
-    notInPayload : false,
-        payloadName : 'numberProperty',
-    isAbstract : false,
-    });
+    false,
+    true,
+    undefined,
+        'numberProperty',
+    false,
+    );
 
 
 
@@ -91,36 +311,25 @@ see : [  ],
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'timestampProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     {
-metaModelBaseAttributes : {
-urn : this.CHARACTERISTIC_NAMESPACE + '#Timestamp',
-preferredNames : [ {
-value : "Timestamp",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Describes a Property which contains the date and time with an optional timezone.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},
-}
+
+        null,
+    null,
+    null,
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#dateTime" ))
+defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Timestamp';
+defaultCharacteristic.addPreferredName('en' , 'Timestamp');
+defaultCharacteristic.addDescription('en' , 'Describes a Property which contains the date and time with an optional timezone.');
+ return defaultCharacteristic; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'timestampProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'timestampProperty',
+    false,
+    );
 
 
 

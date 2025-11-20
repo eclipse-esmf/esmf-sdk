@@ -48,6 +48,7 @@ return '${className}';
 }
 
 getAspectModelUrn(): string {
+##    Check extra space
 return $classMetaName .MODEL_ELEMENT_URN;
 }
 
@@ -80,7 +81,7 @@ return this.getProperties();
     getPreferredNames(): Array<LangString> {
         return [
         #foreach( $langString in $element.getPreferredNames() )
-            {value: '$util.escapeForLiteral( $langString.getValue() )', languageTag: '$langString.getLanguageTag().toLanguageTag()'},
+            new LangString('$util.escapeForLiteral( $langString.getValue() )', '$langString.getLanguageTag().toLanguageTag()'),
         #end
         ];
         }
@@ -91,7 +92,7 @@ return this.getProperties();
         getDescriptions(): Array<LangString> {
         return [
         #foreach( $langString in $element.getDescriptions() )
-            {value: '$util.escapeForLiteral( $langString.getValue() )', languageTag: '$langString.getLanguageTag().toLanguageTag()'},
+            new LangString('$util.escapeForLiteral( $langString.getValue() )', '$langString.getLanguageTag().toLanguageTag()'),
         #end
         ];
         }

@@ -47,7 +47,6 @@
             new (class extends StaticConstraintContainerProperty<$containingClass, $containedType, $propertyType, #getCharacteristicClassName()>{
         #elseif( $util.hasUnit( $property.getCharacteristic().get() ) )
             $codeGenerationConfig.importTracker().importExplicit( 'StaticConstraintUnitProperty' , './core/staticConstraintProperty'  )
-            $codeGenerationConfig.importTracker().importExplicit( 'Unit' , './core/staticConstraintProperty'  )
         new (class extends StaticConstraintUnitProperty<$containingClass, $propertyType, #getCharacteristicClassName()>{
         #else
         new (class extends StaticConstraintProperty<$containingClass, $propertyType, #getCharacteristicClassName()>{
@@ -59,7 +58,6 @@
         new (class extends StaticContainerProperty<$containingClass, $containedType, $propertyType> {
         #elseif( $util.hasUnit( $property.getCharacteristic().get() ) )
             $codeGenerationConfig.importTracker().importExplicit( 'StaticUnitProperty' , './core/staticConstraintProperty'  )
-            $codeGenerationConfig.importTracker().importExplicit( 'Unit' , './core/staticConstraintProperty'  )
         new (class extends StaticUnitProperty<$containingClass, $propertyType>{
         #else
             $codeGenerationConfig.importTracker().importExplicit( 'DefaultStaticProperty' , './core/staticConstraintProperty'  )
@@ -95,7 +93,7 @@
     }
 
     #if( $util.hasContainerType( $property ) && !$propertyType.startsWith( "Map" ) )
-        getContainedType(): ${containingClass} {
+        getContainedType(): string {
             return '${containingClass}';
         }
     #end
@@ -110,20 +108,24 @@
     ##        }
     ##    #end
     })(
-        {
+
     ## {$arg1, $arg2, ...});
-    metaModelBaseAttributes : $modelVisitor.metaModelBaseAttributes( $property, $context ),
-    characteristic : #propertyCharacteristic( $element, $property, $property.getCharacteristic().get(), $propertyType ),
-    exampleValue : $modelVisitor.exampleValue( $property, $context ),
-    optional : $property.isOptional(),
-    notInPayload : $property.isNotInPayload(),
+    null,
+    null,
+    null,
+    #propertyCharacteristic( $element, $property, $property.getCharacteristic().get(), $propertyType ),
+    $property.isNotInPayload(),
+    $property.isOptional(),
+    $modelVisitor.exampleValue( $property, $context ),
     #if ( '$property.getPayloadName()' != '' )
-        payloadName : '$property.getPayloadName()',
+        '$property.getPayloadName()',
+    #else
+        undefined,
     #end
-    isAbstract : $property.isAbstract(),
+    $property.isAbstract(),
     #if ( !$property.getExtends().isEmpty() )
-        extends_ : #staticProperty( $property.getExtends().get(), $containingClass, $codeGenerationConfig )
+        #staticProperty( $property.getExtends().get(), $containingClass, $codeGenerationConfig )
     #end
-    });
+    );
 
 #end

@@ -13,6 +13,8 @@
 
 
 import { AspectWithMultipleCollectionsOfSimpleType,} from './AspectWithMultipleCollectionsOfSimpleType';
+import { DefaultList,DefaultScalar,} from './aspect-meta-model';
+import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
 import { StaticContainerProperty,} from './core/staticConstraintProperty';
 
 
@@ -47,35 +49,29 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
         return 'AspectWithMultipleCollectionsOfSimpleType';
     }
 
-        getContainedType(): AspectWithMultipleCollectionsOfSimpleType {
+        getContainedType(): string {
             return 'AspectWithMultipleCollectionsOfSimpleType';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testListInt',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultList({
-urn : this.NAMESPACE + 'IntegerList',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of(new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" )),Optional.empty())
+
+        null,
+    null,
+    null,
+    (() => { const defaultList = new DefaultList(null, 
+null, 
+null, 
+undefined,
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ))
+defaultList.addAspectModelUrn = this.NAMESPACE + 'IntegerList';
+ return defaultList; })()
 ,
-    exampleValue : {
-metaModelBaseAttributes : {},
-value : Integer.valueOf( "35" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),
-},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testListInt',
-    isAbstract : false,
-    });
+    false,
+    false,
+    new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),'35'),
+        'testListInt',
+    false,
+    );
 
 
 
@@ -93,35 +89,29 @@ type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),
         return 'AspectWithMultipleCollectionsOfSimpleType';
     }
 
-        getContainedType(): AspectWithMultipleCollectionsOfSimpleType {
+        getContainedType(): string {
             return 'AspectWithMultipleCollectionsOfSimpleType';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testListString',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultList({
-urn : this.NAMESPACE + 'StringList',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" )),Optional.empty())
+
+        null,
+    null,
+    null,
+    (() => { const defaultList = new DefaultList(null, 
+null, 
+null, 
+undefined,
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultList.addAspectModelUrn = this.NAMESPACE + 'StringList';
+ return defaultList; })()
 ,
-    exampleValue : {
-metaModelBaseAttributes : {},
-value : "test string",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testListString',
-    isAbstract : false,
-    });
+    false,
+    false,
+    new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'test string'),
+        'testListString',
+    false,
+    );
 
 
 

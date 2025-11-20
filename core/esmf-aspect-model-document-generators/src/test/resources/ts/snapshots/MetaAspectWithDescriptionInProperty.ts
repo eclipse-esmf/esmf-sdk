@@ -13,6 +13,7 @@
 
 
 import { AspectWithDescriptionInProperty,} from './AspectWithDescriptionInProperty';
+import { DefaultCharacteristic,DefaultScalar,} from './aspect-meta-model';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 
 
@@ -49,44 +50,25 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'enabled',
-preferredNames : [ {
-value : "Aktiviert/Deaktiviert",
-languageTag : 'de',
-},
-{
-value : "Enabled/Disabled",
-languageTag : 'en',
-},
- ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     {
-metaModelBaseAttributes : {
-urn : this.CHARACTERISTIC_NAMESPACE + '#Boolean',
-preferredNames : [ {
-value : "Boolean",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Represents a boolean value (i.e. a \"flag\").",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},
-}
+
+        null,
+    null,
+    null,
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#boolean" ))
+defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Boolean';
+defaultCharacteristic.addPreferredName('en' , 'Boolean');
+defaultCharacteristic.addDescription('en' , 'Represents a boolean value (i.e. a \"flag\").');
+ return defaultCharacteristic; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'enabled',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'enabled',
+    false,
+    );
 
 
 

@@ -13,6 +13,7 @@
 
 
 import { AspectWithCollectionWithoutSeeAttribute,} from './AspectWithCollectionWithoutSeeAttribute';
+import { DefaultCollection,DefaultScalar,} from './aspect-meta-model';
 import { StaticContainerProperty,} from './core/staticConstraintProperty';
 
 
@@ -47,39 +48,31 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
         return 'AspectWithCollectionWithoutSeeAttribute';
     }
 
-        getContainedType(): AspectWithCollectionWithoutSeeAttribute {
+        getContainedType(): string {
             return 'AspectWithCollectionWithoutSeeAttribute';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultCollection({
-urn : this.NAMESPACE + 'TestCollection',
-preferredNames : [ {
-value : "Test Collection",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test Collection",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},Optional.of(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" )),Optional.empty())
+
+        null,
+    null,
+    null,
+    (() => { const defaultCollection = new DefaultCollection(null, 
+null, 
+null, 
+true, false, undefined,
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultCollection.addAspectModelUrn = this.NAMESPACE + 'TestCollection';
+defaultCollection.addPreferredName('en' , 'Test Collection');
+defaultCollection.addDescription('en' , 'Test Collection');
+ return defaultCollection; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testProperty',
+    false,
+    );
 
 
 

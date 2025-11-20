@@ -1,3 +1,4 @@
+import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
 import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
@@ -14,8 +15,9 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithEntityCollection,} from './AspectWithEntityCollection';
+import { DefaultCollection,DefaultEntity,} from './aspect-meta-model';
 import { LangString,} from './core/langString';
-import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
+
 import { StaticContainerProperty,} from './core/staticConstraintProperty';
 
 
@@ -51,63 +53,40 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
         return 'AspectWithEntityCollection';
     }
 
-        getContainedType(): AspectWithEntityCollection {
+        getContainedType(): string {
             return 'AspectWithEntityCollection';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [ {
-value : "Test Property",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "This is a test property.",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
-'http://example.com/me',
- ],
-},
-    characteristic :     new DefaultCollection({
-urn : this.NAMESPACE + 'TestCollection',
-preferredNames : [ {
-value : "Test Collection",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "This is a test collection.",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
- ],
-},Optional.of(DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [ {
-value : "Test Entity",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "This is a test entity",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},MetaReplacedAspectArtifact.INSTANCE.getProperties(),Optional.empty())),Optional.empty())
+
+        null,
+    null,
+    null,
+    (() => { const defaultCollection = new DefaultCollection(null, 
+null, 
+null, 
+true, false, undefined,
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+defaultEntityReplacedAspectArtifact.addPreferredName('en' , 'Test Entity');
+defaultEntityReplacedAspectArtifact.addDescription('en' , 'This is a test entity');
+ return defaultEntityReplacedAspectArtifact; })())
+defaultCollection.addAspectModelUrn = this.NAMESPACE + 'TestCollection';
+defaultCollection.addPreferredName('en' , 'Test Collection');
+defaultCollection.addDescription('en' , 'This is a test collection.');
+defaultCollection.addSeeReference('http:\/\/example.com\/');
+ return defaultCollection; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testProperty',
+    false,
+    );
 
 
 
@@ -139,20 +118,20 @@ getAllProperties(): Array<StaticProperty<AspectWithEntityCollection, any>> {
         
     getPreferredNames(): Array<LangString> {
         return [
-            {value: 'Test Aspect', languageTag: 'en'},
+            new LangString('Test Aspect', 'en'),
         ];
         }
 
         
         getDescriptions(): Array<LangString> {
         return [
-            {value: 'This is a test description', languageTag: 'en'},
+            new LangString('This is a test description', 'en'),
         ];
         }
 
         getSee(): Array<String> {
         return [
-            "http://example.com/",
+            'http:\/\/example.com\/',
         ];
         }
 

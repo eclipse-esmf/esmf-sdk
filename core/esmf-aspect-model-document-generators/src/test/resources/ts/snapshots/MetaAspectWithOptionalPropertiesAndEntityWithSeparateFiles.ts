@@ -1,3 +1,4 @@
+import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
 import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
@@ -14,8 +15,9 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithOptionalPropertiesAndEntityWithSeparateFiles,} from './AspectWithOptionalPropertiesAndEntityWithSeparateFiles';
+import { DefaultEntity,DefaultSingleEntity,} from './aspect-meta-model';
 import { LangString,} from './core/langString';
-import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
+
 
 import { StaticContainerProperty,} from './core/staticConstraintProperty';
 
@@ -51,52 +53,36 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
         return 'AspectWithOptionalPropertiesAndEntityWithSeparateFiles';
     }
 
-        getContainedType(): AspectWithOptionalPropertiesAndEntityWithSeparateFiles {
+        getContainedType(): string {
             return 'AspectWithOptionalPropertiesAndEntityWithSeparateFiles';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'productionPeriod',
-preferredNames : [ {
-value : "Production Period",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "The production period of this vehicle type.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},
-    characteristic :     new DefaultSingleEntity({
-urn : this.NAMESPACE + 'ProductionPeriodCharacteristic',
-preferredNames : [ {
-value : "Production Period Characteristic",
-languageTag : 'en',
-},
- ],
-descriptions : [  ],
-see : [  ],
-}, DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [ {
-value : "Production Period Entity",
-languageTag : 'en',
-},
- ],
-descriptions : [  ],
-see : [  ],
-},MetaReplacedAspectArtifact.INSTANCE.getProperties(),Optional.empty()))
+
+        null,
+    null,
+    null,
+    (() => { const defaultSingleEntity = new DefaultSingleEntity(null, 
+null, 
+null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+defaultEntityReplacedAspectArtifact.addPreferredName('en' , 'Production Period Entity');
+ return defaultEntityReplacedAspectArtifact; })())
+defaultSingleEntity.addAspectModelUrn = this.NAMESPACE + 'ProductionPeriodCharacteristic';
+defaultSingleEntity.addPreferredName('en' , 'Production Period Characteristic');
+ return defaultSingleEntity; })()
 ,
-    exampleValue : {},
-    optional : true,
-    notInPayload : false,
-        payloadName : 'productionPeriod',
-    isAbstract : false,
-    });
+    false,
+    true,
+    undefined,
+        'productionPeriod',
+    false,
+    );
 
 
 
@@ -128,14 +114,14 @@ getAllProperties(): Array<StaticProperty<AspectWithOptionalPropertiesAndEntityWi
         
     getPreferredNames(): Array<LangString> {
         return [
-            {value: 'Minimal Vehicle Type Aspect', languageTag: 'en'},
+            new LangString('Minimal Vehicle Type Aspect', 'en'),
         ];
         }
 
         
         getDescriptions(): Array<LangString> {
         return [
-            {value: 'Simplified aspect containing only ReplacedAspectArtifact as an optional property.', languageTag: 'en'},
+            new LangString('Simplified aspect containing only ReplacedAspectArtifact as an optional property.', 'en'),
         ];
         }
 

@@ -13,7 +13,11 @@
 
 
 import { AspectWithRangeConstraintWithOnlyUpperBound,} from './AspectWithRangeConstraintWithOnlyUpperBound';
+import { BoundDefinition,} from './aspect-meta-model/bound-definition';
+import { DefaultMeasurement,DefaultQuantityKind,DefaultRangeConstraint,DefaultScalar,DefaultTrait,} from './aspect-meta-model';
+import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
+import { DefaultUnit,} from './aspect-meta-model/default-unit';
 import { LangString,} from './core/langString';
 
 
@@ -50,77 +54,95 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [ {
-value : "Test Property",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "This is a test property.",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
-'http://example.com/me',
- ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'TestRangeConstraint',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultMeasurement({
-urn : this.NAMESPACE + 'Measurement',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),Units.fromName("metrePerSecond")),new ArrayList<Constraint>(){{add(new DefaultRangeConstraint({
-isAnonymous : true,
-preferredNames : [ {
-value : "Test Range Constraint",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "This is a test range constraint.",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
- ],
-},Optional.empty(),Optional.of({
-metaModelBaseAttributes : {
-isAnonymous : true,
-preferredNames : [ {
-value : "Test Range Constraint",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "This is a test range constraint.",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
- ],
-},
-value : Float.valueOf( "2.3" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),
-}),BoundDefinition.OPEN,BoundDefinition.AT_MOST));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultMeasurement = new DefaultMeasurement(null, 
+null, 
+null, 
+(() => { const defaultUnit = new DefaultUnit(null, 
+null, 
+null, 
+'m\/s','MTS',undefined,'m\/s',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'phase speed of electromagnetic waves')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'phase velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'phase velocity of electromagnetic waves')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'group velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'velocity (speed) on propagation of electromagnetic waves in vacuo')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'(instantaneous) sound particle velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'velocity of sound (phase velocity)')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'neutron speed')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })() ])
+defaultUnit.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#metrePerSecond';
+defaultUnit.addPreferredName('en' , 'metre per second');
+ return defaultUnit; })(),new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ))
+defaultMeasurement.addAspectModelUrn = this.NAMESPACE + 'Measurement';
+ return defaultMeasurement; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(null, 
+null, 
+null, 
+BoundDefinition.AT_MOST,BoundDefinition.OPEN,undefined,new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),'2.3'),)
+defaultRangeConstraint.isAnonymousNode = true;
+defaultRangeConstraint.addPreferredName('en' , 'Test Range Constraint');
+defaultRangeConstraint.addDescription('en' , 'This is a test range constraint.');
+defaultRangeConstraint.addSeeReference('http:\/\/example.com\/');
+ return defaultRangeConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'TestRangeConstraint';
+ return trait; })()
 ,
-    exampleValue : {
-metaModelBaseAttributes : {},
-value : Float.valueOf( "2.0" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),
-},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),'2.0'),
+        'testProperty',
+    false,
+    );
 
 
 
@@ -152,20 +174,20 @@ getAllProperties(): Array<StaticProperty<AspectWithRangeConstraintWithOnlyUpperB
         
     getPreferredNames(): Array<LangString> {
         return [
-            {value: 'Test Aspect', languageTag: 'en'},
+            new LangString('Test Aspect', 'en'),
         ];
         }
 
         
         getDescriptions(): Array<LangString> {
         return [
-            {value: 'This is a test description', languageTag: 'en'},
+            new LangString('This is a test description', 'en'),
         ];
         }
 
         getSee(): Array<String> {
         return [
-            "http://example.com/",
+            'http:\/\/example.com\/',
         ];
         }
 

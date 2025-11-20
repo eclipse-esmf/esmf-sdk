@@ -1,3 +1,4 @@
+import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
 import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
@@ -14,10 +15,11 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithQuantity,} from './AspectWithQuantity';
+import { DefaultEntity,DefaultSingleEntity,} from './aspect-meta-model';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 import { LangString,} from './core/langString';
 import { MetaQuantity,} from './MetaQuantity';
-import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
+
 
 
 
@@ -54,62 +56,39 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [ {
-value : "Test Property",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "This is a test property.",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
-'http://example.com/me',
- ],
-},
-    characteristic :     new DefaultSingleEntity({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-}, DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [ {
-value : "Quantity",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "A numeric value and the physical unit of the value.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},MetaReplacedAspectArtifact.INSTANCE.getProperties(),Optional.of(DefaultAbstractEntity.createDefaultAbstractEntity({
-urn : 'urn:samm:org.eclipse.esmf.samm:entity:2.2.0#Quantity',
-preferredNames : [ {
-value : "Quantity",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "A numeric value and the physical unit of the value.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},MetaQuantity.INSTANCE.getProperties(),Optional.empty(),List.of(AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.test:1.0.0#ReplacedAspectArtifact" ))))))
+
+        null,
+    null,
+    null,
+    (() => { const defaultSingleEntity = new DefaultSingleEntity(null, 
+null, 
+null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+(() => { const extendsDefaultEntityQuantity = new DefaultEntity(null, 
+null, 
+null, 
+MetaQuantity.INSTANCE.getProperties(),true,
+undefined)
+extendsDefaultEntityQuantity.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:entity:2.2.0#Quantity';
+extendsDefaultEntityQuantity.addPreferredName('en' , 'Quantity');
+extendsDefaultEntityQuantity.addDescription('en' , 'A numeric value and the physical unit of the value.');
+ return extendsDefaultEntityQuantity; })())
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+defaultEntityReplacedAspectArtifact.addPreferredName('en' , 'Quantity');
+defaultEntityReplacedAspectArtifact.addDescription('en' , 'A numeric value and the physical unit of the value.');
+ return defaultEntityReplacedAspectArtifact; })())
+defaultSingleEntity.isAnonymousNode = true;
+ return defaultSingleEntity; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testProperty',
+    false,
+    );
 
 
 
@@ -141,20 +120,20 @@ getAllProperties(): Array<StaticProperty<AspectWithQuantity, any>> {
         
     getPreferredNames(): Array<LangString> {
         return [
-            {value: 'Test Aspect', languageTag: 'en'},
+            new LangString('Test Aspect', 'en'),
         ];
         }
 
         
         getDescriptions(): Array<LangString> {
         return [
-            {value: 'This is a test description', languageTag: 'en'},
+            new LangString('This is a test description', 'en'),
         ];
         }
 
         getSee(): Array<String> {
         return [
-            "http://example.com/",
+            'http:\/\/example.com\/',
         ];
         }
 

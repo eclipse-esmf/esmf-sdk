@@ -1,3 +1,4 @@
+import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
 import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
@@ -14,8 +15,10 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithEntityInstanceWithScalarListProperty,} from './AspectWithEntityInstanceWithScalarListProperty';
+import { DefaultEntity,DefaultEnumeration,} from './aspect-meta-model';
+import { DefaultEntityInstance,} from './aspect-meta-model/default-entity-instance';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
-import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
+
 
 
 
@@ -52,57 +55,37 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultEnumeration({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},MetaReplacedAspectArtifact.INSTANCE.getProperties(),Optional.empty()),new ArrayList<Value>(){{add(new DefaultEntityInstance({
-urn : this.NAMESPACE + 'ReplacedAspectArtifactInstance',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new HashMap<Property, Value>() {{put(MetaReplacedAspectArtifact.CODE,{
-metaModelBaseAttributes : {},
-value : Short.parseShort( "3" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#short" ),
-});put(MetaReplacedAspectArtifact.TEST_LIST,new DefaultCollectionValue(new ArrayList<>() {{add({
-metaModelBaseAttributes : {},
-value : new BigInteger( "1" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),
-});add({
-metaModelBaseAttributes : {},
-value : new BigInteger( "2" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),
-});add({
-metaModelBaseAttributes : {},
-value : new BigInteger( "3" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),
-});}},org.eclipse.esmf.metamodel.CollectionValue.CollectionType.LIST,new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" )));}},DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},MetaReplacedAspectArtifact.INSTANCE.getProperties(),Optional.empty())));}})
+
+        null,
+    null,
+    null,
+    (() => { const defaultEnumeration = new DefaultEnumeration(null, 
+null, 
+null, 
+[new DefaultEntityInstance(null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEntityReplacedAspectArtifact; })(),
+undefined)],(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEntityReplacedAspectArtifact; })())
+defaultEnumeration.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEnumeration; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testProperty',
+    false,
+    );
 
 
 

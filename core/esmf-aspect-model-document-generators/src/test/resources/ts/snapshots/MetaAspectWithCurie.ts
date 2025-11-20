@@ -13,6 +13,9 @@
 
 
 import { AspectWithCurie,} from './AspectWithCurie';
+import { Curie,} from './core/curie';
+import { DefaultCharacteristic,DefaultScalar,} from './aspect-meta-model';
+import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 
 
@@ -49,40 +52,25 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testCurie',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     {
-metaModelBaseAttributes : {
-urn : this.CHARACTERISTIC_NAMESPACE + '#UnitReference',
-preferredNames : [ {
-value : "Unit Reference",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Describes a Property containing a reference to one of the units in the Unit Catalog.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},
-}
+
+        null,
+    null,
+    null,
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#curie" ))
+defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#UnitReference';
+defaultCharacteristic.addPreferredName('en' , 'Unit Reference');
+defaultCharacteristic.addDescription('en' , 'Describes a Property containing a reference to one of the units in the Unit Catalog.');
+ return defaultCharacteristic; })()
 ,
-    exampleValue : {
-metaModelBaseAttributes : {},
-value : new Curie( "unit:hectopascal" ),
-type : new DefaultScalar("urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#curie" ),
-},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testCurie',
-    isAbstract : false,
-    });
+    false,
+    false,
+    new DefaultScalarValue(new DefaultScalar("urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#curie" ),new Curie( 'unit:hectopascal' )),
+        'testCurie',
+    false,
+    );
 
 
 
@@ -102,36 +90,25 @@ type : new DefaultScalar("urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#curie"
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testCurieWithoutExampleValue',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     {
-metaModelBaseAttributes : {
-urn : this.CHARACTERISTIC_NAMESPACE + '#UnitReference',
-preferredNames : [ {
-value : "Unit Reference",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Describes a Property containing a reference to one of the units in the Unit Catalog.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},
-}
+
+        null,
+    null,
+    null,
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#curie" ))
+defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#UnitReference';
+defaultCharacteristic.addPreferredName('en' , 'Unit Reference');
+defaultCharacteristic.addDescription('en' , 'Describes a Property containing a reference to one of the units in the Unit Catalog.');
+ return defaultCharacteristic; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testCurieWithoutExampleValue',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testCurieWithoutExampleValue',
+    false,
+    );
 
 
 

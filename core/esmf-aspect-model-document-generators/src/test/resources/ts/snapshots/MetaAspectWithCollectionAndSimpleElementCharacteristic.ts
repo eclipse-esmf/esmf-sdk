@@ -13,6 +13,7 @@
 
 
 import { AspectWithCollectionAndSimpleElementCharacteristic,} from './AspectWithCollectionAndSimpleElementCharacteristic';
+import { DefaultCharacteristic,DefaultCollection,DefaultScalar,} from './aspect-meta-model';
 import { StaticContainerProperty,} from './core/staticConstraintProperty';
 
 
@@ -47,46 +48,36 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
         return 'AspectWithCollectionAndSimpleElementCharacteristic';
     }
 
-        getContainedType(): AspectWithCollectionAndSimpleElementCharacteristic {
+        getContainedType(): string {
             return 'AspectWithCollectionAndSimpleElementCharacteristic';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'items',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultCollection({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" )),Optional.of({
-metaModelBaseAttributes : {
-urn : this.CHARACTERISTIC_NAMESPACE + '#Text',
-preferredNames : [ {
-value : "Text",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},
-}))
+
+        null,
+    null,
+    null,
+    (() => { const defaultCollection = new DefaultCollection(null, 
+null, 
+null, 
+true, false, (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Text';
+defaultCharacteristic.addPreferredName('en' , 'Text');
+defaultCharacteristic.addDescription('en' , 'Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.');
+ return defaultCharacteristic; })(),
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultCollection.isAnonymousNode = true;
+ return defaultCollection; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'items',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'items',
+    false,
+    );
 
 
 

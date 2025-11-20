@@ -13,7 +13,9 @@
 
 
 import { AspectWithFixedPointConstraint,} from './AspectWithFixedPointConstraint';
+import { DefaultFixedPointConstraint,DefaultMeasurement,DefaultQuantityKind,DefaultScalar,DefaultTrait,} from './aspect-meta-model';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
+import { DefaultUnit,} from './aspect-meta-model/default-unit';
 import { LangString,} from './core/langString';
 
 
@@ -50,45 +52,96 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'TestTrait',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultMeasurement({
-urn : this.NAMESPACE + 'Measurement',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),Units.fromName("metrePerSecond")),new ArrayList<Constraint>(){{add(new DefaultFixedPointConstraint({
-isAnonymous : true,
-preferredNames : [ {
-value : "Test Fixed Point",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "This is a test fixed point constraint.",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
- ],
-},5,3));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultMeasurement = new DefaultMeasurement(null, 
+null, 
+null, 
+(() => { const defaultUnit = new DefaultUnit(null, 
+null, 
+null, 
+'m\/s','MTS',undefined,'m\/s',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'phase speed of electromagnetic waves')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'phase velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'phase velocity of electromagnetic waves')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'group velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'velocity (speed) on propagation of electromagnetic waves in vacuo')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'(instantaneous) sound particle velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'velocity of sound (phase velocity)')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'neutron speed')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })() ])
+defaultUnit.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#metrePerSecond';
+defaultUnit.addPreferredName('en' , 'metre per second');
+ return defaultUnit; })(),new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ))
+defaultMeasurement.addAspectModelUrn = this.NAMESPACE + 'Measurement';
+ return defaultMeasurement; })(),[(() => { const defaultFixedPointConstraint = new DefaultFixedPointConstraint(null, 
+null, 
+null, 
+5,
+3)
+defaultFixedPointConstraint.isAnonymousNode = true;
+defaultFixedPointConstraint.addPreferredName('en' , 'Test Fixed Point');
+defaultFixedPointConstraint.addDescription('en' , 'This is a test fixed point constraint.');
+defaultFixedPointConstraint.addSeeReference('http:\/\/example.com\/');
+ return defaultFixedPointConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'TestTrait';
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testProperty',
+    false,
+    );
 
 
 
@@ -120,20 +173,20 @@ getAllProperties(): Array<StaticProperty<AspectWithFixedPointConstraint, any>> {
         
     getPreferredNames(): Array<LangString> {
         return [
-            {value: 'Test Aspect', languageTag: 'en'},
+            new LangString('Test Aspect', 'en'),
         ];
         }
 
         
         getDescriptions(): Array<LangString> {
         return [
-            {value: 'This is a test description', languageTag: 'en'},
+            new LangString('This is a test description', 'en'),
         ];
         }
 
         getSee(): Array<String> {
         return [
-            "http://example.com/",
+            'http:\/\/example.com\/',
         ];
         }
 

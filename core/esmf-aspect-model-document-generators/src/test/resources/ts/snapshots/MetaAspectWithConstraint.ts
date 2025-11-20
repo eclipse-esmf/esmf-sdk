@@ -13,7 +13,11 @@
 
 
 import { AspectWithConstraint,} from './AspectWithConstraint';
+import { BoundDefinition,} from './aspect-meta-model/bound-definition';
+import { DefaultCharacteristic,DefaultLengthConstraint,DefaultMeasurement,DefaultQuantityKind,DefaultRangeConstraint,DefaultRegularExpressionConstraint,DefaultScalar,DefaultTrait,} from './aspect-meta-model';
+import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
+import { DefaultUnit,} from './aspect-meta-model/default-unit';
 
 
     
@@ -49,56 +53,39 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'stringLcProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'StringLengthConstraint',
-preferredNames : [ {
-value : "Used Test Constraint",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Used Test Constraint",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
-'http://example.com/me',
- ],
-},{
-metaModelBaseAttributes : {
-urn : this.CHARACTERISTIC_NAMESPACE + '#Text',
-preferredNames : [ {
-value : "Text",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},
-},new ArrayList<Constraint>(){{add(new DefaultLengthConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of(new BigInteger( "20" )),Optional.of(new BigInteger( "22" ))));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Text';
+defaultCharacteristic.addPreferredName('en' , 'Text');
+defaultCharacteristic.addDescription('en' , 'Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.');
+ return defaultCharacteristic; })(),[(() => { const lengthConstraint = new DefaultLengthConstraint(null, 
+null, 
+null, 
+20,20,)
+lengthConstraint.isAnonymousNode = true;
+ return lengthConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'StringLengthConstraint';
+trait.addPreferredName('en' , 'Used Test Constraint');
+trait.addDescription('en' , 'Used Test Constraint');
+trait.addSeeReference('http:\/\/example.com\/');
+trait.addSeeReference('http:\/\/example.com\/me');
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'stringLcProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'stringLcProperty',
+    false,
+    );
 
 
 
@@ -118,56 +105,65 @@ see : [  ],
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'doubleRcProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'DoubleRangeConstraint',
-preferredNames : [ {
-value : "Test Constraint",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test Constraint",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},new DefaultMeasurement({
-urn : this.NAMESPACE + 'DoubleMeasurement',
-preferredNames : [  ],
-descriptions : [ {
-value : "The acceleration",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#double" ),Units.fromName("metrePerSecondSquared")),new ArrayList<Constraint>(){{add(new DefaultRangeConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of({
-metaModelBaseAttributes : {},
-value : Double.valueOf( "-0.1" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#double" ),
-}),Optional.of({
-metaModelBaseAttributes : {},
-value : Double.valueOf( "0.2" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#double" ),
-}),BoundDefinition.AT_LEAST,BoundDefinition.AT_MOST));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultMeasurement = new DefaultMeasurement(null, 
+null, 
+null, 
+(() => { const defaultUnit = new DefaultUnit(null, 
+null, 
+null, 
+'m\/s²','MSK',undefined,'m\/s²',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'acceleration of free fall')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'acceleration due to gravity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'(instantaneous) sound particle acceleration')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'acceleration')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })() ])
+defaultUnit.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#metrePerSecondSquared';
+defaultUnit.addPreferredName('en' , 'metre per second squared');
+ return defaultUnit; })(),new DefaultScalar("http://www.w3.org/2001/XMLSchema#double" ))
+defaultMeasurement.addAspectModelUrn = this.NAMESPACE + 'DoubleMeasurement';
+defaultMeasurement.addDescription('en' , 'The acceleration');
+ return defaultMeasurement; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(null, 
+null, 
+null, 
+BoundDefinition.AT_MOST,BoundDefinition.AT_LEAST,new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#double" ),'-0.1'),new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#double" ),'0.2'),)
+defaultRangeConstraint.isAnonymousNode = true;
+ return defaultRangeConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'DoubleRangeConstraint';
+trait.addPreferredName('en' , 'Test Constraint');
+trait.addDescription('en' , 'Test Constraint');
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'doubleRcProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'doubleRcProperty',
+    false,
+    );
 
 
 
@@ -187,56 +183,65 @@ type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#double" ),
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'intRcProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'IntegerRangeConstraint',
-preferredNames : [ {
-value : "Test Constraint",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test Constraint",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},new DefaultMeasurement({
-urn : this.NAMESPACE + 'IntegerMeasurement',
-preferredNames : [  ],
-descriptions : [ {
-value : "The acceleration",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),Units.fromName("metrePerSecondSquared")),new ArrayList<Constraint>(){{add(new DefaultRangeConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of({
-metaModelBaseAttributes : {},
-value : Integer.valueOf( "-1" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),
-}),Optional.of({
-metaModelBaseAttributes : {},
-value : Integer.valueOf( "-1" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),
-}),BoundDefinition.AT_LEAST,BoundDefinition.AT_MOST));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultMeasurement = new DefaultMeasurement(null, 
+null, 
+null, 
+(() => { const defaultUnit = new DefaultUnit(null, 
+null, 
+null, 
+'m\/s²','MSK',undefined,'m\/s²',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'acceleration of free fall')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'acceleration due to gravity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'(instantaneous) sound particle acceleration')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'acceleration')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })() ])
+defaultUnit.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#metrePerSecondSquared';
+defaultUnit.addPreferredName('en' , 'metre per second squared');
+ return defaultUnit; })(),new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ))
+defaultMeasurement.addAspectModelUrn = this.NAMESPACE + 'IntegerMeasurement';
+defaultMeasurement.addDescription('en' , 'The acceleration');
+ return defaultMeasurement; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(null, 
+null, 
+null, 
+BoundDefinition.AT_MOST,BoundDefinition.AT_LEAST,new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),'-1'),new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),'-1'),)
+defaultRangeConstraint.isAnonymousNode = true;
+ return defaultRangeConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'IntegerRangeConstraint';
+trait.addPreferredName('en' , 'Test Constraint');
+trait.addDescription('en' , 'Test Constraint');
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'intRcProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'intRcProperty',
+    false,
+    );
 
 
 
@@ -256,56 +261,65 @@ type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'bigIntRcProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'BigIntegerRangeConstraint',
-preferredNames : [ {
-value : "Test Constraint",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test Constraint",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},new DefaultMeasurement({
-urn : this.NAMESPACE + 'BigIntegerMeasurement',
-preferredNames : [  ],
-descriptions : [ {
-value : "The acceleration",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),Units.fromName("metrePerSecondSquared")),new ArrayList<Constraint>(){{add(new DefaultRangeConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of({
-metaModelBaseAttributes : {},
-value : new BigInteger( "10" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),
-}),Optional.of({
-metaModelBaseAttributes : {},
-value : new BigInteger( "15" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),
-}),BoundDefinition.AT_LEAST,BoundDefinition.AT_MOST));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultMeasurement = new DefaultMeasurement(null, 
+null, 
+null, 
+(() => { const defaultUnit = new DefaultUnit(null, 
+null, 
+null, 
+'m\/s²','MSK',undefined,'m\/s²',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'acceleration of free fall')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'acceleration due to gravity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'(instantaneous) sound particle acceleration')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'acceleration')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })() ])
+defaultUnit.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#metrePerSecondSquared';
+defaultUnit.addPreferredName('en' , 'metre per second squared');
+ return defaultUnit; })(),new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ))
+defaultMeasurement.addAspectModelUrn = this.NAMESPACE + 'BigIntegerMeasurement';
+defaultMeasurement.addDescription('en' , 'The acceleration');
+ return defaultMeasurement; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(null, 
+null, 
+null, 
+BoundDefinition.AT_MOST,BoundDefinition.AT_LEAST,new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),'10'),new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),'15'),)
+defaultRangeConstraint.isAnonymousNode = true;
+ return defaultRangeConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'BigIntegerRangeConstraint';
+trait.addPreferredName('en' , 'Test Constraint');
+trait.addDescription('en' , 'Test Constraint');
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'bigIntRcProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'bigIntRcProperty',
+    false,
+    );
 
 
 
@@ -325,56 +339,65 @@ type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'floatRcProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'FloatRangeConstraint',
-preferredNames : [ {
-value : "Test Constraint",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test Constraint",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},new DefaultMeasurement({
-urn : this.NAMESPACE + 'FloatMeasurement',
-preferredNames : [  ],
-descriptions : [ {
-value : "The acceleration",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),Units.fromName("metrePerSecondSquared")),new ArrayList<Constraint>(){{add(new DefaultRangeConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of({
-metaModelBaseAttributes : {},
-value : Float.valueOf( "100.0" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),
-}),Optional.of({
-metaModelBaseAttributes : {},
-value : Float.valueOf( "112.0" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),
-}),BoundDefinition.AT_LEAST,BoundDefinition.AT_MOST));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultMeasurement = new DefaultMeasurement(null, 
+null, 
+null, 
+(() => { const defaultUnit = new DefaultUnit(null, 
+null, 
+null, 
+'m\/s²','MSK',undefined,'m\/s²',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'acceleration of free fall')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'acceleration due to gravity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'(instantaneous) sound particle acceleration')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'acceleration')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })() ])
+defaultUnit.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#metrePerSecondSquared';
+defaultUnit.addPreferredName('en' , 'metre per second squared');
+ return defaultUnit; })(),new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ))
+defaultMeasurement.addAspectModelUrn = this.NAMESPACE + 'FloatMeasurement';
+defaultMeasurement.addDescription('en' , 'The acceleration');
+ return defaultMeasurement; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(null, 
+null, 
+null, 
+BoundDefinition.AT_MOST,BoundDefinition.AT_LEAST,new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),'100.0'),new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),'112.0'),)
+defaultRangeConstraint.isAnonymousNode = true;
+ return defaultRangeConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'FloatRangeConstraint';
+trait.addPreferredName('en' , 'Test Constraint');
+trait.addDescription('en' , 'Test Constraint');
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'floatRcProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'floatRcProperty',
+    false,
+    );
 
 
 
@@ -394,54 +417,37 @@ type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'stringRegexcProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'RegularExpressionConstraint',
-preferredNames : [ {
-value : "Test Regular Expression Constraint",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test Regular Expression Constraint",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},{
-metaModelBaseAttributes : {
-urn : this.CHARACTERISTIC_NAMESPACE + '#Text',
-preferredNames : [ {
-value : "Text",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},
-},new ArrayList<Constraint>(){{add(new DefaultRegularExpressionConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},"[a-zA-Z]"));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Text';
+defaultCharacteristic.addPreferredName('en' , 'Text');
+defaultCharacteristic.addDescription('en' , 'Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.');
+ return defaultCharacteristic; })(),[(() => { const regularExpressionConstraint = new DefaultRegularExpressionConstraint(null, 
+null, 
+null, 
+'[a-zA-Z]')
+regularExpressionConstraint.isAnonymousNode = true;
+ return regularExpressionConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'RegularExpressionConstraint';
+trait.addPreferredName('en' , 'Test Regular Expression Constraint');
+trait.addDescription('en' , 'Test Regular Expression Constraint');
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'stringRegexcProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'stringRegexcProperty',
+    false,
+    );
 
 
 

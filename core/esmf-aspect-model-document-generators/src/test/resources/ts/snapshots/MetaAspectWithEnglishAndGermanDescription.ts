@@ -13,6 +13,8 @@
 
 
 import { AspectWithEnglishAndGermanDescription,} from './AspectWithEnglishAndGermanDescription';
+import { DefaultCharacteristic,DefaultScalar,} from './aspect-meta-model';
+import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 import { LangString,} from './core/langString';
 
@@ -50,56 +52,25 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testString',
-preferredNames : [ {
-value : "testString",
-languageTag : 'de',
-},
-{
-value : "testString",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Es ist ein Test-String",
-languageTag : 'de',
-},
-{
-value : "This is a test string",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},
-    characteristic :     {
-metaModelBaseAttributes : {
-urn : this.CHARACTERISTIC_NAMESPACE + '#Text',
-preferredNames : [ {
-value : "Text",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},
-}
+
+        null,
+    null,
+    null,
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Text';
+defaultCharacteristic.addPreferredName('en' , 'Text');
+defaultCharacteristic.addDescription('en' , 'Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.');
+ return defaultCharacteristic; })()
 ,
-    exampleValue : {
-metaModelBaseAttributes : {},
-value : "Example Value Test",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testString',
-    isAbstract : false,
-    });
+    false,
+    false,
+    new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'Example Value Test'),
+        'testString',
+    false,
+    );
 
 
 
@@ -131,16 +102,16 @@ getAllProperties(): Array<StaticProperty<AspectWithEnglishAndGermanDescription, 
         
     getPreferredNames(): Array<LangString> {
         return [
-            {value: 'Testaspekt', languageTag: 'de'},
-            {value: 'Test Aspect', languageTag: 'en'},
+            new LangString('Testaspekt', 'de'),
+            new LangString('Test Aspect', 'en'),
         ];
         }
 
         
         getDescriptions(): Array<LangString> {
         return [
-            {value: 'Aspekt mit mehrsprachigen Beschreibungen', languageTag: 'de'},
-            {value: 'Aspect With Multilingual Descriptions', languageTag: 'en'},
+            new LangString('Aspekt mit mehrsprachigen Beschreibungen', 'de'),
+            new LangString('Aspect With Multilingual Descriptions', 'en'),
         ];
         }
 

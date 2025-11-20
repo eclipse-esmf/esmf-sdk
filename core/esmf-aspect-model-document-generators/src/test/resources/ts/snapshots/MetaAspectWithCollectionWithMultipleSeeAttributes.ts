@@ -13,6 +13,7 @@
 
 
 import { AspectWithCollectionWithMultipleSeeAttributes,} from './AspectWithCollectionWithMultipleSeeAttributes';
+import { DefaultCollection,DefaultScalar,} from './aspect-meta-model';
 import { StaticContainerProperty,} from './core/staticConstraintProperty';
 
 
@@ -47,41 +48,33 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
         return 'AspectWithCollectionWithMultipleSeeAttributes';
     }
 
-        getContainedType(): AspectWithCollectionWithMultipleSeeAttributes {
+        getContainedType(): string {
             return 'AspectWithCollectionWithMultipleSeeAttributes';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultCollection({
-urn : this.NAMESPACE + 'TestCollection',
-preferredNames : [ {
-value : "Test Collection",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test Collection",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
-'http://example.com/me',
- ],
-},Optional.of(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" )),Optional.empty())
+
+        null,
+    null,
+    null,
+    (() => { const defaultCollection = new DefaultCollection(null, 
+null, 
+null, 
+true, false, undefined,
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultCollection.addAspectModelUrn = this.NAMESPACE + 'TestCollection';
+defaultCollection.addPreferredName('en' , 'Test Collection');
+defaultCollection.addDescription('en' , 'Test Collection');
+defaultCollection.addSeeReference('http:\/\/example.com\/');
+defaultCollection.addSeeReference('http:\/\/example.com\/me');
+ return defaultCollection; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testProperty',
+    false,
+    );
 
 
 

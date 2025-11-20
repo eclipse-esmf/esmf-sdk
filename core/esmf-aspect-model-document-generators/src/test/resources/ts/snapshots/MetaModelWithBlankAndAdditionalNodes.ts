@@ -12,6 +12,9 @@
 
 
 
+import { BoundDefinition,} from './aspect-meta-model/bound-definition';
+import { DefaultCharacteristic,DefaultList,DefaultRangeConstraint,DefaultScalar,DefaultTrait,} from './aspect-meta-model';
+import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
 import { ModelWithBlankAndAdditionalNodes,} from './ModelWithBlankAndAdditionalNodes';
 import { StaticContainerProperty,} from './core/staticConstraintProperty';
 
@@ -47,56 +50,44 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
         return 'ModelWithBlankAndAdditionalNodes';
     }
 
-        getContainedType(): ModelWithBlankAndAdditionalNodes {
+        getContainedType(): string {
             return 'ModelWithBlankAndAdditionalNodes';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultList({
-urn : this.NAMESPACE + 'NumberList',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of(new DefaultScalar("http://www.w3.org/2001/XMLSchema#nonNegativeInteger" )),Optional.of(new DefaultTrait({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},{
-metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'Number',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-},new ArrayList<Constraint>(){{add(new DefaultRangeConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of({
-metaModelBaseAttributes : {},
-value : new BigInteger( "5" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#nonNegativeInteger" ),
-}),Optional.of({
-metaModelBaseAttributes : {},
-value : new BigInteger( "10" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#nonNegativeInteger" ),
-}),BoundDefinition.AT_LEAST,BoundDefinition.AT_MOST));}})))
+
+        null,
+    null,
+    null,
+    (() => { const defaultList = new DefaultList(null, 
+null, 
+null, 
+(() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#nonNegativeInteger" ))
+defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Number';
+ return defaultCharacteristic; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(null, 
+null, 
+null, 
+BoundDefinition.AT_MOST,BoundDefinition.AT_LEAST,new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#nonNegativeInteger" ),'5'),new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#nonNegativeInteger" ),'10'),)
+defaultRangeConstraint.isAnonymousNode = true;
+ return defaultRangeConstraint; })()])
+trait.isAnonymousNode = true;
+ return trait; })(),
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#nonNegativeInteger" ))
+defaultList.addAspectModelUrn = this.NAMESPACE + 'NumberList';
+ return defaultList; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testProperty',
+    false,
+    );
 
 
 

@@ -13,6 +13,7 @@
 
 
 import { AspectWithListWithLengthConstraint,} from './AspectWithListWithLengthConstraint';
+import { DefaultLengthConstraint,DefaultList,DefaultScalar,DefaultTrait,} from './aspect-meta-model';
 import { StaticContainerProperty,} from './core/staticConstraintProperty';
 
 
@@ -47,49 +48,41 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
         return 'AspectWithListWithLengthConstraint';
     }
 
-        getContainedType(): AspectWithListWithLengthConstraint {
+        getContainedType(): string {
             return 'AspectWithListWithLengthConstraint';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testPropertyCollectionLengthConstraint',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'TestLengthConstraintWithCollection',
-preferredNames : [ {
-value : "Test Length Constraint with collection",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test Length Constraint with collection",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},new DefaultList({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of(new DefaultScalar("http://www.w3.org/2001/XMLSchema#nonNegativeInteger" )),Optional.empty()),new ArrayList<Constraint>(){{add(new DefaultLengthConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of(new BigInteger( "1" )),Optional.of(new BigInteger( "10" ))));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultList = new DefaultList(null, 
+null, 
+null, 
+undefined,
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#nonNegativeInteger" ))
+defaultList.isAnonymousNode = true;
+ return defaultList; })(),[(() => { const lengthConstraint = new DefaultLengthConstraint(null, 
+null, 
+null, 
+1,1,)
+lengthConstraint.isAnonymousNode = true;
+ return lengthConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'TestLengthConstraintWithCollection';
+trait.addPreferredName('en' , 'Test Length Constraint with collection');
+trait.addDescription('en' , 'Test Length Constraint with collection');
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testPropertyCollectionLengthConstraint',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testPropertyCollectionLengthConstraint',
+    false,
+    );
 
 
 

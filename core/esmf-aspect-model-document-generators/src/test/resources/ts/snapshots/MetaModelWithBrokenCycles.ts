@@ -1,3 +1,4 @@
+import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
 import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
@@ -14,12 +15,13 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 
+import { DefaultCharacteristic,DefaultEntity,} from './aspect-meta-model';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 
 import { Either,} from './core/Either';
 
-import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
-import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
+
+
 import { ModelWithBrokenCycles,} from './ModelWithBrokenCycles';
 
 
@@ -57,28 +59,29 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'a',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     {
-metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'aCharacteristic',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-}
+
+        null,
+    null,
+    null,
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEntityReplacedAspectArtifact; })())
+defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'aCharacteristic';
+ return defaultCharacteristic; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'a',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'a',
+    false,
+    );
 
 
 
@@ -98,28 +101,29 @@ see : [  ],
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'e',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     {
-metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'eCharacteristic',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-}
+
+        null,
+    null,
+    null,
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEntityReplacedAspectArtifact; })())
+defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'eCharacteristic';
+ return defaultCharacteristic; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'e',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'e',
+    false,
+    );
 
 
 
@@ -139,28 +143,23 @@ see : [  ],
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'h',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     {
-metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'hCharacteristic',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-}
+
+        null,
+    null,
+    null,
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+undefined)
+defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'hCharacteristic';
+ return defaultCharacteristic; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'h',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'h',
+    false,
+    );
 
 
 

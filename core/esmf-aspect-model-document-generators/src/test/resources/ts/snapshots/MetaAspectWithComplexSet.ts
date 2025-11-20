@@ -1,3 +1,4 @@
+import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
 import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
@@ -14,9 +15,10 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithComplexSet,} from './AspectWithComplexSet';
+import { DefaultEntity,DefaultLengthConstraint,DefaultSet,DefaultTrait,} from './aspect-meta-model';
 
 import { LangString,} from './core/langString';
-import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
+
 import { StaticContainerProperty,} from './core/staticConstraintProperty';
 
 
@@ -51,77 +53,52 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
         return 'AspectWithComplexSet';
     }
 
-        getContainedType(): AspectWithComplexSet {
+        getContainedType(): string {
             return 'AspectWithComplexSet';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [ {
-value : "Test Property",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "This is a test property.",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
- ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'TestTrait',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultSet({
-urn : this.NAMESPACE + 'TestSet',
-preferredNames : [ {
-value : "Test Set",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "This is a test set.",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
- ],
-},Optional.of(DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [ {
-value : "Unique ReplacedAspectArtifactentifier",
-languageTag : 'en',
-},
- ],
-descriptions : [  ],
-see : [  ],
-},MetaReplacedAspectArtifact.INSTANCE.getProperties(),Optional.empty())),Optional.empty()),new ArrayList<Constraint>(){{add(new DefaultLengthConstraint({
-urn : this.NAMESPACE + 'TestSetConstraint',
-preferredNames : [ {
-value : "TestSet Constraint",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Constraint for defining a non-empty set of identifiers.",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
- ],
-},Optional.of(new BigInteger( "2" )),Optional.empty()));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultSet = new DefaultSet(null, 
+null, 
+null, 
+undefined,
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+defaultEntityReplacedAspectArtifact.addPreferredName('en' , 'Unique ReplacedAspectArtifactentifier');
+ return defaultEntityReplacedAspectArtifact; })())
+defaultSet.addAspectModelUrn = this.NAMESPACE + 'TestSet';
+defaultSet.addPreferredName('en' , 'Test Set');
+defaultSet.addDescription('en' , 'This is a test set.');
+defaultSet.addSeeReference('http:\/\/example.com\/');
+ return defaultSet; })(),[(() => { const lengthConstraint = new DefaultLengthConstraint(null, 
+null, 
+null, 
+2,2,)
+lengthConstraint.addAspectModelUrn = this.NAMESPACE + 'TestSetConstraint';
+lengthConstraint.addPreferredName('en' , 'TestSet Constraint');
+lengthConstraint.addDescription('en' , 'Constraint for defining a non-empty set of identifiers.');
+lengthConstraint.addSeeReference('http:\/\/example.com\/');
+ return lengthConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'TestTrait';
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testProperty',
+    false,
+    );
 
 
 
@@ -153,20 +130,20 @@ getAllProperties(): Array<StaticProperty<AspectWithComplexSet, any>> {
         
     getPreferredNames(): Array<LangString> {
         return [
-            {value: 'Test Aspect', languageTag: 'en'},
+            new LangString('Test Aspect', 'en'),
         ];
         }
 
         
         getDescriptions(): Array<LangString> {
         return [
-            {value: 'This is a test description', languageTag: 'en'},
+            new LangString('This is a test description', 'en'),
         ];
         }
 
         getSee(): Array<String> {
         return [
-            "http://example.com/",
+            'http:\/\/example.com\/',
         ];
         }
 

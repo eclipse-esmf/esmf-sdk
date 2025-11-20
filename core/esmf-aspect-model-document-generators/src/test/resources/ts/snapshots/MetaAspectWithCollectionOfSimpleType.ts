@@ -13,6 +13,8 @@
 
 
 import { AspectWithCollectionOfSimpleType,} from './AspectWithCollectionOfSimpleType';
+import { DefaultList,DefaultScalar,} from './aspect-meta-model';
+import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
 import { StaticContainerProperty,} from './core/staticConstraintProperty';
 
 
@@ -47,35 +49,29 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
         return 'AspectWithCollectionOfSimpleType';
     }
 
-        getContainedType(): AspectWithCollectionOfSimpleType {
+        getContainedType(): string {
             return 'AspectWithCollectionOfSimpleType';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testList',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultList({
-urn : this.NAMESPACE + 'IntegerList',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of(new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" )),Optional.empty())
+
+        null,
+    null,
+    null,
+    (() => { const defaultList = new DefaultList(null, 
+null, 
+null, 
+undefined,
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ))
+defaultList.addAspectModelUrn = this.NAMESPACE + 'IntegerList';
+ return defaultList; })()
 ,
-    exampleValue : {
-metaModelBaseAttributes : {},
-value : Integer.valueOf( "35" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),
-},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testList',
-    isAbstract : false,
-    });
+    false,
+    false,
+    new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),'35'),
+        'testList',
+    false,
+    );
 
 
 

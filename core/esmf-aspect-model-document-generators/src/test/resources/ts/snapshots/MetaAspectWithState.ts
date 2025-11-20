@@ -14,6 +14,8 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithState,} from './AspectWithState';
+import { DefaultScalar,DefaultState,} from './aspect-meta-model';
+import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 
 
@@ -51,42 +53,25 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'status',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultState({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),new ArrayList<Value>(){{add({
-metaModelBaseAttributes : {},
-value : "ReplacedAspectArtifact",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});add({
-metaModelBaseAttributes : {},
-value : "In Progress",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});add({
-metaModelBaseAttributes : {},
-value : "Success",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});}},{
-metaModelBaseAttributes : {},
-value : "In Progress",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-})
+
+        null,
+    null,
+    null,
+    (() => { const defaultState = new DefaultState(null, 
+null, 
+null, 
+[new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'Error'),
+new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'In Progress'),
+new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'Success')],new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'In Progress'),new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultState.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultState; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'status',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'status',
+    false,
+    );
 
 
 

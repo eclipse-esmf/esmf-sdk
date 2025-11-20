@@ -13,7 +13,9 @@
 
 
 import { AspectWithMeasurementWithUnit,} from './AspectWithMeasurementWithUnit';
-import { StaticUnitProperty,Unit,} from './core/staticConstraintProperty';
+import { DefaultMeasurement,DefaultQuantityKind,DefaultScalar,} from './aspect-meta-model';
+import { DefaultUnit,} from './aspect-meta-model/default-unit';
+import { StaticUnitProperty,} from './core/staticConstraintProperty';
 
 
     
@@ -36,7 +38,6 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
  public static readonly  TEST_PROPERTY = 
                 
-            
         new (class extends StaticUnitProperty<AspectWithMeasurementWithUnit, number>{
 
     
@@ -50,26 +51,34 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultMeasurement({
-urn : this.NAMESPACE + 'TestMeasurement',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),Units.fromName("percent"))
+
+        null,
+    null,
+    null,
+    (() => { const defaultMeasurement = new DefaultMeasurement(null, 
+null, 
+null, 
+(() => { const defaultUnit = new DefaultUnit(null, 
+null, 
+null, 
+'%','P1',undefined,'1 × 10⁻²',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'dimensionless')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })() ])
+defaultUnit.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#percent';
+defaultUnit.addPreferredName('en' , 'percent');
+ return defaultUnit; })(),new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ))
+defaultMeasurement.addAspectModelUrn = this.NAMESPACE + 'TestMeasurement';
+ return defaultMeasurement; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testProperty',
+    false,
+    );
 
 
 

@@ -61,14 +61,14 @@ getAllProperties(): Array<StaticProperty<AspectWithEncodedStrings, any>> {
         
     getPreferredNames(): Array<LangString> {
         return [
-            {value: 'VGhpcyBpcyBhbiBBc3BlY3Qgd2l0aCBlbmNvZGVkIHRleHQu', languageTag: 'en'},
+            new LangString('VGhpcyBpcyBhbiBBc3BlY3Qgd2l0aCBlbmNvZGVkIHRleHQu', 'en'),
         ];
         }
 
         
         getDescriptions(): Array<LangString> {
         return [
-            {value: 'Aspect With encoded text', languageTag: 'en'},
+            new LangString('Aspect With encoded text', 'en'),
         ];
         }
 

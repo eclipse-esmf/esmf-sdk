@@ -13,6 +13,10 @@
 
 
 import { AspectWithCollectionWithElementConstraint,} from './AspectWithCollectionWithElementConstraint';
+import { BoundDefinition,} from './aspect-meta-model/bound-definition';
+import { DefaultCollection,DefaultMeasurement,DefaultQuantityKind,DefaultRangeConstraint,DefaultScalar,DefaultTrait,} from './aspect-meta-model';
+import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
+import { DefaultUnit,} from './aspect-meta-model/default-unit';
 import { LangString,} from './core/langString';
 import { StaticContainerProperty,} from './core/staticConstraintProperty';
 
@@ -48,77 +52,106 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
         return 'AspectWithCollectionWithElementConstraint';
     }
 
-        getContainedType(): AspectWithCollectionWithElementConstraint {
+        getContainedType(): string {
             return 'AspectWithCollectionWithElementConstraint';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [ {
-value : "Test Property",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "This is a test property.",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
-'http://example.com/me',
- ],
-},
-    characteristic :     new DefaultCollection({
-urn : this.NAMESPACE + 'TestCollection',
-preferredNames : [ {
-value : "Test Collection",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "This is a test collection.",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
- ],
-},Optional.of(new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" )),Optional.of(new DefaultTrait({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultMeasurement({
-urn : this.NAMESPACE + 'Measurement',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),Units.fromName("metrePerSecond")),new ArrayList<Constraint>(){{add(new DefaultRangeConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of({
-metaModelBaseAttributes : {},
-value : Float.valueOf( "2.3" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),
-}),Optional.of({
-metaModelBaseAttributes : {},
-value : Float.valueOf( "10.5" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),
-}),BoundDefinition.AT_LEAST,BoundDefinition.AT_MOST));}})))
+
+        null,
+    null,
+    null,
+    (() => { const defaultCollection = new DefaultCollection(null, 
+null, 
+null, 
+true, false, (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultMeasurement = new DefaultMeasurement(null, 
+null, 
+null, 
+(() => { const defaultUnit = new DefaultUnit(null, 
+null, 
+null, 
+'m\/s','MTS',undefined,'m\/s',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'phase speed of electromagnetic waves')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'phase velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'phase velocity of electromagnetic waves')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'group velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'velocity (speed) on propagation of electromagnetic waves in vacuo')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'(instantaneous) sound particle velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'velocity of sound (phase velocity)')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'neutron speed')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })() ])
+defaultUnit.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#metrePerSecond';
+defaultUnit.addPreferredName('en' , 'metre per second');
+ return defaultUnit; })(),new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ))
+defaultMeasurement.addAspectModelUrn = this.NAMESPACE + 'Measurement';
+ return defaultMeasurement; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(null, 
+null, 
+null, 
+BoundDefinition.AT_MOST,BoundDefinition.AT_LEAST,new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),'2.3'),new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),'10.5'),)
+defaultRangeConstraint.isAnonymousNode = true;
+ return defaultRangeConstraint; })()])
+trait.isAnonymousNode = true;
+ return trait; })(),
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ))
+defaultCollection.addAspectModelUrn = this.NAMESPACE + 'TestCollection';
+defaultCollection.addPreferredName('en' , 'Test Collection');
+defaultCollection.addDescription('en' , 'This is a test collection.');
+defaultCollection.addSeeReference('http:\/\/example.com\/');
+ return defaultCollection; })()
 ,
-    exampleValue : {
-metaModelBaseAttributes : {},
-value : Float.valueOf( "5.0" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),
-},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),'5.0'),
+        'testProperty',
+    false,
+    );
 
 
 
@@ -150,20 +183,20 @@ getAllProperties(): Array<StaticProperty<AspectWithCollectionWithElementConstrai
         
     getPreferredNames(): Array<LangString> {
         return [
-            {value: 'Test Aspect', languageTag: 'en'},
+            new LangString('Test Aspect', 'en'),
         ];
         }
 
         
         getDescriptions(): Array<LangString> {
         return [
-            {value: 'This is a test description', languageTag: 'en'},
+            new LangString('This is a test description', 'en'),
         ];
         }
 
         getSee(): Array<String> {
         return [
-            "http://example.com/",
+            'http:\/\/example.com\/',
         ];
         }
 

@@ -13,6 +13,7 @@
 
 
 import { AspectWithPreferredNames,} from './AspectWithPreferredNames';
+import { DefaultCharacteristic,DefaultScalar,} from './aspect-meta-model';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 import { LangString,} from './core/langString';
 
@@ -50,28 +51,23 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testBoolean',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     {
-metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'BooleanReplacedAspectArtifact',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-}
+
+        null,
+    null,
+    null,
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#boolean" ))
+defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'BooleanReplacedAspectArtifact';
+ return defaultCharacteristic; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testBoolean',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testBoolean',
+    false,
+    );
 
 
 
@@ -103,8 +99,8 @@ getAllProperties(): Array<StaticProperty<AspectWithPreferredNames, any>> {
         
     getPreferredNames(): Array<LangString> {
         return [
-            {value: 'Aspekt Mit Boolean', languageTag: 'de'},
-            {value: 'Aspect With Boolean', languageTag: 'en'},
+            new LangString('Aspekt Mit Boolean', 'de'),
+            new LangString('Aspect With Boolean', 'en'),
         ];
         }
 

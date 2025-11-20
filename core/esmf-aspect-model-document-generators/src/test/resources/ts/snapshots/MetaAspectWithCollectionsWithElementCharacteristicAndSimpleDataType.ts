@@ -13,6 +13,7 @@
 
 
 import { AspectWithCollectionsWithElementCharacteristicAndSimpleDataType,} from './AspectWithCollectionsWithElementCharacteristicAndSimpleDataType';
+import { DefaultCharacteristic,DefaultCollection,DefaultScalar,} from './aspect-meta-model';
 import { StaticContainerProperty,} from './core/staticConstraintProperty';
 
 
@@ -47,31 +48,29 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
         return 'AspectWithCollectionsWithElementCharacteristicAndSimpleDataType';
     }
 
-        getContainedType(): AspectWithCollectionsWithElementCharacteristicAndSimpleDataType {
+        getContainedType(): string {
             return 'AspectWithCollectionsWithElementCharacteristicAndSimpleDataType';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultCollection({
-urn : this.NAMESPACE + 'TestCollection',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" )),Optional.empty())
+
+        null,
+    null,
+    null,
+    (() => { const defaultCollection = new DefaultCollection(null, 
+null, 
+null, 
+true, false, undefined,
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultCollection.addAspectModelUrn = this.NAMESPACE + 'TestCollection';
+ return defaultCollection; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testProperty',
+    false,
+    );
 
 
 
@@ -89,46 +88,36 @@ see : [  ],
         return 'AspectWithCollectionsWithElementCharacteristicAndSimpleDataType';
     }
 
-        getContainedType(): AspectWithCollectionsWithElementCharacteristicAndSimpleDataType {
+        getContainedType(): string {
             return 'AspectWithCollectionsWithElementCharacteristicAndSimpleDataType';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testPropertyTwo',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultCollection({
-urn : this.NAMESPACE + 'TestCollectionTwo',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" )),Optional.of({
-metaModelBaseAttributes : {
-urn : this.CHARACTERISTIC_NAMESPACE + '#Text',
-preferredNames : [ {
-value : "Text",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},
-}))
+
+        null,
+    null,
+    null,
+    (() => { const defaultCollection = new DefaultCollection(null, 
+null, 
+null, 
+true, false, (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Text';
+defaultCharacteristic.addPreferredName('en' , 'Text');
+defaultCharacteristic.addDescription('en' , 'Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.');
+ return defaultCharacteristic; })(),
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultCollection.addAspectModelUrn = this.NAMESPACE + 'TestCollectionTwo';
+ return defaultCollection; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testPropertyTwo',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testPropertyTwo',
+    false,
+    );
 
 
 

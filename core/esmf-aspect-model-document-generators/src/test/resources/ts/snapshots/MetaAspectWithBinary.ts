@@ -13,6 +13,7 @@
 
 
 import { AspectWithBinary,} from './AspectWithBinary';
+import { DefaultCharacteristic,DefaultScalar,} from './aspect-meta-model';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 
 
@@ -49,28 +50,23 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testBinary',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     {
-metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'BinaryReplacedAspectArtifact',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-}
+
+        null,
+    null,
+    null,
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#hexBinary" ))
+defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'BinaryReplacedAspectArtifact';
+ return defaultCharacteristic; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testBinary',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testBinary',
+    false,
+    );
 
 
 

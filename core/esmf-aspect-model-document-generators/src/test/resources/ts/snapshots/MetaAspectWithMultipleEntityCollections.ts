@@ -1,3 +1,4 @@
+import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
 import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
@@ -14,7 +15,8 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithMultipleEntityCollections,} from './AspectWithMultipleEntityCollections';
-import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
+import { DefaultEntity,DefaultList,} from './aspect-meta-model';
+
 import { StaticContainerProperty,} from './core/staticConstraintProperty';
 
 
@@ -50,36 +52,35 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
         return 'AspectWithMultipleEntityCollections';
     }
 
-        getContainedType(): AspectWithMultipleEntityCollections {
+        getContainedType(): string {
             return 'AspectWithMultipleEntityCollections';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testListOne',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultList({
-urn : this.NAMESPACE + 'EntityList',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of(DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},MetaReplacedAspectArtifact.INSTANCE.getProperties(),Optional.empty())),Optional.empty())
+
+        null,
+    null,
+    null,
+    (() => { const defaultList = new DefaultList(null, 
+null, 
+null, 
+undefined,
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEntityReplacedAspectArtifact; })())
+defaultList.addAspectModelUrn = this.NAMESPACE + 'EntityList';
+ return defaultList; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testListOne',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testListOne',
+    false,
+    );
 
 
 
@@ -97,36 +98,35 @@ see : [  ],
         return 'AspectWithMultipleEntityCollections';
     }
 
-        getContainedType(): AspectWithMultipleEntityCollections {
+        getContainedType(): string {
             return 'AspectWithMultipleEntityCollections';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testListTwo',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultList({
-urn : this.NAMESPACE + 'EntityList',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of(DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},MetaReplacedAspectArtifact.INSTANCE.getProperties(),Optional.empty())),Optional.empty())
+
+        null,
+    null,
+    null,
+    (() => { const defaultList = new DefaultList(null, 
+null, 
+null, 
+undefined,
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return defaultEntityReplacedAspectArtifact; })())
+defaultList.addAspectModelUrn = this.NAMESPACE + 'EntityList';
+ return defaultList; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testListTwo',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testListTwo',
+    false,
+    );
 
 
 

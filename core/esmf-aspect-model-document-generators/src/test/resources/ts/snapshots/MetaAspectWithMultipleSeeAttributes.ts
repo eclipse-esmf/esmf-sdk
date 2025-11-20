@@ -61,21 +61,21 @@ getAllProperties(): Array<StaticProperty<AspectWithMultipleSeeAttributes, any>> 
         
     getPreferredNames(): Array<LangString> {
         return [
-            {value: 'Test Aspect', languageTag: 'en'},
+            new LangString('Test Aspect', 'en'),
         ];
         }
 
         
         getDescriptions(): Array<LangString> {
         return [
-            {value: 'This is a test Aspect.', languageTag: 'en'},
+            new LangString('This is a test Aspect.', 'en'),
         ];
         }
 
         getSee(): Array<String> {
         return [
-            "http://example.com/",
-            "http://example.com/me",
+            'http:\/\/example.com\/',
+            'http:\/\/example.com\/me',
         ];
         }
 

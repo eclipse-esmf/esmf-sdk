@@ -13,7 +13,11 @@
 
 
 import { AspectWithDateTimeTypeForRangeConstraints,} from './AspectWithDateTimeTypeForRangeConstraints';
+import { BoundDefinition,} from './aspect-meta-model/bound-definition';
+import { DefaultMeasurement,DefaultQuantityKind,DefaultRangeConstraint,DefaultScalar,DefaultTrait,} from './aspect-meta-model';
+import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
+import { DefaultUnit,} from './aspect-meta-model/default-unit';
 
 
     
@@ -49,52 +53,100 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testPropertyWithDateTime',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'testWithGregorianCalenderMinGregorianCalenderMaxDateTime',
-preferredNames : [ {
-value : "Test Range",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test Range",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},new DefaultMeasurement({
-urn : this.NAMESPACE + 'MeasurementDateTime',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#dateTime" ),Units.fromName("secondUnitOfTime")),new ArrayList<Constraint>(){{add(new DefaultRangeConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of({
-metaModelBaseAttributes : {},
-value : _datatypeFactory.newXMLGregorianCalendar( "2000-01-01T14:23:00" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#dateTime" ),
-}),Optional.of({
-metaModelBaseAttributes : {},
-value : _datatypeFactory.newXMLGregorianCalendar( "2000-01-02T15:23:00" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#dateTime" ),
-}),BoundDefinition.AT_LEAST,BoundDefinition.AT_MOST));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultMeasurement = new DefaultMeasurement(null, 
+null, 
+null, 
+(() => { const defaultUnit = new DefaultUnit(null, 
+null, 
+null, 
+'s','SEC',undefined,'s',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'half life')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'time constant')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'relaxation time')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'periodic time')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'reactor time constant')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'time')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'period')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'carrier life time')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'mean life')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'reverberation time')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })() ])
+defaultUnit.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#secondUnitOfTime';
+defaultUnit.addPreferredName('en' , 'second [unit of time]');
+ return defaultUnit; })(),new DefaultScalar("http://www.w3.org/2001/XMLSchema#dateTime" ))
+defaultMeasurement.addAspectModelUrn = this.NAMESPACE + 'MeasurementDateTime';
+ return defaultMeasurement; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(null, 
+null, 
+null, 
+BoundDefinition.AT_MOST,BoundDefinition.AT_LEAST,new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#dateTime" ),new Date( ''2000-01-01T14:23:00'' )),new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#dateTime" ),new Date( ''2000-01-02T15:23:00'' )),)
+defaultRangeConstraint.isAnonymousNode = true;
+ return defaultRangeConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'testWithGregorianCalenderMinGregorianCalenderMaxDateTime';
+trait.addPreferredName('en' , 'Test Range');
+trait.addDescription('en' , 'Test Range');
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testPropertyWithDateTime',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testPropertyWithDateTime',
+    false,
+    );
 
 
 
@@ -114,52 +166,100 @@ type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#dateTime" ),
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testPropertyWithDateTimeStamp',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'testWithGregorianCalenderMinGregorianCalenderMaxDateTimeStamp',
-preferredNames : [ {
-value : "Test Range",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test Range",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},new DefaultMeasurement({
-urn : this.NAMESPACE + 'MeasurementDateTimeStamp',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#dateTimeStamp" ),Units.fromName("secondUnitOfTime")),new ArrayList<Constraint>(){{add(new DefaultRangeConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of({
-metaModelBaseAttributes : {},
-value : _datatypeFactory.newXMLGregorianCalendar( "2000-01-01T14:23:00.66372+14:00" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#dateTimeStamp" ),
-}),Optional.of({
-metaModelBaseAttributes : {},
-value : _datatypeFactory.newXMLGregorianCalendar( "2000-01-01T15:23:00.66372+14:00" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#dateTimeStamp" ),
-}),BoundDefinition.AT_LEAST,BoundDefinition.AT_MOST));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultMeasurement = new DefaultMeasurement(null, 
+null, 
+null, 
+(() => { const defaultUnit = new DefaultUnit(null, 
+null, 
+null, 
+'s','SEC',undefined,'s',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'half life')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'time constant')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'relaxation time')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'periodic time')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'reactor time constant')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'time')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'period')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'carrier life time')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'mean life')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'reverberation time')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })() ])
+defaultUnit.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#secondUnitOfTime';
+defaultUnit.addPreferredName('en' , 'second [unit of time]');
+ return defaultUnit; })(),new DefaultScalar("http://www.w3.org/2001/XMLSchema#dateTimeStamp" ))
+defaultMeasurement.addAspectModelUrn = this.NAMESPACE + 'MeasurementDateTimeStamp';
+ return defaultMeasurement; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(null, 
+null, 
+null, 
+BoundDefinition.AT_MOST,BoundDefinition.AT_LEAST,new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#dateTimeStamp" ),new Date( ''2000-01-01T14:23:00.66372+14:00'' )),new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#dateTimeStamp" ),new Date( ''2000-01-01T15:23:00.66372+14:00'' )),)
+defaultRangeConstraint.isAnonymousNode = true;
+ return defaultRangeConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'testWithGregorianCalenderMinGregorianCalenderMaxDateTimeStamp';
+trait.addPreferredName('en' , 'Test Range');
+trait.addDescription('en' , 'Test Range');
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testPropertyWithDateTimeStamp',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testPropertyWithDateTimeStamp',
+    false,
+    );
 
 
 

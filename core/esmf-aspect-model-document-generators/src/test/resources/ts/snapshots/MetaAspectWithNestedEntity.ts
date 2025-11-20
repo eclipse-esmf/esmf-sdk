@@ -13,6 +13,7 @@
 
 
 import { AspectWithNestedEntity,} from './AspectWithNestedEntity';
+import { DefaultCharacteristic,DefaultEntity,} from './aspect-meta-model';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 import { Entity,} from './Entity';
 import { MetaEntity,} from './MetaEntity';
@@ -51,28 +52,29 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'entity',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     {
-metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'EntityCharacteristic',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-}
+
+        null,
+    null,
+    null,
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+(() => { const defaultEntityEntity = new DefaultEntity(null, 
+null, 
+null, 
+MetaEntity.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityEntity.addAspectModelUrn = this.NAMESPACE + 'Entity';
+ return defaultEntityEntity; })())
+defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'EntityCharacteristic';
+ return defaultCharacteristic; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'entity',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'entity',
+    false,
+    );
 
 
 

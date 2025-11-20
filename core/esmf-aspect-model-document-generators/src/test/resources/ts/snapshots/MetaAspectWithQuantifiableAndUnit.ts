@@ -13,7 +13,9 @@
 
 
 import { AspectWithQuantifiableAndUnit,} from './AspectWithQuantifiableAndUnit';
-import { StaticUnitProperty,Unit,} from './core/staticConstraintProperty';
+import { DefaultQuantifiable,DefaultQuantityKind,DefaultScalar,} from './aspect-meta-model';
+import { DefaultUnit,} from './aspect-meta-model/default-unit';
+import { StaticUnitProperty,} from './core/staticConstraintProperty';
 
 
     
@@ -36,7 +38,6 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
  public static readonly  TEST_PROPERTY = 
                 
-            
         new (class extends StaticUnitProperty<AspectWithQuantifiableAndUnit, number>{
 
     
@@ -50,35 +51,37 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultQuantifiable({
-urn : this.NAMESPACE + 'TestQuantifiable',
-preferredNames : [ {
-value : "Test Quantifiable",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "This is a test Quantifiable",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
- ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),Units.fromName("hertz"))
+
+        null,
+    null,
+    null,
+    (() => { const defaultQuantifiable = new DefaultQuantifiable(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),(() => { const defaultUnit = new DefaultUnit(null, 
+null, 
+null, 
+'Hz','HTZ',undefined,'Hz',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'frequency')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })() ])
+defaultUnit.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#hertz';
+defaultUnit.addPreferredName('en' , 'hertz');
+ return defaultUnit; })())
+defaultQuantifiable.addAspectModelUrn = this.NAMESPACE + 'TestQuantifiable';
+defaultQuantifiable.addPreferredName('en' , 'Test Quantifiable');
+defaultQuantifiable.addDescription('en' , 'This is a test Quantifiable');
+defaultQuantifiable.addSeeReference('http:\/\/example.com\/');
+ return defaultQuantifiable; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testProperty',
+    false,
+    );
 
 
 

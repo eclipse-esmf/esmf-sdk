@@ -1,3 +1,4 @@
+import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
 import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
@@ -14,9 +15,11 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithEntityEnumerationAndNotInPayloadProperties,} from './AspectWithEntityEnumerationAndNotInPayloadProperties';
+import { DefaultEntity,DefaultEnumeration,} from './aspect-meta-model';
+import { DefaultEntityInstance,} from './aspect-meta-model/default-entity-instance';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 import { LangString,} from './core/langString';
-import { MetaSystemState,} from './MetaSystemState';
+
 
 
 
@@ -53,159 +56,76 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'systemState',
-preferredNames : [ {
-value : "System State",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "The state the system is currently in, e.g. heat-up.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},
-    characteristic :     new DefaultEnumeration({
-isAnonymous : true,
-preferredNames : [ {
-value : "System States",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Defines which states the system may have.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'SystemState',
-preferredNames : [ {
-value : "System State",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Represents a specific state the system may have.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},MetaSystemState.INSTANCE.getProperties(),Optional.empty()),new ArrayList<Value>(){{add(new DefaultEntityInstance({
-urn : this.NAMESPACE + 'CoolDown',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new HashMap<Property, Value>() {{put(MetaSystemState.STATE,{
-metaModelBaseAttributes : {},
-value : Short.parseShort( "3" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#short" ),
-});put(MetaSystemState.DESCRIPTION,{
-metaModelBaseAttributes : {},
-value : "CoolDown",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});}},DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'SystemState',
-preferredNames : [ {
-value : "System State",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Represents a specific state the system may have.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},MetaSystemState.INSTANCE.getProperties(),Optional.empty())));add(new DefaultEntityInstance({
-urn : this.NAMESPACE + 'HeatUp',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new HashMap<Property, Value>() {{put(MetaSystemState.STATE,{
-metaModelBaseAttributes : {},
-value : Short.parseShort( "4" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#short" ),
-});put(MetaSystemState.DESCRIPTION,{
-metaModelBaseAttributes : {},
-value : "HeatUp",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});}},DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'SystemState',
-preferredNames : [ {
-value : "System State",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Represents a specific state the system may have.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},MetaSystemState.INSTANCE.getProperties(),Optional.empty())));add(new DefaultEntityInstance({
-urn : this.NAMESPACE + 'Off',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new HashMap<Property, Value>() {{put(MetaSystemState.STATE,{
-metaModelBaseAttributes : {},
-value : Short.parseShort( "0" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#short" ),
-});put(MetaSystemState.DESCRIPTION,{
-metaModelBaseAttributes : {},
-value : "Off",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});}},DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'SystemState',
-preferredNames : [ {
-value : "System State",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Represents a specific state the system may have.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},MetaSystemState.INSTANCE.getProperties(),Optional.empty())));add(new DefaultEntityInstance({
-urn : this.NAMESPACE + 'On',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new HashMap<Property, Value>() {{put(MetaSystemState.STATE,{
-metaModelBaseAttributes : {},
-value : Short.parseShort( "1" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#short" ),
-});put(MetaSystemState.DESCRIPTION,{
-metaModelBaseAttributes : {},
-value : "On",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});}},DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'SystemState',
-preferredNames : [ {
-value : "System State",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Represents a specific state the system may have.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},MetaSystemState.INSTANCE.getProperties(),Optional.empty())));}})
+
+        null,
+    null,
+    null,
+    (() => { const defaultEnumeration = new DefaultEnumeration(null, 
+null, 
+null, 
+[new DefaultEntityInstance(null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+defaultEntityReplacedAspectArtifact.addPreferredName('en' , 'System State');
+defaultEntityReplacedAspectArtifact.addDescription('en' , 'Represents a specific state the system may have.');
+ return defaultEntityReplacedAspectArtifact; })(),
+undefined),
+new DefaultEntityInstance(null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+defaultEntityReplacedAspectArtifact.addPreferredName('en' , 'System State');
+defaultEntityReplacedAspectArtifact.addDescription('en' , 'Represents a specific state the system may have.');
+ return defaultEntityReplacedAspectArtifact; })(),
+undefined),
+new DefaultEntityInstance(null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+defaultEntityReplacedAspectArtifact.addPreferredName('en' , 'System State');
+defaultEntityReplacedAspectArtifact.addDescription('en' , 'Represents a specific state the system may have.');
+ return defaultEntityReplacedAspectArtifact; })(),
+undefined),
+new DefaultEntityInstance(null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+defaultEntityReplacedAspectArtifact.addPreferredName('en' , 'System State');
+defaultEntityReplacedAspectArtifact.addDescription('en' , 'Represents a specific state the system may have.');
+ return defaultEntityReplacedAspectArtifact; })(),
+undefined)],(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+defaultEntityReplacedAspectArtifact.addPreferredName('en' , 'System State');
+defaultEntityReplacedAspectArtifact.addDescription('en' , 'Represents a specific state the system may have.');
+ return defaultEntityReplacedAspectArtifact; })())
+defaultEnumeration.isAnonymousNode = true;
+defaultEnumeration.addPreferredName('en' , 'System States');
+defaultEnumeration.addDescription('en' , 'Defines which states the system may have.');
+ return defaultEnumeration; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'systemState',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'systemState',
+    false,
+    );
 
 
 
@@ -237,20 +157,20 @@ getAllProperties(): Array<StaticProperty<AspectWithEntityEnumerationAndNotInPayl
         
     getPreferredNames(): Array<LangString> {
         return [
-            {value: 'Aspect with entity enumeration and not in payload properties', languageTag: 'en'},
+            new LangString('Aspect with entity enumeration and not in payload properties', 'en'),
         ];
         }
 
         
         getDescriptions(): Array<LangString> {
         return [
-            {value: 'This is a test description', languageTag: 'en'},
+            new LangString('This is a test description', 'en'),
         ];
         }
 
         getSee(): Array<String> {
         return [
-            "http://example.com/",
+            'http:\/\/example.com\/',
         ];
         }
 

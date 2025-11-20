@@ -61,7 +61,7 @@ getAllProperties(): Array<StaticProperty<AspectWithRubyGemUpdateCommand, any>> {
         
     getPreferredNames(): Array<LangString> {
         return [
-            {value: 'gem update --system', languageTag: 'en'},
+            new LangString('gem update --system', 'en'),
         ];
         }
 

@@ -13,7 +13,9 @@
 
 
 import { AspectWithDuration,} from './AspectWithDuration';
-import { StaticUnitProperty,Unit,} from './core/staticConstraintProperty';
+import { DefaultDuration,DefaultQuantityKind,DefaultScalar,} from './aspect-meta-model';
+import { DefaultUnit,} from './aspect-meta-model/default-unit';
+import { StaticUnitProperty,} from './core/staticConstraintProperty';
 
 
     
@@ -36,7 +38,6 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
  public static readonly  TEST_PROPERTY = 
                 
-            
         new (class extends StaticUnitProperty<AspectWithDuration, number>{
 
     
@@ -50,35 +51,37 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultDuration({
-urn : this.NAMESPACE + 'TestDuration',
-preferredNames : [ {
-value : "Test Duration",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "This is a test Duration",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
- ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),Units.fromName("kilosecond"))
+
+        null,
+    null,
+    null,
+    (() => { const defaultDuration = new DefaultDuration(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),(() => { const defaultUnit = new DefaultUnit(null, 
+null, 
+null, 
+'ks','B52','secondUnitOfTime','10³ s',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'time')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })() ])
+defaultUnit.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#kilosecond';
+defaultUnit.addPreferredName('en' , 'kilosecond');
+ return defaultUnit; })())
+defaultDuration.addAspectModelUrn = this.NAMESPACE + 'TestDuration';
+defaultDuration.addPreferredName('en' , 'Test Duration');
+defaultDuration.addDescription('en' , 'This is a test Duration');
+defaultDuration.addSeeReference('http:\/\/example.com\/');
+ return defaultDuration; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testProperty',
+    false,
+    );
 
 
 

@@ -62,7 +62,7 @@ getAllProperties(): Array<StaticProperty<AspectWithMultiLineDescription, any>> {
         
         getDescriptions(): Array<LangString> {
         return [
-            {value: 'This\nis\na\ntest', languageTag: 'en'},
+            new LangString('This\nis\na\ntest', 'en'),
         ];
         }
 

@@ -13,6 +13,8 @@
 
 
 import { AspectWithSortedSet,} from './AspectWithSortedSet';
+import { DefaultScalar,DefaultSortedSet,} from './aspect-meta-model';
+import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
 import { LangString,} from './core/langString';
 import { StaticContainerProperty,} from './core/staticConstraintProperty';
 
@@ -48,54 +50,32 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
         return 'AspectWithSortedSet';
     }
 
-        getContainedType(): AspectWithSortedSet {
+        getContainedType(): string {
             return 'AspectWithSortedSet';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [ {
-value : "Test Property",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "This is a test property.",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
-'http://example.com/me',
- ],
-},
-    characteristic :     new DefaultSortedSet({
-urn : this.NAMESPACE + 'TestSortedSet',
-preferredNames : [ {
-value : "Test Sorted Set",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "This is a test sorted set.",
-languageTag : 'en',
-},
- ],
-see : [ 'http://example.com/',
- ],
-},Optional.of(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" )),Optional.empty())
+
+        null,
+    null,
+    null,
+    (() => { const defaultSortedSet = new DefaultSortedSet(null, 
+null, 
+null, 
+undefined,
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultSortedSet.addAspectModelUrn = this.NAMESPACE + 'TestSortedSet';
+defaultSortedSet.addPreferredName('en' , 'Test Sorted Set');
+defaultSortedSet.addDescription('en' , 'This is a test sorted set.');
+defaultSortedSet.addSeeReference('http:\/\/example.com\/');
+ return defaultSortedSet; })()
 ,
-    exampleValue : {
-metaModelBaseAttributes : {},
-value : "Example Value",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'Example Value'),
+        'testProperty',
+    false,
+    );
 
 
 
@@ -127,20 +107,20 @@ getAllProperties(): Array<StaticProperty<AspectWithSortedSet, any>> {
         
     getPreferredNames(): Array<LangString> {
         return [
-            {value: 'Test Aspect', languageTag: 'en'},
+            new LangString('Test Aspect', 'en'),
         ];
         }
 
         
         getDescriptions(): Array<LangString> {
         return [
-            {value: 'This is a test description', languageTag: 'en'},
+            new LangString('This is a test description', 'en'),
         ];
         }
 
         getSee(): Array<String> {
         return [
-            "http://example.com/",
+            'http:\/\/example.com\/',
         ];
         }
 

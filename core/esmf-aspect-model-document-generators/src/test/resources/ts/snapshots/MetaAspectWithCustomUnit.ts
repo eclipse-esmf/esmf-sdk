@@ -13,7 +13,9 @@
 
 
 import { AspectWithCustomUnit,} from './AspectWithCustomUnit';
-import { StaticUnitProperty,Unit,} from './core/staticConstraintProperty';
+import { DefaultQuantifiable,DefaultQuantityKind,DefaultScalar,} from './aspect-meta-model';
+import { DefaultUnit,} from './aspect-meta-model/default-unit';
+import { StaticUnitProperty,} from './core/staticConstraintProperty';
 
 
     
@@ -36,7 +38,6 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
  public static readonly  TEST_PROPERTY = 
                 
-            
         new (class extends StaticUnitProperty<AspectWithCustomUnit, number>{
 
     
@@ -50,35 +51,34 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultQuantifiable({
-urn : this.NAMESPACE + 'TestQuantifiable',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),Optional.of(new DefaultUnit({
-urn : this.NAMESPACE + 'normLitrePerMinute',
-preferredNames : [ {
-value : "norm litre per minute",
-languageTag : 'en',
-},
- ],
-descriptions : [  ],
-see : [  ],
-},Optional[nl/min],Optional.empty,Optional.empty,Optional.empty,new HashSet<>(){{add(QuantityKinds.VOLUME_FLOW_RATE);}})))
+
+        null,
+    null,
+    null,
+    (() => { const defaultQuantifiable = new DefaultQuantifiable(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),(() => { const defaultUnit = new DefaultUnit(null, 
+null, 
+null, 
+'nl\/min',undefined,undefined,undefined,[ (() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'volume flow rate')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })() ])
+defaultUnit.addAspectModelUrn = this.NAMESPACE + 'normLitrePerMinute';
+defaultUnit.addPreferredName('en' , 'norm litre per minute');
+ return defaultUnit; })())
+defaultQuantifiable.addAspectModelUrn = this.NAMESPACE + 'TestQuantifiable';
+ return defaultQuantifiable; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testProperty',
+    false,
+    );
 
 
 

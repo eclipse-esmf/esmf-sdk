@@ -1,3 +1,4 @@
+import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
 import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
@@ -14,10 +15,12 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithExtendedEnumsWithNotInPayloadProperty,} from './AspectWithExtendedEnumsWithNotInPayloadProperty';
+import { DefaultEntity,DefaultEnumeration,DefaultScalar,} from './aspect-meta-model';
+import { DefaultEntityInstance,} from './aspect-meta-model/default-entity-instance';
+import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 
-import { MetaEvaluationResult,} from './MetaEvaluationResult';
-import { MetaNestedResult,} from './MetaNestedResult';
+
 
 
 
@@ -54,219 +57,65 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'result',
-preferredNames : [ {
-value : "result",
-languageTag : 'en',
-},
- ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultEnumeration({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [ {
-value : "Evaluation Results",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Possible values for the evaluation of a process",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'EvaluationResult',
-preferredNames : [ {
-value : "Evaluation Result",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Possible values for the evaluation of a process",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},MetaEvaluationResult.INSTANCE.getProperties(),Optional.empty()),new ArrayList<Value>(){{add(new DefaultEntityInstance({
-urn : this.NAMESPACE + 'ResultBad',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new HashMap<Property, Value>() {{put(MetaEvaluationResult.AVERAGE,{
-metaModelBaseAttributes : {},
-value : new BigInteger( "13" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),
-});put(MetaEvaluationResult.NUMERIC_CODE,{
-metaModelBaseAttributes : {},
-value : Short.parseShort( "2" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#short" ),
-});put(MetaEvaluationResult.DESCRIPTION,{
-metaModelBaseAttributes : {},
-value : "Bad",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});put(MetaEvaluationResult.NESTED_RESULT,new DefaultEntityInstance({
-urn : this.NAMESPACE + 'NestedResultGood',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new HashMap<Property, Value>() {{put(MetaNestedResult.AVERAGE,{
-metaModelBaseAttributes : {},
-value : new BigInteger( "1" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),
-});put(MetaNestedResult.DESCRIPTION,{
-metaModelBaseAttributes : {},
-value : "GOOD",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});}},DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'NestedResult',
-preferredNames : [ {
-value : "Nested Result",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "A nested result for testing",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},MetaNestedResult.INSTANCE.getProperties(),Optional.empty())));}},DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'EvaluationResult',
-preferredNames : [ {
-value : "Evaluation Result",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Possible values for the evaluation of a process",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},MetaEvaluationResult.INSTANCE.getProperties(),Optional.empty())));add(new DefaultEntityInstance({
-urn : this.NAMESPACE + 'ResultGood',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new HashMap<Property, Value>() {{put(MetaEvaluationResult.AVERAGE,{
-metaModelBaseAttributes : {},
-value : new BigInteger( "4" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),
-});put(MetaEvaluationResult.NUMERIC_CODE,{
-metaModelBaseAttributes : {},
-value : Short.parseShort( "1" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#short" ),
-});put(MetaEvaluationResult.DESCRIPTION,{
-metaModelBaseAttributes : {},
-value : "Good",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});put(MetaEvaluationResult.NESTED_RESULT,new DefaultEntityInstance({
-urn : this.NAMESPACE + 'NestedResultGood',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new HashMap<Property, Value>() {{put(MetaNestedResult.AVERAGE,{
-metaModelBaseAttributes : {},
-value : new BigInteger( "1" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),
-});put(MetaNestedResult.DESCRIPTION,{
-metaModelBaseAttributes : {},
-value : "GOOD",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});}},DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'NestedResult',
-preferredNames : [ {
-value : "Nested Result",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "A nested result for testing",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},MetaNestedResult.INSTANCE.getProperties(),Optional.empty())));}},DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'EvaluationResult',
-preferredNames : [ {
-value : "Evaluation Result",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Possible values for the evaluation of a process",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},MetaEvaluationResult.INSTANCE.getProperties(),Optional.empty())));add(new DefaultEntityInstance({
-urn : this.NAMESPACE + 'ResultNoStatus',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new HashMap<Property, Value>() {{put(MetaEvaluationResult.AVERAGE,{
-metaModelBaseAttributes : {},
-value : new BigInteger( "3" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),
-});put(MetaEvaluationResult.NUMERIC_CODE,{
-metaModelBaseAttributes : {},
-value : Short.parseShort( "-1" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#short" ),
-});put(MetaEvaluationResult.DESCRIPTION,{
-metaModelBaseAttributes : {},
-value : "No status",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});put(MetaEvaluationResult.NESTED_RESULT,new DefaultEntityInstance({
-urn : this.NAMESPACE + 'NestedResultGood',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new HashMap<Property, Value>() {{put(MetaNestedResult.AVERAGE,{
-metaModelBaseAttributes : {},
-value : new BigInteger( "1" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),
-});put(MetaNestedResult.DESCRIPTION,{
-metaModelBaseAttributes : {},
-value : "GOOD",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});}},DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'NestedResult',
-preferredNames : [ {
-value : "Nested Result",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "A nested result for testing",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},MetaNestedResult.INSTANCE.getProperties(),Optional.empty())));}},DefaultEntity.createDefaultEntity({
-urn : this.NAMESPACE + 'EvaluationResult',
-preferredNames : [ {
-value : "Evaluation Result",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Possible values for the evaluation of a process",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},MetaEvaluationResult.INSTANCE.getProperties(),Optional.empty())));}})
+
+        null,
+    null,
+    null,
+    (() => { const defaultEnumeration = new DefaultEnumeration(null, 
+null, 
+null, 
+[new DefaultEntityInstance(null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+defaultEntityReplacedAspectArtifact.addPreferredName('en' , 'Evaluation Result');
+defaultEntityReplacedAspectArtifact.addDescription('en' , 'Possible values for the evaluation of a process');
+ return defaultEntityReplacedAspectArtifact; })(),
+undefined),
+new DefaultEntityInstance(null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+defaultEntityReplacedAspectArtifact.addPreferredName('en' , 'Evaluation Result');
+defaultEntityReplacedAspectArtifact.addDescription('en' , 'Possible values for the evaluation of a process');
+ return defaultEntityReplacedAspectArtifact; })(),
+undefined),
+new DefaultEntityInstance(null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+defaultEntityReplacedAspectArtifact.addPreferredName('en' , 'Evaluation Result');
+defaultEntityReplacedAspectArtifact.addDescription('en' , 'Possible values for the evaluation of a process');
+ return defaultEntityReplacedAspectArtifact; })(),
+undefined)],(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
+undefined)
+defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+defaultEntityReplacedAspectArtifact.addPreferredName('en' , 'Evaluation Result');
+defaultEntityReplacedAspectArtifact.addDescription('en' , 'Possible values for the evaluation of a process');
+ return defaultEntityReplacedAspectArtifact; })())
+defaultEnumeration.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+defaultEnumeration.addPreferredName('en' , 'Evaluation Results');
+defaultEnumeration.addDescription('en' , 'Possible values for the evaluation of a process');
+ return defaultEnumeration; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'result',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'result',
+    false,
+    );
 
 
 
@@ -286,42 +135,25 @@ see : [  ],
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'simpleResult',
-preferredNames : [ {
-value : "simpleResult",
-languageTag : 'en',
-},
- ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultEnumeration({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [ {
-value : "ReplacedAspectArtifact Result",
-languageTag : 'en',
-},
- ],
-descriptions : [  ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),new ArrayList<Value>(){{add({
-metaModelBaseAttributes : {},
-value : "No",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});add({
-metaModelBaseAttributes : {},
-value : "Yes",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});}})
+
+        null,
+    null,
+    null,
+    (() => { const defaultEnumeration = new DefaultEnumeration(null, 
+null, 
+null, 
+[new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'No'),
+new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'Yes')],new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultEnumeration.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+defaultEnumeration.addPreferredName('en' , 'ReplacedAspectArtifact Result');
+ return defaultEnumeration; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'simpleResult',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'simpleResult',
+    false,
+    );
 
 
 

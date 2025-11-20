@@ -1,3 +1,4 @@
+import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
 import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
@@ -15,7 +16,8 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithCollectionWithAbstractEntity,} from './AspectWithCollectionWithAbstractEntity';
-import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
+import { DefaultCollection,DefaultEntity,} from './aspect-meta-model';
+
 import { StaticContainerProperty,} from './core/staticConstraintProperty';
 
 
@@ -50,48 +52,37 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
         return 'AspectWithCollectionWithAbstractEntity';
     }
 
-        getContainedType(): AspectWithCollectionWithAbstractEntity {
+        getContainedType(): string {
             return 'AspectWithCollectionWithAbstractEntity';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [  ],
-descriptions : [ {
-value : "This is a test property",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},
-    characteristic :     new DefaultCollection({
-urn : this.NAMESPACE + 'EntityCollectionCharacteristic',
-preferredNames : [  ],
-descriptions : [ {
-value : "This is an entity collection characteristic",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},Optional.of(DefaultAbstractEntity.createDefaultAbstractEntity({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [  ],
-descriptions : [ {
-value : "This is an abstract test entity",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},MetaReplacedAspectArtifact.INSTANCE.getProperties(),Optional.empty(),List.of(AspectModelUrn.fromUrn("urn:samm:org.eclipse.esmf.test:1.0.0#ReplacedAspectArtifact")))),Optional.empty())
+
+        null,
+    null,
+    null,
+    (() => { const defaultCollection = new DefaultCollection(null, 
+null, 
+null, 
+true, false, undefined,
+(() => { const abstractDefaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),true,
+undefined)
+abstractDefaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+abstractDefaultEntityReplacedAspectArtifact.addDescription('en' , 'This is an abstract test entity');
+ return abstractDefaultEntityReplacedAspectArtifact; })())
+defaultCollection.addAspectModelUrn = this.NAMESPACE + 'EntityCollectionCharacteristic';
+defaultCollection.addDescription('en' , 'This is an entity collection characteristic');
+ return defaultCollection; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testProperty',
+    false,
+    );
 
 
 

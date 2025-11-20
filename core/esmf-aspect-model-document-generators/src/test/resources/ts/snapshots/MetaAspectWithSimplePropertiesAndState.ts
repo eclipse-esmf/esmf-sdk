@@ -15,6 +15,8 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 import { AspectWithSimplePropertiesAndState,} from './AspectWithSimplePropertiesAndState';
 
+import { DefaultCharacteristic,DefaultScalar,DefaultState,} from './aspect-meta-model';
+import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 
 
@@ -51,40 +53,25 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testString',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     {
-metaModelBaseAttributes : {
-urn : this.CHARACTERISTIC_NAMESPACE + '#Text',
-preferredNames : [ {
-value : "Text",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},
-}
+
+        null,
+    null,
+    null,
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Text';
+defaultCharacteristic.addPreferredName('en' , 'Text');
+defaultCharacteristic.addDescription('en' , 'Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.');
+ return defaultCharacteristic; })()
 ,
-    exampleValue : {
-metaModelBaseAttributes : {},
-value : "Example Value Test",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testString',
-    isAbstract : false,
-    });
+    false,
+    false,
+    new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'Example Value Test'),
+        'testString',
+    false,
+    );
 
 
 
@@ -104,32 +91,23 @@ type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testInt',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     {
-metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'Int',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-}
+
+        null,
+    null,
+    null,
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ))
+defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Int';
+ return defaultCharacteristic; })()
 ,
-    exampleValue : {
-metaModelBaseAttributes : {},
-value : Integer.valueOf( "3" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),
-},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testInt',
-    isAbstract : false,
-    });
+    false,
+    false,
+    new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),'3'),
+        'testInt',
+    false,
+    );
 
 
 
@@ -149,32 +127,23 @@ type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testFloat',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     {
-metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'Float',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-}
+
+        null,
+    null,
+    null,
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ))
+defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Float';
+ return defaultCharacteristic; })()
 ,
-    exampleValue : {
-metaModelBaseAttributes : {},
-value : Float.valueOf( "2.25" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),
-},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testFloat',
-    isAbstract : false,
-    });
+    false,
+    false,
+    new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),'2.25'),
+        'testFloat',
+    false,
+    );
 
 
 
@@ -194,32 +163,23 @@ type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testLocalDateTime',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     {
-metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'LocalDateTime',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-}
+
+        null,
+    null,
+    null,
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#dateTime" ))
+defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'LocalDateTime';
+ return defaultCharacteristic; })()
 ,
-    exampleValue : {
-metaModelBaseAttributes : {},
-value : _datatypeFactory.newXMLGregorianCalendar( "2018-02-28T14:23:32.918" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#dateTime" ),
-},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testLocalDateTime',
-    isAbstract : false,
-    });
+    false,
+    false,
+    new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#dateTime" ),new Date( ''2018-02-28T14:23:32.918'' )),
+        'testLocalDateTime',
+    false,
+    );
 
 
 
@@ -239,36 +199,25 @@ type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#dateTime" ),
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'randomValue',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     {
-metaModelBaseAttributes : {
-urn : this.CHARACTERISTIC_NAMESPACE + '#Text',
-preferredNames : [ {
-value : "Text",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},
-}
+
+        null,
+    null,
+    null,
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Text';
+defaultCharacteristic.addPreferredName('en' , 'Text');
+defaultCharacteristic.addDescription('en' , 'Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.');
+ return defaultCharacteristic; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'randomValue',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'randomValue',
+    false,
+    );
 
 
 
@@ -288,54 +237,26 @@ see : [  ],
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'automationProperty',
-preferredNames : [ {
-value : "Aktiviert/Deaktiviert",
-languageTag : 'de',
-},
-{
-value : "Enabled/Disabled",
-languageTag : 'en',
-},
- ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultState({
-urn : this.NAMESPACE + 'ReplacedAspectArtifact',
-preferredNames : [  ],
-descriptions : [ {
-value : "Return status for the Set Configuration Operation",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),new ArrayList<Value>(){{add({
-metaModelBaseAttributes : {},
-value : "ReplacedAspectArtifact Default Prop",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});add({
-metaModelBaseAttributes : {},
-value : "ReplacedAspectArtifact2",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});add({
-metaModelBaseAttributes : {},
-value : "ReplacedAspectArtifact3",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-});}},{
-metaModelBaseAttributes : {},
-value : "ReplacedAspectArtifact Default Prop",
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),
-})
+
+        null,
+    null,
+    null,
+    (() => { const defaultState = new DefaultState(null, 
+null, 
+null, 
+[new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'ReplacedAspectArtifact Default Prop'),
+new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'ReplacedAspectArtifact2'),
+new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'ReplacedAspectArtifact3')],new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'ReplacedAspectArtifact Default Prop'),new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultState.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+defaultState.addDescription('en' , 'Return status for the Set Configuration Operation');
+ return defaultState; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'automationProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'automationProperty',
+    false,
+    );
 
 
 

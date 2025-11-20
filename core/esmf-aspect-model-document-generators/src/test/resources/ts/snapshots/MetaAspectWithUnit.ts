@@ -13,7 +13,9 @@
 
 
 import { AspectWithUnit,} from './AspectWithUnit';
-import { StaticUnitProperty,Unit,} from './core/staticConstraintProperty';
+import { DefaultQuantifiable,DefaultScalar,} from './aspect-meta-model';
+import { DefaultUnit,} from './aspect-meta-model/default-unit';
+import { StaticUnitProperty,} from './core/staticConstraintProperty';
 
 
     
@@ -36,7 +38,6 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
  public static readonly  TEST_PROPERTY = 
                 
-            
         new (class extends StaticUnitProperty<AspectWithUnit, number>{
 
     
@@ -50,26 +51,29 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testProperty',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultQuantifiable({
-urn : this.NAMESPACE + 'TestQuantifiable',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),Units.fromName("bitPerSecond"))
+
+        null,
+    null,
+    null,
+    (() => { const defaultQuantifiable = new DefaultQuantifiable(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),(() => { const defaultUnit = new DefaultUnit(null, 
+null, 
+null, 
+'bit\/s','B10',undefined,undefined,[  ])
+defaultUnit.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#bitPerSecond';
+defaultUnit.addPreferredName('en' , 'bit per second');
+ return defaultUnit; })())
+defaultQuantifiable.addAspectModelUrn = this.NAMESPACE + 'TestQuantifiable';
+ return defaultQuantifiable; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testProperty',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testProperty',
+    false,
+    );
 
 
 

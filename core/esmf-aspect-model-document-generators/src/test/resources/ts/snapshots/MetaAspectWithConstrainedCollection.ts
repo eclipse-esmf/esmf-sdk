@@ -13,6 +13,9 @@
 
 
 import { AspectWithConstrainedCollection,} from './AspectWithConstrainedCollection';
+import { BoundDefinition,} from './aspect-meta-model/bound-definition';
+import { DefaultList,DefaultRangeConstraint,DefaultScalar,DefaultTrait,} from './aspect-meta-model';
+import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
 import { StaticContainerProperty,} from './core/staticConstraintProperty';
 
 
@@ -47,49 +50,39 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
         return 'AspectWithConstrainedCollection';
     }
 
-        getContainedType(): AspectWithConstrainedCollection {
+        getContainedType(): string {
             return 'AspectWithConstrainedCollection';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testCollection',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'IntegerRange',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultList({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of(new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" )),Optional.empty()),new ArrayList<Constraint>(){{add(new DefaultRangeConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of({
-metaModelBaseAttributes : {},
-value : new BigInteger( "2" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),
-}),Optional.of({
-metaModelBaseAttributes : {},
-value : new BigInteger( "10" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),
-}),BoundDefinition.AT_LEAST,BoundDefinition.AT_MOST));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultList = new DefaultList(null, 
+null, 
+null, 
+undefined,
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ))
+defaultList.isAnonymousNode = true;
+ return defaultList; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(null, 
+null, 
+null, 
+BoundDefinition.AT_MOST,BoundDefinition.AT_LEAST,new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),'2'),new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ),'10'),)
+defaultRangeConstraint.isAnonymousNode = true;
+ return defaultRangeConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'IntegerRange';
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testCollection',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testCollection',
+    false,
+    );
 
 
 

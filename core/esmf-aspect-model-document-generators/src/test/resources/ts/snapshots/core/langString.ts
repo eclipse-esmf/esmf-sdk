@@ -11,7 +11,12 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-export type LangString = {
+export class LangString {
     languageTag: string;
     value: string;
-};
+
+    constructor(languageTag: string, value: string) {
+        this.languageTag = languageTag;
+        this.value = value;
+    }
+}

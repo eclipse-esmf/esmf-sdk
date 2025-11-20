@@ -13,6 +13,8 @@
 
 
 import { AspectWithMultilanguageExampleValue,} from './AspectWithMultilanguageExampleValue';
+import { DefaultCharacteristic,DefaultScalar,} from './aspect-meta-model';
+import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 import { LangString,} from './core/langString';
 
@@ -50,40 +52,25 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'prop',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     {
-metaModelBaseAttributes : {
-urn : this.CHARACTERISTIC_NAMESPACE + '#MultiLanguageText',
-preferredNames : [ {
-value : "Multi-Language Text",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Describes a Property which contains plain text in multiple languages. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},
-}
+
+        null,
+    null,
+    null,
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/1999/02/22-rdf-syntax-ns#langString" ))
+defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#MultiLanguageText';
+defaultCharacteristic.addPreferredName('en' , 'Multi-Language Text');
+defaultCharacteristic.addDescription('en' , 'Describes a Property which contains plain text in multiple languages. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.');
+ return defaultCharacteristic; })()
 ,
-    exampleValue : {
-metaModelBaseAttributes : {},
-value : new LangString("Multilanguage example value.", Locale.forLanguageTag("de")),
-type : new DefaultScalar("http://www.w3.org/1999/02/22-rdf-syntax-ns#langString" ),
-},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'prop',
-    isAbstract : false,
-    });
+    false,
+    false,
+    new DefaultScalarValue(new DefaultScalar("http://www.w3.org/1999/02/22-rdf-syntax-ns#langString" ),new LangString('Multilanguage example value.', 'de')),
+        'prop',
+    false,
+    );
 
 
 

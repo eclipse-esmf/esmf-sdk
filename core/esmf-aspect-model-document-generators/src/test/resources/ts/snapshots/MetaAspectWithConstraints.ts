@@ -13,7 +13,11 @@
 
 
 import { AspectWithConstraints,} from './AspectWithConstraints';
+import { BoundDefinition,} from './aspect-meta-model/bound-definition';
+import { DefaultCharacteristic,DefaultLengthConstraint,DefaultList,DefaultMeasurement,DefaultQuantityKind,DefaultRangeConstraint,DefaultRegularExpressionConstraint,DefaultScalar,DefaultTrait,} from './aspect-meta-model';
+import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
 import { DefaultStaticProperty,StaticContainerProperty,} from './core/staticConstraintProperty';
+import { DefaultUnit,} from './aspect-meta-model/default-unit';
 
 
     
@@ -49,54 +53,37 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testPropertyWithRegularExpression',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'TestRegularExpressionConstraint',
-preferredNames : [ {
-value : "Test Regular Expression Constraint",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test Regular Expression Constraint",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},{
-metaModelBaseAttributes : {
-urn : this.CHARACTERISTIC_NAMESPACE + '#Text',
-preferredNames : [ {
-value : "Text",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},
-},new ArrayList<Constraint>(){{add(new DefaultRegularExpressionConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},"^[a-zA-Z]\\.[0-9]"));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Text';
+defaultCharacteristic.addPreferredName('en' , 'Text');
+defaultCharacteristic.addDescription('en' , 'Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.');
+ return defaultCharacteristic; })(),[(() => { const regularExpressionConstraint = new DefaultRegularExpressionConstraint(null, 
+null, 
+null, 
+'^[a-zA-Z]\\.[0-9]')
+regularExpressionConstraint.isAnonymousNode = true;
+ return regularExpressionConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'TestRegularExpressionConstraint';
+trait.addPreferredName('en' , 'Test Regular Expression Constraint');
+trait.addDescription('en' , 'Test Regular Expression Constraint');
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testPropertyWithRegularExpression',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testPropertyWithRegularExpression',
+    false,
+    );
 
 
 
@@ -116,52 +103,94 @@ see : [  ],
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testPropertyWithDecimalMinDecimalMaxRangeConstraint',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'TestWithDecimalMinDecimalMaxRangeConstraint',
-preferredNames : [ {
-value : "Test Range",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test Range",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},new DefaultMeasurement({
-urn : this.NAMESPACE + 'MeasurementDecimal',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#decimal" ),Units.fromName("metrePerSecond")),new ArrayList<Constraint>(){{add(new DefaultRangeConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of({
-metaModelBaseAttributes : {},
-value : new BigDecimal( "2.3" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#decimal" ),
-}),Optional.of({
-metaModelBaseAttributes : {},
-value : new BigDecimal( "10.5" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#decimal" ),
-}),BoundDefinition.AT_LEAST,BoundDefinition.AT_MOST));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultMeasurement = new DefaultMeasurement(null, 
+null, 
+null, 
+(() => { const defaultUnit = new DefaultUnit(null, 
+null, 
+null, 
+'m\/s','MTS',undefined,'m\/s',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'phase speed of electromagnetic waves')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'phase velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'phase velocity of electromagnetic waves')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'group velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'velocity (speed) on propagation of electromagnetic waves in vacuo')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'(instantaneous) sound particle velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'velocity of sound (phase velocity)')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'neutron speed')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })() ])
+defaultUnit.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#metrePerSecond';
+defaultUnit.addPreferredName('en' , 'metre per second');
+ return defaultUnit; })(),new DefaultScalar("http://www.w3.org/2001/XMLSchema#decimal" ))
+defaultMeasurement.addAspectModelUrn = this.NAMESPACE + 'MeasurementDecimal';
+ return defaultMeasurement; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(null, 
+null, 
+null, 
+BoundDefinition.AT_MOST,BoundDefinition.AT_LEAST,new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#decimal" ),'2.3'),new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#decimal" ),'10.5'),)
+defaultRangeConstraint.isAnonymousNode = true;
+ return defaultRangeConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'TestWithDecimalMinDecimalMaxRangeConstraint';
+trait.addPreferredName('en' , 'Test Range');
+trait.addDescription('en' , 'Test Range');
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testPropertyWithDecimalMinDecimalMaxRangeConstraint',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testPropertyWithDecimalMinDecimalMaxRangeConstraint',
+    false,
+    );
 
 
 
@@ -181,48 +210,94 @@ type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#decimal" ),
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testPropertyWithDecimalMaxRangeConstraint',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'TestWithDecimalMaxRangeConstraint',
-preferredNames : [ {
-value : "Test Range",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test Range",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},new DefaultMeasurement({
-urn : this.NAMESPACE + 'MeasurementDecimal',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#decimal" ),Units.fromName("metrePerSecond")),new ArrayList<Constraint>(){{add(new DefaultRangeConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.empty(),Optional.of({
-metaModelBaseAttributes : {},
-value : new BigDecimal( "10.5" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#decimal" ),
-}),BoundDefinition.OPEN,BoundDefinition.AT_MOST));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultMeasurement = new DefaultMeasurement(null, 
+null, 
+null, 
+(() => { const defaultUnit = new DefaultUnit(null, 
+null, 
+null, 
+'m\/s','MTS',undefined,'m\/s',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'phase speed of electromagnetic waves')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'phase velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'phase velocity of electromagnetic waves')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'group velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'velocity (speed) on propagation of electromagnetic waves in vacuo')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'(instantaneous) sound particle velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'velocity of sound (phase velocity)')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'neutron speed')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })() ])
+defaultUnit.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#metrePerSecond';
+defaultUnit.addPreferredName('en' , 'metre per second');
+ return defaultUnit; })(),new DefaultScalar("http://www.w3.org/2001/XMLSchema#decimal" ))
+defaultMeasurement.addAspectModelUrn = this.NAMESPACE + 'MeasurementDecimal';
+ return defaultMeasurement; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(null, 
+null, 
+null, 
+BoundDefinition.AT_MOST,BoundDefinition.OPEN,undefined,new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#decimal" ),'10.5'),)
+defaultRangeConstraint.isAnonymousNode = true;
+ return defaultRangeConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'TestWithDecimalMaxRangeConstraint';
+trait.addPreferredName('en' , 'Test Range');
+trait.addDescription('en' , 'Test Range');
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testPropertyWithDecimalMaxRangeConstraint',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testPropertyWithDecimalMaxRangeConstraint',
+    false,
+    );
 
 
 
@@ -242,52 +317,94 @@ type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#decimal" ),
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testPropertyWithMinMaxRangeConstraint',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'TestWithMinMaxRangeConstraint',
-preferredNames : [ {
-value : "Test Range",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test Range",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},new DefaultMeasurement({
-urn : this.NAMESPACE + 'Measurement',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),Units.fromName("metrePerSecond")),new ArrayList<Constraint>(){{add(new DefaultRangeConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of({
-metaModelBaseAttributes : {},
-value : Integer.valueOf( "1" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),
-}),Optional.of({
-metaModelBaseAttributes : {},
-value : Integer.valueOf( "10" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),
-}),BoundDefinition.AT_LEAST,BoundDefinition.AT_MOST));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultMeasurement = new DefaultMeasurement(null, 
+null, 
+null, 
+(() => { const defaultUnit = new DefaultUnit(null, 
+null, 
+null, 
+'m\/s','MTS',undefined,'m\/s',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'phase speed of electromagnetic waves')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'phase velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'phase velocity of electromagnetic waves')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'group velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'velocity (speed) on propagation of electromagnetic waves in vacuo')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'(instantaneous) sound particle velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'velocity of sound (phase velocity)')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'neutron speed')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })() ])
+defaultUnit.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#metrePerSecond';
+defaultUnit.addPreferredName('en' , 'metre per second');
+ return defaultUnit; })(),new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ))
+defaultMeasurement.addAspectModelUrn = this.NAMESPACE + 'Measurement';
+ return defaultMeasurement; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(null, 
+null, 
+null, 
+BoundDefinition.AT_MOST,BoundDefinition.AT_LEAST,new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),'1'),new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),'10'),)
+defaultRangeConstraint.isAnonymousNode = true;
+ return defaultRangeConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'TestWithMinMaxRangeConstraint';
+trait.addPreferredName('en' , 'Test Range');
+trait.addDescription('en' , 'Test Range');
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testPropertyWithMinMaxRangeConstraint',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testPropertyWithMinMaxRangeConstraint',
+    false,
+    );
 
 
 
@@ -307,48 +424,94 @@ type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testPropertyWithMinRangeConstraint',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'TestWithMinRangeConstraint',
-preferredNames : [ {
-value : "Test Range",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test Range",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},new DefaultMeasurement({
-urn : this.NAMESPACE + 'Measurement',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),Units.fromName("metrePerSecond")),new ArrayList<Constraint>(){{add(new DefaultRangeConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of({
-metaModelBaseAttributes : {},
-value : Integer.valueOf( "1" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),
-}),Optional.empty(),BoundDefinition.AT_LEAST,BoundDefinition.OPEN));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultMeasurement = new DefaultMeasurement(null, 
+null, 
+null, 
+(() => { const defaultUnit = new DefaultUnit(null, 
+null, 
+null, 
+'m\/s','MTS',undefined,'m\/s',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'phase speed of electromagnetic waves')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'phase velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'phase velocity of electromagnetic waves')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'group velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'velocity (speed) on propagation of electromagnetic waves in vacuo')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'(instantaneous) sound particle velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'velocity of sound (phase velocity)')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'neutron speed')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })() ])
+defaultUnit.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#metrePerSecond';
+defaultUnit.addPreferredName('en' , 'metre per second');
+ return defaultUnit; })(),new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ))
+defaultMeasurement.addAspectModelUrn = this.NAMESPACE + 'Measurement';
+ return defaultMeasurement; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(null, 
+null, 
+null, 
+BoundDefinition.OPEN,BoundDefinition.AT_LEAST,new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),'1'),undefined,)
+defaultRangeConstraint.isAnonymousNode = true;
+ return defaultRangeConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'TestWithMinRangeConstraint';
+trait.addPreferredName('en' , 'Test Range');
+trait.addDescription('en' , 'Test Range');
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testPropertyWithMinRangeConstraint',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testPropertyWithMinRangeConstraint',
+    false,
+    );
 
 
 
@@ -368,52 +531,94 @@ type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testPropertyRangeConstraintWithFloatType',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'TestRangeConstraintWithFloatType',
-preferredNames : [ {
-value : "Test Range",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test Range",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},new DefaultMeasurement({
-urn : this.NAMESPACE + 'MeasurementWithFloatType',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),Units.fromName("metrePerSecond")),new ArrayList<Constraint>(){{add(new DefaultRangeConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of({
-metaModelBaseAttributes : {},
-value : Float.valueOf( "1.0" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),
-}),Optional.of({
-metaModelBaseAttributes : {},
-value : Float.valueOf( "10.0" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),
-}),BoundDefinition.AT_LEAST,BoundDefinition.AT_MOST));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultMeasurement = new DefaultMeasurement(null, 
+null, 
+null, 
+(() => { const defaultUnit = new DefaultUnit(null, 
+null, 
+null, 
+'m\/s','MTS',undefined,'m\/s',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'phase speed of electromagnetic waves')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'phase velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'phase velocity of electromagnetic waves')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'group velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'velocity (speed) on propagation of electromagnetic waves in vacuo')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'(instantaneous) sound particle velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'velocity of sound (phase velocity)')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'neutron speed')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })() ])
+defaultUnit.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#metrePerSecond';
+defaultUnit.addPreferredName('en' , 'metre per second');
+ return defaultUnit; })(),new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ))
+defaultMeasurement.addAspectModelUrn = this.NAMESPACE + 'MeasurementWithFloatType';
+ return defaultMeasurement; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(null, 
+null, 
+null, 
+BoundDefinition.AT_MOST,BoundDefinition.AT_LEAST,new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),'1.0'),new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),'10.0'),)
+defaultRangeConstraint.isAnonymousNode = true;
+ return defaultRangeConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'TestRangeConstraintWithFloatType';
+trait.addPreferredName('en' , 'Test Range');
+trait.addDescription('en' , 'Test Range');
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testPropertyRangeConstraintWithFloatType',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testPropertyRangeConstraintWithFloatType',
+    false,
+    );
 
 
 
@@ -433,52 +638,94 @@ type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testPropertyRangeConstraintWithDoubleType',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'TestRangeConstraintWithDoubleType',
-preferredNames : [ {
-value : "Test Range",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test Range",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},new DefaultMeasurement({
-urn : this.NAMESPACE + 'MeasurementWithDoubleType',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#double" ),Units.fromName("metrePerSecond")),new ArrayList<Constraint>(){{add(new DefaultRangeConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of({
-metaModelBaseAttributes : {},
-value : Double.valueOf( "1.0" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#double" ),
-}),Optional.of({
-metaModelBaseAttributes : {},
-value : Double.valueOf( "10.0" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#double" ),
-}),BoundDefinition.AT_LEAST,BoundDefinition.AT_MOST));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultMeasurement = new DefaultMeasurement(null, 
+null, 
+null, 
+(() => { const defaultUnit = new DefaultUnit(null, 
+null, 
+null, 
+'m\/s','MTS',undefined,'m\/s',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'phase speed of electromagnetic waves')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'phase velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'phase velocity of electromagnetic waves')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'group velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'velocity (speed) on propagation of electromagnetic waves in vacuo')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'(instantaneous) sound particle velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'velocity of sound (phase velocity)')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
+null, 
+null, 
+'neutron speed')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })() ])
+defaultUnit.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#metrePerSecond';
+defaultUnit.addPreferredName('en' , 'metre per second');
+ return defaultUnit; })(),new DefaultScalar("http://www.w3.org/2001/XMLSchema#double" ))
+defaultMeasurement.addAspectModelUrn = this.NAMESPACE + 'MeasurementWithDoubleType';
+ return defaultMeasurement; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(null, 
+null, 
+null, 
+BoundDefinition.AT_MOST,BoundDefinition.AT_LEAST,new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#double" ),'1.0'),new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#double" ),'10.0'),)
+defaultRangeConstraint.isAnonymousNode = true;
+ return defaultRangeConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'TestRangeConstraintWithDoubleType';
+trait.addPreferredName('en' , 'Test Range');
+trait.addDescription('en' , 'Test Range');
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testPropertyRangeConstraintWithDoubleType',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testPropertyRangeConstraintWithDoubleType',
+    false,
+    );
 
 
 
@@ -498,54 +745,37 @@ type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#double" ),
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testPropertyWithMinMaxLengthConstraint',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'TestLengthConstraint',
-preferredNames : [ {
-value : "Test Length Constraint",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test Length Constraint",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},{
-metaModelBaseAttributes : {
-urn : this.CHARACTERISTIC_NAMESPACE + '#Text',
-preferredNames : [ {
-value : "Text",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},
-},new ArrayList<Constraint>(){{add(new DefaultLengthConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of(new BigInteger( "1" )),Optional.of(new BigInteger( "10" ))));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Text';
+defaultCharacteristic.addPreferredName('en' , 'Text');
+defaultCharacteristic.addDescription('en' , 'Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.');
+ return defaultCharacteristic; })(),[(() => { const lengthConstraint = new DefaultLengthConstraint(null, 
+null, 
+null, 
+1,1,)
+lengthConstraint.isAnonymousNode = true;
+ return lengthConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'TestLengthConstraint';
+trait.addPreferredName('en' , 'Test Length Constraint');
+trait.addDescription('en' , 'Test Length Constraint');
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testPropertyWithMinMaxLengthConstraint',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testPropertyWithMinMaxLengthConstraint',
+    false,
+    );
 
 
 
@@ -565,46 +795,35 @@ see : [  ],
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testPropertyWithMinLengthConstraint',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'TestLengthConstraintOnlyMin',
-preferredNames : [ {
-value : "Test Length Constraint",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test Length Constraint",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},{
-metaModelBaseAttributes : {
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-},new ArrayList<Constraint>(){{add(new DefaultLengthConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of(new BigInteger( "1" )),Optional.empty()));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#nonNegativeInteger" ))
+defaultCharacteristic.isAnonymousNode = true;
+ return defaultCharacteristic; })(),[(() => { const lengthConstraint = new DefaultLengthConstraint(null, 
+null, 
+null, 
+1,1,)
+lengthConstraint.isAnonymousNode = true;
+ return lengthConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'TestLengthConstraintOnlyMin';
+trait.addPreferredName('en' , 'Test Length Constraint');
+trait.addDescription('en' , 'Test Length Constraint');
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testPropertyWithMinLengthConstraint',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testPropertyWithMinLengthConstraint',
+    false,
+    );
 
 
 
@@ -622,49 +841,41 @@ see : [  ],
         return 'AspectWithConstraints';
     }
 
-        getContainedType(): AspectWithConstraints {
+        getContainedType(): string {
             return 'AspectWithConstraints';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testPropertyCollectionLengthConstraint',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultTrait({
-urn : this.NAMESPACE + 'TestLengthConstraintWithCollection',
-preferredNames : [ {
-value : "Test Length Constraint with collection",
-languageTag : 'en',
-},
- ],
-descriptions : [ {
-value : "Test Length Constraint with collection",
-languageTag : 'en',
-},
- ],
-see : [  ],
-},new DefaultList({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of(new DefaultScalar("http://www.w3.org/2001/XMLSchema#nonNegativeInteger" )),Optional.empty()),new ArrayList<Constraint>(){{add(new DefaultLengthConstraint({
-isAnonymous : true,
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},Optional.of(new BigInteger( "1" )),Optional.of(new BigInteger( "10" ))));}})
+
+        null,
+    null,
+    null,
+    (() => { const trait = new DefaultTrait(null, 
+null, 
+null, 
+(() => { const defaultList = new DefaultList(null, 
+null, 
+null, 
+undefined,
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#nonNegativeInteger" ))
+defaultList.isAnonymousNode = true;
+ return defaultList; })(),[(() => { const lengthConstraint = new DefaultLengthConstraint(null, 
+null, 
+null, 
+1,1,)
+lengthConstraint.isAnonymousNode = true;
+ return lengthConstraint; })()])
+trait.addAspectModelUrn = this.NAMESPACE + 'TestLengthConstraintWithCollection';
+trait.addPreferredName('en' , 'Test Length Constraint with collection');
+trait.addDescription('en' , 'Test Length Constraint with collection');
+ return trait; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testPropertyCollectionLengthConstraint',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testPropertyCollectionLengthConstraint',
+    false,
+    );
 
 
 

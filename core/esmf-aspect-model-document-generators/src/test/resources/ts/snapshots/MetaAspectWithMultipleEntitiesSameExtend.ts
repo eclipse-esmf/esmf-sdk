@@ -1,3 +1,4 @@
+import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
 
 
 
@@ -13,8 +14,9 @@
 
 
 import { AspectWithMultipleEntitiesSameExtend,} from './AspectWithMultipleEntitiesSameExtend';
+import { DefaultCharacteristic,DefaultEntity,} from './aspect-meta-model';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
-import { MetaReplacedAspectArtifact,} from './MetaReplacedAspectArtifact';
+
 import { MetatestEntityOne,} from './MetatestEntityOne';
 import { MetatestEntityTwo,} from './MetatestEntityTwo';
 import { testEntityOne,} from './testEntityOne';
@@ -54,28 +56,35 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testPropertyOne',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     {
-metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testCharacteristicOne',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-}
+
+        null,
+    null,
+    null,
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+(() => { const defaultEntitytestEntityOne = new DefaultEntity(null, 
+null, 
+null, 
+MetatestEntityOne.INSTANCE.getProperties(),false,
+(() => { const extendsDefaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),true,
+undefined)
+extendsDefaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return extendsDefaultEntityReplacedAspectArtifact; })())
+defaultEntitytestEntityOne.addAspectModelUrn = this.NAMESPACE + 'testEntityOne';
+ return defaultEntitytestEntityOne; })())
+defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'testCharacteristicOne';
+ return defaultCharacteristic; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testPropertyOne',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testPropertyOne',
+    false,
+    );
 
 
 
@@ -95,28 +104,35 @@ see : [  ],
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testPropertyTwo',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     {
-metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'testCharacteristicTwo',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-}
+
+        null,
+    null,
+    null,
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
+null, 
+null, 
+(() => { const defaultEntitytestEntityTwo = new DefaultEntity(null, 
+null, 
+null, 
+MetatestEntityTwo.INSTANCE.getProperties(),false,
+(() => { const extendsDefaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
+null, 
+null, 
+MetaReplacedAspectArtifact.INSTANCE.getProperties(),true,
+undefined)
+extendsDefaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
+ return extendsDefaultEntityReplacedAspectArtifact; })())
+defaultEntitytestEntityTwo.addAspectModelUrn = this.NAMESPACE + 'testEntityTwo';
+ return defaultEntitytestEntityTwo; })())
+defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'testCharacteristicTwo';
+ return defaultCharacteristic; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'testPropertyTwo',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'testPropertyTwo',
+    false,
+    );
 
 
 

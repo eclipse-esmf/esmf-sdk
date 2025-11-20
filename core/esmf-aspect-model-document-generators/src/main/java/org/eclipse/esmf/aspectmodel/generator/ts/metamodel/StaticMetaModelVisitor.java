@@ -15,6 +15,7 @@ package org.eclipse.esmf.aspectmodel.generator.ts.metamodel;
 
 import static org.eclipse.esmf.aspectmodel.generator.ts.AspectModelTsUtil.createLiteral;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -37,12 +38,10 @@ import org.eclipse.esmf.metamodel.EntityInstance;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.QuantityKind;
-import org.eclipse.esmf.metamodel.QuantityKinds;
 import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Unit;
-import org.eclipse.esmf.metamodel.Units;
 import org.eclipse.esmf.metamodel.Value;
 import org.eclipse.esmf.metamodel.characteristic.Code;
 import org.eclipse.esmf.metamodel.characteristic.Collection;
@@ -54,10 +53,6 @@ import org.eclipse.esmf.metamodel.characteristic.SingleEntity;
 import org.eclipse.esmf.metamodel.characteristic.State;
 import org.eclipse.esmf.metamodel.characteristic.StructuredValue;
 import org.eclipse.esmf.metamodel.characteristic.Trait;
-import org.eclipse.esmf.metamodel.characteristic.impl.DefaultCollection;
-import org.eclipse.esmf.metamodel.characteristic.impl.DefaultList;
-import org.eclipse.esmf.metamodel.characteristic.impl.DefaultSet;
-import org.eclipse.esmf.metamodel.characteristic.impl.DefaultSortedSet;
 import org.eclipse.esmf.metamodel.constraint.EncodingConstraint;
 import org.eclipse.esmf.metamodel.constraint.FixedPointConstraint;
 import org.eclipse.esmf.metamodel.constraint.LanguageConstraint;
@@ -66,6 +61,7 @@ import org.eclipse.esmf.metamodel.constraint.LocaleConstraint;
 import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
 import org.eclipse.esmf.metamodel.constraint.RegularExpressionConstraint;
 import org.eclipse.esmf.metamodel.impl.DefaultScalar;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.jena.rdf.model.Resource;
@@ -84,126 +80,157 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
       throw new UnsupportedOperationException();
    }
 
-   // TODO validate generated code
    @Override
    public String visitScalarValue( final ScalarValue value, final StaticCodeGenerationContext context ) {
+      context.codeGenerationConfig().importTracker().importExplicit( "DefaultScalarValue", "./aspect-meta-model/default-scalar-value" );
       final ValueExpressionVisitor.Context valueContext = new ValueExpressionVisitor.Context( context.codeGenerationConfig(), false );
-      final String metaModelAttributes = ( !value.getSee().isEmpty() && !value.getPreferredNames().isEmpty() )
-            ? getMetaModelBaseAttributes( value, context )
-            : "{}";
-      return START
-            // Object value
-            + META_MODEL_BASE_ATTRIBUTES_NAME + ASSIGNMENT + metaModelAttributes + END_PARAM
-            // Object value
-            + VALUE_NAME + ASSIGNMENT + value.accept( valueExpressionVisitor, valueContext ) + END_PARAM
-            // Scalar type
-            + TYPE_NAME + ASSIGNMENT + value.getType().accept( this, context ) + END_PARAM
-            + END;
+      return "new DefaultScalarValue("
+            //  type
+            + value.getType().accept( this, context ) + ","
+            //  value
+            + value.accept( valueExpressionVisitor, valueContext )
+            + ")";
    }
 
-   // TODO investigate DefaultCollectionValue
    @Override
    public String visitCollectionValue( final CollectionValue collection, final StaticCodeGenerationContext context ) {
       final Class<?> collectionClass = collection.getValues().getClass();
-      //      context.codeGenerationConfig().importTracker().importExplicit( DefaultCollectionValue.class );
-      //      context.codeGenerationConfig().importTracker().importExplicit( collectionClass );
+      context.codeGenerationConfig().importTracker()
+            .importExplicit( "DefaultCollectionValue", "./aspect-meta-model/default-collection-value" );
       final StringBuilder result = new StringBuilder();
       result.append( "new DefaultCollectionValue(" );
-      // Collection<Value> values
-      result.append( "new " );
-      result.append( collectionClass.getSimpleName() );
-      result.append( "<>() {{" );
-      collection.getValues().forEach( value -> {
-         result.append( "add(" );
-         result.append( value.accept( this, context ) );
-         result.append( ");" );
-      } );
-      result.append( "}}" );
-      result.append( "," );
-      // Collection.CollectionType collectionType
-      result.append( CollectionValue.CollectionType.class.getName().replace( "$", "." ) ).append( "." );
-      result.append( collection.getCollectionType() ).append( "," );
-      // Type element
+      // collectionType
+      result.append( collectionClass.getSimpleName() ).append( "," );
+      // values
+      result.append( "[ " );
+      collection.getValues()
+            .forEach( value -> result.append( value.accept( this, context ) ).append( "," ) );
+      result.append( " ]," );
+      // type
       result.append( collection.getType().accept( this, context ) );
       result.append( ")" );
       return result.toString();
    }
 
-   // TODO investigate DefaultEntityInstance
    @Override
    public String visitEntityInstance( final EntityInstance instance, final StaticCodeGenerationContext context ) {
-      //      context.codeGenerationConfig().importTracker().importExplicit( DefaultEntityInstance.class );
-      //      context.codeGenerationConfig().importTracker().importExplicit( Map.class );
-      //      context.codeGenerationConfig().importTracker().importExplicit( HashMap.class );
-      //      context.codeGenerationConfig().importTracker().importExplicit( Property.class );
-      //      context.codeGenerationConfig().importTracker().importExplicit( Value.class );
+
+      context.codeGenerationConfig().importTracker()
+            .importExplicit( "DefaultEntityInstance", "./aspect-meta-model/default-entity-instance" );
       final Entity entity = instance.getEntityType();
       final StringBuilder builder = new StringBuilder();
       builder.append( "new DefaultEntityInstance(" );
-      builder.append( getMetaModelBaseAttributes( instance, context ) );
-      builder.append( "," );
-      builder.append( "new HashMap<Property, Value>() {{" );
-      for ( final Property property : instance.getEntityType().getProperties() ) {
-         final Value instancePropertyValue = instance.getAssertions().get( property );
-         if ( instancePropertyValue == null ) {
-            continue;
-         }
-         final String className = "Meta" + entity.getName();
-         final String staticPropertyField = AspectModelTsUtil.toConstant( property.getName() );
-         builder.append( "put(" );
-         builder.append( className );
-         builder.append( "." );
-         builder.append( staticPropertyField );
-         builder.append( "," );
-         builder.append( instancePropertyValue.accept( this, context ) );
-         builder.append( ");" );
-      }
-      builder.append( "}}," );
+      // name
+      builder.append( NULL_PARAM );
+      // metaModelType
       builder.append( instance.getEntityType().accept( this, context ) );
+      builder.append( END_PARAM );
+      // _descriptions
+      if ( !instance.getDescriptions().isEmpty() ) {
+         builder.append( "new Map([" );
+         for ( final Property property : instance.getEntityType().getProperties() ) {
+            final Value instancePropertyValue = instance.getAssertions().get( property );
+            if ( instancePropertyValue == null ) {
+               continue;
+            }
+            final String className = "Meta" + entity.getName();
+            final String staticPropertyField = AspectModelTsUtil.toConstant( property.getName() );
+            builder.append( "[" );
+            builder.append( className );
+            builder.append( "." );
+            builder.append( staticPropertyField );
+            builder.append( "," );
+            builder.append( instancePropertyValue.accept( this, context ) );
+            builder.append( "]," );
+         }
+         builder.append( "])," );
+      } else {
+         builder.append( UNDEFINED );
+      }
       builder.append( ")" );
-
       return builder.toString();
    }
 
-   // TODO investigate DefaultSingleEntity
+   // validate
    @Override
    public String visitSingleEntity( final SingleEntity singleEntity, final StaticCodeGenerationContext context ) {
-      //      context.codeGenerationConfig().importTracker().importExplicit( DefaultSingleEntity.class );
-      return "new DefaultSingleEntity("
-            // MetaModelBaseAttributes
-            + getMetaModelBaseAttributes( singleEntity, context ) + ", "
+      context.codeGenerationConfig().importTracker().importExplicit( "DefaultSingleEntity", "./aspect-meta-model" );
+      final String constructor = "new DefaultSingleEntity("
+            // metaModelVersion
+            + NULL_PARAM
+            // aspectModelUrn
+            + NULL_PARAM
+            // name
+            + NULL_PARAM
             // Type dataType
             + singleEntity.getDataType().orElseThrow( noTypeException ).accept( this, context ) + ")";
+      return wrapMetaModelBaseAttributes( singleEntity, context, constructor, "defaultSingleEntity" );
    }
 
-   // TODO investigate implementation collection
+   // validate
    @Override
    public String visitCollection( final Collection collection, final StaticCodeGenerationContext context ) {
-      final Class<?> implementationClass = switch ( collection.getCollectionType() ) {
-         case LIST -> DefaultList.class;
-         case SET -> DefaultSet.class;
-         case SORTEDSET -> DefaultSortedSet.class;
-         default -> DefaultCollection.class;
+      final String implementationClassName = switch ( collection.getCollectionType() ) {
+         case LIST -> "DefaultList";
+         case SET -> "DefaultSet";
+         case SORTEDSET -> "DefaultSortedSet";
+         default -> "DefaultCollection";
       };
-      //      context.codeGenerationConfig().importTracker().importExplicit( implementationClass );
-      final String optionalType = collection.getDataType().map( type -> type.accept( this, context ) )
-            .map( type -> "Optional.of(" + type + ")" )
-            .orElse( "Optional.empty()" );
-      final String optionalElementCharacteristic = collection.getElementCharacteristic()
+      context.codeGenerationConfig().importTracker().importExplicit( implementationClassName, "./aspect-meta-model" );
+
+      final String elementCharacteristic = collection.getElementCharacteristic()
             .map( characteristic -> characteristic.accept( this, context ) )
-            .map( characteristic -> "Optional.of(" + characteristic + ")" ).orElse( "Optional.empty()" );
-      return "new " + implementationClass.getSimpleName() + "(" + getMetaModelBaseAttributes( collection, context ) + "," + optionalType
-            + ","
-            + optionalElementCharacteristic + ")";
+            .orElse( UNDEFINED );
+
+      final String constructor;
+      if ( implementationClassName.equals( "DefaultCollection" ) ) {
+         constructor = "new DefaultCollection("
+               // metaModelVersion
+               + NULL_PARAM
+               // aspectModelUrn
+               + NULL_PARAM
+               // name
+               + NULL_PARAM
+               // _isAllowDuplicates
+               + "true, "
+               // _isOrdered
+               + "false, "
+               // _elementCharacteristic
+               + elementCharacteristic + END_PARAM
+               // Type dataType
+               + collection.getDataType().orElseThrow( noTypeException ).accept( this, context ) + ")";
+      } else {
+         constructor = "new " + implementationClassName + "("
+               // metaModelVersion
+               + NULL_PARAM
+               // aspectModelUrn
+               + NULL_PARAM
+               // name
+               + NULL_PARAM
+               // _elementCharacteristic
+               + elementCharacteristic + END_PARAM
+               // Type dataType
+               + collection.getDataType().orElseThrow( noTypeException ).accept( this, context ) + ")";
+      }
+
+      final String variableName = implementationClassName.substring( 0, 1 ).toLowerCase() + implementationClassName.substring( 1 );
+      return wrapMetaModelBaseAttributes( collection, context, constructor, variableName );
    }
 
-   // TODO validate generated code
+   // validate
    @Override
    public String visitCode( final Code code, final StaticCodeGenerationContext context ) {
-      return START
-            + META_MODEL_BASE_ATTRIBUTES_NAME + ASSIGNMENT + getMetaModelBaseAttributes( code, context ) + END_PARAM
-            + DATA_TYPE_NAME + ASSIGNMENT + code.getDataType().orElseThrow( noTypeException ).accept( this, context ) + END_PARAM
-            + END;
+      context.codeGenerationConfig().importTracker().importExplicit( "DefaultCode", "./aspect-meta-model" );
+      final String constructor = "new DefaultCode("
+            // metaModelVersion
+            + NULL_PARAM
+            // aspectModelUrn
+            + NULL_PARAM
+            // name
+            + NULL_PARAM
+            // Type dataType
+            + code.getDataType().orElseThrow( noTypeException ).accept( this, context ) + ")";
+      return wrapMetaModelBaseAttributes( code, context, constructor, "defaultCode" );
    }
 
    @Override
@@ -212,116 +239,152 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
    }
 
    @Override
-   public String visitMeasurement( final Measurement measurement, final StaticCodeGenerationContext context ) {
-      return generateForQuantifiable( measurement, context );
-   }
-
-   @Override
    public String visitQuantifiable( final Quantifiable quantifiable, final StaticCodeGenerationContext context ) {
       return generateForQuantifiable( quantifiable, context );
    }
 
-   // TODO investigate Quantifiable
+   @Override
+   public String visitMeasurement( final Measurement measurement, final StaticCodeGenerationContext context ) {
+      final String simpleName = measurement.getClass().getSimpleName();
+      context.codeGenerationConfig().importTracker().importExplicit( simpleName, "./aspect-meta-model" );
+      final String constructor = "new " + simpleName + "("
+            // metaModelVersion
+            + NULL_PARAM
+            // aspectModelUrn
+            + NULL_PARAM
+            // name
+            + NULL_PARAM
+            // unit? Unit
+            + measurement.getUnit().map( unit -> unit.accept( this, context ) ).orElse( UNDEFINED ) + ","
+            // Type dataType
+            + measurement.getDataType().orElseThrow( noTypeException ).accept( this, context )
+            + ")";
+      final String variableName = simpleName.substring( 0, 1 ).toLowerCase() + simpleName.substring( 1 );
+      return wrapMetaModelBaseAttributes( measurement, context, constructor, variableName );
+   }
+
+   // validate
    private <T extends Quantifiable> String generateForQuantifiable( final T quantifiable, final StaticCodeGenerationContext context ) {
-      //      context.codeGenerationConfig().importTracker().importExplicit( quantifiable.getClass() );
-      //      context.codeGenerationConfig().importTracker().importExplicit( Units.class );
-      return "new " + quantifiable.getClass().getSimpleName() + "("
-            // MetaModelBaseAttributes
-            + getMetaModelBaseAttributes( quantifiable, context ) + ","
+      final String simpleName = quantifiable.getClass().getSimpleName();
+      context.codeGenerationConfig().importTracker().importExplicit( simpleName, "./aspect-meta-model" );
+      final String constructor = "new " + simpleName + "("
+            // metaModelVersion
+            + NULL_PARAM
+            // aspectModelUrn
+            + NULL_PARAM
+            // name
+            + NULL_PARAM
             // Type dataType
             + quantifiable.getDataType().orElseThrow( noTypeException ).accept( this, context ) + ","
-            // Optional<Unit> unit
-            + quantifiable.getUnit().map( unit -> unit.accept( this, context ) ).orElse( "Optional.empty()" ) + ")";
+            // unit? Unit
+            + quantifiable.getUnit().map( unit -> unit.accept( this, context ) ).orElse( UNDEFINED )
+            + ")";
+      final String variableName = simpleName.substring( 0, 1 ).toLowerCase() + simpleName.substring( 1 );
+      return wrapMetaModelBaseAttributes( quantifiable, context, constructor, variableName );
    }
 
-   // TODO investigate DefaultUnit
+   // validate
    @Override
    public String visitUnit( final Unit unit, final StaticCodeGenerationContext context ) {
-      final Optional<Unit> unitFromCatalog = Units.fromName( unit.getName() );
-      if ( unitFromCatalog.isPresent() ) {
-         //         context.codeGenerationConfig().importTracker().importExplicit( Units.class );
-         return "Units.fromName(\"" + unit.getName() + "\")";
-      }
-
-      //TODO fix it investigate Unit logic
-      return "Optional.of(new DefaultUnit("
-            + getMetaModelBaseAttributes( unit, context ) + ","
-            + unit.getSymbol() + ","
-            + unit.getCode() + ","
-            + unit.getReferenceUnit() + ","
-            + unit.getConversionFactor() + ","
-            + "new HashSet<>(){{"
+      context.codeGenerationConfig().importTracker().importExplicit( "DefaultUnit", "./aspect-meta-model/default-unit" );
+      final String constructor = "new DefaultUnit("
+            // metaModelVersion
+            + NULL_PARAM
+            // aspectModelUrn
+            + NULL_PARAM
+            // name
+            + NULL_PARAM
+            // Type dataType
+            // _symbol
+            + unit.getSymbol().map( AspectModelTsUtil::createLiteral ).orElse( UNDEFINED ) + ","
+            // _code
+            + unit.getCode().map( AspectModelTsUtil::createLiteral ).orElse( UNDEFINED ) + ","
+            // _referenceUnit
+            + unit.getReferenceUnit().map( AspectModelTsUtil::createLiteral ).orElse( UNDEFINED ) + ","
+            // _conversionFactor
+            + unit.getConversionFactor().map( AspectModelTsUtil::createLiteral ).orElse( UNDEFINED ) + ","
+            // _quantityKinds
+            + "[ "
             + unit.getQuantityKinds().stream()
             .map( quantityKind -> quantityKind.accept( this, context ) )
-            .map( quantityKindInitializer -> String.format( "add(%s);", quantityKindInitializer ) )
-            .collect( Collectors.joining() )
-            + "}}"
-            + "))";
+            .collect( Collectors.joining( END_PARAM ) )
+            + " ]"
+            + ")";
+      return wrapMetaModelBaseAttributes( unit, context, constructor, "defaultUnit" );
    }
 
-   // TODO investigate QuantityKinds
+   // validate
    @Override
    public String visitQuantityKind( final QuantityKind quantityKind, final StaticCodeGenerationContext context ) {
-      // The quantity kind is one of the default ones defined in the QuantityKinds enum?
-      if ( QuantityKinds.fromName( quantityKind.getName() ).isPresent() ) {
-         //         context.codeGenerationConfig().importTracker().importExplicit( QuantityKinds.class );
-         return "QuantityKinds." + AspectModelTsUtil.toConstant( quantityKind.getName() );
-      }
-
-      // If not, create a new instance of the default implementation
-      //      context.codeGenerationConfig().importTracker().importExplicit( DefaultQuantityKind.class );
-      return "new DefaultQuantityKind("
-            + getMetaModelBaseAttributes( quantityKind, context ) + ","
-            + "\"" + StringEscapeUtils.escapeJava( quantityKind.getLabel() ) + "\""
-            + ")";
+      context.codeGenerationConfig().importTracker().importExplicit( "DefaultQuantityKind", "./aspect-meta-model" );
+      final String constructor = "new DefaultQuantityKind("
+            // metaModelVersion
+            + NULL_PARAM
+            // aspectModelUrn
+            + NULL_PARAM
+            // name
+            + NULL_PARAM
+            // _label
+            + createLiteral( quantityKind.getLabel() ) + ")";
+      return wrapMetaModelBaseAttributes( quantityKind, context, constructor, "defaultQuantityKind" );
    }
 
-   // TODO investigate DefaultState
+   // validate
    @Override
    public String visitState( final State state, final StaticCodeGenerationContext context ) {
-      //      context.codeGenerationConfig().importTracker().importExplicit( DefaultState.class );
-      //      context.codeGenerationConfig().importTracker().importExplicit( ArrayList.class );
-      //      context.codeGenerationConfig().importTracker().importExplicit( Value.class );
-      return "new DefaultState("
-            // MetaModelBaseAttributes
-            + getMetaModelBaseAttributes( state, context ) + ","
-            // Type type
-            + state.getDataType().orElseThrow( noTypeException ).accept( this, context ) + ","
-            // List<Value> values
-            + "new ArrayList<Value>(){{" + state.getValues().stream().sorted()
-            .map( value -> String.format( "add(%s);", value.accept( this, context ) ) )
-            .collect( Collectors.joining() ) + "}},"
-            // Value defaultValue
-            + state.getDefaultValue().accept( this, context ) + ")";
+      context.codeGenerationConfig().importTracker().importExplicit( "DefaultState", "./aspect-meta-model" );
+      final String constructor = "new DefaultState("
+            // metaModelVersion
+            + NULL_PARAM
+            // aspectModelUrn
+            + NULL_PARAM
+            // name
+            + NULL_PARAM
+            // values
+            + "["
+            + state.getValues().stream().sorted()
+            .map( value -> value.accept( this, context ) )
+            .collect( Collectors.joining( END_PARAM ) )
+            + "]" + ","
+            // defaultValue
+            + state.getDefaultValue().accept( this, context ) + ","
+            // Type dataType
+            + state.getDataType().orElseThrow( noTypeException ).accept( this, context )
+            + ")";
+      return wrapMetaModelBaseAttributes( state, context, constructor, "defaultState" );
    }
 
-   // TODO investigate DefaultEnumeration
+   // validate
    @Override
    public String visitEnumeration( final Enumeration enumeration, final StaticCodeGenerationContext context ) {
-      //      context.codeGenerationConfig().importTracker().importExplicit( DefaultEnumeration.class );
-      //      context.codeGenerationConfig().importTracker().importExplicit( ArrayList.class );
-      //      context.codeGenerationConfig().importTracker().importExplicit( Value.class );
-      return "new DefaultEnumeration("
-            // MetaModelBaseAttributes
-            + getMetaModelBaseAttributes( enumeration, context ) + ","
-            // Type type
-            + enumeration.getDataType().orElseThrow( noTypeException ).accept( this, context ) + ","
-            // List<Value> values
-            + "new ArrayList<Value>(){{" + enumeration.getValues().stream().sorted()
-            .map( value -> String.format( "add(%s);", value.accept( this, context ) ) )
-            .collect( Collectors.joining() ) + "}})";
+      context.codeGenerationConfig().importTracker().importExplicit( "DefaultEnumeration", "./aspect-meta-model" );
+      final String constructor = "new DefaultEnumeration("
+            // metaModelVersion
+            + NULL_PARAM
+            // aspectModelUrn
+            + NULL_PARAM
+            // name
+            + NULL_PARAM
+            // values
+            + "["
+            + enumeration.getValues().stream().sorted()
+            .map( value -> value.accept( this, context ) )
+            .collect( Collectors.joining( END_PARAM ) )
+            + "],"
+            // Type dataType
+            + enumeration.getDataType().orElseThrow( noTypeException ).accept( this, context )
+            + ")";
+      return wrapMetaModelBaseAttributes( enumeration, context, constructor, "defaultEnumeration" );
    }
 
-   // TODO investigate DefaultStructuredValue
+   // validate
    @Override
    public String visitStructuredValue( final StructuredValue structuredValue, final StaticCodeGenerationContext context ) {
-      //      context.codeGenerationConfig().importTracker().importExplicit( DefaultStructuredValue.class );
-      //      context.codeGenerationConfig().importTracker().importExplicit( ArrayList.class );
-
+      context.codeGenerationConfig().importTracker().importExplicit( "DefaultStructuredValue", "./aspect-meta-model" );
       // The referenced Properties created by the StructuredValuePropertiesDeconstructor could differ from the referenced Properties
       // given in the StructuredValue: For example, when two properties "startDate" and "endDate" both use a StructuredValue
       // with elements ( :year "-" :month "-" :day ), the StructuredValue will refer to "year", "month" and "day", while
-      // referencedProperties retrieved here will refer to "startDateYear", "startDateMonth", "starteDateDay" or
+      // referencedProperties retrieved here will refer to "startDateYear", "startDateMonth", "startDateDay" or
       // "endDateYear", "endDateMonth", "endDateDay", respectively; since those are the names of the fields created (to prevent
       // name clashes). The latter are the names we need to refer to in the "new DefaultStructuredValue" call.
       final Property originalProperty = context.currentProperty();
@@ -333,15 +396,18 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
             .getFirst()
             .elementProperties();
 
-      return "new DefaultStructuredValue("
-            // MetaModelBaseAttributes
-            + getMetaModelBaseAttributes( structuredValue, context ) + ","
-            // Type type
-            + structuredValue.getDataType().orElseThrow( noTypeException ).accept( this, context ) + ","
-            // String deconstructionRule
+      final String constructor = "new DefaultStructuredValue("
+            // metaModelVersion
+            + NULL_PARAM
+            // aspectModelUrn
+            + NULL_PARAM
+            // name
+            + NULL_PARAM
+            // _deconstructionRule
             + createLiteral( structuredValue.getDeconstructionRule() ) + ","
-            // List<Object> elements
-            + "new ArrayList<Object>(){{" + structuredValue.getElements().stream().sequential()
+            // _elements
+            + "["
+            + structuredValue.getElements().stream()
             .map( element -> {
                if ( element instanceof final Property referencedPropertyFromStructuredValue ) {
                   // Find the qualified property in the referencedProperties list that corresponds to referencedPropertyFromStructuredValue
@@ -359,132 +425,186 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
                   return createLiteral( element.toString() );
                }
             } )
-            .map( s -> "add(" + s + ");" )
-            .collect( Collectors.joining() ) + "}})";
+            .collect( Collectors.joining( END_PARAM ) )
+            + "],"
+            // Type dataType
+            + structuredValue.getDataType().orElseThrow( noTypeException ).accept( this, context )
+            + ")";
+      return wrapMetaModelBaseAttributes( structuredValue, context, constructor, "defaultStructuredValue" );
    }
 
-   // TODO investigate DefaultTrait
+   // validate
    @Override
    public String visitTrait( final Trait trait, final StaticCodeGenerationContext context ) {
-      //      context.codeGenerationConfig().importTracker().importExplicit( DefaultTrait.class );
-      //      context.codeGenerationConfig().importTracker().importExplicit( ArrayList.class );
-      return "new DefaultTrait("
-            // MetaModelBaseAttributes
-            + getMetaModelBaseAttributes( trait, context ) + ","
-            // Characteristic baseCharacteristic
+      context.codeGenerationConfig().importTracker().importExplicit( "DefaultTrait", "./aspect-meta-model" );
+      final String constructor = "new DefaultTrait("
+            // metaModelVersion
+            + NULL_PARAM
+            // aspectModelUrn
+            + NULL_PARAM
+            // name
+            + NULL_PARAM
+            // _baseCharacteristic
             + trait.getBaseCharacteristic().accept( this, context ) + ","
-            // List<Constraint> constraints
-            + "new ArrayList<Constraint>(){{" + trait.getConstraints().stream().sorted()
-            .map( constraint -> String.format( "add(%s);", constraint.accept( this, context.withCurrentCharacteristic( trait ) ) ) )
-            .collect( Collectors.joining() ) + "}})";
+            // _constraints
+            + "["
+            + trait.getConstraints().stream().sorted()
+            .map( constraint -> constraint.accept( this, context.withCurrentCharacteristic( trait ) ) )
+            .collect( Collectors.joining( END_PARAM ) )
+            + "]"
+            + ")";
+      return wrapMetaModelBaseAttributes( trait, context, constructor, "trait" );
    }
 
    @Override
    public String visitCharacteristic( final Characteristic characteristic, final StaticCodeGenerationContext context ) {
-      final StringBuilder builder = new StringBuilder();
-      builder.append( START );
-      builder.append( META_MODEL_BASE_ATTRIBUTES_NAME ).append( ASSIGNMENT ).append( getMetaModelBaseAttributes( characteristic, context ) )
-            .append( END_PARAM );
-      characteristic.getDataType()
-            .map( type -> type.accept( this, context ) )
-            .filter( String::isEmpty )
-            .ifPresent( str -> builder.append( DATA_TYPE_NAME ).append( ASSIGNMENT ).append( str ) );
-      builder.append( END );
-      return builder.toString();
+      context.codeGenerationConfig().importTracker().importExplicit( "DefaultCharacteristic", "./aspect-meta-model" );
+      final String constructor = "new DefaultCharacteristic("
+            // metaModelVersion
+            + NULL_PARAM
+            // aspectModelUrn
+            + NULL_PARAM
+            // name
+            + NULL_PARAM
+            // Type dataType
+            + characteristic.getDataType()
+            .map( a -> a.accept( this, context ) )
+            .orElse( UNDEFINED )
+            + ")";
+      return wrapMetaModelBaseAttributes( characteristic, context, constructor, "defaultCharacteristic" );
    }
 
-   // TODO investigate DefaultLengthConstraint
+   // validate
    @Override
    public String visitLengthConstraint( final LengthConstraint lengthConstraint, final StaticCodeGenerationContext context ) {
-      //      context.codeGenerationConfig().importTracker().importExplicit( DefaultLengthConstraint.class );
+      context.codeGenerationConfig().importTracker().importExplicit( "DefaultLengthConstraint", "./aspect-meta-model" );
       final Scalar nonNegativeInteger = new DefaultScalar( XSD.nonNegativeInteger.getURI() );
-      return "new DefaultLengthConstraint("
-            // MetaModelBaseAttributes
-            + getMetaModelBaseAttributes( lengthConstraint, context ) + ","
-            // Optional<BigInteger> min
+      final String constructor = "new DefaultLengthConstraint("
+            // metaModelVersion
+            + NULL_PARAM
+            // aspectModelUrn
+            + NULL_PARAM
+            // name
+            + NULL_PARAM
+            // _minValue
             + getOptionalStaticDeclarationValue( nonNegativeInteger, lengthConstraint.getMinValue(), context ) + ","
-            // Optional<BigInteger> max
-            + getOptionalStaticDeclarationValue( nonNegativeInteger, lengthConstraint.getMaxValue(), context ) + ")";
+            // _maxValue
+            + getOptionalStaticDeclarationValue( nonNegativeInteger, lengthConstraint.getMinValue(), context ) + ","
+            + ")";
+      return wrapMetaModelBaseAttributes( lengthConstraint, context, constructor, "lengthConstraint" );
    }
 
-   // TODO investigate DefaultLengthConstraint
+   // validate
    @Override
    public String visitRangeConstraint( final RangeConstraint rangeConstraint, final StaticCodeGenerationContext context ) {
-      //      context.codeGenerationConfig().importTracker().importExplicit( DefaultRangeConstraint.class );
-      //      context.codeGenerationConfig().importTracker().importExplicit( BoundDefinition.class );
+      context.codeGenerationConfig().importTracker().importExplicit( "DefaultRangeConstraint", "./aspect-meta-model" );
+      context.codeGenerationConfig().importTracker().importExplicit( "BoundDefinition", "./aspect-meta-model/bound-definition" );
       final Type characteristicType = context.currentCharacteristic().getDataType().orElseThrow( noTypeException );
-      return "new DefaultRangeConstraint("
-            // MetaModelBaseAttributes
-            + getMetaModelBaseAttributes( rangeConstraint, context ) + ","
-            // Optional<Object> minValue
-            + getOptionalStaticDeclarationValue( characteristicType, rangeConstraint.getMinValue(), context ) + ","
-            // Optional<Object> maxValue
-            + getOptionalStaticDeclarationValue( characteristicType, rangeConstraint.getMaxValue(), context ) + ","
-            // BoundDefinition lowerBoundDefinition
+      final String constructor = "new DefaultRangeConstraint("
+            // metaModelVersion
+            + NULL_PARAM
+            // aspectModelUrn
+            + NULL_PARAM
+            // name
+            + NULL_PARAM
+            // upperBoundDefinition
+            + "BoundDefinition." + rangeConstraint.getUpperBoundDefinition().name() + ","
+            // lowerBoundDefinition
             + "BoundDefinition." + rangeConstraint.getLowerBoundDefinition().name() + ","
-            // BoundDefinition upperBoundDefinition
-            + "BoundDefinition." + rangeConstraint.getUpperBoundDefinition().name() + ")";
+            // minValue
+            + getOptionalStaticDeclarationValue( characteristicType, rangeConstraint.getMinValue(), context ) + ","
+            // maxValue
+            + getOptionalStaticDeclarationValue( characteristicType, rangeConstraint.getMaxValue(), context ) + ","
+            + ")";
+      return wrapMetaModelBaseAttributes( rangeConstraint, context, constructor, "defaultRangeConstraint" );
    }
 
-   // TODO investigate DefaultRegularExpressionConstraint
+   // validate
    @Override
    public String visitRegularExpressionConstraint( final RegularExpressionConstraint regularExpressionConstraint,
          final StaticCodeGenerationContext context ) {
-      //      context.codeGenerationConfig().importTracker().importExplicit( DefaultRegularExpressionConstraint.class );
-      return "new DefaultRegularExpressionConstraint("
-            // MetaModelBaseAttributes
-            + getMetaModelBaseAttributes( regularExpressionConstraint, context ) + ","
-            // String value
-            + createLiteral( regularExpressionConstraint.getValue() ) + ")";
+      context.codeGenerationConfig().importTracker().importExplicit( "DefaultRegularExpressionConstraint", "./aspect-meta-model" );
+      final String constructor = "new DefaultRegularExpressionConstraint("
+            // metaModelVersion
+            + NULL_PARAM
+            // aspectModelUrn
+            + NULL_PARAM
+            // name
+            + NULL_PARAM
+            // value
+            + createLiteral( regularExpressionConstraint.getValue() )
+            + ")";
+      return wrapMetaModelBaseAttributes( regularExpressionConstraint, context, constructor, "regularExpressionConstraint" );
    }
 
-   // TODO investigate DefaultEncodingConstraint
+   // validate
    @Override
    public String visitEncodingConstraint( final EncodingConstraint encodingConstraint, final StaticCodeGenerationContext context ) {
-      //      context.codeGenerationConfig().importTracker().importExplicit( DefaultEncodingConstraint.class );
-      //      context.codeGenerationConfig().importTracker().importExplicit( Charset.class );
-      return "new DefaultEncodingConstraint("
-            // MetaModelBaseAttributes
-            + getMetaModelBaseAttributes( encodingConstraint, context ) + ","
-            // Charset value
-            + "Charset.forName(\"" + encodingConstraint.getValue() + "\"))";
+      context.codeGenerationConfig().importTracker().importExplicit( "DefaultEncodingConstraint", "./aspect-meta-model" );
+      final String constructor = "new DefaultEncodingConstraint("
+            // metaModelVersion
+            + NULL_PARAM
+            // aspectModelUrn
+            + NULL_PARAM
+            // name
+            + NULL_PARAM
+            // value
+            + createLiteral( encodingConstraint.getValue().toString() )
+            + ")";
+      return wrapMetaModelBaseAttributes( encodingConstraint, context, constructor, "encodingConstraint" );
    }
 
-   // TODO investigate DefaultLanguageConstraint
+   // validate
    @Override
    public String visitLanguageConstraint( final LanguageConstraint languageConstraint, final StaticCodeGenerationContext context ) {
-      //      context.codeGenerationConfig().importTracker().importExplicit( DefaultLanguageConstraint.class );
-      //      context.codeGenerationConfig().importTracker().importExplicit( Locale.class );
-      return "new DefaultLanguageConstraint("
-            // MetaModelBaseAttributes
-            + getMetaModelBaseAttributes( languageConstraint, context ) + ","
-            // Locale languageCode
-            + "Locale.forLanguageTag(\"" + languageConstraint.getLanguageCode().toLanguageTag() + "\"))";
+      context.codeGenerationConfig().importTracker().importExplicit( "DefaultLanguageConstraint", "./aspect-meta-model" );
+      final String constructor = "new DefaultLanguageConstraint("
+            // metaModelVersion
+            + NULL_PARAM
+            // aspectModelUrn
+            + NULL_PARAM
+            // name
+            + NULL_PARAM
+            // languageCode
+            + createLiteral( languageConstraint.getLanguageCode().toLanguageTag() )
+            + ")";
+      return wrapMetaModelBaseAttributes( languageConstraint, context, constructor, "defaultLanguageConstraint" );
    }
 
-   // TODO investigate DefaultLocaleConstraint
+   // validate
    @Override
    public String visitLocaleConstraint( final LocaleConstraint localeConstraint, final StaticCodeGenerationContext context ) {
-      //      context.codeGenerationConfig().importTracker().importExplicit( DefaultLocaleConstraint.class );
-      //      context.codeGenerationConfig().importTracker().importExplicit( Locale.class );
-      return "new DefaultLanguageConstraint("
-            // MetaModelBaseAttributes
-            + getMetaModelBaseAttributes( localeConstraint, context ) + ","
-            // Locale localeCode
-            + "Locale.forLanguageTag(\"" + localeConstraint.getLocaleCode().toLanguageTag() + "\"))";
+      context.codeGenerationConfig().importTracker().importExplicit( "DefaultLocaleConstraint", "./aspect-meta-model" );
+      final String constructor = "new DefaultLocaleConstraint("
+            // metaModelVersion
+            + NULL_PARAM
+            // aspectModelUrn
+            + NULL_PARAM
+            // name
+            + NULL_PARAM
+            // languageCode
+            + localeConstraint.getLocaleCode().toLanguageTag()
+            + ")";
+      return wrapMetaModelBaseAttributes( localeConstraint, context, constructor, "defaultLocaleConstraint" );
    }
 
-   // TODO investigate DefaultFixedPointConstraint
+   // validate
    @Override
    public String visitFixedPointConstraint( final FixedPointConstraint fixedPointConstraint, final StaticCodeGenerationContext context ) {
-      //      context.codeGenerationConfig().importTracker().importExplicit( DefaultFixedPointConstraint.class );
-      return "new DefaultFixedPointConstraint("
-            // MetaModelBaseAttributes
-            + getMetaModelBaseAttributes( fixedPointConstraint, context ) + ","
-            // Integer scale
-            + fixedPointConstraint.getScale() + ","
-            // Integer scale
-            + fixedPointConstraint.getInteger() + ")";
+      context.codeGenerationConfig().importTracker().importExplicit( "DefaultFixedPointConstraint", "./aspect-meta-model" );
+      final String constructor = "new DefaultFixedPointConstraint("
+            // metaModelVersion
+            + NULL_PARAM
+            // aspectModelUrn
+            + NULL_PARAM
+            // name
+            + NULL_PARAM
+            // scale
+            + fixedPointConstraint.getScale() + END_PARAM
+            // integer
+            + fixedPointConstraint.getInteger()
+            + ")";
+      return wrapMetaModelBaseAttributes( fixedPointConstraint, context, constructor, "defaultFixedPointConstraint" );
    }
 
    @Override
@@ -492,147 +612,191 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
       throw new UnsupportedOperationException( "Could not generate code for unknown constraint: " + constraint.getName() );
    }
 
-   // TODO investigate DefaultEntity
+   // validate
    @Override
    public String visitEntity( final Entity entity, final StaticCodeGenerationContext context ) {
-      //      context.codeGenerationConfig().importTracker().importExplicit( DefaultEntity.class );
       final String metaName = "Meta" + entity.getName();
       context.codeGenerationConfig().importTracker().trackPotentiallyParameterizedType( metaName );
-      return "DefaultEntity.createDefaultEntity("
-            // MetaModelBaseAttributes
-            + getMetaModelBaseAttributes( entity, context ) + ","
-            // List<Property> properties
+      context.codeGenerationConfig().importTracker().importExplicit( "DefaultEntity", "./aspect-meta-model" );
+      final String constructor = "new DefaultEntity("
+            // metaModelVersion
+            + NULL_PARAM
+            // aspectModelUrn
+            + NULL_PARAM
+            // name
+            + NULL_PARAM
+            // _properties
             + metaName + INSTANCE_GET_PROPERTIES
-            // Optional<ComplexType> _extends
-            + extendsComplexType( entity, context ) + ")";
+            // _isAbstract
+            + entity.isAbstractEntity() + END_PARAM
+            // _extends
+            + extendsComplexType( entity, context )
+            + ")";
+      return wrapMetaModelBaseAttributes( entity, context, constructor, "defaultEntity" + entity.getName() );
    }
 
-   // TODO investigate DefaultAbstractEntity
+   // validate
    @Override
    public String visitAbstractEntity( final AbstractEntity abstractEntity, final StaticCodeGenerationContext context ) {
-      //      context.codeGenerationConfig().importTracker().importExplicit( DefaultAbstractEntity.class );
+      context.codeGenerationConfig().importTracker().importExplicit( "DefaultEntity", "./aspect-meta-model" );
       final String metaName = "Meta" + abstractEntity.getName();
       context.codeGenerationConfig().importTracker().trackPotentiallyParameterizedType( metaName );
-      return "DefaultAbstractEntity.createDefaultAbstractEntity("
-            // MetaModelBaseAttributes
-            + getMetaModelBaseAttributes( abstractEntity, context ) + ","
-            // List<Property> properties
+      final String constructor = "new DefaultEntity("
+            // metaModelVersion
+            + NULL_PARAM
+            // aspectModelUrn
+            + NULL_PARAM
+            // name
+            + NULL_PARAM
+            // _properties
             + metaName + INSTANCE_GET_PROPERTIES
-            // Optional<ComplexType> _extends
-            + extendsComplexType( abstractEntity, context ) + ","
-            // List<AspectModelUrn> extendingElements
-            + "List.of(" + abstractEntity.getExtendingElements().stream().sorted()
-            .map( extendingElement -> "AspectModelUrn.fromUrn(\"" + extendingElement.getUrn() + "\")" ).collect( Collectors.joining( "," ) )
-            + "))";
+            // _isAbstract
+            + true + END_PARAM
+            // _extends
+            + extendsComplexType( abstractEntity, context )
+            + ")";
+      return wrapMetaModelBaseAttributes( abstractEntity, context, constructor, "abstractDefaultEntity" + abstractEntity.getName() );
    }
 
-   // TODO investigate DefaultScalar
+   // validate
    @Override
    public String visitScalar( final Scalar scalar, final StaticCodeGenerationContext context ) {
-      //      context.codeGenerationConfig().importTracker().importExplicit( DefaultScalar.class );
+      context.codeGenerationConfig().importTracker().importExplicit( "DefaultScalar", "./aspect-meta-model" );
       return "new DefaultScalar(\"" + scalar.getUrn() + "\" )";
    }
 
-   //TODO fix it
+   // validate
    private String extendsComplexType( final ComplexType complexType, final StaticCodeGenerationContext context ) {
       if ( complexType.getExtends().isEmpty() ) {
-         return "Optional.empty()";
+         return UNDEFINED;
       }
-
       final ComplexType type = complexType.getExtends().get();
+      context.codeGenerationConfig().importTracker().importExplicit( "DefaultEntity", "./aspect-meta-model" );
       if ( type.is( Entity.class ) ) {
          final Entity entity = type.as( Entity.class );
-         //         context.codeGenerationConfig().importTracker().importExplicit( DefaultEntity.class );
          final String metaName = "Meta" + entity.getName();
          context.codeGenerationConfig().importTracker().trackPotentiallyParameterizedType( metaName );
-         return "Optional.of(DefaultEntity.createDefaultEntity(" + getMetaModelBaseAttributes( complexType, context ) + "," + metaName
-               + INSTANCE_GET_PROPERTIES + extendsComplexType( entity, context ) + "))";
+         final String constructor = "new DefaultEntity("
+               // metaModelVersion
+               + NULL_PARAM
+               // aspectModelUrn
+               + NULL_PARAM
+               // name
+               + NULL_PARAM
+               // _properties
+               + metaName + INSTANCE_GET_PROPERTIES
+               // _isAbstract
+               + false + END_PARAM
+               // _extends
+               + extendsComplexType( entity, context )
+               + ")";
+         return wrapMetaModelBaseAttributes( entity, context, constructor, "extendsDefaultEntity" + entity.getName() );
       }
       // AbstractEntity
       final AbstractEntity abstractEntity = type.as( AbstractEntity.class );
-      //      context.codeGenerationConfig().importTracker().importExplicit( DefaultAbstractEntity.class );
       final String metaName = "Meta" + abstractEntity.getName();
       context.codeGenerationConfig().importTracker().trackPotentiallyParameterizedType( metaName );
-      return "Optional.of(DefaultAbstractEntity.createDefaultAbstractEntity(" + getMetaModelBaseAttributes( abstractEntity, context ) + ","
-            + metaName + INSTANCE_GET_PROPERTIES + extendsComplexType( abstractEntity, context ) + "," + "List.of("
-            + abstractEntity.getExtendingElements().stream().sorted()
-            .map( extendingElement -> "AspectModelUrn.fromUrn( \"" + extendingElement.getUrn() + "\" )" )
-            .collect( Collectors.joining( "," ) ) + ")" + "))";
+      final String constructor = "new DefaultEntity("
+            // metaModelVersion
+            + NULL_PARAM
+            // aspectModelUrn
+            + NULL_PARAM
+            // name
+            + NULL_PARAM
+            // _properties
+            + metaName + INSTANCE_GET_PROPERTIES
+            // _isAbstract
+            + true + END_PARAM
+            // _extends
+            + extendsComplexType( abstractEntity, context )
+            + ")";
+      return wrapMetaModelBaseAttributes( abstractEntity, context, constructor, "extendsDefaultEntity" + abstractEntity.getName() );
    }
 
-   //TODO fix it
+   // validate
    private <T> String getOptionalStaticDeclarationValue( final Type type, final Optional<T> optionalValue,
          final StaticCodeGenerationContext context ) {
       if ( optionalValue.isEmpty() ) {
-         return "Optional.empty()";
+         return UNDEFINED;
       }
 
       if ( optionalValue.get() instanceof final ScalarValue scalarValue ) {
-         return "Optional.of(" + ( scalarValue ).accept( this, context ) + ")";
+         return ( scalarValue ).accept( this, context );
       }
-
-      //      context.codeGenerationConfig().importTracker().importExplicit( AspectModelTsUtil.getDataTypeClass( type ) );
       final Resource xsdType = ResourceFactory.createResource( type.getUrn() );
       String valueExpression = optionalValue.get().toString();
-      if ( type.getUrn().endsWith( "#float" ) ) {
-         valueExpression = valueExpression + "f";
-      }
       if ( AspectModelTsUtil.doesValueNeedToBeQuoted( type.getUrn() ) ) {
-         valueExpression = "\"" + valueExpression + "\"";
+         valueExpression = "'" + valueExpression + "'";
       } else {
          valueExpression = StringEscapeUtils.escapeJava( valueExpression );
       }
-      return "Optional.of(" + valueInitializer.apply( xsdType, valueExpression ) + ")";
+
+      if ( xsdType.equals( SammNs.SAMM.curie() ) ) {
+         context.codeGenerationConfig().importTracker().importExplicit( "Curie", "./core/curie" );
+         return String.format( "new Curie( %s )", valueExpression );
+      }
+      return valueInitializer.apply( xsdType, valueExpression );
    }
 
-   // TODO validate generated code
+   // validate
    public String exampleValue( final Property property, final StaticCodeGenerationContext context ) {
       return property.getExampleValue()
-            .map( exampleValue -> visitScalarValue( exampleValue, context ) )
-            .orElse( "{}" );
+            .map( exampleValue -> {
+               if ( exampleValue instanceof final ScalarValue scalarValue ) {
+                  return visitScalarValue( scalarValue, context );
+               } else if ( exampleValue instanceof final Value value ) {
+                  return visitValue( value, context );
+               } else {
+                  throw new IllegalArgumentException( "Unexpected exampleValue type: " + exampleValue.getClass() );
+               }
+            } )
+            .orElse( UNDEFINED );
    }
-
-   /*
-    * This method is a crutch because velocity is not able to call the parameterized actual method
-    */
-   public String metaModelBaseAttributes( final Property property, final StaticCodeGenerationContext context ) {
-      return getMetaModelBaseAttributes( property, context );
-   }
-
-   private String getMetaModelBaseAttributes( final ModelElement element, final StaticCodeGenerationContext context ) {
+   
+   private String wrapMetaModelBaseAttributes( final ModelElement element, final StaticCodeGenerationContext context,
+         final String initializationConstructor, final String variableName ) {
       final StringBuilder builder = new StringBuilder();
-      builder.append( START );
+
+      builder.append( "(() => {" );
+      builder.append( " const " ).append( variableName ).append( " = " ).append( initializationConstructor ).append( NEW_LINE );
+      // variable.isAnonymousNode = true/false
       if ( element.isAnonymous() ) {
-         builder.append( "isAnonymous" ).append( ASSIGNMENT ).append( element.isAnonymous() ).append( END_PARAM );
+         builder.append( variableName ).append( ".isAnonymousNode = " ).append( element.isAnonymous() )
+               .append( END_INITIALIZATION );
       } else {
-         builder.append( "urn" ).append( ASSIGNMENT ).append( elementUrn( element, context ) ).append( END_PARAM );
+         // variable.addAspectModelUrn = urn
+         builder.append( variableName ).append( ".addAspectModelUrn = " ).append( elementUrn( element, context ) )
+               .append( END_INITIALIZATION );
       }
 
-      builder.append( "preferredNames" ).append( ASSIGNMENT ).append( START_ARRAY );
-      element.getPreferredNames().stream().sorted().forEach( preferredName -> {
-         builder.append( START );
-         builder.append( VALUE_NAME ).append( ASSIGNMENT ).append( createLiteral( preferredName.getValue() ) ).append( END_PARAM );
-         builder.append( "languageTag" ).append( ASSIGNMENT )
-               .append( "'" ).append( preferredName.getLanguageTag().toLanguageTag() ).append( "'" ).append( END_PARAM );
-         builder.append( END ).append( END_PARAM );
-      } );
-      builder.append( END_ARRAY ).append( END_PARAM );
+      // variable.addPreferredName( 'en' , 'name' )
+      element.getPreferredNames().stream().sorted()
+            .forEach( preferredName -> builder.append(
+                  applyMethod(
+                        variableName,
+                        "addPreferredName",
+                        createLiteral( preferredName.getLanguageTag().toLanguageTag() ), createLiteral( preferredName.getValue() )
+                  )
+            ).append( END_INITIALIZATION ) );
 
-      builder.append( "descriptions" ).append( ASSIGNMENT ).append( START_ARRAY );
-      element.getDescriptions().stream().sorted().forEach( description -> {
-         builder.append( START );
-         builder.append( VALUE_NAME ).append( ASSIGNMENT ).append( createLiteral( description.getValue() ) ).append( END_PARAM );
-         builder.append( "languageTag" ).append( ASSIGNMENT )
-               .append( "'" ).append( description.getLanguageTag().toLanguageTag() ).append( "'" ).append( END_PARAM );
-         builder.append( END ).append( END_PARAM );
-      } );
-      builder.append( END_ARRAY ).append( END_PARAM );
+      // variable.addDescription( 'en' , 'name' )
+      element.getDescriptions().stream().sorted()
+            .forEach( description -> builder.append(
+                  applyMethod(
+                        variableName,
+                        "addDescription",
+                        createLiteral( description.getLanguageTag().toLanguageTag() ), createLiteral( description.getValue() )
+                  )
+            ).append( END_INITIALIZATION ) );
 
-      builder.append( "see" ).append( ASSIGNMENT ).append( START_ARRAY );
-      element.getSee().stream().sorted().forEach( see -> builder.append( "'" ).append( see ).append( "'" ).append( END_PARAM ) );
-      builder.append( END_ARRAY ).append( END_PARAM );
-
-      builder.append( END );
+      // variable.addSeeReference( 'example' )
+      element.getSee().stream().sorted().forEach( see -> builder.append(
+                  applyMethod( variableName, "addSeeReference", createLiteral( see ) )
+            ).append( END_INITIALIZATION )
+      );
+      // return variable
+      builder.append( " return " ).append( variableName ).append( ";" );
+      builder.append( " })()" );
       return builder.toString();
    }
 
@@ -646,15 +810,18 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
       return "'" + element.urn() + "'";
    }
 
+   public static final String NEW_LINE = "\n";
+   public static final String END_INITIALIZATION = ";\n";
    public static final String END_PARAM = ",\n";
-   public static final String ASSIGNMENT = " : ";
-   public static final String START = "{\n";
    public static final String END = "}";
-   public static final String START_ARRAY = "[ ";
-   public static final String END_ARRAY = " ]";
-   public static final String META_MODEL_BASE_ATTRIBUTES_NAME = "metaModelBaseAttributes";
-   public static final String VALUE_NAME = "value";
-   public static final String TYPE_NAME = "type";
-   public static final String DATA_TYPE_NAME = "dataType";
    public static final String INSTANCE_GET_PROPERTIES = ".INSTANCE.getProperties(),";
+   public static final String UNDEFINED = "undefined";
+   public static final String NULL_PARAM = "null, \n";
+
+   public static final String applyMethod( String name, String methodName, Object... params ) {
+      return name + "." + methodName + "(" + Arrays.stream( params )
+            .map( Object::toString )
+            .collect( Collectors.joining( " , " ) ) + ")";
+   }
+
 }

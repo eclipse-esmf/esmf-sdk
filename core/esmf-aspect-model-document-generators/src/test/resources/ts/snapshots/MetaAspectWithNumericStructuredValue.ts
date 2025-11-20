@@ -13,6 +13,8 @@
 
 
 import { AspectWithNumericStructuredValue,} from './AspectWithNumericStructuredValue';
+import { DefaultScalar,DefaultStructuredValue,} from './aspect-meta-model';
+import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
 import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 
 
@@ -49,30 +51,27 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'date',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultStructuredValue({
-urn : this.NAMESPACE + 'StructuredDate',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},new DefaultScalar("http://www.w3.org/2001/XMLSchema#date" ),"(\\d{4})-(\\d{2})-(\\d{2})",new ArrayList<Object>(){{add(YEAR);add("-");add(MONTH);add("-");add(DAY);}})
+
+        null,
+    null,
+    null,
+    (() => { const defaultStructuredValue = new DefaultStructuredValue(null, 
+null, 
+null, 
+'(\\d{4})-(\\d{2})-(\\d{2})',[YEAR,
+'-',
+MONTH,
+'-',
+DAY],new DefaultScalar("http://www.w3.org/2001/XMLSchema#date" ))
+defaultStructuredValue.addAspectModelUrn = this.NAMESPACE + 'StructuredDate';
+ return defaultStructuredValue; })()
 ,
-    exampleValue : {
-metaModelBaseAttributes : {},
-value : _datatypeFactory.newXMLGregorianCalendar( "2019-09-27" ),
-type : new DefaultScalar("http://www.w3.org/2001/XMLSchema#date" ),
-},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'date',
-    isAbstract : false,
-    });
+    false,
+    false,
+    new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#date" ),new Date( ''2019-09-27'' )),
+        'date',
+    false,
+    );
 
 
 

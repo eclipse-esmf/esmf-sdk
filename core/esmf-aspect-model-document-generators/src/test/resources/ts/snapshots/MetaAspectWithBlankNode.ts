@@ -13,6 +13,7 @@
 
 
 import { AspectWithBlankNode,} from './AspectWithBlankNode';
+import { DefaultCollection,DefaultScalar,} from './aspect-meta-model';
 import { LangString,} from './core/langString';
 import { StaticContainerProperty,} from './core/staticConstraintProperty';
 
@@ -48,39 +49,31 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
         return 'AspectWithBlankNode';
     }
 
-        getContainedType(): AspectWithBlankNode {
+        getContainedType(): string {
             return 'AspectWithBlankNode';
         }
 
                                         })(
-        {
-        metaModelBaseAttributes : {
-urn : this.NAMESPACE + 'list',
-preferredNames : [  ],
-descriptions : [  ],
-see : [  ],
-},
-    characteristic :     new DefaultCollection({
-isAnonymous : true,
-preferredNames : [ {
-value : "Blank Node Liste",
-languageTag : 'de',
-},
-{
-value : "Blank Node Collection",
-languageTag : 'en',
-},
- ],
-descriptions : [  ],
-see : [  ],
-},Optional.of(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" )),Optional.empty())
+
+        null,
+    null,
+    null,
+    (() => { const defaultCollection = new DefaultCollection(null, 
+null, 
+null, 
+true, false, undefined,
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
+defaultCollection.isAnonymousNode = true;
+defaultCollection.addPreferredName('de' , 'Blank Node Liste');
+defaultCollection.addPreferredName('en' , 'Blank Node Collection');
+ return defaultCollection; })()
 ,
-    exampleValue : {},
-    optional : false,
-    notInPayload : false,
-        payloadName : 'list',
-    isAbstract : false,
-    });
+    false,
+    false,
+    undefined,
+        'list',
+    false,
+    );
 
 
 
@@ -112,8 +105,8 @@ getAllProperties(): Array<StaticProperty<AspectWithBlankNode, any>> {
         
     getPreferredNames(): Array<LangString> {
         return [
-            {value: 'Aspekt mit anonymen Knoten', languageTag: 'de'},
-            {value: 'Aspect With Blank Node', languageTag: 'en'},
+            new LangString('Aspekt mit anonymen Knoten', 'de'),
+            new LangString('Aspect With Blank Node', 'en'),
         ];
         }
 
