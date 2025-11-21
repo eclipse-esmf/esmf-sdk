@@ -27,6 +27,8 @@ import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
 import org.apache.jena.rdf.model.Model;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
@@ -41,6 +43,7 @@ class RdfModelCreatorVisitorTest {
     * as well.
     */
    @ParameterizedTest
+   @Execution( ExecutionMode.CONCURRENT )
    @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
          "ASPECT_WITH_USED_AND_UNUSED_CHARACTERISTIC",
          "ASPECT_WITH_USED_AND_UNUSED_COLLECTION",

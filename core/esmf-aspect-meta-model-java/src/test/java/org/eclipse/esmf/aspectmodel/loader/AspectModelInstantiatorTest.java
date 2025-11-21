@@ -38,11 +38,14 @@ import org.eclipse.esmf.test.TestModel;
 
 import org.apache.jena.vocabulary.XSD;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 class AspectModelInstantiatorTest extends AbstractAspectModelInstantiatorTest {
    @ParameterizedTest
+   @Execution( ExecutionMode.CONCURRENT )
    @EnumSource( value = TestAspect.class )
    void testLoadAspectExpectSuccess( final TestAspect aspect ) {
       assertThatCode( () -> loadAspect( aspect ) ).doesNotThrowAnyException();

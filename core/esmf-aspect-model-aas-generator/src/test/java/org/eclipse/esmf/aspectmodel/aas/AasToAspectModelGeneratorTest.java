@@ -51,6 +51,8 @@ import org.eclipse.digitaltwin.aas4j.v3.dataformat.xml.XmlDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -150,6 +152,7 @@ class AasToAspectModelGeneratorTest {
    }
 
    @ParameterizedTest
+   @Execution( ExecutionMode.CONCURRENT )
    @EnumSource( TestAspect.class )
    void testRoundtripConversion( final TestAspect testAspect ) throws DeserializationException {
       final Aspect aspect = TestResources.load( testAspect ).aspect();

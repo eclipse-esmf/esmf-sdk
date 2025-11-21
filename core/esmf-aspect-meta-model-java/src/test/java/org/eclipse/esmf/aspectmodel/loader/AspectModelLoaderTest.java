@@ -42,11 +42,14 @@ import org.eclipse.esmf.test.TestResources;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 class AspectModelLoaderTest {
    @ParameterizedTest
+   @Execution( ExecutionMode.CONCURRENT )
    @EnumSource( TestAspect.class )
    void testLoadAspectModelsSourceFilesArePresent( final TestAspect testAspect ) {
       final AspectModel aspectModel = TestResources.load( testAspect );

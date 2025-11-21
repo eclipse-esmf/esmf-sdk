@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 import org.eclipse.esmf.test.TestAspect;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
@@ -32,6 +34,7 @@ class DatabricksColumnDefinitionParserTest extends DatabricksTestBase {
    }
 
    @ParameterizedTest
+   @Execution( ExecutionMode.CONCURRENT )
    @EnumSource( value = TestAspect.class )
    void testParseSqlForAspectModel( final TestAspect testAspect ) {
       final String sql = sql( testAspect );

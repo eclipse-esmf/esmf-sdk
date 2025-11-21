@@ -24,12 +24,15 @@ import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 public class AspectModelDiagramGeneratorTest {
    @ParameterizedTest
+   @Execution( ExecutionMode.CONCURRENT )
    @EnumSource( value = TestAspect.class )
    void testGen( final TestAspect testAspect ) {
       final Aspect aspect = TestResources.load( testAspect ).aspect();

@@ -59,6 +59,8 @@ import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElementList;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultOperation;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultProperty;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.xml.sax.SAXException;
@@ -364,6 +366,7 @@ class AspectModelAasGeneratorTest {
     * Anonymous enumeration in test has no URN for enum values but is required for Concept Description referencing
     */
    @ParameterizedTest
+   @Execution( ExecutionMode.CONCURRENT )
    @EnumSource( value = TestAspect.class )
    void testGeneration( final TestAspect testAspect ) throws DeserializationException {
       final String aasXmlString = aspectToAasXml( testAspect );
