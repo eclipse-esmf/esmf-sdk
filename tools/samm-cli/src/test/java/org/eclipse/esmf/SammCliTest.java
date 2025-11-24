@@ -47,9 +47,14 @@ import org.eclipse.esmf.test.TestModel;
 import org.eclipse.esmf.test.TestResources;
 import org.eclipse.esmf.test.TestSharedModel;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
+import org.apache.jena.shared.LockMRSW;
+import org.apache.jena.sparql.core.mem.PMapQuadTable;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
@@ -66,6 +71,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.slf4j.LoggerFactory;
 
 /**
  * The tests for the CLI that are executed by Maven Surefire. They work using the {@link MainClassProcessLauncher}, i.e. directly call
@@ -91,6 +97,12 @@ class SammCliTest {
             argument -> !"-XX:ThreadPriorityPolicy=1".equals( argument ) && !argument.startsWith( "-agentlib:jdwp" )
       );
       outputDirectory = Files.createTempDirectory( "junit" );
+
+      final LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+      Stream.of( LockMRSW.class, PMapQuadTable.class ).forEach( loggerClass -> {
+         final Logger logger = loggerContext.getLogger( loggerClass );
+         logger.setLevel( Level.OFF );
+      } );
    }
 
    @AfterEach
@@ -192,6 +204,7 @@ class SammCliTest {
    }
 
    @Test
+   @EnabledIfSystemProperty( named = "packaging-type", matches = "native" )
    void testVerboseOutput() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "validate", "-vvv" );
       assertThat( result.stdout() ).contains( "Input model is valid" );

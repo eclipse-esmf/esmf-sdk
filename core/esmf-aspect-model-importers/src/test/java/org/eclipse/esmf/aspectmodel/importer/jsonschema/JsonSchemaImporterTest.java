@@ -75,6 +75,8 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -98,6 +100,7 @@ public class JsonSchemaImporterTest {
    }
 
    @ParameterizedTest
+   @Execution( ExecutionMode.CONCURRENT )
    @EnumSource( value = TestAspect.class )
    void testGenerationOfValidAspectModels( final TestModel testAspect ) {
       final Aspect originalAspect = TestResources.load( testAspect ).aspect();
@@ -116,6 +119,7 @@ public class JsonSchemaImporterTest {
     * Aspect corresponds to the original schema.
     */
    @ParameterizedTest
+   @Execution( ExecutionMode.CONCURRENT )
    @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
          "ASPECT_WITH_ABSTRACT_ENTITY",
          "ASPECT_WITH_ABSTRACT_PROPERTY",
