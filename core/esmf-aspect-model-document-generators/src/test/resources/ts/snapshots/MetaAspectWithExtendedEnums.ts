@@ -15,11 +15,11 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithExtendedEnums,} from './AspectWithExtendedEnums';
-import { DefaultEntity,DefaultEnumeration,DefaultScalar,} from './aspect-meta-model';
-import { DefaultEntityInstance,} from './aspect-meta-model/default-entity-instance';
-import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
-import { DefaultStaticProperty,} from './core/staticConstraintProperty';
+import { DefaultEntity,DefaultEntityInstance,DefaultEnumeration,DefaultScalar,} from './esmf/aspect-meta-model';
+import { DefaultScalarValue,} from './esmf/aspect-meta-model/default-scalar-value';
+import { DefaultStaticProperty,PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
 
+import { KnownVersion,} from './esmf/shared/known-version';
 
 
 
@@ -30,8 +30,10 @@ import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithExtendedEnums (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithExtendedEnums).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithExtendedEnums implements StaticMetaClass<AspectWithExtendedEnums>, PropertyContainer<AspectWithExtendedEnums> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -56,18 +58,18 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultEnumeration = new DefaultEnumeration(null, 
-null, 
-null, 
-[new DefaultEntityInstance(null, 
-(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithExtendedEnums',
+    'result',
+    (() => { const defaultEnumeration = new DefaultEnumeration(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
+[new DefaultEntityInstance('ResultBad',
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
 undefined)
 defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
@@ -75,10 +77,10 @@ defaultEntityReplacedAspectArtifact.addPreferredName('en' , 'Evaluation Result')
 defaultEntityReplacedAspectArtifact.addDescription('en' , 'Possible values for the evaluation of a process');
  return defaultEntityReplacedAspectArtifact; })(),
 undefined),
-new DefaultEntityInstance(null, 
-(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+new DefaultEntityInstance('ResultGood',
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
 undefined)
 defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
@@ -86,19 +88,19 @@ defaultEntityReplacedAspectArtifact.addPreferredName('en' , 'Evaluation Result')
 defaultEntityReplacedAspectArtifact.addDescription('en' , 'Possible values for the evaluation of a process');
  return defaultEntityReplacedAspectArtifact; })(),
 undefined),
-new DefaultEntityInstance(null, 
-(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+new DefaultEntityInstance('ResultNoStatus',
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
 undefined)
 defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
 defaultEntityReplacedAspectArtifact.addPreferredName('en' , 'Evaluation Result');
 defaultEntityReplacedAspectArtifact.addDescription('en' , 'Possible values for the evaluation of a process');
  return defaultEntityReplacedAspectArtifact; })(),
-undefined)],(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+undefined)],(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
 undefined)
 defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
@@ -134,14 +136,14 @@ defaultEnumeration.addDescription('en' , 'Possible values for the evaluation of 
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultEnumeration = new DefaultEnumeration(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithExtendedEnums',
+    'simpleResult',
+    (() => { const defaultEnumeration = new DefaultEnumeration(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 [new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'No'),
 new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'Yes')],new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
 defaultEnumeration.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
@@ -167,19 +169,19 @@ return MetaAspectWithExtendedEnums .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithExtendedEnums';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithExtendedEnums, any>> {
+getProperties(): Array<StaticProperty<AspectWithExtendedEnums, any>> {
 return [MetaAspectWithExtendedEnums.RESULT, MetaAspectWithExtendedEnums.SIMPLE_RESULT];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithExtendedEnums, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

@@ -40,27 +40,27 @@
 
     ## new (class extends $type <...> {
     #if( $Trait.isAssignableFrom( $property.getCharacteristic().get().getClass() ) )
-        $codeGenerationConfig.importTracker().importExplicit( 'StaticConstraintProperty' , './core/staticConstraintProperty' )
+        $codeGenerationConfig.importTracker().importLibExplicit( 'staticProperty' , 'aspect-meta-model/staticProperty' )
         #if( $util.hasContainerType( $property ) )
-            $codeGenerationConfig.importTracker().importExplicit( 'StaticConstraintContainerProperty' , './core/staticConstraintProperty'  )
+            $codeGenerationConfig.importTracker().importLibExplicit( 'StaticConstraintContainerProperty' , 'aspect-meta-model/staticProperty'  )
             #set( $containedType = $util.getCharacteristicTsType( $property, $codeGenerationConfig ) )
             new (class extends StaticConstraintContainerProperty<$containingClass, $containedType, $propertyType, #getCharacteristicClassName()>{
         #elseif( $util.hasUnit( $property.getCharacteristic().get() ) )
-            $codeGenerationConfig.importTracker().importExplicit( 'StaticConstraintUnitProperty' , './core/staticConstraintProperty'  )
+            $codeGenerationConfig.importTracker().importLibExplicit( 'StaticConstraintUnitProperty' , 'aspect-meta-model/staticProperty'  )
         new (class extends StaticConstraintUnitProperty<$containingClass, $propertyType, #getCharacteristicClassName()>{
         #else
-        new (class extends StaticConstraintProperty<$containingClass, $propertyType, #getCharacteristicClassName()>{
+        new (class extends staticProperty<$containingClass, $propertyType, #getCharacteristicClassName()>{
         #end
     #else
         #if( $util.hasContainerType( $property ) && !$propertyType.startsWith( "Map" ) )
-            $codeGenerationConfig.importTracker().importExplicit( 'StaticContainerProperty' , './core/staticConstraintProperty'  )
+            $codeGenerationConfig.importTracker().importLibExplicit( 'StaticContainerProperty' , 'aspect-meta-model/staticProperty'  )
             #set( $containedType = $util.getCharacteristicTsType( $property, $codeGenerationConfig ) )
         new (class extends StaticContainerProperty<$containingClass, $containedType, $propertyType> {
         #elseif( $util.hasUnit( $property.getCharacteristic().get() ) )
-            $codeGenerationConfig.importTracker().importExplicit( 'StaticUnitProperty' , './core/staticConstraintProperty'  )
+            $codeGenerationConfig.importTracker().importLibExplicit( 'StaticUnitProperty' , 'aspect-meta-model/staticProperty'  )
         new (class extends StaticUnitProperty<$containingClass, $propertyType>{
         #else
-            $codeGenerationConfig.importTracker().importExplicit( 'DefaultStaticProperty' , './core/staticConstraintProperty'  )
+            $codeGenerationConfig.importTracker().importLibExplicit( 'DefaultStaticProperty' , 'aspect-meta-model/staticProperty'  )
         new (class extends DefaultStaticProperty<$containingClass, $propertyType>{
         #end
     #end
@@ -98,21 +98,19 @@
         }
     #end
 
-    ##    TODO refactoring after Unit implementation in TS
-    ##    #if( $util.hasUnit( $property.getCharacteristic().get() ) )
-    ##        $codeGenerationConfig.importTracker().importExplicit( $Unit )
-    ##        $codeGenerationConfig.importTracker().importExplicit( $Units )
-    ##        public Unit getUnit() {
-    ##        return Units.fromName("$util.castToQuantifiable( $property.getCharacteristic().get() ).unit.get().getName()")
-    ##        .orElseThrow(() -> new RuntimeException("Unknown unit: $util.castToQuantifiable( $property.getCharacteristic().get() ).getUnit().get().getName()"));
-    ##        }
-    ##    #end
+    ##    TODO uncomment after Units.fromName() is implemented
+##        #if( $util.hasUnit( $property.getCharacteristic().get() ) )
+##            $codeGenerationConfig.importTracker().importLibExplicit('Units', './shared/units' )
+##            etUnit(): any {
+##            return Units.fromName("$util.castToQuantifiable( $property.getCharacteristic().get() )")
+##            }
+##        #end
     })(
 
     ## {$arg1, $arg2, ...});
-    null,
-    null,
-    null,
+    KnownVersion.getLatest().toString(),
+    $util.elementUrn( $element, $context ),
+    '$property.getName()',
     #propertyCharacteristic( $element, $property, $property.getCharacteristic().get(), $propertyType ),
     $property.isNotInPayload(),
     $property.isOptional(),

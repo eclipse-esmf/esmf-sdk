@@ -22,6 +22,7 @@ import org.eclipse.esmf.aspectmodel.generator.ArtifactGenerator;
 import org.eclipse.esmf.aspectmodel.generator.TemplateEngine;
 import org.eclipse.esmf.aspectmodel.generator.exception.CodeGenerationException;
 import org.eclipse.esmf.aspectmodel.generator.ts.AspectModelTsUtil;
+import org.eclipse.esmf.aspectmodel.generator.ts.StructuredValuePropertiesDeconstructor;
 import org.eclipse.esmf.aspectmodel.generator.ts.TsArtifact;
 import org.eclipse.esmf.aspectmodel.generator.ts.TsArtifactGenerator;
 import org.eclipse.esmf.aspectmodel.generator.ts.TsCodeGenerationConfig;
@@ -54,6 +55,7 @@ public class StaticMetaModelTsArtifactGenerator<E extends StructureElement> impl
       final Map<String, Object> context = ImmutableMap.<String, Object> builder()
             .put( "characteristicBaseUrn", characteristicBaseUrn )
             .put( "codeGenerationConfig", config )
+            .put( "deconstructor", new StructuredValuePropertiesDeconstructor( element ) )
             .put( "codeGeneratorName", AspectModelTsUtil.codeGeneratorName() )
             .put( "codeGeneratorDate", AspectModelTsUtil.CURRENT_DATE_ISO_8601 )
             .put( "context", new StaticCodeGenerationContext( config, modelUrnPrefix, characteristicBaseUrn, null, null, null ) )

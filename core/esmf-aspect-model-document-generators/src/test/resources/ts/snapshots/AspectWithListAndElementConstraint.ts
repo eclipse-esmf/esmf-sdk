@@ -6,7 +6,7 @@
 */
 
 
-import { CollectionAspect,} from './core/collectionAspect';
+import { CollectionAspect,} from './esmf/aspect-meta-model/collectionAspect';
 
         export class AspectWithListAndElementConstraint extends CollectionAspect<number[],number> {
     // NotNull

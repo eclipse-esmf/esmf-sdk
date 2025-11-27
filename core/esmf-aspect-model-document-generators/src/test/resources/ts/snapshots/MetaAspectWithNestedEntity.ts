@@ -13,9 +13,10 @@
 
 
 import { AspectWithNestedEntity,} from './AspectWithNestedEntity';
-import { DefaultCharacteristic,DefaultEntity,} from './aspect-meta-model';
-import { DefaultStaticProperty,} from './core/staticConstraintProperty';
+import { DefaultCharacteristic,DefaultEntity,} from './esmf/aspect-meta-model';
+import { DefaultStaticProperty,PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
 import { Entity,} from './Entity';
+import { KnownVersion,} from './esmf/shared/known-version';
 import { MetaEntity,} from './MetaEntity';
 
 
@@ -25,8 +26,10 @@ import { MetaEntity,} from './MetaEntity';
 * Generated class MetaAspectWithNestedEntity (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithNestedEntity).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithNestedEntity implements StaticMetaClass<AspectWithNestedEntity>, PropertyContainer<AspectWithNestedEntity> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -51,17 +54,17 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
-(() => { const defaultEntityEntity = new DefaultEntity(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithNestedEntity',
+    'entity',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'EntityCharacteristic',
+'EntityCharacteristic',
+(() => { const defaultEntityEntity = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'Entity',
+'Entity',
 MetaEntity.INSTANCE.getProperties(),false,
 undefined)
 defaultEntityEntity.addAspectModelUrn = this.NAMESPACE + 'Entity';
@@ -88,19 +91,19 @@ return MetaAspectWithNestedEntity .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithNestedEntity';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithNestedEntity, any>> {
+getProperties(): Array<StaticProperty<AspectWithNestedEntity, any>> {
 return [MetaAspectWithNestedEntity.ENTITY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithNestedEntity, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

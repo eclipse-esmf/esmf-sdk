@@ -13,6 +13,8 @@
 
 
 import { AspectWithOperationWithSeeAttribute,} from './AspectWithOperationWithSeeAttribute';
+import { KnownVersion,} from './esmf/shared/known-version';
+import { PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
 
 
     
@@ -21,8 +23,10 @@ import { AspectWithOperationWithSeeAttribute,} from './AspectWithOperationWithSe
 * Generated class MetaAspectWithOperationWithSeeAttribute (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithOperationWithSeeAttribute).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithOperationWithSeeAttribute implements StaticMetaClass<AspectWithOperationWithSeeAttribute>, PropertyContainer<AspectWithOperationWithSeeAttribute> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -42,19 +46,19 @@ return MetaAspectWithOperationWithSeeAttribute .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithOperationWithSeeAttribute';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithOperationWithSeeAttribute, any>> {
+getProperties(): Array<StaticProperty<AspectWithOperationWithSeeAttribute, any>> {
 return [];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithOperationWithSeeAttribute, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

@@ -15,11 +15,12 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithExtendedEntity,} from './AspectWithExtendedEntity';
-import { DefaultEntity,DefaultSortedSet,} from './aspect-meta-model';
+import { DefaultEntity,DefaultSortedSet,} from './esmf/aspect-meta-model';
+import { KnownVersion,} from './esmf/shared/known-version';
 
 
 
-import { StaticContainerProperty,} from './core/staticConstraintProperty';
+import { PropertyContainer,StaticContainerProperty,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
 
 
 
@@ -29,8 +30,10 @@ import { StaticContainerProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithExtendedEntity (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithExtendedEntity).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithExtendedEntity implements StaticMetaClass<AspectWithExtendedEntity>, PropertyContainer<AspectWithExtendedEntity> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -47,7 +50,7 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
     
     getPropertyType(): string {
-            return '${codeGenerationConfig.importTracker().getRawContainerType( $propertyType )}';
+            return 'ReplacedAspectArtifact';
     }
 
     getContainingType(): string {
@@ -58,26 +61,26 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
             return 'AspectWithExtendedEntity';
         }
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultSortedSet = new DefaultSortedSet(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithExtendedEntity',
+    'testProperty',
+    (() => { const defaultSortedSet = new DefaultSortedSet(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 undefined,
-(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
-(() => { const extendsDefaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+(() => { const extendsDefaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),true,
-(() => { const extendsDefaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+(() => { const extendsDefaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),true,
 undefined)
 extendsDefaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
@@ -108,19 +111,19 @@ return MetaAspectWithExtendedEntity .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithExtendedEntity';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithExtendedEntity, any>> {
+getProperties(): Array<StaticProperty<AspectWithExtendedEntity, any>> {
 return [MetaAspectWithExtendedEntity.TEST_PROPERTY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithExtendedEntity, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

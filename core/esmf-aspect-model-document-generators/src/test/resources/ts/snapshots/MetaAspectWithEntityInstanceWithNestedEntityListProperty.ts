@@ -15,9 +15,9 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithEntityInstanceWithNestedEntityListProperty,} from './AspectWithEntityInstanceWithNestedEntityListProperty';
-import { DefaultEntity,DefaultEnumeration,} from './aspect-meta-model';
-import { DefaultEntityInstance,} from './aspect-meta-model/default-entity-instance';
-import { DefaultStaticProperty,} from './core/staticConstraintProperty';
+import { DefaultEntity,DefaultEntityInstance,DefaultEnumeration,} from './esmf/aspect-meta-model';
+import { DefaultStaticProperty,PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
+import { KnownVersion,} from './esmf/shared/known-version';
 
 
 
@@ -28,8 +28,10 @@ import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithEntityInstanceWithNestedEntityListProperty (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEntityInstanceWithNestedEntityListProperty).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithEntityInstanceWithNestedEntityListProperty implements StaticMetaClass<AspectWithEntityInstanceWithNestedEntityListProperty>, PropertyContainer<AspectWithEntityInstanceWithNestedEntityListProperty> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -54,25 +56,25 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultEnumeration = new DefaultEnumeration(null, 
-null, 
-null, 
-[new DefaultEntityInstance(null, 
-(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithEntityInstanceWithNestedEntityListProperty',
+    'testProperty',
+    (() => { const defaultEnumeration = new DefaultEnumeration(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
+[new DefaultEntityInstance('ReplacedAspectArtifactInstance',
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
 undefined)
 defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
  return defaultEntityReplacedAspectArtifact; })(),
-undefined)],(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+undefined)],(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
 undefined)
 defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
@@ -99,19 +101,19 @@ return MetaAspectWithEntityInstanceWithNestedEntityListProperty .MODEL_ELEMENT_U
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithEntityInstanceWithNestedEntityListProperty';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithEntityInstanceWithNestedEntityListProperty, any>> {
+getProperties(): Array<StaticProperty<AspectWithEntityInstanceWithNestedEntityListProperty, any>> {
 return [MetaAspectWithEntityInstanceWithNestedEntityListProperty.TEST_PROPERTY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithEntityInstanceWithNestedEntityListProperty, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

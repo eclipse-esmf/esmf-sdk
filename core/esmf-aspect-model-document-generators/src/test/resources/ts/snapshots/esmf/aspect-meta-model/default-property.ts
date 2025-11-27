@@ -14,7 +14,7 @@
 import {Characteristic, DefaultCharacteristic} from './characteristic/default-characteristic';
 import {Base, BaseMetaModelElement} from './base';
 import {Type} from './type';
-import {ModelVisitor} from './visitor/model-visitor';
+import {ModelVisitor} from '../visitor/model-visitor';
 import {DefaultTrait} from './characteristic/default-trait';
 import {Constraint} from './constraint/default-constraint';
 

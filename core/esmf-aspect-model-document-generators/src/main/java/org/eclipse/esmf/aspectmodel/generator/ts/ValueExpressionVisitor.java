@@ -26,7 +26,6 @@ import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.Value;
 import org.eclipse.esmf.metamodel.datatype.LangString;
 import org.eclipse.esmf.metamodel.datatype.SammXsdType;
-import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
@@ -56,7 +55,6 @@ public class ValueExpressionVisitor implements AspectVisitor<String, ValueExpres
       throw new UnsupportedOperationException( "Can't create value expression for model element: " + modelElement );
    }
 
-   // TODO fix it after mapping will be provided
    @Override
    public String visitScalarValue( final ScalarValue value, final Context context ) {
       return generateValueExpression( value, context );
@@ -65,19 +63,16 @@ public class ValueExpressionVisitor implements AspectVisitor<String, ValueExpres
    private String generateValueExpression( final ScalarValue value, final Context context ) {
       final String typeUri = value.getType().as( Scalar.class ).getUrn();
       if ( typeUri.equals( RDF.langString.getURI() ) ) {
-         context.codeGenerationConfig().importTracker().importExplicit( "LangString", "./core/langString" );
+         context.codeGenerationConfig().importTracker()
+               .importLibExplicit( "MultiLanguageText", "instantiator/characteristic/characteristic-instantiator-util" );
          final LangString langStringValue = (LangString) value.as( ScalarValue.class ).getValue();
-         return String.format( "new LangString('%s', '%s')",
+         return String.format( "{ value: '%s', language: '%s' }",
                AspectModelTsUtil.escapeForLiteral( langStringValue.getValue() ),
                langStringValue.getLanguageTag().toLanguageTag() );
       }
       final Resource typeResource = ResourceFactory.createResource( typeUri );
       final Class<?> javaType = SammXsdType.getJavaTypeForMetaModelType( typeResource );
       final String valueExpression = AspectModelTsUtil.createLiteral( value.getValue().toString() );
-      if ( typeResource.equals( SammNs.SAMM.curie() ) ) {
-         context.codeGenerationConfig().importTracker().importExplicit( "Curie", "./core/curie" );
-         return String.format( "new Curie( %s )", valueExpression );
-      }
       return valueInitializer.apply( typeResource, javaType, valueExpression );
    }
 

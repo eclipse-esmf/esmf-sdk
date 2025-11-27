@@ -14,7 +14,7 @@
 import {IsNamed} from './is-named';
 import {IsVersioned} from './is-versioned';
 import {IsDescribed} from './is-described';
-import {ModelVisitor} from './visitor/model-visitor';
+import {ModelVisitor} from '../visitor/model-visitor';
 
 export interface BaseMetaModelElement extends IsNamed, IsVersioned, IsDescribed {
     accept<T, U>(visitor: ModelVisitor<T, U>, context: U): T;

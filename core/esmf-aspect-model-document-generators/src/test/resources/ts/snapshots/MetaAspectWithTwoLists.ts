@@ -13,10 +13,11 @@
 
 
 import { AspectWithTwoLists,} from './AspectWithTwoLists';
-import { DefaultList,DefaultScalar,} from './aspect-meta-model';
-import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
-import { LangString,} from './core/langString';
-import { StaticContainerProperty,} from './core/staticConstraintProperty';
+import { DefaultList,DefaultScalar,} from './esmf/aspect-meta-model';
+import { DefaultScalarValue,} from './esmf/aspect-meta-model/default-scalar-value';
+import { KnownVersion,} from './esmf/shared/known-version';
+import { MultiLanguageText,} from './esmf/instantiator/characteristic/characteristic-instantiator-util';
+import { PropertyContainer,StaticContainerProperty,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
 
 
     
@@ -25,8 +26,10 @@ import { StaticContainerProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithTwoLists (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithTwoLists).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithTwoLists implements StaticMetaClass<AspectWithTwoLists>, PropertyContainer<AspectWithTwoLists> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -43,7 +46,7 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
     
     getPropertyType(): string {
-            return '${codeGenerationConfig.importTracker().getRawContainerType( $propertyType )}';
+            return 'string';
     }
 
     getContainingType(): string {
@@ -54,14 +57,14 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
             return 'AspectWithTwoLists';
         }
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultList = new DefaultList(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithTwoLists',
+    'testProperty',
+    (() => { const defaultList = new DefaultList(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'TestList',
+'TestList',
 undefined,
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
 defaultList.addAspectModelUrn = this.NAMESPACE + 'TestList';
@@ -86,7 +89,7 @@ defaultList.addSeeReference('http:\/\/example.com\/');
 
     
     getPropertyType(): string {
-            return '${codeGenerationConfig.importTracker().getRawContainerType( $propertyType )}';
+            return 'string';
     }
 
     getContainingType(): string {
@@ -97,14 +100,14 @@ defaultList.addSeeReference('http:\/\/example.com\/');
             return 'AspectWithTwoLists';
         }
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultList = new DefaultList(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithTwoLists',
+    'testPropertyTwo',
+    (() => { const defaultList = new DefaultList(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'TestList',
+'TestList',
 undefined,
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
 defaultList.addAspectModelUrn = this.NAMESPACE + 'TestList';
@@ -132,32 +135,32 @@ return MetaAspectWithTwoLists .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithTwoLists';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithTwoLists, any>> {
+getProperties(): Array<StaticProperty<AspectWithTwoLists, any>> {
 return [MetaAspectWithTwoLists.TEST_PROPERTY, MetaAspectWithTwoLists.TEST_PROPERTY_TWO];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithTwoLists, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
         
-    getPreferredNames(): Array<LangString> {
+    getPreferredNames(): Array<MultiLanguageText> {
         return [
-            new LangString('Test Aspect', 'en'),
+            {value: 'Test Aspect', language: 'en'},
         ];
         }
 
         
-        getDescriptions(): Array<LangString> {
+        getDescriptions(): Array<MultiLanguageText> {
         return [
-            new LangString('This is a test description', 'en'),
+            {value: 'This is a test description', language: 'en'},
         ];
         }
 

@@ -13,6 +13,8 @@
 
 
 import { AspectWithOperationWithMultipleSeeAttributes,} from './AspectWithOperationWithMultipleSeeAttributes';
+import { KnownVersion,} from './esmf/shared/known-version';
+import { PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
 
 
     
@@ -21,8 +23,10 @@ import { AspectWithOperationWithMultipleSeeAttributes,} from './AspectWithOperat
 * Generated class MetaAspectWithOperationWithMultipleSeeAttributes (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithOperationWithMultipleSeeAttributes).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithOperationWithMultipleSeeAttributes implements StaticMetaClass<AspectWithOperationWithMultipleSeeAttributes>, PropertyContainer<AspectWithOperationWithMultipleSeeAttributes> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -42,19 +46,19 @@ return MetaAspectWithOperationWithMultipleSeeAttributes .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithOperationWithMultipleSeeAttributes';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithOperationWithMultipleSeeAttributes, any>> {
+getProperties(): Array<StaticProperty<AspectWithOperationWithMultipleSeeAttributes, any>> {
 return [];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithOperationWithMultipleSeeAttributes, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

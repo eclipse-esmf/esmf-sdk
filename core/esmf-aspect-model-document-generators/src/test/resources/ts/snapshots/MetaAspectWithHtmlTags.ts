@@ -15,10 +15,11 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithHtmlTags,} from './AspectWithHtmlTags';
-import { DefaultCharacteristic,DefaultEntity,} from './aspect-meta-model';
-import { DefaultStaticProperty,} from './core/staticConstraintProperty';
-import { LangString,} from './core/langString';
+import { DefaultCharacteristic,DefaultEntity,} from './esmf/aspect-meta-model';
+import { DefaultStaticProperty,PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
+import { KnownVersion,} from './esmf/shared/known-version';
 
+import { MultiLanguageText,} from './esmf/instantiator/characteristic/characteristic-instantiator-util';
 
 
 
@@ -28,8 +29,10 @@ import { LangString,} from './core/langString';
 * Generated class MetaAspectWithHtmlTags (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithHtmlTags).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithHtmlTags implements StaticMetaClass<AspectWithHtmlTags>, PropertyContainer<AspectWithHtmlTags> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -54,17 +57,17 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
-(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithHtmlTags',
+    'testEntity',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifactCharacteristic',
+'ReplacedAspectArtifactCharacteristic',
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
 undefined)
 defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
@@ -91,32 +94,32 @@ return MetaAspectWithHtmlTags .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithHtmlTags';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithHtmlTags, any>> {
+getProperties(): Array<StaticProperty<AspectWithHtmlTags, any>> {
 return [MetaAspectWithHtmlTags.TEST_ENTITY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithHtmlTags, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
         
-    getPreferredNames(): Array<LangString> {
+    getPreferredNames(): Array<MultiLanguageText> {
         return [
-            new LangString('Aspect With <img src=xss.png onerror=alert(\'Boom!\')> Entity', 'en'),
+            {value: 'Aspect With <img src=xss.png onerror=alert(\'Boom!\')> Entity', language: 'en'},
         ];
         }
 
         
-        getDescriptions(): Array<LangString> {
+        getDescriptions(): Array<MultiLanguageText> {
         return [
-            new LangString('Aspect With <p>inside html tag<\/p> Entity', 'en'),
+            {value: 'Aspect With <p>inside html tag<\/p> Entity', language: 'en'},
         ];
         }
 

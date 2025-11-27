@@ -13,7 +13,7 @@
 
 import {Characteristic, DefaultCharacteristic} from './default-characteristic';
 import {Constraint} from '../constraint/default-constraint';
-import {ModelVisitor} from '../visitor/model-visitor';
+import {ModelVisitor} from '../../visitor/model-visitor';
 
 export interface Trait extends Characteristic {
     baseCharacteristic?: Characteristic;

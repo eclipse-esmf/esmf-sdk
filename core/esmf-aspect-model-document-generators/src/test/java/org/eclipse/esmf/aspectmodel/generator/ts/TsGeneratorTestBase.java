@@ -34,6 +34,7 @@ public abstract class TsGeneratorTestBase {
             .executeLibraryMacros( false )
             .packageName( aspect.urn().getNamespaceMainPart() )
             .disablePrettierFormatter( true ) // disable formatting for faster tests
+            .metaModelPackageName( "./esmf" )
             .build();
       final TsGenerator pojoGenerator = new AspectModelTsGenerator( aspect, config );
       return List.of( pojoGenerator );
@@ -46,6 +47,7 @@ public abstract class TsGeneratorTestBase {
             .executeLibraryMacros( false )
             .packageName( aspect.urn().getNamespaceMainPart() )
             .disablePrettierFormatter( true ) // disable formatting for faster tests
+            .metaModelPackageName( "./esmf" )
             .build();
       final TsGenerator staticGenerator = new StaticMetaModelTsGenerator( aspect, config );
       final TsGenerator pojoGenerator = new AspectModelTsGenerator( aspect, config );

@@ -13,7 +13,7 @@
 
 import {IsNamed} from './is-named';
 import {Base} from './base';
-import {ModelVisitor} from './visitor/model-visitor';
+import {ModelVisitor} from '../visitor/model-visitor';
 
 export interface QuantityKind extends IsNamed {
     label: string;

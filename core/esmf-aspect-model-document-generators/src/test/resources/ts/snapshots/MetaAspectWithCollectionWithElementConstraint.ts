@@ -13,12 +13,13 @@
 
 
 import { AspectWithCollectionWithElementConstraint,} from './AspectWithCollectionWithElementConstraint';
-import { BoundDefinition,} from './aspect-meta-model/bound-definition';
-import { DefaultCollection,DefaultMeasurement,DefaultQuantityKind,DefaultRangeConstraint,DefaultScalar,DefaultTrait,} from './aspect-meta-model';
-import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
-import { DefaultUnit,} from './aspect-meta-model/default-unit';
-import { LangString,} from './core/langString';
-import { StaticContainerProperty,} from './core/staticConstraintProperty';
+import { BoundDefinition,} from './esmf/aspect-meta-model/bound-definition';
+import { DefaultCollection,DefaultMeasurement,DefaultQuantityKind,DefaultRangeConstraint,DefaultScalar,DefaultTrait,} from './esmf/aspect-meta-model';
+import { DefaultScalarValue,} from './esmf/aspect-meta-model/default-scalar-value';
+import { DefaultUnit,} from './esmf/aspect-meta-model/default-unit';
+import { KnownVersion,} from './esmf/shared/known-version';
+import { MultiLanguageText,} from './esmf/instantiator/characteristic/characteristic-instantiator-util';
+import { PropertyContainer,StaticContainerProperty,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
 
 
     
@@ -27,8 +28,10 @@ import { StaticContainerProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithCollectionWithElementConstraint (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithCollectionWithElementConstraint).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithCollectionWithElementConstraint implements StaticMetaClass<AspectWithCollectionWithElementConstraint>, PropertyContainer<AspectWithCollectionWithElementConstraint> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -45,7 +48,7 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
     
     getPropertyType(): string {
-            return '${codeGenerationConfig.importTracker().getRawContainerType( $propertyType )}';
+            return 'number';
     }
 
     getContainingType(): string {
@@ -56,84 +59,84 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
             return 'AspectWithCollectionWithElementConstraint';
         }
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCollection = new DefaultCollection(null, 
-null, 
-null, 
-true, false, (() => { const trait = new DefaultTrait(null, 
-null, 
-null, 
-(() => { const defaultMeasurement = new DefaultMeasurement(null, 
-null, 
-null, 
-(() => { const defaultUnit = new DefaultUnit(null, 
-null, 
-null, 
-'m\/s','MTS',undefined,'m\/s',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'phase speed of electromagnetic waves')
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithCollectionWithElementConstraint',
+    'testProperty',
+    (() => { const defaultCollection = new DefaultCollection(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'TestCollection',
+'TestCollection',
+true, false, (() => { const trait = new DefaultTrait(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
+(() => { const defaultMeasurement = new DefaultMeasurement(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'Measurement',
+'Measurement',
+(() => { const defaultUnit = new DefaultUnit(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#metrePerSecond',
+'metrePerSecond',
+'m\/s','MTS',undefined,'m\/s',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#neutronSpeed',
+'neutronSpeed',
+'neutron speed')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'phase velocity')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'phase velocity of electromagnetic waves')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#groupVelocity',
+'groupVelocity',
 'group velocity')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#phaseSpeedOfElectromagneticWaves',
+'phaseSpeedOfElectromagneticWaves',
+'phase speed of electromagnetic waves')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#velocitySpeedOnPropagationOfElectromagneticWavesInVacuo',
+'velocitySpeedOnPropagationOfElectromagneticWavesInVacuo',
 'velocity (speed) on propagation of electromagnetic waves in vacuo')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'velocity')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'(instantaneous) sound particle velocity')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#velocityOfSoundPhaseVelocity',
+'velocityOfSoundPhaseVelocity',
 'velocity of sound (phase velocity)')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'neutron speed')
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#velocity',
+'velocity',
+'velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#phaseVelocityOfElectromagneticWaves',
+'phaseVelocityOfElectromagneticWaves',
+'phase velocity of electromagnetic waves')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#instantaneousSoundParticleVelocity',
+'instantaneousSoundParticleVelocity',
+'(instantaneous) sound particle velocity')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#phaseVelocity',
+'phaseVelocity',
+'phase velocity')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })() ])
 defaultUnit.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#metrePerSecond';
 defaultUnit.addPreferredName('en' , 'metre per second');
  return defaultUnit; })(),new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ))
 defaultMeasurement.addAspectModelUrn = this.NAMESPACE + 'Measurement';
- return defaultMeasurement; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(null, 
-null, 
-null, 
+ return defaultMeasurement; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 BoundDefinition.AT_MOST,BoundDefinition.AT_LEAST,new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),'2.3'),new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),'10.5'),)
 defaultRangeConstraint.isAnonymousNode = true;
  return defaultRangeConstraint; })()])
@@ -165,32 +168,32 @@ return MetaAspectWithCollectionWithElementConstraint .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithCollectionWithElementConstraint';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithCollectionWithElementConstraint, any>> {
+getProperties(): Array<StaticProperty<AspectWithCollectionWithElementConstraint, any>> {
 return [MetaAspectWithCollectionWithElementConstraint.TEST_PROPERTY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithCollectionWithElementConstraint, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
         
-    getPreferredNames(): Array<LangString> {
+    getPreferredNames(): Array<MultiLanguageText> {
         return [
-            new LangString('Test Aspect', 'en'),
+            {value: 'Test Aspect', language: 'en'},
         ];
         }
 
         
-        getDescriptions(): Array<LangString> {
+        getDescriptions(): Array<MultiLanguageText> {
         return [
-            new LangString('This is a test description', 'en'),
+            {value: 'This is a test description', language: 'en'},
         ];
         }
 

@@ -13,8 +13,9 @@
 
 
 import { AspectWithCollectionsWithElementCharacteristicAndSimpleDataType,} from './AspectWithCollectionsWithElementCharacteristicAndSimpleDataType';
-import { DefaultCharacteristic,DefaultCollection,DefaultScalar,} from './aspect-meta-model';
-import { StaticContainerProperty,} from './core/staticConstraintProperty';
+import { DefaultCharacteristic,DefaultCollection,DefaultScalar,} from './esmf/aspect-meta-model';
+import { KnownVersion,} from './esmf/shared/known-version';
+import { PropertyContainer,StaticContainerProperty,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
 
 
     
@@ -23,8 +24,10 @@ import { StaticContainerProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithCollectionsWithElementCharacteristicAndSimpleDataType (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithCollectionsWithElementCharacteristicAndSimpleDataType).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithCollectionsWithElementCharacteristicAndSimpleDataType implements StaticMetaClass<AspectWithCollectionsWithElementCharacteristicAndSimpleDataType>, PropertyContainer<AspectWithCollectionsWithElementCharacteristicAndSimpleDataType> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -41,7 +44,7 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
     
     getPropertyType(): string {
-            return '${codeGenerationConfig.importTracker().getRawContainerType( $propertyType )}';
+            return 'string';
     }
 
     getContainingType(): string {
@@ -52,14 +55,14 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
             return 'AspectWithCollectionsWithElementCharacteristicAndSimpleDataType';
         }
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCollection = new DefaultCollection(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithCollectionsWithElementCharacteristicAndSimpleDataType',
+    'testProperty',
+    (() => { const defaultCollection = new DefaultCollection(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'TestCollection',
+'TestCollection',
 true, false, undefined,
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
 defaultCollection.addAspectModelUrn = this.NAMESPACE + 'TestCollection';
@@ -81,7 +84,7 @@ defaultCollection.addAspectModelUrn = this.NAMESPACE + 'TestCollection';
 
     
     getPropertyType(): string {
-            return '${codeGenerationConfig.importTracker().getRawContainerType( $propertyType )}';
+            return 'string';
     }
 
     getContainingType(): string {
@@ -92,17 +95,17 @@ defaultCollection.addAspectModelUrn = this.NAMESPACE + 'TestCollection';
             return 'AspectWithCollectionsWithElementCharacteristicAndSimpleDataType';
         }
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCollection = new DefaultCollection(null, 
-null, 
-null, 
-true, false, (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithCollectionsWithElementCharacteristicAndSimpleDataType',
+    'testPropertyTwo',
+    (() => { const defaultCollection = new DefaultCollection(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'TestCollectionTwo',
+'TestCollectionTwo',
+true, false, (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.CHARACTERISTIC_NAMESPACE + '#Text',
+'Text',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
 defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Text';
 defaultCharacteristic.addPreferredName('en' , 'Text');
@@ -131,19 +134,19 @@ return MetaAspectWithCollectionsWithElementCharacteristicAndSimpleDataType .MODE
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithCollectionsWithElementCharacteristicAndSimpleDataType';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithCollectionsWithElementCharacteristicAndSimpleDataType, any>> {
+getProperties(): Array<StaticProperty<AspectWithCollectionsWithElementCharacteristicAndSimpleDataType, any>> {
 return [MetaAspectWithCollectionsWithElementCharacteristicAndSimpleDataType.TEST_PROPERTY, MetaAspectWithCollectionsWithElementCharacteristicAndSimpleDataType.TEST_PROPERTY_TWO];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithCollectionsWithElementCharacteristicAndSimpleDataType, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

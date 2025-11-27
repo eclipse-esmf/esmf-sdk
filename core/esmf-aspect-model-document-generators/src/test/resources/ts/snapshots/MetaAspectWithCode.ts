@@ -13,8 +13,9 @@
 
 
 import { AspectWithCode,} from './AspectWithCode';
-import { DefaultCode,DefaultScalar,} from './aspect-meta-model';
-import { DefaultStaticProperty,} from './core/staticConstraintProperty';
+import { DefaultCode,DefaultScalar,} from './esmf/aspect-meta-model';
+import { DefaultStaticProperty,PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
+import { KnownVersion,} from './esmf/shared/known-version';
 
 
     
@@ -23,8 +24,10 @@ import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithCode (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithCode).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithCode implements StaticMetaClass<AspectWithCode>, PropertyContainer<AspectWithCode> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -49,14 +52,14 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCode = new DefaultCode(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithCode',
+    'testProperty',
+    (() => { const defaultCode = new DefaultCode(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'TestCode',
+'TestCode',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ))
 defaultCode.addAspectModelUrn = this.NAMESPACE + 'TestCode';
 defaultCode.addPreferredName('en' , 'Test Code');
@@ -83,19 +86,19 @@ return MetaAspectWithCode .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithCode';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithCode, any>> {
+getProperties(): Array<StaticProperty<AspectWithCode, any>> {
 return [MetaAspectWithCode.TEST_PROPERTY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithCode, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

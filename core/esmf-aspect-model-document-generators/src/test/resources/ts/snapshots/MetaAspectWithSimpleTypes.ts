@@ -13,10 +13,11 @@
 
 
 import { AspectWithSimpleTypes,} from './AspectWithSimpleTypes';
-import { DefaultCharacteristic,DefaultQuantifiable,DefaultQuantityKind,DefaultScalar,} from './aspect-meta-model';
-import { DefaultStaticProperty,StaticUnitProperty,} from './core/staticConstraintProperty';
-import { DefaultUnit,} from './aspect-meta-model/default-unit';
-import { LangString,} from './core/langString';
+import { DefaultCharacteristic,DefaultQuantifiable,DefaultQuantityKind,DefaultScalar,} from './esmf/aspect-meta-model';
+import { DefaultStaticProperty,PropertyContainer,StaticMetaClass,StaticProperty,StaticUnitProperty,} from './esmf/aspect-meta-model/staticProperty';
+import { DefaultUnit,} from './esmf/aspect-meta-model/default-unit';
+import { KnownVersion,} from './esmf/shared/known-version';
+import { MultiLanguageText,} from './esmf/instantiator/characteristic/characteristic-instantiator-util';
 
 
     
@@ -25,8 +26,10 @@ import { LangString,} from './core/langString';
 * Generated class MetaAspectWithSimpleTypes (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithSimpleTypes).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithSimpleTypes implements StaticMetaClass<AspectWithSimpleTypes>, PropertyContainer<AspectWithSimpleTypes> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -51,14 +54,14 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'anyUriProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#anyURI" ))
 defaultCharacteristic.isAnonymousNode = true;
 defaultCharacteristic.addDescription('en' , 'This is an anyURI characteristic.');
@@ -88,14 +91,14 @@ defaultCharacteristic.addDescription('en' , 'This is an anyURI characteristic.')
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'base64BinaryProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#base64Binary" ))
 defaultCharacteristic.isAnonymousNode = true;
 defaultCharacteristic.addDescription('en' , 'This is a base64Binary characteristic.');
@@ -125,14 +128,14 @@ defaultCharacteristic.addDescription('en' , 'This is a base64Binary characterist
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'booleanProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.CHARACTERISTIC_NAMESPACE + '#Boolean',
+'Boolean',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#boolean" ))
 defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Boolean';
 defaultCharacteristic.addPreferredName('en' , 'Boolean');
@@ -163,14 +166,14 @@ defaultCharacteristic.addDescription('en' , 'Represents a boolean value (i.e. a 
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'byteProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#byte" ))
 defaultCharacteristic.isAnonymousNode = true;
 defaultCharacteristic.addDescription('en' , 'This is a byteProperty characteristic.');
@@ -200,14 +203,14 @@ defaultCharacteristic.addDescription('en' , 'This is a byteProperty characterist
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'curieProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.CHARACTERISTIC_NAMESPACE + '#UnitReference',
+'UnitReference',
 new DefaultScalar("urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#curie" ))
 defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#UnitReference';
 defaultCharacteristic.addPreferredName('en' , 'Unit Reference');
@@ -238,14 +241,14 @@ defaultCharacteristic.addDescription('en' , 'Describes a Property containing a r
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'dateProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#date" ))
 defaultCharacteristic.isAnonymousNode = true;
  return defaultCharacteristic; })()
@@ -274,14 +277,14 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'dateTimeProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.CHARACTERISTIC_NAMESPACE + '#Timestamp',
+'Timestamp',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#dateTime" ))
 defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Timestamp';
 defaultCharacteristic.addPreferredName('en' , 'Timestamp');
@@ -312,14 +315,14 @@ defaultCharacteristic.addDescription('en' , 'Describes a Property which contains
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'dateTimeStampProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#dateTimeStamp" ))
 defaultCharacteristic.isAnonymousNode = true;
  return defaultCharacteristic; })()
@@ -348,14 +351,14 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'dayTimeDuration',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#dayTimeDuration" ))
 defaultCharacteristic.isAnonymousNode = true;
  return defaultCharacteristic; })()
@@ -384,14 +387,14 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'decimalProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#decimal" ))
 defaultCharacteristic.isAnonymousNode = true;
  return defaultCharacteristic; })()
@@ -420,14 +423,14 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'doubleProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#double" ))
 defaultCharacteristic.isAnonymousNode = true;
  return defaultCharacteristic; })()
@@ -456,14 +459,14 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'durationProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#duration" ))
 defaultCharacteristic.isAnonymousNode = true;
  return defaultCharacteristic; })()
@@ -492,14 +495,14 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'floatProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ))
 defaultCharacteristic.isAnonymousNode = true;
  return defaultCharacteristic; })()
@@ -528,14 +531,14 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'gDayProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#gDay" ))
 defaultCharacteristic.isAnonymousNode = true;
  return defaultCharacteristic; })()
@@ -564,14 +567,14 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'gMonthDayProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#gMonthDay" ))
 defaultCharacteristic.isAnonymousNode = true;
  return defaultCharacteristic; })()
@@ -600,14 +603,14 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'gMonthProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#gMonth" ))
 defaultCharacteristic.isAnonymousNode = true;
  return defaultCharacteristic; })()
@@ -636,14 +639,14 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'gYearMonthProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#gYearMonth" ))
 defaultCharacteristic.isAnonymousNode = true;
  return defaultCharacteristic; })()
@@ -672,14 +675,14 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'gYearProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#gYear" ))
 defaultCharacteristic.isAnonymousNode = true;
  return defaultCharacteristic; })()
@@ -708,14 +711,14 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'hexBinaryProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#hexBinary" ))
 defaultCharacteristic.isAnonymousNode = true;
  return defaultCharacteristic; })()
@@ -744,14 +747,14 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'intProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ))
 defaultCharacteristic.isAnonymousNode = true;
  return defaultCharacteristic; })()
@@ -780,14 +783,14 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'integerProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer" ))
 defaultCharacteristic.isAnonymousNode = true;
  return defaultCharacteristic; })()
@@ -804,11 +807,11 @@ defaultCharacteristic.isAnonymousNode = true;
 
  public static readonly  LANG_STRING_PROPERTY = 
                 
-        new (class extends DefaultStaticProperty<AspectWithSimpleTypes, LangString>{
+        new (class extends DefaultStaticProperty<AspectWithSimpleTypes, MultiLanguageText>{
 
     
     getPropertyType(): string {
-                return 'LangString';
+                return 'MultiLanguageText';
     }
 
     getContainingType(): string {
@@ -816,14 +819,14 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'langStringProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.CHARACTERISTIC_NAMESPACE + '#MultiLanguageText',
+'MultiLanguageText',
 new DefaultScalar("http://www.w3.org/1999/02/22-rdf-syntax-ns#langString" ))
 defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#MultiLanguageText';
 defaultCharacteristic.addPreferredName('en' , 'Multi-Language Text');
@@ -854,14 +857,14 @@ defaultCharacteristic.addDescription('en' , 'Describes a Property which contains
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'longProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#long" ))
 defaultCharacteristic.isAnonymousNode = true;
  return defaultCharacteristic; })()
@@ -890,14 +893,14 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'negativeIntegerProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#negativeInteger" ))
 defaultCharacteristic.isAnonymousNode = true;
  return defaultCharacteristic; })()
@@ -926,14 +929,14 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'nonNegativeIntegerProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#nonNegativeInteger" ))
 defaultCharacteristic.isAnonymousNode = true;
  return defaultCharacteristic; })()
@@ -962,14 +965,14 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'nonPositiveInteger',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#nonPositiveInteger" ))
 defaultCharacteristic.isAnonymousNode = true;
  return defaultCharacteristic; })()
@@ -998,14 +1001,14 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'positiveIntegerProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#positiveInteger" ))
 defaultCharacteristic.isAnonymousNode = true;
  return defaultCharacteristic; })()
@@ -1034,14 +1037,14 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'shortProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#short" ))
 defaultCharacteristic.isAnonymousNode = true;
  return defaultCharacteristic; })()
@@ -1070,14 +1073,14 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'stringProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.CHARACTERISTIC_NAMESPACE + '#Text',
+'Text',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
 defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Text';
 defaultCharacteristic.addPreferredName('en' , 'Text');
@@ -1108,14 +1111,14 @@ defaultCharacteristic.addDescription('en' , 'Describes a Property which contains
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'timeProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#time" ))
 defaultCharacteristic.isAnonymousNode = true;
  return defaultCharacteristic; })()
@@ -1144,14 +1147,14 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'unsignedByteProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#unsignedByte" ))
 defaultCharacteristic.isAnonymousNode = true;
  return defaultCharacteristic; })()
@@ -1180,14 +1183,14 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'unsignedIntProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#unsignedInt" ))
 defaultCharacteristic.isAnonymousNode = true;
  return defaultCharacteristic; })()
@@ -1216,231 +1219,231 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultQuantifiable = new DefaultQuantifiable(null, 
-null, 
-null, 
-new DefaultScalar("http://www.w3.org/2001/XMLSchema#unsignedLong" ),(() => { const defaultUnit = new DefaultUnit(null, 
-null, 
-null, 
-'m','MTR',undefined,'m',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'(instantaneous) sound particle displacement')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'Bohr radius')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'half-thickness')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'diffusion coefficient for neutron flux density')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'London penetration depth')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'focal distance')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'breadth')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'particle position vector')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'migration length')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'length of path')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'mean free path of phonons or electrons')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'coherence length')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'electron radius')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'thickness')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'mean free path')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'Compton wavelength')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'image distance')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'wavelength')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'distance')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'displacement vector of ion or atom')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'unsignedLongProperty',
+    (() => { const defaultQuantifiable = new DefaultQuantifiable(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#unsignedLong" ),(() => { const defaultUnit = new DefaultUnit(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#metre',
+'metre',
+'m','MTR',undefined,'m',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#fundamentalLatticeVector',
+'fundamentalLatticeVector',
 'fundamental lattice vector')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'slowing-down length')
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#halfThickness',
+'halfThickness',
+'half-thickness')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'half-value thickness')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'diffusion coefficient for neutron fluence rate')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#radiusOfCurvature',
+'radiusOfCurvature',
 'radius of curvature')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'diffusion length')
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#distance',
+'distance',
+'distance')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'object distance')
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#equilibriumPositionVectorOfIonOrAtom',
+'equilibriumPositionVectorOfIonOrAtom',
+'equilibrium position vector of ion or atom')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#slowingDownLength',
+'slowingDownLength',
+'slowing-down length')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#height',
+'height',
 'height')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'nuclear radius')
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#halfValueThickness',
+'halfValueThickness',
+'half-value thickness')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'cartesian coordinates')
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#diffusionCoefficientForNeutronFluenceRate',
+'diffusionCoefficientForNeutronFluenceRate',
+'diffusion coefficient for neutron fluence rate')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'radius')
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#meanFreePathOfPhononsOrElectrons',
+'meanFreePathOfPhononsOrElectrons',
+'mean free path of phonons or electrons')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'diameter')
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#bohrRadius',
+'bohrRadius',
+'Bohr radius')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'length')
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#instantaneousSoundParticleDisplacement',
+'instantaneousSoundParticleDisplacement',
+'(instantaneous) sound particle displacement')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#electronRadius',
+'electronRadius',
+'electron radius')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#lengthOfPath',
+'lengthOfPath',
+'length of path')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#coherenceLength',
+'coherenceLength',
+'coherence length')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#diffusionCoefficientForNeutronFluxDensity',
+'diffusionCoefficientForNeutronFluxDensity',
+'diffusion coefficient for neutron flux density')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#migrationLength',
+'migrationLength',
+'migration length')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#meanLinearRange',
+'meanLinearRange',
 'mean linear range')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#radius',
+'radius',
+'radius')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#displacementVectorOfIonOrAtom',
+'displacementVectorOfIonOrAtom',
+'displacement vector of ion or atom')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#latticeVector',
+'latticeVector',
 'lattice vector')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'equilibrium position vector of ion or atom')
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#meanFreePath',
+'meanFreePath',
+'mean free path')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#length',
+'length',
+'length')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#breadth',
+'breadth',
+'breadth')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#londonPenetrationDepth',
+'londonPenetrationDepth',
+'London penetration depth')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#nuclearRadius',
+'nuclearRadius',
+'nuclear radius')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#comptonWavelength',
+'comptonWavelength',
+'Compton wavelength')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#particlePositionVector',
+'particlePositionVector',
+'particle position vector')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#diffusionLength',
+'diffusionLength',
+'diffusion length')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#focalDistance',
+'focalDistance',
+'focal distance')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#cartesianCoordinates',
+'cartesianCoordinates',
+'cartesian coordinates')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#thickness',
+'thickness',
+'thickness')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#wavelength',
+'wavelength',
+'wavelength')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#diameter',
+'diameter',
+'diameter')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#imageDistance',
+'imageDistance',
+'image distance')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#objectDistance',
+'objectDistance',
+'object distance')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })() ])
 defaultUnit.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#metre';
@@ -1473,14 +1476,14 @@ defaultQuantifiable.isAnonymousNode = true;
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'unsignedShortProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#unsignedShort" ))
 defaultCharacteristic.isAnonymousNode = true;
  return defaultCharacteristic; })()
@@ -1509,14 +1512,14 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimpleTypes',
+    'yearMonthDurationProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#yearMonthDuration" ))
 defaultCharacteristic.isAnonymousNode = true;
  return defaultCharacteristic; })()
@@ -1540,19 +1543,19 @@ return MetaAspectWithSimpleTypes .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithSimpleTypes';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithSimpleTypes, any>> {
+getProperties(): Array<StaticProperty<AspectWithSimpleTypes, any>> {
 return [MetaAspectWithSimpleTypes.ANY_URI_PROPERTY, MetaAspectWithSimpleTypes.BASE64_BINARY_PROPERTY, MetaAspectWithSimpleTypes.BOOLEAN_PROPERTY, MetaAspectWithSimpleTypes.BYTE_PROPERTY, MetaAspectWithSimpleTypes.CURIE_PROPERTY, MetaAspectWithSimpleTypes.DATE_PROPERTY, MetaAspectWithSimpleTypes.DATE_TIME_PROPERTY, MetaAspectWithSimpleTypes.DATE_TIME_STAMP_PROPERTY, MetaAspectWithSimpleTypes.DAY_TIME_DURATION, MetaAspectWithSimpleTypes.DECIMAL_PROPERTY, MetaAspectWithSimpleTypes.DOUBLE_PROPERTY, MetaAspectWithSimpleTypes.DURATION_PROPERTY, MetaAspectWithSimpleTypes.FLOAT_PROPERTY, MetaAspectWithSimpleTypes.G_DAY_PROPERTY, MetaAspectWithSimpleTypes.G_MONTH_DAY_PROPERTY, MetaAspectWithSimpleTypes.G_MONTH_PROPERTY, MetaAspectWithSimpleTypes.G_YEAR_MONTH_PROPERTY, MetaAspectWithSimpleTypes.G_YEAR_PROPERTY, MetaAspectWithSimpleTypes.HEX_BINARY_PROPERTY, MetaAspectWithSimpleTypes.INT_PROPERTY, MetaAspectWithSimpleTypes.INTEGER_PROPERTY, MetaAspectWithSimpleTypes.LANG_STRING_PROPERTY, MetaAspectWithSimpleTypes.LONG_PROPERTY, MetaAspectWithSimpleTypes.NEGATIVE_INTEGER_PROPERTY, MetaAspectWithSimpleTypes.NON_NEGATIVE_INTEGER_PROPERTY, MetaAspectWithSimpleTypes.NON_POSITIVE_INTEGER, MetaAspectWithSimpleTypes.POSITIVE_INTEGER_PROPERTY, MetaAspectWithSimpleTypes.SHORT_PROPERTY, MetaAspectWithSimpleTypes.STRING_PROPERTY, MetaAspectWithSimpleTypes.TIME_PROPERTY, MetaAspectWithSimpleTypes.UNSIGNED_BYTE_PROPERTY, MetaAspectWithSimpleTypes.UNSIGNED_INT_PROPERTY, MetaAspectWithSimpleTypes.UNSIGNED_LONG_PROPERTY, MetaAspectWithSimpleTypes.UNSIGNED_SHORT_PROPERTY, MetaAspectWithSimpleTypes.YEAR_MONTH_DURATION_PROPERTY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithSimpleTypes, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

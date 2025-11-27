@@ -13,8 +13,9 @@
 
 
 import { AspectWithListWithLengthConstraint,} from './AspectWithListWithLengthConstraint';
-import { DefaultLengthConstraint,DefaultList,DefaultScalar,DefaultTrait,} from './aspect-meta-model';
-import { StaticContainerProperty,} from './core/staticConstraintProperty';
+import { DefaultLengthConstraint,DefaultList,DefaultScalar,DefaultTrait,} from './esmf/aspect-meta-model';
+import { KnownVersion,} from './esmf/shared/known-version';
+import { PropertyContainer,StaticContainerProperty,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
 
 
     
@@ -23,8 +24,10 @@ import { StaticContainerProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithListWithLengthConstraint (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithListWithLengthConstraint).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithListWithLengthConstraint implements StaticMetaClass<AspectWithListWithLengthConstraint>, PropertyContainer<AspectWithListWithLengthConstraint> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -41,7 +44,7 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
     
     getPropertyType(): string {
-            return '${codeGenerationConfig.importTracker().getRawContainerType( $propertyType )}';
+            return 'string';
     }
 
     getContainingType(): string {
@@ -52,23 +55,23 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
             return 'AspectWithListWithLengthConstraint';
         }
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const trait = new DefaultTrait(null, 
-null, 
-null, 
-(() => { const defaultList = new DefaultList(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithListWithLengthConstraint',
+    'testPropertyCollectionLengthConstraint',
+    (() => { const trait = new DefaultTrait(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'TestLengthConstraintWithCollection',
+'TestLengthConstraintWithCollection',
+(() => { const defaultList = new DefaultList(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 undefined,
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#nonNegativeInteger" ))
 defaultList.isAnonymousNode = true;
- return defaultList; })(),[(() => { const lengthConstraint = new DefaultLengthConstraint(null, 
-null, 
-null, 
+ return defaultList; })(),[(() => { const lengthConstraint = new DefaultLengthConstraint(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 1,1,)
 lengthConstraint.isAnonymousNode = true;
  return lengthConstraint; })()])
@@ -96,19 +99,19 @@ return MetaAspectWithListWithLengthConstraint .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithListWithLengthConstraint';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithListWithLengthConstraint, any>> {
+getProperties(): Array<StaticProperty<AspectWithListWithLengthConstraint, any>> {
 return [MetaAspectWithListWithLengthConstraint.TEST_PROPERTY_COLLECTION_LENGTH_CONSTRAINT];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithListWithLengthConstraint, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

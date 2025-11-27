@@ -14,11 +14,12 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithEnumOnlyOneSee,} from './AspectWithEnumOnlyOneSee';
-import { DefaultEnumeration,DefaultScalar,} from './aspect-meta-model';
-import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
-import { DefaultStaticProperty,} from './core/staticConstraintProperty';
+import { DefaultEnumeration,DefaultScalar,} from './esmf/aspect-meta-model';
+import { DefaultScalarValue,} from './esmf/aspect-meta-model/default-scalar-value';
+import { DefaultStaticProperty,PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
 
 
+import { KnownVersion,} from './esmf/shared/known-version';
 
 
     
@@ -27,8 +28,10 @@ import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithEnumOnlyOneSee (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEnumOnlyOneSee).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithEnumOnlyOneSee implements StaticMetaClass<AspectWithEnumOnlyOneSee>, PropertyContainer<AspectWithEnumOnlyOneSee> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -53,14 +56,14 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultEnumeration = new DefaultEnumeration(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithEnumOnlyOneSee',
+    'prop1',
+    (() => { const defaultEnumeration = new DefaultEnumeration(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 [new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'a'),
 new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'b')],new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
 defaultEnumeration.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
@@ -90,14 +93,14 @@ defaultEnumeration.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact'
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultEnumeration = new DefaultEnumeration(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithEnumOnlyOneSee',
+    'prop2',
+    (() => { const defaultEnumeration = new DefaultEnumeration(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 [new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'1'),
 new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'2')],new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
 defaultEnumeration.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
@@ -123,19 +126,19 @@ return MetaAspectWithEnumOnlyOneSee .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithEnumOnlyOneSee';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithEnumOnlyOneSee, any>> {
+getProperties(): Array<StaticProperty<AspectWithEnumOnlyOneSee, any>> {
 return [MetaAspectWithEnumOnlyOneSee.PROP1, MetaAspectWithEnumOnlyOneSee.PROP2];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithEnumOnlyOneSee, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

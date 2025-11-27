@@ -15,11 +15,11 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithEntityEnumerationAndLangString,} from './AspectWithEntityEnumerationAndLangString';
-import { DefaultEntity,DefaultEnumeration,} from './aspect-meta-model';
-import { DefaultEntityInstance,} from './aspect-meta-model/default-entity-instance';
-import { DefaultStaticProperty,} from './core/staticConstraintProperty';
-import { LangString,} from './core/langString';
+import { DefaultEntity,DefaultEntityInstance,DefaultEnumeration,} from './esmf/aspect-meta-model';
+import { DefaultStaticProperty,PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
+import { KnownVersion,} from './esmf/shared/known-version';
 
+import { MultiLanguageText,} from './esmf/instantiator/characteristic/characteristic-instantiator-util';
 
 
 
@@ -29,8 +29,10 @@ import { LangString,} from './core/langString';
 * Generated class MetaAspectWithEntityEnumerationAndLangString (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEntityEnumerationAndLangString).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithEntityEnumerationAndLangString implements StaticMetaClass<AspectWithEntityEnumerationAndLangString>, PropertyContainer<AspectWithEntityEnumerationAndLangString> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -55,27 +57,27 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultEnumeration = new DefaultEnumeration(null, 
-null, 
-null, 
-[new DefaultEntityInstance(null, 
-(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithEntityEnumerationAndLangString',
+    'testProperty',
+    (() => { const defaultEnumeration = new DefaultEnumeration(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
+[new DefaultEntityInstance('entityInstance',
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
 undefined)
 defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
 defaultEntityReplacedAspectArtifact.addPreferredName('en' , 'Test Entity');
 defaultEntityReplacedAspectArtifact.addDescription('en' , 'This is a test entity');
  return defaultEntityReplacedAspectArtifact; })(),
-undefined)],(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+undefined)],(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
 undefined)
 defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
@@ -107,32 +109,32 @@ return MetaAspectWithEntityEnumerationAndLangString .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithEntityEnumerationAndLangString';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithEntityEnumerationAndLangString, any>> {
+getProperties(): Array<StaticProperty<AspectWithEntityEnumerationAndLangString, any>> {
 return [MetaAspectWithEntityEnumerationAndLangString.TEST_PROPERTY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithEntityEnumerationAndLangString, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
         
-    getPreferredNames(): Array<LangString> {
+    getPreferredNames(): Array<MultiLanguageText> {
         return [
-            new LangString('Test Aspect', 'en'),
+            {value: 'Test Aspect', language: 'en'},
         ];
         }
 
         
-        getDescriptions(): Array<LangString> {
+        getDescriptions(): Array<MultiLanguageText> {
         return [
-            new LangString('This is a test description', 'en'),
+            {value: 'This is a test description', language: 'en'},
         ];
         }
 

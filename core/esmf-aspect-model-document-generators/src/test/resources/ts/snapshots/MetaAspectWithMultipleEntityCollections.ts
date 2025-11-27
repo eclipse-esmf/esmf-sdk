@@ -15,9 +15,10 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithMultipleEntityCollections,} from './AspectWithMultipleEntityCollections';
-import { DefaultEntity,DefaultList,} from './aspect-meta-model';
+import { DefaultEntity,DefaultList,} from './esmf/aspect-meta-model';
+import { KnownVersion,} from './esmf/shared/known-version';
 
-import { StaticContainerProperty,} from './core/staticConstraintProperty';
+import { PropertyContainer,StaticContainerProperty,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
 
 
 
@@ -27,8 +28,10 @@ import { StaticContainerProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithMultipleEntityCollections (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithMultipleEntityCollections).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithMultipleEntityCollections implements StaticMetaClass<AspectWithMultipleEntityCollections>, PropertyContainer<AspectWithMultipleEntityCollections> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -45,7 +48,7 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
     
     getPropertyType(): string {
-            return '${codeGenerationConfig.importTracker().getRawContainerType( $propertyType )}';
+            return 'ReplacedAspectArtifact';
     }
 
     getContainingType(): string {
@@ -56,18 +59,18 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
             return 'AspectWithMultipleEntityCollections';
         }
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultList = new DefaultList(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithMultipleEntityCollections',
+    'testListOne',
+    (() => { const defaultList = new DefaultList(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'EntityList',
+'EntityList',
 undefined,
-(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
 undefined)
 defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
@@ -91,7 +94,7 @@ defaultList.addAspectModelUrn = this.NAMESPACE + 'EntityList';
 
     
     getPropertyType(): string {
-            return '${codeGenerationConfig.importTracker().getRawContainerType( $propertyType )}';
+            return 'ReplacedAspectArtifact';
     }
 
     getContainingType(): string {
@@ -102,18 +105,18 @@ defaultList.addAspectModelUrn = this.NAMESPACE + 'EntityList';
             return 'AspectWithMultipleEntityCollections';
         }
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultList = new DefaultList(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithMultipleEntityCollections',
+    'testListTwo',
+    (() => { const defaultList = new DefaultList(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'EntityList',
+'EntityList',
 undefined,
-(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
 undefined)
 defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
@@ -140,19 +143,19 @@ return MetaAspectWithMultipleEntityCollections .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithMultipleEntityCollections';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithMultipleEntityCollections, any>> {
+getProperties(): Array<StaticProperty<AspectWithMultipleEntityCollections, any>> {
 return [MetaAspectWithMultipleEntityCollections.TEST_LIST_ONE, MetaAspectWithMultipleEntityCollections.TEST_LIST_TWO];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithMultipleEntityCollections, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

@@ -15,10 +15,11 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithValidAnnotationTest,} from './AspectWithValidAnnotationTest';
-import { DefaultCharacteristic,DefaultCollection,DefaultEntity,DefaultScalar,DefaultSingleEntity,} from './aspect-meta-model';
-import { DefaultStaticProperty,StaticContainerProperty,} from './core/staticConstraintProperty';
-import { LangString,} from './core/langString';
+import { DefaultCharacteristic,DefaultCollection,DefaultEntity,DefaultScalar,DefaultSingleEntity,} from './esmf/aspect-meta-model';
+import { DefaultStaticProperty,PropertyContainer,StaticContainerProperty,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
+import { KnownVersion,} from './esmf/shared/known-version';
 
+import { MultiLanguageText,} from './esmf/instantiator/characteristic/characteristic-instantiator-util';
 
 
 
@@ -28,8 +29,10 @@ import { LangString,} from './core/langString';
 * Generated class MetaAspectWithValidAnnotationTest (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithValidAnnotationTest).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithValidAnnotationTest implements StaticMetaClass<AspectWithValidAnnotationTest>, PropertyContainer<AspectWithValidAnnotationTest> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -54,17 +57,17 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultSingleEntity = new DefaultSingleEntity(null, 
-null, 
-null, 
-(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithValidAnnotationTest',
+    'entity',
+    (() => { const defaultSingleEntity = new DefaultSingleEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'EntityCharacteristic',
+'EntityCharacteristic',
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
 undefined)
 defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
@@ -90,7 +93,7 @@ defaultSingleEntity.addPreferredName('en' , 'Test Entity Characteristic');
 
     
     getPropertyType(): string {
-            return '${codeGenerationConfig.importTracker().getRawContainerType( $propertyType )}';
+            return 'ReplacedAspectArtifact';
     }
 
     getContainingType(): string {
@@ -101,18 +104,18 @@ defaultSingleEntity.addPreferredName('en' , 'Test Entity Characteristic');
             return 'AspectWithValidAnnotationTest';
         }
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCollection = new DefaultCollection(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithValidAnnotationTest',
+    'collectionEntity',
+    (() => { const defaultCollection = new DefaultCollection(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'TestCollection',
+'TestCollection',
 true, false, undefined,
-(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
 undefined)
 defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
@@ -138,7 +141,7 @@ defaultCollection.addPreferredName('en' , 'Test Collection');
 
     
     getPropertyType(): string {
-            return '${codeGenerationConfig.importTracker().getRawContainerType( $propertyType )}';
+            return 'ReplacedAspectArtifact';
     }
 
     getContainingType(): string {
@@ -149,17 +152,17 @@ defaultCollection.addPreferredName('en' , 'Test Collection');
             return 'AspectWithValidAnnotationTest';
         }
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultSingleEntity = new DefaultSingleEntity(null, 
-null, 
-null, 
-(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithValidAnnotationTest',
+    'optionalEntity',
+    (() => { const defaultSingleEntity = new DefaultSingleEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'EntityCharacteristic',
+'EntityCharacteristic',
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
 undefined)
 defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
@@ -193,14 +196,14 @@ defaultSingleEntity.addPreferredName('en' , 'Test Entity Characteristic');
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithValidAnnotationTest',
+    'testProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.CHARACTERISTIC_NAMESPACE + '#Text',
+'Text',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
 defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Text';
 defaultCharacteristic.addPreferredName('en' , 'Text');
@@ -223,7 +226,7 @@ defaultCharacteristic.addDescription('en' , 'Describes a Property which contains
 
     
     getPropertyType(): string {
-            return '${codeGenerationConfig.importTracker().getRawContainerType( $propertyType )}';
+            return 'string';
     }
 
     getContainingType(): string {
@@ -234,14 +237,14 @@ defaultCharacteristic.addDescription('en' , 'Describes a Property which contains
             return 'AspectWithValidAnnotationTest';
         }
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCollection = new DefaultCollection(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithValidAnnotationTest',
+    'collectionTestProperty',
+    (() => { const defaultCollection = new DefaultCollection(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 true, false, undefined,
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
 defaultCollection.isAnonymousNode = true;
@@ -264,7 +267,7 @@ defaultCollection.addPreferredName('en' , 'Collection Test Property');
 
     
     getPropertyType(): string {
-            return '${codeGenerationConfig.importTracker().getRawContainerType( $propertyType )}';
+            return 'string';
     }
 
     getContainingType(): string {
@@ -275,14 +278,14 @@ defaultCollection.addPreferredName('en' , 'Collection Test Property');
             return 'AspectWithValidAnnotationTest';
         }
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithValidAnnotationTest',
+    'optionalTestProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.CHARACTERISTIC_NAMESPACE + '#Text',
+'Text',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
 defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Text';
 defaultCharacteristic.addPreferredName('en' , 'Text');
@@ -308,32 +311,32 @@ return MetaAspectWithValidAnnotationTest .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithValidAnnotationTest';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithValidAnnotationTest, any>> {
+getProperties(): Array<StaticProperty<AspectWithValidAnnotationTest, any>> {
 return [MetaAspectWithValidAnnotationTest.ENTITY, MetaAspectWithValidAnnotationTest.COLLECTION_ENTITY, MetaAspectWithValidAnnotationTest.OPTIONAL_ENTITY, MetaAspectWithValidAnnotationTest.TEST_PROPERTY, MetaAspectWithValidAnnotationTest.COLLECTION_TEST_PROPERTY, MetaAspectWithValidAnnotationTest.OPTIONAL_TEST_PROPERTY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithValidAnnotationTest, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
         
-    getPreferredNames(): Array<LangString> {
+    getPreferredNames(): Array<MultiLanguageText> {
         return [
-            new LangString('Aspect with Valid Annotation Test', 'en'),
+            {value: 'Aspect with Valid Annotation Test', language: 'en'},
         ];
         }
 
         
-        getDescriptions(): Array<LangString> {
+        getDescriptions(): Array<MultiLanguageText> {
         return [
-            new LangString('This aspect is used to test the @Valid annotation rules.', 'en'),
+            {value: 'This aspect is used to test the @Valid annotation rules.', language: 'en'},
         ];
         }
 

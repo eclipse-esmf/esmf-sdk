@@ -6,10 +6,10 @@
 */
 
 
-import { LangString,} from './core/langString';
+import { MultiLanguageText,} from './esmf/instantiator/characteristic/characteristic-instantiator-util';
 
         export class AspectWithMultilanguageExampleValue {
     // NotNull
-    prop: LangString;
+    prop: MultiLanguageText;
 }
 

@@ -6,7 +6,7 @@
 */
 
 
-import { LangString,} from './core/langString';
+import { MultiLanguageText,} from './esmf/instantiator/characteristic/characteristic-instantiator-util';
 
         export class AspectWithSimpleTypes {
     // NotNull
@@ -52,7 +52,7 @@ import { LangString,} from './core/langString';
     // NotNull
     integerProperty: string;
     // NotNull
-    langStringProperty: LangString;
+    langStringProperty: MultiLanguageText;
     // NotNull
     longProperty: number;
     // NotNull

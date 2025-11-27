@@ -15,9 +15,10 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithOptionalPropertiesWithEntity,} from './AspectWithOptionalPropertiesWithEntity';
-import { DefaultCharacteristic,DefaultEntity,DefaultScalar,} from './aspect-meta-model';
-import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
-import { DefaultStaticProperty,StaticContainerProperty,} from './core/staticConstraintProperty';
+import { DefaultCharacteristic,DefaultEntity,DefaultScalar,} from './esmf/aspect-meta-model';
+import { DefaultScalarValue,} from './esmf/aspect-meta-model/default-scalar-value';
+import { DefaultStaticProperty,PropertyContainer,StaticContainerProperty,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
+import { KnownVersion,} from './esmf/shared/known-version';
 
 
 
@@ -28,8 +29,10 @@ import { DefaultStaticProperty,StaticContainerProperty,} from './core/staticCons
 * Generated class MetaAspectWithOptionalPropertiesWithEntity (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithOptionalPropertiesWithEntity).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithOptionalPropertiesWithEntity implements StaticMetaClass<AspectWithOptionalPropertiesWithEntity>, PropertyContainer<AspectWithOptionalPropertiesWithEntity> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -54,14 +57,14 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithOptionalPropertiesWithEntity',
+    'testString',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.CHARACTERISTIC_NAMESPACE + '#Text',
+'Text',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
 defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Text';
 defaultCharacteristic.addPreferredName('en' , 'Text');
@@ -84,7 +87,7 @@ defaultCharacteristic.addDescription('en' , 'Describes a Property which contains
 
     
     getPropertyType(): string {
-            return '${codeGenerationConfig.importTracker().getRawContainerType( $propertyType )}';
+            return 'string';
     }
 
     getContainingType(): string {
@@ -95,14 +98,14 @@ defaultCharacteristic.addDescription('en' , 'Describes a Property which contains
             return 'AspectWithOptionalPropertiesWithEntity';
         }
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithOptionalPropertiesWithEntity',
+    'testOptionalString',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.CHARACTERISTIC_NAMESPACE + '#Text',
+'Text',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
 defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Text';
 defaultCharacteristic.addPreferredName('en' , 'Text');
@@ -125,7 +128,7 @@ defaultCharacteristic.addDescription('en' , 'Describes a Property which contains
 
     
     getPropertyType(): string {
-            return '${codeGenerationConfig.importTracker().getRawContainerType( $propertyType )}';
+            return 'ReplacedAspectArtifact';
     }
 
     getContainingType(): string {
@@ -136,17 +139,17 @@ defaultCharacteristic.addDescription('en' , 'Describes a Property which contains
             return 'AspectWithOptionalPropertiesWithEntity';
         }
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
-(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithOptionalPropertiesWithEntity',
+    'testOptionalEntity',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifactCharacteristic',
+'ReplacedAspectArtifactCharacteristic',
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
 undefined)
 defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
@@ -173,19 +176,19 @@ return MetaAspectWithOptionalPropertiesWithEntity .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithOptionalPropertiesWithEntity';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithOptionalPropertiesWithEntity, any>> {
+getProperties(): Array<StaticProperty<AspectWithOptionalPropertiesWithEntity, any>> {
 return [MetaAspectWithOptionalPropertiesWithEntity.TEST_STRING, MetaAspectWithOptionalPropertiesWithEntity.TEST_OPTIONAL_STRING, MetaAspectWithOptionalPropertiesWithEntity.TEST_OPTIONAL_ENTITY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithOptionalPropertiesWithEntity, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

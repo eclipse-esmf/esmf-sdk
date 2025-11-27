@@ -13,10 +13,11 @@
 
 
 import { AspectWithRangeConstraintWithoutMinMaxDoubleValue,} from './AspectWithRangeConstraintWithoutMinMaxDoubleValue';
-import { BoundDefinition,} from './aspect-meta-model/bound-definition';
-import { DefaultCharacteristic,DefaultRangeConstraint,DefaultScalar,DefaultTrait,} from './aspect-meta-model';
-import { DefaultStaticProperty,} from './core/staticConstraintProperty';
-import { LangString,} from './core/langString';
+import { BoundDefinition,} from './esmf/aspect-meta-model/bound-definition';
+import { DefaultCharacteristic,DefaultRangeConstraint,DefaultScalar,DefaultTrait,} from './esmf/aspect-meta-model';
+import { DefaultStaticProperty,PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
+import { KnownVersion,} from './esmf/shared/known-version';
+import { MultiLanguageText,} from './esmf/instantiator/characteristic/characteristic-instantiator-util';
 
 
     
@@ -25,8 +26,10 @@ import { LangString,} from './core/langString';
 * Generated class MetaAspectWithRangeConstraintWithoutMinMaxDoubleValue (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithRangeConstraintWithoutMinMaxDoubleValue).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithRangeConstraintWithoutMinMaxDoubleValue implements StaticMetaClass<AspectWithRangeConstraintWithoutMinMaxDoubleValue>, PropertyContainer<AspectWithRangeConstraintWithoutMinMaxDoubleValue> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -51,25 +54,25 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const trait = new DefaultTrait(null, 
-null, 
-null, 
-(() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithRangeConstraintWithoutMinMaxDoubleValue',
+    'doubleProperty',
+    (() => { const trait = new DefaultTrait(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'TestRangeConstraint',
+'TestRangeConstraint',
+(() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'DoubleCharacteristic',
+'DoubleCharacteristic',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#double" ))
 defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'DoubleCharacteristic';
 defaultCharacteristic.addPreferredName('de' , 'Numerische Charakteristik');
 defaultCharacteristic.addPreferredName('en' , 'Double Characteristic');
 defaultCharacteristic.addDescription('de' , 'Positive Zahlen');
- return defaultCharacteristic; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(null, 
-null, 
-null, 
+ return defaultCharacteristic; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 BoundDefinition.OPEN,BoundDefinition.OPEN,undefined,undefined,)
 defaultRangeConstraint.isAnonymousNode = true;
  return defaultRangeConstraint; })()])
@@ -99,26 +102,26 @@ return MetaAspectWithRangeConstraintWithoutMinMaxDoubleValue .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithRangeConstraintWithoutMinMaxDoubleValue';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithRangeConstraintWithoutMinMaxDoubleValue, any>> {
+getProperties(): Array<StaticProperty<AspectWithRangeConstraintWithoutMinMaxDoubleValue, any>> {
 return [MetaAspectWithRangeConstraintWithoutMinMaxDoubleValue.DOUBLE_PROPERTY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithRangeConstraintWithoutMinMaxDoubleValue, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
         
-    getPreferredNames(): Array<LangString> {
+    getPreferredNames(): Array<MultiLanguageText> {
         return [
-            new LangString('Test Aspect', 'en'),
-            new LangString('Test Aspekt', 'de'),
+            {value: 'Test Aspect', language: 'en'},
+            {value: 'Test Aspekt', language: 'de'},
         ];
         }
 

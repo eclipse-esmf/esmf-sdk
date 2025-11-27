@@ -17,7 +17,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
 
 public class ImportTracker {
 
@@ -28,11 +31,33 @@ public class ImportTracker {
    private static final String TYPE_BRACKETS_AND_WHITESPACE = "[<>\\s]";
    private static final String DEFAULT_PATH = "./";
 
-   private final Map<String, QualifiedName> usedImports = new HashMap<>();
+   private final Map<String, QualifiedName> usedImports;
+   private final String defaultDependencyPath;
+
+   public ImportTracker() {
+      usedImports = new HashMap<>();
+      this.defaultDependencyPath = DEFAULT_PATH;
+   }
+
+   public ImportTracker( String defaultDependencyPath ) {
+      usedImports = new HashMap<>();
+      this.defaultDependencyPath = Optional.ofNullable( defaultDependencyPath )
+            .filter( StringUtils::isNotBlank )
+            .map( defaultPath -> defaultPath.endsWith( "/" ) ? defaultPath : defaultPath + "/" )
+            .orElse( DEFAULT_PATH );
+   }
+
+
 
    public void importExplicit( final String fileName, final String path ) {
       if ( !usedImports.containsKey( fileName ) ) {
          usedImports.putIfAbsent( fileName, new QualifiedName( fileName, path ) );
+      }
+   }
+
+   public void importLibExplicit( final String fileName, final String path ) {
+      if ( !usedImports.containsKey( fileName ) ) {
+         usedImports.putIfAbsent( fileName, new QualifiedName( fileName, defaultDependencyPath + path ) );
       }
    }
 
@@ -72,6 +97,20 @@ public class ImportTracker {
             } )
             .sorted()
             .toList();
+   }
+
+   /**
+    * Extracts and tracks the container type without any type parameters.
+    *
+    * @param parameterizedContainerType the fully qualified class name including type parameters
+    * @return the raw container type
+    */
+   public String getRawContainerType( final String parameterizedContainerType ) {
+      trackPotentiallyParameterizedType( parameterizedContainerType );
+      if ( parameterizedContainerType.contains( ARRAY ) ) {
+         return parameterizedContainerType.replace( ARRAY, EMPTY_STRING );
+      }
+      return parameterizedContainerType;
    }
 
    public void clear() {

@@ -15,8 +15,9 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithRecursivePropertyWithOptionalAndEntityProperty,} from './AspectWithRecursivePropertyWithOptionalAndEntityProperty';
-import { DefaultEntity,DefaultSingleEntity,} from './aspect-meta-model';
-import { DefaultStaticProperty,} from './core/staticConstraintProperty';
+import { DefaultEntity,DefaultSingleEntity,} from './esmf/aspect-meta-model';
+import { DefaultStaticProperty,PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
+import { KnownVersion,} from './esmf/shared/known-version';
 
 
 
@@ -27,8 +28,10 @@ import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithRecursivePropertyWithOptionalAndEntityProperty (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithRecursivePropertyWithOptionalAndEntityProperty).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithRecursivePropertyWithOptionalAndEntityProperty implements StaticMetaClass<AspectWithRecursivePropertyWithOptionalAndEntityProperty>, PropertyContainer<AspectWithRecursivePropertyWithOptionalAndEntityProperty> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -53,17 +56,17 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultSingleEntity = new DefaultSingleEntity(null, 
-null, 
-null, 
-(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithRecursivePropertyWithOptionalAndEntityProperty',
+    'testProperty',
+    (() => { const defaultSingleEntity = new DefaultSingleEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'TestItemCharacteristic',
+'TestItemCharacteristic',
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
 undefined)
 defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
@@ -90,19 +93,19 @@ return MetaAspectWithRecursivePropertyWithOptionalAndEntityProperty .MODEL_ELEME
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithRecursivePropertyWithOptionalAndEntityProperty';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithRecursivePropertyWithOptionalAndEntityProperty, any>> {
+getProperties(): Array<StaticProperty<AspectWithRecursivePropertyWithOptionalAndEntityProperty, any>> {
 return [MetaAspectWithRecursivePropertyWithOptionalAndEntityProperty.TEST_PROPERTY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithRecursivePropertyWithOptionalAndEntityProperty, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

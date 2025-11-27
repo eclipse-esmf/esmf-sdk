@@ -13,9 +13,10 @@
 
 
 import { AspectWithOptionalProperties,} from './AspectWithOptionalProperties';
-import { DefaultCharacteristic,DefaultQuantifiable,DefaultQuantityKind,DefaultScalar,} from './aspect-meta-model';
-import { DefaultStaticProperty,StaticContainerProperty,} from './core/staticConstraintProperty';
-import { DefaultUnit,} from './aspect-meta-model/default-unit';
+import { DefaultCharacteristic,DefaultQuantifiable,DefaultQuantityKind,DefaultScalar,} from './esmf/aspect-meta-model';
+import { DefaultStaticProperty,PropertyContainer,StaticContainerProperty,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
+import { DefaultUnit,} from './esmf/aspect-meta-model/default-unit';
+import { KnownVersion,} from './esmf/shared/known-version';
 
 
     
@@ -24,8 +25,10 @@ import { DefaultUnit,} from './aspect-meta-model/default-unit';
 * Generated class MetaAspectWithOptionalProperties (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithOptionalProperties).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithOptionalProperties implements StaticMetaClass<AspectWithOptionalProperties>, PropertyContainer<AspectWithOptionalProperties> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -42,7 +45,7 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
     
     getPropertyType(): string {
-            return '${codeGenerationConfig.importTracker().getRawContainerType( $propertyType )}';
+            return 'string';
     }
 
     getContainingType(): string {
@@ -53,231 +56,231 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
             return 'AspectWithOptionalProperties';
         }
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultQuantifiable = new DefaultQuantifiable(null, 
-null, 
-null, 
-new DefaultScalar("http://www.w3.org/2001/XMLSchema#unsignedLong" ),(() => { const defaultUnit = new DefaultUnit(null, 
-null, 
-null, 
-'m','MTR',undefined,'m',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'(instantaneous) sound particle displacement')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'Bohr radius')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'half-thickness')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'diffusion coefficient for neutron flux density')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'London penetration depth')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'focal distance')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'breadth')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'particle position vector')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'migration length')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'length of path')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'mean free path of phonons or electrons')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'coherence length')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'electron radius')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'thickness')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'mean free path')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'Compton wavelength')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'image distance')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'wavelength')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'distance')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'displacement vector of ion or atom')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithOptionalProperties',
+    'numberProperty',
+    (() => { const defaultQuantifiable = new DefaultQuantifiable(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#unsignedLong" ),(() => { const defaultUnit = new DefaultUnit(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#metre',
+'metre',
+'m','MTR',undefined,'m',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#fundamentalLatticeVector',
+'fundamentalLatticeVector',
 'fundamental lattice vector')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'slowing-down length')
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#halfThickness',
+'halfThickness',
+'half-thickness')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'half-value thickness')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'diffusion coefficient for neutron fluence rate')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#radiusOfCurvature',
+'radiusOfCurvature',
 'radius of curvature')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'diffusion length')
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#distance',
+'distance',
+'distance')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'object distance')
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#equilibriumPositionVectorOfIonOrAtom',
+'equilibriumPositionVectorOfIonOrAtom',
+'equilibrium position vector of ion or atom')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#slowingDownLength',
+'slowingDownLength',
+'slowing-down length')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#height',
+'height',
 'height')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'nuclear radius')
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#halfValueThickness',
+'halfValueThickness',
+'half-value thickness')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'cartesian coordinates')
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#diffusionCoefficientForNeutronFluenceRate',
+'diffusionCoefficientForNeutronFluenceRate',
+'diffusion coefficient for neutron fluence rate')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'radius')
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#meanFreePathOfPhononsOrElectrons',
+'meanFreePathOfPhononsOrElectrons',
+'mean free path of phonons or electrons')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'diameter')
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#bohrRadius',
+'bohrRadius',
+'Bohr radius')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'length')
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#instantaneousSoundParticleDisplacement',
+'instantaneousSoundParticleDisplacement',
+'(instantaneous) sound particle displacement')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#electronRadius',
+'electronRadius',
+'electron radius')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#lengthOfPath',
+'lengthOfPath',
+'length of path')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#coherenceLength',
+'coherenceLength',
+'coherence length')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#diffusionCoefficientForNeutronFluxDensity',
+'diffusionCoefficientForNeutronFluxDensity',
+'diffusion coefficient for neutron flux density')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#migrationLength',
+'migrationLength',
+'migration length')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#meanLinearRange',
+'meanLinearRange',
 'mean linear range')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#radius',
+'radius',
+'radius')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#displacementVectorOfIonOrAtom',
+'displacementVectorOfIonOrAtom',
+'displacement vector of ion or atom')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#latticeVector',
+'latticeVector',
 'lattice vector')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'equilibrium position vector of ion or atom')
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#meanFreePath',
+'meanFreePath',
+'mean free path')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#length',
+'length',
+'length')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#breadth',
+'breadth',
+'breadth')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#londonPenetrationDepth',
+'londonPenetrationDepth',
+'London penetration depth')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#nuclearRadius',
+'nuclearRadius',
+'nuclear radius')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#comptonWavelength',
+'comptonWavelength',
+'Compton wavelength')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#particlePositionVector',
+'particlePositionVector',
+'particle position vector')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#diffusionLength',
+'diffusionLength',
+'diffusion length')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#focalDistance',
+'focalDistance',
+'focal distance')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#cartesianCoordinates',
+'cartesianCoordinates',
+'cartesian coordinates')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#thickness',
+'thickness',
+'thickness')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#wavelength',
+'wavelength',
+'wavelength')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#diameter',
+'diameter',
+'diameter')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#imageDistance',
+'imageDistance',
+'image distance')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#objectDistance',
+'objectDistance',
+'object distance')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })() ])
 defaultUnit.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#metre';
@@ -310,14 +313,14 @@ defaultQuantifiable.isAnonymousNode = true;
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithOptionalProperties',
+    'timestampProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.CHARACTERISTIC_NAMESPACE + '#Timestamp',
+'Timestamp',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#dateTime" ))
 defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Timestamp';
 defaultCharacteristic.addPreferredName('en' , 'Timestamp');
@@ -343,19 +346,19 @@ return MetaAspectWithOptionalProperties .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithOptionalProperties';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithOptionalProperties, any>> {
+getProperties(): Array<StaticProperty<AspectWithOptionalProperties, any>> {
 return [MetaAspectWithOptionalProperties.NUMBER_PROPERTY, MetaAspectWithOptionalProperties.TIMESTAMP_PROPERTY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithOptionalProperties, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

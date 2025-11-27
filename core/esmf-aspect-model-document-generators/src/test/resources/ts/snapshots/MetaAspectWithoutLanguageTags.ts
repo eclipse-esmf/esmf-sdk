@@ -13,6 +13,8 @@
 
 
 import { AspectWithoutLanguageTags,} from './AspectWithoutLanguageTags';
+import { KnownVersion,} from './esmf/shared/known-version';
+import { PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
 
 
     
@@ -21,8 +23,10 @@ import { AspectWithoutLanguageTags,} from './AspectWithoutLanguageTags';
 * Generated class MetaAspectWithoutLanguageTags (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithoutLanguageTags).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithoutLanguageTags implements StaticMetaClass<AspectWithoutLanguageTags>, PropertyContainer<AspectWithoutLanguageTags> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -42,19 +46,19 @@ return MetaAspectWithoutLanguageTags .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithoutLanguageTags';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithoutLanguageTags, any>> {
+getProperties(): Array<StaticProperty<AspectWithoutLanguageTags, any>> {
 return [];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithoutLanguageTags, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

@@ -7,7 +7,7 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 */
 
 
-import { CollectionAspect,} from './core/collectionAspect';
+import { CollectionAspect,} from './esmf/aspect-meta-model/collectionAspect';
 
 
         export class AspectWithCollectionAndElementCharacteristic extends CollectionAspect<ReplacedAspectArtifact[],ReplacedAspectArtifact> {

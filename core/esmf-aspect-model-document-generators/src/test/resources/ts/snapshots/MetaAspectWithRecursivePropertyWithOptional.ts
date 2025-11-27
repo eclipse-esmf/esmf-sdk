@@ -15,8 +15,9 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithRecursivePropertyWithOptional,} from './AspectWithRecursivePropertyWithOptional';
-import { DefaultEntity,DefaultSingleEntity,} from './aspect-meta-model';
-import { DefaultStaticProperty,} from './core/staticConstraintProperty';
+import { DefaultEntity,DefaultSingleEntity,} from './esmf/aspect-meta-model';
+import { DefaultStaticProperty,PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
+import { KnownVersion,} from './esmf/shared/known-version';
 
 
 
@@ -27,8 +28,10 @@ import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithRecursivePropertyWithOptional (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithRecursivePropertyWithOptional).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithRecursivePropertyWithOptional implements StaticMetaClass<AspectWithRecursivePropertyWithOptional>, PropertyContainer<AspectWithRecursivePropertyWithOptional> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -53,17 +56,17 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultSingleEntity = new DefaultSingleEntity(null, 
-null, 
-null, 
-(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithRecursivePropertyWithOptional',
+    'testProperty',
+    (() => { const defaultSingleEntity = new DefaultSingleEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'TestItemCharacteristic',
+'TestItemCharacteristic',
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
 undefined)
 defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
@@ -90,19 +93,19 @@ return MetaAspectWithRecursivePropertyWithOptional .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithRecursivePropertyWithOptional';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithRecursivePropertyWithOptional, any>> {
+getProperties(): Array<StaticProperty<AspectWithRecursivePropertyWithOptional, any>> {
 return [MetaAspectWithRecursivePropertyWithOptional.TEST_PROPERTY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithRecursivePropertyWithOptional, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

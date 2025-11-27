@@ -15,11 +15,12 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithOptionalPropertiesAndEntityWithSeparateFiles,} from './AspectWithOptionalPropertiesAndEntityWithSeparateFiles';
-import { DefaultEntity,DefaultSingleEntity,} from './aspect-meta-model';
-import { LangString,} from './core/langString';
+import { DefaultEntity,DefaultSingleEntity,} from './esmf/aspect-meta-model';
+import { KnownVersion,} from './esmf/shared/known-version';
 
+import { MultiLanguageText,} from './esmf/instantiator/characteristic/characteristic-instantiator-util';
 
-import { StaticContainerProperty,} from './core/staticConstraintProperty';
+import { PropertyContainer,StaticContainerProperty,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
 
 
     
@@ -28,8 +29,10 @@ import { StaticContainerProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithOptionalPropertiesAndEntityWithSeparateFiles (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithOptionalPropertiesAndEntityWithSeparateFiles).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithOptionalPropertiesAndEntityWithSeparateFiles implements StaticMetaClass<AspectWithOptionalPropertiesAndEntityWithSeparateFiles>, PropertyContainer<AspectWithOptionalPropertiesAndEntityWithSeparateFiles> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -46,7 +49,7 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
     
     getPropertyType(): string {
-            return '${codeGenerationConfig.importTracker().getRawContainerType( $propertyType )}';
+            return 'ReplacedAspectArtifact';
     }
 
     getContainingType(): string {
@@ -57,17 +60,17 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
             return 'AspectWithOptionalPropertiesAndEntityWithSeparateFiles';
         }
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultSingleEntity = new DefaultSingleEntity(null, 
-null, 
-null, 
-(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithOptionalPropertiesAndEntityWithSeparateFiles',
+    'productionPeriod',
+    (() => { const defaultSingleEntity = new DefaultSingleEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ProductionPeriodCharacteristic',
+'ProductionPeriodCharacteristic',
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
 undefined)
 defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
@@ -96,32 +99,32 @@ return MetaAspectWithOptionalPropertiesAndEntityWithSeparateFiles .MODEL_ELEMENT
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithOptionalPropertiesAndEntityWithSeparateFiles';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithOptionalPropertiesAndEntityWithSeparateFiles, any>> {
+getProperties(): Array<StaticProperty<AspectWithOptionalPropertiesAndEntityWithSeparateFiles, any>> {
 return [MetaAspectWithOptionalPropertiesAndEntityWithSeparateFiles.PRODUCTION_PERIOD];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithOptionalPropertiesAndEntityWithSeparateFiles, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
         
-    getPreferredNames(): Array<LangString> {
+    getPreferredNames(): Array<MultiLanguageText> {
         return [
-            new LangString('Minimal Vehicle Type Aspect', 'en'),
+            {value: 'Minimal Vehicle Type Aspect', language: 'en'},
         ];
         }
 
         
-        getDescriptions(): Array<LangString> {
+        getDescriptions(): Array<MultiLanguageText> {
         return [
-            new LangString('Simplified aspect containing only ReplacedAspectArtifact as an optional property.', 'en'),
+            {value: 'Simplified aspect containing only ReplacedAspectArtifact as an optional property.', language: 'en'},
         ];
         }
 

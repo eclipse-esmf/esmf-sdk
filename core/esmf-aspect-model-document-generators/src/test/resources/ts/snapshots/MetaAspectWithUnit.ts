@@ -13,9 +13,10 @@
 
 
 import { AspectWithUnit,} from './AspectWithUnit';
-import { DefaultQuantifiable,DefaultScalar,} from './aspect-meta-model';
-import { DefaultUnit,} from './aspect-meta-model/default-unit';
-import { StaticUnitProperty,} from './core/staticConstraintProperty';
+import { DefaultQuantifiable,DefaultScalar,} from './esmf/aspect-meta-model';
+import { DefaultUnit,} from './esmf/aspect-meta-model/default-unit';
+import { KnownVersion,} from './esmf/shared/known-version';
+import { PropertyContainer,StaticMetaClass,StaticProperty,StaticUnitProperty,} from './esmf/aspect-meta-model/staticProperty';
 
 
     
@@ -24,8 +25,10 @@ import { StaticUnitProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithUnit (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithUnit).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithUnit implements StaticMetaClass<AspectWithUnit>, PropertyContainer<AspectWithUnit> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -50,17 +53,17 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultQuantifiable = new DefaultQuantifiable(null, 
-null, 
-null, 
-new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),(() => { const defaultUnit = new DefaultUnit(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithUnit',
+    'testProperty',
+    (() => { const defaultQuantifiable = new DefaultQuantifiable(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'TestQuantifiable',
+'TestQuantifiable',
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ),(() => { const defaultUnit = new DefaultUnit(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#bitPerSecond',
+'bitPerSecond',
 'bit\/s','B10',undefined,undefined,[  ])
 defaultUnit.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#bitPerSecond';
 defaultUnit.addPreferredName('en' , 'bit per second');
@@ -87,19 +90,19 @@ return MetaAspectWithUnit .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithUnit';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithUnit, any>> {
+getProperties(): Array<StaticProperty<AspectWithUnit, any>> {
 return [MetaAspectWithUnit.TEST_PROPERTY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithUnit, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

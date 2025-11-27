@@ -15,11 +15,12 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithQuantity,} from './AspectWithQuantity';
-import { DefaultEntity,DefaultSingleEntity,} from './aspect-meta-model';
-import { DefaultStaticProperty,} from './core/staticConstraintProperty';
-import { LangString,} from './core/langString';
+import { DefaultEntity,DefaultSingleEntity,} from './esmf/aspect-meta-model';
+import { DefaultStaticProperty,PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
+import { KnownVersion,} from './esmf/shared/known-version';
 import { MetaQuantity,} from './MetaQuantity';
 
+import { MultiLanguageText,} from './esmf/instantiator/characteristic/characteristic-instantiator-util';
 
 
 
@@ -29,8 +30,10 @@ import { MetaQuantity,} from './MetaQuantity';
 * Generated class MetaAspectWithQuantity (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithQuantity).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithQuantity implements StaticMetaClass<AspectWithQuantity>, PropertyContainer<AspectWithQuantity> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -55,21 +58,21 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultSingleEntity = new DefaultSingleEntity(null, 
-null, 
-null, 
-(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithQuantity',
+    'testProperty',
+    (() => { const defaultSingleEntity = new DefaultSingleEntity(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
-(() => { const extendsDefaultEntityQuantity = new DefaultEntity(null, 
-null, 
-null, 
+(() => { const extendsDefaultEntityQuantity = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaQuantity.INSTANCE.getProperties(),true,
 undefined)
 extendsDefaultEntityQuantity.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:entity:2.2.0#Quantity';
@@ -102,32 +105,32 @@ return MetaAspectWithQuantity .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithQuantity';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithQuantity, any>> {
+getProperties(): Array<StaticProperty<AspectWithQuantity, any>> {
 return [MetaAspectWithQuantity.TEST_PROPERTY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithQuantity, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
         
-    getPreferredNames(): Array<LangString> {
+    getPreferredNames(): Array<MultiLanguageText> {
         return [
-            new LangString('Test Aspect', 'en'),
+            {value: 'Test Aspect', language: 'en'},
         ];
         }
 
         
-        getDescriptions(): Array<LangString> {
+        getDescriptions(): Array<MultiLanguageText> {
         return [
-            new LangString('This is a test description', 'en'),
+            {value: 'This is a test description', language: 'en'},
         ];
         }
 

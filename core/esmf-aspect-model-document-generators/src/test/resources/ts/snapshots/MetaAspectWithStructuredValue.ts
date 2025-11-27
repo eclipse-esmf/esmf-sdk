@@ -13,9 +13,10 @@
 
 
 import { AspectWithStructuredValue,} from './AspectWithStructuredValue';
-import { DefaultScalar,DefaultStructuredValue,} from './aspect-meta-model';
-import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
-import { DefaultStaticProperty,} from './core/staticConstraintProperty';
+import { DefaultCharacteristic,DefaultScalar,DefaultStructuredValue,} from './esmf/aspect-meta-model';
+import { DefaultScalarValue,} from './esmf/aspect-meta-model/default-scalar-value';
+import { DefaultStaticProperty,PropertyContainer,StaticContainerProperty,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
+import { KnownVersion,} from './esmf/shared/known-version';
 
 
     
@@ -24,8 +25,10 @@ import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithStructuredValue (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithStructuredValue).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithStructuredValue implements StaticMetaClass<AspectWithStructuredValue>, PropertyContainer<AspectWithStructuredValue> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -34,6 +37,123 @@ export class MetaAspectWithStructuredValue implements StaticMetaClass<AspectWith
 private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0';
 
  public static readonly  INSTANCE = new MetaAspectWithStructuredValue();
+
+
+ public static readonly  YEAR = 
+                
+        new (class extends StaticContainerProperty<AspectWithStructuredValue, Date, Date> {
+
+    
+    getPropertyType(): string {
+            return 'Date';
+    }
+
+    getContainingType(): string {
+        return 'AspectWithStructuredValue';
+    }
+
+        getContainedType(): string {
+            return 'AspectWithStructuredValue';
+        }
+
+        })(
+
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithStructuredValue',
+    'year',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'Year',
+'Year',
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#gYear" ))
+defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Year';
+ return defaultCharacteristic; })()
+,
+    false,
+    true,
+    undefined,
+        'year',
+    false,
+    );
+
+
+
+
+ public static readonly  MONTH = 
+                
+        new (class extends StaticContainerProperty<AspectWithStructuredValue, Date, Date> {
+
+    
+    getPropertyType(): string {
+            return 'Date';
+    }
+
+    getContainingType(): string {
+        return 'AspectWithStructuredValue';
+    }
+
+        getContainedType(): string {
+            return 'AspectWithStructuredValue';
+        }
+
+        })(
+
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithStructuredValue',
+    'month',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'Month',
+'Month',
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#gMonth" ))
+defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Month';
+ return defaultCharacteristic; })()
+,
+    false,
+    true,
+    undefined,
+        'month',
+    false,
+    );
+
+
+
+
+ public static readonly  DAY = 
+                
+        new (class extends StaticContainerProperty<AspectWithStructuredValue, Date, Date> {
+
+    
+    getPropertyType(): string {
+            return 'Date';
+    }
+
+    getContainingType(): string {
+        return 'AspectWithStructuredValue';
+    }
+
+        getContainedType(): string {
+            return 'AspectWithStructuredValue';
+        }
+
+        })(
+
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithStructuredValue',
+    'day',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'Day',
+'Day',
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#gMonthDay" ))
+defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Day';
+ return defaultCharacteristic; })()
+,
+    false,
+    true,
+    undefined,
+        'day',
+    false,
+    );
+
+
 
 
  public static readonly  DATE = 
@@ -50,25 +170,25 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultStructuredValue = new DefaultStructuredValue(null, 
-null, 
-null, 
-'(\\d{4})-(\\d{2})-(\\d{2})',[YEAR,
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithStructuredValue',
+    'date',
+    (() => { const defaultStructuredValue = new DefaultStructuredValue(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'StructuredDate',
+'StructuredDate',
+'(\\d{4})-(\\d{2})-(\\d{2})',[this.YEAR,
 '-',
-MONTH,
+this.MONTH,
 '-',
-DAY],new DefaultScalar("http://www.w3.org/2001/XMLSchema#date" ))
+this.DAY],new DefaultScalar("http://www.w3.org/2001/XMLSchema#date" ))
 defaultStructuredValue.addAspectModelUrn = this.NAMESPACE + 'StructuredDate';
  return defaultStructuredValue; })()
 ,
     false,
     false,
-    new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#date" ),new Date( ''2019-09-27'' )),
+    new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#date" ),new Date( '2019-09-27' )),
         'date',
     false,
     );
@@ -85,19 +205,19 @@ return MetaAspectWithStructuredValue .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithStructuredValue';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithStructuredValue, any>> {
+getProperties(): Array<StaticProperty<AspectWithStructuredValue, any>> {
 return [MetaAspectWithStructuredValue.DATE];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithStructuredValue, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

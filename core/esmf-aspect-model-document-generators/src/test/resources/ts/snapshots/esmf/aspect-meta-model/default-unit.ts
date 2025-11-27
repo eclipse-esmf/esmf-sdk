@@ -13,7 +13,7 @@
 
 import {Base, BaseMetaModelElement} from './base';
 import {QuantityKind} from './default-quantity-kind';
-import {ModelVisitor} from './visitor/model-visitor';
+import {ModelVisitor} from '../visitor/model-visitor';
 
 export interface Unit extends BaseMetaModelElement {
     symbol?: string;

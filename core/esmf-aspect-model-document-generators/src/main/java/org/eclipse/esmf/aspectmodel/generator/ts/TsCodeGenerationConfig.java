@@ -19,6 +19,7 @@ import org.eclipse.esmf.aspectmodel.generator.GenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.exception.CodeGenerationException;
 
 import io.soabase.recordbuilder.core.RecordBuilder;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * A {@link GenerationConfig} for Java code.
@@ -39,12 +40,16 @@ public record TsCodeGenerationConfig(
       String namePrefix,
       String namePostfix,
       boolean disablePrettierFormatter,
-      String prettierConfigPath
+      String prettierConfigPath,
+      String metaModelPackageName
 ) implements GenerationConfig {
 
    public TsCodeGenerationConfig {
       if ( packageName == null ) {
          packageName = "";
+      }
+      if ( StringUtils.isNotBlank( metaModelPackageName ) ) {
+         importTracker = new ImportTracker( metaModelPackageName );
       }
       if ( importTracker == null ) {
          importTracker = new ImportTracker();

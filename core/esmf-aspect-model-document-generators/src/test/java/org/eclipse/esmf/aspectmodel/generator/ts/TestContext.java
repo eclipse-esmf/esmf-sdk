@@ -41,6 +41,7 @@ public class TestContext {
                "TestEnumOneCharacteristic", "TestEnumerationTwo", "TestEnumeration", "TestEntityWithEnumOne", "TestCharacteristic",
                "SecondTestEntity", "RightEntity", "ProductionPeriodEntity", "TimeSeriesEntity",
                "MyEnumerationTwo", "MyEnumerationThree", "SystemState", "TheEntity", "ParentOfParentEntity",
+               "testEntityTwo", "testEntityOne",
                "MyEnumerationOne", "MyEnumerationFour", "MyEntityOne", "MyEntityTwo", "MyEntityThree", "MyEntityFour",
                "LeftEntity", "Id", "GenericEnum", "Foo", "FirstLevelEntity", "EvaluationResults", "EvaluationResult",
                "Enum2", "Enum1", "EEntity", "ParentTestEntity", "TestEntity", "Automation" );

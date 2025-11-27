@@ -13,10 +13,11 @@
 
 
 import { AspectWithRangeConstraintWithOnlyLowerBoundDefinitionAndBothValues,} from './AspectWithRangeConstraintWithOnlyLowerBoundDefinitionAndBothValues';
-import { BoundDefinition,} from './aspect-meta-model/bound-definition';
-import { DefaultCharacteristic,DefaultRangeConstraint,DefaultScalar,DefaultTrait,} from './aspect-meta-model';
-import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
-import { DefaultStaticProperty,} from './core/staticConstraintProperty';
+import { BoundDefinition,} from './esmf/aspect-meta-model/bound-definition';
+import { DefaultCharacteristic,DefaultRangeConstraint,DefaultScalar,DefaultTrait,} from './esmf/aspect-meta-model';
+import { DefaultScalarValue,} from './esmf/aspect-meta-model/default-scalar-value';
+import { DefaultStaticProperty,PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
+import { KnownVersion,} from './esmf/shared/known-version';
 
 
     
@@ -25,8 +26,10 @@ import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithRangeConstraintWithOnlyLowerBoundDefinitionAndBothValues (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithRangeConstraintWithOnlyLowerBoundDefinitionAndBothValues).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithRangeConstraintWithOnlyLowerBoundDefinitionAndBothValues implements StaticMetaClass<AspectWithRangeConstraintWithOnlyLowerBoundDefinitionAndBothValues>, PropertyContainer<AspectWithRangeConstraintWithOnlyLowerBoundDefinitionAndBothValues> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -51,22 +54,22 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const trait = new DefaultTrait(null, 
-null, 
-null, 
-(() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithRangeConstraintWithOnlyLowerBoundDefinitionAndBothValues',
+    'testProperty',
+    (() => { const trait = new DefaultTrait(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'TestTrait',
+'TestTrait',
+(() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#nonNegativeInteger" ))
 defaultCharacteristic.isAnonymousNode = true;
- return defaultCharacteristic; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(null, 
-null, 
-null, 
+ return defaultCharacteristic; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 BoundDefinition.AT_MOST,BoundDefinition.GREATER_THAN,new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#nonNegativeInteger" ),'5'),new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#nonNegativeInteger" ),'10'),)
 defaultRangeConstraint.isAnonymousNode = true;
 defaultRangeConstraint.addPreferredName('en' , 'Test Constraint');
@@ -95,19 +98,19 @@ return MetaAspectWithRangeConstraintWithOnlyLowerBoundDefinitionAndBothValues .M
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithRangeConstraintWithOnlyLowerBoundDefinitionAndBothValues';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithRangeConstraintWithOnlyLowerBoundDefinitionAndBothValues, any>> {
+getProperties(): Array<StaticProperty<AspectWithRangeConstraintWithOnlyLowerBoundDefinitionAndBothValues, any>> {
 return [MetaAspectWithRangeConstraintWithOnlyLowerBoundDefinitionAndBothValues.TEST_PROPERTY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithRangeConstraintWithOnlyLowerBoundDefinitionAndBothValues, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

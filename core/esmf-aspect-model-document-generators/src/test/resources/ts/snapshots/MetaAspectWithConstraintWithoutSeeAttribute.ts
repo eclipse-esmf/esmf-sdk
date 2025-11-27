@@ -13,8 +13,9 @@
 
 
 import { AspectWithConstraintWithoutSeeAttribute,} from './AspectWithConstraintWithoutSeeAttribute';
-import { DefaultCharacteristic,DefaultLengthConstraint,DefaultScalar,DefaultTrait,} from './aspect-meta-model';
-import { DefaultStaticProperty,} from './core/staticConstraintProperty';
+import { DefaultCharacteristic,DefaultLengthConstraint,DefaultScalar,DefaultTrait,} from './esmf/aspect-meta-model';
+import { DefaultStaticProperty,PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
+import { KnownVersion,} from './esmf/shared/known-version';
 
 
     
@@ -23,8 +24,10 @@ import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithConstraintWithoutSeeAttribute (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithConstraintWithoutSeeAttribute).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithConstraintWithoutSeeAttribute implements StaticMetaClass<AspectWithConstraintWithoutSeeAttribute>, PropertyContainer<AspectWithConstraintWithoutSeeAttribute> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -49,24 +52,24 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const trait = new DefaultTrait(null, 
-null, 
-null, 
-(() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithConstraintWithoutSeeAttribute',
+    'testProperty',
+    (() => { const trait = new DefaultTrait(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'TestTrait',
+'TestTrait',
+(() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.CHARACTERISTIC_NAMESPACE + '#Text',
+'Text',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
 defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Text';
 defaultCharacteristic.addPreferredName('en' , 'Text');
 defaultCharacteristic.addDescription('en' , 'Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.');
- return defaultCharacteristic; })(),[(() => { const lengthConstraint = new DefaultLengthConstraint(null, 
-null, 
-null, 
+ return defaultCharacteristic; })(),[(() => { const lengthConstraint = new DefaultLengthConstraint(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 5,5,)
 lengthConstraint.isAnonymousNode = true;
 lengthConstraint.addPreferredName('en' , 'Test Constraint');
@@ -94,19 +97,19 @@ return MetaAspectWithConstraintWithoutSeeAttribute .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithConstraintWithoutSeeAttribute';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithConstraintWithoutSeeAttribute, any>> {
+getProperties(): Array<StaticProperty<AspectWithConstraintWithoutSeeAttribute, any>> {
 return [MetaAspectWithConstraintWithoutSeeAttribute.TEST_PROPERTY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithConstraintWithoutSeeAttribute, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

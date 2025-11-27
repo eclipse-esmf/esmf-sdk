@@ -7,14 +7,14 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 */
 
 
-import { Either,} from './core/Either';
+import { Either,} from './esmf/aspect-meta-model/Either';
 
 
         export class AspectWithMultipleEntitiesAndEither {
     // NotNull
-    testEntityOne: ReplacedAspectArtifact;
+    ReplacedAspectArtifact: ReplacedAspectArtifact;
     // NotNull
-    testEntityTwo: ReplacedAspectArtifact;
+    ReplacedAspectArtifact: ReplacedAspectArtifact;
     // NotNull
     testEitherProperty: Either<ReplacedAspectArtifact, ReplacedAspectArtifact>;
 }

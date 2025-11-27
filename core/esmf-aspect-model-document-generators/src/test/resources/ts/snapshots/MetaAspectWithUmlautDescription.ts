@@ -13,7 +13,9 @@
 
 
 import { AspectWithUmlautDescription,} from './AspectWithUmlautDescription';
-import { LangString,} from './core/langString';
+import { KnownVersion,} from './esmf/shared/known-version';
+import { MultiLanguageText,} from './esmf/instantiator/characteristic/characteristic-instantiator-util';
+import { PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
 
 
     
@@ -22,8 +24,10 @@ import { LangString,} from './core/langString';
 * Generated class MetaAspectWithUmlautDescription (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithUmlautDescription).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithUmlautDescription implements StaticMetaClass<AspectWithUmlautDescription>, PropertyContainer<AspectWithUmlautDescription> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -43,34 +47,34 @@ return MetaAspectWithUmlautDescription .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithUmlautDescription';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithUmlautDescription, any>> {
+getProperties(): Array<StaticProperty<AspectWithUmlautDescription, any>> {
 return [];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithUmlautDescription, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
         
-    getPreferredNames(): Array<LangString> {
+    getPreferredNames(): Array<MultiLanguageText> {
         return [
-            new LangString('Test Aspect mit Umlauten in der Beschreibung', 'de'),
-            new LangString('Test Aspect with Umlauts within description', 'en'),
+            {value: 'Test Aspect mit Umlauten in der Beschreibung', language: 'de'},
+            {value: 'Test Aspect with Umlauts within description', language: 'en'},
         ];
         }
 
         
-        getDescriptions(): Array<LangString> {
+        getDescriptions(): Array<MultiLanguageText> {
         return [
-            new LangString('Im Wort Entität ist ein Umlaut', 'de'),
-            new LangString('This is a test description', 'en'),
+            {value: 'Im Wort Entität ist ein Umlaut', language: 'de'},
+            {value: 'This is a test description', language: 'en'},
         ];
         }
 

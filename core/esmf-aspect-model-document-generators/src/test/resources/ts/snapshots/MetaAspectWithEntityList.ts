@@ -15,9 +15,10 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithEntityList,} from './AspectWithEntityList';
-import { DefaultEntity,DefaultList,} from './aspect-meta-model';
+import { DefaultEntity,DefaultList,} from './esmf/aspect-meta-model';
+import { KnownVersion,} from './esmf/shared/known-version';
 
-import { StaticContainerProperty,} from './core/staticConstraintProperty';
+import { PropertyContainer,StaticContainerProperty,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
 
 
 
@@ -27,8 +28,10 @@ import { StaticContainerProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithEntityList (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEntityList).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithEntityList implements StaticMetaClass<AspectWithEntityList>, PropertyContainer<AspectWithEntityList> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -45,7 +48,7 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
     
     getPropertyType(): string {
-            return '${codeGenerationConfig.importTracker().getRawContainerType( $propertyType )}';
+            return 'ReplacedAspectArtifact';
     }
 
     getContainingType(): string {
@@ -56,18 +59,18 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
             return 'AspectWithEntityList';
         }
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultList = new DefaultList(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithEntityList',
+    'testList',
+    (() => { const defaultList = new DefaultList(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 undefined,
-(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
 undefined)
 defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
@@ -94,19 +97,19 @@ return MetaAspectWithEntityList .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithEntityList';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithEntityList, any>> {
+getProperties(): Array<StaticProperty<AspectWithEntityList, any>> {
 return [MetaAspectWithEntityList.TEST_LIST];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithEntityList, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

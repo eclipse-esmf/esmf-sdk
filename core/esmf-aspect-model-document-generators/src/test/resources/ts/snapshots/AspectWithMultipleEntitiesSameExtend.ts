@@ -1,3 +1,4 @@
+import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 /**
 * Generated class for AspectWithMultipleEntitiesSameExtend (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithMultipleEntitiesSameExtend).
@@ -6,13 +7,13 @@
 */
 
 
-import { testEntityOne,} from './testEntityOne';
-import { testEntityTwo,} from './testEntityTwo';
+
+
 
         export class AspectWithMultipleEntitiesSameExtend {
     // NotNull
-    testPropertyOne: testEntityOne;
+    testPropertyOne: ReplacedAspectArtifact;
     // NotNull
-    testPropertyTwo: testEntityTwo;
+    testPropertyTwo: ReplacedAspectArtifact;
 }
 

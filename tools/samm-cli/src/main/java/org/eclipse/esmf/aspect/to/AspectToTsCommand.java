@@ -98,6 +98,15 @@ public class AspectToTsCommand extends AbstractCommand {
                + " If provided, this configuration will be used during the formatting step instead of the default setting" )
    private String prettierConfigPath = "";
 
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--meta-model-package" },
+         description =
+               "Specifies the root package path for meta model generation, used to resolve imports for generated meta model classes."
+                     + " For local development, use a relative path (e.g., --meta-model-package=./esmf/)."
+                     + " For build environments, use the library path (e.g., --meta-model-package=@esmf/)." )
+   private String metaModelPackageName = "";
+
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
 
@@ -136,6 +145,7 @@ public class AspectToTsCommand extends AbstractCommand {
             .namePostfix( namePostfix )
             .disablePrettierFormatter( disablePrettierFormatter )
             .prettierConfigPath( prettierConfigPath )
+            .metaModelPackageName( metaModelPackageName )
             .build();
    }
 

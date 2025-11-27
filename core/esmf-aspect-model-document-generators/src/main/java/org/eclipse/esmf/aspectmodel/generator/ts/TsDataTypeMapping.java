@@ -76,10 +76,8 @@ public class TsDataTypeMapping {
       MAPPING.put( boolean.class, TsType.BOOLEAN );
 
       MAPPING.put( String.class, TsType.STRING );
-      //=== TODO what the mapping do we need to use? it can be special type in TS
       MAPPING.put( BigInteger.class, TsType.STRING );
       MAPPING.put( BigDecimal.class, TsType.STRING );
-      //===
       MAPPING.put( Character.class, TsType.STRING );
       MAPPING.put( UUID.class, TsType.STRING );
 

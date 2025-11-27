@@ -15,10 +15,11 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithEntityCollection,} from './AspectWithEntityCollection';
-import { DefaultCollection,DefaultEntity,} from './aspect-meta-model';
-import { LangString,} from './core/langString';
+import { DefaultCollection,DefaultEntity,} from './esmf/aspect-meta-model';
+import { KnownVersion,} from './esmf/shared/known-version';
 
-import { StaticContainerProperty,} from './core/staticConstraintProperty';
+import { MultiLanguageText,} from './esmf/instantiator/characteristic/characteristic-instantiator-util';
+import { PropertyContainer,StaticContainerProperty,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
 
 
 
@@ -28,8 +29,10 @@ import { StaticContainerProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithEntityCollection (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEntityCollection).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithEntityCollection implements StaticMetaClass<AspectWithEntityCollection>, PropertyContainer<AspectWithEntityCollection> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -46,7 +49,7 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
     
     getPropertyType(): string {
-            return '${codeGenerationConfig.importTracker().getRawContainerType( $propertyType )}';
+            return 'ReplacedAspectArtifact';
     }
 
     getContainingType(): string {
@@ -57,18 +60,18 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
             return 'AspectWithEntityCollection';
         }
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCollection = new DefaultCollection(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithEntityCollection',
+    'testProperty',
+    (() => { const defaultCollection = new DefaultCollection(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'TestCollection',
+'TestCollection',
 true, false, undefined,
-(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
 undefined)
 defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
@@ -100,32 +103,32 @@ return MetaAspectWithEntityCollection .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithEntityCollection';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithEntityCollection, any>> {
+getProperties(): Array<StaticProperty<AspectWithEntityCollection, any>> {
 return [MetaAspectWithEntityCollection.TEST_PROPERTY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithEntityCollection, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
         
-    getPreferredNames(): Array<LangString> {
+    getPreferredNames(): Array<MultiLanguageText> {
         return [
-            new LangString('Test Aspect', 'en'),
+            {value: 'Test Aspect', language: 'en'},
         ];
         }
 
         
-        getDescriptions(): Array<LangString> {
+        getDescriptions(): Array<MultiLanguageText> {
         return [
-            new LangString('This is a test description', 'en'),
+            {value: 'This is a test description', language: 'en'},
         ];
         }
 

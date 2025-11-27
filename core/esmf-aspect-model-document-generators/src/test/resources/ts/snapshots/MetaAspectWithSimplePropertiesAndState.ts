@@ -15,9 +15,10 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 import { AspectWithSimplePropertiesAndState,} from './AspectWithSimplePropertiesAndState';
 
-import { DefaultCharacteristic,DefaultScalar,DefaultState,} from './aspect-meta-model';
-import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
-import { DefaultStaticProperty,} from './core/staticConstraintProperty';
+import { DefaultCharacteristic,DefaultScalar,DefaultState,} from './esmf/aspect-meta-model';
+import { DefaultScalarValue,} from './esmf/aspect-meta-model/default-scalar-value';
+import { DefaultStaticProperty,PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
+import { KnownVersion,} from './esmf/shared/known-version';
 
 
     
@@ -26,8 +27,10 @@ import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithSimplePropertiesAndState (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithSimplePropertiesAndState).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithSimplePropertiesAndState implements StaticMetaClass<AspectWithSimplePropertiesAndState>, PropertyContainer<AspectWithSimplePropertiesAndState> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -52,14 +55,14 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimplePropertiesAndState',
+    'testString',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.CHARACTERISTIC_NAMESPACE + '#Text',
+'Text',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
 defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Text';
 defaultCharacteristic.addPreferredName('en' , 'Text');
@@ -90,14 +93,14 @@ defaultCharacteristic.addDescription('en' , 'Describes a Property which contains
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimplePropertiesAndState',
+    'testInt',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'Int',
+'Int',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ))
 defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Int';
  return defaultCharacteristic; })()
@@ -126,14 +129,14 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Int';
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimplePropertiesAndState',
+    'testFloat',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'Float',
+'Float',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ))
 defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Float';
  return defaultCharacteristic; })()
@@ -162,21 +165,21 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Float';
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimplePropertiesAndState',
+    'testLocalDateTime',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'LocalDateTime',
+'LocalDateTime',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#dateTime" ))
 defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'LocalDateTime';
  return defaultCharacteristic; })()
 ,
     false,
     false,
-    new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#dateTime" ),new Date( ''2018-02-28T14:23:32.918'' )),
+    new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#dateTime" ),new Date( '2018-02-28T14:23:32.918' )),
         'testLocalDateTime',
     false,
     );
@@ -198,14 +201,14 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'LocalDateTime';
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimplePropertiesAndState',
+    'randomValue',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.CHARACTERISTIC_NAMESPACE + '#Text',
+'Text',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
 defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Text';
 defaultCharacteristic.addPreferredName('en' , 'Text');
@@ -236,14 +239,14 @@ defaultCharacteristic.addDescription('en' , 'Describes a Property which contains
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultState = new DefaultState(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSimplePropertiesAndState',
+    'automationProperty',
+    (() => { const defaultState = new DefaultState(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 [new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'ReplacedAspectArtifact Default Prop'),
 new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'ReplacedAspectArtifact2'),
 new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'ReplacedAspectArtifact3')],new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'ReplacedAspectArtifact Default Prop'),new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
@@ -270,19 +273,19 @@ return MetaAspectWithSimplePropertiesAndState .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithSimplePropertiesAndState';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithSimplePropertiesAndState, any>> {
+getProperties(): Array<StaticProperty<AspectWithSimplePropertiesAndState, any>> {
 return [MetaAspectWithSimplePropertiesAndState.TEST_STRING, MetaAspectWithSimplePropertiesAndState.TEST_INT, MetaAspectWithSimplePropertiesAndState.TEST_FLOAT, MetaAspectWithSimplePropertiesAndState.TEST_LOCAL_DATE_TIME, MetaAspectWithSimplePropertiesAndState.RANDOM_VALUE, MetaAspectWithSimplePropertiesAndState.AUTOMATION_PROPERTY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithSimplePropertiesAndState, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

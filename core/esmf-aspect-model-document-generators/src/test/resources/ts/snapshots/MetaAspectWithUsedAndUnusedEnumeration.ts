@@ -14,9 +14,10 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithUsedAndUnusedEnumeration,} from './AspectWithUsedAndUnusedEnumeration';
-import { DefaultEnumeration,DefaultScalar,} from './aspect-meta-model';
-import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
-import { DefaultStaticProperty,} from './core/staticConstraintProperty';
+import { DefaultEnumeration,DefaultScalar,} from './esmf/aspect-meta-model';
+import { DefaultScalarValue,} from './esmf/aspect-meta-model/default-scalar-value';
+import { DefaultStaticProperty,PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
+import { KnownVersion,} from './esmf/shared/known-version';
 
 
 
@@ -26,8 +27,10 @@ import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithUsedAndUnusedEnumeration (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithUsedAndUnusedEnumeration).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithUsedAndUnusedEnumeration implements StaticMetaClass<AspectWithUsedAndUnusedEnumeration>, PropertyContainer<AspectWithUsedAndUnusedEnumeration> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -52,14 +55,14 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultEnumeration = new DefaultEnumeration(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithUsedAndUnusedEnumeration',
+    'testProperty',
+    (() => { const defaultEnumeration = new DefaultEnumeration(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 [new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'bar'),
 new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'foo')],new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
 defaultEnumeration.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
@@ -88,19 +91,19 @@ return MetaAspectWithUsedAndUnusedEnumeration .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithUsedAndUnusedEnumeration';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithUsedAndUnusedEnumeration, any>> {
+getProperties(): Array<StaticProperty<AspectWithUsedAndUnusedEnumeration, any>> {
 return [MetaAspectWithUsedAndUnusedEnumeration.TEST_PROPERTY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithUsedAndUnusedEnumeration, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

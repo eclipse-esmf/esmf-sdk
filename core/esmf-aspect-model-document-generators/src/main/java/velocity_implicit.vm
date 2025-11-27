@@ -1,6 +1,5 @@
 #* @implicitly included *#
 #* @vtlvariable name="aspectModel" type="org.eclipse.esmf.metamodel.Aspect" *#
-#* @vtlvariable name="versionModel" type="org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel" *#
 #* @vtlvariable name="property" type="org.eclipse.esmf.metamodel.Property" *#
 #* @vtlvariable name="characteristic" type="org.eclipse.esmf.metamodel.Characteristic" *#
 #* @vtlvariable name="constraint" type="org.eclipse.esmf.metamodel.Constraint" *#
@@ -40,4 +39,5 @@
 #* @vtlvariable name="State" type="java.lang.Class<org.eclipse.esmf.metamodel.characteristic.State>" *#
 #* @vtlvariable name="element" type="org.eclipse.esmf.metamodel.StructureElement" *#
 #* @vtlvariable name="context" type="org.eclipse.esmf.aspectmodel.generator.ts.metamodel.StaticCodeGenerationContext" *#
+#* @vtlvariable name="deconstructor" type="org.eclipse.esmf.aspectmodel.generator.ts.StructuredValuePropertiesDeconstructor" *#
 

@@ -14,9 +14,10 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithEnumerationWithMultipleSeeAttributes,} from './AspectWithEnumerationWithMultipleSeeAttributes';
-import { DefaultEnumeration,DefaultScalar,} from './aspect-meta-model';
-import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
-import { DefaultStaticProperty,} from './core/staticConstraintProperty';
+import { DefaultEnumeration,DefaultScalar,} from './esmf/aspect-meta-model';
+import { DefaultScalarValue,} from './esmf/aspect-meta-model/default-scalar-value';
+import { DefaultStaticProperty,PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
+import { KnownVersion,} from './esmf/shared/known-version';
 
 
 
@@ -26,8 +27,10 @@ import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithEnumerationWithMultipleSeeAttributes (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEnumerationWithMultipleSeeAttributes).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithEnumerationWithMultipleSeeAttributes implements StaticMetaClass<AspectWithEnumerationWithMultipleSeeAttributes>, PropertyContainer<AspectWithEnumerationWithMultipleSeeAttributes> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -52,14 +55,14 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultEnumeration = new DefaultEnumeration(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithEnumerationWithMultipleSeeAttributes',
+    'testProperty',
+    (() => { const defaultEnumeration = new DefaultEnumeration(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 [new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'bar'),
 new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ),'foo')],new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
 defaultEnumeration.isAnonymousNode = true;
@@ -88,19 +91,19 @@ return MetaAspectWithEnumerationWithMultipleSeeAttributes .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithEnumerationWithMultipleSeeAttributes';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithEnumerationWithMultipleSeeAttributes, any>> {
+getProperties(): Array<StaticProperty<AspectWithEnumerationWithMultipleSeeAttributes, any>> {
 return [MetaAspectWithEnumerationWithMultipleSeeAttributes.TEST_PROPERTY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithEnumerationWithMultipleSeeAttributes, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

@@ -13,7 +13,7 @@
 
 import {Type} from '../type';
 import {Base, BaseMetaModelElement} from '../base';
-import {ModelVisitor} from '../visitor/model-visitor';
+import {ModelVisitor} from '../../visitor/model-visitor';
 
 export interface Characteristic extends BaseMetaModelElement {
     dataType?: Type;

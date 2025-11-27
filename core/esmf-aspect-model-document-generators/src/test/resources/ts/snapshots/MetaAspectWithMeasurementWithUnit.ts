@@ -13,9 +13,10 @@
 
 
 import { AspectWithMeasurementWithUnit,} from './AspectWithMeasurementWithUnit';
-import { DefaultMeasurement,DefaultQuantityKind,DefaultScalar,} from './aspect-meta-model';
-import { DefaultUnit,} from './aspect-meta-model/default-unit';
-import { StaticUnitProperty,} from './core/staticConstraintProperty';
+import { DefaultMeasurement,DefaultQuantityKind,DefaultScalar,} from './esmf/aspect-meta-model';
+import { DefaultUnit,} from './esmf/aspect-meta-model/default-unit';
+import { KnownVersion,} from './esmf/shared/known-version';
+import { PropertyContainer,StaticMetaClass,StaticProperty,StaticUnitProperty,} from './esmf/aspect-meta-model/staticProperty';
 
 
     
@@ -24,8 +25,10 @@ import { StaticUnitProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithMeasurementWithUnit (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithMeasurementWithUnit).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithMeasurementWithUnit implements StaticMetaClass<AspectWithMeasurementWithUnit>, PropertyContainer<AspectWithMeasurementWithUnit> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -50,20 +53,20 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultMeasurement = new DefaultMeasurement(null, 
-null, 
-null, 
-(() => { const defaultUnit = new DefaultUnit(null, 
-null, 
-null, 
-'%','P1',undefined,'1 × 10⁻²',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithMeasurementWithUnit',
+    'testProperty',
+    (() => { const defaultMeasurement = new DefaultMeasurement(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'TestMeasurement',
+'TestMeasurement',
+(() => { const defaultUnit = new DefaultUnit(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#percent',
+'percent',
+'%','P1',undefined,'1 × 10⁻²',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#dimensionless',
+'dimensionless',
 'dimensionless')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })() ])
@@ -92,19 +95,19 @@ return MetaAspectWithMeasurementWithUnit .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithMeasurementWithUnit';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithMeasurementWithUnit, any>> {
+getProperties(): Array<StaticProperty<AspectWithMeasurementWithUnit, any>> {
 return [MetaAspectWithMeasurementWithUnit.TEST_PROPERTY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithMeasurementWithUnit, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

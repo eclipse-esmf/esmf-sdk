@@ -13,11 +13,12 @@
 
 
 import { AspectWithErrorCollection,} from './AspectWithErrorCollection';
-import { DefaultCollection,DefaultEntity,} from './aspect-meta-model';
+import { DefaultCollection,DefaultEntity,} from './esmf/aspect-meta-model';
 import { Error,} from './Error';
-import { LangString,} from './core/langString';
+import { KnownVersion,} from './esmf/shared/known-version';
 import { MetaError,} from './MetaError';
-import { StaticContainerProperty,} from './core/staticConstraintProperty';
+import { MultiLanguageText,} from './esmf/instantiator/characteristic/characteristic-instantiator-util';
+import { PropertyContainer,StaticContainerProperty,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
 
 
     
@@ -26,8 +27,10 @@ import { StaticContainerProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithErrorCollection (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithErrorCollection).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithErrorCollection implements StaticMetaClass<AspectWithErrorCollection>, PropertyContainer<AspectWithErrorCollection> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -44,7 +47,7 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
     
     getPropertyType(): string {
-            return '${codeGenerationConfig.importTracker().getRawContainerType( $propertyType )}';
+            return 'Error';
     }
 
     getContainingType(): string {
@@ -55,18 +58,18 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
             return 'AspectWithErrorCollection';
         }
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCollection = new DefaultCollection(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithErrorCollection',
+    'items',
+    (() => { const defaultCollection = new DefaultCollection(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 true, false, undefined,
-(() => { const defaultEntityError = new DefaultEntity(null, 
-null, 
-null, 
+(() => { const defaultEntityError = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'Error',
+'Error',
 MetaError.INSTANCE.getProperties(),false,
 undefined)
 defaultEntityError.addAspectModelUrn = this.NAMESPACE + 'Error';
@@ -97,32 +100,32 @@ return MetaAspectWithErrorCollection .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithErrorCollection';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithErrorCollection, any>> {
+getProperties(): Array<StaticProperty<AspectWithErrorCollection, any>> {
 return [MetaAspectWithErrorCollection.ITEMS];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithErrorCollection, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
         
-    getPreferredNames(): Array<LangString> {
+    getPreferredNames(): Array<MultiLanguageText> {
         return [
-            new LangString('Errors Aspect', 'en'),
+            {value: 'Errors Aspect', language: 'en'},
         ];
         }
 
         
-        getDescriptions(): Array<LangString> {
+        getDescriptions(): Array<MultiLanguageText> {
         return [
-            new LangString('The Errors Aspect delivers a list of the currently active errors for a specific machine.', 'en'),
+            {value: 'The Errors Aspect delivers a list of the currently active errors for a specific machine.', language: 'en'},
         ];
         }
 

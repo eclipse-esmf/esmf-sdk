@@ -15,8 +15,9 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithMultipleEntities,} from './AspectWithMultipleEntities';
-import { DefaultCharacteristic,DefaultEntity,} from './aspect-meta-model';
-import { DefaultStaticProperty,} from './core/staticConstraintProperty';
+import { DefaultCharacteristic,DefaultEntity,} from './esmf/aspect-meta-model';
+import { DefaultStaticProperty,PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
+import { KnownVersion,} from './esmf/shared/known-version';
 
 
 
@@ -27,8 +28,10 @@ import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithMultipleEntities (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithMultipleEntities).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithMultipleEntities implements StaticMetaClass<AspectWithMultipleEntities>, PropertyContainer<AspectWithMultipleEntities> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -53,17 +56,17 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
-(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithMultipleEntities',
+    'ReplacedAspectArtifact',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifactCharacteristic',
+'ReplacedAspectArtifactCharacteristic',
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
 undefined)
 defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
@@ -74,7 +77,7 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifa
     false,
     false,
     undefined,
-        'testEntityOne',
+        'ReplacedAspectArtifact',
     false,
     );
 
@@ -95,17 +98,17 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
-(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithMultipleEntities',
+    'ReplacedAspectArtifact',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifactCharacteristic',
+'ReplacedAspectArtifactCharacteristic',
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
 undefined)
 defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
@@ -116,7 +119,7 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifa
     false,
     false,
     undefined,
-        'testEntityTwo',
+        'ReplacedAspectArtifact',
     false,
     );
 
@@ -132,19 +135,19 @@ return MetaAspectWithMultipleEntities .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithMultipleEntities';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithMultipleEntities, any>> {
+getProperties(): Array<StaticProperty<AspectWithMultipleEntities, any>> {
 return [MetaAspectWithMultipleEntities.TEST_ENTITY_ONE, MetaAspectWithMultipleEntities.TEST_ENTITY_TWO];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithMultipleEntities, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

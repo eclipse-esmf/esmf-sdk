@@ -13,9 +13,10 @@
 
 
 import { AspectWithTwoStructuredValuesAndTrait,} from './AspectWithTwoStructuredValuesAndTrait';
-import { DefaultRegularExpressionConstraint,DefaultScalar,DefaultStructuredValue,DefaultTrait,} from './aspect-meta-model';
-import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
-import { DefaultStaticProperty,} from './core/staticConstraintProperty';
+import { DefaultCharacteristic,DefaultRegularExpressionConstraint,DefaultScalar,DefaultStructuredValue,DefaultTrait,} from './esmf/aspect-meta-model';
+import { DefaultScalarValue,} from './esmf/aspect-meta-model/default-scalar-value';
+import { DefaultStaticProperty,PropertyContainer,StaticContainerProperty,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
+import { KnownVersion,} from './esmf/shared/known-version';
 
 
     
@@ -24,8 +25,10 @@ import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithTwoStructuredValuesAndTrait (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithTwoStructuredValuesAndTrait).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithTwoStructuredValuesAndTrait implements StaticMetaClass<AspectWithTwoStructuredValuesAndTrait>, PropertyContainer<AspectWithTwoStructuredValuesAndTrait> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -34,6 +37,240 @@ export class MetaAspectWithTwoStructuredValuesAndTrait implements StaticMetaClas
 private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0';
 
  public static readonly  INSTANCE = new MetaAspectWithTwoStructuredValuesAndTrait();
+
+
+ public static readonly  END_DATE_YEAR = 
+                
+        new (class extends StaticContainerProperty<AspectWithTwoStructuredValuesAndTrait, Date, Date> {
+
+    
+    getPropertyType(): string {
+            return 'Date';
+    }
+
+    getContainingType(): string {
+        return 'AspectWithTwoStructuredValuesAndTrait';
+    }
+
+        getContainedType(): string {
+            return 'AspectWithTwoStructuredValuesAndTrait';
+        }
+
+        })(
+
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithTwoStructuredValuesAndTrait',
+    'endDateYear',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'Year',
+'Year',
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#gYear" ))
+defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Year';
+ return defaultCharacteristic; })()
+,
+    false,
+    true,
+    undefined,
+        'endDateYear',
+    false,
+    );
+
+
+
+
+ public static readonly  END_DATE_MONTH = 
+                
+        new (class extends StaticContainerProperty<AspectWithTwoStructuredValuesAndTrait, Date, Date> {
+
+    
+    getPropertyType(): string {
+            return 'Date';
+    }
+
+    getContainingType(): string {
+        return 'AspectWithTwoStructuredValuesAndTrait';
+    }
+
+        getContainedType(): string {
+            return 'AspectWithTwoStructuredValuesAndTrait';
+        }
+
+        })(
+
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithTwoStructuredValuesAndTrait',
+    'endDateMonth',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'Month',
+'Month',
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#gMonth" ))
+defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Month';
+ return defaultCharacteristic; })()
+,
+    false,
+    true,
+    undefined,
+        'endDateMonth',
+    false,
+    );
+
+
+
+
+ public static readonly  END_DATE_DAY = 
+                
+        new (class extends StaticContainerProperty<AspectWithTwoStructuredValuesAndTrait, Date, Date> {
+
+    
+    getPropertyType(): string {
+            return 'Date';
+    }
+
+    getContainingType(): string {
+        return 'AspectWithTwoStructuredValuesAndTrait';
+    }
+
+        getContainedType(): string {
+            return 'AspectWithTwoStructuredValuesAndTrait';
+        }
+
+        })(
+
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithTwoStructuredValuesAndTrait',
+    'endDateDay',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'Day',
+'Day',
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#gMonthDay" ))
+defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Day';
+ return defaultCharacteristic; })()
+,
+    false,
+    true,
+    undefined,
+        'endDateDay',
+    false,
+    );
+
+
+
+
+ public static readonly  START_DATE_YEAR = 
+                
+        new (class extends StaticContainerProperty<AspectWithTwoStructuredValuesAndTrait, Date, Date> {
+
+    
+    getPropertyType(): string {
+            return 'Date';
+    }
+
+    getContainingType(): string {
+        return 'AspectWithTwoStructuredValuesAndTrait';
+    }
+
+        getContainedType(): string {
+            return 'AspectWithTwoStructuredValuesAndTrait';
+        }
+
+        })(
+
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithTwoStructuredValuesAndTrait',
+    'startDateYear',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'Year',
+'Year',
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#gYear" ))
+defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Year';
+ return defaultCharacteristic; })()
+,
+    false,
+    true,
+    undefined,
+        'startDateYear',
+    false,
+    );
+
+
+
+
+ public static readonly  START_DATE_MONTH = 
+                
+        new (class extends StaticContainerProperty<AspectWithTwoStructuredValuesAndTrait, Date, Date> {
+
+    
+    getPropertyType(): string {
+            return 'Date';
+    }
+
+    getContainingType(): string {
+        return 'AspectWithTwoStructuredValuesAndTrait';
+    }
+
+        getContainedType(): string {
+            return 'AspectWithTwoStructuredValuesAndTrait';
+        }
+
+        })(
+
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithTwoStructuredValuesAndTrait',
+    'startDateMonth',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'Month',
+'Month',
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#gMonth" ))
+defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Month';
+ return defaultCharacteristic; })()
+,
+    false,
+    true,
+    undefined,
+        'startDateMonth',
+    false,
+    );
+
+
+
+
+ public static readonly  START_DATE_DAY = 
+                
+        new (class extends StaticContainerProperty<AspectWithTwoStructuredValuesAndTrait, Date, Date> {
+
+    
+    getPropertyType(): string {
+            return 'Date';
+    }
+
+    getContainingType(): string {
+        return 'AspectWithTwoStructuredValuesAndTrait';
+    }
+
+        getContainedType(): string {
+            return 'AspectWithTwoStructuredValuesAndTrait';
+        }
+
+        })(
+
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithTwoStructuredValuesAndTrait',
+    'startDateDay',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'Day',
+'Day',
+new DefaultScalar("http://www.w3.org/2001/XMLSchema#gMonthDay" ))
+defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Day';
+ return defaultCharacteristic; })()
+,
+    false,
+    true,
+    undefined,
+        'startDateDay',
+    false,
+    );
+
+
 
 
  public static readonly  START_DATE = 
@@ -50,26 +287,26 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const trait = new DefaultTrait(null, 
-null, 
-null, 
-(() => { const defaultStructuredValue = new DefaultStructuredValue(null, 
-null, 
-null, 
-'(\\d{4})-(\\d{2})-(\\d{2})',[START_DATE_YEAR,
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithTwoStructuredValuesAndTrait',
+    'startDate',
+    (() => { const trait = new DefaultTrait(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'StructuredDateWithConstraint',
+'StructuredDateWithConstraint',
+(() => { const defaultStructuredValue = new DefaultStructuredValue(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'StructuredDate',
+'StructuredDate',
+'(\\d{4})-(\\d{2})-(\\d{2})',[this.START_DATE_YEAR,
 '-',
-START_DATE_MONTH,
+this.START_DATE_MONTH,
 '-',
-START_DATE_DAY],new DefaultScalar("http://www.w3.org/2001/XMLSchema#date" ))
+this.START_DATE_DAY],new DefaultScalar("http://www.w3.org/2001/XMLSchema#date" ))
 defaultStructuredValue.addAspectModelUrn = this.NAMESPACE + 'StructuredDate';
- return defaultStructuredValue; })(),[(() => { const regularExpressionConstraint = new DefaultRegularExpressionConstraint(null, 
-null, 
-null, 
+ return defaultStructuredValue; })(),[(() => { const regularExpressionConstraint = new DefaultRegularExpressionConstraint(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 '[\\d-]*')
 regularExpressionConstraint.isAnonymousNode = true;
  return regularExpressionConstraint; })()])
@@ -78,7 +315,7 @@ trait.addAspectModelUrn = this.NAMESPACE + 'StructuredDateWithConstraint';
 ,
     false,
     false,
-    new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#date" ),new Date( ''2019-09-27'' )),
+    new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#date" ),new Date( '2019-09-27' )),
         'startDate',
     false,
     );
@@ -100,26 +337,26 @@ trait.addAspectModelUrn = this.NAMESPACE + 'StructuredDateWithConstraint';
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const trait = new DefaultTrait(null, 
-null, 
-null, 
-(() => { const defaultStructuredValue = new DefaultStructuredValue(null, 
-null, 
-null, 
-'(\\d{4})-(\\d{2})-(\\d{2})',[END_DATE_YEAR,
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithTwoStructuredValuesAndTrait',
+    'endDate',
+    (() => { const trait = new DefaultTrait(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'StructuredDateWithConstraint',
+'StructuredDateWithConstraint',
+(() => { const defaultStructuredValue = new DefaultStructuredValue(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'StructuredDate',
+'StructuredDate',
+'(\\d{4})-(\\d{2})-(\\d{2})',[this.END_DATE_YEAR,
 '-',
-END_DATE_MONTH,
+this.END_DATE_MONTH,
 '-',
-END_DATE_DAY],new DefaultScalar("http://www.w3.org/2001/XMLSchema#date" ))
+this.END_DATE_DAY],new DefaultScalar("http://www.w3.org/2001/XMLSchema#date" ))
 defaultStructuredValue.addAspectModelUrn = this.NAMESPACE + 'StructuredDate';
- return defaultStructuredValue; })(),[(() => { const regularExpressionConstraint = new DefaultRegularExpressionConstraint(null, 
-null, 
-null, 
+ return defaultStructuredValue; })(),[(() => { const regularExpressionConstraint = new DefaultRegularExpressionConstraint(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 '[\\d-]*')
 regularExpressionConstraint.isAnonymousNode = true;
  return regularExpressionConstraint; })()])
@@ -128,7 +365,7 @@ trait.addAspectModelUrn = this.NAMESPACE + 'StructuredDateWithConstraint';
 ,
     false,
     false,
-    new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#date" ),new Date( ''2019-09-27'' )),
+    new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#date" ),new Date( '2019-09-27' )),
         'endDate',
     false,
     );
@@ -145,19 +382,19 @@ return MetaAspectWithTwoStructuredValuesAndTrait .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithTwoStructuredValuesAndTrait';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithTwoStructuredValuesAndTrait, any>> {
+getProperties(): Array<StaticProperty<AspectWithTwoStructuredValuesAndTrait, any>> {
 return [MetaAspectWithTwoStructuredValuesAndTrait.START_DATE, MetaAspectWithTwoStructuredValuesAndTrait.END_DATE];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithTwoStructuredValuesAndTrait, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

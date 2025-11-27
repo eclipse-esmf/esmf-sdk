@@ -13,8 +13,9 @@
 
 
 import { AspectWithCollections,} from './AspectWithCollections';
-import { DefaultList,DefaultScalar,DefaultSet,} from './aspect-meta-model';
-import { StaticContainerProperty,} from './core/staticConstraintProperty';
+import { DefaultList,DefaultScalar,DefaultSet,} from './esmf/aspect-meta-model';
+import { KnownVersion,} from './esmf/shared/known-version';
+import { PropertyContainer,StaticContainerProperty,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
 
 
     
@@ -23,8 +24,10 @@ import { StaticContainerProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithCollections (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithCollections).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithCollections implements StaticMetaClass<AspectWithCollections>, PropertyContainer<AspectWithCollections> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -41,7 +44,7 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
     
     getPropertyType(): string {
-            return '${codeGenerationConfig.importTracker().getRawContainerType( $propertyType )}';
+            return 'string';
     }
 
     getContainingType(): string {
@@ -52,14 +55,14 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
             return 'AspectWithCollections';
         }
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultSet = new DefaultSet(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithCollections',
+    'setProperty',
+    (() => { const defaultSet = new DefaultSet(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 undefined,
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
 defaultSet.isAnonymousNode = true;
@@ -81,7 +84,7 @@ defaultSet.isAnonymousNode = true;
 
     
     getPropertyType(): string {
-            return '${codeGenerationConfig.importTracker().getRawContainerType( $propertyType )}';
+            return 'number';
     }
 
     getContainingType(): string {
@@ -92,14 +95,14 @@ defaultSet.isAnonymousNode = true;
             return 'AspectWithCollections';
         }
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultList = new DefaultList(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithCollections',
+    'listProperty',
+    (() => { const defaultList = new DefaultList(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 undefined,
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ))
 defaultList.isAnonymousNode = true;
@@ -124,19 +127,19 @@ return MetaAspectWithCollections .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithCollections';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithCollections, any>> {
+getProperties(): Array<StaticProperty<AspectWithCollections, any>> {
 return [MetaAspectWithCollections.SET_PROPERTY, MetaAspectWithCollections.LIST_PROPERTY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithCollections, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

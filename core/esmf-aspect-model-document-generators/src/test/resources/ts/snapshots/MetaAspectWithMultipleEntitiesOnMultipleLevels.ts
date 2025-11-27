@@ -15,9 +15,10 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithMultipleEntitiesOnMultipleLevels,} from './AspectWithMultipleEntitiesOnMultipleLevels';
-import { DefaultCharacteristic,DefaultEntity,DefaultScalar,} from './aspect-meta-model';
-import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
-import { DefaultStaticProperty,} from './core/staticConstraintProperty';
+import { DefaultCharacteristic,DefaultEntity,DefaultScalar,} from './esmf/aspect-meta-model';
+import { DefaultScalarValue,} from './esmf/aspect-meta-model/default-scalar-value';
+import { DefaultStaticProperty,PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
+import { KnownVersion,} from './esmf/shared/known-version';
 
 
 
@@ -30,8 +31,10 @@ import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithMultipleEntitiesOnMultipleLevels (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithMultipleEntitiesOnMultipleLevels).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithMultipleEntitiesOnMultipleLevels implements StaticMetaClass<AspectWithMultipleEntitiesOnMultipleLevels>, PropertyContainer<AspectWithMultipleEntitiesOnMultipleLevels> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -56,17 +59,17 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
-(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithMultipleEntitiesOnMultipleLevels',
+    'ReplacedAspectArtifact',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifactCharacteristic',
+'ReplacedAspectArtifactCharacteristic',
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
 undefined)
 defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
@@ -77,7 +80,7 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifa
     false,
     false,
     undefined,
-        'testEntityOne',
+        'ReplacedAspectArtifact',
     false,
     );
 
@@ -98,17 +101,17 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
-(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithMultipleEntitiesOnMultipleLevels',
+    'ReplacedAspectArtifact',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifactCharacteristic',
+'ReplacedAspectArtifactCharacteristic',
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
 undefined)
 defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
@@ -119,7 +122,7 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifa
     false,
     false,
     undefined,
-        'testEntityTwo',
+        'ReplacedAspectArtifact',
     false,
     );
 
@@ -140,14 +143,14 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithMultipleEntitiesOnMultipleLevels',
+    'testString',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.CHARACTERISTIC_NAMESPACE + '#Text',
+'Text',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
 defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Text';
 defaultCharacteristic.addPreferredName('en' , 'Text');
@@ -178,17 +181,17 @@ defaultCharacteristic.addDescription('en' , 'Describes a Property which contains
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
-(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithMultipleEntitiesOnMultipleLevels',
+    'testSecondEntity',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifactCharacteristic',
+'ReplacedAspectArtifactCharacteristic',
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
 undefined)
 defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
@@ -215,19 +218,19 @@ return MetaAspectWithMultipleEntitiesOnMultipleLevels .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithMultipleEntitiesOnMultipleLevels';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithMultipleEntitiesOnMultipleLevels, any>> {
+getProperties(): Array<StaticProperty<AspectWithMultipleEntitiesOnMultipleLevels, any>> {
 return [MetaAspectWithMultipleEntitiesOnMultipleLevels.TEST_ENTITY_ONE, MetaAspectWithMultipleEntitiesOnMultipleLevels.TEST_ENTITY_TWO, MetaAspectWithMultipleEntitiesOnMultipleLevels.TEST_STRING, MetaAspectWithMultipleEntitiesOnMultipleLevels.TEST_SECOND_ENTITY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithMultipleEntitiesOnMultipleLevels, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

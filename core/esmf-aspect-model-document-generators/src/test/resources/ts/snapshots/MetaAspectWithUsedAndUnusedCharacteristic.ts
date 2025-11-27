@@ -13,8 +13,9 @@
 
 
 import { AspectWithUsedAndUnusedCharacteristic,} from './AspectWithUsedAndUnusedCharacteristic';
-import { DefaultCharacteristic,DefaultScalar,} from './aspect-meta-model';
-import { DefaultStaticProperty,} from './core/staticConstraintProperty';
+import { DefaultCharacteristic,DefaultScalar,} from './esmf/aspect-meta-model';
+import { DefaultStaticProperty,PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
+import { KnownVersion,} from './esmf/shared/known-version';
 
 
     
@@ -23,8 +24,10 @@ import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithUsedAndUnusedCharacteristic (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithUsedAndUnusedCharacteristic).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithUsedAndUnusedCharacteristic implements StaticMetaClass<AspectWithUsedAndUnusedCharacteristic>, PropertyContainer<AspectWithUsedAndUnusedCharacteristic> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -49,14 +52,14 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithUsedAndUnusedCharacteristic',
+    'testProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'UsedReplacedAspectArtifact',
+'UsedReplacedAspectArtifact',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
 defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'UsedReplacedAspectArtifact';
 defaultCharacteristic.addPreferredName('en' , 'Used Test Characteristic');
@@ -84,19 +87,19 @@ return MetaAspectWithUsedAndUnusedCharacteristic .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithUsedAndUnusedCharacteristic';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithUsedAndUnusedCharacteristic, any>> {
+getProperties(): Array<StaticProperty<AspectWithUsedAndUnusedCharacteristic, any>> {
 return [MetaAspectWithUsedAndUnusedCharacteristic.TEST_PROPERTY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithUsedAndUnusedCharacteristic, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

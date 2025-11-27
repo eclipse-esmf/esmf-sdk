@@ -13,7 +13,9 @@
 
 
 import { AspectWithSeeToElement,} from './AspectWithSeeToElement';
-import { LangString,} from './core/langString';
+import { KnownVersion,} from './esmf/shared/known-version';
+import { MultiLanguageText,} from './esmf/instantiator/characteristic/characteristic-instantiator-util';
+import { PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
 
 
     
@@ -22,8 +24,10 @@ import { LangString,} from './core/langString';
 * Generated class MetaAspectWithSeeToElement (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithSeeToElement).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithSeeToElement implements StaticMetaClass<AspectWithSeeToElement>, PropertyContainer<AspectWithSeeToElement> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -43,32 +47,32 @@ return MetaAspectWithSeeToElement .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithSeeToElement';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithSeeToElement, any>> {
+getProperties(): Array<StaticProperty<AspectWithSeeToElement, any>> {
 return [];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithSeeToElement, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
         
-    getPreferredNames(): Array<LangString> {
+    getPreferredNames(): Array<MultiLanguageText> {
         return [
-            new LangString('Test Aspect', 'en'),
+            {value: 'Test Aspect', language: 'en'},
         ];
         }
 
         
-        getDescriptions(): Array<LangString> {
+        getDescriptions(): Array<MultiLanguageText> {
         return [
-            new LangString('This is a test Aspect.', 'en'),
+            {value: 'This is a test Aspect.', language: 'en'},
         ];
         }
 

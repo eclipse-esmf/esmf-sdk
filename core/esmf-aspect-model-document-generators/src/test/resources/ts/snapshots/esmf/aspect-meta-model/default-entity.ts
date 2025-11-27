@@ -15,7 +15,7 @@ import {Base, BaseMetaModelElement} from './base';
 import {HasProperties} from './has-properties';
 import {Property} from './default-property';
 import {Type} from './type';
-import {ModelVisitor} from './visitor/model-visitor';
+import {ModelVisitor} from '../visitor/model-visitor';
 
 export interface Entity extends BaseMetaModelElement, HasProperties, Type {
     /**

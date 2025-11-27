@@ -13,9 +13,10 @@
 
 
 import { AspectWithPropertyWithPayloadName,} from './AspectWithPropertyWithPayloadName';
-import { DefaultCharacteristic,DefaultScalar,} from './aspect-meta-model';
-import { DefaultStaticProperty,} from './core/staticConstraintProperty';
-import { LangString,} from './core/langString';
+import { DefaultCharacteristic,DefaultScalar,} from './esmf/aspect-meta-model';
+import { DefaultStaticProperty,PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
+import { KnownVersion,} from './esmf/shared/known-version';
+import { MultiLanguageText,} from './esmf/instantiator/characteristic/characteristic-instantiator-util';
 
 
     
@@ -24,8 +25,10 @@ import { LangString,} from './core/langString';
 * Generated class MetaAspectWithPropertyWithPayloadName (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithPropertyWithPayloadName).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithPropertyWithPayloadName implements StaticMetaClass<AspectWithPropertyWithPayloadName>, PropertyContainer<AspectWithPropertyWithPayloadName> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -50,14 +53,14 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithPropertyWithPayloadName',
+    'testProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.CHARACTERISTIC_NAMESPACE + '#Text',
+'Text',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
 defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Text';
 defaultCharacteristic.addPreferredName('en' , 'Text');
@@ -83,32 +86,32 @@ return MetaAspectWithPropertyWithPayloadName .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithPropertyWithPayloadName';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithPropertyWithPayloadName, any>> {
+getProperties(): Array<StaticProperty<AspectWithPropertyWithPayloadName, any>> {
 return [MetaAspectWithPropertyWithPayloadName.TEST_PROPERTY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithPropertyWithPayloadName, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
         
-    getPreferredNames(): Array<LangString> {
+    getPreferredNames(): Array<MultiLanguageText> {
         return [
-            new LangString('Test Aspect', 'en'),
+            {value: 'Test Aspect', language: 'en'},
         ];
         }
 
         
-        getDescriptions(): Array<LangString> {
+        getDescriptions(): Array<MultiLanguageText> {
         return [
-            new LangString('This is a test description', 'en'),
+            {value: 'This is a test description', language: 'en'},
         ];
         }
 

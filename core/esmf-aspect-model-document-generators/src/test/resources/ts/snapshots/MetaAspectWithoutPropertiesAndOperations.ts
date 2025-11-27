@@ -13,6 +13,8 @@
 
 
 import { AspectWithoutPropertiesAndOperations,} from './AspectWithoutPropertiesAndOperations';
+import { KnownVersion,} from './esmf/shared/known-version';
+import { PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
 
 
     
@@ -21,8 +23,10 @@ import { AspectWithoutPropertiesAndOperations,} from './AspectWithoutPropertiesA
 * Generated class MetaAspectWithoutPropertiesAndOperations (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithoutPropertiesAndOperations).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithoutPropertiesAndOperations implements StaticMetaClass<AspectWithoutPropertiesAndOperations>, PropertyContainer<AspectWithoutPropertiesAndOperations> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -42,19 +46,19 @@ return MetaAspectWithoutPropertiesAndOperations .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithoutPropertiesAndOperations';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithoutPropertiesAndOperations, any>> {
+getProperties(): Array<StaticProperty<AspectWithoutPropertiesAndOperations, any>> {
 return [];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithoutPropertiesAndOperations, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

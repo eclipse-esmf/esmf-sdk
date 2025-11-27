@@ -16,9 +16,10 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithCollectionWithAbstractEntity,} from './AspectWithCollectionWithAbstractEntity';
-import { DefaultCollection,DefaultEntity,} from './aspect-meta-model';
+import { DefaultCollection,DefaultEntity,} from './esmf/aspect-meta-model';
+import { KnownVersion,} from './esmf/shared/known-version';
 
-import { StaticContainerProperty,} from './core/staticConstraintProperty';
+import { PropertyContainer,StaticContainerProperty,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
 
 
     
@@ -27,8 +28,10 @@ import { StaticContainerProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithCollectionWithAbstractEntity (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithCollectionWithAbstractEntity).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithCollectionWithAbstractEntity implements StaticMetaClass<AspectWithCollectionWithAbstractEntity>, PropertyContainer<AspectWithCollectionWithAbstractEntity> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -45,7 +48,7 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
     
     getPropertyType(): string {
-            return '${codeGenerationConfig.importTracker().getRawContainerType( $propertyType )}';
+            return 'ReplacedAspectArtifact';
     }
 
     getContainingType(): string {
@@ -56,18 +59,18 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
             return 'AspectWithCollectionWithAbstractEntity';
         }
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCollection = new DefaultCollection(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithCollectionWithAbstractEntity',
+    'testProperty',
+    (() => { const defaultCollection = new DefaultCollection(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'EntityCollectionCharacteristic',
+'EntityCollectionCharacteristic',
 true, false, undefined,
-(() => { const abstractDefaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+(() => { const abstractDefaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),true,
 undefined)
 abstractDefaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
@@ -96,19 +99,19 @@ return MetaAspectWithCollectionWithAbstractEntity .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithCollectionWithAbstractEntity';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithCollectionWithAbstractEntity, any>> {
+getProperties(): Array<StaticProperty<AspectWithCollectionWithAbstractEntity, any>> {
 return [MetaAspectWithCollectionWithAbstractEntity.TEST_PROPERTY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithCollectionWithAbstractEntity, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

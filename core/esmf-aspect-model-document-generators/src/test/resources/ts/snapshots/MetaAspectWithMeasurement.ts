@@ -13,9 +13,10 @@
 
 
 import { AspectWithMeasurement,} from './AspectWithMeasurement';
-import { DefaultMeasurement,DefaultQuantityKind,DefaultScalar,} from './aspect-meta-model';
-import { DefaultUnit,} from './aspect-meta-model/default-unit';
-import { StaticUnitProperty,} from './core/staticConstraintProperty';
+import { DefaultMeasurement,DefaultQuantityKind,DefaultScalar,} from './esmf/aspect-meta-model';
+import { DefaultUnit,} from './esmf/aspect-meta-model/default-unit';
+import { KnownVersion,} from './esmf/shared/known-version';
+import { PropertyContainer,StaticMetaClass,StaticProperty,StaticUnitProperty,} from './esmf/aspect-meta-model/staticProperty';
 
 
     
@@ -24,8 +25,10 @@ import { StaticUnitProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithMeasurement (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithMeasurement).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithMeasurement implements StaticMetaClass<AspectWithMeasurement>, PropertyContainer<AspectWithMeasurement> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -50,50 +53,50 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultMeasurement = new DefaultMeasurement(null, 
-null, 
-null, 
-(() => { const defaultUnit = new DefaultUnit(null, 
-null, 
-null, 
-'K','KEL',undefined,'K',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'Debye temperature')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'Néel temperature')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
-'Curie temperature')
-defaultQuantityKind.isAnonymousNode = true;
- return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithMeasurement',
+    'testProperty',
+    (() => { const defaultMeasurement = new DefaultMeasurement(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'TestMeasurement',
+'TestMeasurement',
+(() => { const defaultUnit = new DefaultUnit(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#kelvin',
+'kelvin',
+'K','KEL',undefined,'K',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#thermodynamic',
+'thermodynamic',
 'thermodynamic')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#neelTemperature',
+'neelTemperature',
+'Néel temperature')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#superConductorTransitionTemperature',
+'superConductorTransitionTemperature',
 'Super conductor transition temperature')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })(),
-(() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#debyeTemperature',
+'debyeTemperature',
+'Debye temperature')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#curieTemperature',
+'curieTemperature',
+'Curie temperature')
+defaultQuantityKind.isAnonymousNode = true;
+ return defaultQuantityKind; })(),
+(() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#fermiTemperature',
+'fermiTemperature',
 'Fermi temperature')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })() ])
@@ -125,19 +128,19 @@ return MetaAspectWithMeasurement .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithMeasurement';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithMeasurement, any>> {
+getProperties(): Array<StaticProperty<AspectWithMeasurement, any>> {
 return [MetaAspectWithMeasurement.TEST_PROPERTY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithMeasurement, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

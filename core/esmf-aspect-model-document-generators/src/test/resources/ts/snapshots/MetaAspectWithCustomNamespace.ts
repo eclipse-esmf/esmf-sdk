@@ -13,7 +13,9 @@
 
 
 import { AspectWithCustomNamespace,} from './AspectWithCustomNamespace';
-import { LangString,} from './core/langString';
+import { KnownVersion,} from './esmf/shared/known-version';
+import { MultiLanguageText,} from './esmf/instantiator/characteristic/characteristic-instantiator-util';
+import { PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
 
 
     
@@ -22,8 +24,10 @@ import { LangString,} from './core/langString';
 * Generated class MetaAspectWithCustomNamespace (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithCustomNamespace).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithCustomNamespace implements StaticMetaClass<AspectWithCustomNamespace>, PropertyContainer<AspectWithCustomNamespace> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -43,32 +47,32 @@ return MetaAspectWithCustomNamespace .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithCustomNamespace';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithCustomNamespace, any>> {
+getProperties(): Array<StaticProperty<AspectWithCustomNamespace, any>> {
 return [];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithCustomNamespace, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
         
-    getPreferredNames(): Array<LangString> {
+    getPreferredNames(): Array<MultiLanguageText> {
         return [
-            new LangString('Test Aspect', 'en'),
+            {value: 'Test Aspect', language: 'en'},
         ];
         }
 
         
-        getDescriptions(): Array<LangString> {
+        getDescriptions(): Array<MultiLanguageText> {
         return [
-            new LangString('This is a test description', 'en'),
+            {value: 'This is a test description', language: 'en'},
         ];
         }
 

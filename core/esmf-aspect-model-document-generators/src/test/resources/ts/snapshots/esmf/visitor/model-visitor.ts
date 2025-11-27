@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {Aspect, Characteristic, Constraint, Entity, Property, QuantityKind, Unit} from '../index';
+import {Aspect, Characteristic, Constraint, Entity, Event, Operation, Property, QuantityKind, Unit} from '../aspect-meta-model';
 
 /**
  * Visitor interface to traverse a loaded model and apply operations to the
@@ -25,6 +25,8 @@ export interface ModelVisitor<T, U> {
     visitProperty(property: Property, context: U): T;
     /** Visit an Aspect definition */
     visitAspect(aspect: Aspect, context: U): T;
+    /** Visit a Operation definition */
+    visitOperation(operation: Operation, context: U): T;
     /** Visit a Constraint definition */
     visitConstraint(constraint: Constraint, context: U): T;
     /** Visit a Characteristic definition */

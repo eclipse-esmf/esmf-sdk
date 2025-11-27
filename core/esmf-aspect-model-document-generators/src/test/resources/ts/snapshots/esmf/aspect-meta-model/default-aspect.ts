@@ -14,7 +14,7 @@
 import {Base, DefaultCollection, Event, Operation, Property} from './index';
 import {BaseMetaModelElement} from './base';
 import {HasProperties} from './has-properties';
-import {ModelVisitor} from './visitor/model-visitor';
+import {ModelVisitor} from '../visitor/model-visitor';
 
 export interface Aspect extends BaseMetaModelElement, HasProperties {
     operations: Array<Operation>;

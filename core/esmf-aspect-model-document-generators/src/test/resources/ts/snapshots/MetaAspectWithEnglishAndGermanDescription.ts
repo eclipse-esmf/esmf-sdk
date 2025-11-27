@@ -13,10 +13,11 @@
 
 
 import { AspectWithEnglishAndGermanDescription,} from './AspectWithEnglishAndGermanDescription';
-import { DefaultCharacteristic,DefaultScalar,} from './aspect-meta-model';
-import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
-import { DefaultStaticProperty,} from './core/staticConstraintProperty';
-import { LangString,} from './core/langString';
+import { DefaultCharacteristic,DefaultScalar,} from './esmf/aspect-meta-model';
+import { DefaultScalarValue,} from './esmf/aspect-meta-model/default-scalar-value';
+import { DefaultStaticProperty,PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
+import { KnownVersion,} from './esmf/shared/known-version';
+import { MultiLanguageText,} from './esmf/instantiator/characteristic/characteristic-instantiator-util';
 
 
     
@@ -25,8 +26,10 @@ import { LangString,} from './core/langString';
 * Generated class MetaAspectWithEnglishAndGermanDescription (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEnglishAndGermanDescription).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithEnglishAndGermanDescription implements StaticMetaClass<AspectWithEnglishAndGermanDescription>, PropertyContainer<AspectWithEnglishAndGermanDescription> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -51,14 +54,14 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithEnglishAndGermanDescription',
+    'testString',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.CHARACTERISTIC_NAMESPACE + '#Text',
+'Text',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
 defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#Text';
 defaultCharacteristic.addPreferredName('en' , 'Text');
@@ -84,34 +87,34 @@ return MetaAspectWithEnglishAndGermanDescription .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithEnglishAndGermanDescription';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithEnglishAndGermanDescription, any>> {
+getProperties(): Array<StaticProperty<AspectWithEnglishAndGermanDescription, any>> {
 return [MetaAspectWithEnglishAndGermanDescription.TEST_STRING];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithEnglishAndGermanDescription, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
         
-    getPreferredNames(): Array<LangString> {
+    getPreferredNames(): Array<MultiLanguageText> {
         return [
-            new LangString('Testaspekt', 'de'),
-            new LangString('Test Aspect', 'en'),
+            {value: 'Testaspekt', language: 'de'},
+            {value: 'Test Aspect', language: 'en'},
         ];
         }
 
         
-        getDescriptions(): Array<LangString> {
+        getDescriptions(): Array<MultiLanguageText> {
         return [
-            new LangString('Aspekt mit mehrsprachigen Beschreibungen', 'de'),
-            new LangString('Aspect With Multilingual Descriptions', 'en'),
+            {value: 'Aspekt mit mehrsprachigen Beschreibungen', language: 'de'},
+            {value: 'Aspect With Multilingual Descriptions', language: 'en'},
         ];
         }
 

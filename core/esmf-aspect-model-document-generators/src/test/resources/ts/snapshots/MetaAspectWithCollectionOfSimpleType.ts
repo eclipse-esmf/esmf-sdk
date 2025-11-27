@@ -13,9 +13,10 @@
 
 
 import { AspectWithCollectionOfSimpleType,} from './AspectWithCollectionOfSimpleType';
-import { DefaultList,DefaultScalar,} from './aspect-meta-model';
-import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
-import { StaticContainerProperty,} from './core/staticConstraintProperty';
+import { DefaultList,DefaultScalar,} from './esmf/aspect-meta-model';
+import { DefaultScalarValue,} from './esmf/aspect-meta-model/default-scalar-value';
+import { KnownVersion,} from './esmf/shared/known-version';
+import { PropertyContainer,StaticContainerProperty,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
 
 
     
@@ -24,8 +25,10 @@ import { StaticContainerProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithCollectionOfSimpleType (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithCollectionOfSimpleType).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithCollectionOfSimpleType implements StaticMetaClass<AspectWithCollectionOfSimpleType>, PropertyContainer<AspectWithCollectionOfSimpleType> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -42,7 +45,7 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
     
     getPropertyType(): string {
-            return '${codeGenerationConfig.importTracker().getRawContainerType( $propertyType )}';
+            return 'number';
     }
 
     getContainingType(): string {
@@ -53,14 +56,14 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
             return 'AspectWithCollectionOfSimpleType';
         }
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultList = new DefaultList(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithCollectionOfSimpleType',
+    'testList',
+    (() => { const defaultList = new DefaultList(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'IntegerList',
+'IntegerList',
 undefined,
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#int" ))
 defaultList.addAspectModelUrn = this.NAMESPACE + 'IntegerList';
@@ -85,19 +88,19 @@ return MetaAspectWithCollectionOfSimpleType .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithCollectionOfSimpleType';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithCollectionOfSimpleType, any>> {
+getProperties(): Array<StaticProperty<AspectWithCollectionOfSimpleType, any>> {
 return [MetaAspectWithCollectionOfSimpleType.TEST_LIST];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithCollectionOfSimpleType, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

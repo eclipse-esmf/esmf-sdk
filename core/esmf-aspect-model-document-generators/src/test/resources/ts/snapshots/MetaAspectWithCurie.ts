@@ -13,10 +13,10 @@
 
 
 import { AspectWithCurie,} from './AspectWithCurie';
-import { Curie,} from './core/curie';
-import { DefaultCharacteristic,DefaultScalar,} from './aspect-meta-model';
-import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
-import { DefaultStaticProperty,} from './core/staticConstraintProperty';
+import { DefaultCharacteristic,DefaultScalar,} from './esmf/aspect-meta-model';
+import { DefaultScalarValue,} from './esmf/aspect-meta-model/default-scalar-value';
+import { DefaultStaticProperty,PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
+import { KnownVersion,} from './esmf/shared/known-version';
 
 
     
@@ -25,8 +25,10 @@ import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithCurie (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithCurie).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithCurie implements StaticMetaClass<AspectWithCurie>, PropertyContainer<AspectWithCurie> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -51,14 +53,14 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithCurie',
+    'testCurie',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.CHARACTERISTIC_NAMESPACE + '#UnitReference',
+'UnitReference',
 new DefaultScalar("urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#curie" ))
 defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#UnitReference';
 defaultCharacteristic.addPreferredName('en' , 'Unit Reference');
@@ -67,7 +69,7 @@ defaultCharacteristic.addDescription('en' , 'Describes a Property containing a r
 ,
     false,
     false,
-    new DefaultScalarValue(new DefaultScalar("urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#curie" ),new Curie( 'unit:hectopascal' )),
+    new DefaultScalarValue(new DefaultScalar("urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#curie" ),'unit:hectopascal'),
         'testCurie',
     false,
     );
@@ -89,14 +91,14 @@ defaultCharacteristic.addDescription('en' , 'Describes a Property containing a r
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithCurie',
+    'testCurieWithoutExampleValue',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.CHARACTERISTIC_NAMESPACE + '#UnitReference',
+'UnitReference',
 new DefaultScalar("urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#curie" ))
 defaultCharacteristic.addAspectModelUrn = this.CHARACTERISTIC_NAMESPACE + '#UnitReference';
 defaultCharacteristic.addPreferredName('en' , 'Unit Reference');
@@ -122,19 +124,19 @@ return MetaAspectWithCurie .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithCurie';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithCurie, any>> {
+getProperties(): Array<StaticProperty<AspectWithCurie, any>> {
 return [MetaAspectWithCurie.TEST_CURIE, MetaAspectWithCurie.TEST_CURIE_WITHOUT_EXAMPLE_VALUE];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithCurie, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

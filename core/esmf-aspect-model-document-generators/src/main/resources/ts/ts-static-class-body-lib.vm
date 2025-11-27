@@ -23,8 +23,10 @@
 * Generated class $classMetaName (${elementUrn}).
 * Generated "$codeGeneratorName", date = "$codeGeneratorDate"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+$codeGenerationConfig.importTracker().importLibExplicit( 'StaticMetaClass' , 'aspect-meta-model/staticProperty' )
+$codeGenerationConfig.importTracker().importLibExplicit( 'PropertyContainer' , 'aspect-meta-model/staticProperty' )
+$codeGenerationConfig.importTracker().importLibExplicit( 'StaticProperty' , 'aspect-meta-model/staticProperty' )
+$codeGenerationConfig.importTracker().importLibExplicit( 'KnownVersion' , 'shared/known-version' )
 
 export class $classMetaName implements StaticMetaClass<${className}>, PropertyContainer<${className}> {
     #propertyDeclaration() NAMESPACE = '${modelUrnPrefix}';
@@ -53,46 +55,45 @@ return $classMetaName .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return '${className}';
 }
 
-    ##    #if( $element.getExtends().isPresent() )
-    ##        #set( $propertyTypeParameter = "? super ${className}" )
-    ##    #else
-    ##        #set( $propertyTypeParameter = ${className} )
-    ##    #end
-    ##    Do we need improve it?
     #set( $propertyTypeParameter = ${className} )
 getProperties(): Array<StaticProperty<$propertyTypeParameter, any>> {
 return [${util.staticPropertiesExpression($classMetaName , $element )}];
 }
 
 getAllProperties(): Array<StaticProperty<$propertyTypeParameter, any>> {
-    ##      TODO implement merging with super types
-return this.getProperties();
+    #if( $element.getExtends().isPresent() )
+        #set( $extendedElement = $element.getExtends().get() )
+         $codeGenerationConfig.importTracker().trackPotentiallyParameterizedType( "Meta${extendedElement.getName()}" )
+        return this.getProperties().concat([Meta${extendedElement.getName()}.INSTANCE.getAllProperties()]);
+    #else
+        return this.getProperties();
+    #end
 }
 
     #if( !$element.getPreferredNames().isEmpty() )
-        $codeGenerationConfig.importTracker().importExplicit( 'LangString' , './core/langString' )
-    getPreferredNames(): Array<LangString> {
+        $codeGenerationConfig.importTracker().importLibExplicit( 'MultiLanguageText' , 'instantiator/characteristic/characteristic-instantiator-util' )
+    getPreferredNames(): Array<MultiLanguageText> {
         return [
         #foreach( $langString in $element.getPreferredNames() )
-            new LangString('$util.escapeForLiteral( $langString.getValue() )', '$langString.getLanguageTag().toLanguageTag()'),
+            {value: '$util.escapeForLiteral( $langString.getValue() )', language: '$langString.getLanguageTag().toLanguageTag()'},
         #end
         ];
         }
     #end
 
     #if( !$element.descriptions.isEmpty() )
-        $codeGenerationConfig.importTracker().importExplicit( 'LangString' , './core/langString' )
-        getDescriptions(): Array<LangString> {
+        $codeGenerationConfig.importTracker().importLibExplicit( 'MultiLanguageText' , 'instantiator/characteristic/characteristic-instantiator-util' )
+        getDescriptions(): Array<MultiLanguageText> {
         return [
         #foreach( $langString in $element.getDescriptions() )
-            new LangString('$util.escapeForLiteral( $langString.getValue() )', '$langString.getLanguageTag().toLanguageTag()'),
+            {value: '$util.escapeForLiteral( $langString.getValue() )', language: '$langString.getLanguageTag().toLanguageTag()'},
         #end
         ];
         }

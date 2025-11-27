@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import { StaticProperty } from './core/staticConstraintProperty';
+import { StaticProperty } from './esmf/aspect-meta-model/staticProperty';
 
 export class MetaReplacedAspectArtifact {
 

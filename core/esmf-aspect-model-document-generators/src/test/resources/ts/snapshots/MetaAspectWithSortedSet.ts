@@ -13,10 +13,11 @@
 
 
 import { AspectWithSortedSet,} from './AspectWithSortedSet';
-import { DefaultScalar,DefaultSortedSet,} from './aspect-meta-model';
-import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
-import { LangString,} from './core/langString';
-import { StaticContainerProperty,} from './core/staticConstraintProperty';
+import { DefaultScalar,DefaultSortedSet,} from './esmf/aspect-meta-model';
+import { DefaultScalarValue,} from './esmf/aspect-meta-model/default-scalar-value';
+import { KnownVersion,} from './esmf/shared/known-version';
+import { MultiLanguageText,} from './esmf/instantiator/characteristic/characteristic-instantiator-util';
+import { PropertyContainer,StaticContainerProperty,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
 
 
     
@@ -25,8 +26,10 @@ import { StaticContainerProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithSortedSet (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithSortedSet).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithSortedSet implements StaticMetaClass<AspectWithSortedSet>, PropertyContainer<AspectWithSortedSet> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -43,7 +46,7 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
     
     getPropertyType(): string {
-            return '${codeGenerationConfig.importTracker().getRawContainerType( $propertyType )}';
+            return 'string';
     }
 
     getContainingType(): string {
@@ -54,14 +57,14 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
             return 'AspectWithSortedSet';
         }
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultSortedSet = new DefaultSortedSet(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithSortedSet',
+    'testProperty',
+    (() => { const defaultSortedSet = new DefaultSortedSet(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'TestSortedSet',
+'TestSortedSet',
 undefined,
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
 defaultSortedSet.addAspectModelUrn = this.NAMESPACE + 'TestSortedSet';
@@ -89,32 +92,32 @@ return MetaAspectWithSortedSet .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithSortedSet';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithSortedSet, any>> {
+getProperties(): Array<StaticProperty<AspectWithSortedSet, any>> {
 return [MetaAspectWithSortedSet.TEST_PROPERTY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithSortedSet, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
         
-    getPreferredNames(): Array<LangString> {
+    getPreferredNames(): Array<MultiLanguageText> {
         return [
-            new LangString('Test Aspect', 'en'),
+            {value: 'Test Aspect', language: 'en'},
         ];
         }
 
         
-        getDescriptions(): Array<LangString> {
+        getDescriptions(): Array<MultiLanguageText> {
         return [
-            new LangString('This is a test description', 'en'),
+            {value: 'This is a test description', language: 'en'},
         ];
         }
 

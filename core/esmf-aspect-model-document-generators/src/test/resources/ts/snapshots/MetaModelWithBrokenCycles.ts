@@ -15,10 +15,11 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 
-import { DefaultCharacteristic,DefaultEntity,} from './aspect-meta-model';
-import { DefaultStaticProperty,} from './core/staticConstraintProperty';
+import { DefaultCharacteristic,DefaultEntity,} from './esmf/aspect-meta-model';
+import { DefaultStaticProperty,PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
 
-import { Either,} from './core/Either';
+import { Either,} from './esmf/aspect-meta-model/Either';
+import { KnownVersion,} from './esmf/shared/known-version';
 
 
 
@@ -32,8 +33,10 @@ import { ModelWithBrokenCycles,} from './ModelWithBrokenCycles';
 * Generated class MetaModelWithBrokenCycles (urn:samm:org.eclipse.esmf.test:1.0.0#ModelWithBrokenCycles).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaModelWithBrokenCycles implements StaticMetaClass<ModelWithBrokenCycles>, PropertyContainer<ModelWithBrokenCycles> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -58,17 +61,17 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
-(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'ModelWithBrokenCycles',
+    'a',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'aCharacteristic',
+'aCharacteristic',
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
 undefined)
 defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
@@ -100,17 +103,17 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'aCharacteristic';
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
-(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'ModelWithBrokenCycles',
+    'e',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'eCharacteristic',
+'eCharacteristic',
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
 undefined)
 defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
@@ -142,14 +145,14 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'eCharacteristic';
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'ModelWithBrokenCycles',
+    'h',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'hCharacteristic',
+'hCharacteristic',
 undefined)
 defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'hCharacteristic';
  return defaultCharacteristic; })()
@@ -173,19 +176,19 @@ return MetaModelWithBrokenCycles .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'ModelWithBrokenCycles';
 }
 
-                        getProperties(): Array<StaticProperty<ModelWithBrokenCycles, any>> {
+getProperties(): Array<StaticProperty<ModelWithBrokenCycles, any>> {
 return [MetaModelWithBrokenCycles.A, MetaModelWithBrokenCycles.E, MetaModelWithBrokenCycles.H];
 }
 
 getAllProperties(): Array<StaticProperty<ModelWithBrokenCycles, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

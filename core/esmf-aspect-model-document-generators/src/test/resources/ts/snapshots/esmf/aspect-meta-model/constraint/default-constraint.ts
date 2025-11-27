@@ -12,7 +12,7 @@
  */
 
 import {Base, BaseMetaModelElement} from '../base';
-import {ModelVisitor} from '../visitor/model-visitor';
+import {ModelVisitor} from '../../visitor/model-visitor';
 
 export type Constraint = BaseMetaModelElement;
 

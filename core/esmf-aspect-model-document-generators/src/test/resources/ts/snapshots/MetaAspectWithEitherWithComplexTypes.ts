@@ -14,9 +14,10 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithEitherWithComplexTypes,} from './AspectWithEitherWithComplexTypes';
-import { DefaultCharacteristic,} from './aspect-meta-model';
-import { DefaultStaticProperty,} from './core/staticConstraintProperty';
-import { Either,} from './core/Either';
+import { DefaultCharacteristic,} from './esmf/aspect-meta-model';
+import { DefaultStaticProperty,PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
+import { Either,} from './esmf/aspect-meta-model/Either';
+import { KnownVersion,} from './esmf/shared/known-version';
 
 
 
@@ -27,8 +28,10 @@ import { Either,} from './core/Either';
 * Generated class MetaAspectWithEitherWithComplexTypes (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEitherWithComplexTypes).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithEitherWithComplexTypes implements StaticMetaClass<AspectWithEitherWithComplexTypes>, PropertyContainer<AspectWithEitherWithComplexTypes> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -53,14 +56,14 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithEitherWithComplexTypes',
+    'testProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'TestEither',
+'TestEither',
 undefined)
 defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'TestEither';
 defaultCharacteristic.addPreferredName('en' , 'Test Either');
@@ -87,19 +90,19 @@ return MetaAspectWithEitherWithComplexTypes .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithEitherWithComplexTypes';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithEitherWithComplexTypes, any>> {
+getProperties(): Array<StaticProperty<AspectWithEitherWithComplexTypes, any>> {
 return [MetaAspectWithEitherWithComplexTypes.TEST_PROPERTY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithEitherWithComplexTypes, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

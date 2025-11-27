@@ -13,8 +13,9 @@
 
 
 import { AspectWithQuantifiableWithoutUnit,} from './AspectWithQuantifiableWithoutUnit';
-import { DefaultQuantifiable,DefaultScalar,} from './aspect-meta-model';
-import { DefaultStaticProperty,} from './core/staticConstraintProperty';
+import { DefaultQuantifiable,DefaultScalar,} from './esmf/aspect-meta-model';
+import { DefaultStaticProperty,PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
+import { KnownVersion,} from './esmf/shared/known-version';
 
 
     
@@ -23,8 +24,10 @@ import { DefaultStaticProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithQuantifiableWithoutUnit (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithQuantifiableWithoutUnit).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithQuantifiableWithoutUnit implements StaticMetaClass<AspectWithQuantifiableWithoutUnit>, PropertyContainer<AspectWithQuantifiableWithoutUnit> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -49,14 +52,14 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultQuantifiable = new DefaultQuantifiable(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithQuantifiableWithoutUnit',
+    'testProperty',
+    (() => { const defaultQuantifiable = new DefaultQuantifiable(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'TestQuantifiable',
+'TestQuantifiable',
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#float" ),undefined)
 defaultQuantifiable.addAspectModelUrn = this.NAMESPACE + 'TestQuantifiable';
 defaultQuantifiable.addPreferredName('en' , 'Test Quantifiable');
@@ -83,19 +86,19 @@ return MetaAspectWithQuantifiableWithoutUnit .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithQuantifiableWithoutUnit';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithQuantifiableWithoutUnit, any>> {
+getProperties(): Array<StaticProperty<AspectWithQuantifiableWithoutUnit, any>> {
 return [MetaAspectWithQuantifiableWithoutUnit.TEST_PROPERTY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithQuantifiableWithoutUnit, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

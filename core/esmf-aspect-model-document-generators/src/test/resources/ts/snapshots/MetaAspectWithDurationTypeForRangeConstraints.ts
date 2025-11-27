@@ -13,11 +13,12 @@
 
 
 import { AspectWithDurationTypeForRangeConstraints,} from './AspectWithDurationTypeForRangeConstraints';
-import { BoundDefinition,} from './aspect-meta-model/bound-definition';
-import { DefaultMeasurement,DefaultQuantityKind,DefaultRangeConstraint,DefaultScalar,DefaultTrait,} from './aspect-meta-model';
-import { DefaultScalarValue,} from './aspect-meta-model/default-scalar-value';
-import { DefaultStaticProperty,} from './core/staticConstraintProperty';
-import { DefaultUnit,} from './aspect-meta-model/default-unit';
+import { BoundDefinition,} from './esmf/aspect-meta-model/bound-definition';
+import { DefaultMeasurement,DefaultQuantityKind,DefaultRangeConstraint,DefaultScalar,DefaultTrait,} from './esmf/aspect-meta-model';
+import { DefaultScalarValue,} from './esmf/aspect-meta-model/default-scalar-value';
+import { DefaultStaticProperty,PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
+import { DefaultUnit,} from './esmf/aspect-meta-model/default-unit';
+import { KnownVersion,} from './esmf/shared/known-version';
 
 
     
@@ -26,8 +27,10 @@ import { DefaultUnit,} from './aspect-meta-model/default-unit';
 * Generated class MetaAspectWithDurationTypeForRangeConstraints (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithDurationTypeForRangeConstraints).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithDurationTypeForRangeConstraints implements StaticMetaClass<AspectWithDurationTypeForRangeConstraints>, PropertyContainer<AspectWithDurationTypeForRangeConstraints> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -52,23 +55,23 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const trait = new DefaultTrait(null, 
-null, 
-null, 
-(() => { const defaultMeasurement = new DefaultMeasurement(null, 
-null, 
-null, 
-(() => { const defaultUnit = new DefaultUnit(null, 
-null, 
-null, 
-'h','HUR','secondUnitOfTime','3600 s',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithDurationTypeForRangeConstraints',
+    'testPropertyWithDayTimeDuration',
+    (() => { const trait = new DefaultTrait(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'testWithDurationMinDurationMaxDayTimeDuration',
+'testWithDurationMinDurationMaxDayTimeDuration',
+(() => { const defaultMeasurement = new DefaultMeasurement(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'MeasurementDayTimeDuration',
+'MeasurementDayTimeDuration',
+(() => { const defaultUnit = new DefaultUnit(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#hour',
+'hour',
+'h','HUR','secondUnitOfTime','3600 s',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#time',
+'time',
 'time')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })() ])
@@ -76,9 +79,9 @@ defaultUnit.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#hour'
 defaultUnit.addPreferredName('en' , 'hour');
  return defaultUnit; })(),new DefaultScalar("http://www.w3.org/2001/XMLSchema#dayTimeDuration" ))
 defaultMeasurement.addAspectModelUrn = this.NAMESPACE + 'MeasurementDayTimeDuration';
- return defaultMeasurement; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(null, 
-null, 
-null, 
+ return defaultMeasurement; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 BoundDefinition.AT_MOST,BoundDefinition.AT_LEAST,new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#dayTimeDuration" ),'P1DT5H'),new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#dayTimeDuration" ),'P1DT8H'),)
 defaultRangeConstraint.isAnonymousNode = true;
  return defaultRangeConstraint; })()])
@@ -111,23 +114,23 @@ trait.addDescription('en' , 'Test Range');
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const trait = new DefaultTrait(null, 
-null, 
-null, 
-(() => { const defaultMeasurement = new DefaultMeasurement(null, 
-null, 
-null, 
-(() => { const defaultUnit = new DefaultUnit(null, 
-null, 
-null, 
-'h','HUR','secondUnitOfTime','3600 s',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithDurationTypeForRangeConstraints',
+    'testPropertyWithDuration',
+    (() => { const trait = new DefaultTrait(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'testWithDurationMinDurationMaxDuration',
+'testWithDurationMinDurationMaxDuration',
+(() => { const defaultMeasurement = new DefaultMeasurement(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'MeasurementDuration',
+'MeasurementDuration',
+(() => { const defaultUnit = new DefaultUnit(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#hour',
+'hour',
+'h','HUR','secondUnitOfTime','3600 s',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#time',
+'time',
 'time')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })() ])
@@ -135,9 +138,9 @@ defaultUnit.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#hour'
 defaultUnit.addPreferredName('en' , 'hour');
  return defaultUnit; })(),new DefaultScalar("http://www.w3.org/2001/XMLSchema#duration" ))
 defaultMeasurement.addAspectModelUrn = this.NAMESPACE + 'MeasurementDuration';
- return defaultMeasurement; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(null, 
-null, 
-null, 
+ return defaultMeasurement; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 BoundDefinition.AT_MOST,BoundDefinition.AT_LEAST,new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#duration" ),'PT1H5M0S'),new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#duration" ),'PT1H5M3S'),)
 defaultRangeConstraint.isAnonymousNode = true;
  return defaultRangeConstraint; })()])
@@ -170,23 +173,23 @@ trait.addDescription('en' , 'Test Range');
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const trait = new DefaultTrait(null, 
-null, 
-null, 
-(() => { const defaultMeasurement = new DefaultMeasurement(null, 
-null, 
-null, 
-(() => { const defaultUnit = new DefaultUnit(null, 
-null, 
-null, 
-'h','HUR','secondUnitOfTime','3600 s',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithDurationTypeForRangeConstraints',
+    'testPropertyWithYearMonthDuration',
+    (() => { const trait = new DefaultTrait(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'testWithDurationMinDurationMaxYearMonthDuration',
+'testWithDurationMinDurationMaxYearMonthDuration',
+(() => { const defaultMeasurement = new DefaultMeasurement(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'MeasurementYearMonthDuration',
+'MeasurementYearMonthDuration',
+(() => { const defaultUnit = new DefaultUnit(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#hour',
+'hour',
+'h','HUR','secondUnitOfTime','3600 s',[ (() => { const defaultQuantityKind = new DefaultQuantityKind(KnownVersion.getLatest().toString(),
+'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#time',
+'time',
 'time')
 defaultQuantityKind.isAnonymousNode = true;
  return defaultQuantityKind; })() ])
@@ -194,9 +197,9 @@ defaultUnit.addAspectModelUrn = 'urn:samm:org.eclipse.esmf.samm:unit:2.2.0#hour'
 defaultUnit.addPreferredName('en' , 'hour');
  return defaultUnit; })(),new DefaultScalar("http://www.w3.org/2001/XMLSchema#yearMonthDuration" ))
 defaultMeasurement.addAspectModelUrn = this.NAMESPACE + 'MeasurementYearMonthDuration';
- return defaultMeasurement; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(null, 
-null, 
-null, 
+ return defaultMeasurement; })(),[(() => { const defaultRangeConstraint = new DefaultRangeConstraint(KnownVersion.getLatest().toString(),
+'urn:samm:anonymous.elements:0.0.0#ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 BoundDefinition.AT_MOST,BoundDefinition.AT_LEAST,new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#yearMonthDuration" ),'P5Y2M'),new DefaultScalarValue(new DefaultScalar("http://www.w3.org/2001/XMLSchema#yearMonthDuration" ),'P5Y3M'),)
 defaultRangeConstraint.isAnonymousNode = true;
  return defaultRangeConstraint; })()])
@@ -224,19 +227,19 @@ return MetaAspectWithDurationTypeForRangeConstraints .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithDurationTypeForRangeConstraints';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithDurationTypeForRangeConstraints, any>> {
+getProperties(): Array<StaticProperty<AspectWithDurationTypeForRangeConstraints, any>> {
 return [MetaAspectWithDurationTypeForRangeConstraints.TEST_PROPERTY_WITH_DAY_TIME_DURATION, MetaAspectWithDurationTypeForRangeConstraints.TEST_PROPERTY_WITH_DURATION, MetaAspectWithDurationTypeForRangeConstraints.TEST_PROPERTY_WITH_YEAR_MONTH_DURATION];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithDurationTypeForRangeConstraints, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

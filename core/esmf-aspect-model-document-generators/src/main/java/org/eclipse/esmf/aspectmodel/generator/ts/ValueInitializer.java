@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.function.BiFunction;
 
 import org.eclipse.esmf.metamodel.datatype.SammXsdType;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.XSD;
@@ -31,7 +32,7 @@ public class ValueInitializer {
 
    static {
       final BiFunction<Class<?>, String, String> literalExpression = ( type, valueExpression ) -> valueExpression;
-      final BiFunction<Class<?>, String, String> date = ( type, valueExpression ) -> "new Date( '" + valueExpression + "' )";
+      final BiFunction<Class<?>, String, String> date = ( type, valueExpression ) -> "new Date( " + valueExpression + " )";
 
       INITIALIZERS = new HashMap<>();
       INITIALIZERS.put( XSD.xstring, literalExpression );
@@ -43,6 +44,7 @@ public class ValueInitializer {
       INITIALIZERS.put( XSD.date, date );
       INITIALIZERS.put( XSD.dateTime, date );
       INITIALIZERS.put( XSD.dateTimeStamp, date );
+      INITIALIZERS.put( XSD.time, date );
       INITIALIZERS.put( XSD.gYear, literalExpression );
       INITIALIZERS.put( XSD.gMonth, literalExpression );
       INITIALIZERS.put( XSD.gYearMonth, literalExpression );
@@ -88,6 +90,9 @@ public class ValueInitializer {
     * @param valueExpression an expression that, when evaluated, will return the input value <b>as a string</b>.
     */
    public String apply( final Resource rdfType, final Class<?> javaType, final String valueExpression ) {
+      if ( rdfType.equals( SammNs.SAMM.curie() ) ) {
+         return valueExpression;
+      }
       return INITIALIZERS.get( rdfType ).apply( javaType, valueExpression );
    }
 }

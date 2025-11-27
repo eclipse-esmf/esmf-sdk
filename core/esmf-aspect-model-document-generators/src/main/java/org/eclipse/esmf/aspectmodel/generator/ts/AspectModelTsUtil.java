@@ -26,6 +26,7 @@ import java.util.stream.IntStream;
 
 import org.eclipse.esmf.aspectmodel.VersionInfo;
 import org.eclipse.esmf.aspectmodel.generator.exception.CodeGenerationException;
+import org.eclipse.esmf.aspectmodel.generator.ts.metamodel.StaticCodeGenerationContext;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Entity;
@@ -64,6 +65,15 @@ public class AspectModelTsUtil {
    private AspectModelTsUtil() {
    }
 
+   public static String elementUrn( final ModelElement element, final StaticCodeGenerationContext context ) {
+      if ( element.urn().toString().startsWith( context.modelUrnPrefix() ) ) {
+         return "this.NAMESPACE + '" + element.getName() + "'";
+      }
+      if ( element.urn().toString().startsWith( context.characteristicBaseUrn() ) ) {
+         return "this.CHARACTERISTIC_NAMESPACE + '#" + element.getName() + "'";
+      }
+      return "'" + element.urn() + "'";
+   }
    /**
     * Determines whether the property has a container type, i.e. it will result in an Optional, Collection or
     * something similar.
@@ -157,7 +167,7 @@ public class AspectModelTsUtil {
 
       if ( characteristic.is( Either.class ) ) {
 
-         codeGenerationConfig.importTracker().importExplicit( "Either", "./core/Either" );
+         codeGenerationConfig.importTracker().importLibExplicit( "Either", "aspect-meta-model/Either" );
 
          final String left = determinePropertyType(
                optionalCharacteristic.map( c -> c.as( Either.class ) ).map( Either::getLeft ),
@@ -202,9 +212,8 @@ public class AspectModelTsUtil {
          if ( actualDataType instanceof Scalar ) {
             final Resource typeResource = ResourceFactory.createResource( actualDataType.getUrn() );
             if ( typeResource.getURI().equals( RDF.langString.getURI() ) ) {
-               // TODO fix imports
-               importTracker.importExplicit( "LangString", "./core/langString" );
-               return "LangString";
+               importTracker.importLibExplicit( "MultiLanguageText", "instantiator/characteristic/characteristic-instantiator-util" );
+               return "MultiLanguageText";
             }
             final Class<?> result = SammXsdType.getJavaTypeForMetaModelType( typeResource );
             return resolveType( result );
@@ -356,8 +365,8 @@ public class AspectModelTsUtil {
       final Supplier<RuntimeException> error = () -> new CodeGenerationException(
             "Tried to generate a Collection Aspect class definition, but no " + "Property has a Collection Characteristic in "
                   + element.getName() );
-      // TODO fix imports
-      codeGenerationConfig.importTracker().importExplicit( "CollectionAspect", "./core/collectionAspect" );
+      // TODO fix imports after implementation
+      codeGenerationConfig.importTracker().importLibExplicit( "CollectionAspect", "aspect-meta-model/collectionAspect" );
       for ( final Property property : element.getProperties() ) {
          final Characteristic characteristic = property.getEffectiveCharacteristic().orElseThrow( error );
          if ( characteristic instanceof Collection characteristicCollection ) {
@@ -370,4 +379,9 @@ public class AspectModelTsUtil {
       }
       throw error.get();
    }
+
+   public static Quantifiable castToQuantifiable( final Characteristic characteristic ) {
+      return (Quantifiable) characteristic;
+   }
+
 }

@@ -15,9 +15,10 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithMultipleEntitiesAndEither,} from './AspectWithMultipleEntitiesAndEither';
-import { DefaultCharacteristic,DefaultEntity,} from './aspect-meta-model';
-import { DefaultStaticProperty,} from './core/staticConstraintProperty';
-import { Either,} from './core/Either';
+import { DefaultCharacteristic,DefaultEntity,} from './esmf/aspect-meta-model';
+import { DefaultStaticProperty,PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
+import { Either,} from './esmf/aspect-meta-model/Either';
+import { KnownVersion,} from './esmf/shared/known-version';
 
 
 
@@ -28,8 +29,10 @@ import { Either,} from './core/Either';
 * Generated class MetaAspectWithMultipleEntitiesAndEither (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithMultipleEntitiesAndEither).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithMultipleEntitiesAndEither implements StaticMetaClass<AspectWithMultipleEntitiesAndEither>, PropertyContainer<AspectWithMultipleEntitiesAndEither> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -54,17 +57,17 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
-(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithMultipleEntitiesAndEither',
+    'ReplacedAspectArtifact',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifactCharacteristic',
+'ReplacedAspectArtifactCharacteristic',
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
 undefined)
 defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
@@ -75,7 +78,7 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifa
     false,
     false,
     undefined,
-        'testEntityOne',
+        'ReplacedAspectArtifact',
     false,
     );
 
@@ -96,17 +99,17 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
-(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithMultipleEntitiesAndEither',
+    'ReplacedAspectArtifact',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifactCharacteristic',
+'ReplacedAspectArtifactCharacteristic',
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
 undefined)
 defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
@@ -117,7 +120,7 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifa
     false,
     false,
     undefined,
-        'testEntityTwo',
+        'ReplacedAspectArtifact',
     false,
     );
 
@@ -138,14 +141,14 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifa
     }
 
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCharacteristic = new DefaultCharacteristic(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithMultipleEntitiesAndEither',
+    'testEitherProperty',
+    (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'TestEither',
+'TestEither',
 undefined)
 defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'TestEither';
 defaultCharacteristic.addPreferredName('en' , 'Test Either');
@@ -172,19 +175,19 @@ return MetaAspectWithMultipleEntitiesAndEither .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithMultipleEntitiesAndEither';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithMultipleEntitiesAndEither, any>> {
+getProperties(): Array<StaticProperty<AspectWithMultipleEntitiesAndEither, any>> {
 return [MetaAspectWithMultipleEntitiesAndEither.TEST_ENTITY_ONE, MetaAspectWithMultipleEntitiesAndEither.TEST_ENTITY_TWO, MetaAspectWithMultipleEntitiesAndEither.TEST_EITHER_PROPERTY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithMultipleEntitiesAndEither, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

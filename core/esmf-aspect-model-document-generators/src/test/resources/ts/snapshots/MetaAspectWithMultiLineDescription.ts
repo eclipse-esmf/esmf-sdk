@@ -13,7 +13,9 @@
 
 
 import { AspectWithMultiLineDescription,} from './AspectWithMultiLineDescription';
-import { LangString,} from './core/langString';
+import { KnownVersion,} from './esmf/shared/known-version';
+import { MultiLanguageText,} from './esmf/instantiator/characteristic/characteristic-instantiator-util';
+import { PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
 
 
     
@@ -22,8 +24,10 @@ import { LangString,} from './core/langString';
 * Generated class MetaAspectWithMultiLineDescription (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithMultiLineDescription).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithMultiLineDescription implements StaticMetaClass<AspectWithMultiLineDescription>, PropertyContainer<AspectWithMultiLineDescription> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -43,26 +47,26 @@ return MetaAspectWithMultiLineDescription .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithMultiLineDescription';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithMultiLineDescription, any>> {
+getProperties(): Array<StaticProperty<AspectWithMultiLineDescription, any>> {
 return [];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithMultiLineDescription, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 
         
-        getDescriptions(): Array<LangString> {
+        getDescriptions(): Array<MultiLanguageText> {
         return [
-            new LangString('This\nis\na\ntest', 'en'),
+            {value: 'This\nis\na\ntest', language: 'en'},
         ];
         }
 

@@ -13,8 +13,9 @@
 
 
 import { AspectWithUsedAndUnusedCollection,} from './AspectWithUsedAndUnusedCollection';
-import { DefaultCollection,DefaultScalar,} from './aspect-meta-model';
-import { StaticContainerProperty,} from './core/staticConstraintProperty';
+import { DefaultCollection,DefaultScalar,} from './esmf/aspect-meta-model';
+import { KnownVersion,} from './esmf/shared/known-version';
+import { PropertyContainer,StaticContainerProperty,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
 
 
     
@@ -23,8 +24,10 @@ import { StaticContainerProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithUsedAndUnusedCollection (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithUsedAndUnusedCollection).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithUsedAndUnusedCollection implements StaticMetaClass<AspectWithUsedAndUnusedCollection>, PropertyContainer<AspectWithUsedAndUnusedCollection> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -41,7 +44,7 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
     
     getPropertyType(): string {
-            return '${codeGenerationConfig.importTracker().getRawContainerType( $propertyType )}';
+            return 'string';
     }
 
     getContainingType(): string {
@@ -52,14 +55,14 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
             return 'AspectWithUsedAndUnusedCollection';
         }
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const defaultCollection = new DefaultCollection(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithUsedAndUnusedCollection',
+    'testProperty',
+    (() => { const defaultCollection = new DefaultCollection(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'UsedTestCollection',
+'UsedTestCollection',
 true, false, undefined,
 new DefaultScalar("http://www.w3.org/2001/XMLSchema#string" ))
 defaultCollection.addAspectModelUrn = this.NAMESPACE + 'UsedTestCollection';
@@ -88,19 +91,19 @@ return MetaAspectWithUsedAndUnusedCollection .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithUsedAndUnusedCollection';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithUsedAndUnusedCollection, any>> {
+getProperties(): Array<StaticProperty<AspectWithUsedAndUnusedCollection, any>> {
 return [MetaAspectWithUsedAndUnusedCollection.TEST_PROPERTY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithUsedAndUnusedCollection, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
 

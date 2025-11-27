@@ -13,7 +13,9 @@
 
 
 import { AspectWithRubyGemUpdateCommand,} from './AspectWithRubyGemUpdateCommand';
-import { LangString,} from './core/langString';
+import { KnownVersion,} from './esmf/shared/known-version';
+import { MultiLanguageText,} from './esmf/instantiator/characteristic/characteristic-instantiator-util';
+import { PropertyContainer,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
 
 
     
@@ -22,8 +24,10 @@ import { LangString,} from './core/langString';
 * Generated class MetaAspectWithRubyGemUpdateCommand (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithRubyGemUpdateCommand).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithRubyGemUpdateCommand implements StaticMetaClass<AspectWithRubyGemUpdateCommand>, PropertyContainer<AspectWithRubyGemUpdateCommand> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -43,25 +47,25 @@ return MetaAspectWithRubyGemUpdateCommand .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithRubyGemUpdateCommand';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithRubyGemUpdateCommand, any>> {
+getProperties(): Array<StaticProperty<AspectWithRubyGemUpdateCommand, any>> {
 return [];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithRubyGemUpdateCommand, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
         
-    getPreferredNames(): Array<LangString> {
+    getPreferredNames(): Array<MultiLanguageText> {
         return [
-            new LangString('gem update --system', 'en'),
+            {value: 'gem update --system', language: 'en'},
         ];
         }
 

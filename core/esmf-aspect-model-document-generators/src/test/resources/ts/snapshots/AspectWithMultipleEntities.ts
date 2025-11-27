@@ -11,8 +11,8 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
         export class AspectWithMultipleEntities {
     // NotNull
-    testEntityOne: ReplacedAspectArtifact;
+    ReplacedAspectArtifact: ReplacedAspectArtifact;
     // NotNull
-    testEntityTwo: ReplacedAspectArtifact;
+    ReplacedAspectArtifact: ReplacedAspectArtifact;
 }
 

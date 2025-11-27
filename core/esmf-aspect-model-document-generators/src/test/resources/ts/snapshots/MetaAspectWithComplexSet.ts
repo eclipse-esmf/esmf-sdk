@@ -15,11 +15,12 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
 
 import { AspectWithComplexSet,} from './AspectWithComplexSet';
-import { DefaultEntity,DefaultLengthConstraint,DefaultSet,DefaultTrait,} from './aspect-meta-model';
+import { DefaultEntity,DefaultLengthConstraint,DefaultSet,DefaultTrait,} from './esmf/aspect-meta-model';
 
-import { LangString,} from './core/langString';
+import { KnownVersion,} from './esmf/shared/known-version';
 
-import { StaticContainerProperty,} from './core/staticConstraintProperty';
+import { MultiLanguageText,} from './esmf/instantiator/characteristic/characteristic-instantiator-util';
+import { PropertyContainer,StaticContainerProperty,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
 
 
     
@@ -28,8 +29,10 @@ import { StaticContainerProperty,} from './core/staticConstraintProperty';
 * Generated class MetaAspectWithComplexSet (urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithComplexSet).
 * Generated "esmf-sdk DEV-SNAPSHOT", date = "replaced"
 */
-import { StaticMetaClass, PropertyContainer, StaticProperty } from './core/staticConstraintProperty';
-import { KnownVersion, KnownVersionUtils } from './core/knownVersion';
+
+
+
+
 
 export class MetaAspectWithComplexSet implements StaticMetaClass<AspectWithComplexSet>, PropertyContainer<AspectWithComplexSet> {
  public static readonly  NAMESPACE = 'urn:samm:org.eclipse.esmf.test:1.0.0#';
@@ -46,7 +49,7 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
     
     getPropertyType(): string {
-            return '${codeGenerationConfig.importTracker().getRawContainerType( $propertyType )}';
+            return 'ReplacedAspectArtifact';
     }
 
     getContainingType(): string {
@@ -57,21 +60,21 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
             return 'AspectWithComplexSet';
         }
 
-                                        })(
+        })(
 
-        null,
-    null,
-    null,
-    (() => { const trait = new DefaultTrait(null, 
-null, 
-null, 
-(() => { const defaultSet = new DefaultSet(null, 
-null, 
-null, 
+        KnownVersion.getLatest().toString(),
+    this.NAMESPACE + 'AspectWithComplexSet',
+    'testProperty',
+    (() => { const trait = new DefaultTrait(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'TestTrait',
+'TestTrait',
+(() => { const defaultSet = new DefaultSet(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'TestSet',
+'TestSet',
 undefined,
-(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(null, 
-null, 
-null, 
+(() => { const defaultEntityReplacedAspectArtifact = new DefaultEntity(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'ReplacedAspectArtifact',
+'ReplacedAspectArtifact',
 MetaReplacedAspectArtifact.INSTANCE.getProperties(),false,
 undefined)
 defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
@@ -81,9 +84,9 @@ defaultSet.addAspectModelUrn = this.NAMESPACE + 'TestSet';
 defaultSet.addPreferredName('en' , 'Test Set');
 defaultSet.addDescription('en' , 'This is a test set.');
 defaultSet.addSeeReference('http:\/\/example.com\/');
- return defaultSet; })(),[(() => { const lengthConstraint = new DefaultLengthConstraint(null, 
-null, 
-null, 
+ return defaultSet; })(),[(() => { const lengthConstraint = new DefaultLengthConstraint(KnownVersion.getLatest().toString(),
+this.NAMESPACE + 'TestSetConstraint',
+'TestSetConstraint',
 2,2,)
 lengthConstraint.addAspectModelUrn = this.NAMESPACE + 'TestSetConstraint';
 lengthConstraint.addPreferredName('en' , 'TestSet Constraint');
@@ -112,32 +115,32 @@ return MetaAspectWithComplexSet .MODEL_ELEMENT_URN;
 }
 
 getMetaModelVersion(): KnownVersion {
-return KnownVersionUtils.getLatest()
+return KnownVersion.getLatest()
 }
 
 getName(): string {
 return 'AspectWithComplexSet';
 }
 
-                        getProperties(): Array<StaticProperty<AspectWithComplexSet, any>> {
+getProperties(): Array<StaticProperty<AspectWithComplexSet, any>> {
 return [MetaAspectWithComplexSet.TEST_PROPERTY];
 }
 
 getAllProperties(): Array<StaticProperty<AspectWithComplexSet, any>> {
-    return this.getProperties();
+        return this.getProperties();
 }
 
         
-    getPreferredNames(): Array<LangString> {
+    getPreferredNames(): Array<MultiLanguageText> {
         return [
-            new LangString('Test Aspect', 'en'),
+            {value: 'Test Aspect', language: 'en'},
         ];
         }
 
         
-        getDescriptions(): Array<LangString> {
+        getDescriptions(): Array<MultiLanguageText> {
         return [
-            new LangString('This is a test description', 'en'),
+            {value: 'This is a test description', language: 'en'},
         ];
         }
 

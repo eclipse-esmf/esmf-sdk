@@ -6,7 +6,7 @@
 */
 
 
-import { Either,} from './core/Either';
+import { Either,} from './esmf/aspect-meta-model/Either';
 
         export class AspectWithEitherWithMultipleSeeAttributes {
     // NotNull
