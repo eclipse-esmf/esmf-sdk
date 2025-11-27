@@ -12,9 +12,9 @@ import { Either,} from './esmf/aspect-meta-model/Either';
 
         export class AspectWithMultipleEntitiesAndEither {
     // NotNull
-    ReplacedAspectArtifact: ReplacedAspectArtifact;
+    testEntityOne: ReplacedAspectArtifact;
     // NotNull
-    ReplacedAspectArtifact: ReplacedAspectArtifact;
+    testEntityTwo: ReplacedAspectArtifact;
     // NotNull
     testEitherProperty: Either<ReplacedAspectArtifact, ReplacedAspectArtifact>;
 }

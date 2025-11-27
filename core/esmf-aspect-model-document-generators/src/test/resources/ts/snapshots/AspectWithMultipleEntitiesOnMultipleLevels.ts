@@ -12,9 +12,9 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
 
         export class AspectWithMultipleEntitiesOnMultipleLevels {
     // NotNull
-    ReplacedAspectArtifact: ReplacedAspectArtifact;
+    testEntityOne: ReplacedAspectArtifact;
     // NotNull
-    ReplacedAspectArtifact: ReplacedAspectArtifact;
+    testEntityTwo: ReplacedAspectArtifact;
     // NotNull
     testString: string;
     // NotNull

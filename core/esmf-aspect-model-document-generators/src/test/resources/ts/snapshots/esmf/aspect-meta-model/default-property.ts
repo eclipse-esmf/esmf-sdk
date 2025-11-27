@@ -31,17 +31,24 @@ export interface Property extends BaseMetaModelElement {
 }
 
 export class DefaultProperty extends Base implements Property {
+    _characteristic: Characteristic;
+    _isNotInPayload: boolean = false;
+    _isOptional: boolean = false;
+    _exampleValue?: any;
+    _payloadName?: string;
+    _isAbstract: boolean = false;
+    _extends?: Property;
     constructor(
         metaModelVersion: string,
         aspectModelUrn: string,
         name: string,
-        private _characteristic: Characteristic,
-        private _isNotInPayload: boolean = false,
-        private _isOptional: boolean = false,
-        private _exampleValue?: any,
-        private _payloadName?: string,
-        private _isAbstract: boolean = false,
-        private _extends?: Property
+        _characteristic: Characteristic,
+        _isNotInPayload: boolean = false,
+        _isOptional: boolean = false,
+        _exampleValue?: any,
+        _payloadName?: string,
+        _isAbstract: boolean = false,
+        _extends?: Property
     ) {
         super(metaModelVersion, aspectModelUrn, name);
     }
@@ -231,7 +238,7 @@ export class DefaultPropertyInstanceDefinition implements Property {
     }
 
     public set aspectModelUrn(value: string) {
-        this._wrappedProperty.aspectModelUrn = value;
+        this._wrappedProperty.addAspectModelUrn = value;
     }
 
     public get aspectModelUrn(): string {

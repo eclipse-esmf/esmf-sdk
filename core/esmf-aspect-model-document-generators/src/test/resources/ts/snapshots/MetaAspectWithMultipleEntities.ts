@@ -60,7 +60,7 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithMultipleEntities',
-    'ReplacedAspectArtifact',
+    'testEntityOne',
     (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
 this.NAMESPACE + 'ReplacedAspectArtifactCharacteristic',
 'ReplacedAspectArtifactCharacteristic',
@@ -77,7 +77,7 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifa
     false,
     false,
     undefined,
-        'ReplacedAspectArtifact',
+        'testEntityOne',
     false,
     );
 
@@ -102,7 +102,7 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifa
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithMultipleEntities',
-    'ReplacedAspectArtifact',
+    'testEntityTwo',
     (() => { const defaultCharacteristic = new DefaultCharacteristic(KnownVersion.getLatest().toString(),
 this.NAMESPACE + 'ReplacedAspectArtifactCharacteristic',
 'ReplacedAspectArtifactCharacteristic',
@@ -119,7 +119,7 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifa
     false,
     false,
     undefined,
-        'ReplacedAspectArtifact',
+        'testEntityTwo',
     false,
     );
 

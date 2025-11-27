@@ -72,7 +72,7 @@ export class DefaultEntity extends Base implements Entity {
     }
 
     public get seeReferences(): Array<string> {
-        const see = super.seeReferences;
+        const see = super.getSeeReferences();
         if (this.extends) {
             see.push(...this.extends.seeReferences);
         }

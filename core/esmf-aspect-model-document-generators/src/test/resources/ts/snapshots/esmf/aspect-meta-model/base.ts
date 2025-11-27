@@ -23,17 +23,20 @@ export interface BaseMetaModelElement extends IsNamed, IsVersioned, IsDescribed 
 }
 
 export abstract class Base implements BaseMetaModelElement {
-    private _preferredNames: Map<string, string> = new Map();
-    private _descriptions: Map<string, string> = new Map();
-    private _see: Array<string> = [];
-
-    private _parents: Array<BaseMetaModelElement> = [];
+    _preferredNames: Map<string, string> = new Map();
+    _descriptions: Map<string, string> = new Map();
+    _see: Array<string> = [];
+    _name: string;
+    _isAnonymousNode: boolean;
+    _metaModelVersion: string;
+    _aspectModelUrn: string;
+    _parents: Array<BaseMetaModelElement> = [];
 
     protected constructor(
-        private _metaModelVersion: string,
-        private _aspectModelUrn: string,
-        private _name: string,
-        private _isAnonymousNode: boolean = false
+        _metaModelVersion: string,
+        _aspectModelUrn: string,
+        _name: string,
+        _isAnonymousNode: boolean = false
     ) {}
 
     public get namespace(): string {
@@ -100,7 +103,7 @@ export abstract class Base implements BaseMetaModelElement {
     }
 
     public get localesPreferredNames(): string[] {
-        return [...this._preferredNames.keys()];
+        return Array.from(this._preferredNames.keys());
     }
 
     public get seeReferences(): Array<string> {
