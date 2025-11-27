@@ -71,7 +71,7 @@ getAllProperties(): Array<StaticProperty<$propertyTypeParameter, any>> {
     #if( $element.getExtends().isPresent() )
         #set( $extendedElement = $element.getExtends().get() )
          $codeGenerationConfig.importTracker().trackPotentiallyParameterizedType( "Meta${extendedElement.getName()}" )
-        return this.getProperties().concat([Meta${extendedElement.getName()}.INSTANCE.getAllProperties()]);
+        return this.getProperties().concat(Meta${extendedElement.getName()}.INSTANCE.getAllProperties());
     #else
         return this.getProperties();
     #end

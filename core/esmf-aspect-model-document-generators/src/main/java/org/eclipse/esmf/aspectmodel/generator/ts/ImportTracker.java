@@ -30,13 +30,14 @@ public class ImportTracker {
    private static final String COMMA_STRING = ",";
    private static final String TYPE_BRACKETS_AND_WHITESPACE = "[<>\\s]";
    private static final String DEFAULT_PATH = "./";
+   private static final String DEFAULT_DEPENDENCY_PATH = "@esmf/";
 
    private final Map<String, QualifiedName> usedImports;
    private final String defaultDependencyPath;
 
    public ImportTracker() {
       usedImports = new HashMap<>();
-      this.defaultDependencyPath = DEFAULT_PATH;
+      this.defaultDependencyPath = DEFAULT_DEPENDENCY_PATH;
    }
 
    public ImportTracker( String defaultDependencyPath ) {
@@ -44,7 +45,7 @@ public class ImportTracker {
       this.defaultDependencyPath = Optional.ofNullable( defaultDependencyPath )
             .filter( StringUtils::isNotBlank )
             .map( defaultPath -> defaultPath.endsWith( "/" ) ? defaultPath : defaultPath + "/" )
-            .orElse( DEFAULT_PATH );
+            .orElse( DEFAULT_DEPENDENCY_PATH );
    }
 
 

@@ -105,7 +105,7 @@ public class AspectToTsCommand extends AbstractCommand {
                "Specifies the root package path for meta model generation, used to resolve imports for generated meta model classes."
                      + " For local development, use a relative path (e.g., --meta-model-package=./esmf/)."
                      + " For build environments, use the library path (e.g., --meta-model-package=@esmf/)." )
-   private String metaModelPackageName = "";
+   private String metaModelPackageName = "@esmf/";
 
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;

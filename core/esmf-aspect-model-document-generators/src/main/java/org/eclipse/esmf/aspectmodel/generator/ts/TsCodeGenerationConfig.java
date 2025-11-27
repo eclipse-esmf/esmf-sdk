@@ -19,7 +19,6 @@ import org.eclipse.esmf.aspectmodel.generator.GenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.exception.CodeGenerationException;
 
 import io.soabase.recordbuilder.core.RecordBuilder;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * A {@link GenerationConfig} for Java code.
@@ -48,11 +47,8 @@ public record TsCodeGenerationConfig(
       if ( packageName == null ) {
          packageName = "";
       }
-      if ( StringUtils.isNotBlank( metaModelPackageName ) ) {
-         importTracker = new ImportTracker( metaModelPackageName );
-      }
       if ( importTracker == null ) {
-         importTracker = new ImportTracker();
+         importTracker = new ImportTracker( metaModelPackageName );
       }
       if ( executeLibraryMacros && ( templateLibFile == null || templateLibFile.toString().isEmpty() ) ) {
          throw new CodeGenerationException( "Missing configuration. Please provide path to velocity template library file." );
