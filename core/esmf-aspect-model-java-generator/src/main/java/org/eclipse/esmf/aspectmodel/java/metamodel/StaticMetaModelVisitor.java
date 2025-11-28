@@ -480,7 +480,6 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
    public String visitLocaleConstraint( final LocaleConstraint localeConstraint, final StaticCodeGenerationContext context ) {
       context.codeGenerationConfig().importTracker().importExplicit( DefaultLocaleConstraint.class );
       context.codeGenerationConfig().importTracker().importExplicit( Locale.class );
-      // TODO is it bug?
       return "new DefaultLanguageConstraint("
             // MetaModelBaseAttributes
             + getMetaModelBaseAttributes( localeConstraint, context ) + ","
