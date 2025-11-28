@@ -48,12 +48,20 @@ import org.apache.jena.rdf.model.Resource;
  */
 public class AspectModelValidator implements Validator<Violation, List<Violation>> {
    private final ShaclValidator shaclValidator;
+   private static boolean arqInitialized = false;
+
+   private static synchronized void initArq() {
+      if ( !arqInitialized ) {
+         ARQ.init();
+         arqInitialized = true;
+      }
+   }
 
    /**
     * Default constructor that will use the latest meta model version
     */
    public AspectModelValidator() {
-      ARQ.init();
+      initArq();
       shaclValidator = new ShaclValidator( MetaModelFile.metaModelShapes() );
    }
 

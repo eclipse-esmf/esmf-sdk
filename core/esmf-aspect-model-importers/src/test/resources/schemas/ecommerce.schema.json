@@ -1,0 +1,35 @@
+{
+  "$id": "https://example.com/ecommerce.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "product": {
+      "$anchor": "ProductSchema",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "price": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "order": {
+      "$anchor": "OrderSchema",
+      "type": "object",
+      "properties": {
+        "orderId": {
+          "type": "string"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#ProductSchema"
+          }
+        }
+      }
+    }
+  }
+}
+

@@ -1,0 +1,21 @@
+JSON Schema examples taken from https://json-schema.org/learn:
+- address
+- arrays
+- blogpost
+- calendar
+- complex-object
+- conditional-validation-dependentRequired
+- conditional-validation-dependentSchemas
+- conditional-validation-if-else
+- device
+- ecommerce
+- enumerated-values
+- geographical-location
+- health-record
+- job-posting
+- laptop-schema
+- movie
+- person
+- regex-pattern
+- smartphone
+- user-profile

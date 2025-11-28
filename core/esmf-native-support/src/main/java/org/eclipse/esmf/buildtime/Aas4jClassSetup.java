@@ -153,12 +153,12 @@ public class Aas4jClassSetup {
     * Logic duplicated from {@link ReflectionHelper#scanDefaultImplementations(ScanResult)}
     */
    private List<ReflectionHelper.ImplementationInfo> scanDefaultImplementations( final ScanResult modelScan ) {
-      final ScanResult defaulImplementationScan = new ClassGraph()
+      final ScanResult defaultImplementationScan = new ClassGraph()
             .enableClassInfo()
             .acceptPackagesNonRecursive( DEFAULT_IMPLEMENTATION_PACKAGE_NAME )
             .scan();
       final List<ReflectionHelper.ImplementationInfo> defaultImplementations = new ArrayList<>();
-      defaulImplementationScan.getAllClasses()
+      defaultImplementationScan.getAllClasses()
             .filter( x -> x.getSimpleName().startsWith( DEFAULT_IMPLEMENTATION_PREFIX ) )
             .loadClasses()
             .forEach( x -> {

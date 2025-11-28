@@ -36,6 +36,7 @@ import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFileBuilder;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectModel;
+import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
 import org.eclipse.esmf.metamodel.vocabulary.SimpleRdfNamespace;
 
@@ -127,19 +128,30 @@ public class AspectSerializer {
     * @return the String representation in RDF/Turtle
     */
    public String aspectToString( final Aspect aspect ) {
-      if ( aspect.getSourceFile() != null ) {
-         return aspectModelFileToString( aspect.getSourceFile() );
+      return modelElementToString( aspect );
+   }
+
+   /**
+    * Serializes a model element and the elements it depends on
+    *
+    * @param element the model element
+    * @return the String representation in RDF/Turtle
+    */
+   public String modelElementToString( final ModelElement element ) {
+      if ( element.getSourceFile() != null ) {
+         return aspectModelFileToString( element.getSourceFile() );
       }
 
-      // The Aspect has no source file, it was probably created programmatically.
+      // The element has no source file, it was probably created programmatically.
       // Construct a virtual AspectModelFile with an RDF representation that can be serialized.
 
-      final RdfNamespace namespace = new SimpleRdfNamespace( "", aspect.urn().getUrnPrefix() );
-      final Model rdfModel = new RdfModelCreatorVisitor( namespace ).visitAspect( aspect, null ).model();
+      final RdfNamespace namespace = new SimpleRdfNamespace( "", element.urn().getUrnPrefix() );
+      final Model rdfModel = element.accept( new RdfModelCreatorVisitor( namespace ), null ).model();
       RdfUtil.cleanPrefixes( rdfModel );
+      RdfUtil.cleanRedundantTypeAssertions( rdfModel );
       final AspectModel aspectModel = new AspectModelLoader().loadAspectModelFiles(
             List.of( RawAspectModelFileBuilder.builder().sourceModel( rdfModel ).build() ) );
-      final AspectModelFile newSourceFile = aspectModel.aspect().getSourceFile();
+      final AspectModelFile newSourceFile = aspectModel.files().getFirst();
       return aspectModelFileToString( newSourceFile );
    }
 

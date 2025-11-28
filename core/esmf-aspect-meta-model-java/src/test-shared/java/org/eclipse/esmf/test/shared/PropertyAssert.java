@@ -84,6 +84,10 @@ public class PropertyAssert<SELF extends PropertyAssert<SELF, ACTUAL>, ACTUAL ex
       return new CharacteristicAssert<>( (A) actual.getCharacteristic().orElseThrow() );
    }
 
+   public <S extends CharacteristicAssert<S, A>, A extends Characteristic> CharacteristicAssert<S, A> hasCharacteristicThat() {
+      return characteristic();
+   }
+
    public SELF hasPayloadName( final String payloadName ) {
       assertThat( actual.getPayloadName() ).isEqualTo( payloadName );
       return myself;

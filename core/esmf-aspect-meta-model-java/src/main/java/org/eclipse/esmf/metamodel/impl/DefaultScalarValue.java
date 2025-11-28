@@ -20,6 +20,7 @@ import java.util.StringJoiner;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.ScalarValue;
@@ -82,6 +83,16 @@ public class DefaultScalarValue implements ScalarValue {
    @Override
    public AspectModelFile getSourceFile() {
       return metaModelBaseAttributes == null ? null : metaModelBaseAttributes.getSourceFile();
+   }
+
+   @Override
+   public boolean isAnonymous() {
+      return metaModelBaseAttributes == null || metaModelBaseAttributes.isAnonymous();
+   }
+
+   @Override
+   public AspectModelUrn urn() {
+      return metaModelBaseAttributes != null ? metaModelBaseAttributes.urn() : ScalarValue.super.urn();
    }
 
    @Override

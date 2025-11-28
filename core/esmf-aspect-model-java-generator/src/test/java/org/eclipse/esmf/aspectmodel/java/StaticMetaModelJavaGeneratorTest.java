@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
-
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -531,7 +530,7 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
 
       result.assertNumberOfFiles( 2 );
 
-      Map<String, Set<String>> expectedBaseAttributes = new HashMap<>();
+      final Map<String, Set<String>> expectedBaseAttributes = new HashMap<>();
       expectedBaseAttributes.put( "TEST_PROPERTY", Set.of(
             "withUrn(AspectModelUrn.fromUrn(NAMESPACE + \"testProperty\"))",
             "withPreferredName(Locale.forLanguageTag(\"en\"), \"Test Property\")",

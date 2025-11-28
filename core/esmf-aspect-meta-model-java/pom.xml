@@ -180,6 +180,9 @@
                      <includes>
                         <include>**/shared/**</include>
                      </includes>
+                     <excludes>
+                        <exclude>**/junit-platform.properties</exclude>
+                     </excludes>
                   </configuration>
                   <goals>
                      <goal>test-jar</goal>

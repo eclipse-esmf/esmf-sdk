@@ -20,6 +20,7 @@ import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -32,18 +33,28 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
 import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher;
 import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher.ExecutionResult;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
+import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.InvalidTestAspect;
 import org.eclipse.esmf.test.OrderingTestAspect;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
+import org.eclipse.esmf.test.TestResources;
 import org.eclipse.esmf.test.TestSharedModel;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
+import org.apache.jena.shared.LockMRSW;
+import org.apache.jena.sparql.core.mem.PMapQuadTable;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
@@ -60,6 +71,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.slf4j.LoggerFactory;
 
 /**
  * The tests for the CLI that are executed by Maven Surefire. They work using the {@link MainClassProcessLauncher}, i.e. directly call
@@ -85,6 +97,12 @@ class SammCliTest {
             argument -> !"-XX:ThreadPriorityPolicy=1".equals( argument ) && !argument.startsWith( "-agentlib:jdwp" )
       );
       outputDirectory = Files.createTempDirectory( "junit" );
+
+      final LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+      Stream.of( LockMRSW.class, PMapQuadTable.class ).forEach( loggerClass -> {
+         final Logger logger = loggerContext.getLogger( loggerClass );
+         logger.setLevel( Level.OFF );
+      } );
    }
 
    @AfterEach
@@ -186,6 +204,7 @@ class SammCliTest {
    }
 
    @Test
+   @EnabledIfSystemProperty( named = "packaging-type", matches = "native" )
    void testVerboseOutput() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "validate", "-vvv" );
       assertThat( result.stdout() ).contains( "Input model is valid" );
@@ -1650,6 +1669,28 @@ class SammCliTest {
       assertThat( contentType( outputFile.toFile() ) ).isEqualTo( MediaType.application( "zip" ) );
    }
 
+   @Test
+   void testImportJsonSchema() throws IOException {
+      // Create test JSON schema file
+      final Aspect originalAspect = TestResources.load( testModel ).aspect();
+      final JsonNode jsonSchema = new AspectModelJsonSchemaGenerator( originalAspect ).getContent();
+      final String schemaName = "TestAspect.schema.json";
+      final File schemaFile = outputDirectory.resolve( schemaName ).toFile();
+      try ( final FileOutputStream out = new FileOutputStream( schemaFile ) ) {
+         new ObjectMapper().writerWithDefaultPrettyPrinter().writeValue( out, jsonSchema );
+      }
+
+      // Import JSON schema to Aspect Model
+      final AspectModelUrn targetUrn = AspectModelUrn.fromUrn( "urn:samm:org.example:1.0.0#TestAspect" );
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "import",
+            schemaFile.getAbsolutePath(), targetUrn.toString(), "--output-directory", outputDirectory.toFile().getAbsolutePath() );
+      final Path outputFile = outputDirectory.resolve( targetUrn.getNamespaceMainPart() ).resolve( targetUrn.getVersion() )
+            .resolve( targetUrn.getName() + ".ttl" );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( outputFile ).exists().isNotEmptyFile().content().contains( ":TestAspect a samm:Aspect" );
+   }
+
    /**
     * Returns the File object for a test namespace package file
     */
@@ -1658,8 +1699,8 @@ class SammCliTest {
             System.getProperty( "user.dir" ), filename );
       try {
          return new File( resourcePath ).getCanonicalFile();
-      } catch ( final IOException e ) {
-         throw new RuntimeException( e );
+      } catch ( final IOException exception ) {
+         throw new RuntimeException( exception );
       }
    }
 
@@ -1667,7 +1708,7 @@ class SammCliTest {
     * Returns the File object for a test model file
     */
    private static File inputFile( final TestModel testModel ) {
-      final boolean isValid = !(testModel instanceof InvalidTestAspect);
+      final boolean isValid = !( testModel instanceof InvalidTestAspect );
       final boolean isOrdering = testModel instanceof OrderingTestAspect;
 
       final String resourcePath;
@@ -1705,7 +1746,7 @@ class SammCliTest {
       }
    }
 
-   private MediaType contentType( final byte... input ) {
+   private MediaType contentType( final byte[] input ) {
       try {
          return new TikaConfig().getDetector().detect( new BufferedInputStream( new ByteArrayInputStream( input ) ), new Metadata() );
       } catch ( final IOException | TikaException exception ) {
@@ -1727,8 +1768,8 @@ class SammCliTest {
       // are not resolved to the file system but to the jar)
       try {
          final String resolverScript = new File(
-               System.getProperty( "user.dir" ) + "/target/test-classes/model_resolver" + (OS.WINDOWS.isCurrentOs()
-                     ? ".bat" : ".sh") ).getCanonicalPath();
+               System.getProperty( "user.dir" ) + "/target/test-classes/model_resolver" + ( OS.WINDOWS.isCurrentOs()
+                     ? ".bat" : ".sh" ) ).getCanonicalPath();
          final String modelsRoot = new File( System.getProperty( "user.dir" ) + "/target/classes/valid" ).getCanonicalPath();
          final String metaModelVersion = KnownVersion.getLatest().toString().toLowerCase();
          return resolverScript + ' ' + modelsRoot + ' ' + metaModelVersion;

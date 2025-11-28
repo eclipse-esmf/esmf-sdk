@@ -38,6 +38,8 @@
 :TestEntity a samm:Entity ;
    samm:preferredName "Test Entity"@en ;
    samm:description "This is a test entity"@en ;
+   samm:see <http://example.com/entity> ;
+   samm:see <http://example.com/entity/spec> ;
    samm:properties ( :entityProperty ) .
 
 :entityProperty a samm:Property ;

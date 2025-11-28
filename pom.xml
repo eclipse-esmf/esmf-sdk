@@ -58,6 +58,7 @@
       <module>core/esmf-aspect-model-jackson</module>
       <module>core/esmf-aspect-model-java-core</module>
       <module>core/esmf-aspect-model-java-generator</module>
+      <module>core/esmf-aspect-model-importers</module>
       <module>core/esmf-aspect-model-starter</module>
       <module>core/esmf-aspect-model-urn</module>
       <module>core/esmf-aspect-model-validator</module>
@@ -128,6 +129,11 @@
          <dependency>
             <groupId>org.eclipse.esmf</groupId>
             <artifactId>esmf-aspect-model-java-generator</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-model-importers</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>

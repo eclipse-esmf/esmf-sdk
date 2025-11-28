@@ -184,7 +184,7 @@ of model resolution] for more information.
                                    | _--language, -l_ : The language from the model for which a JSON schema should be
                                        generated (default: en)                                                               | `samm aspect AspectModel.ttl to schema -l de`
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
-.10+| [[aspect-to-sql]] aspect <model> to sql | Generate SQL script that sets up a table for data for this Aspect            | `samm aspect AspectModel.ttl to sql`
+.11+| [[aspect-to-sql]] aspect <model> to sql | Generate SQL script that sets up a table for data for this Aspect            | `samm aspect AspectModel.ttl to sql`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--language, -l_ : The language from the model to use for generated comments            |
                                    | _--dialect, -d_ : The SQL dialect to generate for (default: `databricks`)               |
@@ -201,7 +201,9 @@ of model resolution] for more information.
                                    | _--decimal-scale, -ds_ : The scale to use for Databricks decimal columns
                                      (default: 0). See also notes in
                                      the xref:java-aspect-tooling.adoc#databricks-type-mapping[Databricks type mapping].     |
-                                   | _--custom-column, -col_ : Additional custom column definition, e.g. for databricks following the pattern `column_name DATATYPE [NOT NULL] [COMMENT 'custom']`. This parameter can be repeated for multiple columns.                                                  | `samm aspect AspectModel.ttl to sql --custom-column "column_name STRING NOT NULL COMMENT 'custom'"`
+                                   | _--custom-column, -col_ : Additional custom column definition, e.g. for databricks
+                                     following the pattern `column_name DATATYPE [NOT NULL] [COMMENT 'custom']`. This
+                                     parameter can be repeated for multiple columns.                                         | `samm aspect AspectModel.ttl to sql --custom-column "column_name STRING NOT NULL COMMENT 'custom'"`
 .5+| [[aspect-to-aas]] aspect <model> to aas | Generate an Asset Administration Shell (AAS) submodel template from an
                                      Aspect Model                                                                            | `samm aspect AspectModel.ttl to aas`
                                    | _--output, -o_ : output file path (default: stdout)                                     | `samm aspect AspectModel.ttl to aas -o="somewhere\new-file-name.extension"`
@@ -252,16 +254,24 @@ of model resolution] for more information.
                                    | _--dry-run_ : Don't write changes to the file system, but print a report of changes
                                      that would be performed.                                                                |
                                    | _--details_ : When used with `--dry-run`, include details about model content
-                                     changes in the report .                                                                 |
+                                     changes in the report.                                                                  |
                                    | _--force_ : When a new file is to be created but it already exists in the file system,
                                      the operation will be cancelled, unless `--force` is used.                              |
 .2+| [[package-export]] package <model or namespace URN> export | Exports an Aspect Model with its dependencies
-                                     or a complete namespace to a Namespace Package (.zip)                                   | `samm package urn:samm:org.eclipse.example.myns:1.0.0 --output package.zip` +
+                                     or a complete namespace to a Namespace Package (.zip)                                   | `samm package urn:samm:org.eclipse.example.myns:1.0.0 export --output package.zip` +
                                      {empty} +
                                      `samm package AspectModel.ttl export --output package.zip`
                                    | _--output, -o_ : output file path (default: stdout); as ZIP is a binary format, it is
                                        strongly recommended to output the result to a file by using the -o option or the
                                        console redirection operator '>')|
+.5+| [[import]] import <file> <URN> | Imports (i.e., translates) a file to an Aspect Model. The only currently supported
+                                      format is JSON Schema.                                                                  | `samm import MyModel.schema.json urn:org.example:1.0.0#MyModel --output-directory models`
+                                    | _-js, --json-schema_ : If the input file name does not end with .schema.json, use this
+                                      switch to force interpreting the input as JSON schema.                                  |
+                                    | _-d, --output-directory_ : output directory to write files to                           |
+                                    | _-e, --entity_ : Create an Entity instead of an Aspect from the imported schema         |
+                                    | _-t, --todo_ : Add TODO descriptions to otherwise undescribed model elements            |
+
 |===
 
 [[configuration-of-model-resolution]]
@@ -302,8 +312,8 @@ will not know where to find the corresonding file(s).
 
 Every specification is based on one Aspect, which needs a separately defined server URL where the given aspect will be.
 The URL will be defined as string with the `-b` option, i.e.: https://www.example.org. The default URL, using the above
-defined `--api-base-url`, would result in https://www.example.org/api/v1/\{tenantId}/<aspectName>. By default,
-`\{tenantId}` followed by the Aspect's name is used as path, with the aspect name converted from CamelCase to
+defined `--api-base-url`, would result in https://www.example.org/api/v1/\{tenant-id}/<aspectName>. By default,
+`\{tenant-id}` followed by the Aspect's name is used as path, with the aspect name converted from CamelCase to
 kebab-case. The default path can be changed with the `--resource-path` switch. If the path is defined further, for
 example using `--resource-path "/resources/\{resourceId}"`, the resulting URL would be:
 https://www.example.org/resources/\{resourceId}.

@@ -1,0 +1,142 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "type": "object",
+  "components": {
+    "schemas": {
+      "Text": {
+        "type": "string",
+        "description": "Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc."
+      },
+      "Int": {
+        "type": "number",
+        "minimum": -2147483648,
+        "maximum": 2147483647
+      },
+      "Float": {
+        "type": "number"
+      },
+      "LocalDateTime": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "TestEntityCharacteristic": {
+        "type": "object",
+        "properties": {
+          "testString": {
+            "$ref": "#/components/schemas/Text"
+          },
+          "testInt": {
+            "$ref": "#/components/schemas/Int"
+          },
+          "testFloat": {
+            "$ref": "#/components/schemas/Float"
+          },
+          "testLocalDateTime": {
+            "$ref": "#/components/schemas/LocalDateTime"
+          },
+          "randomValue": {
+            "$ref": "#/components/schemas/Text"
+          }
+        },
+        "required": [
+          "testString",
+          "testInt",
+          "testFloat",
+          "testLocalDateTime",
+          "randomValue"
+        ],
+        "description": "Right type Characteristic"
+      },
+      "TestEither": {
+        "description": "This is a test Either.",
+        "additionalProperties": false,
+        "properties": {
+          "left": {
+            "type": "object",
+            "properties": {
+              "testString": {
+                "$ref": "#/components/schemas/Text"
+              },
+              "testInt": {
+                "$ref": "#/components/schemas/Int"
+              },
+              "testFloat": {
+                "$ref": "#/components/schemas/Float"
+              },
+              "testLocalDateTime": {
+                "$ref": "#/components/schemas/LocalDateTime"
+              },
+              "randomValue": {
+                "$ref": "#/components/schemas/Text"
+              }
+            },
+            "required": [
+              "testString",
+              "testInt",
+              "testFloat",
+              "testLocalDateTime",
+              "randomValue"
+            ],
+            "description": "Right type Characteristic"
+          },
+          "right": {
+            "type": "object",
+            "properties": {
+              "testString": {
+                "$ref": "#/components/schemas/Text"
+              },
+              "testInt": {
+                "$ref": "#/components/schemas/Int"
+              },
+              "testFloat": {
+                "$ref": "#/components/schemas/Float"
+              },
+              "testLocalDateTime": {
+                "$ref": "#/components/schemas/LocalDateTime"
+              },
+              "randomValue": {
+                "$ref": "#/components/schemas/Text"
+              }
+            },
+            "required": [
+              "testString",
+              "testInt",
+              "testFloat",
+              "testLocalDateTime",
+              "randomValue"
+            ],
+            "description": "Right type Characteristic"
+          }
+        },
+        "oneOf": [
+          {
+            "required": [
+              "left"
+            ]
+          },
+          {
+            "required": [
+              "right"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "properties": {
+    "testEntityOne": {
+      "$ref": "#/components/schemas/TestEntityCharacteristic"
+    },
+    "testEntityTwo": {
+      "$ref": "#/components/schemas/TestEntityCharacteristic"
+    },
+    "testEitherProperty": {
+      "$ref": "#/components/schemas/TestEither"
+    }
+  },
+  "required": [
+    "testEntityOne",
+    "testEntityTwo",
+    "testEitherProperty"
+  ]
+}

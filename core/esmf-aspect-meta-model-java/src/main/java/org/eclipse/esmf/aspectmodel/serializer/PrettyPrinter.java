@@ -183,6 +183,7 @@ public class PrettyPrinter {
             .thenComparing( Map.Entry::getKey );
    }
 
+   @SuppressWarnings( "ConstantValue" ) // constant values changes depending on build flags
    private void showMilestoneBanner() {
       if ( VersionInfo.ASPECT_META_MODEL_VERSION.contains( "-M" ) ) {
          writer.println( "# This model was created using SAMM version " + VersionInfo.ASPECT_META_MODEL_VERSION
@@ -254,9 +255,15 @@ public class PrettyPrinter {
       final StringBuilder builder = new StringBuilder();
       builder.append( "(\n" );
       int i = 0;
+      final boolean isValueList = listContent.getFirst().isResource()
+            && model.contains( listContent.getFirst().asResource(), RDF.type, SammNs.SAMM.Value() );
+      final int nestedIndendationLevel = isValueList ? indentationLevel + 1 : indentationLevel + 2;
       for ( final RDFNode listNode : listContent ) {
-         builder.append( INDENT.repeat( indentationLevel + 2 ) );
-         builder.append( serialize( listNode, indentationLevel + 2 ) );
+         if ( isValueList ) {
+            builder.append( INDENT );
+         }
+         builder.append( INDENT.repeat( nestedIndendationLevel ) );
+         builder.append( serialize( listNode, nestedIndendationLevel ) );
          i++;
          if ( i < listContent.size() ) {
             builder.append( "\n" );
@@ -406,7 +413,8 @@ public class PrettyPrinter {
       final String serializedObject = serialize( elementDefinition.get().getObject().asResource(), indentationLevel );
 
       final String firstLine = element.isAnon()
-            ? String.format( "[%n%s%s %s", INDENT.repeat( indentationLevel + 1 ), serializedProperty, serializedObject )
+            ? String.format( "[%n%s%s %s", INDENT.repeat( indentationLevel + 1 ), serializedProperty,
+            serializedObject )
             : String.format( "%s %s %s", serialize( element, indentationLevel ), serializedProperty, serializedObject );
 
       processedResources.add( element );

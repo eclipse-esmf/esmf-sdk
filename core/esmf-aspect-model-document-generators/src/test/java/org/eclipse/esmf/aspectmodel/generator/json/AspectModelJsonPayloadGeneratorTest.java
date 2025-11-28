@@ -126,6 +126,8 @@ import org.assertj.core.api.Condition;
 import org.assertj.core.data.Percentage;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -145,6 +147,7 @@ class AspectModelJsonPayloadGeneratorTest {
    }
 
    @ParameterizedTest
+   @Execution( ExecutionMode.CONCURRENT )
    @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
          "MODEL_WITH_BROKEN_CYCLES",
          "ASPECT_WITH_MULTIPLE_ENTITIES_SAME_EXTEND",
@@ -174,7 +177,7 @@ class AspectModelJsonPayloadGeneratorTest {
     * attribute for the case that there are ambiguous entities inheriting from an AbstractEntity
     */
    @Test
-   void testDeserializationForAbiguousSubEntities() {
+   void testDeserializationForAmbiguousSubEntities() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_MULTIPLE_ENTITIES_SAME_EXTEND ).aspect();
       final JavaCodeGenerationConfig codeGenerationConfig = JavaCodeGenerationConfigBuilder.builder()
             .packageName( PACKAGE )
@@ -786,17 +789,19 @@ class AspectModelJsonPayloadGeneratorTest {
    }
 
    Trait createTraitWithRangeConstraint( final Type dataType, final BoundDefinition boundKind, final Pair<Number, Number> randomRange ) {
-      final MetaModelBaseAttributes constraintAttibutes = MetaModelBaseAttributes.builder()
+      final MetaModelBaseAttributes constraintAttributes = MetaModelBaseAttributes.builder()
             .withUrn( TestModel.TEST_NAMESPACE + "TestConstraint" ).build();
+      //@formatter:off
       final Optional<ScalarValue> minValue = BoundDefinition.OPEN.equals( boundKind )
             ? Optional.empty()
-            : Optional.of( new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), randomRange.getLeft(),
+            : Optional.of( new DefaultScalarValue( MetaModelBaseAttributes.empty(), randomRange.getLeft(),
                   new DefaultScalar( dataType.getUrn() ) ) );
       final Optional<ScalarValue> maxValue = BoundDefinition.OPEN.equals( boundKind )
             ? Optional.empty()
-            : Optional.of( new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), randomRange.getRight(),
+            : Optional.of( new DefaultScalarValue( MetaModelBaseAttributes.empty(), randomRange.getRight(),
                   new DefaultScalar( dataType.getUrn() ) ) );
-      final RangeConstraint rangeConstraint = new DefaultRangeConstraint( constraintAttibutes, minValue, maxValue, boundKind,
+      //@formatter:on
+      final RangeConstraint rangeConstraint = new DefaultRangeConstraint( constraintAttributes, minValue, maxValue, boundKind,
             getMatchingUpperBound( boundKind ) );
       final MetaModelBaseAttributes traitAttributes = MetaModelBaseAttributes.builder().withUrn( TestModel.TEST_NAMESPACE + "TestTrait" )
             .build();

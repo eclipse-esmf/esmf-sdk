@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.java.Flags;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategySupport;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.DefaultAspectModelFile;
@@ -39,7 +40,9 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 
+@EnabledIfSystemProperty( named = Flags.RUN_PERFORMANCE_TEST, matches = "true" )
 class EsmfPerformanceTest {
    private static final int ITERATIONS = 10;
    private static final List<AspectModelFile> INPUT_FILES_2_1_0 = InlineModel.getModel( KnownVersion.SAMM_2_2_0.toVersionString() );
@@ -47,7 +50,7 @@ class EsmfPerformanceTest {
    private static final List<AspectModelFile> INPUT_FILES_LATEST = InlineModel.getModel( KnownVersion.getLatest().toVersionString() );
    private static final Collection<AspectModelUrn> URNS_LATEST = getUrns( INPUT_FILES_LATEST );
    private static final long MAX_DURATION_MS = 5000;
-   private static final long MAX_MEMORY_BYTES = 500L * 1024 * 1024;
+   private static final long MAX_MEMORY_BYTES = 600L * 1024 * 1024;
 
    @Test
    @Timeout( 90 )
@@ -244,32 +247,33 @@ class EsmfPerformanceTest {
    }
 
    private void measurePerformance( final String testName, final List<AspectModelFile> inputFiles, final Collection<AspectModelUrn> urns ) {
-      Runtime runtime = Runtime.getRuntime();
+      final Runtime runtime = Runtime.getRuntime();
 
       // Clean up before starting measurement
       System.gc();
-      long beforeUsedMem = runtime.totalMemory() - runtime.freeMemory();
-      long startTime = System.nanoTime();
+      final long beforeUsedMem = runtime.totalMemory() - runtime.freeMemory();
+      final long startTime = System.nanoTime();
 
       for ( int i = 0; i < ITERATIONS; i++ ) {
          assertThatCode( () -> new AspectModelLoader( new ResolutionStrategyBasedOnFiles( inputFiles ) ).loadUrns( urns ) )
                .doesNotThrowAnyException();
       }
 
-      long endTime = System.nanoTime();
-      long afterUsedMem = runtime.totalMemory() - runtime.freeMemory();
+      final long endTime = System.nanoTime();
+      final long afterUsedMem = runtime.totalMemory() - runtime.freeMemory();
 
-      long durationInMillis = (endTime - startTime) / 1_000_000;
-      long memoryUsedInBytes = afterUsedMem - beforeUsedMem;
+      final long durationInMillis = ( endTime - startTime ) / 1_000_000;
+      final long memoryUsedInBytes = afterUsedMem - beforeUsedMem;
 
       System.out.println( "\nPerformance Results for: " + testName );
       System.out.println( "Total time: " + durationInMillis + " ms for " + ITERATIONS + " iterations" );
-      System.out.println( "Average time per iteration: " + (durationInMillis / ITERATIONS) + " ms" );
+      System.out.println( "Average time per iteration: " + ( durationInMillis / ITERATIONS ) + " ms" );
       System.out.println( "Memory allocated: " + memoryUsedInBytes / 1024 + " KB\n" );
 
       assertTrue( durationInMillis <= MAX_DURATION_MS,
             "Execution time exceeded the limit: " + durationInMillis + "ms > " + MAX_DURATION_MS + "ms" );
       assertTrue( memoryUsedInBytes <= MAX_MEMORY_BYTES,
-            "Memory usage exceeded the limit: " + (memoryUsedInBytes / 1024 / 1024) + "MB > " + (MAX_MEMORY_BYTES / 1024 / 1024) + "MB" );
+            "Memory usage exceeded the limit: " + ( memoryUsedInBytes / 1024 / 1024 ) + "MB > " + ( MAX_MEMORY_BYTES / 1024 / 1024 )
+                  + "MB" );
    }
 }

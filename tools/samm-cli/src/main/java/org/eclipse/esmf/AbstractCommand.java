@@ -35,7 +35,10 @@ import org.eclipse.esmf.aspectmodel.generator.LanguageCollector;
 import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
 import org.eclipse.esmf.aspectmodel.generator.diagram.DiagramGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.diagram.DiagramGenerationConfigBuilder;
+import org.eclipse.esmf.aspectmodel.resolver.fs.ModelsRoot;
+import org.eclipse.esmf.aspectmodel.resolver.fs.StructuredModelsRoot;
 import org.eclipse.esmf.exception.CommandException;
+import org.eclipse.esmf.exception.SubCommandException;
 import org.eclipse.esmf.metamodel.Aspect;
 
 @SuppressWarnings( "UseOfSystemOutOrSystemErr" )
@@ -189,5 +192,27 @@ public abstract class AbstractCommand implements Runnable {
          return;
       }
       System.exit( 1 );
+   }
+
+   protected void mkdirs( final File directory ) {
+      if ( directory.exists() ) {
+         if ( directory.isDirectory() ) {
+            return;
+         }
+         throw new SubCommandException( "Could not create directory " + directory + ": It already exists but is not a directory" );
+      }
+      if ( !directory.mkdirs() ) {
+         throw new SubCommandException( "Could not create directory: " + directory );
+      }
+   }
+
+   protected ModelsRoot createModelsRoot( final File modelsRootLocation ) {
+      if ( modelsRootLocation.exists() && !modelsRootLocation.isDirectory() ) {
+         throw new SubCommandException( "Given models root is not a directory: " + modelsRootLocation );
+      }
+      mkdirs( modelsRootLocation );
+
+      // Load the Namespace Package and create a "add file" change for each file in it
+      return new StructuredModelsRoot( modelsRootLocation.toPath() );
    }
 }

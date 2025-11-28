@@ -127,6 +127,11 @@
       </dependency>
       <dependency>
          <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-test-resources</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.esmf</groupId>
          <artifactId>esmf-aspect-model-aas-generator</artifactId>
          <scope>compile</scope>
          <exclusions>
