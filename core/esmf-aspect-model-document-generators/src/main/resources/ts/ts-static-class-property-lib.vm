@@ -94,7 +94,7 @@
 
     #if( $util.hasContainerType( $property ) && !$propertyType.startsWith( "Map" ) )
         getContainedType(): string {
-            return '${containingClass}';
+            return '${containedType}';
         }
     #end
 

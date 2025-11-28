@@ -90,10 +90,11 @@ class StaticMetaModelTsGeneratorTest extends TsGeneratorTestBase {
     * Checks that generated TypeScript code for each aspect compiles successfully using the TypeScript compiler.
     * <b>Prerequisites:</b>
     * <ul>
-    *   <li>Node.js and TypeScript must be installed on the system where the test is executed.</li>
-    *   <li>The <code>tsc</code> command must be available in the system PATH.</li>
+    *   <li>Node.js, npm, and TypeScript are automatically installed during project build via the <code>frontend-maven-plugin</code>.</li>
+    *   <li>The <code>tsc</code> command is available in the local <code>node</code> directory after building the project.</li>
     * </ul>
     * <b>Note:</b> If <code>tsc</code> is not available, this test will be skipped and a message will be logged.
+    * If the test is skipped, please build the project first to ensure all frontend dependencies are installed.
     *
     * @param testAspect The {@link TestAspect} enum value representing the aspect being tested.
     * @throws IOException If an I/O error occurs during compilation.
@@ -102,9 +103,9 @@ class StaticMetaModelTsGeneratorTest extends TsGeneratorTestBase {
    @ParameterizedTest
    @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = { "ASPECT_WITH_NAMESPACE_DESCRIPTION" } )
    void testCodeGenerationCompilationCheck( final TestAspect testAspect ) throws IOException, InterruptedException {
-      Assumptions.assumeTrue( isTscAvailable(), "[INFO] TypeScript compiler (tsc) is not available in the system environment. "
+      Assumptions.assumeTrue( isTscAvailable(), "[INFO] TypeScript compiler (tsc) is not available in the local node environment. "
             + "Compilation tests will be skipped. "
-            + "To enable these tests, please ensure that Node.js and TypeScript are installed and 'tsc' is available in your PATH."
+            + "To enable these tests, please build the project first to install Node.js, npm, and TypeScript via frontend-maven-plugin."
       );
 
       final String className = testAspect.getName();
@@ -114,9 +115,7 @@ class StaticMetaModelTsGeneratorTest extends TsGeneratorTestBase {
 
       Path snapshotPath = Paths.get( resource.getPath() );
       ProcessBuilder pb = new ProcessBuilder(
-            "tsc",
-            "--noEmit",
-            "--lib", "es2018",
+            "./node/npx", "tsc", "--noEmit", "--lib", "es2018",
             snapshotPath.toAbsolutePath().toString()
       );
       pb.redirectErrorStream( true );
@@ -140,7 +139,7 @@ class StaticMetaModelTsGeneratorTest extends TsGeneratorTestBase {
     */
    static boolean isTscAvailable() {
       try {
-         ProcessBuilder pb = new ProcessBuilder( "tsc", "--version" );
+         ProcessBuilder pb = new ProcessBuilder( "./node/npx", "tsc", "--version" );
          pb.redirectErrorStream( true );
          Process process = pb.start();
          int exitCode = process.waitFor();
