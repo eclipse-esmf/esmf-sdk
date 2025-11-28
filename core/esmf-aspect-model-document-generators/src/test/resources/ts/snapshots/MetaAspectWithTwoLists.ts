@@ -54,7 +54,7 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
         getContainedType(): string {
-            return 'AspectWithTwoLists';
+            return 'string';
         }
 
         })(
@@ -97,7 +97,7 @@ defaultList.addSeeReference('http:\/\/example.com\/');
     }
 
         getContainedType(): string {
-            return 'AspectWithTwoLists';
+            return 'string';
         }
 
         })(

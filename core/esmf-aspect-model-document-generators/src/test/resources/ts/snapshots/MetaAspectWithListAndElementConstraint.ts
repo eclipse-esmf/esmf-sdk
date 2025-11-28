@@ -56,7 +56,7 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
         getContainedType(): string {
-            return 'AspectWithListAndElementConstraint';
+            return 'number';
         }
 
         })(

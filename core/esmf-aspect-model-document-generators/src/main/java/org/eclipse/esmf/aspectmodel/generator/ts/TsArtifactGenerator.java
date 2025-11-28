@@ -18,7 +18,7 @@ import org.eclipse.esmf.aspectmodel.generator.ArtifactGenerator;
 import org.eclipse.esmf.metamodel.ModelElement;
 
 /**
- * A {@link ArtifactGenerator} specific to Java code: The type identifying artifacts is {@link QualifiedName} and
+ * A {@link ArtifactGenerator} specific to Typescript code: The type identifying artifacts is {@link QualifiedName} and
  * the content type is {@link String}.
  *
  * @param <E> the model element type to generate code for

@@ -53,7 +53,7 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
         getContainedType(): string {
-            return 'AspectWithNumericStructuredValue';
+            return 'number';
         }
 
         })(
@@ -92,7 +92,7 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Year';
     }
 
         getContainedType(): string {
-            return 'AspectWithNumericStructuredValue';
+            return 'number';
         }
 
         })(
@@ -131,7 +131,7 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Month';
     }
 
         getContainedType(): string {
-            return 'AspectWithNumericStructuredValue';
+            return 'number';
         }
 
         })(

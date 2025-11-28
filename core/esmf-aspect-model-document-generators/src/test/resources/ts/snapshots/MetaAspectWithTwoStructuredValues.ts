@@ -53,7 +53,7 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
         getContainedType(): string {
-            return 'AspectWithTwoStructuredValues';
+            return 'Date';
         }
 
         })(
@@ -92,7 +92,7 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Year';
     }
 
         getContainedType(): string {
-            return 'AspectWithTwoStructuredValues';
+            return 'Date';
         }
 
         })(
@@ -131,7 +131,7 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Month';
     }
 
         getContainedType(): string {
-            return 'AspectWithTwoStructuredValues';
+            return 'Date';
         }
 
         })(
@@ -170,7 +170,7 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Day';
     }
 
         getContainedType(): string {
-            return 'AspectWithTwoStructuredValues';
+            return 'Date';
         }
 
         })(
@@ -209,7 +209,7 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Year';
     }
 
         getContainedType(): string {
-            return 'AspectWithTwoStructuredValues';
+            return 'Date';
         }
 
         })(
@@ -248,7 +248,7 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Month';
     }
 
         getContainedType(): string {
-            return 'AspectWithTwoStructuredValues';
+            return 'Date';
         }
 
         })(

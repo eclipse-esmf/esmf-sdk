@@ -101,7 +101,7 @@ defaultSingleEntity.addPreferredName('en' , 'Test Entity Characteristic');
     }
 
         getContainedType(): string {
-            return 'AspectWithValidAnnotationTest';
+            return 'ReplacedAspectArtifact';
         }
 
         })(
@@ -149,7 +149,7 @@ defaultCollection.addPreferredName('en' , 'Test Collection');
     }
 
         getContainedType(): string {
-            return 'AspectWithValidAnnotationTest';
+            return 'ReplacedAspectArtifact';
         }
 
         })(
@@ -234,7 +234,7 @@ defaultCharacteristic.addDescription('en' , 'Describes a Property which contains
     }
 
         getContainedType(): string {
-            return 'AspectWithValidAnnotationTest';
+            return 'string';
         }
 
         })(
@@ -275,7 +275,7 @@ defaultCollection.addPreferredName('en' , 'Collection Test Property');
     }
 
         getContainedType(): string {
-            return 'AspectWithValidAnnotationTest';
+            return 'string';
         }
 
         })(

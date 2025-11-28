@@ -28,12 +28,15 @@ import java.util.stream.Collectors;
 import org.eclipse.esmf.test.TestAspect;
 
 import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 class StaticMetaModelTsGeneratorTest extends TsGeneratorTestBase {
 
    @ParameterizedTest
+   @Execution( ExecutionMode.CONCURRENT )
    @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = { "ASPECT_WITH_NAMESPACE_DESCRIPTION" } )
    void testCodeGeneration( final TestAspect testAspect ) throws IOException {
       final String className = testAspect.getName();
@@ -62,7 +65,7 @@ class StaticMetaModelTsGeneratorTest extends TsGeneratorTestBase {
     * @throws IOException If an I/O error occurs while reading or writing the snapshot files.
     */
    // Uncomment ONLY for snapshot updates
-   // @ParameterizedTest
+//    @ParameterizedTest
    @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = { "ASPECT_WITH_NAMESPACE_DESCRIPTION" } )
    void overwriteSnapshotsMeta( final TestAspect testAspect ) throws IOException {
       final String className = testAspect.getName();
@@ -101,6 +104,7 @@ class StaticMetaModelTsGeneratorTest extends TsGeneratorTestBase {
     * @throws InterruptedException If the compilation process is interrupted.
     */
    @ParameterizedTest
+   @Execution( ExecutionMode.CONCURRENT )
    @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = { "ASPECT_WITH_NAMESPACE_DESCRIPTION" } )
    void testCodeGenerationCompilationCheck( final TestAspect testAspect ) throws IOException, InterruptedException {
       Assumptions.assumeTrue( isTscAvailable(), "[INFO] TypeScript compiler (tsc) is not available in the local node environment. "

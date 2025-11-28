@@ -93,7 +93,7 @@ defaultEnumeration.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact'
     }
 
         getContainedType(): string {
-            return 'AspectWithEnumAndOptionalEnumProperties';
+            return 'string';
         }
 
         })(

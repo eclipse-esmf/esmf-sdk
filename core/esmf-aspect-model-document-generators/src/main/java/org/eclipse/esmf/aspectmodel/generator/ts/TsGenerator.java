@@ -17,7 +17,7 @@ import org.eclipse.esmf.aspectmodel.generator.AspectGenerator;
 import org.eclipse.esmf.metamodel.Aspect;
 
 /**
- * Base class for all generators that want to create Java source code.
+ * Base class for all generators that want to create Typescript source code.
  */
 public abstract class TsGenerator extends
       AspectGenerator<QualifiedName, String, TsCodeGenerationConfig, Artifact<QualifiedName, String>> {

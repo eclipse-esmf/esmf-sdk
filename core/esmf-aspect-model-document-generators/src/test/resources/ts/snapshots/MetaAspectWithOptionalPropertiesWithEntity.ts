@@ -95,7 +95,7 @@ defaultCharacteristic.addDescription('en' , 'Describes a Property which contains
     }
 
         getContainedType(): string {
-            return 'AspectWithOptionalPropertiesWithEntity';
+            return 'string';
         }
 
         })(
@@ -136,7 +136,7 @@ defaultCharacteristic.addDescription('en' , 'Describes a Property which contains
     }
 
         getContainedType(): string {
-            return 'AspectWithOptionalPropertiesWithEntity';
+            return 'ReplacedAspectArtifact';
         }
 
         })(

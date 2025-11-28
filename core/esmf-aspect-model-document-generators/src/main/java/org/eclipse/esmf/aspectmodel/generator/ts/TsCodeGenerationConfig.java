@@ -21,7 +21,7 @@ import org.eclipse.esmf.aspectmodel.generator.exception.CodeGenerationException;
 import io.soabase.recordbuilder.core.RecordBuilder;
 
 /**
- * A {@link GenerationConfig} for Java code.
+ * A {@link GenerationConfig} for Typescript code.
  *
  * @param packageName the package name that classes should be created in
  * @param importTracker the instance of the tracker that tracks imports during code generation
@@ -29,6 +29,11 @@ import io.soabase.recordbuilder.core.RecordBuilder;
  * @param templateLibFile a file containing velocity macros overriding sections in the default code templates
  * @param namePrefix custom class name prefix
  * @param namePostfix custom class name postfix
+ * @param disablePrettierFormatter disables Prettier formatting; if true, generated scripts will not be formatted with Prettier
+ * @param prettierConfigPath specifies the path to a custom Prettier configuration file; if provided, this configuration will be used
+ * during formatting
+ * @param metaModelPackageName specifies the root package path for metamodel generation, used to resolve imports for generated metamodel
+ * classes
  */
 @RecordBuilder
 public record TsCodeGenerationConfig(

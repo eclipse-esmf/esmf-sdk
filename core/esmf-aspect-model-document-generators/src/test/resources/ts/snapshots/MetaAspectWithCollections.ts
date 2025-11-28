@@ -52,7 +52,7 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
         getContainedType(): string {
-            return 'AspectWithCollections';
+            return 'string';
         }
 
         })(
@@ -92,7 +92,7 @@ defaultSet.isAnonymousNode = true;
     }
 
         getContainedType(): string {
-            return 'AspectWithCollections';
+            return 'number';
         }
 
         })(

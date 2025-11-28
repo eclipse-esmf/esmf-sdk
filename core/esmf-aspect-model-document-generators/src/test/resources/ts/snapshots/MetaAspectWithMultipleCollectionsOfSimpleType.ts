@@ -53,7 +53,7 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
         getContainedType(): string {
-            return 'AspectWithMultipleCollectionsOfSimpleType';
+            return 'number';
         }
 
         })(
@@ -93,7 +93,7 @@ defaultList.addAspectModelUrn = this.NAMESPACE + 'IntegerList';
     }
 
         getContainedType(): string {
-            return 'AspectWithMultipleCollectionsOfSimpleType';
+            return 'string';
         }
 
         })(

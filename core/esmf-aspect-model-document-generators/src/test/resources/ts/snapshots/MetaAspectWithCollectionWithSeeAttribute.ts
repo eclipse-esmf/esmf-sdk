@@ -52,7 +52,7 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
         getContainedType(): string {
-            return 'AspectWithCollectionWithSeeAttribute';
+            return 'string';
         }
 
         })(
@@ -95,7 +95,7 @@ defaultCollection.addSeeReference('http:\/\/example.com\/');
     }
 
         getContainedType(): string {
-            return 'AspectWithCollectionWithSeeAttribute';
+            return 'string';
         }
 
         })(

@@ -845,7 +845,7 @@ trait.addDescription('en' , 'Test Length Constraint');
     }
 
         getContainedType(): string {
-            return 'AspectWithConstraints';
+            return 'string';
         }
 
         })(
