@@ -80,15 +80,15 @@ public class TsDataTypeMapping {
       MAPPING.put( BigDecimal.class, TsType.STRING );
       MAPPING.put( Character.class, TsType.STRING );
       MAPPING.put( UUID.class, TsType.STRING );
+      MAPPING.put( Calendar.class, TsType.STRING );
+      MAPPING.put( Temporal.class, TsType.STRING );
+      MAPPING.put( ZonedDateTime.class, TsType.STRING );
+      MAPPING.put( XMLGregorianCalendar.class, TsType.STRING );
+      MAPPING.put( Duration.class, TsType.STRING );
 
       MAPPING.put( Date.class, TsType.DATE );
-      MAPPING.put( Calendar.class, TsType.DATE );
-      MAPPING.put( Temporal.class, TsType.DATE );
       MAPPING.put( LocalDate.class, TsType.DATE );
       MAPPING.put( LocalDateTime.class, TsType.DATE );
-      MAPPING.put( ZonedDateTime.class, TsType.DATE );
-      MAPPING.put( XMLGregorianCalendar.class, TsType.DATE );
-      MAPPING.put( Duration.class, TsType.DATE );
 
       MAPPING.put( Object.class, TsType.ANY );
 

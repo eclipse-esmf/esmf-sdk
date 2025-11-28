@@ -57,7 +57,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithValidAnnotationTest) : ReplacedAspectArtifact {
+        return object.entity;
+    }
+
+        setValue( object : AspectWithValidAnnotationTest, value : ReplacedAspectArtifact ) {
+            object.entity = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithValidAnnotationTest',
@@ -104,7 +112,15 @@ defaultSingleEntity.addPreferredName('en' , 'Test Entity Characteristic');
             return 'ReplacedAspectArtifact';
         }
 
-        })(
+    getValue( object : AspectWithValidAnnotationTest) : ReplacedAspectArtifact[] {
+        return object.collectionEntity;
+    }
+
+        setValue( object : AspectWithValidAnnotationTest, value : ReplacedAspectArtifact[] ) {
+            object.collectionEntity = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithValidAnnotationTest',
@@ -152,7 +168,15 @@ defaultCollection.addPreferredName('en' , 'Test Collection');
             return 'ReplacedAspectArtifact';
         }
 
-        })(
+    getValue( object : AspectWithValidAnnotationTest) : ReplacedAspectArtifact {
+        return object.optionalEntity;
+    }
+
+        setValue( object : AspectWithValidAnnotationTest, value : ReplacedAspectArtifact ) {
+            object.optionalEntity = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithValidAnnotationTest',
@@ -196,7 +220,15 @@ defaultSingleEntity.addPreferredName('en' , 'Test Entity Characteristic');
     }
 
 
-        })(
+    getValue( object : AspectWithValidAnnotationTest) : string {
+        return object.testProperty;
+    }
+
+        setValue( object : AspectWithValidAnnotationTest, value : string ) {
+            object.testProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithValidAnnotationTest',
@@ -237,7 +269,15 @@ defaultCharacteristic.addDescription('en' , 'Describes a Property which contains
             return 'string';
         }
 
-        })(
+    getValue( object : AspectWithValidAnnotationTest) : string[] {
+        return object.collectionTestProperty;
+    }
+
+        setValue( object : AspectWithValidAnnotationTest, value : string[] ) {
+            object.collectionTestProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithValidAnnotationTest',
@@ -278,7 +318,15 @@ defaultCollection.addPreferredName('en' , 'Collection Test Property');
             return 'string';
         }
 
-        })(
+    getValue( object : AspectWithValidAnnotationTest) : string {
+        return object.optionalTestProperty;
+    }
+
+        setValue( object : AspectWithValidAnnotationTest, value : string ) {
+            object.optionalTestProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithValidAnnotationTest',

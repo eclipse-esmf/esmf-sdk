@@ -9,8 +9,14 @@
 
         export class AspectWithTwoStructuredValues {
     // NotNull
-    startDate: Date;
+    startDate: string;
     // NotNull
-    endDate: Date;
+    endDate: string;
+    endDateYear: string;
+    endDateMonth: string;
+    endDateDay: string;
+    startDateYear: string;
+    startDateMonth: string;
+    startDateDay: string;
 }
 

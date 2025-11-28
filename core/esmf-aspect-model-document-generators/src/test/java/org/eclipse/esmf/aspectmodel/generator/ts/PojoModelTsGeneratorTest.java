@@ -60,7 +60,7 @@ class PojoModelTsGeneratorTest extends TsGeneratorTestBase {
     * @throws IOException If an I/O error occurs while reading or writing the snapshot files.
     */
    // Uncomment ONLY for snapshot updates
-   //      @ParameterizedTest
+         @ParameterizedTest
    @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = { "ASPECT_WITH_NAMESPACE_DESCRIPTION" } )
    void overwriteSnapshotsPojo( final TestAspect testAspect ) throws IOException {
       final String className = testAspect.getName();

@@ -20,11 +20,11 @@ import { MultiLanguageText,} from './esmf/instantiator/characteristic/characteri
     // NotNull
     curieProperty: any;
     // NotNull
-    dateProperty: Date;
+    dateProperty: string;
     // NotNull
-    dateTimeProperty: Date;
+    dateTimeProperty: string;
     // NotNull
-    dateTimeStampProperty: Date;
+    dateTimeStampProperty: string;
     // NotNull
     dayTimeDuration: any;
     // NotNull
@@ -36,15 +36,15 @@ import { MultiLanguageText,} from './esmf/instantiator/characteristic/characteri
     // NotNull
     floatProperty: number;
     // NotNull
-    gDayProperty: Date;
+    gDayProperty: string;
     // NotNull
-    gMonthDayProperty: Date;
+    gMonthDayProperty: string;
     // NotNull
-    gMonthProperty: Date;
+    gMonthProperty: string;
     // NotNull
-    gYearMonthProperty: Date;
+    gYearMonthProperty: string;
     // NotNull
-    gYearProperty: Date;
+    gYearProperty: string;
     // NotNull
     hexBinaryProperty: any;
     // NotNull
@@ -68,7 +68,7 @@ import { MultiLanguageText,} from './esmf/instantiator/characteristic/characteri
     // NotNull
     stringProperty: string;
     // NotNull
-    timeProperty: Date;
+    timeProperty: string;
     // NotNull
     unsignedByteProperty: number;
     // NotNull

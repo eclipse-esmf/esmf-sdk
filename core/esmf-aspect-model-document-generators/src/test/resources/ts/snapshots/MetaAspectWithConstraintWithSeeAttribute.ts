@@ -52,7 +52,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithConstraintWithSeeAttribute) : string {
+        return object.testProperty;
+    }
+
+        setValue( object : AspectWithConstraintWithSeeAttribute, value : string ) {
+            object.testProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithConstraintWithSeeAttribute',
@@ -103,7 +111,15 @@ trait.addAspectModelUrn = this.NAMESPACE + 'TestTrait';
     }
 
 
-        })(
+    getValue( object : AspectWithConstraintWithSeeAttribute) : string {
+        return object.testPropertyTwo;
+    }
+
+        setValue( object : AspectWithConstraintWithSeeAttribute, value : string ) {
+            object.testPropertyTwo = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithConstraintWithSeeAttribute',

@@ -54,7 +54,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithRangeConstraintWithoutMinMaxDoubleValue) : number {
+        return object.doubleProperty;
+    }
+
+        setValue( object : AspectWithRangeConstraintWithoutMinMaxDoubleValue, value : number ) {
+            object.doubleProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithRangeConstraintWithoutMinMaxDoubleValue',

@@ -15,9 +15,9 @@
     // NotNull
     testFloat: number;
     // NotNull
-    testLocalDateTime: Date;
+    testLocalDateTime: string;
     // NotNull
-    testLocalDateTimeWithoutExample: Date;
+    testLocalDateTimeWithoutExample: string;
     // NotNull
     testDurationWithoutExample: any;
     // NotNull

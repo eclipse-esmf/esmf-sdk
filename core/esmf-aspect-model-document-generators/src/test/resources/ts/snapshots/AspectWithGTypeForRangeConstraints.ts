@@ -9,14 +9,14 @@
 
         export class AspectWithGTypeForRangeConstraints {
     // NotNull
-    testPropertyWithGYear: Date;
+    testPropertyWithGYear: string;
     // NotNull
-    testPropertyWithGMonth: Date;
+    testPropertyWithGMonth: string;
     // NotNull
-    testPropertyWithGDay: Date;
+    testPropertyWithGDay: string;
     // NotNull
-    testPropertyWithGYearMonth: Date;
+    testPropertyWithGYearMonth: string;
     // NotNull
-    testPropertyWithGMonthYear: Date;
+    testPropertyWithGMonthYear: string;
 }
 

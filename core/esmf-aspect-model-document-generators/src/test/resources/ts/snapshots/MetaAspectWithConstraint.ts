@@ -55,7 +55,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithConstraint) : string {
+        return object.stringLcProperty;
+    }
+
+        setValue( object : AspectWithConstraint, value : string ) {
+            object.stringLcProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithConstraint',
@@ -107,7 +115,15 @@ trait.addSeeReference('http:\/\/example.com\/me');
     }
 
 
-        })(
+    getValue( object : AspectWithConstraint) : number {
+        return object.doubleRcProperty;
+    }
+
+        setValue( object : AspectWithConstraint, value : number ) {
+            object.doubleRcProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithConstraint',
@@ -185,7 +201,15 @@ trait.addDescription('en' , 'Test Constraint');
     }
 
 
-        })(
+    getValue( object : AspectWithConstraint) : number {
+        return object.intRcProperty;
+    }
+
+        setValue( object : AspectWithConstraint, value : number ) {
+            object.intRcProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithConstraint',
@@ -263,7 +287,15 @@ trait.addDescription('en' , 'Test Constraint');
     }
 
 
-        })(
+    getValue( object : AspectWithConstraint) : string {
+        return object.bigIntRcProperty;
+    }
+
+        setValue( object : AspectWithConstraint, value : string ) {
+            object.bigIntRcProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithConstraint',
@@ -341,7 +373,15 @@ trait.addDescription('en' , 'Test Constraint');
     }
 
 
-        })(
+    getValue( object : AspectWithConstraint) : number {
+        return object.floatRcProperty;
+    }
+
+        setValue( object : AspectWithConstraint, value : number ) {
+            object.floatRcProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithConstraint',
@@ -419,7 +459,15 @@ trait.addDescription('en' , 'Test Constraint');
     }
 
 
-        })(
+    getValue( object : AspectWithConstraint) : string {
+        return object.stringRegexcProperty;
+    }
+
+        setValue( object : AspectWithConstraint, value : string ) {
+            object.stringRegexcProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithConstraint',

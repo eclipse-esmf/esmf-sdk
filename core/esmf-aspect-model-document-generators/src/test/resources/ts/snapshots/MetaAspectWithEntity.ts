@@ -57,7 +57,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithEntity) : ReplacedAspectArtifact {
+        return object.testProperty;
+    }
+
+        setValue( object : AspectWithEntity, value : ReplacedAspectArtifact ) {
+            object.testProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithEntity',
@@ -73,6 +81,8 @@ undefined)
 defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
 defaultEntityReplacedAspectArtifact.addPreferredName('en' , 'Test Entity');
 defaultEntityReplacedAspectArtifact.addDescription('en' , 'This is a test entity');
+defaultEntityReplacedAspectArtifact.addSeeReference('file:\/\/\/Users\/Evgenii_Filchenko\/ReplacedAspectArtifacteaProjects\/bci-oss\/esmf-sdk\/core\/esmf-aspect-model-document-generators\/0173-1%2302-ABG854%23003');
+defaultEntityReplacedAspectArtifact.addSeeReference('urn:irdi:0173-1%2306-AAA999%23001');
  return defaultEntityReplacedAspectArtifact; })())
 defaultSingleEntity.addAspectModelUrn = this.NAMESPACE + 'EntityCharacteristic';
 defaultSingleEntity.addPreferredName('en' , 'Test Entity Characteristic');

@@ -56,7 +56,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithRangeConstraintInclBoundDefinitionProperties) : number {
+        return object.testProperty;
+    }
+
+        setValue( object : AspectWithRangeConstraintInclBoundDefinitionProperties, value : number ) {
+            object.testProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithRangeConstraintInclBoundDefinitionProperties',

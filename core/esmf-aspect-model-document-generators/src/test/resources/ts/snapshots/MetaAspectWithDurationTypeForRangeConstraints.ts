@@ -55,7 +55,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithDurationTypeForRangeConstraints) : any {
+        return object.testPropertyWithDayTimeDuration;
+    }
+
+        setValue( object : AspectWithDurationTypeForRangeConstraints, value : any ) {
+            object.testPropertyWithDayTimeDuration = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithDurationTypeForRangeConstraints',
@@ -114,7 +122,15 @@ trait.addDescription('en' , 'Test Range');
     }
 
 
-        })(
+    getValue( object : AspectWithDurationTypeForRangeConstraints) : any {
+        return object.testPropertyWithDuration;
+    }
+
+        setValue( object : AspectWithDurationTypeForRangeConstraints, value : any ) {
+            object.testPropertyWithDuration = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithDurationTypeForRangeConstraints',
@@ -173,7 +189,15 @@ trait.addDescription('en' , 'Test Range');
     }
 
 
-        })(
+    getValue( object : AspectWithDurationTypeForRangeConstraints) : any {
+        return object.testPropertyWithYearMonthDuration;
+    }
+
+        setValue( object : AspectWithDurationTypeForRangeConstraints, value : any ) {
+            object.testPropertyWithYearMonthDuration = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithDurationTypeForRangeConstraints',

@@ -53,7 +53,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithEitherWithSeeAttribute) : Either<number, string> {
+        return object.testProperty;
+    }
+
+        setValue( object : AspectWithEitherWithSeeAttribute, value : Either<number, string> ) {
+            object.testProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithEitherWithSeeAttribute',

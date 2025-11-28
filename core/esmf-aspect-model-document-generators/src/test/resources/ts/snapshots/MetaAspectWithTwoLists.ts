@@ -57,7 +57,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
             return 'string';
         }
 
-        })(
+    getValue( object : AspectWithTwoLists) : string[] {
+        return object.testProperty;
+    }
+
+        setValue( object : AspectWithTwoLists, value : string[] ) {
+            object.testProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithTwoLists',
@@ -100,7 +108,15 @@ defaultList.addSeeReference('http:\/\/example.com\/');
             return 'string';
         }
 
-        })(
+    getValue( object : AspectWithTwoLists) : string[] {
+        return object.testPropertyTwo;
+    }
+
+        setValue( object : AspectWithTwoLists, value : string[] ) {
+            object.testPropertyTwo = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithTwoLists',

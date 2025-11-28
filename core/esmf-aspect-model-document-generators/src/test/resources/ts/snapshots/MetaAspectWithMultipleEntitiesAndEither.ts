@@ -57,7 +57,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithMultipleEntitiesAndEither) : ReplacedAspectArtifact {
+        return object.testEntityOne;
+    }
+
+        setValue( object : AspectWithMultipleEntitiesAndEither, value : ReplacedAspectArtifact ) {
+            object.testEntityOne = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithMultipleEntitiesAndEither',
@@ -99,7 +107,15 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifa
     }
 
 
-        })(
+    getValue( object : AspectWithMultipleEntitiesAndEither) : ReplacedAspectArtifact {
+        return object.testEntityTwo;
+    }
+
+        setValue( object : AspectWithMultipleEntitiesAndEither, value : ReplacedAspectArtifact ) {
+            object.testEntityTwo = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithMultipleEntitiesAndEither',
@@ -141,7 +157,15 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifa
     }
 
 
-        })(
+    getValue( object : AspectWithMultipleEntitiesAndEither) : Either<ReplacedAspectArtifact, ReplacedAspectArtifact> {
+        return object.testEitherProperty;
+    }
+
+        setValue( object : AspectWithMultipleEntitiesAndEither, value : Either<ReplacedAspectArtifact, ReplacedAspectArtifact> ) {
+            object.testEitherProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithMultipleEntitiesAndEither',

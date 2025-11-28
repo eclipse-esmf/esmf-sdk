@@ -57,7 +57,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithEntityEnumerationAndLangString) : ReplacedAspectArtifact {
+        return object.testProperty;
+    }
+
+        setValue( object : AspectWithEntityEnumerationAndLangString, value : ReplacedAspectArtifact ) {
+            object.testProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithEntityEnumerationAndLangString',

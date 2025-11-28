@@ -55,7 +55,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithSimplePropertiesAndState) : string {
+        return object.testString;
+    }
+
+        setValue( object : AspectWithSimplePropertiesAndState, value : string ) {
+            object.testString = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimplePropertiesAndState',
@@ -93,7 +101,15 @@ defaultCharacteristic.addDescription('en' , 'Describes a Property which contains
     }
 
 
-        })(
+    getValue( object : AspectWithSimplePropertiesAndState) : number {
+        return object.testInt;
+    }
+
+        setValue( object : AspectWithSimplePropertiesAndState, value : number ) {
+            object.testInt = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimplePropertiesAndState',
@@ -129,7 +145,15 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Int';
     }
 
 
-        })(
+    getValue( object : AspectWithSimplePropertiesAndState) : number {
+        return object.testFloat;
+    }
+
+        setValue( object : AspectWithSimplePropertiesAndState, value : number ) {
+            object.testFloat = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimplePropertiesAndState',
@@ -153,11 +177,11 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Float';
 
  public static readonly  TEST_LOCAL_DATE_TIME = 
                 
-        new (class extends DefaultStaticProperty<AspectWithSimplePropertiesAndState, Date>{
+        new (class extends DefaultStaticProperty<AspectWithSimplePropertiesAndState, string>{
 
     
     getPropertyType(): string {
-                return 'Date';
+                return 'string';
     }
 
     getContainingType(): string {
@@ -165,7 +189,15 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Float';
     }
 
 
-        })(
+    getValue( object : AspectWithSimplePropertiesAndState) : string {
+        return object.testLocalDateTime;
+    }
+
+        setValue( object : AspectWithSimplePropertiesAndState, value : string ) {
+            object.testLocalDateTime = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimplePropertiesAndState',
@@ -201,7 +233,15 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'LocalDateTime';
     }
 
 
-        })(
+    getValue( object : AspectWithSimplePropertiesAndState) : string {
+        return object.randomValue;
+    }
+
+        setValue( object : AspectWithSimplePropertiesAndState, value : string ) {
+            object.randomValue = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimplePropertiesAndState',
@@ -239,7 +279,15 @@ defaultCharacteristic.addDescription('en' , 'Describes a Property which contains
     }
 
 
-        })(
+    getValue( object : AspectWithSimplePropertiesAndState) : ReplacedAspectArtifact {
+        return object.automationProperty;
+    }
+
+        setValue( object : AspectWithSimplePropertiesAndState, value : ReplacedAspectArtifact ) {
+            object.automationProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimplePropertiesAndState',

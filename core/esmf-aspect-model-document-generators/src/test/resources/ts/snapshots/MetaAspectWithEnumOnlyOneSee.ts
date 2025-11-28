@@ -56,7 +56,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithEnumOnlyOneSee) : ReplacedAspectArtifact {
+        return object.prop1;
+    }
+
+        setValue( object : AspectWithEnumOnlyOneSee, value : ReplacedAspectArtifact ) {
+            object.prop1 = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithEnumOnlyOneSee',
@@ -93,7 +101,15 @@ defaultEnumeration.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact'
     }
 
 
-        })(
+    getValue( object : AspectWithEnumOnlyOneSee) : ReplacedAspectArtifact {
+        return object.prop2;
+    }
+
+        setValue( object : AspectWithEnumOnlyOneSee, value : ReplacedAspectArtifact ) {
+            object.prop2 = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithEnumOnlyOneSee',

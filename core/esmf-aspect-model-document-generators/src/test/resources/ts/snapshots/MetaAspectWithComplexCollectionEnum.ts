@@ -62,7 +62,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithComplexCollectionEnum) : ReplacedAspectArtifact {
+        return object.myPropertyOne;
+    }
+
+        setValue( object : AspectWithComplexCollectionEnum, value : ReplacedAspectArtifact ) {
+            object.myPropertyOne = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithComplexCollectionEnum',
@@ -112,7 +120,15 @@ defaultEnumeration.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact'
     }
 
 
-        })(
+    getValue( object : AspectWithComplexCollectionEnum) : ReplacedAspectArtifact {
+        return object.myPropertyTwo;
+    }
+
+        setValue( object : AspectWithComplexCollectionEnum, value : ReplacedAspectArtifact ) {
+            object.myPropertyTwo = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithComplexCollectionEnum',
@@ -162,7 +178,15 @@ defaultEnumeration.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact'
     }
 
 
-        })(
+    getValue( object : AspectWithComplexCollectionEnum) : ReplacedAspectArtifact {
+        return object.myPropertyThree;
+    }
+
+        setValue( object : AspectWithComplexCollectionEnum, value : ReplacedAspectArtifact ) {
+            object.myPropertyThree = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithComplexCollectionEnum',
@@ -212,7 +236,15 @@ defaultEnumeration.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact'
     }
 
 
-        })(
+    getValue( object : AspectWithComplexCollectionEnum) : ReplacedAspectArtifact {
+        return object.myPropertyFour;
+    }
+
+        setValue( object : AspectWithComplexCollectionEnum, value : ReplacedAspectArtifact ) {
+            object.myPropertyFour = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithComplexCollectionEnum',

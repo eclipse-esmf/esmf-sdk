@@ -52,7 +52,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithBinary) : any {
+        return object.testBinary;
+    }
+
+        setValue( object : AspectWithBinary, value : any ) {
+            object.testBinary = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithBinary',

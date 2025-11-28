@@ -61,7 +61,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : ModelWithBrokenCycles) : ReplacedAspectArtifact {
+        return object.a;
+    }
+
+        setValue( object : ModelWithBrokenCycles, value : ReplacedAspectArtifact ) {
+            object.a = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'ModelWithBrokenCycles',
@@ -103,7 +111,15 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'aCharacteristic';
     }
 
 
-        })(
+    getValue( object : ModelWithBrokenCycles) : ReplacedAspectArtifact {
+        return object.e;
+    }
+
+        setValue( object : ModelWithBrokenCycles, value : ReplacedAspectArtifact ) {
+            object.e = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'ModelWithBrokenCycles',
@@ -145,7 +161,15 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'eCharacteristic';
     }
 
 
-        })(
+    getValue( object : ModelWithBrokenCycles) : Either<ReplacedAspectArtifact, ReplacedAspectArtifact> {
+        return object.h;
+    }
+
+        setValue( object : ModelWithBrokenCycles, value : Either<ReplacedAspectArtifact, ReplacedAspectArtifact> ) {
+            object.h = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'ModelWithBrokenCycles',

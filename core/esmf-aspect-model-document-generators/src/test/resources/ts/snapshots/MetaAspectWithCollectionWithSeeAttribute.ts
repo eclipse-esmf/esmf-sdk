@@ -55,7 +55,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
             return 'string';
         }
 
-        })(
+    getValue( object : AspectWithCollectionWithSeeAttribute) : string[] {
+        return object.testProperty;
+    }
+
+        setValue( object : AspectWithCollectionWithSeeAttribute, value : string[] ) {
+            object.testProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithCollectionWithSeeAttribute',
@@ -98,7 +106,15 @@ defaultCollection.addSeeReference('http:\/\/example.com\/');
             return 'string';
         }
 
-        })(
+    getValue( object : AspectWithCollectionWithSeeAttribute) : string[] {
+        return object.testPropertyTwo;
+    }
+
+        setValue( object : AspectWithCollectionWithSeeAttribute, value : string[] ) {
+            object.testPropertyTwo = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithCollectionWithSeeAttribute',

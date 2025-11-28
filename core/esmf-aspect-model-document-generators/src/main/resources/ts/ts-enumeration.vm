@@ -10,6 +10,8 @@
  ~
  ~ SPDX-License-Identifier: MPL-2.0
  *#
+
+## Phase 2: Enum is not yet supported
 #parse( "ts-enumeration-class-body-lib.vm" )
 #set( $classBody = "#tsEnumerationClassBody()" )
 

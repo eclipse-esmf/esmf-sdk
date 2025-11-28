@@ -17,7 +17,7 @@ import { ReplacedAspectArtifact,} from './ReplacedAspectArtifact';
     // NotNull
     testFloat: number;
     // NotNull
-    testLocalDateTime: Date;
+    testLocalDateTime: string;
     // NotNull
     randomValue: string;
     // NotNull

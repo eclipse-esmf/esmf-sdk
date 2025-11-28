@@ -57,7 +57,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
             return 'string';
         }
 
-        })(
+    getValue( object : AspectWithConstrainedCollection) : string[] {
+        return object.testCollection;
+    }
+
+        setValue( object : AspectWithConstrainedCollection, value : string[] ) {
+            object.testCollection = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithConstrainedCollection',

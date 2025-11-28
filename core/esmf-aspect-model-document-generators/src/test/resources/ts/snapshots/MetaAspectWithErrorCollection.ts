@@ -58,7 +58,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
             return 'Error';
         }
 
-        })(
+    getValue( object : AspectWithErrorCollection) : Error[] {
+        return object.items;
+    }
+
+        setValue( object : AspectWithErrorCollection, value : Error[] ) {
+            object.items = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithErrorCollection',

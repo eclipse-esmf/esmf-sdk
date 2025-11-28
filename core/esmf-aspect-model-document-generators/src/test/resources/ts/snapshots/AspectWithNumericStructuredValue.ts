@@ -9,6 +9,9 @@
 
         export class AspectWithNumericStructuredValue {
     // NotNull
-    date: Date;
+    date: string;
+    year: number;
+    month: number;
+    day: number;
 }
 

@@ -59,7 +59,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
             return 'ReplacedAspectArtifact';
         }
 
-        })(
+    getValue( object : AspectWithMultipleEntityCollections) : ReplacedAspectArtifact[] {
+        return object.testListOne;
+    }
+
+        setValue( object : AspectWithMultipleEntityCollections, value : ReplacedAspectArtifact[] ) {
+            object.testListOne = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithMultipleEntityCollections',
@@ -105,7 +113,15 @@ defaultList.addAspectModelUrn = this.NAMESPACE + 'EntityList';
             return 'ReplacedAspectArtifact';
         }
 
-        })(
+    getValue( object : AspectWithMultipleEntityCollections) : ReplacedAspectArtifact[] {
+        return object.testListTwo;
+    }
+
+        setValue( object : AspectWithMultipleEntityCollections, value : ReplacedAspectArtifact[] ) {
+            object.testListTwo = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithMultipleEntityCollections',

@@ -53,7 +53,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleProperties) : string {
+        return object.testString;
+    }
+
+        setValue( object : AspectWithSimpleProperties, value : string ) {
+            object.testString = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleProperties',
@@ -91,7 +99,15 @@ defaultCharacteristic.addDescription('en' , 'Describes a Property which contains
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleProperties) : number {
+        return object.testInt;
+    }
+
+        setValue( object : AspectWithSimpleProperties, value : number ) {
+            object.testInt = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleProperties',
@@ -127,7 +143,15 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Int';
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleProperties) : number {
+        return object.testFloat;
+    }
+
+        setValue( object : AspectWithSimpleProperties, value : number ) {
+            object.testFloat = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleProperties',
@@ -151,11 +175,11 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Float';
 
  public static readonly  TEST_LOCAL_DATE_TIME = 
                 
-        new (class extends DefaultStaticProperty<AspectWithSimpleProperties, Date>{
+        new (class extends DefaultStaticProperty<AspectWithSimpleProperties, string>{
 
     
     getPropertyType(): string {
-                return 'Date';
+                return 'string';
     }
 
     getContainingType(): string {
@@ -163,7 +187,15 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Float';
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleProperties) : string {
+        return object.testLocalDateTime;
+    }
+
+        setValue( object : AspectWithSimpleProperties, value : string ) {
+            object.testLocalDateTime = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleProperties',
@@ -187,11 +219,11 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'LocalDateTime';
 
  public static readonly  TEST_LOCAL_DATE_TIME_WITHOUT_EXAMPLE = 
                 
-        new (class extends DefaultStaticProperty<AspectWithSimpleProperties, Date>{
+        new (class extends DefaultStaticProperty<AspectWithSimpleProperties, string>{
 
     
     getPropertyType(): string {
-                return 'Date';
+                return 'string';
     }
 
     getContainingType(): string {
@@ -199,7 +231,15 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'LocalDateTime';
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleProperties) : string {
+        return object.testLocalDateTimeWithoutExample;
+    }
+
+        setValue( object : AspectWithSimpleProperties, value : string ) {
+            object.testLocalDateTimeWithoutExample = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleProperties',
@@ -235,7 +275,15 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'LocalDateTime';
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleProperties) : any {
+        return object.testDurationWithoutExample;
+    }
+
+        setValue( object : AspectWithSimpleProperties, value : any ) {
+            object.testDurationWithoutExample = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleProperties',
@@ -271,7 +319,15 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Duration';
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleProperties) : string {
+        return object.randomValue;
+    }
+
+        setValue( object : AspectWithSimpleProperties, value : string ) {
+            object.randomValue = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleProperties',

@@ -9,8 +9,8 @@
 
         export class AspectWithDateTimeTypeForRangeConstraints {
     // NotNull
-    testPropertyWithDateTime: Date;
+    testPropertyWithDateTime: string;
     // NotNull
-    testPropertyWithDateTimeStamp: Date;
+    testPropertyWithDateTimeStamp: string;
 }
 

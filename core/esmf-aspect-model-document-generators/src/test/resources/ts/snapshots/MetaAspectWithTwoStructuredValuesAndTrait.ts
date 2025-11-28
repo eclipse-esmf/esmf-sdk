@@ -41,11 +41,11 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
  public static readonly  END_DATE_YEAR = 
                 
-        new (class extends StaticContainerProperty<AspectWithTwoStructuredValuesAndTrait, Date, Date> {
+        new (class extends StaticContainerProperty<AspectWithTwoStructuredValuesAndTrait, string, string> {
 
     
     getPropertyType(): string {
-            return 'Date';
+            return 'string';
     }
 
     getContainingType(): string {
@@ -53,10 +53,18 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
         getContainedType(): string {
-            return 'Date';
+            return 'string';
         }
 
-        })(
+    getValue( object : AspectWithTwoStructuredValuesAndTrait) : string {
+        return object.endDateYear;
+    }
+
+        setValue( object : AspectWithTwoStructuredValuesAndTrait, value : string ) {
+            object.endDateYear = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithTwoStructuredValuesAndTrait',
@@ -80,11 +88,11 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Year';
 
  public static readonly  END_DATE_MONTH = 
                 
-        new (class extends StaticContainerProperty<AspectWithTwoStructuredValuesAndTrait, Date, Date> {
+        new (class extends StaticContainerProperty<AspectWithTwoStructuredValuesAndTrait, string, string> {
 
     
     getPropertyType(): string {
-            return 'Date';
+            return 'string';
     }
 
     getContainingType(): string {
@@ -92,10 +100,18 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Year';
     }
 
         getContainedType(): string {
-            return 'Date';
+            return 'string';
         }
 
-        })(
+    getValue( object : AspectWithTwoStructuredValuesAndTrait) : string {
+        return object.endDateMonth;
+    }
+
+        setValue( object : AspectWithTwoStructuredValuesAndTrait, value : string ) {
+            object.endDateMonth = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithTwoStructuredValuesAndTrait',
@@ -119,11 +135,11 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Month';
 
  public static readonly  END_DATE_DAY = 
                 
-        new (class extends StaticContainerProperty<AspectWithTwoStructuredValuesAndTrait, Date, Date> {
+        new (class extends StaticContainerProperty<AspectWithTwoStructuredValuesAndTrait, string, string> {
 
     
     getPropertyType(): string {
-            return 'Date';
+            return 'string';
     }
 
     getContainingType(): string {
@@ -131,10 +147,18 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Month';
     }
 
         getContainedType(): string {
-            return 'Date';
+            return 'string';
         }
 
-        })(
+    getValue( object : AspectWithTwoStructuredValuesAndTrait) : string {
+        return object.endDateDay;
+    }
+
+        setValue( object : AspectWithTwoStructuredValuesAndTrait, value : string ) {
+            object.endDateDay = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithTwoStructuredValuesAndTrait',
@@ -158,11 +182,11 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Day';
 
  public static readonly  START_DATE_YEAR = 
                 
-        new (class extends StaticContainerProperty<AspectWithTwoStructuredValuesAndTrait, Date, Date> {
+        new (class extends StaticContainerProperty<AspectWithTwoStructuredValuesAndTrait, string, string> {
 
     
     getPropertyType(): string {
-            return 'Date';
+            return 'string';
     }
 
     getContainingType(): string {
@@ -170,10 +194,18 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Day';
     }
 
         getContainedType(): string {
-            return 'Date';
+            return 'string';
         }
 
-        })(
+    getValue( object : AspectWithTwoStructuredValuesAndTrait) : string {
+        return object.startDateYear;
+    }
+
+        setValue( object : AspectWithTwoStructuredValuesAndTrait, value : string ) {
+            object.startDateYear = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithTwoStructuredValuesAndTrait',
@@ -197,11 +229,11 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Year';
 
  public static readonly  START_DATE_MONTH = 
                 
-        new (class extends StaticContainerProperty<AspectWithTwoStructuredValuesAndTrait, Date, Date> {
+        new (class extends StaticContainerProperty<AspectWithTwoStructuredValuesAndTrait, string, string> {
 
     
     getPropertyType(): string {
-            return 'Date';
+            return 'string';
     }
 
     getContainingType(): string {
@@ -209,10 +241,18 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Year';
     }
 
         getContainedType(): string {
-            return 'Date';
+            return 'string';
         }
 
-        })(
+    getValue( object : AspectWithTwoStructuredValuesAndTrait) : string {
+        return object.startDateMonth;
+    }
+
+        setValue( object : AspectWithTwoStructuredValuesAndTrait, value : string ) {
+            object.startDateMonth = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithTwoStructuredValuesAndTrait',
@@ -236,11 +276,11 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Month';
 
  public static readonly  START_DATE_DAY = 
                 
-        new (class extends StaticContainerProperty<AspectWithTwoStructuredValuesAndTrait, Date, Date> {
+        new (class extends StaticContainerProperty<AspectWithTwoStructuredValuesAndTrait, string, string> {
 
     
     getPropertyType(): string {
-            return 'Date';
+            return 'string';
     }
 
     getContainingType(): string {
@@ -248,10 +288,18 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Month';
     }
 
         getContainedType(): string {
-            return 'Date';
+            return 'string';
         }
 
-        })(
+    getValue( object : AspectWithTwoStructuredValuesAndTrait) : string {
+        return object.startDateDay;
+    }
+
+        setValue( object : AspectWithTwoStructuredValuesAndTrait, value : string ) {
+            object.startDateDay = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithTwoStructuredValuesAndTrait',
@@ -275,11 +323,11 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Day';
 
  public static readonly  START_DATE = 
                 
-        new (class extends DefaultStaticProperty<AspectWithTwoStructuredValuesAndTrait, Date>{
+        new (class extends DefaultStaticProperty<AspectWithTwoStructuredValuesAndTrait, string>{
 
     
     getPropertyType(): string {
-                return 'Date';
+                return 'string';
     }
 
     getContainingType(): string {
@@ -287,7 +335,15 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Day';
     }
 
 
-        })(
+    getValue( object : AspectWithTwoStructuredValuesAndTrait) : string {
+        return object.startDate;
+    }
+
+        setValue( object : AspectWithTwoStructuredValuesAndTrait, value : string ) {
+            object.startDate = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithTwoStructuredValuesAndTrait',
@@ -325,11 +381,11 @@ trait.addAspectModelUrn = this.NAMESPACE + 'StructuredDateWithConstraint';
 
  public static readonly  END_DATE = 
                 
-        new (class extends DefaultStaticProperty<AspectWithTwoStructuredValuesAndTrait, Date>{
+        new (class extends DefaultStaticProperty<AspectWithTwoStructuredValuesAndTrait, string>{
 
     
     getPropertyType(): string {
-                return 'Date';
+                return 'string';
     }
 
     getContainingType(): string {
@@ -337,7 +393,15 @@ trait.addAspectModelUrn = this.NAMESPACE + 'StructuredDateWithConstraint';
     }
 
 
-        })(
+    getValue( object : AspectWithTwoStructuredValuesAndTrait) : string {
+        return object.endDate;
+    }
+
+        setValue( object : AspectWithTwoStructuredValuesAndTrait, value : string ) {
+            object.endDate = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithTwoStructuredValuesAndTrait',

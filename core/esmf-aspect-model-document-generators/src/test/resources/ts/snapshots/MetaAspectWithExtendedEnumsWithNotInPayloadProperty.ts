@@ -58,7 +58,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithExtendedEnumsWithNotInPayloadProperty) : ReplacedAspectArtifact {
+        return object.result;
+    }
+
+        setValue( object : AspectWithExtendedEnumsWithNotInPayloadProperty, value : ReplacedAspectArtifact ) {
+            object.result = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithExtendedEnumsWithNotInPayloadProperty',
@@ -136,7 +144,15 @@ defaultEnumeration.addDescription('en' , 'Possible values for the evaluation of 
     }
 
 
-        })(
+    getValue( object : AspectWithExtendedEnumsWithNotInPayloadProperty) : ReplacedAspectArtifact {
+        return object.simpleResult;
+    }
+
+        setValue( object : AspectWithExtendedEnumsWithNotInPayloadProperty, value : ReplacedAspectArtifact ) {
+            object.simpleResult = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithExtendedEnumsWithNotInPayloadProperty',

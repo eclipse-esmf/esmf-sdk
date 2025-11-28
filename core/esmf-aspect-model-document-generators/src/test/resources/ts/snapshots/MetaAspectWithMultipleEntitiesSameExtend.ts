@@ -58,7 +58,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithMultipleEntitiesSameExtend) : testEntityOne {
+        return object.testPropertyOne;
+    }
+
+        setValue( object : AspectWithMultipleEntitiesSameExtend, value : testEntityOne ) {
+            object.testPropertyOne = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithMultipleEntitiesSameExtend',
@@ -106,7 +114,15 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'testCharacteristicOn
     }
 
 
-        })(
+    getValue( object : AspectWithMultipleEntitiesSameExtend) : testEntityTwo {
+        return object.testPropertyTwo;
+    }
+
+        setValue( object : AspectWithMultipleEntitiesSameExtend, value : testEntityTwo ) {
+            object.testPropertyTwo = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithMultipleEntitiesSameExtend',

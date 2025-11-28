@@ -60,7 +60,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
             return 'ReplacedAspectArtifact';
         }
 
-        })(
+    getValue( object : AspectWithEntityCollection) : ReplacedAspectArtifact[] {
+        return object.testProperty;
+    }
+
+        setValue( object : AspectWithEntityCollection, value : ReplacedAspectArtifact[] ) {
+            object.testProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithEntityCollection',
@@ -77,6 +85,8 @@ undefined)
 defaultEntityReplacedAspectArtifact.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact';
 defaultEntityReplacedAspectArtifact.addPreferredName('en' , 'Test Entity');
 defaultEntityReplacedAspectArtifact.addDescription('en' , 'This is a test entity');
+defaultEntityReplacedAspectArtifact.addSeeReference('http:\/\/example.com\/entity');
+defaultEntityReplacedAspectArtifact.addSeeReference('http:\/\/example.com\/entity\/spec');
  return defaultEntityReplacedAspectArtifact; })())
 defaultCollection.addAspectModelUrn = this.NAMESPACE + 'TestCollection';
 defaultCollection.addPreferredName('en' , 'Test Collection');

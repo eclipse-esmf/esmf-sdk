@@ -53,7 +53,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithCurie) : any {
+        return object.testCurie;
+    }
+
+        setValue( object : AspectWithCurie, value : any ) {
+            object.testCurie = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithCurie',
@@ -91,7 +99,15 @@ defaultCharacteristic.addDescription('en' , 'Describes a Property containing a r
     }
 
 
-        })(
+    getValue( object : AspectWithCurie) : any {
+        return object.testCurieWithoutExampleValue;
+    }
+
+        setValue( object : AspectWithCurie, value : any ) {
+            object.testCurieWithoutExampleValue = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithCurie',

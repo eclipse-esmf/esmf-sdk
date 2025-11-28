@@ -54,7 +54,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithEnglishAndGermanDescription) : string {
+        return object.testString;
+    }
+
+        setValue( object : AspectWithEnglishAndGermanDescription, value : string ) {
+            object.testString = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithEnglishAndGermanDescription',

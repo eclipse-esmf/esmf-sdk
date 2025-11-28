@@ -59,7 +59,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithMultipleEntitiesOnMultipleLevels) : ReplacedAspectArtifact {
+        return object.testEntityOne;
+    }
+
+        setValue( object : AspectWithMultipleEntitiesOnMultipleLevels, value : ReplacedAspectArtifact ) {
+            object.testEntityOne = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithMultipleEntitiesOnMultipleLevels',
@@ -101,7 +109,15 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifa
     }
 
 
-        })(
+    getValue( object : AspectWithMultipleEntitiesOnMultipleLevels) : ReplacedAspectArtifact {
+        return object.testEntityTwo;
+    }
+
+        setValue( object : AspectWithMultipleEntitiesOnMultipleLevels, value : ReplacedAspectArtifact ) {
+            object.testEntityTwo = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithMultipleEntitiesOnMultipleLevels',
@@ -143,7 +159,15 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifa
     }
 
 
-        })(
+    getValue( object : AspectWithMultipleEntitiesOnMultipleLevels) : string {
+        return object.testString;
+    }
+
+        setValue( object : AspectWithMultipleEntitiesOnMultipleLevels, value : string ) {
+            object.testString = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithMultipleEntitiesOnMultipleLevels',
@@ -181,7 +205,15 @@ defaultCharacteristic.addDescription('en' , 'Describes a Property which contains
     }
 
 
-        })(
+    getValue( object : AspectWithMultipleEntitiesOnMultipleLevels) : ReplacedAspectArtifact {
+        return object.testSecondEntity;
+    }
+
+        setValue( object : AspectWithMultipleEntitiesOnMultipleLevels, value : ReplacedAspectArtifact ) {
+            object.testSecondEntity = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithMultipleEntitiesOnMultipleLevels',

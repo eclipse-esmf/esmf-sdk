@@ -94,7 +94,7 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
 
    @Override
    public String visitCollectionValue( final CollectionValue collection, final StaticCodeGenerationContext context ) {
-      // uncomment and implement when CollectionValue is supported
+      // Phase 2: Implement collection value generation
       //      final Class<?> collectionClass = collection.getValues().getClass();
       //      context.codeGenerationConfig().importTracker().importLibExplicit( "DefaultCollectionValue", 
       //      "aspect-meta-model/default-collection-value" );

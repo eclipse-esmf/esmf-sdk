@@ -55,7 +55,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
             return 'string';
         }
 
-        })(
+    getValue( object : AspectWithCollections) : string[] {
+        return object.setProperty;
+    }
+
+        setValue( object : AspectWithCollections, value : string[] ) {
+            object.setProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithCollections',
@@ -95,7 +103,15 @@ defaultSet.isAnonymousNode = true;
             return 'number';
         }
 
-        })(
+    getValue( object : AspectWithCollections) : number[] {
+        return object.listProperty;
+    }
+
+        setValue( object : AspectWithCollections, value : number[] ) {
+            object.listProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithCollections',

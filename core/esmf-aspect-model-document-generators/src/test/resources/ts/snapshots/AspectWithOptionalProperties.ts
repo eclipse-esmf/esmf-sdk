@@ -10,6 +10,6 @@
         export class AspectWithOptionalProperties {
     numberProperty: string;
     // NotNull
-    timestampProperty: Date;
+    timestampProperty: string;
 }
 

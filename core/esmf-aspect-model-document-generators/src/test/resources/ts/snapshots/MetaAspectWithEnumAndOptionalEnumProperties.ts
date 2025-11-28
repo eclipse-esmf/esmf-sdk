@@ -55,7 +55,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithEnumAndOptionalEnumProperties) : ReplacedAspectArtifact {
+        return object.testProperty;
+    }
+
+        setValue( object : AspectWithEnumAndOptionalEnumProperties, value : ReplacedAspectArtifact ) {
+            object.testProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithEnumAndOptionalEnumProperties',
@@ -96,7 +104,15 @@ defaultEnumeration.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact'
             return 'string';
         }
 
-        })(
+    getValue( object : AspectWithEnumAndOptionalEnumProperties) : ReplacedAspectArtifact {
+        return object.optionalTestProperty;
+    }
+
+        setValue( object : AspectWithEnumAndOptionalEnumProperties, value : ReplacedAspectArtifact ) {
+            object.optionalTestProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithEnumAndOptionalEnumProperties',

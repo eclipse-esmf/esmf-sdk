@@ -18,6 +18,7 @@ import { DefaultStaticProperty,PropertyContainer,StaticMetaClass,StaticProperty,
 import { DefaultUnit,} from './esmf/aspect-meta-model/default-unit';
 import { KnownVersion,} from './esmf/shared/known-version';
 import { MultiLanguageText,} from './esmf/instantiator/characteristic/characteristic-instantiator-util';
+import { Units,} from './esmf/./shared/units';
 
 
     
@@ -54,7 +55,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : any {
+        return object.anyUriProperty;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : any ) {
+            object.anyUriProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -91,7 +100,15 @@ defaultCharacteristic.addDescription('en' , 'This is an anyURI characteristic.')
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : any {
+        return object.base64BinaryProperty;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : any ) {
+            object.base64BinaryProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -128,7 +145,15 @@ defaultCharacteristic.addDescription('en' , 'This is a base64Binary characterist
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : boolean {
+        return object.booleanProperty;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : boolean ) {
+            object.booleanProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -166,7 +191,15 @@ defaultCharacteristic.addDescription('en' , 'Represents a boolean value (i.e. a 
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : number {
+        return object.byteProperty;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : number ) {
+            object.byteProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -203,7 +236,15 @@ defaultCharacteristic.addDescription('en' , 'This is a byteProperty characterist
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : any {
+        return object.curieProperty;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : any ) {
+            object.curieProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -229,11 +270,11 @@ defaultCharacteristic.addDescription('en' , 'Describes a Property containing a r
 
  public static readonly  DATE_PROPERTY = 
                 
-        new (class extends DefaultStaticProperty<AspectWithSimpleTypes, Date>{
+        new (class extends DefaultStaticProperty<AspectWithSimpleTypes, string>{
 
     
     getPropertyType(): string {
-                return 'Date';
+                return 'string';
     }
 
     getContainingType(): string {
@@ -241,7 +282,15 @@ defaultCharacteristic.addDescription('en' , 'Describes a Property containing a r
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : string {
+        return object.dateProperty;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : string ) {
+            object.dateProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -265,11 +314,11 @@ defaultCharacteristic.isAnonymousNode = true;
 
  public static readonly  DATE_TIME_PROPERTY = 
                 
-        new (class extends DefaultStaticProperty<AspectWithSimpleTypes, Date>{
+        new (class extends DefaultStaticProperty<AspectWithSimpleTypes, string>{
 
     
     getPropertyType(): string {
-                return 'Date';
+                return 'string';
     }
 
     getContainingType(): string {
@@ -277,7 +326,15 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : string {
+        return object.dateTimeProperty;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : string ) {
+            object.dateTimeProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -303,11 +360,11 @@ defaultCharacteristic.addDescription('en' , 'Describes a Property which contains
 
  public static readonly  DATE_TIME_STAMP_PROPERTY = 
                 
-        new (class extends DefaultStaticProperty<AspectWithSimpleTypes, Date>{
+        new (class extends DefaultStaticProperty<AspectWithSimpleTypes, string>{
 
     
     getPropertyType(): string {
-                return 'Date';
+                return 'string';
     }
 
     getContainingType(): string {
@@ -315,7 +372,15 @@ defaultCharacteristic.addDescription('en' , 'Describes a Property which contains
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : string {
+        return object.dateTimeStampProperty;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : string ) {
+            object.dateTimeStampProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -351,7 +416,15 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : any {
+        return object.dayTimeDuration;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : any ) {
+            object.dayTimeDuration = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -387,7 +460,15 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : string {
+        return object.decimalProperty;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : string ) {
+            object.decimalProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -423,7 +504,15 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : number {
+        return object.doubleProperty;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : number ) {
+            object.doubleProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -459,7 +548,15 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : any {
+        return object.durationProperty;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : any ) {
+            object.durationProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -495,7 +592,15 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : number {
+        return object.floatProperty;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : number ) {
+            object.floatProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -519,11 +624,11 @@ defaultCharacteristic.isAnonymousNode = true;
 
  public static readonly  G_DAY_PROPERTY = 
                 
-        new (class extends DefaultStaticProperty<AspectWithSimpleTypes, Date>{
+        new (class extends DefaultStaticProperty<AspectWithSimpleTypes, string>{
 
     
     getPropertyType(): string {
-                return 'Date';
+                return 'string';
     }
 
     getContainingType(): string {
@@ -531,7 +636,15 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : string {
+        return object.gDayProperty;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : string ) {
+            object.gDayProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -555,11 +668,11 @@ defaultCharacteristic.isAnonymousNode = true;
 
  public static readonly  G_MONTH_DAY_PROPERTY = 
                 
-        new (class extends DefaultStaticProperty<AspectWithSimpleTypes, Date>{
+        new (class extends DefaultStaticProperty<AspectWithSimpleTypes, string>{
 
     
     getPropertyType(): string {
-                return 'Date';
+                return 'string';
     }
 
     getContainingType(): string {
@@ -567,7 +680,15 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : string {
+        return object.gMonthDayProperty;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : string ) {
+            object.gMonthDayProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -591,11 +712,11 @@ defaultCharacteristic.isAnonymousNode = true;
 
  public static readonly  G_MONTH_PROPERTY = 
                 
-        new (class extends DefaultStaticProperty<AspectWithSimpleTypes, Date>{
+        new (class extends DefaultStaticProperty<AspectWithSimpleTypes, string>{
 
     
     getPropertyType(): string {
-                return 'Date';
+                return 'string';
     }
 
     getContainingType(): string {
@@ -603,7 +724,15 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : string {
+        return object.gMonthProperty;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : string ) {
+            object.gMonthProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -627,11 +756,11 @@ defaultCharacteristic.isAnonymousNode = true;
 
  public static readonly  G_YEAR_MONTH_PROPERTY = 
                 
-        new (class extends DefaultStaticProperty<AspectWithSimpleTypes, Date>{
+        new (class extends DefaultStaticProperty<AspectWithSimpleTypes, string>{
 
     
     getPropertyType(): string {
-                return 'Date';
+                return 'string';
     }
 
     getContainingType(): string {
@@ -639,7 +768,15 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : string {
+        return object.gYearMonthProperty;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : string ) {
+            object.gYearMonthProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -663,11 +800,11 @@ defaultCharacteristic.isAnonymousNode = true;
 
  public static readonly  G_YEAR_PROPERTY = 
                 
-        new (class extends DefaultStaticProperty<AspectWithSimpleTypes, Date>{
+        new (class extends DefaultStaticProperty<AspectWithSimpleTypes, string>{
 
     
     getPropertyType(): string {
-                return 'Date';
+                return 'string';
     }
 
     getContainingType(): string {
@@ -675,7 +812,15 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : string {
+        return object.gYearProperty;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : string ) {
+            object.gYearProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -711,7 +856,15 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : any {
+        return object.hexBinaryProperty;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : any ) {
+            object.hexBinaryProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -747,7 +900,15 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : number {
+        return object.intProperty;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : number ) {
+            object.intProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -783,7 +944,15 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : string {
+        return object.integerProperty;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : string ) {
+            object.integerProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -819,7 +988,15 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : MultiLanguageText {
+        return object.langStringProperty;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : MultiLanguageText ) {
+            object.langStringProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -857,7 +1034,15 @@ defaultCharacteristic.addDescription('en' , 'Describes a Property which contains
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : number {
+        return object.longProperty;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : number ) {
+            object.longProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -893,7 +1078,15 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : string {
+        return object.negativeIntegerProperty;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : string ) {
+            object.negativeIntegerProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -929,7 +1122,15 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : string {
+        return object.nonNegativeIntegerProperty;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : string ) {
+            object.nonNegativeIntegerProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -965,7 +1166,15 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : string {
+        return object.nonPositiveInteger;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : string ) {
+            object.nonPositiveInteger = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -1001,7 +1210,15 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : string {
+        return object.positiveIntegerProperty;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : string ) {
+            object.positiveIntegerProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -1037,7 +1254,15 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : number {
+        return object.shortProperty;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : number ) {
+            object.shortProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -1073,7 +1298,15 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : string {
+        return object.stringProperty;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : string ) {
+            object.stringProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -1099,11 +1332,11 @@ defaultCharacteristic.addDescription('en' , 'Describes a Property which contains
 
  public static readonly  TIME_PROPERTY = 
                 
-        new (class extends DefaultStaticProperty<AspectWithSimpleTypes, Date>{
+        new (class extends DefaultStaticProperty<AspectWithSimpleTypes, string>{
 
     
     getPropertyType(): string {
-                return 'Date';
+                return 'string';
     }
 
     getContainingType(): string {
@@ -1111,7 +1344,15 @@ defaultCharacteristic.addDescription('en' , 'Describes a Property which contains
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : string {
+        return object.timeProperty;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : string ) {
+            object.timeProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -1147,7 +1388,15 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : number {
+        return object.unsignedByteProperty;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : number ) {
+            object.unsignedByteProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -1183,7 +1432,15 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : number {
+        return object.unsignedIntProperty;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : number ) {
+            object.unsignedIntProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -1219,7 +1476,19 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : string {
+        return object.unsignedLongProperty;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : string ) {
+            object.unsignedLongProperty = value;
+        }
+
+            
+            getUnit(): any {
+            return Units.fromName('DefaultQuantifiable[unit=Optional[DefaultUnit[symbol=Optional[m], code=Optional[MTR], referenceUnit=Optional.empty, conversionFactor=Optional[m], quantityKinds=[length, slowing-down length, diffusion coefficient for neutron fluence rate, half-thickness, London penetration depth, (instantaneous) sound particle displacement, Compton wavelength, diffusion coefficient for neutron flux density, breadth, distance, radius of curvature, mean free path, fundamental lattice vector, mean linear range, length of path, object distance, nuclear radius, half-value thickness, image distance, Bohr radius, equilibrium position vector of ion or atom, migration length, lattice vector, electron radius, cartesian coordinates, displacement vector of ion or atom, radius, thickness, diffusion length, focal distance, coherence length, particle position vector, wavelength, diameter, mean free path of phonons or electrons, height]]]]')
+            }
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -1476,7 +1745,15 @@ defaultQuantifiable.isAnonymousNode = true;
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : number {
+        return object.unsignedShortProperty;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : number ) {
+            object.unsignedShortProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',
@@ -1512,7 +1789,15 @@ defaultCharacteristic.isAnonymousNode = true;
     }
 
 
-        })(
+    getValue( object : AspectWithSimpleTypes) : any {
+        return object.yearMonthDurationProperty;
+    }
+
+        setValue( object : AspectWithSimpleTypes, value : any ) {
+            object.yearMonthDurationProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithSimpleTypes',

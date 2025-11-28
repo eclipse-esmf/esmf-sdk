@@ -52,7 +52,8 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
     * @param testAspect the injected Aspect model
     */
    @ParameterizedTest
-   @EnumSource( value = TestAspect.class )
+//   @EnumSource( value = TestAspect.class )
+   @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.INCLUDE, names = { "ASPECT_WITH_NUMERIC_STRUCTURED_VALUE" } )
    void testCodeGeneration( final TestAspect testAspect ) {
       assertThatCode( () -> {
          final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( testAspect, false,

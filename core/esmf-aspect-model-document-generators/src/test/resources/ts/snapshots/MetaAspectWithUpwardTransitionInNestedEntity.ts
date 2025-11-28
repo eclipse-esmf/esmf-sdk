@@ -59,7 +59,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
             return 'ReplacedAspectArtifact';
         }
 
-        })(
+    getValue( object : AspectWithUpwardTransitionInNestedEntity) : ReplacedAspectArtifact[] {
+        return object.firstLevelProperty;
+    }
+
+        setValue( object : AspectWithUpwardTransitionInNestedEntity, value : ReplacedAspectArtifact[] ) {
+            object.firstLevelProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithUpwardTransitionInNestedEntity',

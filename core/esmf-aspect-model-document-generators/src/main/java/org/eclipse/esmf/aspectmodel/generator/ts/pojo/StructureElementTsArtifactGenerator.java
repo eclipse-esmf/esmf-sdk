@@ -23,6 +23,7 @@ import org.eclipse.esmf.aspectmodel.generator.ArtifactGenerator;
 import org.eclipse.esmf.aspectmodel.generator.TemplateEngine;
 import org.eclipse.esmf.aspectmodel.generator.exception.CodeGenerationException;
 import org.eclipse.esmf.aspectmodel.generator.ts.AspectModelTsUtil;
+import org.eclipse.esmf.aspectmodel.generator.ts.StructuredValuePropertiesDeconstructor;
 import org.eclipse.esmf.aspectmodel.generator.ts.TsArtifact;
 import org.eclipse.esmf.aspectmodel.generator.ts.TsArtifactGenerator;
 import org.eclipse.esmf.aspectmodel.generator.ts.TsCodeGenerationConfig;
@@ -67,6 +68,7 @@ public class StructureElementTsArtifactGenerator<E extends StructureElement> imp
             .put( "localeEn", Locale.ENGLISH )
             .put( "extendingEntities", extendingEntities )
             .put( "util", AspectModelTsUtil.class )
+            .put( "deconstructor", new StructuredValuePropertiesDeconstructor( element ) )
             .build();
 
       final Properties engineConfiguration = new Properties();

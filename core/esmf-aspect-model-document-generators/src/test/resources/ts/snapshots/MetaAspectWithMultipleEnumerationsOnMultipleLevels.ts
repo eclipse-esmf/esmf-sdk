@@ -59,7 +59,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithMultipleEnumerationsOnMultipleLevels) : ReplacedAspectArtifact {
+        return object.testPropertyWithEnumOne;
+    }
+
+        setValue( object : AspectWithMultipleEnumerationsOnMultipleLevels, value : ReplacedAspectArtifact ) {
+            object.testPropertyWithEnumOne = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithMultipleEnumerationsOnMultipleLevels',
@@ -97,7 +105,15 @@ defaultEnumeration.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact'
     }
 
 
-        })(
+    getValue( object : AspectWithMultipleEnumerationsOnMultipleLevels) : ReplacedAspectArtifact {
+        return object.testPropertyWithEnumTwo;
+    }
+
+        setValue( object : AspectWithMultipleEnumerationsOnMultipleLevels, value : ReplacedAspectArtifact ) {
+            object.testPropertyWithEnumTwo = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithMultipleEnumerationsOnMultipleLevels',
@@ -135,7 +151,15 @@ defaultEnumeration.addAspectModelUrn = this.NAMESPACE + 'ReplacedAspectArtifact'
     }
 
 
-        })(
+    getValue( object : AspectWithMultipleEnumerationsOnMultipleLevels) : ReplacedAspectArtifact {
+        return object.testEntityWithEnumOne;
+    }
+
+        setValue( object : AspectWithMultipleEnumerationsOnMultipleLevels, value : ReplacedAspectArtifact ) {
+            object.testEntityWithEnumOne = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithMultipleEnumerationsOnMultipleLevels',

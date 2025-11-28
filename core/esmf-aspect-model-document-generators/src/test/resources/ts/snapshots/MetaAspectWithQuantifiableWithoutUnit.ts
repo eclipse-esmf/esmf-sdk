@@ -52,7 +52,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithQuantifiableWithoutUnit) : number {
+        return object.testProperty;
+    }
+
+        setValue( object : AspectWithQuantifiableWithoutUnit, value : number ) {
+            object.testProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithQuantifiableWithoutUnit',

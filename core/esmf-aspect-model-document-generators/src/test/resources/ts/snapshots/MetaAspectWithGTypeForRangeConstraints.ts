@@ -43,11 +43,11 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
  public static readonly  TEST_PROPERTY_WITH_G_YEAR = 
                 
-        new (class extends DefaultStaticProperty<AspectWithGTypeForRangeConstraints, Date>{
+        new (class extends DefaultStaticProperty<AspectWithGTypeForRangeConstraints, string>{
 
     
     getPropertyType(): string {
-                return 'Date';
+                return 'string';
     }
 
     getContainingType(): string {
@@ -55,7 +55,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithGTypeForRangeConstraints) : string {
+        return object.testPropertyWithGYear;
+    }
+
+        setValue( object : AspectWithGTypeForRangeConstraints, value : string ) {
+            object.testPropertyWithGYear = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithGTypeForRangeConstraints',
@@ -102,11 +110,11 @@ trait.addDescription('en' , 'Test Range');
 
  public static readonly  TEST_PROPERTY_WITH_G_MONTH = 
                 
-        new (class extends DefaultStaticProperty<AspectWithGTypeForRangeConstraints, Date>{
+        new (class extends DefaultStaticProperty<AspectWithGTypeForRangeConstraints, string>{
 
     
     getPropertyType(): string {
-                return 'Date';
+                return 'string';
     }
 
     getContainingType(): string {
@@ -114,7 +122,15 @@ trait.addDescription('en' , 'Test Range');
     }
 
 
-        })(
+    getValue( object : AspectWithGTypeForRangeConstraints) : string {
+        return object.testPropertyWithGMonth;
+    }
+
+        setValue( object : AspectWithGTypeForRangeConstraints, value : string ) {
+            object.testPropertyWithGMonth = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithGTypeForRangeConstraints',
@@ -161,11 +177,11 @@ trait.addDescription('en' , 'Test Range');
 
  public static readonly  TEST_PROPERTY_WITH_G_DAY = 
                 
-        new (class extends DefaultStaticProperty<AspectWithGTypeForRangeConstraints, Date>{
+        new (class extends DefaultStaticProperty<AspectWithGTypeForRangeConstraints, string>{
 
     
     getPropertyType(): string {
-                return 'Date';
+                return 'string';
     }
 
     getContainingType(): string {
@@ -173,7 +189,15 @@ trait.addDescription('en' , 'Test Range');
     }
 
 
-        })(
+    getValue( object : AspectWithGTypeForRangeConstraints) : string {
+        return object.testPropertyWithGDay;
+    }
+
+        setValue( object : AspectWithGTypeForRangeConstraints, value : string ) {
+            object.testPropertyWithGDay = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithGTypeForRangeConstraints',
@@ -220,11 +244,11 @@ trait.addDescription('en' , 'Test Range');
 
  public static readonly  TEST_PROPERTY_WITH_G_YEAR_MONTH = 
                 
-        new (class extends DefaultStaticProperty<AspectWithGTypeForRangeConstraints, Date>{
+        new (class extends DefaultStaticProperty<AspectWithGTypeForRangeConstraints, string>{
 
     
     getPropertyType(): string {
-                return 'Date';
+                return 'string';
     }
 
     getContainingType(): string {
@@ -232,7 +256,15 @@ trait.addDescription('en' , 'Test Range');
     }
 
 
-        })(
+    getValue( object : AspectWithGTypeForRangeConstraints) : string {
+        return object.testPropertyWithGYearMonth;
+    }
+
+        setValue( object : AspectWithGTypeForRangeConstraints, value : string ) {
+            object.testPropertyWithGYearMonth = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithGTypeForRangeConstraints',
@@ -1149,11 +1181,11 @@ trait.addDescription('en' , 'Test Range');
 
  public static readonly  TEST_PROPERTY_WITH_G_MONTH_YEAR = 
                 
-        new (class extends DefaultStaticProperty<AspectWithGTypeForRangeConstraints, Date>{
+        new (class extends DefaultStaticProperty<AspectWithGTypeForRangeConstraints, string>{
 
     
     getPropertyType(): string {
-                return 'Date';
+                return 'string';
     }
 
     getContainingType(): string {
@@ -1161,7 +1193,15 @@ trait.addDescription('en' , 'Test Range');
     }
 
 
-        })(
+    getValue( object : AspectWithGTypeForRangeConstraints) : string {
+        return object.testPropertyWithGMonthYear;
+    }
+
+        setValue( object : AspectWithGTypeForRangeConstraints, value : string ) {
+            object.testPropertyWithGMonthYear = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithGTypeForRangeConstraints',

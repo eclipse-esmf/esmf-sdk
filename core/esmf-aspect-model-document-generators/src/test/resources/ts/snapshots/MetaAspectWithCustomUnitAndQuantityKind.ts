@@ -17,6 +17,7 @@ import { DefaultQuantifiable,DefaultQuantityKind,DefaultScalar,} from './esmf/as
 import { DefaultUnit,} from './esmf/aspect-meta-model/default-unit';
 import { KnownVersion,} from './esmf/shared/known-version';
 import { PropertyContainer,StaticMetaClass,StaticProperty,StaticUnitProperty,} from './esmf/aspect-meta-model/staticProperty';
+import { Units,} from './esmf/./shared/units';
 
 
     
@@ -53,7 +54,19 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithCustomUnitAndQuantityKind) : number {
+        return object.emissions;
+    }
+
+        setValue( object : AspectWithCustomUnitAndQuantityKind, value : number ) {
+            object.emissions = value;
+        }
+
+            
+            getUnit(): any {
+            return Units.fromName('DefaultQuantifiable[unit=Optional[DefaultUnit[symbol=Optional[gCO₂eq/kWh], code=Optional.empty, referenceUnit=Optional.empty, conversionFactor=Optional.empty, quantityKinds=[DefaultQuantityKind[]]]]]')
+            }
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithCustomUnitAndQuantityKind',

@@ -55,7 +55,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
             return 'string';
         }
 
-        })(
+    getValue( object : AspectWithCollectionAndSimpleElementCharacteristic) : string[] {
+        return object.items;
+    }
+
+        setValue( object : AspectWithCollectionAndSimpleElementCharacteristic, value : string[] ) {
+            object.items = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithCollectionAndSimpleElementCharacteristic',

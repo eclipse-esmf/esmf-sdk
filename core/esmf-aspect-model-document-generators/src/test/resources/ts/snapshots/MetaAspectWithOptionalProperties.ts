@@ -17,6 +17,7 @@ import { DefaultCharacteristic,DefaultQuantifiable,DefaultQuantityKind,DefaultSc
 import { DefaultStaticProperty,PropertyContainer,StaticContainerProperty,StaticMetaClass,StaticProperty,} from './esmf/aspect-meta-model/staticProperty';
 import { DefaultUnit,} from './esmf/aspect-meta-model/default-unit';
 import { KnownVersion,} from './esmf/shared/known-version';
+import { Units,} from './esmf/./shared/units';
 
 
     
@@ -56,7 +57,19 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
             return 'string';
         }
 
-        })(
+    getValue( object : AspectWithOptionalProperties) : string {
+        return object.numberProperty;
+    }
+
+        setValue( object : AspectWithOptionalProperties, value : string ) {
+            object.numberProperty = value;
+        }
+
+            
+            getUnit(): any {
+            return Units.fromName('DefaultQuantifiable[unit=Optional[DefaultUnit[symbol=Optional[m], code=Optional[MTR], referenceUnit=Optional.empty, conversionFactor=Optional[m], quantityKinds=[length, slowing-down length, diffusion coefficient for neutron fluence rate, half-thickness, London penetration depth, (instantaneous) sound particle displacement, Compton wavelength, diffusion coefficient for neutron flux density, breadth, distance, radius of curvature, mean free path, fundamental lattice vector, mean linear range, length of path, object distance, nuclear radius, half-value thickness, image distance, Bohr radius, equilibrium position vector of ion or atom, migration length, lattice vector, electron radius, cartesian coordinates, displacement vector of ion or atom, radius, thickness, diffusion length, focal distance, coherence length, particle position vector, wavelength, diameter, mean free path of phonons or electrons, height]]]]')
+            }
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithOptionalProperties',
@@ -301,11 +314,11 @@ defaultQuantifiable.isAnonymousNode = true;
 
  public static readonly  TIMESTAMP_PROPERTY = 
                 
-        new (class extends DefaultStaticProperty<AspectWithOptionalProperties, Date>{
+        new (class extends DefaultStaticProperty<AspectWithOptionalProperties, string>{
 
     
     getPropertyType(): string {
-                return 'Date';
+                return 'string';
     }
 
     getContainingType(): string {
@@ -313,7 +326,15 @@ defaultQuantifiable.isAnonymousNode = true;
     }
 
 
-        })(
+    getValue( object : AspectWithOptionalProperties) : string {
+        return object.timestampProperty;
+    }
+
+        setValue( object : AspectWithOptionalProperties, value : string ) {
+            object.timestampProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithOptionalProperties',

@@ -98,13 +98,20 @@
         }
     #end
 
-    ##    TODO uncomment after Units.fromName() is implemented
-##        #if( $util.hasUnit( $property.getCharacteristic().get() ) )
-##            $codeGenerationConfig.importTracker().importLibExplicit('Units', './shared/units' )
-##            etUnit(): any {
-##            return Units.fromName("$util.castToQuantifiable( $property.getCharacteristic().get() )")
-##            }
-##        #end
+    getValue( object : $containingClass) : $propertyType {
+        return object.$property.getPayloadName();
+    }
+
+        setValue( object : $containingClass, value : $propertyType ) {
+            object.$property.getPayloadName() = value;
+        }
+
+        #if( $util.hasUnit( $property.getCharacteristic().get() ) )
+            $codeGenerationConfig.importTracker().importLibExplicit('Units', './shared/units' )
+            getUnit(): any {
+            return Units.fromName('$util.castToQuantifiable( $property.getCharacteristic().get() )')
+            }
+        #end
     })(
 
     ## {$arg1, $arg2, ...});

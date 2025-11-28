@@ -56,7 +56,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
             return 'number';
         }
 
-        })(
+    getValue( object : AspectWithNumericStructuredValue) : number {
+        return object.year;
+    }
+
+        setValue( object : AspectWithNumericStructuredValue, value : number ) {
+            object.year = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithNumericStructuredValue',
@@ -95,7 +103,15 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Year';
             return 'number';
         }
 
-        })(
+    getValue( object : AspectWithNumericStructuredValue) : number {
+        return object.month;
+    }
+
+        setValue( object : AspectWithNumericStructuredValue, value : number ) {
+            object.month = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithNumericStructuredValue',
@@ -134,7 +150,15 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Month';
             return 'number';
         }
 
-        })(
+    getValue( object : AspectWithNumericStructuredValue) : number {
+        return object.day;
+    }
+
+        setValue( object : AspectWithNumericStructuredValue, value : number ) {
+            object.day = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithNumericStructuredValue',
@@ -158,11 +182,11 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Day';
 
  public static readonly  DATE = 
                 
-        new (class extends DefaultStaticProperty<AspectWithNumericStructuredValue, Date>{
+        new (class extends DefaultStaticProperty<AspectWithNumericStructuredValue, string>{
 
     
     getPropertyType(): string {
-                return 'Date';
+                return 'string';
     }
 
     getContainingType(): string {
@@ -170,7 +194,15 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Day';
     }
 
 
-        })(
+    getValue( object : AspectWithNumericStructuredValue) : string {
+        return object.date;
+    }
+
+        setValue( object : AspectWithNumericStructuredValue, value : string ) {
+            object.date = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithNumericStructuredValue',

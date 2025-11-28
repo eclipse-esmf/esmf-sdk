@@ -41,11 +41,11 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
  public static readonly  YEAR = 
                 
-        new (class extends StaticContainerProperty<AspectWithStructuredValue, Date, Date> {
+        new (class extends StaticContainerProperty<AspectWithStructuredValue, string, string> {
 
     
     getPropertyType(): string {
-            return 'Date';
+            return 'string';
     }
 
     getContainingType(): string {
@@ -53,10 +53,18 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
         getContainedType(): string {
-            return 'Date';
+            return 'string';
         }
 
-        })(
+    getValue( object : AspectWithStructuredValue) : string {
+        return object.year;
+    }
+
+        setValue( object : AspectWithStructuredValue, value : string ) {
+            object.year = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithStructuredValue',
@@ -80,11 +88,11 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Year';
 
  public static readonly  MONTH = 
                 
-        new (class extends StaticContainerProperty<AspectWithStructuredValue, Date, Date> {
+        new (class extends StaticContainerProperty<AspectWithStructuredValue, string, string> {
 
     
     getPropertyType(): string {
-            return 'Date';
+            return 'string';
     }
 
     getContainingType(): string {
@@ -92,10 +100,18 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Year';
     }
 
         getContainedType(): string {
-            return 'Date';
+            return 'string';
         }
 
-        })(
+    getValue( object : AspectWithStructuredValue) : string {
+        return object.month;
+    }
+
+        setValue( object : AspectWithStructuredValue, value : string ) {
+            object.month = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithStructuredValue',
@@ -119,11 +135,11 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Month';
 
  public static readonly  DAY = 
                 
-        new (class extends StaticContainerProperty<AspectWithStructuredValue, Date, Date> {
+        new (class extends StaticContainerProperty<AspectWithStructuredValue, string, string> {
 
     
     getPropertyType(): string {
-            return 'Date';
+            return 'string';
     }
 
     getContainingType(): string {
@@ -131,10 +147,18 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Month';
     }
 
         getContainedType(): string {
-            return 'Date';
+            return 'string';
         }
 
-        })(
+    getValue( object : AspectWithStructuredValue) : string {
+        return object.day;
+    }
+
+        setValue( object : AspectWithStructuredValue, value : string ) {
+            object.day = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithStructuredValue',
@@ -158,11 +182,11 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Day';
 
  public static readonly  DATE = 
                 
-        new (class extends DefaultStaticProperty<AspectWithStructuredValue, Date>{
+        new (class extends DefaultStaticProperty<AspectWithStructuredValue, string>{
 
     
     getPropertyType(): string {
-                return 'Date';
+                return 'string';
     }
 
     getContainingType(): string {
@@ -170,7 +194,15 @@ defaultCharacteristic.addAspectModelUrn = this.NAMESPACE + 'Day';
     }
 
 
-        })(
+    getValue( object : AspectWithStructuredValue) : string {
+        return object.date;
+    }
+
+        setValue( object : AspectWithStructuredValue, value : string ) {
+            object.date = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithStructuredValue',

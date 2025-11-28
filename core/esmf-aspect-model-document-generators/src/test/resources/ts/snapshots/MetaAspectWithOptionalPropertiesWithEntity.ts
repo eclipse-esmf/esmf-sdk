@@ -57,7 +57,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithOptionalPropertiesWithEntity) : string {
+        return object.testString;
+    }
+
+        setValue( object : AspectWithOptionalPropertiesWithEntity, value : string ) {
+            object.testString = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithOptionalPropertiesWithEntity',
@@ -98,7 +106,15 @@ defaultCharacteristic.addDescription('en' , 'Describes a Property which contains
             return 'string';
         }
 
-        })(
+    getValue( object : AspectWithOptionalPropertiesWithEntity) : string {
+        return object.testOptionalString;
+    }
+
+        setValue( object : AspectWithOptionalPropertiesWithEntity, value : string ) {
+            object.testOptionalString = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithOptionalPropertiesWithEntity',
@@ -139,7 +155,15 @@ defaultCharacteristic.addDescription('en' , 'Describes a Property which contains
             return 'ReplacedAspectArtifact';
         }
 
-        })(
+    getValue( object : AspectWithOptionalPropertiesWithEntity) : ReplacedAspectArtifact {
+        return object.testOptionalEntity;
+    }
+
+        setValue( object : AspectWithOptionalPropertiesWithEntity, value : ReplacedAspectArtifact ) {
+            object.testOptionalEntity = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithOptionalPropertiesWithEntity',

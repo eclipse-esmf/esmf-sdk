@@ -17,5 +17,8 @@
     #foreach ($property in $element.properties)
         #tsPojoProperty($property)
     #end
+    #foreach( $property in $deconstructor.allProperties )
+        #tsPojoProperty( $property )
+    #end
 }
 #end

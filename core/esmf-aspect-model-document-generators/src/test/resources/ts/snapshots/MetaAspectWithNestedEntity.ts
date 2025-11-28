@@ -54,7 +54,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithNestedEntity) : Entity {
+        return object.entity;
+    }
+
+        setValue( object : AspectWithNestedEntity, value : Entity ) {
+            object.entity = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithNestedEntity',

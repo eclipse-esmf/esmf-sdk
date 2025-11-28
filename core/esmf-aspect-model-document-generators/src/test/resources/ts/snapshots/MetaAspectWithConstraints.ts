@@ -55,7 +55,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithConstraints) : string {
+        return object.testPropertyWithRegularExpression;
+    }
+
+        setValue( object : AspectWithConstraints, value : string ) {
+            object.testPropertyWithRegularExpression = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithConstraints',
@@ -105,7 +113,15 @@ trait.addDescription('en' , 'Test Regular Expression Constraint');
     }
 
 
-        })(
+    getValue( object : AspectWithConstraints) : string {
+        return object.testPropertyWithDecimalMinDecimalMaxRangeConstraint;
+    }
+
+        setValue( object : AspectWithConstraints, value : string ) {
+            object.testPropertyWithDecimalMinDecimalMaxRangeConstraint = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithConstraints',
@@ -212,7 +228,15 @@ trait.addDescription('en' , 'Test Range');
     }
 
 
-        })(
+    getValue( object : AspectWithConstraints) : string {
+        return object.testPropertyWithDecimalMaxRangeConstraint;
+    }
+
+        setValue( object : AspectWithConstraints, value : string ) {
+            object.testPropertyWithDecimalMaxRangeConstraint = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithConstraints',
@@ -319,7 +343,15 @@ trait.addDescription('en' , 'Test Range');
     }
 
 
-        })(
+    getValue( object : AspectWithConstraints) : number {
+        return object.testPropertyWithMinMaxRangeConstraint;
+    }
+
+        setValue( object : AspectWithConstraints, value : number ) {
+            object.testPropertyWithMinMaxRangeConstraint = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithConstraints',
@@ -426,7 +458,15 @@ trait.addDescription('en' , 'Test Range');
     }
 
 
-        })(
+    getValue( object : AspectWithConstraints) : number {
+        return object.testPropertyWithMinRangeConstraint;
+    }
+
+        setValue( object : AspectWithConstraints, value : number ) {
+            object.testPropertyWithMinRangeConstraint = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithConstraints',
@@ -533,7 +573,15 @@ trait.addDescription('en' , 'Test Range');
     }
 
 
-        })(
+    getValue( object : AspectWithConstraints) : number {
+        return object.testPropertyRangeConstraintWithFloatType;
+    }
+
+        setValue( object : AspectWithConstraints, value : number ) {
+            object.testPropertyRangeConstraintWithFloatType = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithConstraints',
@@ -640,7 +688,15 @@ trait.addDescription('en' , 'Test Range');
     }
 
 
-        })(
+    getValue( object : AspectWithConstraints) : number {
+        return object.testPropertyRangeConstraintWithDoubleType;
+    }
+
+        setValue( object : AspectWithConstraints, value : number ) {
+            object.testPropertyRangeConstraintWithDoubleType = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithConstraints',
@@ -747,7 +803,15 @@ trait.addDescription('en' , 'Test Range');
     }
 
 
-        })(
+    getValue( object : AspectWithConstraints) : string {
+        return object.testPropertyWithMinMaxLengthConstraint;
+    }
+
+        setValue( object : AspectWithConstraints, value : string ) {
+            object.testPropertyWithMinMaxLengthConstraint = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithConstraints',
@@ -797,7 +861,15 @@ trait.addDescription('en' , 'Test Length Constraint');
     }
 
 
-        })(
+    getValue( object : AspectWithConstraints) : string {
+        return object.testPropertyWithMinLengthConstraint;
+    }
+
+        setValue( object : AspectWithConstraints, value : string ) {
+            object.testPropertyWithMinLengthConstraint = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithConstraints',
@@ -848,7 +920,15 @@ trait.addDescription('en' , 'Test Length Constraint');
             return 'string';
         }
 
-        })(
+    getValue( object : AspectWithConstraints) : string[] {
+        return object.testPropertyCollectionLengthConstraint;
+    }
+
+        setValue( object : AspectWithConstraints, value : string[] ) {
+            object.testPropertyCollectionLengthConstraint = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithConstraints',

@@ -53,7 +53,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithMultiLanguageText) : MultiLanguageText {
+        return object.prop;
+    }
+
+        setValue( object : AspectWithMultiLanguageText, value : MultiLanguageText ) {
+            object.prop = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithMultiLanguageText',

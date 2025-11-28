@@ -54,7 +54,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithExclusiveRangeConstraint) : number {
+        return object.floatProp;
+    }
+
+        setValue( object : AspectWithExclusiveRangeConstraint, value : number ) {
+            object.floatProp = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithExclusiveRangeConstraint',
@@ -101,7 +109,15 @@ trait.addAspectModelUrn = this.NAMESPACE + 'FloatRange';
     }
 
 
-        })(
+    getValue( object : AspectWithExclusiveRangeConstraint) : number {
+        return object.doubleProp;
+    }
+
+        setValue( object : AspectWithExclusiveRangeConstraint, value : number ) {
+            object.doubleProp = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithExclusiveRangeConstraint',
@@ -148,7 +164,15 @@ trait.addAspectModelUrn = this.NAMESPACE + 'DoubleRange';
     }
 
 
-        })(
+    getValue( object : AspectWithExclusiveRangeConstraint) : string {
+        return object.decimalProp;
+    }
+
+        setValue( object : AspectWithExclusiveRangeConstraint, value : string ) {
+            object.decimalProp = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithExclusiveRangeConstraint',
@@ -195,7 +219,15 @@ trait.addAspectModelUrn = this.NAMESPACE + 'DecimalRange';
     }
 
 
-        })(
+    getValue( object : AspectWithExclusiveRangeConstraint) : string {
+        return object.integerProp;
+    }
+
+        setValue( object : AspectWithExclusiveRangeConstraint, value : string ) {
+            object.integerProp = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithExclusiveRangeConstraint',
@@ -242,7 +274,15 @@ trait.addAspectModelUrn = this.NAMESPACE + 'IntegerRange';
     }
 
 
-        })(
+    getValue( object : AspectWithExclusiveRangeConstraint) : number {
+        return object.intProp;
+    }
+
+        setValue( object : AspectWithExclusiveRangeConstraint, value : number ) {
+            object.intProp = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithExclusiveRangeConstraint',

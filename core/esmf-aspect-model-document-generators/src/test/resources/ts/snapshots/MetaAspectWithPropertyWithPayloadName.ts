@@ -53,7 +53,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithPropertyWithPayloadName) : string {
+        return object.test;
+    }
+
+        setValue( object : AspectWithPropertyWithPayloadName, value : string ) {
+            object.test = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithPropertyWithPayloadName',

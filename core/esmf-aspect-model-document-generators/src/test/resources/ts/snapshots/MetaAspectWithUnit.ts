@@ -17,6 +17,7 @@ import { DefaultQuantifiable,DefaultScalar,} from './esmf/aspect-meta-model';
 import { DefaultUnit,} from './esmf/aspect-meta-model/default-unit';
 import { KnownVersion,} from './esmf/shared/known-version';
 import { PropertyContainer,StaticMetaClass,StaticProperty,StaticUnitProperty,} from './esmf/aspect-meta-model/staticProperty';
+import { Units,} from './esmf/./shared/units';
 
 
     
@@ -53,7 +54,19 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithUnit) : number {
+        return object.testProperty;
+    }
+
+        setValue( object : AspectWithUnit, value : number ) {
+            object.testProperty = value;
+        }
+
+            
+            getUnit(): any {
+            return Units.fromName('DefaultQuantifiable[unit=Optional[DefaultUnit[symbol=Optional[bit/s], code=Optional[B10], referenceUnit=Optional.empty, conversionFactor=Optional.empty, quantityKinds=[]]]]')
+            }
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithUnit',

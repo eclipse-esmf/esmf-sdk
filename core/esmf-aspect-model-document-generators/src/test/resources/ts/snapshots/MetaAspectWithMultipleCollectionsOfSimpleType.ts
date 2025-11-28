@@ -56,7 +56,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
             return 'number';
         }
 
-        })(
+    getValue( object : AspectWithMultipleCollectionsOfSimpleType) : number[] {
+        return object.testListInt;
+    }
+
+        setValue( object : AspectWithMultipleCollectionsOfSimpleType, value : number[] ) {
+            object.testListInt = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithMultipleCollectionsOfSimpleType',
@@ -96,7 +104,15 @@ defaultList.addAspectModelUrn = this.NAMESPACE + 'IntegerList';
             return 'string';
         }
 
-        })(
+    getValue( object : AspectWithMultipleCollectionsOfSimpleType) : string[] {
+        return object.testListString;
+    }
+
+        setValue( object : AspectWithMultipleCollectionsOfSimpleType, value : string[] ) {
+            object.testListString = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithMultipleCollectionsOfSimpleType',

@@ -52,7 +52,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithUsedAndUnusedCharacteristic) : string {
+        return object.testProperty;
+    }
+
+        setValue( object : AspectWithUsedAndUnusedCharacteristic, value : string ) {
+            object.testProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithUsedAndUnusedCharacteristic',

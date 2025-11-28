@@ -43,11 +43,11 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
 
  public static readonly  TEST_PROPERTY_WITH_DATE_TIME = 
                 
-        new (class extends DefaultStaticProperty<AspectWithDateTimeTypeForRangeConstraints, Date>{
+        new (class extends DefaultStaticProperty<AspectWithDateTimeTypeForRangeConstraints, string>{
 
     
     getPropertyType(): string {
-                return 'Date';
+                return 'string';
     }
 
     getContainingType(): string {
@@ -55,7 +55,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithDateTimeTypeForRangeConstraints) : string {
+        return object.testPropertyWithDateTime;
+    }
+
+        setValue( object : AspectWithDateTimeTypeForRangeConstraints, value : string ) {
+            object.testPropertyWithDateTime = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithDateTimeTypeForRangeConstraints',
@@ -156,11 +164,11 @@ trait.addDescription('en' , 'Test Range');
 
  public static readonly  TEST_PROPERTY_WITH_DATE_TIME_STAMP = 
                 
-        new (class extends DefaultStaticProperty<AspectWithDateTimeTypeForRangeConstraints, Date>{
+        new (class extends DefaultStaticProperty<AspectWithDateTimeTypeForRangeConstraints, string>{
 
     
     getPropertyType(): string {
-                return 'Date';
+                return 'string';
     }
 
     getContainingType(): string {
@@ -168,7 +176,15 @@ trait.addDescription('en' , 'Test Range');
     }
 
 
-        })(
+    getValue( object : AspectWithDateTimeTypeForRangeConstraints) : string {
+        return object.testPropertyWithDateTimeStamp;
+    }
+
+        setValue( object : AspectWithDateTimeTypeForRangeConstraints, value : string ) {
+            object.testPropertyWithDateTimeStamp = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithDateTimeTypeForRangeConstraints',

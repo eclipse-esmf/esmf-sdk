@@ -52,7 +52,15 @@ private static readonly CHARACTERISTIC_NAMESPACE = 'urn:samm:org.eclipse.esmf.sa
     }
 
 
-        })(
+    getValue( object : AspectWithNumericRegularExpressionConstraint) : string {
+        return object.testProperty;
+    }
+
+        setValue( object : AspectWithNumericRegularExpressionConstraint, value : string ) {
+            object.testProperty = value;
+        }
+
+    })(
 
         KnownVersion.getLatest().toString(),
     this.NAMESPACE + 'AspectWithNumericRegularExpressionConstraint',
