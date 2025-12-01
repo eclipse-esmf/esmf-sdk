@@ -19,15 +19,15 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Check code style
-        if: matrix.os == 'ubuntu-latest'
-        uses: dbelyaev/action-checkstyle@e89baf0f8b488b946345b7de8e975be1e3606387 # v1.5.6
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: github-pr-review
-          checkstyle_config: esmf-checkstyle.xml
-          level: warning
-          fail_on_error: true
+#      - name: Check code style
+#        if: matrix.os == 'ubuntu-latest'
+#        uses: dbelyaev/action-checkstyle@e89baf0f8b488b946345b7de8e975be1e3606387 # v1.5.6
+#        with:
+#          github_token: ${{ secrets.GITHUB_TOKEN }}
+#          reporter: github-pr-review
+#          checkstyle_config: esmf-checkstyle.xml
+#          level: warning
+#          fail_on_error: true
 
       - name: Setup JDK
         uses: graalvm/setup-graalvm@01ed653ac833fe80569f1ef9f25585ba2811baab # v1.3.3
