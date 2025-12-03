@@ -1,7 +1,7 @@
 = Using Java Static Meta Classes
-:page-aliases: ROOT:static-metaclasses:index.adoc, \
-ROOT:static-metaclasses:basic-usage.adoc, \
-ROOT:static-metaclasses:advanced-usage.adoc
+:page-aliases: static-metaclasses:index.adoc, \
+static-metaclasses:basic-usage.adoc, \
+static-metaclasses:advanced-usage.adoc
 
 == Motivation
 To fully leverage the power of Aspect Models during application development generating the Java classes
