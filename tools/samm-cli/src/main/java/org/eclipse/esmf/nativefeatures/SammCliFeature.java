@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -40,6 +40,7 @@ import org.eclipse.esmf.aspect.to.AspectToOpenapiCommand;
 import org.eclipse.esmf.aspect.to.AspectToPngCommand;
 import org.eclipse.esmf.aspect.to.AspectToSqlCommand;
 import org.eclipse.esmf.aspect.to.AspectToSvgCommand;
+import org.eclipse.esmf.aspect.to.AspectToTsCommand;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.exception.SubCommandException;
 import org.eclipse.esmf.substitution.AdminShellConfig;
@@ -73,6 +74,7 @@ public class SammCliFeature implements Feature {
       Native.forClass( AspectToAsyncapiCommand.class ).registerEverythingForReflection();
       Native.forClass( AspectToHtmlCommand.class ).registerEverythingForReflection();
       Native.forClass( AspectToJavaCommand.class ).registerEverythingForReflection();
+      Native.forClass( AspectToTsCommand.class ).registerEverythingForReflection();
       Native.forClass( AspectToJsonCommand.class ).registerEverythingForReflection();
       Native.forClass( AspectToJsonLdCommand.class ).registerEverythingForReflection();
       Native.forClass( AspectToJsonSchemaCommand.class ).registerEverythingForReflection();
