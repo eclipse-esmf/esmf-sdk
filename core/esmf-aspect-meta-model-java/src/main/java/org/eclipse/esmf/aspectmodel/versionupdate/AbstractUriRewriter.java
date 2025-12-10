@@ -42,29 +42,30 @@ public abstract class AbstractUriRewriter extends AbstractSammMigrator {
    /**
     * The URI rewriter implementation decides whether a URI needs to be rewritten, given the map of old to new namespaces
     *
-    * @param oldUri the URI to rewrite
+    * @param resource the RDF resource whose URI may be rewritten
     * @param oldToNewNamespaces the map of old to new namespaces
     * @return empty if the URI should be kept as-is, the replacement URI otherwise
     */
-   protected abstract Optional<String> rewriteUri( String oldUri, Map<String, String> oldToNewNamespaces );
+   protected abstract Optional<String> rewriteUri( Resource resource, Map<String, String> oldToNewNamespaces );
 
    protected Resource updateResource( final Resource resource, final Map<String, String> oldToNewNamespaces ) {
       if ( resource.isAnon() ) {
          return resource;
       }
 
-      return rewriteUri( resource.getURI(), oldToNewNamespaces ).map( uriref ->
+      return rewriteUri( resource, oldToNewNamespaces ).map( uriref ->
             resource.getModel().createResource( uriref ) ).orElse( resource );
    }
 
    protected Property updateProperty( final Property property, final Map<String, String> oldToNewNamespaces ) {
-      return rewriteUri( property.getURI(), oldToNewNamespaces ).map( uriref ->
+      return rewriteUri( property, oldToNewNamespaces ).map( uriref ->
             property.getModel().createProperty( uriref ) ).orElse( property );
    }
 
    protected Literal updateLiteral( final Literal literal, final Map<String, String> oldToNewNamespaces ) {
       return Optional.ofNullable( literal.getDatatypeURI() )
-            .flatMap( uri -> rewriteUri( uri, oldToNewNamespaces ) )
+            .map(uri -> literal.getModel().createResource( uri ) )
+            .flatMap(datatype -> rewriteUri(datatype, oldToNewNamespaces))
             .map( uri -> literal.getModel().createTypedLiteral( literal.getLexicalForm(), NodeFactory.getType( uri ) ) )
             .orElse( literal );
    }
