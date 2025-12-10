@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Locale;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
 
 import org.eclipse.esmf.substitution.IsLinux;
 import org.eclipse.esmf.substitution.IsWindows;
@@ -37,6 +36,7 @@ import org.graalvm.nativeimage.impl.RuntimeJNIAccessSupport;
 import org.graalvm.nativeimage.impl.RuntimeProxyCreationSupport;
 import org.graalvm.nativeimage.impl.RuntimeReflectionSupport;
 import org.graalvm.nativeimage.impl.RuntimeResourceSupport;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Helper class for registration of resources, classes etc. for GraalVM native image compilation.
@@ -118,7 +118,7 @@ public class Native {
       return this;
    }
 
-   public Native registerFieldsForReflection( @Nonnull final String... fieldNames ) {
+   public Native registerFieldsForReflection( @NonNull final String... fieldNames ) {
       for ( final Field field : clazz.getDeclaredFields() ) {
          for ( final String targetField : fieldNames ) {
             if ( field.getName().equals( targetField ) ) {
@@ -134,7 +134,7 @@ public class Native {
       return this;
    }
 
-   public Native registerConstructorForReflection( @Nonnull final Class<?>... args ) {
+   public Native registerConstructorForReflection( @NonNull final Class<?>... args ) {
       try {
          RUNTIME_REFLECTION_SUPPORT.get().register( alwaysTrue(), false, clazz.getDeclaredConstructor( args ) );
       } catch ( final NoSuchMethodException exception ) {
@@ -149,7 +149,7 @@ public class Native {
       return this;
    }
 
-   public Native registerMethodForReflection( final String name, @Nonnull final Class<?>... args ) {
+   public Native registerMethodForReflection( final String name, @NonNull final Class<?>... args ) {
       try {
          RUNTIME_REFLECTION_SUPPORT.get().register( alwaysTrue(), false, clazz.getDeclaredMethod( name, args ) );
       } catch ( final NoSuchMethodException exception ) {
@@ -178,7 +178,7 @@ public class Native {
       return this;
    }
 
-   public Native registerFieldsForJni( @Nonnull final String... fieldNames ) {
+   public Native registerFieldsForJni( @NonNull final String... fieldNames ) {
       for ( final Field field : clazz.getDeclaredFields() ) {
          for ( final String targetField : fieldNames ) {
             if ( field.getName().equals( targetField ) ) {
@@ -196,7 +196,7 @@ public class Native {
       return this;
    }
 
-   public Native registerConstructorForJni( @Nonnull final Class<?>... args ) {
+   public Native registerConstructorForJni( @NonNull final Class<?>... args ) {
       try {
          RUNTIME_JNI_ACCESS_SUPPORT.get().register( alwaysTrue(), false, clazz.getDeclaredConstructor( args ) );
       } catch ( final NoSuchMethodException exception ) {
@@ -213,7 +213,7 @@ public class Native {
       return this;
    }
 
-   public Native registerMethodForJni( final String name, @Nonnull final Class<?>... args ) {
+   public Native registerMethodForJni( final String name, @NonNull final Class<?>... args ) {
       try {
          RUNTIME_JNI_ACCESS_SUPPORT.get().register( alwaysTrue(), false, clazz.getDeclaredMethod( name, args ) );
       } catch ( final NoSuchMethodException exception ) {
