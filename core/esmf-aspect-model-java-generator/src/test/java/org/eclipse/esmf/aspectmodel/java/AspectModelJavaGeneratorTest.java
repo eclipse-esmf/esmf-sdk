@@ -61,6 +61,8 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
@@ -126,6 +128,7 @@ class AspectModelJavaGeneratorTest {
     * @param testAspect the injected Aspect model
     */
    @ParameterizedTest
+   @Execution( ExecutionMode.CONCURRENT )
    @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
          "ASPECT_WITH_USED_AND_UNUSED_ENUMERATION", // No code will be generated for an unused enumeration
          "MODEL_WITH_BROKEN_CYCLES" // Contains elements that are not references from the Aspect

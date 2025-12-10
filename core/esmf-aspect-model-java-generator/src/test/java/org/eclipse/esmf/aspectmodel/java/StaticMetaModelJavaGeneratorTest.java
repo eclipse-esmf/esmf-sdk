@@ -42,6 +42,8 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.reflect.TypeToken;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
@@ -52,6 +54,7 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
     * @param testAspect the injected Aspect model
     */
    @ParameterizedTest
+   @Execution( ExecutionMode.CONCURRENT )
    @EnumSource( value = TestAspect.class )
    void testCodeGeneration( final TestAspect testAspect ) {
       assertThatCode( () -> {
@@ -72,6 +75,7 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
     * @param testAspect the injected shared Aspect models
     */
    @ParameterizedTest
+   @Execution( ExecutionMode.CONCURRENT )
    @EnumSource( value = TestSharedAspect.class )
    void testCodeGenerationSharedAspect( final TestSharedAspect testAspect ) {
       assertThatCode( () -> TestContext.generateStaticAspectCode()
