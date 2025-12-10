@@ -34,7 +34,7 @@ public class AspectModelNamespacePackageCreator
    }
 
    private AspectModel aspectModel() {
-      return focus;
+      return getFocus();
    }
 
    /**

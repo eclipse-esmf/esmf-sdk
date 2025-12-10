@@ -26,7 +26,7 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AspectModelAsyncApiGenerator extends JsonGenerator<AsyncApiSchemaGenerationConfig, JsonNode, AsyncApiSchemaArtifact> {
+public class AspectModelAsyncApiGenerator extends JsonGenerator<Aspect, AsyncApiSchemaGenerationConfig, JsonNode, AsyncApiSchemaArtifact> {
    public static final AsyncApiSchemaGenerationConfig DEFAULT_CONFIG = AsyncApiSchemaGenerationConfigBuilder.builder().build();
 
    private static final String APPLICATION_JSON = "application/json";
@@ -50,6 +50,10 @@ public class AspectModelAsyncApiGenerator extends JsonGenerator<AsyncApiSchemaGe
 
    public AspectModelAsyncApiGenerator( final Aspect aspect, final AsyncApiSchemaGenerationConfig config ) {
       super( aspect, config );
+   }
+
+   private Aspect aspect() {
+      return structureElement();
    }
 
    @Override
