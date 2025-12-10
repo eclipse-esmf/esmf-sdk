@@ -42,8 +42,8 @@ public class ViolationFormatter implements Function<List<Violation>, String>, Vi
    protected final String additionalHints;
    protected final RustLikeFormatter formatter;
 
-   private static final String ERROR_CODES_DOC_LINK = "https://eclipse-esmf.github.io/esmf-developer-guide/tooling-guide/error-codes.html";
-   private static final String ERROR_CODES_DOC_STRING = "For more information, see: documentation: " + ERROR_CODES_DOC_LINK;
+   private static final String ERROR_CODES_DOC_LINK = "https://eclipse-esmf.github.io/esmf-developer-guide/tooling-guide/error-codes.html#";
+   private static final String ERROR_CODES_DOC_STRING = "For more information, see documentation: " + ERROR_CODES_DOC_LINK;
 
    public ViolationFormatter( final String additionalHints ) {
       this( new PlainTextFormatter(), additionalHints );
