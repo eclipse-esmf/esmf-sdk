@@ -18,8 +18,10 @@ import static org.eclipse.esmf.aspectmodel.StreamUtil.asMap;
 import java.io.File;
 import java.net.URI;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -49,6 +51,7 @@ import org.apache.jena.rdf.model.Resource;
 public class AspectModelValidator implements Validator<Violation, List<Violation>> {
    private final ShaclValidator shaclValidator;
    private static boolean arqInitialized = false;
+   private final Set<CustomValidation> customValidations;
 
    private static synchronized void initArq() {
       if ( !arqInitialized ) {
@@ -63,6 +66,9 @@ public class AspectModelValidator implements Validator<Violation, List<Violation
    public AspectModelValidator() {
       initArq();
       shaclValidator = new ShaclValidator( MetaModelFile.metaModelShapes() );
+      customValidations = new HashSet<>(
+            List.of( new RegularExpressionExampleValueValidator() )
+      );
    }
 
    /**
@@ -170,7 +176,15 @@ public class AspectModelValidator implements Validator<Violation, List<Violation
             return cycleDetectionReport;
          }
       }
-
+      // ModelCycleDetector - must be first to detect cycles before other validations are performed
+      if ( violations.isEmpty() ) {
+         for ( final CustomValidation customValidation : customValidations ) {
+            final List<Violation> customViolations = customValidation.validateModel( model );
+            if ( !customViolations.isEmpty() ) {
+               return customViolations;
+            }
+         }
+      }
       return violations;
    }
 

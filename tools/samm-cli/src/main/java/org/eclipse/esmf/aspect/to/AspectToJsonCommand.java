@@ -68,7 +68,7 @@ public class AspectToJsonCommand extends AbstractCommand {
             .addTypeAttributeForEntityInheritance( addTypeAttribute )
             .build();
       final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator(
-            getInputHandler( parentCommand.parentCommand.getInput() ).loadAspect(), config );
+            getInputHandler( parentCommand.parentCommand.getInput(), true ).loadAspect(), config );
       // we intentionally override the name of the generated artifact here to the name explicitly desired by the user (outputFilePath),
       // as opposed to what the model thinks it should be called (name)
       generator.generate( name -> getStreamForFile( outputFilePath ) );

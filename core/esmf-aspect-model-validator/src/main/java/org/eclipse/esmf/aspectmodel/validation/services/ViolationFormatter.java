@@ -32,6 +32,7 @@ import org.eclipse.esmf.aspectmodel.validation.CycleViolation;
 import org.eclipse.esmf.aspectmodel.validation.InvalidLexicalValueViolation;
 import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
 import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
+import org.eclipse.esmf.aspectmodel.validation.RegularExpressionConstraintViolation;
 
 /**
  * Formats one or multiple {@link Violation}s in a human-readable way. Note that this is intended only for places with raw textual output,
@@ -205,6 +206,12 @@ public class ViolationFormatter implements Function<List<Violation>, String>, Vi
 
    @Override
    public String visitCycleViolation( final CycleViolation violation ) {
+      return formatter.constructDetailedMessage( violation.highlight(), violation.violationSpecificMessage(),
+            violation.highlight().getModel() );
+   }
+
+   @Override
+   public String visitRegularExpressionConstraint( final RegularExpressionConstraintViolation violation ) {
       return formatter.constructDetailedMessage( violation.highlight(), violation.violationSpecificMessage(),
             violation.highlight().getModel() );
    }

@@ -81,6 +81,7 @@ import org.eclipse.esmf.aspectmodel.validation.CycleViolation;
 import org.eclipse.esmf.aspectmodel.validation.InvalidLexicalValueViolation;
 import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
 import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
+import org.eclipse.esmf.aspectmodel.validation.RegularExpressionConstraintViolation;
 
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Property;
@@ -297,6 +298,13 @@ public class DetailedViolationFormatter extends ViolationFormatter {
       return formatViolation( violation, () ->
             String.format( "properties-in-path: %s%n",
                   violation.path().stream().map( Resource::getURI ).collect( Collectors.joining( ", " ) ) ) );
+   }
+
+   @Override
+   public String visitRegularExpressionConstraint( final RegularExpressionConstraintViolation violation ) {
+      return formatViolation( violation, () ->
+            String.format( "properties-in-path: %s%n",
+                  Optional.ofNullable( violation.path() ).map( Resource::getURI ).orElse( "" ) ) );
    }
 
    @Override

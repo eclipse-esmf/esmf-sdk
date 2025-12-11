@@ -256,4 +256,12 @@ class AspectModelValidatorTest {
       assertThat( violations ).hasSize( 1 );
       assertThat( violations.getFirst().violationSpecificMessage() ).contains( "is no valid value for type" );
    }
+
+   @Test
+   void testValidateInvalidLiteralValue1() {
+      final AspectModel aspectModel = TestResources.load( InvalidTestAspect.INVALID_ASPECT_WITH_ENTITY_REGEX_CONSTRAINT );
+      final List<Violation> result = validator.validateModel( aspectModel );
+      assertThat( result ).hasSize( 1 );
+      assertThat( result.getFirst().violationSpecificMessage() ).contains( "Cannot automatically generate an example value for property" );
+   }
 }

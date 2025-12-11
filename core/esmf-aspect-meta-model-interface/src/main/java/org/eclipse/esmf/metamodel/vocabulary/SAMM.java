@@ -106,6 +106,10 @@ public class SAMM implements RdfNamespace {
       return resource( "Constraint" );
    }
 
+   public Property constraint() {
+      return property( "constraint" );
+   }
+
    public Property dataType() {
       return property( "dataType" );
    }
