@@ -64,8 +64,8 @@ public abstract class AbstractUriRewriter extends AbstractSammMigrator {
 
    protected Literal updateLiteral( final Literal literal, final Map<String, String> oldToNewNamespaces ) {
       return Optional.ofNullable( literal.getDatatypeURI() )
-            .map(uri -> literal.getModel().createResource( uri ) )
-            .flatMap(datatype -> rewriteUri(datatype, oldToNewNamespaces))
+            .map( uri -> literal.getModel().createResource( uri ) )
+            .flatMap( datatype -> rewriteUri( datatype, oldToNewNamespaces ) )
             .map( uri -> literal.getModel().createTypedLiteral( literal.getLexicalForm(), NodeFactory.getType( uri ) ) )
             .orElse( literal );
    }
