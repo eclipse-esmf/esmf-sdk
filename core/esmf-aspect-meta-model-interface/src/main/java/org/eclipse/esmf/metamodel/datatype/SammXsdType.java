@@ -342,7 +342,7 @@ public abstract non-sealed class SammXsdType<T> extends XSDDatatype implements S
     *
     * @param <T> the Java class that represents values for the type
     */
-   public static abstract non-sealed class SammExtendedXsdType<T> implements SammType<T> {
+   public abstract static non-sealed class SammExtendedXsdType<T> implements SammType<T> {
       private final String uri;
       private final Class<T> javaClass;
 

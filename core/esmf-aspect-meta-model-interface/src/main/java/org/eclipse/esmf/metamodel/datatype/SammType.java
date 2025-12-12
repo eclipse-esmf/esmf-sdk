@@ -460,6 +460,7 @@ public sealed interface SammType<T> extends RDFDatatype, Scalar
       }
    }
 
+   @SuppressWarnings( "checkstyle:AbbreviationAsWordInName" )
    final class XsdGYear extends SammXsdType<XMLGregorianCalendar> implements SammType<XMLGregorianCalendar> {
       private XsdGYear() {
          super( org.apache.jena.vocabulary.XSD.gYear, XMLGregorianCalendar.class );
@@ -487,6 +488,7 @@ public sealed interface SammType<T> extends RDFDatatype, Scalar
       }
    }
 
+   @SuppressWarnings( "checkstyle:AbbreviationAsWordInName" )
    final class XsdGMonth extends SammXsdType<XMLGregorianCalendar> implements SammType<XMLGregorianCalendar> {
       private XsdGMonth() {
          super( org.apache.jena.vocabulary.XSD.gMonth, XMLGregorianCalendar.class );
@@ -514,6 +516,7 @@ public sealed interface SammType<T> extends RDFDatatype, Scalar
       }
    }
 
+   @SuppressWarnings( "checkstyle:AbbreviationAsWordInName" )
    final class XsdGDay extends SammXsdType<XMLGregorianCalendar> implements SammType<XMLGregorianCalendar> {
       private XsdGDay() {
          super( org.apache.jena.vocabulary.XSD.gDay, XMLGregorianCalendar.class );
@@ -541,6 +544,7 @@ public sealed interface SammType<T> extends RDFDatatype, Scalar
       }
    }
 
+   @SuppressWarnings( "checkstyle:AbbreviationAsWordInName" )
    final class XsdGYearMonth extends SammXsdType<XMLGregorianCalendar> implements SammType<XMLGregorianCalendar> {
       private XsdGYearMonth() {
          super( org.apache.jena.vocabulary.XSD.gYearMonth, XMLGregorianCalendar.class );

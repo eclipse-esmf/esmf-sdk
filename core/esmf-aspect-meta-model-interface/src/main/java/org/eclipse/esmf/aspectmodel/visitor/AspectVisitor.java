@@ -342,22 +342,27 @@ public interface AspectVisitor<T, C> {
       return visitScalar( dateTimeStamp, context );
    }
 
+   @SuppressWarnings( "checkstyle:AbbreviationAsWordInName" )
    default T visitXsdGYear( final SammType.XsdGYear gYear, final C context ) {
       return visitScalar( gYear, context );
    }
 
+   @SuppressWarnings( "checkstyle:AbbreviationAsWordInName" )
    default T visitXsdGMonth( final SammType.XsdGMonth gMonth, final C context ) {
       return visitScalar( gMonth, context );
    }
 
+   @SuppressWarnings( "checkstyle:AbbreviationAsWordInName" )
    default T visitXsdGDay( final SammType.XsdGDay gDay, final C context ) {
       return visitScalar( gDay, context );
    }
 
+   @SuppressWarnings( "checkstyle:AbbreviationAsWordInName" )
    default T visitXsdGYearMonth( final SammType.XsdGYearMonth gYearMonth, final C context ) {
       return visitScalar( gYearMonth, context );
    }
 
+   @SuppressWarnings( "checkstyle:AbbreviationAsWordInName" )
    default T visitXsdGMonthDay( final SammType.XsdMonthDay monthDay, final C context ) {
       return visitScalar( monthDay, context );
    }
