@@ -73,6 +73,7 @@ import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.curiousoddman.rgxgen.RgxGen;
+import com.github.curiousoddman.rgxgen.parsing.dflt.RgxGenParseException;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.apache.jena.rdf.model.Resource;
@@ -675,8 +676,12 @@ public class AspectModelJsonPayloadGenerator extends JsonGenerator<JsonPayloadGe
       }
 
       private Object getRandomValue( final RegularExpressionConstraint rangeConstraint ) {
-         final RgxGen rgxGen = RgxGen.parse( rangeConstraint.getValue() );
-         return rgxGen.generate();
+         try {
+            final RgxGen rgxGen = RgxGen.parse( rangeConstraint.getValue() );
+            return rgxGen.generate();
+         } catch ( final RgxGenParseException exception ) {
+            return "";
+         }
       }
 
       private Double getRandomDouble( final double min, final double max ) {

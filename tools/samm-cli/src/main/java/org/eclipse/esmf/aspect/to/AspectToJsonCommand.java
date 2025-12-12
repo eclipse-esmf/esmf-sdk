@@ -52,6 +52,13 @@ public class AspectToJsonCommand extends AbstractCommand {
          description = "Print detailed reports on errors" )
    private boolean details = false;
 
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--fail-on-empty-example-value" },
+         description = "Throw ERR_EMPTY_EXAMPLE_VALUE if an example value cannot be generated for a regular expression constraint, "
+               + "instead of returning an empty value." )
+   private boolean failOnEmptyExampleValue = false;
+
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
 
@@ -69,13 +76,18 @@ public class AspectToJsonCommand extends AbstractCommand {
       final JsonPayloadGenerationConfig config = JsonPayloadGenerationConfigBuilder.builder()
             .addTypeAttributeForEntityInheritance( addTypeAttribute )
             .build();
+
+      ValidatorConfig validationConfig;
+      if ( failOnEmptyExampleValue ) {
+         validationConfig = new ValidatorConfig.Builder()
+               .addCustomValidator( new RegularExpressionExampleValueValidator() )
+               .build();
+      } else {
+         validationConfig = new ValidatorConfig();
+      }
+
       final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator(
-            getInputHandler( parentCommand.parentCommand.getInput(),
-                  new ValidatorConfig.Builder()
-                        .addCustomValidator( new RegularExpressionExampleValueValidator() )
-                        .build() )
-                  .loadAspect(),
-            config );
+            getInputHandler( parentCommand.parentCommand.getInput(), validationConfig ).loadAspect(), config );
       // we intentionally override the name of the generated artifact here to the name explicitly desired by the user (outputFilePath),
       // as opposed to what the model thinks it should be called (name)
       generator.generate( name -> getStreamForFile( outputFilePath ) );
