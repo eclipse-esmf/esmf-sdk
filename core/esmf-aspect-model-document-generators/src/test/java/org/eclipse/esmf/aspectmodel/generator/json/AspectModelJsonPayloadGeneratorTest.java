@@ -22,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,6 +45,7 @@ import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithCollect
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithCollectionWithAbstractEntity;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithComplexEntityCollectionEnum;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithComplexSet;
+import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithComplexSetAsList;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithConstrainedSet;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithConstraintProperties;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithConstraints;
@@ -338,6 +340,20 @@ class AspectModelJsonPayloadGeneratorTest {
       assertThatCode( () -> {
          generateJsonForModel( aspect );
       } ).doesNotThrowAnyException();
+   }
+
+   @Test
+   void testGenerateJsonForAspectWithComplexCollectionOfMinSize2AndExampleValue() throws IOException {
+      // We generate a payload for the set of entities, where the Entity's single property has an example value and the
+      // set has a minimum size of 2. This means that the exampleValue may not reused for every entry.
+      // We parse the generated JSON using a List instead of a Set though, so that Jackson doesn't "solve" the problem
+      // by swallowing duplicate values: We want to ensure that the JSON does indeed not contain two duplicate entries
+      // (i.e., keeps the "set" semantics)
+      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_COMPLEX_SET );
+      final AspectWithComplexSetAsList aspectWithComplexSet = parseJson( generatedJson, AspectWithComplexSetAsList.class );
+      final List<URI> list = aspectWithComplexSet.getTestProperty().stream().map( Id::getProductId ).toList();
+      assertThat( list ).hasSizeGreaterThan( 1 );
+      assertThat( list.get( 0 ) ).isNotEqualTo( list.get( 1 ) );
    }
 
    @Test

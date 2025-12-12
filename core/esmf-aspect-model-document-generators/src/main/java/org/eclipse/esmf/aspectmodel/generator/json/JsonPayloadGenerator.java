@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
@@ -50,6 +49,7 @@ import org.eclipse.esmf.metamodel.Value;
 import org.eclipse.esmf.metamodel.characteristic.Collection;
 import org.eclipse.esmf.metamodel.characteristic.Either;
 import org.eclipse.esmf.metamodel.characteristic.Enumeration;
+import org.eclipse.esmf.metamodel.characteristic.SortedSet;
 import org.eclipse.esmf.metamodel.characteristic.State;
 import org.eclipse.esmf.metamodel.characteristic.Trait;
 import org.eclipse.esmf.metamodel.constraint.FixedPointConstraint;
@@ -96,13 +96,27 @@ public class JsonPayloadGenerator<S extends StructureElement>
       return Stream.of( new JsonPayloadArtifact( element.urn().toString(), json ) );
    }
 
-   public record Context( List<Constraint> constraints, Set<Property> visitedProperties ) {
+   /**
+    * The context while traversing the input model
+    *
+    * @param constraints the constraints that apply to the current position
+    * @param visitedProperties the Properties that were visited during the traversal
+    * @param ignoreExampleValue whether or not the exampleValue for the next level of Properties should be ignored
+    */
+   public record Context(
+         List<Constraint> constraints,
+         Set<Property> visitedProperties,
+         boolean ignoreExampleValue ) {
       private Context() {
-         this( List.of(), new HashSet<>() );
+         this( List.of(), new HashSet<>(), false );
       }
 
       public Context withConstraints( final List<Constraint> constraints ) {
-         return new Context( constraints, visitedProperties() );
+         return new Context( constraints, visitedProperties(), ignoreExampleValue() );
+      }
+
+      public Context doIgnoreExampleValue( final boolean ignore ) {
+         return new Context( constraints(), visitedProperties(), ignore );
       }
    }
 
@@ -277,11 +291,18 @@ public class JsonPayloadGenerator<S extends StructureElement>
          return null;
       }
       context.visitedProperties().add( property );
-      return property.getExampleValue()
-            .map( exampleValue -> exampleValue.accept( this, context ) )
-            .orElseGet( () -> property.getCharacteristic()
-                  .map( c -> c.accept( this, context ) )
-                  .orElse( null ) );
+
+      if ( context.ignoreExampleValue() ) {
+         return property.getCharacteristic()
+               .map( c -> c.accept( this, context.doIgnoreExampleValue( false ) ) )
+               .orElse( null );
+      } else {
+         return property.getExampleValue()
+               .map( value -> value.accept( this, context ) )
+               .orElseGet( () -> property.getCharacteristic()
+                     .map( c -> c.accept( this, context ) )
+                     .orElse( null ) );
+      }
    }
 
    @Override
@@ -293,11 +314,12 @@ public class JsonPayloadGenerator<S extends StructureElement>
 
    @Override
    public JsonNode visitCollection( final Collection collection, final Context context ) {
-      // "type" of elements of the collection, i.e., scalar type or Characteristic
+      // "type" of elements of the collection, i.e., scalar type or Characteristic.
+      // Check elementCharacteristic first, because it could be a Trait with constraints
       final ModelElement collectionElementType =
-            collection.getDataType()
+            collection.getElementCharacteristic()
                   .map( ModelElement.class::cast )
-                  .or( collection::getElementCharacteristic )
+                  .or( collection::getDataType )
                   .orElseThrow( () -> new IllegalArgumentException(
                         "Collection " + collection.getName() + " has neither dataType nor elementCharacteristic" ) );
 
@@ -309,21 +331,58 @@ public class JsonPayloadGenerator<S extends StructureElement>
          return JsonNodeFactory.instance.arrayNode();
       }
       final ArrayNode result = JsonNodeFactory.instance.arrayNode( numberOfElements );
-      final Context newContext = new Context();
-      for ( int i = 0; i < numberOfElements; i++ ) {
-         result.add( collectionElementType.accept( this, newContext ) );
+      final Context contextForSubsequentElements = context.withConstraints( List.of() );
+      final Context contextForFirstElement = contextForSubsequentElements.doIgnoreExampleValue( false );
+      result.add( collectionElementType.accept( this, contextForFirstElement ) );
+      for ( int i = 1; i < numberOfElements; i++ ) {
+         result.add( collectionElementType.accept( this, contextForSubsequentElements ) );
       }
       return result;
+   }
+
+   /**
+    * For the case of a Set or SortedSet with a minimum cardinality of 2 and an Entity type, only the first example element's
+    * value may be based on the exampleValue, otherwise the generated structure violates the corresponding JSON Schema's
+    * "uniqueItems" constraint. In other words, the following would not be valid, because both values are identical:
+    * <pre>
+    *  {
+    *   "someProperty" : [ {
+    *     "someNestedProperty" : "the given example value"
+    *   }, {
+    *     "someNestedProperty" : "the given example value"
+    *   } ]
+    * }
+    * </pre>
+    *
+    * @param set the input Set
+    * @param context the evaluation context
+    * @return the corresponding JSON node
+    */
+   @Override
+   public JsonNode visitSet( final org.eclipse.esmf.metamodel.characteristic.Set set, final Context context ) {
+      return visitCollection( set, context.doIgnoreExampleValue( true ) );
+   }
+
+   /**
+    * See {@link #visitSet(org.eclipse.esmf.metamodel.characteristic.Set, Context)}
+    *
+    * @param sortedSet the input Set
+    * @param context the evaluation context
+    * @return the corresponding JSON node
+    */
+   @Override
+   public JsonNode visitSortedSet( final SortedSet sortedSet, final Context context ) {
+      return visitCollection( sortedSet, context.doIgnoreExampleValue( true ) );
    }
 
    @Override
    public JsonNode visitEither( final Either either, final Context context ) {
       final ObjectNode result = JsonNodeFactory.instance.objectNode();
-      final Consumer<ObjectNode> consumer = randomValueOf(
-            node -> node.set( SammNs.SAMMC.left().getLocalName(), either.getLeft().accept( this, context ) ),
-            node -> node.set( SammNs.SAMMC.right().getLocalName(), either.getRight().accept( this, context ) )
-      );
-      consumer.accept( result );
+      if ( randomValueOf( true, false ) ) {
+         result.set( SammNs.SAMMC.left().getLocalName(), either.getLeft().accept( this, context ) );
+      } else {
+         result.set( SammNs.SAMMC.right().getLocalName(), either.getRight().accept( this, context ) );
+      }
       return result;
    }
 
