@@ -296,7 +296,7 @@ public class RdfUtil {
     * @return the merged view
     */
    public static Model mergedView( final Map<URI, Model> models ) {
-      final Dataset dataset = DatasetFactory.createTxnMem();
+      final Dataset dataset = DatasetFactory.create();
       dataset.begin( ReadWrite.WRITE );
       try {
          for ( final Map.Entry<URI, Model> entry : models.entrySet() ) {
