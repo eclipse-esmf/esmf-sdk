@@ -25,6 +25,7 @@ import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+import org.eclipse.esmf.aspectmodel.validation.ValidatorConfig;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.AspectModel;
 
@@ -37,8 +38,9 @@ import org.apache.commons.io.FilenameUtils;
 public class FileInputHandler extends AbstractInputHandler {
    private final File inputFile;
 
-   FileInputHandler( final String input, final ResolverConfigurationMixin resolverConfig, final boolean details, final boolean validate ) {
-      super( input, resolverConfig, details, validate );
+   FileInputHandler( final String input, final ResolverConfigurationMixin resolverConfig, final boolean details,
+         final ValidatorConfig validatorConfig ) {
+      super( input, resolverConfig, details, validatorConfig );
       inputFile = absoluteFile( new File( input ) );
    }
 

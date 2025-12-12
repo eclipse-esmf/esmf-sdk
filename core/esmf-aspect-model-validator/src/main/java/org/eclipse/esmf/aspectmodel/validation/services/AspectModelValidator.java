@@ -18,7 +18,6 @@ import static org.eclipse.esmf.aspectmodel.StreamUtil.asMap;
 import java.io.File;
 import java.net.URI;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,6 +36,7 @@ import org.eclipse.esmf.aspectmodel.validation.InvalidLexicalValueViolation;
 import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
 import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
 import org.eclipse.esmf.aspectmodel.validation.Validator;
+import org.eclipse.esmf.aspectmodel.validation.ValidatorConfig;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
@@ -51,7 +51,7 @@ import org.apache.jena.rdf.model.Resource;
 public class AspectModelValidator implements Validator<Violation, List<Violation>> {
    private final ShaclValidator shaclValidator;
    private static boolean arqInitialized = false;
-   private final Set<CustomValidation> customValidations;
+   private final Set<CustomValidator> customValidators;
 
    private static synchronized void initArq() {
       if ( !arqInitialized ) {
@@ -64,11 +64,13 @@ public class AspectModelValidator implements Validator<Violation, List<Violation
     * Default constructor that will use the latest meta model version
     */
    public AspectModelValidator() {
+      this( new ValidatorConfig() );
+   }
+
+   public AspectModelValidator( ValidatorConfig validatorConfig ) {
       initArq();
       shaclValidator = new ShaclValidator( MetaModelFile.metaModelShapes() );
-      customValidations = new HashSet<>(
-            List.of( new RegularExpressionExampleValueValidator() )
-      );
+      customValidators = validatorConfig.getCustomValidators();
    }
 
    /**
@@ -178,8 +180,8 @@ public class AspectModelValidator implements Validator<Violation, List<Violation
       }
       // ModelCycleDetector - must be first to detect cycles before other validations are performed
       if ( violations.isEmpty() ) {
-         for ( final CustomValidation customValidation : customValidations ) {
-            final List<Violation> customViolations = customValidation.validateModel( model );
+         for ( final CustomValidator customValidator : customValidators ) {
+            final List<Violation> customViolations = customValidator.validateModel( model );
             if ( !customViolations.isEmpty() ) {
                return customViolations;
             }

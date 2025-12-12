@@ -16,6 +16,7 @@ package org.eclipse.esmf.aspect;
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.ResolverConfigurationMixin;
+import org.eclipse.esmf.aspectmodel.validation.ValidatorConfig;
 
 import picocli.CommandLine;
 
@@ -50,6 +51,6 @@ public class AspectValidateCommand extends AbstractCommand {
    public void run() {
       setDetails( details );
       setResolverConfig( resolverConfiguration );
-      System.out.println( getInputHandler( parentCommand.getInput(), true ).validateAspectModel() );
+      System.out.println( getInputHandler( parentCommand.getInput(), new ValidatorConfig() ).validateAspectModel() );
    }
 }

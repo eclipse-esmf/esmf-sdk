@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -11,14 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.aspectmodel.validation.services;
+package org.eclipse.esmf.test;
 
-import java.util.List;
-
-import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
-
-import org.apache.jena.rdf.model.Model;
-
-public interface CustomValidation {
-   List<Violation> validateModel( Model rawModel );
+public interface InvalideTestModel extends TestModel {
 }

@@ -28,8 +28,10 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.validation.CycleViolation;
 import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
 import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
+import org.eclipse.esmf.aspectmodel.validation.ValidatorConfig;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
+import org.eclipse.esmf.test.CustomValidatorInvalidTestAspect;
 import org.eclipse.esmf.test.InvalidTestAspect;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestProperty;
@@ -258,10 +260,19 @@ class AspectModelValidatorTest {
    }
 
    @Test
-   void testValidateInvalidLiteralValue1() {
-      final AspectModel aspectModel = TestResources.load( InvalidTestAspect.INVALID_ASPECT_WITH_ENTITY_REGEX_CONSTRAINT );
-      final List<Violation> result = validator.validateModel( aspectModel );
-      assertThat( result ).hasSize( 1 );
-      assertThat( result.getFirst().violationSpecificMessage() ).contains( "Cannot automatically generate an example value for property" );
+   void testValidateRegularExpressionExampleValueValidator() {
+      final Either<List<Violation>, AspectModel> result = TestResources.loadWithValidation(
+            CustomValidatorInvalidTestAspect.INVALID_ASPECT_WITH_ENTITY_REGEX_CONSTRAINT,
+            new AspectModelValidator(
+                  new ValidatorConfig.Builder()
+                        .addCustomValidator( new RegularExpressionExampleValueValidator() )
+                        .build()
+            )
+      );
+      assertThat( result.isLeft() ).isTrue();
+      final List<Violation> violations = result.getLeft();
+      assertThat( violations ).hasSize( 1 );
+      assertThat( violations.getFirst().violationSpecificMessage() ).contains(
+            "Cannot automatically generate an example value for property" );
    }
 }

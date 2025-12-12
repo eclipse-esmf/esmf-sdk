@@ -15,20 +15,8 @@ package org.eclipse.esmf.test;
 
 import org.apache.commons.text.CaseUtils;
 
-public enum InvalidTestAspect implements InvalideTestModel {
-   ACTUALLY_JSON,
-   ASPECT_WITH_INVALID_VERSION,
-   ASPECT_WITH_RECURSIVE_PROPERTY,
-   INVALID_SYNTAX,
-   INVALID_ENCODING,
-   INVALID_EXAMPLE_VALUE_DATATYPE,
-   INVALID_PREFERRED_NAME_DATATYPE,
-   INVALID_CHARACTERISTIC_DATATYPE,
-   INVALID_URI,
-   RANGE_CONSTRAINT_WITH_WRONG_TYPE,
-   MODEL_WITH_CYCLES,
-
-   INVALID_ASPECT_WITH_TWO_ASPECTS;
+public enum CustomValidatorInvalidTestAspect implements InvalideTestModel {
+   INVALID_ASPECT_WITH_ENTITY_REGEX_CONSTRAINT;
 
    @Override
    public String getName() {

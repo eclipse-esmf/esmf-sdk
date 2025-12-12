@@ -34,7 +34,7 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.vocabulary.RDF;
 
-public class RegularExpressionExampleValueValidator implements CustomValidation {
+public class RegularExpressionExampleValueValidator implements CustomValidator {
 
    private final SAMM samm = SammNs.SAMM;
    private final SAMMC sammc = SammNs.SAMMC;
@@ -42,11 +42,11 @@ public class RegularExpressionExampleValueValidator implements CustomValidation 
    private final List<Violation> violations = new ArrayList<>();
 
    @Override
-   public List<Violation> validateModel( final Model rawModel ) {
+   public List<Violation> validateModel( final Model model ) {
       violations.clear();
 
       // Traverse all Aspects in the model
-      final StmtIterator aspects = rawModel.listStatements( null, RDF.type, samm.Aspect() );
+      final StmtIterator aspects = model.listStatements( null, RDF.type, samm.Aspect() );
       while ( aspects.hasNext() ) {
          final Statement aspect = aspects.nextStatement();
          final Statement properties = aspect.getSubject().getProperty( samm.properties() );

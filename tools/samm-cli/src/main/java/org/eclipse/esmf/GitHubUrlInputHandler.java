@@ -27,6 +27,7 @@ import org.eclipse.esmf.aspectmodel.resolver.github.GithubModelSourceConfig;
 import org.eclipse.esmf.aspectmodel.resolver.github.GithubModelSourceConfigBuilder;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.aspectmodel.validation.ValidatorConfig;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.AspectModel;
 
@@ -41,8 +42,8 @@ public class GitHubUrlInputHandler extends AbstractInputHandler {
    private final GitHubFileLocation location;
 
    public GitHubUrlInputHandler( final String input, final ResolverConfigurationMixin resolverConfig, final boolean details,
-         final boolean validate ) {
-      super( input, resolverConfig, details, validate );
+         final ValidatorConfig validatorConfig ) {
+      super( input, resolverConfig, details, validatorConfig );
       location = GitHubFileLocation.parse( input ).orElseThrow( () ->
             new CommandException( "Input URL format is not supported: " + input ) );
       url = input;

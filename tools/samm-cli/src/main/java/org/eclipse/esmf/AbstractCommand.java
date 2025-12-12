@@ -37,6 +37,7 @@ import org.eclipse.esmf.aspectmodel.generator.diagram.DiagramGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.diagram.DiagramGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.resolver.fs.ModelsRoot;
 import org.eclipse.esmf.aspectmodel.resolver.fs.StructuredModelsRoot;
+import org.eclipse.esmf.aspectmodel.validation.ValidatorConfig;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.exception.SubCommandException;
 import org.eclipse.esmf.metamodel.Aspect;
@@ -65,27 +66,28 @@ public abstract class AbstractCommand implements Runnable {
    }
 
    protected InputHandler getInputHandler( final File input ) {
-      return new FileInputHandler( input.getAbsolutePath(), resolverConfig, details, false );
+      return new FileInputHandler( input.getAbsolutePath(), resolverConfig, details,
+            new ValidatorConfig.Builder().disableValidation( true ).build() );
    }
 
    protected InputHandler getInputHandler( final String input ) {
-      return getInputHandler( input, false );
+      return getInputHandler( input, new ValidatorConfig.Builder().disableValidation( true ).build() );
    }
 
-   protected InputHandler getInputHandler( final String input, final boolean validate ) {
+   protected InputHandler getInputHandler( final String input, final ValidatorConfig validatorConfig ) {
       if ( FileInputHandler.appliesToInput( input ) ) {
-         return new FileInputHandler( input, resolverConfig, details, validate );
+         return new FileInputHandler( input, resolverConfig, details, validatorConfig );
       } else if ( AspectModelUrnInputHandler.appliesToInput( input ) ) {
-         return new AspectModelUrnInputHandler( input, resolverConfig, details, validate );
+         return new AspectModelUrnInputHandler( input, resolverConfig, details, validatorConfig );
       } else if ( GitHubUrlInputHandler.appliesToInput( input ) ) {
-         return new GitHubUrlInputHandler( input, resolverConfig, details, validate );
+         return new GitHubUrlInputHandler( input, resolverConfig, details, validatorConfig );
       }
       throw new CommandException( "File not found: " + input );
    }
 
    protected void generateDiagram( final String input, final DiagramGenerationConfig.Format targetFormat,
          final String outputFileName, final String languageTag ) throws IOException {
-      final Aspect aspect = getInputHandler( input, false ).loadAspect();
+      final Aspect aspect = getInputHandler( input, new ValidatorConfig.Builder().disableValidation( true ).build() ).loadAspect();
       final Set<Locale> languagesUsedInModel = LanguageCollector.collectUsedLanguages( aspect );
       if ( !languagesUsedInModel.contains( Locale.forLanguageTag( languageTag ) ) ) {
          throw new CommandException( String.format( "The model does not contain the desired language: %s.", languageTag ) );
