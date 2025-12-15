@@ -93,7 +93,7 @@ public class JsonPayloadGenerator<S extends StructureElement>
    public Stream<JsonPayloadArtifact> generate() {
       final StructureElement element = structureElement();
       final JsonNode json = element.accept( this, new Context() );
-      return Stream.of( new JsonPayloadArtifact( element.urn().toString(), json ) );
+      return Stream.of( new JsonPayloadArtifact( element.getName() + ".json", json ) );
    }
 
    /**
