@@ -296,15 +296,10 @@ public class RdfUtil {
     * @return the merged view
     */
    public static Model mergedView( final Map<URI, Model> models ) {
-      final Dataset dataset = DatasetFactory.createTxnMem();
-      dataset.begin( ReadWrite.WRITE );
-      try {
-         for ( final Map.Entry<URI, Model> entry : models.entrySet() ) {
-            dataset.addNamedModel( entry.getKey().toString(), entry.getValue() );
-         }
-         dataset.commit();
-      } finally {
-         dataset.end();
+      final Dataset dataset = DatasetFactory.create();
+
+      for ( final Map.Entry<URI, Model> entry : models.entrySet() ) {
+         dataset.addNamedModel( entry.getKey().toString(), entry.getValue() );
       }
 
       final Model result = dataset.getUnionModel();
