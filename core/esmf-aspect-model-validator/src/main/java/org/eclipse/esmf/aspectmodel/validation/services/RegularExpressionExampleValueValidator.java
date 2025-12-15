@@ -76,20 +76,20 @@ public class RegularExpressionExampleValueValidator implements CustomValidator {
       // Traverse characteristic if present
       Statement characteristicStmt = resource.getProperty( samm.characteristic() );
       if ( characteristicStmt != null ) {
-         Resource characteristic = characteristicStmt.getObject().asResource();
+         final Resource characteristic = characteristicStmt.getObject().asResource();
          traverseRecursively( characteristic );
 
          // Traverse dataType if present in characteristic
          Statement dataTypeStmt = characteristic.getProperty( samm.dataType() );
          if ( dataTypeStmt != null ) {
-            Resource dataType = dataTypeStmt.getObject().asResource();
+            final Resource dataType = dataTypeStmt.getObject().asResource();
             traverseRecursively( dataType );
          }
 
          // Traverse baseCharacteristic if present in characteristic
          Statement baseCharacteristicStmt = characteristic.getProperty( sammc.baseCharacteristic() );
          if ( baseCharacteristicStmt != null ) {
-            Resource baseCharacteristic = baseCharacteristicStmt.getObject().asResource();
+            final Resource baseCharacteristic = baseCharacteristicStmt.getObject().asResource();
             traverseRecursively( baseCharacteristic );
          }
       }
@@ -114,16 +114,16 @@ public class RegularExpressionExampleValueValidator implements CustomValidator {
    private void checkRegularExpressionConstraint( final Resource resource ) {
       if ( resource.getProperty( samm.exampleValue() ) == null ) {
          // Check for presence of constraint
-         Statement characteristicStmt = resource.getProperty( samm.characteristic() );
+         final Statement characteristicStmt = resource.getProperty( samm.characteristic() );
          if ( characteristicStmt != null ) {
             Resource characteristic = characteristicStmt.getObject().asResource();
-            Statement constraintStmt = characteristic.getProperty( sammc.constraint() );
+            final Statement constraintStmt = characteristic.getProperty( sammc.constraint() );
             if ( constraintStmt != null ) {
-               Resource constraintResource = constraintStmt.getObject().asResource();
-               Property typeProp = ResourceFactory.createProperty( "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" );
+               final Resource constraintResource = constraintStmt.getObject().asResource();
+               final Property typeProp = ResourceFactory.createProperty( "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" );
                boolean isRegExConstraint = constraintResource.hasProperty( typeProp, sammc.RegularExpressionConstraint() );
                if ( isRegExConstraint ) {
-                  Property valueProp = samm.value();
+                  final Property valueProp = samm.value();
                   String regexValue = constraintResource.getProperty( valueProp ).getString();
                   try {
                      RgxGen.parse( regexValue );
