@@ -15,15 +15,16 @@ package org.eclipse.esmf.aspectmodel.validation.services;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.validation.RdfBasedValidator;
 import org.eclipse.esmf.aspectmodel.validation.RegularExpressionConstraintViolation;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import com.google.common.collect.Streams;
-import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Statement;
@@ -43,14 +44,15 @@ public class RegularExpressionExampleValueValidator implements RdfBasedValidator
             .map( Statement::getSubject )
             .flatMap( constraint -> Streams.stream( model.listStatements( constraint, SammNs.SAMM.value(), (RDFNode) null ) )
                   .filter( Objects::nonNull )
-                  .map( Statement::getLiteral )
-                  .map( Literal::getString )
-                  .<Violation> flatMap( regex -> {
+                  .<Violation> flatMap( statement -> {
+                     final String regex = statement.getLiteral().getString();
                      try {
-                        new RegularExpression( regex, "X" );
+                        new RegularExpression( regex, "m" );
                         return Stream.of();
                      } catch ( final ParseException exception ) {
-                        return Stream.of( new RegularExpressionConstraintViolation( constraint, regex ) );
+                        final EvaluationContext context = new EvaluationContext( constraint, null, Optional.empty(),
+                              Optional.empty(), Optional.empty(), List.of( statement ), null, model );
+                        return Stream.of( new RegularExpressionConstraintViolation( context, regex ) );
                      }
                   } ) )
             .toList();

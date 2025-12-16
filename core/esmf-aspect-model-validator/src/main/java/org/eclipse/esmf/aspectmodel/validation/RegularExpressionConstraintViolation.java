@@ -20,21 +20,15 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 
 import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
 
 /**
  * Violation for regular expressions that are too complex to automatically generate example values.
  *
- * @param path the property where the problematic regular expression is defined
+ * @param context the evaluation context
  * @param regexp the problematic regular expression
  */
-public record RegularExpressionConstraintViolation( Resource path, String regexp ) implements Violation {
+public record RegularExpressionConstraintViolation( EvaluationContext context, String regexp ) implements Violation {
    public static final String ERROR_CODE = "ERR_EMPTY_EXAMPLE_VALUE";
-
-   @Override
-   public EvaluationContext context() {
-      return null;
-   }
 
    @Override
    public String errorCode() {
@@ -42,27 +36,21 @@ public record RegularExpressionConstraintViolation( Resource path, String regexp
    }
 
    @Override
-   public String violationSpecificMessage() {
-      return String.format(
-            "Cannot automatically generate an example value for property '%s' due to a complex or unsupported regular expression:%n    %s%n"
-                  + "To resolve this, please do one of the following:%n"
-                  + "  1. Add an example value manually for this property.%n"
-                  + "  2. Simplify the regular expression so that an example can be generated automatically.",
-            path.getModel().shortForm( path.getURI() ), regexp
-      );
+   public String message() {
+      return violationSpecificMessage();
    }
 
    @Override
-   public String message() {
-      return "Cannot automatically generate an example value due to a complex or unsupported regular expression";
+   public String violationSpecificMessage() {
+      return "Regular expression on %s is invalid: '%s'.".formatted( context.value( context.element() ), regexp );
    }
 
    @Override
    public RDFNode highlight() {
-      return Optional.ofNullable( path )
+      return Optional.ofNullable( context.element() )
             .filter( property -> TokenRegistry.getToken( property.asNode() ).isPresent() )
             .map( resource -> resource.as( RDFNode.class ) )
-            .orElse( path );
+            .orElse( context.element() );
    }
 
    @Override

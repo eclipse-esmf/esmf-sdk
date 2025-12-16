@@ -303,8 +303,8 @@ public class DetailedViolationFormatter extends ViolationFormatter {
    @Override
    public String visitRegularExpressionConstraint( final RegularExpressionConstraintViolation violation ) {
       return formatViolation( violation, () ->
-            String.format( "properties-in-path: %s%n",
-                  Optional.ofNullable( violation.path() ).map( Resource::getURI ).orElse( "" ) ) );
+            String.format( "properties-in-regular-expression-constraint: %s%n",
+                  Optional.ofNullable( violation.context().value( violation.context().element() ) ) ) );
    }
 
    @Override
