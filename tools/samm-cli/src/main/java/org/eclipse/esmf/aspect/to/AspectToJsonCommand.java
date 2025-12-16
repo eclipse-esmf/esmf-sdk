@@ -20,8 +20,6 @@ import org.eclipse.esmf.aspect.AspectToCommand;
 import org.eclipse.esmf.aspectmodel.generator.json.AspectModelJsonPayloadGenerator;
 import org.eclipse.esmf.aspectmodel.generator.json.JsonPayloadGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.json.JsonPayloadGenerationConfigBuilder;
-import org.eclipse.esmf.aspectmodel.validation.ValidatorConfig;
-import org.eclipse.esmf.aspectmodel.validation.services.RegularExpressionExampleValueValidator;
 
 import picocli.CommandLine;
 
@@ -77,17 +75,8 @@ public class AspectToJsonCommand extends AbstractCommand {
             .addTypeAttributeForEntityInheritance( addTypeAttribute )
             .build();
 
-      ValidatorConfig validationConfig;
-      if ( failOnEmptyExampleValue ) {
-         validationConfig = new ValidatorConfig.Builder()
-               .addCustomValidator( new RegularExpressionExampleValueValidator() )
-               .build();
-      } else {
-         validationConfig = new ValidatorConfig();
-      }
-
       final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator(
-            getInputHandler( parentCommand.parentCommand.getInput(), validationConfig ).loadAspect(), config );
+            getInputHandler( parentCommand.parentCommand.getInput() ).loadAspect(), config );
       // we intentionally override the name of the generated artifact here to the name explicitly desired by the user (outputFilePath),
       // as opposed to what the model thinks it should be called (name)
       generator.generate( name -> getStreamForFile( outputFilePath ) );

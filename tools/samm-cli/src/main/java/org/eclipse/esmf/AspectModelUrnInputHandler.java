@@ -22,7 +22,6 @@ import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.aspectmodel.validation.ValidatorConfig;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.ModelElement;
@@ -37,8 +36,8 @@ public class AspectModelUrnInputHandler extends AbstractInputHandler {
    private final AspectModelUrn urn;
 
    public AspectModelUrnInputHandler( final String input, final ResolverConfigurationMixin resolverConfig, final boolean details,
-         final ValidatorConfig validatorConfig ) {
-      super( input, resolverConfig, details, validatorConfig );
+         final boolean validate ) {
+      super( input, resolverConfig, details, validate );
       urn = urnFromInput( input );
    }
 

@@ -31,7 +31,6 @@ import org.eclipse.esmf.aspectmodel.resolver.github.GitHubStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.github.GithubModelSourceConfig;
 import org.eclipse.esmf.aspectmodel.resolver.github.GithubModelSourceConfigBuilder;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
-import org.eclipse.esmf.aspectmodel.validation.ValidatorConfig;
 import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
 import org.eclipse.esmf.aspectmodel.validation.services.DetailedViolationFormatter;
 import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
@@ -54,12 +53,12 @@ public abstract class AbstractInputHandler implements InputHandler {
    protected final ViolationFormatter violationFormatter;
 
    public AbstractInputHandler( final String input, final ResolverConfigurationMixin resolverConfig, final boolean details,
-         final ValidatorConfig validatorConfig ) {
+         final boolean validate ) {
       this.input = input;
       this.resolverConfig = resolverConfig;
       this.details = details;
-      this.validate = validatorConfig.isEnable();
-      validator = new AspectModelValidator( validatorConfig );
+      this.validate = validate;
+      validator = new AspectModelValidator();
 
       violationFormatter = details
             ? new DetailedViolationFormatter()
