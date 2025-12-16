@@ -36,7 +36,7 @@ public class TestResources {
          InputStream inputStream
    ) {}
 
-   public static IdentifiedInputStream inputStream( final InvalideTestModel model ) {
+   public static IdentifiedInputStream inputStream( final InvalidTestAspect model ) {
       final String path = String.format( "invalid/%s/%s/%s.ttl", model.getUrn().getNamespaceMainPart(), model.getUrn().getVersion(),
             model.getName() );
       final InputStream inputStream = TestResources.class.getClassLoader().getResourceAsStream( path );
@@ -50,14 +50,14 @@ public class TestResources {
       return new IdentifiedInputStream( URI.create( "testmodel:" + path ), inputStream );
    }
 
-   public static AspectModel load( final InvalideTestModel model ) {
+   public static AspectModel load( final InvalidTestAspect model ) {
       final IdentifiedInputStream inputStream = inputStream( model );
       final ResolutionStrategy testModelsResolutionStrategy = new ClasspathStrategy(
             "invalid/" + KnownVersion.getLatest().toString().toLowerCase() );
       return new AspectModelLoader( testModelsResolutionStrategy ).load( inputStream.inputStream(), inputStream.location() );
    }
 
-   public static <P, C extends Collection<P>> Either<C, AspectModel> loadWithValidation( final InvalideTestModel model,
+   public static <P, C extends Collection<P>> Either<C, AspectModel> loadWithValidation( final InvalidTestAspect model,
          final Validator<P, C> validator ) {
       final IdentifiedInputStream inputStream = inputStream( model );
       final ResolutionStrategy testModelsResolutionStrategy = new ClasspathStrategy(

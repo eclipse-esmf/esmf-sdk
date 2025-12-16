@@ -15,8 +15,10 @@ package org.eclipse.esmf.test;
 
 import org.apache.commons.text.CaseUtils;
 
-public enum InvalidTestAspect implements InvalideTestModel {
+public enum InvalidTestAspect implements TestModel {
    ACTUALLY_JSON,
+   ASPECT_WITH_INVALID_ANONYMOUS_REGEX_CONSTRAINT,
+   ASPECT_WITH_INVALID_REGEX_CONSTRAINT,
    ASPECT_WITH_INVALID_VERSION,
    ASPECT_WITH_RECURSIVE_PROPERTY,
    INVALID_SYNTAX,

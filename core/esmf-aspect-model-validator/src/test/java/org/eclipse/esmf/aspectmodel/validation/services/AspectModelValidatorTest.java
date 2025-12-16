@@ -30,7 +30,6 @@ import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
 import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
-import org.eclipse.esmf.test.CustomValidatorInvalidTestAspect;
 import org.eclipse.esmf.test.InvalidTestAspect;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestProperty;
@@ -261,13 +260,22 @@ class AspectModelValidatorTest {
    @Test
    void testValidateRegularExpressionExampleValueValidator() {
       final Either<List<Violation>, AspectModel> result = TestResources.loadWithValidation(
-            CustomValidatorInvalidTestAspect.INVALID_ASPECT_WITH_ENTITY_REGEX_CONSTRAINT,
-            new AspectModelValidator()
-      );
+            InvalidTestAspect.ASPECT_WITH_INVALID_REGEX_CONSTRAINT, validator );
       assertThat( result.isLeft() ).isTrue();
       final List<Violation> violations = result.getLeft();
       assertThat( violations ).hasSize( 1 );
       assertThat( violations.getFirst().violationSpecificMessage() ).contains(
-            "Cannot automatically generate an example value for property" );
+            "Regular expression on :TestRegularExpressionConstraint is invalid" );
+   }
+
+   @Test
+   void testValidateAnonymousRegularExpressionExampleValueValidator() {
+      final Either<List<Violation>, AspectModel> result = TestResources.loadWithValidation(
+            InvalidTestAspect.ASPECT_WITH_INVALID_ANONYMOUS_REGEX_CONSTRAINT, validator );
+      assertThat( result.isLeft() ).isTrue();
+      final List<Violation> violations = result.getLeft();
+      assertThat( violations ).hasSize( 1 );
+      assertThat( violations.getFirst().violationSpecificMessage() ).contains(
+            "Regular expression on anonymous element is invalid" );
    }
 }
