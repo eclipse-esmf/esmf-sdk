@@ -73,6 +73,7 @@ public class AspectToJsonCommand extends AbstractCommand {
 
       final JsonPayloadGenerationConfig config = JsonPayloadGenerationConfigBuilder.builder()
             .addTypeAttributeForEntityInheritance( addTypeAttribute )
+            .failOnInvalidRegularExpressions( failOnEmptyExampleValue )
             .build();
 
       final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator(
