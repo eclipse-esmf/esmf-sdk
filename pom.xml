@@ -79,8 +79,6 @@
       <relative-native-config-path>core/esmf-native-support/src-gen/main/resources/META-INF/native-image/${project.groupId}/esmf-native-support</relative-native-config-path>
       <!-- The path to the native configs as it is reachable from the submodules -->
       <native-config-path>${project.basedir}/../../${relative-native-config-path}</native-config-path>
-      <!-- Can be removed once configured in esmf-parent -->
-      <central-publishing-maven-plugin-version>0.8.0</central-publishing-maven-plugin-version>
    </properties>
 
    <dependencyManagement>
