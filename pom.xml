@@ -79,6 +79,7 @@
       <relative-native-config-path>core/esmf-native-support/src-gen/main/resources/META-INF/native-image/${project.groupId}/esmf-native-support</relative-native-config-path>
       <!-- The path to the native configs as it is reachable from the submodules -->
       <native-config-path>${project.basedir}/../../${relative-native-config-path}</native-config-path>
+      <graalvm-version>24.1.2</graalvm-version>
    </properties>
 
    <dependencyManagement>
