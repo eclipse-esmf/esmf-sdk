@@ -24,7 +24,6 @@ import org.eclipse.esmf.metamodel.Constraint;
  * @since SAMM 1.0.0
  */
 public interface LengthConstraint extends Constraint {
-
    /**
     * @return the lower bound of the constraint.
     */

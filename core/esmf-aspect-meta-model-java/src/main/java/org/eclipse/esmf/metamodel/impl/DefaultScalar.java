@@ -66,11 +66,10 @@ public class DefaultScalar implements Scalar {
       if ( this == o ) {
          return true;
       }
-      if ( o == null || getClass() != o.getClass() ) {
-         return false;
+      if ( o instanceof final Scalar scalar ) {
+         return Objects.equals( urn, scalar.getUrn() );
       }
-      final DefaultScalar that = (DefaultScalar) o;
-      return Objects.equals( urn, that.urn );
+      return false;
    }
 
    @Override

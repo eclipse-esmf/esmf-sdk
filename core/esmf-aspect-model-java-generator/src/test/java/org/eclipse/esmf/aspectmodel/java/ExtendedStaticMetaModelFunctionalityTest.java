@@ -33,6 +33,8 @@ import org.eclipse.esmf.test.TestAspect;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -296,6 +298,7 @@ public class ExtendedStaticMetaModelFunctionalityTest extends StaticMetaModelGen
    }
 
    @ParameterizedTest( name = "{0}" )
+   @Execution( ExecutionMode.CONCURRENT )
    @MethodSource( "mutatePropertiesInput" )
    void testMutatePropertiesThroughStaticProperties( final String testName, final boolean generateSetters,
          final JavaCodeGenerationConfig.SetterStyle setterStyle,

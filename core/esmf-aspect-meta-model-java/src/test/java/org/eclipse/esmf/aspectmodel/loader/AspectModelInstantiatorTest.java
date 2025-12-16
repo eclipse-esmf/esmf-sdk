@@ -189,8 +189,8 @@ class AspectModelInstantiatorTest extends AbstractAspectModelInstantiatorTest {
 
       assertThat( aspect ).properties().hasSize( 1 );
 
-      final AbstractEntity abstractEntity = (AbstractEntity) aspect.getProperties().get( 0 ).getCharacteristic().get().getDataType().get();
-      assertThat( abstractEntity.getExtends() ).isEmpty();
+      final Entity entity = (Entity) aspect.getProperties().get( 0 ).getCharacteristic().get().getDataType().get();
+      final AbstractEntity abstractEntity = (AbstractEntity) entity.getExtends().get();
       assertBaseAttributes( abstractEntity, expectedAspectModelUrn, "AbstractTestEntity", null,
             "This is an abstract test entity" );
       final List<ComplexType> extendingElements = abstractEntity.getExtendingElements();

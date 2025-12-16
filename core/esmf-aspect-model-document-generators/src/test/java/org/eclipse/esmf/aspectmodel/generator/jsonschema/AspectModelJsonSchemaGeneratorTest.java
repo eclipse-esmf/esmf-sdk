@@ -105,7 +105,9 @@ class AspectModelJsonSchemaGeneratorTest {
          if ( !report.isSuccess() ) {
             System.out.println( report );
          }
-         assertThat( report.isSuccess() ).isTrue();
+         assertThat( report.isSuccess() )
+               .describedAs( "JSON data should adhere to given JSON schema" )
+               .isTrue();
       } catch ( final Throwable throwable ) {
          System.out.println( "Payload:" );
          showJson( payload );
@@ -1029,7 +1031,7 @@ class AspectModelJsonSchemaGeneratorTest {
             "$['components']['schemas']['EntityCollectionCharacteristic']['" + AspectModelJsonSchemaGenerator.SAMM_EXTENSION + "']" ) )
             .isEqualTo( TestModel.TEST_NAMESPACE + "EntityCollectionCharacteristic" );
       assertThat( context.<String> read( "$['components']['schemas']['EntityCollectionCharacteristic']['items']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/AbstractTestEntity" );
+            .isEqualTo( "#/components/schemas/ExtendingTestEntity" );
       assertThat( context.<String> read( "$['properties']['testProperty']['$ref']" ) )
             .isEqualTo( "#/components/schemas/EntityCollectionCharacteristic" );
    }

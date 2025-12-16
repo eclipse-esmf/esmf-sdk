@@ -41,12 +41,12 @@ import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
+import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.Parameter;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.resolution.types.ResolvedArrayType;
 import com.github.javaparser.resolution.types.ResolvedPrimitiveType;
@@ -59,11 +59,15 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
+import org.jspecify.annotations.NullMarked;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
+@NullMarked
 class AspectModelJavaGeneratorTest {
    private Collection<JavaGenerator> getGenerators( final TestAspect testAspect, final JavaCodeGenerationConfig config ) {
       final Aspect aspect = TestResources.load( testAspect ).aspect();
@@ -126,6 +130,7 @@ class AspectModelJavaGeneratorTest {
     * @param testAspect the injected Aspect model
     */
    @ParameterizedTest
+   @Execution( ExecutionMode.CONCURRENT )
    @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
          "ASPECT_WITH_USED_AND_UNUSED_ENUMERATION", // No code will be generated for an unused enumeration
          "MODEL_WITH_BROKEN_CYCLES" // Contains elements that are not references from the Aspect
@@ -133,7 +138,7 @@ class AspectModelJavaGeneratorTest {
    void testCodeGeneration( final TestAspect testAspect ) {
       assertThatCode( () -> {
                final AspectModel aspectModel = TestResources.load( testAspect );
-               final Model model = aspectModel.files().iterator().next().sourceModel();
+               final Model model = aspectModel.files().getFirst().sourceModel();
                final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspectModel ) );
 
                final Pattern uninterpolatedTemplate = Pattern.compile( "\\$[a-zA-Z]" );
@@ -1011,7 +1016,7 @@ class AspectModelJavaGeneratorTest {
    @Test
    void testGenerateAspectModelWithCollectionWithAbstractEntity() throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-            .put( "testProperty", "Collection<AbstractTestEntity>" )
+            .put( "testProperty", "Collection<ExtendingTestEntity>" )
             .build();
 
       final ImmutableMap<String, Object> expectedFieldsForEntityClass = ImmutableMap.<String, Object> builder()
@@ -1225,10 +1230,13 @@ class AspectModelJavaGeneratorTest {
             .apply( getGenerators( aspect, null, null, true, JavaCodeGenerationConfig.SetterStyle.FLUENT ) );
       result.assertNumberOfFiles( 2 );
 
-      result.assertMethodBody( "AspectWithEntity", "setTestProperty", false, Optional.of( new ClassOrInterfaceType( "AspectWithEntity" ) ),
+      final JavaParser javaParser = new JavaParser();
+      result.assertMethodBody( "AspectWithEntity", "setTestProperty", false,
+            javaParser.parseClassOrInterfaceType( "AspectWithEntity" ).getResult(),
             1,
             List.of( "this.testProperty=testProperty;", "returnthis;" ) );
-      result.assertMethodBody( "TestEntity", "setEntityProperty", false, Optional.of( new ClassOrInterfaceType( "TestEntity" ) ), 1,
+      result.assertMethodBody( "TestEntity", "setEntityProperty", false, javaParser.parseClassOrInterfaceType( "TestEntity" ).getResult(),
+            1,
             List.of( "this.entityProperty=entityProperty;", "returnthis;" ) );
    }
 
@@ -1239,10 +1247,12 @@ class AspectModelJavaGeneratorTest {
             .apply( getGenerators( aspect, null, null, true, JavaCodeGenerationConfig.SetterStyle.FLUENT_COMPACT ) );
       result.assertNumberOfFiles( 2 );
 
-      result.assertMethodBody( "AspectWithEntity", "testProperty", false, Optional.of( new ClassOrInterfaceType( "AspectWithEntity" ) ),
+      final JavaParser javaParser = new JavaParser();
+      result.assertMethodBody( "AspectWithEntity", "testProperty", false,
+            javaParser.parseClassOrInterfaceType( "AspectWithEntity" ).getResult(),
             1,
             List.of( "this.testProperty=testProperty;", "returnthis;" ) );
-      result.assertMethodBody( "TestEntity", "entityProperty", false, Optional.of( new ClassOrInterfaceType( "TestEntity" ) ), 1,
+      result.assertMethodBody( "TestEntity", "entityProperty", false, javaParser.parseClassOrInterfaceType( "TestEntity" ).getResult(), 1,
             List.of( "this.entityProperty=entityProperty;", "returnthis;" ) );
    }
 
