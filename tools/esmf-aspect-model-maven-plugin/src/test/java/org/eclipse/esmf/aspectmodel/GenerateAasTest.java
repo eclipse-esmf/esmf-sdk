@@ -16,36 +16,49 @@ package org.eclipse.esmf.aspectmodel;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-import org.apache.maven.plugin.Mojo;
+import org.apache.maven.api.plugin.testing.InjectMojo;
+import org.apache.maven.api.plugin.testing.MojoTest;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-@SuppressWarnings( "JUnitMixedFramework" )
+@MojoTest
 public class GenerateAasTest extends AspectModelMojoTest {
    @Test
-   public void testGenerateAasXmlValidAspectModel() throws Exception {
-      final Mojo generateAas = getMojo( "generate-aas-xml-pom-valid-aspect-model", "generateAas" );
+   @InjectMojo(
+         goal = GenerateAas.MAVEN_GOAL,
+         pom = "src/test/resources/generate-aas-xml-pom-valid-aspect-model/pom.xml"
+   )
+   public void testGenerateAasXmlValidAspectModel( final GenerateAas generateAas ) {
       assertThatCode( generateAas::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "Aspect.xml" ) ).exists();
    }
 
    @Test
-   public void testGenerateAasJsonValidAspectModel() throws Exception {
-      final Mojo generateAas = getMojo( "generate-aas-json-pom-valid-aspect-model", "generateAas" );
+   @InjectMojo(
+         goal = GenerateAas.MAVEN_GOAL,
+         pom = "src/test/resources/generate-aas-json-pom-valid-aspect-model/pom.xml"
+   )
+   public void testGenerateAasJsonValidAspectModel( final GenerateAas generateAas ) {
       assertThatCode( generateAas::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "Aspect.json" ) ).exists();
    }
 
    @Test
-   public void testGenerateAasAasxValidAspectModel() throws Exception {
-      final Mojo generateAas = getMojo( "generate-aas-aasx-pom-valid-aspect-model", "generateAas" );
+   @InjectMojo(
+         goal = GenerateAas.MAVEN_GOAL,
+         pom = "src/test/resources/generate-aas-aasx-pom-valid-aspect-model/pom.xml"
+   )
+   public void testGenerateAasAasxValidAspectModel( final GenerateAas generateAas ) {
       assertThatCode( generateAas::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "Aspect.aasx" ) ).exists();
    }
 
    @Test
-   public void testGenerateAasInvalidTargetFormat() throws Exception {
-      final Mojo generateAas = getMojo( "generate-aas-pom-invalid-target-format", "generateAas" );
+   @InjectMojo(
+         goal = GenerateAas.MAVEN_GOAL,
+         pom = "src/test/resources/generate-aas-pom-invalid-target-format/pom.xml"
+   )
+   public void testGenerateAasInvalidTargetFormat( final GenerateAas generateAas ) {
       assertThatCode( generateAas::execute )
             .isInstanceOf( MojoExecutionException.class )
             .hasMessage( "Invalid target format: html. Valid formats are aasx, xml, json." );

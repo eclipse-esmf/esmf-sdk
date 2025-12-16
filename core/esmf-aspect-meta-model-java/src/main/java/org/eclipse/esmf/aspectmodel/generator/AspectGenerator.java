@@ -28,13 +28,13 @@ import org.eclipse.esmf.metamodel.ModelElement;
  * @param <A> the type of the artifact that is generated
  */
 public abstract class AspectGenerator<I, T, C extends GenerationConfig, A extends Artifact<I, T>>
-      extends Generator<Aspect, I, T, C, A> {
+      extends StructureElementGenerator<Aspect, I, T, C, A> {
    protected AspectGenerator( final Aspect aspect, final C config ) {
       super( aspect, config );
    }
 
    protected Aspect aspect() {
-      return focus;
+      return getFocus();
    }
 
    protected <E extends ModelElement> Stream<E> elements( final Class<E> clazz ) {

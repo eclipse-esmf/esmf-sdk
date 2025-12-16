@@ -34,6 +34,6 @@ public class CurieSerializer extends StdSerializer<Curie> {
 
    @Override
    public void serialize( final Curie value, final JsonGenerator generator, final SerializerProvider provider ) throws IOException {
-      generator.writeString( CurieType.INSTANCE.unparseTyped( value ) );
+      generator.writeString( CurieType.INSTANCE.serialize( value ) );
    }
 }

@@ -19,6 +19,7 @@ import java.util.function.Function;
 
 import org.eclipse.esmf.aspectmodel.jackson.AspectModelJacksonModule;
 import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.StructureElement;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,16 +29,17 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 /**
  * Base class for generators that create JSON
  *
+ * @param <S> the input element type, e.g., Aspect or Entity
  * @param <C> the configuration type
  * @param <R> the result type, e.g., JsonNode or ObjectNode
  * @param <A> the corresponding artifact type
  */
-public abstract class JsonGenerator<C extends JsonGenerationConfig, R extends JsonNode, A extends JsonArtifact<R>>
-      extends AspectGenerator<String, R, C, A> {
+public abstract class JsonGenerator<S extends StructureElement, C extends JsonGenerationConfig, R extends JsonNode,
+      A extends JsonArtifact<R>> extends StructureElementGenerator<S, String, R, C, A> {
    protected final ObjectMapper objectMapper;
 
-   public JsonGenerator( final Aspect aspect, final C config ) {
-      super( aspect, config );
+   public JsonGenerator( final S element, final C config ) {
+      super( element, config );
 
       objectMapper = new ObjectMapper();
       objectMapper.registerModule( new JavaTimeModule() );
@@ -66,7 +68,7 @@ public abstract class JsonGenerator<C extends JsonGenerationConfig, R extends Js
 
    @Override
    protected void write( final Artifact<String, R> artifact, final Function<String, OutputStream> nameMapper ) {
-      try ( final OutputStream output = nameMapper.apply( aspect().getName() ) ) {
+      try ( final OutputStream output = nameMapper.apply( structureElement().getName() ) ) {
          output.write( artifact.serialize() );
          output.flush();
       } catch ( final IOException exception ) {

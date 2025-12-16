@@ -37,7 +37,7 @@ public abstract class AbstractCharacteristicAssert<SELF extends AbstractCharacte
    }
 
    public SELF hasDataType( final Type type ) {
-      assertThat( actual.getDataType() ).isNotEmpty().contains( type );
+      assertThat( actual.getDataType() ).map( Type::getUrn ).isNotEmpty().contains( type.getUrn() );
       return myself;
    }
 

@@ -12,38 +12,40 @@
  */
 package org.eclipse.esmf.aspectmodel.generator.json.testclasses;
 
+import java.util.List;
 import java.util.Objects;
-
-import org.eclipse.esmf.metamodel.datatype.LangString;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 /**
- * Generated class for AspectWithMultilanguageExampleValue.
- *
+ * Copy of {@link AspectWithComplexSet}, but using a List instead of a Set; used specifically in
+ * {@link AspectModelJsonPayloadGeneratorTest#testGenerateJsonForAspectWithComplexCollectionOfMinSize2AndExampleValue()}
  */
-public class AspectWithMultilanguageExampleValue {
+public class AspectWithComplexSetAsList {
 
    @NotNull
-   private LangString prop;
+   @Size( min = 2 )
+
+   private final List<Id> testProperty;
 
    @JsonCreator
-   public AspectWithMultilanguageExampleValue( @JsonProperty( value = "prop" ) final LangString prop ) {
+   public AspectWithComplexSetAsList( @JsonProperty( value = "testProperty" ) final List<Id> testProperty ) {
       super(
 
       );
-      this.prop = prop;
+      this.testProperty = testProperty;
    }
 
    /**
-    * Returns prop
+    * Returns Test Property
     *
-    * @return {@link #prop}
+    * @return {@link #testProperty}
     */
-   public LangString getProp() {
-      return prop;
+   public List<Id> getTestProperty() {
+      return testProperty;
    }
 
    @Override
@@ -55,12 +57,12 @@ public class AspectWithMultilanguageExampleValue {
          return false;
       }
 
-      final AspectWithMultilanguageExampleValue that = (AspectWithMultilanguageExampleValue) o;
-      return Objects.equals( prop, that.prop );
+      final AspectWithComplexSetAsList that = (AspectWithComplexSetAsList) o;
+      return Objects.equals( testProperty, that.testProperty );
    }
 
    @Override
    public int hashCode() {
-      return Objects.hash( prop );
+      return Objects.hash( testProperty );
    }
 }

@@ -13,7 +13,6 @@
 
 package org.eclipse.esmf.metamodel.builder;
 
-import static org.eclipse.esmf.metamodel.DataTypes.dataTypeByUri;
 import static org.eclipse.esmf.metamodel.DataTypes.xsd;
 import static org.eclipse.esmf.metamodel.Elements.samm_e;
 
@@ -96,6 +95,7 @@ import org.eclipse.esmf.metamodel.constraint.impl.DefaultLocaleConstraint;
 import org.eclipse.esmf.metamodel.constraint.impl.DefaultRangeConstraint;
 import org.eclipse.esmf.metamodel.constraint.impl.DefaultRegularExpressionConstraint;
 import org.eclipse.esmf.metamodel.datatype.LangString;
+import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 import org.eclipse.esmf.metamodel.impl.DefaultAspect;
 import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;
 import org.eclipse.esmf.metamodel.impl.DefaultEntity;
@@ -1446,11 +1446,19 @@ public class SammBuilder {
          return myself;
       }
 
+      public SELF minValue( final long minValue ) {
+         return minValue( BigInteger.valueOf( minValue ) );
+      }
+
       public SELF maxValue( final BigInteger maxValue ) {
          if ( maxValue != null ) {
             this.maxValue = maxValue;
          }
          return myself;
+      }
+
+      public SELF maxValue( final long maxValue ) {
+         return maxValue( BigInteger.valueOf( maxValue ) );
       }
 
       @Override
@@ -1653,8 +1661,7 @@ public class SammBuilder {
          }
 
          if ( modelElement instanceof final ScalarValue scalarValue ) {
-            builder
-                  .withPreferredNames( scalarValue.getPreferredNames() )
+            builder.withPreferredNames( scalarValue.getPreferredNames() )
                   .withDescriptions( scalarValue.getDescriptions() )
                   .withSee( scalarValue.getSee() )
                   .withSourceFile( scalarValue.getSourceFile() );
@@ -1667,7 +1674,7 @@ public class SammBuilder {
                .build();
       }
 
-      return new DefaultScalarValue( metaModelBaseAttributes, value, dataTypeByUri( type.getUrn() ) );
+      return new DefaultScalarValue( metaModelBaseAttributes, value, type );
    }
 
    @SafeVarargs

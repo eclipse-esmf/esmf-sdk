@@ -33,8 +33,10 @@ import org.eclipse.esmf.metamodel.Entity;
 import org.eclipse.esmf.metamodel.EntityInstance;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Property;
+import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Value;
+import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 import org.eclipse.esmf.metamodel.impl.DefaultCollectionValue;
 import org.eclipse.esmf.metamodel.impl.DefaultEntityInstance;
 import org.eclipse.esmf.metamodel.impl.DefaultScalar;
@@ -105,7 +107,10 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
          return modelElementFactory.create( AbstractEntity.class, entityStatement.get().getSubject() );
       }
 
-      return new DefaultScalar( dataTypeResource.getURI() );
+      final Scalar scalar = SammXsdType.typeByUri( dataTypeResource.getURI() )
+            .map( Scalar.class::cast )
+            .orElseGet( () -> new DefaultScalar( dataTypeResource.getURI() ) );
+      return scalar;
    }
 
    /**

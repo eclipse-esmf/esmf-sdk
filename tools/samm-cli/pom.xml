@@ -182,6 +182,11 @@
                   <include>**/SammCliTest.java</include>
                   <include>**/CommandExecutorTest.java</include>
                </includes>
+               <properties>
+                  <configurationParameters>
+                     junit.jupiter.execution.parallel.enabled =
+                  </configurationParameters>
+               </properties>
             </configuration>
          </plugin>
 
