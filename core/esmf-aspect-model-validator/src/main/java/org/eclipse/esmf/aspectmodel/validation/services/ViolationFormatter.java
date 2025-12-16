@@ -97,7 +97,7 @@ public class ViolationFormatter implements Function<List<Violation>, String>, Vi
                      .append( possibleFix.description() );
             }
             // Add documentation link
-            builder.append( String.format( ERROR_CODES_DOC_STRING + "#%s%n",
+            builder.append( String.format( ERROR_CODES_DOC_STRING + "%s%n",
                   errorCode.toLowerCase().replace( "_", "-" ) ) );
             builder.append( System.lineSeparator() );
          }
