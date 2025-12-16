@@ -53,7 +53,7 @@ public class AspectToJsonCommand extends AbstractCommand {
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
          names = { "--fail-on-empty-example-value" },
-         description = "Throw ERR_EMPTY_EXAMPLE_VALUE if an example value cannot be generated for a regular expression constraint, "
+         description = "Fail if an example value cannot be generated for a regular expression constraint, "
                + "instead of returning an empty value." )
    private boolean failOnEmptyExampleValue = false;
 

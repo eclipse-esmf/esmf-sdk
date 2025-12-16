@@ -216,21 +216,16 @@ See https://www.w3.org/TR/shacl/#NotConstraintComponent[sh:not] for more informa
 
 **Resolution:** Modify the element to violate the negated constraint. The element should not satisfy the condition specified in the NOT constraint.
 
-[[custom-error]]
-== Custom error
+[[other-specific-violations]]
+== Other specific violations
 
-ERR_EMPTY_EXAMPLE_VALUE - Cannot automatically generate an example value for a property in the JSON payload because the associated regular expression constraint is too complex or unsupported.
+ERR_INVALID_REGEX - The model contains a
+xref:samm-specification:ROOT:characteristics.adoc#regular-expression-constraint[samm-c:RegularExpressionConstraint]
+with an invalid regular expression.
 
-   Note: This error applies only to JSON payload generation.
-
-Resolution:
-
-1. Add an example value manually for this property.
-2. Simplify the regular expression so that an example can be generated automatically.
-3. Use the `--fail-on-empty-example-value` command-line option to enable strict validation. When this option is enabled, the tool will throw `ERR_EMPTY_EXAMPLE_VALUE` instead of generating an empty example value for properties with complex regular expressions.
-
-
-
+**Resolution:** Make sure the regular expression adheres to the XQuery 1.0 and XPath 2.0 Functions
+  and Operators
+  xref:samm-specification:appendix:bibliography.adoc#xpath-functions[[xpath-functions\]].
 
 [[error-contexts]]
 == Error Contexts
