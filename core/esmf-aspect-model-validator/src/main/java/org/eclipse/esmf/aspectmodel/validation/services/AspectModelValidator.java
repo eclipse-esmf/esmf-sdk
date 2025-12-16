@@ -20,7 +20,6 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -35,8 +34,8 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.validation.InvalidLexicalValueViolation;
 import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
 import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
+import org.eclipse.esmf.aspectmodel.validation.RdfBasedValidator;
 import org.eclipse.esmf.aspectmodel.validation.Validator;
-import org.eclipse.esmf.aspectmodel.validation.ValidatorConfig;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
@@ -51,7 +50,6 @@ import org.apache.jena.rdf.model.Resource;
 public class AspectModelValidator implements Validator<Violation, List<Violation>> {
    private final ShaclValidator shaclValidator;
    private static boolean arqInitialized = false;
-   private final Set<CustomValidator> customValidators;
 
    private static synchronized void initArq() {
       if ( !arqInitialized ) {
@@ -64,13 +62,8 @@ public class AspectModelValidator implements Validator<Violation, List<Violation
     * Default constructor that will use the latest meta model version
     */
    public AspectModelValidator() {
-      this( new ValidatorConfig() );
-   }
-
-   public AspectModelValidator( ValidatorConfig validatorConfig ) {
       initArq();
       shaclValidator = new ShaclValidator( MetaModelFile.metaModelShapes() );
-      customValidators = validatorConfig.getCustomValidators();
    }
 
    /**
@@ -170,24 +163,15 @@ public class AspectModelValidator implements Validator<Violation, List<Violation
     */
    @Override
    public List<Violation> validateModel( final Model model ) {
-      final List<Violation> violations = shaclValidator.validateModel( model );
-      if ( violations.isEmpty() ) {
-         // The SHACL validation succeeded, check for cycles in the model.
-         final List<Violation> cycleDetectionReport = new ModelCycleDetector().validateModel( model );
-         if ( !cycleDetectionReport.isEmpty() ) {
-            return cycleDetectionReport;
-         }
-      }
-      // ModelCycleDetector - must be first to detect cycles before other validations are performed
-      if ( violations.isEmpty() ) {
-         for ( final CustomValidator customValidator : customValidators ) {
-            final List<Violation> customViolations = customValidator.validateModel( model );
-            if ( !customViolations.isEmpty() ) {
-               return customViolations;
-            }
-         }
-      }
-      return violations;
+      return Stream.<Supplier<RdfBasedValidator<Violation, List<Violation>>>> of(
+                  () -> shaclValidator,
+                  ModelCycleDetector::new,
+                  RegularExpressionExampleValueValidator::new
+            )
+            .map( validator -> validator.get().validateModel( model ) )
+            .filter( result -> !result.isEmpty() )
+            .findFirst()
+            .orElse( List.of() );
    }
 
    /**

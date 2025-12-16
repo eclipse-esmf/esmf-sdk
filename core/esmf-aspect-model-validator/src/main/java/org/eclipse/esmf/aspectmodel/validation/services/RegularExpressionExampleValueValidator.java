@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+import org.eclipse.esmf.aspectmodel.validation.RdfBasedValidator;
 import org.eclipse.esmf.aspectmodel.validation.RegularExpressionConstraintViolation;
 import org.eclipse.esmf.metamodel.vocabulary.SAMM;
 import org.eclipse.esmf.metamodel.vocabulary.SAMMC;
@@ -34,7 +35,7 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.vocabulary.RDF;
 
-public class RegularExpressionExampleValueValidator implements CustomValidator {
+public class RegularExpressionExampleValueValidator implements RdfBasedValidator<Violation, List<Violation>> {
 
    private final SAMM samm = SammNs.SAMM;
    private final SAMMC sammc = SammNs.SAMMC;

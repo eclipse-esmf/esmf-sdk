@@ -28,7 +28,6 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.validation.CycleViolation;
 import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
 import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
-import org.eclipse.esmf.aspectmodel.validation.ValidatorConfig;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.test.CustomValidatorInvalidTestAspect;
@@ -263,11 +262,7 @@ class AspectModelValidatorTest {
    void testValidateRegularExpressionExampleValueValidator() {
       final Either<List<Violation>, AspectModel> result = TestResources.loadWithValidation(
             CustomValidatorInvalidTestAspect.INVALID_ASPECT_WITH_ENTITY_REGEX_CONSTRAINT,
-            new AspectModelValidator(
-                  new ValidatorConfig.Builder()
-                        .addCustomValidator( new RegularExpressionExampleValueValidator() )
-                        .build()
-            )
+            new AspectModelValidator()
       );
       assertThat( result.isLeft() ).isTrue();
       final List<Violation> violations = result.getLeft();
