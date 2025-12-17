@@ -68,7 +68,10 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.curiousoddman.rgxgen.RgxGen;
+import com.github.curiousoddman.rgxgen.parsing.dflt.RgxGenParseException;
 import org.apache.jena.vocabulary.RDF;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Generator for random JSON payloads corresponding to a given StructureElement (e.g., {@link Aspect} or {@link Entity}).
@@ -78,6 +81,7 @@ import org.apache.jena.vocabulary.RDF;
 public class JsonPayloadGenerator<S extends StructureElement>
       extends JsonGenerator<S, JsonPayloadGenerationConfig, JsonNode, JsonPayloadArtifact>
       implements AspectVisitor<JsonNode, JsonPayloadGenerator.Context> {
+   private static final Logger LOG = LoggerFactory.getLogger( JsonPayloadGenerator.class );
    public static final JsonPayloadGenerationConfig DEFAULT_CONFIG = JsonPayloadGenerationConfigBuilder.builder().build();
    private static final float EPSILON = .0001f;
 
@@ -696,8 +700,18 @@ public class JsonPayloadGenerator<S extends StructureElement>
       final String value = context.constraints().stream()
             .flatMap( constraint -> {
                if ( constraint instanceof final RegularExpressionConstraint regularExpressionConstraint ) {
-                  final RgxGen rgxGen = RgxGen.parse( regularExpressionConstraint.getValue() );
-                  return Stream.of( rgxGen.generate( config.randomStrategy() ) );
+                  final String regex = regularExpressionConstraint.getValue();
+                  try {
+                     final RgxGen rgxGen = RgxGen.parse( regex );
+                     return Stream.of( rgxGen.generate( config.randomStrategy() ) );
+                  } catch ( final RgxGenParseException exception ) {
+                     if ( config.failOnInvalidRegularExpressions() ) {
+                        throw new IllegalArgumentException( "Unable to generate random value for complex regular expression: " + regex );
+                     } else {
+                        LOG.debug( "Could not generate JSON for regex: '{}', using empty string instead", regex );
+                        return Stream.of( "" );
+                     }
+                  }
                }
                return Stream.empty();
             } )

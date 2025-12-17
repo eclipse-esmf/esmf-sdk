@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -255,5 +255,27 @@ class AspectModelValidatorTest {
       final List<Violation> violations = result.getLeft();
       assertThat( violations ).hasSize( 1 );
       assertThat( violations.getFirst().violationSpecificMessage() ).contains( "is no valid value for type" );
+   }
+
+   @Test
+   void testValidateRegularExpressionExampleValueValidator() {
+      final Either<List<Violation>, AspectModel> result = TestResources.loadWithValidation(
+            InvalidTestAspect.ASPECT_WITH_INVALID_REGEX_CONSTRAINT, validator );
+      assertThat( result.isLeft() ).isTrue();
+      final List<Violation> violations = result.getLeft();
+      assertThat( violations ).hasSize( 1 );
+      assertThat( violations.getFirst().violationSpecificMessage() ).contains(
+            "Regular expression on :TestRegularExpressionConstraint is invalid" );
+   }
+
+   @Test
+   void testValidateAnonymousRegularExpressionExampleValueValidator() {
+      final Either<List<Violation>, AspectModel> result = TestResources.loadWithValidation(
+            InvalidTestAspect.ASPECT_WITH_INVALID_ANONYMOUS_REGEX_CONSTRAINT, validator );
+      assertThat( result.isLeft() ).isTrue();
+      final List<Violation> violations = result.getLeft();
+      assertThat( violations ).hasSize( 1 );
+      assertThat( violations.getFirst().violationSpecificMessage() ).contains(
+            "Regular expression on anonymous element is invalid" );
    }
 }

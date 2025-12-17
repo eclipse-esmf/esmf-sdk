@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -49,7 +49,7 @@ public abstract class AbstractInputHandler implements InputHandler {
    protected final ResolverConfigurationMixin resolverConfig;
    protected final boolean details;
    protected final boolean validate;
-   protected final AspectModelValidator validator = new AspectModelValidator();
+   protected final AspectModelValidator validator;
    protected final ViolationFormatter violationFormatter;
 
    public AbstractInputHandler( final String input, final ResolverConfigurationMixin resolverConfig, final boolean details,
@@ -58,6 +58,7 @@ public abstract class AbstractInputHandler implements InputHandler {
       this.resolverConfig = resolverConfig;
       this.details = details;
       this.validate = validate;
+      validator = new AspectModelValidator();
 
       violationFormatter = details
             ? new DetailedViolationFormatter()
