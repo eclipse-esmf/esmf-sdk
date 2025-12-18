@@ -80,6 +80,7 @@
       <!-- The path to the native configs as it is reachable from the submodules -->
       <native-config-path>${project.basedir}/../../${relative-native-config-path}</native-config-path>
       <graalvm-version>24.1.2</graalvm-version>
+      <central-publishing-maven-plugin-version>0.8.0</central-publishing-maven-plugin-version>
    </properties>
 
    <dependencyManagement>
