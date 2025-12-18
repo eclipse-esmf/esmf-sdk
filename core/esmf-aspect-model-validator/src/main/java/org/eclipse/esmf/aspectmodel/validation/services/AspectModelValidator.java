@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -34,6 +34,7 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.validation.InvalidLexicalValueViolation;
 import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
 import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
+import org.eclipse.esmf.aspectmodel.validation.RdfBasedValidator;
 import org.eclipse.esmf.aspectmodel.validation.Validator;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
@@ -162,16 +163,15 @@ public class AspectModelValidator implements Validator<Violation, List<Violation
     */
    @Override
    public List<Violation> validateModel( final Model model ) {
-      final List<Violation> violations = shaclValidator.validateModel( model );
-      if ( violations.isEmpty() ) {
-         // The SHACL validation succeeded, check for cycles in the model.
-         final List<Violation> cycleDetectionReport = new ModelCycleDetector().validateModel( model );
-         if ( !cycleDetectionReport.isEmpty() ) {
-            return cycleDetectionReport;
-         }
-      }
-
-      return violations;
+      return Stream.<Supplier<RdfBasedValidator<Violation, List<Violation>>>> of(
+                  () -> shaclValidator,
+                  ModelCycleDetector::new,
+                  RegularExpressionExampleValueValidator::new
+            )
+            .map( validator -> validator.get().validateModel( model ) )
+            .filter( result -> !result.isEmpty() )
+            .findFirst()
+            .orElse( List.of() );
    }
 
    /**

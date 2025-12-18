@@ -33,6 +33,7 @@ import org.apache.jena.rdf.model.Statement;
  * @param shape the shape that is being evaluated
  * @param propertyShape if a property shape for a given node shape is evaluated, it is given here
  * @param property if a property shape for a given node shape is evaluated, this is the corresponding property
+ * @param parentContext the parent context, if this context inherits one
  * @param offendingStatements one ore more statements that are the cause of the violation if one occurs
  * @param validator the validator
  * @param resolvedModel the model being evaluated

@@ -16,22 +16,29 @@ package org.eclipse.esmf.aspectmodel;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-import org.apache.maven.plugin.Mojo;
+import org.apache.maven.api.plugin.testing.InjectMojo;
+import org.apache.maven.api.plugin.testing.MojoTest;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-@SuppressWarnings( "JUnitMixedFramework" )
+@MojoTest
 public class GenerateDocumentationTest extends AspectModelMojoTest {
    @Test
-   public void testGenerateDocumentation() throws Exception {
-      final Mojo generateDocumentation = getMojo( "test-pom-valid-aspect-model-output-directory", "generateDocumentation" );
+   @InjectMojo(
+         goal = GenerateDocumentation.MAVEN_GOAL,
+         pom = "src/test/resources/test-pom-valid-aspect-model-output-directory/pom.xml"
+   )
+   public void testGenerateDocumentation( final GenerateDocumentation generateDocumentation ) {
       assertThatCode( generateDocumentation::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "Aspect_en.html" ) ).exists();
    }
 
    @Test
-   public void testGenerateDocumentationInvalidAspectModel() throws Exception {
-      final Mojo generateDocumentation = getMojo( "generate-documentation-pom-invalid-aspect-model", "generateDocumentation" );
+   @InjectMojo(
+         goal = GenerateDocumentation.MAVEN_GOAL,
+         pom = "src/test/resources/generate-documentation-pom-invalid-aspect-model/pom.xml"
+   )
+   public void testGenerateDocumentationInvalidAspectModel( final GenerateDocumentation generateDocumentation ) {
       assertThatCode( generateDocumentation::execute )
             .isInstanceOf( MojoExecutionException.class )
             .hasMessageContaining( "Error at line 17 column 3" );

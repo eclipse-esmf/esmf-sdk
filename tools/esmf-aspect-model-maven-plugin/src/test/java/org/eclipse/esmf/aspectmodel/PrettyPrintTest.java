@@ -16,22 +16,29 @@ package org.eclipse.esmf.aspectmodel;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-import org.apache.maven.plugin.Mojo;
+import org.apache.maven.api.plugin.testing.InjectMojo;
+import org.apache.maven.api.plugin.testing.MojoTest;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-@SuppressWarnings( "JUnitMixedFramework" )
+@MojoTest
 public class PrettyPrintTest extends AspectModelMojoTest {
    @Test
-   public void testPrettyPrintValidAspectModel() throws Exception {
-      final Mojo prettyPrint = getMojo( "test-pom-valid-aspect-model-output-directory", "prettyPrint" );
+   @InjectMojo(
+         goal = PrettyPrint.MAVEN_GOAL,
+         pom = "src/test/resources/test-pom-valid-aspect-model-output-directory/pom.xml"
+   )
+   public void testPrettyPrintValidAspectModel( final PrettyPrint prettyPrint ) {
       assertThatCode( prettyPrint::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "Aspect.ttl" ) ).exists();
    }
 
    @Test
-   public void testPrettyPrintInvalidAspectModel() throws Exception {
-      final Mojo prettyPrint = getMojo( "prettyprint-pom-invalid-aspect-model", "prettyPrint" );
+   @InjectMojo(
+         goal = PrettyPrint.MAVEN_GOAL,
+         pom = "src/test/resources/prettyprint-pom-invalid-aspect-model/pom.xml"
+   )
+   public void testPrettyPrintInvalidAspectModel( final PrettyPrint prettyPrint ) {
       assertThatCode( prettyPrint::execute )
             .isInstanceOf( MojoExecutionException.class )
             .hasMessageContaining( "Error at line 17 column 3" );
