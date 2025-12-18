@@ -58,7 +58,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @SuppressWarnings( "OptionalUsedAsFieldOrParameterType" )
-public class AspectModelOpenApiGenerator extends JsonGenerator<OpenApiSchemaGenerationConfig, ObjectNode, OpenApiSchemaArtifact> {
+public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSchemaGenerationConfig, ObjectNode, OpenApiSchemaArtifact> {
    public static final OpenApiSchemaGenerationConfig DEFAULT_CONFIG = OpenApiSchemaGenerationConfigBuilder.builder().build();
 
    private static final String APPLICATION_JSON = "application/json";
@@ -119,6 +119,10 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<OpenApiSchemaGene
 
    public AspectModelOpenApiGenerator( final Aspect aspect, final OpenApiSchemaGenerationConfig config ) {
       super( aspect, config );
+   }
+
+   private Aspect aspect() {
+      return structureElement();
    }
 
    /**

@@ -101,7 +101,6 @@ import org.slf4j.LoggerFactory;
 public class AasToAspectModelGenerator extends Generator<Environment, AspectModelUrn, Aspect, AspectGenerationConfig, AspectArtifact> {
    public static final AspectGenerationConfig DEFAULT_CONFIG = AspectGenerationConfigBuilder.builder().build();
    private static final Logger LOG = LoggerFactory.getLogger( AasToAspectModelGenerator.class );
-   private final Environment aasEnvironment;
    private final Map<SubmodelElement, Property> properties = new HashMap<>();
    private final ValueInstantiator valueInstantiator = new ValueInstantiator();
    private AspectModelUrn aspectUrn;
@@ -110,7 +109,6 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
 
    private AasToAspectModelGenerator( final Environment aasEnvironment ) {
       super( aasEnvironment, DEFAULT_CONFIG );
-      this.aasEnvironment = focus;
    }
 
    public static AasToAspectModelGenerator fromAasXml( final InputStream inputStream ) {
@@ -159,7 +157,7 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
 
    @Override
    public Stream<AspectArtifact> generate() {
-      return aasEnvironment.getSubmodels()
+      return getFocus().getSubmodels()
             .stream()
             .filter( submodel -> submodel.getKind().equals( ModellingKind.TEMPLATE ) )
             .map( this::submodelToAspect )

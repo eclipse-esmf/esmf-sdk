@@ -54,6 +54,8 @@ import org.eclipse.esmf.metamodel.constraint.LengthConstraint;
 import org.eclipse.esmf.metamodel.constraint.LocaleConstraint;
 import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
 import org.eclipse.esmf.metamodel.constraint.RegularExpressionConstraint;
+import org.eclipse.esmf.metamodel.datatype.CurieType;
+import org.eclipse.esmf.metamodel.datatype.SammType;
 
 /**
  * Visitor interface for the traversal of Aspect Meta Model instances
@@ -302,5 +304,150 @@ public interface AspectVisitor<T, C> {
 
    default T visitEntityInstance( final EntityInstance instance, final C context ) {
       return visitValue( instance, context );
+   }
+
+   default T visitXsdBoolean( final SammType.XsdBoolean booleanValue, final C context ) {
+      return visitScalar( booleanValue, context );
+   }
+
+   default T visitXsdDecimal( final SammType.XsdDecimal decimal, final C context ) {
+      return visitScalar( decimal, context );
+   }
+
+   default T visitXsdInteger( final SammType.XsdInteger sammInteger, final C context ) {
+      return visitScalar( sammInteger, context );
+   }
+
+   default T visitXsdDouble( final SammType.XsdDouble doubleValue, final C context ) {
+      return visitScalar( doubleValue, context );
+   }
+
+   default T visitXsdFloat( final SammType.XsdFloat floatValue, final C context ) {
+      return visitScalar( floatValue, context );
+   }
+
+   default T visitXsdDate( final SammType.XsdDate date, final C context ) {
+      return visitScalar( date, context );
+   }
+
+   default T visitXsdTime( final SammType.XsdTime time, final C context ) {
+      return visitScalar( time, context );
+   }
+
+   default T visitXsdDateTime( final SammType.XsdDateTime dateTime, final C context ) {
+      return visitScalar( dateTime, context );
+   }
+
+   default T visitXsdDateTimeStamp( final SammType.XsdDateTimeStamp dateTimeStamp, final C context ) {
+      return visitScalar( dateTimeStamp, context );
+   }
+
+   @SuppressWarnings( "checkstyle:AbbreviationAsWordInName" )
+   default T visitXsdGYear( final SammType.XsdGYear gYear, final C context ) {
+      return visitScalar( gYear, context );
+   }
+
+   @SuppressWarnings( "checkstyle:AbbreviationAsWordInName" )
+   default T visitXsdGMonth( final SammType.XsdGMonth gMonth, final C context ) {
+      return visitScalar( gMonth, context );
+   }
+
+   @SuppressWarnings( "checkstyle:AbbreviationAsWordInName" )
+   default T visitXsdGDay( final SammType.XsdGDay gDay, final C context ) {
+      return visitScalar( gDay, context );
+   }
+
+   @SuppressWarnings( "checkstyle:AbbreviationAsWordInName" )
+   default T visitXsdGYearMonth( final SammType.XsdGYearMonth gYearMonth, final C context ) {
+      return visitScalar( gYearMonth, context );
+   }
+
+   @SuppressWarnings( "checkstyle:AbbreviationAsWordInName" )
+   default T visitXsdGMonthDay( final SammType.XsdMonthDay monthDay, final C context ) {
+      return visitScalar( monthDay, context );
+   }
+
+   default T visitXsdDuration( final SammType.XsdDuration duration, final C context ) {
+      return visitScalar( duration, context );
+   }
+
+   default T visitXsdYearMonthDuration( final SammType.XsdYearMonthDuration yearMonthDuration, final C context ) {
+      return visitScalar( yearMonthDuration, context );
+   }
+
+   default T visitXsdDayTimeDuration( final SammType.XsdDayTimeDuration dayTimeDuration, final C context ) {
+      return visitScalar( dayTimeDuration, context );
+   }
+
+   default T visitXsdByte( final SammType.XsdByte byteValue, final C context ) {
+      return visitScalar( byteValue, context );
+   }
+
+   default T visitXsdShort( final SammType.XsdShort shortValue, final C context ) {
+      return visitScalar( shortValue, context );
+   }
+
+   default T visitXsdInt( final SammType.XsdInt intValue, final C context ) {
+      return visitScalar( intValue, context );
+   }
+
+   default T visitXsdLong( final SammType.XsdLong longValue, final C context ) {
+      return visitScalar( longValue, context );
+   }
+
+   default T visitXsdUnsignedByte( final SammType.XsdUnsignedByte unsignedByte, final C context ) {
+      return visitScalar( unsignedByte, context );
+   }
+
+   default T visitXsdUnsignedShort( final SammType.XsdUnsignedShort unsignedShort, final C context ) {
+      return visitScalar( unsignedShort, context );
+   }
+
+   default T visitXsdUnsignedInt( final SammType.XsdUnsignedInt unsignedInt, final C context ) {
+      return visitScalar( unsignedInt, context );
+   }
+
+   default T visitXsdUnsignedLong( final SammType.XsdUnsignedLong unsignedLong, final C context ) {
+      return visitScalar( unsignedLong, context );
+   }
+
+   default T visitXsdPositiveInteger( final SammType.XsdPositiveInteger positiveInteger, final C context ) {
+      return visitScalar( positiveInteger, context );
+   }
+
+   default T visitXsdNonNegativeInteger( final SammType.XsdNonNegativeInteger nonNegativeInteger, final C context ) {
+      return visitScalar( nonNegativeInteger, context );
+   }
+
+   default T visitXsdNegativeInteger( final SammType.XsdNegativeInteger negativeInteger, final C context ) {
+      return visitScalar( negativeInteger, context );
+   }
+
+   default T visitXsdNonPositiveInteger( final SammType.XsdNonPositiveInteger nonPositiveInteger, final C context ) {
+      return visitScalar( nonPositiveInteger, context );
+   }
+
+   default T visitXsdHexBinary( final SammType.XsdHexBinary hexBinary, final C context ) {
+      return visitScalar( hexBinary, context );
+   }
+
+   default T visitXsdBase64Binary( final SammType.XsdBase64Binary base64Binary, final C context ) {
+      return visitScalar( base64Binary, context );
+   }
+
+   default T visitXsdAnyUri( final SammType.XsdAnyUri anyUri, final C context ) {
+      return visitScalar( anyUri, context );
+   }
+
+   default T visitCurieType( final CurieType curieType, final C context ) {
+      return visitScalar( curieType, context );
+   }
+
+   default T visitXsdString( final SammType.XsdString string, final C context ) {
+      return visitScalar( string, context );
+   }
+
+   default T visitRdfLangString( final SammType.RdfLangString langString, final C context ) {
+      return visitScalar( langString, context );
    }
 }

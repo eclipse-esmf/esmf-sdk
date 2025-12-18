@@ -26,6 +26,10 @@
    <packaging>maven-plugin</packaging>
    <name>ESMF Aspect Model Maven Plugin</name>
 
+   <properties>
+      <mockito-version>5.20.0</mockito-version>
+   </properties>
+
    <dependencies>
       <dependency>
          <groupId>org.apache.maven</groupId>
@@ -80,33 +84,19 @@
          <scope>test</scope>
       </dependency>
       <dependency>
+         <groupId>org.junit.jupiter</groupId>
+         <artifactId>junit-jupiter</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
          <groupId>org.assertj</groupId>
          <artifactId>assertj-core</artifactId>
          <scope>test</scope>
       </dependency>
-      <!-- Maven plugin testing has a transitive dependency on Junit 4, but does not declare it explictly -->
       <dependency>
-         <groupId>junit</groupId>
-         <artifactId>junit</artifactId>
+         <groupId>org.mockito</groupId>
+         <artifactId>mockito-core</artifactId>
          <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>org.junit.vintage</groupId>
-         <artifactId>junit-vintage-engine</artifactId>
-         <version>${junit-jupiter-version}</version>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>org.junit.platform</groupId>
-         <artifactId>junit-platform-commons</artifactId>
-         <version>1.12.0</version>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>org.junit.platform</groupId>
-         <artifactId>junit-platform-engine</artifactId>
-         <scope>test</scope>
-         <version>1.12.0</version>
       </dependency>
    </dependencies>
 
@@ -148,8 +138,8 @@
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
                <skip>false</skip>
-               <!-- Override argLine to remove the native-image agent inherited from parent pom -->
-               <argLine></argLine>
+               <argLine>-javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito-version}/mockito-core-${mockito-version}.jar -Xshare:off
+               </argLine>
             </configuration>
          </plugin>
       </plugins>

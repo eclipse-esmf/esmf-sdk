@@ -18,7 +18,7 @@
    <parent>
       <groupId>org.eclipse.esmf</groupId>
       <artifactId>esmf-parent</artifactId>
-      <version>21</version>
+      <version>22</version>
    </parent>
 
    <artifactId>esmf-sdk-parent</artifactId>
@@ -79,8 +79,7 @@
       <relative-native-config-path>core/esmf-native-support/src-gen/main/resources/META-INF/native-image/${project.groupId}/esmf-native-support</relative-native-config-path>
       <!-- The path to the native configs as it is reachable from the submodules -->
       <native-config-path>${project.basedir}/../../${relative-native-config-path}</native-config-path>
-      <!-- Can be removed once configured in esmf-parent -->
-      <central-publishing-maven-plugin-version>0.8.0</central-publishing-maven-plugin-version>
+      <graalvm-version>24.1.2</graalvm-version>
    </properties>
 
    <dependencyManagement>
@@ -239,17 +238,6 @@
    </dependencies>
 
    <build>
-      <!-- Can be removed once configured in esmf-parent -->
-      <pluginManagement>
-         <plugins>
-            <plugin>
-               <groupId>org.sonatype.central</groupId>
-               <artifactId>central-publishing-maven-plugin</artifactId>
-               <version>${central-publishing-maven-plugin-version}</version>
-            </plugin>
-         </plugins>
-      </pluginManagement>
-
       <plugins>
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
@@ -305,6 +293,18 @@
 
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+               <properties>
+                  <configurationParameters>
+                     junit.jupiter.execution.parallel.enabled = true
+                  </configurationParameters>
+               </properties>
+            </configuration>
+         </plugin>
+
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-deploy-plugin</artifactId>
             <version>${maven-deploy-plugin-version}</version>
             <configuration>
@@ -337,6 +337,11 @@
                   <configuration>
                      <skip>false</skip>
                      <argLine>-agentlib:native-image-agent=config-merge-dir=${native-config-path}</argLine>
+                     <properties>
+                        <configurationParameters>
+                           junit.jupiter.execution.parallel.enabled = true
+                        </configurationParameters>
+                     </properties>
                   </configuration>
                </plugin>
 

@@ -193,7 +193,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
             .toList();
    }
 
-   private Optional<String> normalizeSee( String seeReference ) {
+   private Optional<String> normalizeSee( final String seeReference ) {
       if ( seeReference == null ) {
          return Optional.empty();
       }
@@ -230,8 +230,8 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       return Optional.of( trimmed );
    }
 
-   private static String lastPathSegment( String uri ) {
-      int idx = Math.max( uri.lastIndexOf( '/' ), uri.lastIndexOf( '\\' ) );
+   private static String lastPathSegment( final String uri ) {
+      final int idx = Math.max( uri.lastIndexOf( '/' ), uri.lastIndexOf( '\\' ) );
       return ( idx >= 0 && idx < uri.length() - 1 ) ? uri.substring( idx + 1 ) : uri;
    }
 
@@ -336,8 +336,8 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       element.setSupplementalSemanticIds( updateGlobalReferenceWithSeeReferences( element, property ) );
 
       if ( !property.getPayloadName().isEmpty()
-            && !(element instanceof SubmodelElementList)
-            && !(element instanceof SubmodelElementCollection) ) {
+            && !( element instanceof SubmodelElementList )
+            && !( element instanceof SubmodelElementCollection ) ) {
          element.setIdShort( property.getPayloadName() );
       }
 

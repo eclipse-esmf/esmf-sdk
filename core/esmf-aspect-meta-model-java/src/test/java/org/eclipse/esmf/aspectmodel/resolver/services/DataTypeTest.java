@@ -92,11 +92,11 @@ public class DataTypeTest {
 
    static Stream<TestConfiguration<?>> getTestConfigurationsWithLexicalErrors() {
       return Stream.of(
-            new TestConfiguration<>( SammXsdType.DOUBLE, Map.of(
+            new TestConfiguration<>( SammType.DOUBLE, Map.of(
                   "foo", v -> false
             ) ),
 
-            new TestConfiguration<>( SammXsdType.FLOAT, Map.of(
+            new TestConfiguration<>( SammType.FLOAT, Map.of(
                   "foo", v -> false
             ) )
       );
@@ -104,7 +104,7 @@ public class DataTypeTest {
 
    static Stream<TestConfiguration<?>> getValidTestConfigurations() {
       final Stream<TestConfiguration<?>> extendedXsdTypes = Stream.of(
-            new TestConfiguration<>( SammXsdType.BOOLEAN, Map.of(
+            new TestConfiguration<>( SammType.BOOLEAN, Map.of(
                   "true", v -> v,
                   "false", v -> !v,
                   "TRUE", v -> v,
@@ -113,13 +113,13 @@ public class DataTypeTest {
                   "False", v -> !v
             ) ),
 
-            new TestConfiguration<>( SammXsdType.DECIMAL, Map.of(
+            new TestConfiguration<>( SammType.DECIMAL, Map.of(
                   "-1.23", v -> v.equals( new BigDecimal( "-1.23" ) ),
                   "126789672374892739424.543233", v -> v.equals( new BigDecimal( "126789672374892739424.543233" ) ),
                   "+100000.00", v -> v.equals( new BigDecimal( "100000.00" ) )
             ) ),
 
-            new TestConfiguration<>( SammXsdType.INTEGER, Map.of(
+            new TestConfiguration<>( SammType.INTEGER, Map.of(
                   "-1", v -> v.equals( new BigInteger( "-1" ) ),
                   "0", v -> v.equals( BigInteger.ZERO ),
                   "126789675432332938792837429837429837429",
@@ -127,7 +127,7 @@ public class DataTypeTest {
                   "+10000", v -> v.equals( new BigInteger( "10000" ) )
             ) ),
 
-            new TestConfiguration<>( SammXsdType.DOUBLE, Map.of(
+            new TestConfiguration<>( SammType.DOUBLE, Map.of(
                   "-1.0", v -> v.equals( -1.0d ),
                   "+0.0", v -> v.equals( 0.0d ),
                   "-0.0", v -> v.equals( -0.0d ),
@@ -137,7 +137,7 @@ public class DataTypeTest {
                   "NaN", v -> v.equals( Double.NaN )
             ) ),
 
-            new TestConfiguration<>( SammXsdType.FLOAT, Map.of(
+            new TestConfiguration<>( SammType.FLOAT, Map.of(
                   "-1.0", v -> v.equals( -1.0f ),
                   "+0.0", v -> v.equals( 0.0f ),
                   "-0.0", v -> v.equals( -0.0f ),
@@ -147,7 +147,7 @@ public class DataTypeTest {
                   "NaN", v -> v.equals( Float.NaN )
             ) ),
 
-            new TestConfiguration<>( SammXsdType.DATE, Map.of(
+            new TestConfiguration<>( SammType.DATE, Map.of(
                   "2000-01-01", v -> v.getYear() == 2000 && v.getMonth() == 1 && v.getDay() == 1,
                   "2000-01-01Z", v -> v.getYear() == 2000 && v.getMonth() == 1 && v.getDay() == 1
                         && v.getTimezone() != DatatypeConstants.FIELD_UNDEFINED,
@@ -155,7 +155,7 @@ public class DataTypeTest {
                   v -> v.getYear() == 2000 && v.getMonth() == 1 && v.getDay() == 1 && v.getTimezone() == 12 * 60 + 5
             ) ),
 
-            new TestConfiguration<>( SammXsdType.TIME, Map.of(
+            new TestConfiguration<>( SammType.TIME, Map.of(
                   "14:23:00", v -> v.getHour() == 14 && v.getMinute() == 23 && v.getSecond() == 0,
                   "14:23:00.527634Z",
                   v -> v.getHour() == 14 && v.getMinute() == 23 && v.getSecond() == 0 && v.getFractionalSecond().equals(
@@ -163,7 +163,7 @@ public class DataTypeTest {
                   "14:23:00+03:00", v -> v.getHour() == 14 && v.getMinute() == 23 && v.getSecond() == 0
             ) ),
 
-            new TestConfiguration<>( SammXsdType.DATE_TIME, Map.of(
+            new TestConfiguration<>( SammType.DATE_TIME, Map.of(
                   "2000-01-01T14:23:00",
                   v -> v.getYear() == 2000 && v.getMonth() == 1 && v.getDay() == 1 && v.getHour() == 14
                         && v.getMinute() == 23 && v.getSecond() == 0,
@@ -173,140 +173,140 @@ public class DataTypeTest {
                         && v.getFractionalSecond().equals( new BigDecimal( "0.66372" ) ) && v.getTimezone() == 14 * 60
             ) ),
 
-            new TestConfiguration<>( SammXsdType.DATE_TIME_STAMP, Map.of(
+            new TestConfiguration<>( SammType.DATE_TIME_STAMP, Map.of(
                   "2000-01-01T14:23:00.66372+14:00",
                   v -> v.getYear() == 2000 && v.getMonth() == 1 && v.getDay() == 1 && v.getHour() == 14
                         && v.getMinute() == 23 && v.getSecond() == 0
                         && v.getFractionalSecond().equals( new BigDecimal( "0.66372" ) ) && v.getTimezone() == 14 * 60
             ) ),
 
-            new TestConfiguration<>( SammXsdType.G_YEAR, Map.of(
+            new TestConfiguration<>( SammType.G_YEAR, Map.of(
                   "2000", v -> v.getYear() == 2000,
                   "2000+03:00", v -> v.getYear() == 2000 && v.getTimezone() == 3 * 60
             ) ),
 
-            new TestConfiguration<>( SammXsdType.G_MONTH, Map.of(
+            new TestConfiguration<>( SammType.G_MONTH, Map.of(
                   "--04", v -> v.getMonth() == 4,
                   "--04+03:00", v -> v.getMonth() == 4 && v.getTimezone() == 3 * 60
             ) ),
 
-            new TestConfiguration<>( SammXsdType.G_DAY, Map.of(
+            new TestConfiguration<>( SammType.G_DAY, Map.of(
                   "---04", v -> v.getDay() == 4,
                   "---04+03:00", v -> v.getDay() == 4 && v.getTimezone() == 3 * 60
             ) ),
 
-            new TestConfiguration<>( SammXsdType.G_YEAR_MONTH, Map.of(
+            new TestConfiguration<>( SammType.G_YEAR_MONTH, Map.of(
                   "2000-01", v -> v.getYear() == 2000 && v.getMonth() == 1,
                   "2000-01+03:00", v -> v.getYear() == 2000 && v.getMonth() == 1 && v.getTimezone() == 3 * 60
             ) ),
 
-            new TestConfiguration<>( SammXsdType.G_MONTH_DAY, Map.of(
+            new TestConfiguration<>( SammType.G_MONTH_DAY, Map.of(
                   "--01-01", v -> v.getMonth() == 1 && v.getDay() == 1,
                   "--01-01+03:00", v -> v.getMonth() == 1 && v.getDay() == 1 && v.getTimezone() == 3 * 60
             ) ),
 
-            new TestConfiguration<>( SammXsdType.DURATION, Map.of(
+            new TestConfiguration<>( SammType.DURATION, Map.of(
                   "P30D", v -> v.getDays() == 30,
                   "-P1Y2M3DT1H", v -> v.getYears() == 1 && v.getMonths() == 2 && v.getDays() == 3 && v.getHours() == 1
                         && v.getSign() == -1,
                   "PT1H5M0S", v -> v.getHours() == 1 && v.getMinutes() == 5 && v.getSeconds() == 0
             ) ),
 
-            new TestConfiguration<>( SammXsdType.YEAR_MONTH_DURATION, Map.of(
+            new TestConfiguration<>( SammType.YEAR_MONTH_DURATION, Map.of(
                   "P10M", v -> v.getMonths() == 10,
                   "P5Y2M", v -> v.getYears() == 5 && v.getMonths() == 2
             ) ),
 
-            new TestConfiguration<>( SammXsdType.DAY_TIME_DURATION, Map.of(
+            new TestConfiguration<>( SammType.DAY_TIME_DURATION, Map.of(
                   "P30D", v -> v.getDays() == 30,
                   "P1DT5H", v -> v.getDays() == 1 && v.getHours() == 5,
                   "PT1H5M0S", v -> v.getHours() == 1 && v.getMinutes() == 5 && v.getSeconds() == 0
             ) ),
 
-            new TestConfiguration<>( SammXsdType.BYTE, Map.of(
+            new TestConfiguration<>( SammType.BYTE, Map.of(
                   "-1", v -> v == -1,
                   "0", v -> v == 0,
                   "127", v -> v == 127
             ) ),
 
-            new TestConfiguration<>( SammXsdType.SHORT, Map.of(
+            new TestConfiguration<>( SammType.SHORT, Map.of(
                   "-1", v -> v == -1,
                   "0", v -> v == 0,
                   "32767", v -> v == 32767
             ) ),
 
-            new TestConfiguration<>( SammXsdType.INT, Map.of(
+            new TestConfiguration<>( SammType.INT, Map.of(
                   "-1", v -> v == -1,
                   "0", v -> v == 0,
                   "2147483647", v -> v == 2147483647
             ) ),
 
-            new TestConfiguration<>( SammXsdType.LONG, Map.of(
+            new TestConfiguration<>( SammType.LONG, Map.of(
                   "-1", v -> v == -1,
                   "0", v -> v == 0,
                   "9223372036854775807", v -> v == 9223372036854775807L
             ) ),
 
-            new TestConfiguration<>( SammXsdType.UNSIGNED_BYTE, Map.of(
+            new TestConfiguration<>( SammType.UNSIGNED_BYTE, Map.of(
                   "0", v -> v == 0,
                   "1", v -> v == 1,
                   "255", v -> v == 255
             ) ),
 
-            new TestConfiguration<>( SammXsdType.UNSIGNED_SHORT, Map.of(
+            new TestConfiguration<>( SammType.UNSIGNED_SHORT, Map.of(
                   "0", v -> v == 0,
                   "1", v -> v == 1,
                   "65535", v -> v == 65535
             ) ),
 
-            new TestConfiguration<>( SammXsdType.UNSIGNED_INT, Map.of(
+            new TestConfiguration<>( SammType.UNSIGNED_INT, Map.of(
                   "0", v -> v == 0,
                   "1", v -> v == 1,
                   "4294967295", v -> v == 4294967295L
             ) ),
 
-            new TestConfiguration<>( SammXsdType.UNSIGNED_LONG, Map.of(
+            new TestConfiguration<>( SammType.UNSIGNED_LONG, Map.of(
                   "0", v -> v.equals( BigInteger.ZERO ),
                   "1", v -> v.equals( BigInteger.ONE ),
                   "18446744073709551615", v -> v.equals( new BigInteger( "18446744073709551615" ) )
             ) ),
 
-            new TestConfiguration<>( SammXsdType.POSITIVE_INTEGER, Map.of(
+            new TestConfiguration<>( SammType.POSITIVE_INTEGER, Map.of(
                   "1", v -> v.equals( BigInteger.ONE ),
                   "7345683746578364857368475638745",
                   v -> v.equals( new BigInteger( "7345683746578364857368475638745" ) )
             ) ),
 
-            new TestConfiguration<>( SammXsdType.NON_NEGATIVE_INTEGER, Map.of(
+            new TestConfiguration<>( SammType.NON_NEGATIVE_INTEGER, Map.of(
                   "0", v -> v.equals( BigInteger.ZERO ),
                   "1", v -> v.equals( BigInteger.ONE ),
                   "7345683746578364857368475638745",
                   v -> v.equals( new BigInteger( "7345683746578364857368475638745" ) )
             ) ),
 
-            new TestConfiguration<>( SammXsdType.NEGATIVE_INTEGER, Map.of(
+            new TestConfiguration<>( SammType.NEGATIVE_INTEGER, Map.of(
                   "-1", v -> v.equals( new BigInteger( "-1" ) ),
                   "-23487263847628376482736487263847",
                   v -> v.equals( new BigInteger( "-23487263847628376482736487263847" ) )
             ) ),
 
-            new TestConfiguration<>( SammXsdType.NON_POSITIVE_INTEGER, Map.of(
+            new TestConfiguration<>( SammType.NON_POSITIVE_INTEGER, Map.of(
                   "-1", v -> v.equals( new BigInteger( "-1" ) ),
                   "0", v -> v.equals( BigInteger.ZERO ),
                   "-93845837498573987498798987394",
                   v -> v.equals( new BigInteger( "-93845837498573987498798987394" ) )
             ) ),
 
-            new TestConfiguration<>( SammXsdType.HEX_BINARY, Map.of(
+            new TestConfiguration<>( SammType.HEX_BINARY, Map.of(
                   "5468697320697320612074657374",
                   v -> new String( v, StandardCharsets.US_ASCII ).equals( "This is a test" )
             ) ),
 
-            new TestConfiguration<>( SammXsdType.BASE64_BINARY, Map.of(
+            new TestConfiguration<>( SammType.BASE64_BINARY, Map.of(
                   "VGhpcyBpcyBhIHRlc3Q=", v -> new String( v, StandardCharsets.US_ASCII ).equals( "This is a test" )
             ) ),
 
-            new TestConfiguration<>( SammXsdType.ANY_URI, Map.of(
+            new TestConfiguration<>( SammType.ANY_URI, Map.of(
                   "http://example.org/", v -> v.toString().equals( "http://example.org/" ),
                   "urn:samm:org.eclipse.esmf.samm:Errors:1.0.0#errorState",
                   v -> v.toString()
@@ -314,14 +314,14 @@ public class DataTypeTest {
             ) )
       );
 
-      final Stream<TestConfiguration<Curie>> curieTypes =
+      @SuppressWarnings( "unchecked" ) final Stream<TestConfiguration<Curie>> curieTypes =
             SammXsdType.ALL_TYPES.stream()
                   .filter( dataType -> dataType.getJavaClass() != null
                         && dataType.getJavaClass().equals( Curie.class ) )
                   .map( dataType -> (SammType<Curie>) dataType )
                   .map( curieType -> new TestConfiguration<>( curieType, Map.of(
-                        "xsd:string", v -> ( (Curie) v ).value().equals( "xsd:string" ),
-                        "unit:hectopascal", v -> ( (Curie) v ).value().equals( "unit:hectopascal" )
+                        "xsd:string", v -> v.value().equals( "xsd:string" ),
+                        "unit:hectopascal", v -> v.value().equals( "unit:hectopascal" )
                   ) ) );
 
       return Stream.concat( extendedXsdTypes, curieTypes );

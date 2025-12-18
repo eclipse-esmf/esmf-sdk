@@ -30,6 +30,7 @@ import org.eclipse.esmf.samm.KnownVersion;
 
 import com.google.common.collect.Streams;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 
@@ -56,8 +57,15 @@ public class BammUriRewriter extends AbstractUriRewriter {
                case "bamm-c" -> Map.entry( SammNs.SAMMC.getShortForm(), targetPrefixes.get( SammNs.SAMMC.getShortForm() ) );
                case "bamm-e" -> Map.entry( SammNs.SAMME.getShortForm(), targetPrefixes.get( SammNs.SAMME.getShortForm() ) );
                case "unit" -> Map.entry( SammNs.UNIT.getShortForm(), targetPrefixes.get( SammNs.UNIT.getShortForm() ) );
-               default -> Map.entry( prefix, rewriteUri( sourceModel.getNsPrefixURI( prefix ), oldToNewNamespaces )
-                     .orElse( sourceModel.getNsPrefixURI( prefix ) ) );
+               default -> {
+                  final String uri = sourceModel.getNsPrefixURI( prefix );
+                  final Resource resource = sourceModel.createResource( uri );
+
+                  yield Map.entry(
+                        prefix,
+                        rewriteUri( resource, oldToNewNamespaces ).orElse( uri )
+                  );
+               }
             } )
             .collect( asMap() );
    }
@@ -76,14 +84,18 @@ public class BammUriRewriter extends AbstractUriRewriter {
    }
 
    @Override
-   protected Optional<String> rewriteUri( final String oldUri, final Map<String, String> oldToNewNamespaces ) {
-      if ( !oldUri.startsWith( "urn:bamm:" ) ) {
+   protected Optional<String> rewriteUri( final Resource resource, final Map<String, String> oldToNewNamespaces ) {
+      final String oldUri = resource.getURI();
+
+      if ( oldUri == null || !oldUri.startsWith( "urn:bamm:" ) ) {
          return Optional.empty();
       }
+
       String result = oldUri;
       for ( final Map.Entry<String, String> mapEntry : oldToNewNamespaces.entrySet() ) {
          result = result.replace( mapEntry.getKey(), mapEntry.getValue() );
       }
+
       // This catches the regular (i.e., non meta-model) URNs
       result = result.replace( "urn:bamm:", AspectModelUrn.PROTOCOL_AND_NAMESPACE_PREFIX );
       return Optional.of( result );

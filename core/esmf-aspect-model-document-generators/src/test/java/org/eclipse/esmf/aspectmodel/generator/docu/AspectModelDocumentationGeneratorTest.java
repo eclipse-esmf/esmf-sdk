@@ -65,7 +65,7 @@ class AspectModelDocumentationGeneratorTest {
       assertThat( htmlResult ).contains(
             "<h3 id=\"org-eclipse-esmf-test-AspectWithCollectionOfSimpleType-org-eclipse-esmf-test-testList-property\">testList</h3>" );
       // example value
-      assertThat( htmlResult ).containsIgnoringWhitespaces( "<div class=\"w-80\">Example</div><div class=\"w-full\">35</div>" );
+      assertThat( htmlResult ).containsIgnoringWhitespaces( "<div class=\"w-80\">Characteristic</div>" );
    }
 
    @Test
