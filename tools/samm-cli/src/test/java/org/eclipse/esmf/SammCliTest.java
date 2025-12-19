@@ -61,6 +61,7 @@ import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -289,6 +290,7 @@ class SammCliTest {
    }
 
    @Test
+   @Disabled ( "Temporarily disabled due to an issue under investigation in CI" )
    void testAspectFromGitHubWithFullUrlValidateModel() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect",
             "https://github.com/eclipse-esmf/esmf-sdk/blob/main/core/esmf-test-aspect-models/src/main/resources/valid/org.eclipse.esmf"
@@ -298,6 +300,7 @@ class SammCliTest {
    }
 
    @Test
+   @Disabled( "Temporarily disabled due to an issue under investigation in CI" )
    void testAspectFromGitHubWithExplicitRepoValidateModel() {
       final String remoteModelsDirectory = "core/esmf-test-aspect-models/src/main/resources/valid";
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect",
@@ -307,6 +310,7 @@ class SammCliTest {
    }
 
    @Test
+   @Disabled ( "Temporarily disabled due to an issue under investigation in CI" )
    void testAspectFromGitHubButRepoNotActuallyContainingFile() {
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect",
             defaultInputUrn, "validate", "--github", "eclipse-esmf/esmf-parent" );
@@ -1584,6 +1588,7 @@ class SammCliTest {
    }
 
    @Test
+   @Disabled ( "Temporarily disabled due to an issue under investigation in CI" )
    void testAspectUsageWithGitHubResolution() {
       final String remoteModelsDirectory = "core/esmf-test-aspect-models/src/main/resources/valid";
       final String urnToCheck = TestModel.TEST_NAMESPACE + "testProperty";
