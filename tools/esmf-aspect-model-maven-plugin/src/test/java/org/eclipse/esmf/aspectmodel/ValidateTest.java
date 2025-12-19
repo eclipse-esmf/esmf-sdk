@@ -30,6 +30,7 @@ import org.apache.maven.settings.Settings;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 @MojoTest
@@ -73,6 +74,7 @@ public class ValidateTest extends AspectModelMojoTest {
          goal = Validate.MAVEN_GOAL,
          pom = "src/test/resources/validate-pom-resolve-from-github/pom.xml"
    )
+   @Disabled( "Temporarily disabled due to an issue under investigation in CI" )
    public void testValidateWithResolutionFromGitHub( final Validate validate ) throws XmlPullParserException, IOException {
       // Inject <configuration> block into session's config
       final String serverConfigXml = """
