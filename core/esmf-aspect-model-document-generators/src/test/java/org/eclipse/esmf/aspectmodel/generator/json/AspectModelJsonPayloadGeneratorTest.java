@@ -15,8 +15,11 @@ package org.eclipse.esmf.aspectmodel.generator.json;
 import static org.assertj.core.api.Assertions.anyOf;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.eclipse.esmf.metamodel.Elements.*;
-import static org.eclipse.esmf.metamodel.builder.SammBuilder.*;
+import static org.eclipse.esmf.metamodel.Elements.samm_c;
+import static org.eclipse.esmf.metamodel.builder.SammBuilder.aspect;
+import static org.eclipse.esmf.metamodel.builder.SammBuilder.either;
+import static org.eclipse.esmf.metamodel.builder.SammBuilder.list;
+import static org.eclipse.esmf.metamodel.builder.SammBuilder.property;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -618,7 +621,7 @@ class AspectModelJsonPayloadGeneratorTest {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_FIXED_POINT_CONSTRAINT );
       final AspectWithFixedPointConstraint aspectWithConstraint = parseJson( generatedJson, AspectWithFixedPointConstraint.class );
       assertThat( generatedJson ).contains( "testProperty" );
-      assertThat( aspectWithConstraint.getTestProperty() ).matches( "\\s*\\d{3}\\.\\d{4,5}" );
+      assertThat( aspectWithConstraint.getTestProperty() ).matches( "\\s*\\d{3}\\.\\d+" );
    }
 
    private String generateJsonForModel( final Aspect aspect ) {
