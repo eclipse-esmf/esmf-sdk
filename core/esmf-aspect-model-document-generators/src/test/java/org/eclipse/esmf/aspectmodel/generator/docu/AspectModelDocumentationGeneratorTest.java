@@ -153,13 +153,15 @@ class AspectModelDocumentationGeneratorTest {
    void testAspectWithCollectionWithAbstractEntityExpectSuccess() throws IOException {
       final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY );
       assertThat( documentation ).contains(
-            "<h3 id=\"org-eclipse-esmf-test-AspectWithCollectionWithAbstractEntity-org-eclipse-esmf-test-testProperty-property"
-                  + "\">testProperty</h3>" );
-      assertThat( documentation ).contains(
-            "<h5 id=\"org-eclipse-esmf-test-AbstractTestEntity-org-eclipse-esmf-test-abstractTestProperty-property\">abstractTestProperty"
-                  + "</h5>" );
-      assertThat( documentation ).contains(
-            "<h5 id=\"org-eclipse-esmf-test-ExtendingTestEntity-org-eclipse-esmf-test-entityProperty-property\">entityProperty</h5>" );
+                  "<h3 id=\"org-eclipse-esmf-test-AspectWithCollectionWithAbstractEntity-org-eclipse-esmf-test-testProperty-property"
+                        + "\">testProperty</h3>" )
+            .contains(
+                  "<h5 id=\"org-eclipse-esmf-test-AbstractTestEntity-org-eclipse-esmf-test-abstractTestProperty-property"
+                        + "\">abstractTestProperty"
+                        + "</h5>" )
+            .contains(
+                  "<h5 id=\"org-eclipse-esmf-test-ExtendingTestEntity-org-eclipse-esmf-test-entityProperty-property\">entityProperty</h5"
+                        + ">" );
    }
 
    @Test
@@ -174,13 +176,14 @@ class AspectModelDocumentationGeneratorTest {
    @Test
    void testAspectWithConstraintWithSeeAttribute() throws IOException {
       final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_CONSTRAINT_WITH_SEE_ATTRIBUTE );
-      assertThat( documentation ).contains(
-            "<h3 id=\"org-eclipse-esmf-test-AspectWithConstraintWithSeeAttribute-org-eclipse-esmf-test-testPropertyTwo-property"
-                  + "\">testPropertyTwo</h3>" );
-      assertThat( documentation ).contains(
-            "<div class=\"table-cell pb-3 col-span-2\">Trait</div>" );
-      assertThat( documentation ).contains(
-            "<li>http://example.com/me2</li>" );
+      assertThat( documentation )
+            .contains(
+                  "<h3 id=\"org-eclipse-esmf-test-AspectWithConstraintWithSeeAttribute-org-eclipse-esmf-test-testPropertyTwo-property"
+                        + "\">testPropertyTwo</h3>" )
+            .contains(
+                  "<div class=\"table-cell pb-3 col-span-2\">Trait</div>" )
+            .contains(
+                  "<li>http://example.com/me2</li>" );
    }
 
    @Test
@@ -199,6 +202,28 @@ class AspectModelDocumentationGeneratorTest {
    void testHtmlOutputDoesNotContainMarkdownSyntax() throws IOException {
       final String htmlResult = generateHtmlDocumentation( TestAspect.ASPECT_WITH_MARKDOWN_DESCRIPTION );
       AssertionsForClassTypes.assertThat( htmlResult ).doesNotContain( "[Visit Example](https://example.com)" );
+   }
+
+   @Test
+   void testRangeConstraintRendersNumericBoundsCorrectly() throws Exception {
+      final String htmlResult = generateHtmlDocumentation( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT );
+
+      AssertionsForClassTypes.assertThat( htmlResult )
+            .doesNotContain( "DefaultScalarValue[" )
+            .doesNotContain( "type='DefaultScalar" );
+
+      AssertionsForClassTypes.assertThat( htmlResult )
+            .contains( "2.3" )
+            .contains( "10.5" )
+            .contains( "..." );
+
+      // Lower bound: AT_LEAST => >= 2.3
+      AssertionsForClassTypes.assertThat( htmlResult )
+            .containsPattern( ">=(?s).*?2\\.3" );
+
+      // Upper bound: AT_MOST => <= 10.5
+      AssertionsForClassTypes.assertThat( htmlResult )
+            .containsPattern( "<=(?s).*?10\\.5" );
    }
 
    private String generateHtmlDocumentation( final TestAspect testAspect ) throws IOException {
