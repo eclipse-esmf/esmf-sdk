@@ -66,7 +66,6 @@ import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.condition.DisabledOnOs;
-import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -91,10 +90,7 @@ class SammCliTest {
 
    @BeforeEach
    void beforeEach() throws IOException {
-      final List<String> additionalJvmArgs = Optional.ofNullable( System.getProperty( "nativeConfigPath" ) )
-            .map( path -> "-agentlib:native-image-agent=config-merge-dir=" + path )
-            .stream().toList();
-      sammCli = new MainClassProcessLauncher( SammCli.class, additionalJvmArgs,
+      sammCli = new MainClassProcessLauncher( SammCli.class, List.of(),
             argument -> !"-XX:ThreadPriorityPolicy=1".equals( argument ) && !argument.startsWith( "-agentlib:jdwp" )
       );
       outputDirectory = Files.createTempDirectory( "junit" );
@@ -205,7 +201,6 @@ class SammCliTest {
    }
 
    @Test
-   @EnabledIfSystemProperty( named = "packaging-type", matches = "native" )
    void testVerboseOutput() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "validate", "-vvv" );
       assertThat( result.stdout() ).contains( "Input model is valid" );
@@ -320,7 +315,6 @@ class SammCliTest {
 
    @ParameterizedTest
    @EnumSource( TestAspect.class )
-   @EnabledIfSystemProperty( named = "packaging-type", matches = "native" )
    void testAspectValidateValidModelAllTestFiles( final TestModel aspect ) {
       final String input = inputFile( aspect ).getAbsolutePath();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "validate" );
@@ -383,7 +377,6 @@ class SammCliTest {
 
    @ParameterizedTest
    @EnumSource( TestAspect.class )
-   @EnabledIfSystemProperty( named = "packaging-type", matches = "native" )
    void testAspectToAasXmlToFileAllTestFiles( final TestModel aspect ) {
       final String input = inputFile( aspect ).getAbsolutePath();
       final File targetFile = outputFile( "output.xml" );
@@ -406,7 +399,6 @@ class SammCliTest {
 
    @ParameterizedTest
    @EnumSource( TestAspect.class )
-   @EnabledIfSystemProperty( named = "packaging-type", matches = "native" )
    void testAspectToAasXmlToStdoutAllTestFiles( final TestModel aspect ) {
       final String input = inputFile( aspect ).getAbsolutePath();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "to", "aas", "--format",
@@ -428,7 +420,6 @@ class SammCliTest {
 
    @ParameterizedTest
    @EnumSource( TestAspect.class )
-   @EnabledIfSystemProperty( named = "packaging-type", matches = "native" )
    void testAspectToAasAasxToFileAllTestFiles( final TestModel aspect ) {
       final String input = inputFile( aspect ).getAbsolutePath();
       final File targetFile = outputFile( "output.aasx" );
@@ -463,7 +454,6 @@ class SammCliTest {
 
    @ParameterizedTest
    @EnumSource( TestAspect.class )
-   @EnabledIfSystemProperty( named = "packaging-type", matches = "native" )
    void testAspectToAasJsonToFileAllTestFiles( final TestModel aspect ) {
       final String input = inputFile( aspect ).getAbsolutePath();
       final File targetFile = outputFile( "output.json" );
@@ -487,7 +477,6 @@ class SammCliTest {
 
    @ParameterizedTest
    @EnumSource( TestAspect.class )
-   @EnabledIfSystemProperty( named = "packaging-type", matches = "native" )
    void testAspectToAasJsonToStdoutAllTestFiles( final TestModel aspect ) {
       final String input = inputFile( aspect ).getAbsolutePath();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "to", "aas", "--format",

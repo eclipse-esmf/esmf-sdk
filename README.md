@@ -54,17 +54,16 @@ Are you having trouble with ESMF SDK? We want to help!
 ## Build and contribute
 
 The top level elements of the SDK structure are all carried out as Maven multimodule projects.
-Building the SDK requires a Java 21-compatible [GraalVM JDK](https://www.graalvm.org/).
+Building the SDK requires a Java 21 version.
 
 To build the SDK core components, run the following command:
 ```bash
-mvn -pl '!org.eclipse.esmf:samm-cli' clean install -Pnative
+mvn -pl '!org.eclipse.esmf:samm-cli' clean install 
 ```
 
 To also build SDK core components and the CLI tool, run the above command, followed by:
 ```bash
 mvn -pl org.eclipse.esmf:samm-cli clean verify
-mvn -pl org.eclipse.esmf:samm-cli verify -Pnative
 ```
 
 We are always looking forward to your contributions. For more details on how to contribute just take
