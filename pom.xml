@@ -235,18 +235,12 @@
             <artifactId>maven-enforcer-plugin</artifactId>
             <executions>
                <execution>
-                  <id>esmf-enforce-graalvm</id>
+                  <id>esmf-enforce</id>
                   <goals>
                      <goal>enforce</goal>
                   </goals>
                   <configuration>
                      <rules>
-                        <requireProperty>
-                           <property>java.vendor.version</property>
-                           <message>Could not determine JDK vendor version (java.vendor.version property)</message>
-                           <regex>.*GraalVM.*</regex>
-                           <regexMessage>A GraalVM JDK is required to build this project</regexMessage>
-                        </requireProperty>
                         <requireJavaVersion>
                            <version>21</version>
                            <message>Java 21 or newer is required to build this project</message>
