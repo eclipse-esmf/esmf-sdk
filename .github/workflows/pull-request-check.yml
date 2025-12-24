@@ -78,6 +78,7 @@ jobs:
         run: |
           bundle="samm-bundle-DEV-SNAPSHOT-$(date +%s)"
           mkdir ${bundle}
+          mkdir -p "${bundle}/jre"
           curl -Lo jre.tar.gz https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.7%2B6/OpenJDK21U-jre_x64_linux_hotspot_21.0.7_6.tar.gz
           tar -xvf jre.tar.gz
           cp -r ./jdk-21.0.7+6-jre/* ./${bundle}/jre
@@ -103,6 +104,7 @@ jobs:
         run: |
           $bundle = "samm-bundle-DEV-SNAPSHOT-$([int][double]::Parse((Get-Date -UFormat %s)))"
           mkdir $bundle
+          New-Item -ItemType Directory -Path "$bundle\jre" -Force
           curl -Lo jre.zip https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.7%2B6/OpenJDK21U-jre_x64_windows_hotspot_21.0.7_6.zip
           tar -xf jre.zip
           Copy-Item .\jdk-21.0.7+6-jre\* .\$bundle\jre -Recurse
