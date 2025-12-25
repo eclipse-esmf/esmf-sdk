@@ -1731,8 +1731,8 @@ class SammCliTest {
    }
 
    private static MediaType contentType( final File file ) {
-      try {
-         return new TikaConfig().getDetector().detect( new BufferedInputStream( new FileInputStream( file ) ), new Metadata() );
+      try ( BufferedInputStream bis = new BufferedInputStream( new FileInputStream( file ) ) ) {
+         return new TikaConfig().getDetector().detect( bis, new Metadata() );
       } catch ( final IOException | TikaException exception ) {
          throw new RuntimeException( exception );
       }
