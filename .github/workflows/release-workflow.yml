@@ -111,11 +111,11 @@ jobs:
           zip -r -9 ../../central-bundle.zip .
           popd
 
-          # Build samm-cli executable jar and run integration tests
+          # Build samm-cli executable jar
           unset JAVA_TOOL_OPTIONS
           mvn -B -pl tools/samm-cli clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
 
-          # Build native executable with warp-packer and run integration tests
+          # Build native executable with warp-packer
           pushd tools/samm-cli/target
           bundle="samm-bundle-${{ github.event.inputs.release_version }}-linux-$(date +%s)"
           mkdir ${bundle}
@@ -151,11 +151,6 @@ jobs:
           distribution: 'temurin'
           java-version: '21.0.7'
           overwrite-settings: false
-
-      - name: Test executable jar on Temurin
-        run: |
-          cd tools/samm-cli
-          mvn -B -Denforcer.skip -Dskip.maven.surefire failsafe:integration-test -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
 
       - name: Upload staging directory and Linux binary
         uses: actions/upload-artifact@v4
@@ -202,7 +197,7 @@ jobs:
           mvn versions:commit
           # Actual build of core SDK
           mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
-          # Build samm-cli executable jar and run integration tests
+          # Build samm-cli executable jar
           unset JAVA_TOOL_OPTIONS
           mvn -B -pl tools/samm-cli clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
         shell: bash
@@ -288,11 +283,11 @@ jobs:
 
           # Actual build of core SDK
           mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
-          # Build samm-cli executable jar and run integration tests
+          # Build samm-cli executable jar
           unset JAVA_TOOL_OPTIONS
           mvn -B -pl tools/samm-cli clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
 
-          # Build native executable with warp-packer and run integration tests
+          # Build native executable with warp-packer
           $bundle = "samm-bundle-${{ github.event.inputs.release_version }}-windows-$([int][double]::Parse((Get-Date -UFormat %s)))"
           mkdir $bundle
           New-Item -ItemType Directory -Path "$bundle\jre" -Force

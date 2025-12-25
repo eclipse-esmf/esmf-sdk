@@ -79,7 +79,7 @@ import org.slf4j.LoggerFactory;
  * the main function in {@link SammCli}.
  */
 @ExtendWith( LogExtension.class )
-@TestInstance( TestInstance.Lifecycle.PER_METHOD )
+@TestInstance( TestInstance.Lifecycle.PER_CLASS )
 class SammCliTest {
    protected static ProcessLauncher<?> sammCli;
    private final TestModel testModel = TestAspect.ASPECT_WITH_ENTITY;

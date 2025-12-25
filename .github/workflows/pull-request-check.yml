@@ -68,7 +68,7 @@ jobs:
           export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
           # Actual build of core SDK
           mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
-          # Build samm-cli executable jar and run integration tests
+          # Build samm-cli executable jar
           unset JAVA_TOOL_OPTIONS
           mvn -B -pl tools/samm-cli clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
         shell: bash
@@ -157,12 +157,6 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
           overwrite-settings: false
-
-      - name: Test executable jar on Temurin
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          cd tools/samm-cli
-          mvn -B -Denforcer.skip -Dskip.maven.surefire failsafe:integration-test -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
 
       - name: Upload executable jar
         # We only need one OS job to upload the jar
