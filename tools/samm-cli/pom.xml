@@ -376,6 +376,11 @@
                   <reuseForks>true</reuseForks>
                   <argLine>-Xmx4096m</argLine>
                </systemPropertyVariables>
+               <properties>
+                  <configurationParameters>
+                     junit.jupiter.execution.parallel.enabled = true
+                  </configurationParameters>
+               </properties>
                <includes>
                   <include>**/SammCliIntegrationTest.java</include>
                </includes>
