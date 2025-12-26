@@ -1,0 +1,57 @@
+#**
+ ~ Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
+ ~
+ ~ See the AUTHORS file(s) distributed with this work for additional
+ ~ information regarding authorship.
+ ~
+ ~ This Source Code Form is subject to the terms of the Mozilla Public
+ ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+ ~ file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ ~
+ ~ SPDX-License-Identifier: MPL-2.0
+ *#
+
+#macro( event $event $aspectModel $aspectModelHelper $i18n $weight )
+
+<div class="flex flex-col pb-10">
+
+    #paragraph(
+        $event.getPreferredName( $i18n.getLocale() )
+        "${aspectModelHelper.buildAnchor( $event, $aspectModel, 'event' )}"
+        $weight
+    )
+
+    #if( $event.getDescription( $i18n.getLocale() ) )
+        #description( $descriptionsUtils.toHtml( $event.getDescription( $i18n.getLocale() ) ) )
+    #end
+
+    <div class="flex border-b pb-1 py-4">
+        <div class="w-80">$i18n.getText( "docu.label.name" )</div>
+        <div class="w-full">$event.getName()</div>
+    </div>
+
+    #if( $event.urn() )
+        <div class="flex border-b pb-1 py-4">
+            <div class="w-80">URN</div>
+            <div class="w-full break-all">$event.urn()</div>
+        </div>
+    #end
+
+    ## Properties
+    #if( $event.getProperties() && !$event.getProperties().isEmpty() )
+        <div class="flex border-b pb-1 py-4">
+            <div class="w-80">$i18n.getText( "docu.label.properties" )</div>
+            <div class="w-full space-y-6">
+
+                #set( $paramWeight = "4" )
+                #foreach( $param in $aspectModelHelper.sortPropertiesByPreferredName( $event.getProperties(), $i18n.getLocale() ) )
+                    ## reuse existing property macro
+                    #property( $param $aspectModel $aspectModelHelper $i18n $paramWeight )
+                #end
+            </div>
+        </div>
+    #end
+
+</div>
+
+#end

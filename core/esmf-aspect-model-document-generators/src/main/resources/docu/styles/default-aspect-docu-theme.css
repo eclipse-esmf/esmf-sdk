@@ -66,3 +66,15 @@ a.toc-link {
     width: 1px;
     right: 1px;
 }
+
+/* Events */
+.event-card {
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 20px;
+}
+.event-meta {
+    font-size: 0.875rem;
+    opacity: 0.85;
+}
