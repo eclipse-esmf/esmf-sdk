@@ -126,22 +126,21 @@ public class AspectModelHelper {
       return parentPart + namespaceAnchorPart( modelElement ) + "-" + modelElement.getName() + "-" + suffix;
    }
 
-   public List<Event> sortEventsByPreferredName(final List<Event> events, final Locale locale) {
-      if (events != null) {
-         events.sort(Comparator.comparing(
-               event -> eventSortKey(event, locale),
+   public List<Event> sortEventsByPreferredName( final List<Event> events, final Locale locale ) {
+      if ( events != null ) {
+         events.sort( Comparator.comparing(
+               event -> eventSortKey( event, locale ),
                String.CASE_INSENSITIVE_ORDER
-         ));
+         ) );
       }
       return events;
    }
 
-   private static String eventSortKey(final Event e, final Locale l) {
-      return Optional.ofNullable(e)
-            .map(x -> Optional.ofNullable(x.getPreferredName(l)).filter(s -> !s.isBlank()).orElse(x.getName()))
+   private static String eventSortKey( final Event e, final Locale l ) {
+      return Optional.ofNullable( e )
+            .map( x -> Optional.ofNullable( x.getPreferredName( l ) ).filter( s -> !s.isBlank() ).orElse( x.getName() ) )
             .map( String::trim )
-            .filter(s -> !s.isBlank())
-            .orElse("");
+            .filter( s -> !s.isBlank() )
+            .orElse( "" );
    }
-
 }
