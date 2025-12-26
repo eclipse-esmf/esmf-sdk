@@ -144,10 +144,10 @@ jobs:
           
           ./warp-packer --arch macos-x64 --input_dir ${bundle} --exec run.sh --output samm
           chmod +x samm
+          mv samm tools/samm-cli/target/
         shell: bash
 
       - name: Integration tests for native images
-        if: matrix.os != 'macos-13'
         run: |
           export MAVEN_OPTS="-Xmx4096m"
           # Run integration tests
