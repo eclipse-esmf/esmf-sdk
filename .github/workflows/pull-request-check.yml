@@ -117,6 +117,7 @@ jobs:
 
           curl -Lo warp-packer.exe https://github.com/dgiagio/warp/releases/download/v0.3.0/windows-x64.warp-packer.exe
           .\warp-packer.exe --arch windows-x64 --input_dir $bundle --exec run.bat --output samm.exe
+          Move-Item samm.exe tools\samm-cli\target\samm.exe
         shell: pwsh
 
       - name: Build native image (Mac)
@@ -145,6 +146,15 @@ jobs:
           chmod +x samm
         shell: bash
 
+      - name: Integration tests for native images
+        if: matrix.os != 'macos-13'
+        run: |
+          export MAVEN_OPTS="-Xmx4096m"
+          # Run integration tests
+          cd tools/samm-cli
+          mvn -B -Dskip.maven.failsafe=false -Dpackaging-type=binary failsafe:integration-test
+        shell: bash
+
       - name: Create convenience batch file
         if: matrix.os == 'windows-latest'
         run: |
@@ -157,6 +167,12 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
           overwrite-settings: false
+
+      - name: Test executable jar on Temurin
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          cd tools/samm-cli
+          mvn -B -Dskip.maven.failsafe=false failsafe:integration-test
 
       - name: Upload executable jar
         # We only need one OS job to upload the jar

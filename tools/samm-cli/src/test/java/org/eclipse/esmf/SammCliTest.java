@@ -15,13 +15,8 @@ package org.eclipse.esmf;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
@@ -30,7 +25,6 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
 import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher;
@@ -38,7 +32,6 @@ import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher.ExecutionRe
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.InvalidTestAspect;
 import org.eclipse.esmf.test.OrderingTestAspect;
 import org.eclipse.esmf.test.TestAspect;
@@ -46,19 +39,10 @@ import org.eclipse.esmf.test.TestModel;
 import org.eclipse.esmf.test.TestResources;
 import org.eclipse.esmf.test.TestSharedModel;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
-import org.apache.jena.shared.LockMRSW;
-import org.apache.jena.sparql.core.mem.PMapQuadTable;
-import org.apache.tika.config.TikaConfig;
-import org.apache.tika.exception.TikaException;
-import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
@@ -67,12 +51,8 @@ import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.slf4j.LoggerFactory;
 
 /**
  * The tests for the CLI that are executed by Maven Surefire. They work using the {@link MainClassProcessLauncher}, i.e. directly call
@@ -80,24 +60,13 @@ import org.slf4j.LoggerFactory;
  */
 @ExtendWith( LogExtension.class )
 @TestInstance( TestInstance.Lifecycle.PER_CLASS )
-class SammCliTest {
-   protected static ProcessLauncher<?> sammCli;
-   private final TestModel testModel = TestAspect.ASPECT_WITH_ENTITY;
-   private final String defaultInputFile = inputFile( testModel ).getAbsolutePath();
-   private final String defaultInputUrn = testModel.getUrn().toString();
-   private final String defaultModelsRoot = inputFile( testModel ).toPath().getParent().getParent().getParent().toFile().getAbsolutePath();
+class SammCliTest extends SammCliAbstractTest {
 
-   @BeforeAll
-   static void beforeAll() {
-      sammCli = new MainClassProcessLauncher( SammCli.class, List.of(),
+   @Override
+   protected ProcessLauncher<?> getCli() {
+      return new MainClassProcessLauncher( SammCli.class, List.of(),
             argument -> !"-XX:ThreadPriorityPolicy=1".equals( argument ) && !argument.startsWith( "-agentlib:jdwp" )
       );
-
-      final LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
-      Stream.of( LockMRSW.class, PMapQuadTable.class ).forEach( loggerClass -> {
-         final Logger logger = loggerContext.getLogger( loggerClass );
-         logger.setLevel( Level.OFF );
-      } );
    }
 
    @Test
@@ -177,13 +146,6 @@ class SammCliTest {
       assertThat( result.stderr() ).isEmpty();
    }
 
-   @Test
-   @Disabled( " Not working without native-image build, double check it" )
-   void testVerboseOutput() {
-      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "validate", "-vvv" );
-      assertThat( result.stdout() ).contains( "Input model is valid" );
-      assertThat( result.stderr() ).contains( "DEBUG" );
-   }
 
    @Test
    void testAspectPrettyPrintToFile( @TempDir final Path outputDirectory ) {
@@ -291,15 +253,6 @@ class SammCliTest {
       assertThat( result.stderr() ).isEmpty();
    }
 
-   @ParameterizedTest
-   @EnumSource( TestAspect.class )
-   @Execution( ExecutionMode.CONCURRENT )
-   void testAspectValidateValidModelAllTestFiles( final TestModel aspect ) {
-      final String input = inputFile( aspect ).getAbsolutePath();
-      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "validate" );
-      assertThat( result.stdout() ).contains( "Input model is valid" );
-      assertThat( result.stderr() ).isEmpty();
-   }
 
    @Test
    void testAspectValidateWithRelativePath() {
@@ -354,20 +307,6 @@ class SammCliTest {
       assertThat( targetFile ).content().startsWith( "<?xml" );
    }
 
-   @ParameterizedTest
-   @EnumSource( TestAspect.class )
-   @Execution( ExecutionMode.CONCURRENT )
-   void testAspectToAasXmlToFileAllTestFiles( final TestModel aspect, @TempDir final Path outputDirectory ) {
-      final String input = inputFile( aspect ).getAbsolutePath();
-      final File targetFile = outputFile( outputDirectory, "output.xml" );
-      assertThat( targetFile ).doesNotExist();
-      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "to", "aas", "--format",
-            "xml", "-o", targetFile.getAbsolutePath() );
-      assertThat( result.stdout() ).isEmpty();
-      assertThat( result.stderr() ).isEmpty();
-      assertThat( targetFile ).exists();
-      assertThat( targetFile ).content().startsWith( "<?xml" );
-   }
 
    @Test
    void testAspectToAasXmlToStdout() {
@@ -377,16 +316,6 @@ class SammCliTest {
       assertThat( result.stderr() ).isEmpty();
    }
 
-   @ParameterizedTest
-   @EnumSource( TestAspect.class )
-   @Execution( ExecutionMode.CONCURRENT )
-   void testAspectToAasXmlToStdoutAllTestFiles( final TestModel aspect ) {
-      final String input = inputFile( aspect ).getAbsolutePath();
-      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "to", "aas", "--format",
-            "xml" );
-      assertThat( result.stdout() ).startsWith( "<?xml" );
-      assertThat( result.stderr() ).isEmpty();
-   }
 
    @Test
    void testAspectToAasAasxToFile( @TempDir final Path outputDirectory ) {
@@ -399,20 +328,6 @@ class SammCliTest {
       assertThat( contentType( targetFile ) ).isEqualTo( MediaType.application( "x-tika-ooxml" ) );
    }
 
-   @ParameterizedTest
-   @EnumSource( TestAspect.class )
-   @Execution( ExecutionMode.CONCURRENT )
-   void testAspectToAasAasxToFileAllTestFiles( final TestModel aspect, @TempDir final Path outputDirectory ) {
-      final String input = inputFile( aspect ).getAbsolutePath();
-      final File targetFile = outputFile( outputDirectory, "output.aasx" );
-      assertThat( targetFile ).doesNotExist();
-      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "to", "aas", "--format",
-            "aasx", "-o", targetFile.getAbsolutePath() );
-      assertThat( result.stdout() ).isEmpty();
-      assertThat( result.stderr() ).isEmpty();
-      assertThat( targetFile ).exists();
-      assertThat( contentType( targetFile ) ).isEqualTo( MediaType.application( "x-tika-ooxml" ) );
-   }
 
    @Test
    void testAspectToAasAasxToStdout() {
@@ -434,22 +349,6 @@ class SammCliTest {
       assertThat( contentType( targetFile ) ).isEqualTo( MediaType.text( "plain" ) );
    }
 
-   @ParameterizedTest
-   @EnumSource( TestAspect.class )
-   @Execution( ExecutionMode.CONCURRENT )
-   void testAspectToAasJsonToFileAllTestFiles( final TestModel aspect, @TempDir final Path outputDirectory ) {
-      final String input = inputFile( aspect ).getAbsolutePath();
-      final File targetFile = outputFile( outputDirectory, "output.json" );
-      assertThat( targetFile ).doesNotExist();
-      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "to", "aas", "--format",
-            "json", "-o",
-            targetFile.getAbsolutePath() );
-      assertThat( result.stdout() ).isEmpty();
-      assertThat( result.stderr() ).isEmpty();
-      assertThat( targetFile ).exists();
-      assertThat( contentType( targetFile ) ).isEqualTo( MediaType.text( "plain" ) );
-   }
-
    @Test
    void testAspectToAasJsonToStdout() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas", "--format",
@@ -458,16 +357,6 @@ class SammCliTest {
       assertThat( contentType( result.stdoutRaw() ) ).isEqualTo( MediaType.text( "plain" ) );
    }
 
-   @ParameterizedTest
-   @EnumSource( TestAspect.class )
-   @Execution( ExecutionMode.CONCURRENT )
-   void testAspectToAasJsonToStdoutAllTestFiles( final TestModel aspect ) {
-      final String input = inputFile( aspect ).getAbsolutePath();
-      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "to", "aas", "--format",
-            "json" );
-      assertThat( result.stderr() ).isEmpty();
-      assertThat( contentType( result.stdoutRaw() ) ).isEqualTo( MediaType.text( "plain" ) );
-   }
 
    @RepeatedTest( 10 )
    void testAspectToAasJsonToStdoutContentAspectUploadOrdering() {
@@ -1665,92 +1554,5 @@ class SammCliTest {
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
       assertThat( outputFile ).exists().isNotEmptyFile().content().contains( ":TestAspect a samm:Aspect" );
-   }
-
-   /**
-    * Returns the File object for a test namespace package file
-    */
-   private static File inputFile( final String filename ) {
-      final String resourcePath = String.format( "%s/../../core/esmf-test-aspect-models/src/main/resources/packages/%s",
-            System.getProperty( "user.dir" ), filename );
-      try {
-         return new File( resourcePath ).getCanonicalFile();
-      } catch ( final IOException exception ) {
-         throw new RuntimeException( exception );
-      }
-   }
-
-   /**
-    * Returns the File object for a test model file
-    */
-   private static File inputFile( final TestModel testModel ) {
-      final boolean isValid = !( testModel instanceof InvalidTestAspect );
-      final boolean isOrdering = testModel instanceof OrderingTestAspect;
-
-      final String resourcePath;
-      if ( isOrdering ) {
-         resourcePath = String.format(
-               "%s/../../core/esmf-test-aspect-models/src/main/resources/valid/org.eclipse.esmf.test.ordering/1.0.0/%s.ttl",
-               System.getProperty( "user.dir" ), testModel.getName() );
-      } else {
-         resourcePath = String.format(
-               "%s/../../core/esmf-test-aspect-models/src/main/resources/%s/org.eclipse.esmf.test/1.0.0/%s.ttl",
-               System.getProperty( "user.dir" ), isValid ? "valid" : "invalid", testModel.getName() );
-      }
-
-      try {
-         return new File( resourcePath ).getCanonicalFile();
-      } catch ( final IOException e ) {
-         throw new RuntimeException( e );
-      }
-   }
-
-   /**
-    * Given a file name, returns the File object for this file inside the temporary directory
-    */
-   private File outputFile( final Path outputDirectory, final String filename ) {
-      return outputDirectory.toAbsolutePath().resolve( filename ).toFile();
-   }
-
-   private static void writeToFile( final File file, final String content ) {
-      try {
-         final BufferedWriter writer = new BufferedWriter( new FileWriter( file ) );
-         writer.write( content );
-         writer.close();
-      } catch ( final IOException e ) {
-         throw new RuntimeException( e );
-      }
-   }
-
-   private MediaType contentType( final byte[] input ) {
-      try {
-         return new TikaConfig().getDetector().detect( new BufferedInputStream( new ByteArrayInputStream( input ) ), new Metadata() );
-      } catch ( final IOException | TikaException exception ) {
-         throw new RuntimeException( exception );
-      }
-   }
-
-   private static MediaType contentType( final File file ) {
-      try ( BufferedInputStream bis = new BufferedInputStream( new FileInputStream( file ) ) ) {
-         return new TikaConfig().getDetector().detect( bis, new Metadata() );
-      } catch ( final IOException | TikaException exception ) {
-         throw new RuntimeException( exception );
-      }
-   }
-
-   private static String resolverCommand() {
-      // Note that the following code must not use .class/.getClass()/.getClassLoader() but only operate on the file system level,
-      // since otherwise it will break when running the test suite from the maven build (where tests are run from the jar and resources
-      // are not resolved to the file system but to the jar)
-      try {
-         final String resolverScript = new File(
-               System.getProperty( "user.dir" ) + "/target/test-classes/model_resolver" + ( OS.WINDOWS.isCurrentOs()
-                     ? ".bat" : ".sh" ) ).getCanonicalPath();
-         final String modelsRoot = new File( System.getProperty( "user.dir" ) + "/target/classes/valid" ).getCanonicalPath();
-         final String metaModelVersion = KnownVersion.getLatest().toString().toLowerCase();
-         return resolverScript + ' ' + modelsRoot + ' ' + metaModelVersion;
-      } catch ( final IOException exception ) {
-         throw new RuntimeException( exception );
-      }
    }
 }

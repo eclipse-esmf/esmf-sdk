@@ -31,9 +31,7 @@
       <packaging-type>jar</packaging-type>
       <main-class>org.eclipse.esmf.SammCli</main-class>
       <binary-name>samm</binary-name>
-      <skip.maven.surefire>false</skip.maven.surefire>
-      <skip.maven.failsafe>false</skip.maven.failsafe>
-      <skip.maven.surefire.report.plugin>false</skip.maven.surefire.report.plugin>
+      <skip.maven.failsafe>true</skip.maven.failsafe>
       <skip.maven.shade>false</skip.maven.shade>
    </properties>
 
@@ -175,7 +173,6 @@
                <forkCount>1</forkCount>
                <reuseForks>false</reuseForks>
                <argLine>-Xmx6g</argLine>
-               <skip>${skip.maven.surefire}</skip>
                <reportsDirectory>${project.build.directory}/${testreports.surefire}</reportsDirectory>
                <!-- Do NOT wildcard include *Test.java, because then we would also run the SammCliIntegrationTest -->
                <includes>
@@ -356,6 +353,35 @@
             </executions>
          </plugin>
 
+         <!-- Configure maven failsave plugin (execution of integration tests) -->
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <version>${maven-failsafe-plugin-version}</version>
+            <executions>
+               <execution>
+                  <goals>
+                     <goal>integration-test</goal>
+                  </goals>
+               </execution>
+            </executions>
+            <configuration>
+               <skipITs>${skip.maven.failsafe}</skipITs>
+               <systemPropertyVariables>
+                  <packaging-type>${packaging-type}</packaging-type>
+                  <executableJar>${project.build.directory}/${project.artifactId}-${project.version}.jar
+                  </executableJar>
+                  <binary>${project.build.directory}/${binary-name}</binary>
+                  <forkCount>1</forkCount>
+                  <reuseForks>true</reuseForks>
+                  <argLine>-Xmx4096m</argLine>
+               </systemPropertyVariables>
+               <includes>
+                  <include>**/SammCliIntegrationTest.java</include>
+               </includes>
+            </configuration>
+         </plugin>
+
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-source-plugin</artifactId>
@@ -366,23 +392,4 @@
       </plugins>
    </build>
 
-   <profiles>
-
-      <!--
-      This profile is active by default and will disable the generation of the source jar.
-      When the native profile (see below) is active, the source jar will be generated.
-      If we don't do it like this, the source jar is created and attached twice, which
-      trips up Maven: "We have duplicated artifacts attached."
-      -->
-      <profile>
-         <id>non-native</id>
-         <activation>
-            <activeByDefault>true</activeByDefault>
-         </activation>
-         <properties>
-            <maven.source.skip>true</maven.source.skip>
-         </properties>
-      </profile>
-
-   </profiles>
 </project>
