@@ -73,8 +73,8 @@ public class SammCliIntegrationTest extends SammCliAbstractTest {
    @Test
    @Disabled( " Not working without native-image build, double check it" )
    void testVerboseOutput() {
-      final ProcessLauncher.ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "validate",
-            "-vvv" );
+      final ProcessLauncher.ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile,
+            "validate", "-vvv" );
       assertThat( result.stdout() ).contains( "Input model is valid" );
       assertThat( result.stderr() ).contains( "DEBUG" );
    }

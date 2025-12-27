@@ -151,7 +151,7 @@ jobs:
         run: |
           export MAVEN_OPTS="-Xmx4096m"
           # Run integration tests
-          cd tools/samm-cli
+          cd tools/samm-cli/target
           mvn -B -Dskip.maven.failsafe=false -Dpackaging-type=binary failsafe:integration-test
         shell: bash
 
