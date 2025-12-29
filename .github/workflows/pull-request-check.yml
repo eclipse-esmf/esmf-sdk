@@ -98,8 +98,6 @@ jobs:
           
           ./warp-packer --arch linux-x64 --input_dir ${bundle} --exec run.sh --output samm
           chmod +x samm
-          
-          cp samm tools/samm-cli/target/
         shell: bash
 
       - name: Build native image (Windows)
@@ -117,7 +115,6 @@ jobs:
 
           curl -Lo warp-packer.exe https://github.com/dgiagio/warp/releases/download/v0.3.0/windows-x64.warp-packer.exe
           .\warp-packer.exe --arch windows-x64 --input_dir $bundle --exec run.bat --output samm.exe
-          Copy-Item samm.exe tools\samm-cli\target\samm.exe
         shell: pwsh
 
       - name: Build native image (Mac)
@@ -144,7 +141,6 @@ jobs:
           
           ./warp-packer --arch macos-x64 --input_dir ${bundle} --exec run.sh --output samm
           chmod +x samm
-          cp samm tools/samm-cli/target/
         shell: bash
 
       - name: Integration tests for native images
@@ -188,10 +184,7 @@ jobs:
         with:
           name: samm-cli-binary-${{ matrix.os }}
           path: |
-            tools/samm-cli/target/samm.exe
-            tools/samm-cli/target/*.dll
-            tools/samm-cli/target/*.bat
-            tools/samm-cli/target/lib/
+            samm.exe
 
       - name: Upload binary (Linux)
         if: matrix.os == 'ubuntu-latest'
@@ -199,8 +192,7 @@ jobs:
         with:
           name: samm-cli-binary-${{ matrix.os }}
           path: |
-            tools/samm-cli/target/samm
-            tools/samm-cli/target/*.so
+            samm
 
       - name: Upload binary (Mac)
         if: matrix.os == 'macos-15-intel'
@@ -208,4 +200,4 @@ jobs:
         with:
           name: samm-cli-binary-${{ matrix.os }}
           path: |
-            tools/samm-cli/target/samm
+            samm
