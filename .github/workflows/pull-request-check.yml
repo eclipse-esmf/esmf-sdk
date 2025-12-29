@@ -89,6 +89,12 @@ jobs:
 
           HERE=\${BASH_SOURCE%/*}
 
+          echo "HERE=HERE"
+          ls -l "$HERE/jre/bin/java"
+          
+          echo "$PWD=$PWD"
+          ls -l "$PWD/jre/bin/java"
+          
           "\$HERE/jre/bin/java" -jar "\$HERE/samm-cli-DEV-SNAPSHOT.jar" "\$@"
           EOF
           chmod +x ./${bundle}/run.sh
