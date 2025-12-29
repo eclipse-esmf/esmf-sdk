@@ -1,0 +1,30 @@
+name: GitHub Actions SAST (zizmor)
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+permissions: {}
+
+jobs:
+  zizmor:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v4.x pinned
+        with:
+          persist-credentials: false
+
+      - name: Run zizmor (PR annotations)
+        uses: zizmorcore/zizmor-action@e639db99335bc9038abc0e066dfcd72e23d26fb4 # v0.3.0
+        with:
+          advanced-security: false
+          annotations: true
+          persona: auditor
+          min-severity: medium
+          # inputs по умолчанию "." — этого достаточно
