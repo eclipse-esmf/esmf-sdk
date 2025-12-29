@@ -78,14 +78,11 @@ jobs:
         run: |
           bundle="samm-bundle-DEV-SNAPSHOT-$(date +%s)"
           mkdir ${bundle}
-          mkdir -p "${bundle}/jre"
           curl -Lo jre.tar.gz https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.7%2B6/OpenJDK21U-jre_x64_linux_hotspot_21.0.7_6.tar.gz
           tar -xvf jre.tar.gz
-          cp -r ./jdk-21.0.7+6-jre/* ./${bundle}/jre
+          cp -r ./jdk-21.0.7+6-jre/Contents/Home ./${bundle}/jre
           cp tools/samm-cli/target/samm-cli-DEV-SNAPSHOT.jar ./${bundle}/
           
-          ls -la ./${bundle}
-
           cat <<EOF > ./${bundle}/run.sh
           #!/usr/bin/env bash
 
@@ -147,6 +144,7 @@ jobs:
           ./warp-packer --arch macos-x64 --input_dir ${bundle} --exec run.sh --output samm
           chmod +x samm
           cp samm tools/samm-cli/target/
+          touch "/Users/runner/Library/Application Support/warp/packages/samm/testfile"
         shell: bash
 
       - name: Integration tests for native images
