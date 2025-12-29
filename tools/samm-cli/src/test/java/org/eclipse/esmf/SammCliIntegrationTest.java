@@ -58,6 +58,7 @@ public class SammCliIntegrationTest extends SammCliAbstractTest {
          return new ExecutableJarLauncher( new File( jarFile ), List.of( "-Djava.awt.headless=true" ) );
       } else {
          String binary = System.getProperty( "binary" );
+         System.out.println( "Using binary: " + binary );
          if ( System.getProperty( "os.name" ).startsWith( "Windows" ) ) {
             binary = binary.replace( "/", "\\" );
             binary = binary + ".exe";

@@ -83,20 +83,15 @@ jobs:
           tar -xvf jre.tar.gz
           cp -r ./jdk-21.0.7+6-jre/* ./${bundle}/jre
           cp tools/samm-cli/target/samm-cli-DEV-SNAPSHOT.jar ./${bundle}/
+          
+          ls -la ./${bundle}
 
           cat <<EOF > ./${bundle}/run.sh
           #!/usr/bin/env bash
-          
-          echo "BASH_SOURCE=${BASH_SOURCE[0]}"
-          echo "0=$0"
-          echo "PWD=$PWD"
-          
-          SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-          echo "SCRIPT_DIR=$SCRIPT_DIR"
-          
-          ls -l "$SCRIPT_DIR/jre/bin/java"
-          
-          "$SCRIPT_DIR/jre/bin/java" -jar "$SCRIPT_DIR/samm-cli-DEV-SNAPSHOT.jar" "$@"
+
+          HERE=\${BASH_SOURCE%/*}
+
+          "\$HERE/jre/bin/java" -jar "\$HERE/samm-cli-DEV-SNAPSHOT.jar" "\$@"
           EOF
           chmod +x ./${bundle}/run.sh
 
