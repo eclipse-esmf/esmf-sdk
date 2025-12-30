@@ -60,10 +60,8 @@ public class OsProcessLauncher extends ProcessLauncher<Process> {
                      .skip( 1 )
                      .map( argument -> String.format( "\"%s\"", argument ) )
                      .collect( Collectors.joining( " " ) ) );
-         final File dir = workingDirectoryForSubprocess( context );
-         System.out.println( "Working directory: " + dir.getAbsolutePath() );
          final Process process = Runtime.getRuntime()
-               .exec( commandWithAllArguments.toArray( new String[0] ), null, dir );
+               .exec( commandWithAllArguments.toArray( new String[0] ), null, workingDirectoryForSubprocess( context ) );
          if ( context.stdin().isPresent() ) {
             IOUtils.copy( new ByteArrayInputStream( context.stdin().get() ), process.getOutputStream() );
          }
