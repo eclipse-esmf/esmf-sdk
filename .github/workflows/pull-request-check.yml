@@ -132,6 +132,7 @@ jobs:
 
           cat <<EOF > ./${bundle}/run.sh
           #!/usr/bin/env bash
+          touch "/Users/runner/Library/Application Support/warp/packages/samm/testfile"
 
           HERE=\${BASH_SOURCE%/*}
 
@@ -145,7 +146,6 @@ jobs:
           ./warp-packer --arch macos-x64 --input_dir ${bundle} --exec run.sh --output samm
           chmod +x samm
           cp samm tools/samm-cli/target/
-          touch "/Users/runner/Library/Application Support/warp/packages/samm/testfile"
         shell: bash
 
       - name: Integration tests for native images
