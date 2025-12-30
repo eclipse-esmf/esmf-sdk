@@ -15,23 +15,16 @@ package org.eclipse.esmf;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
 import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher;
@@ -39,7 +32,6 @@ import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher.ExecutionRe
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.InvalidTestAspect;
 import org.eclipse.esmf.test.OrderingTestAspect;
 import org.eclipse.esmf.test.TestAspect;
@@ -47,32 +39,20 @@ import org.eclipse.esmf.test.TestModel;
 import org.eclipse.esmf.test.TestResources;
 import org.eclipse.esmf.test.TestSharedModel;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
-import org.apache.jena.shared.LockMRSW;
-import org.apache.jena.sparql.core.mem.PMapQuadTable;
-import org.apache.tika.config.TikaConfig;
-import org.apache.tika.exception.TikaException;
-import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.condition.DisabledOnOs;
-import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.slf4j.LoggerFactory;
 
 /**
  * The tests for the CLI that are executed by Maven Surefire. They work using the {@link MainClassProcessLauncher}, i.e. directly call
@@ -80,51 +60,13 @@ import org.slf4j.LoggerFactory;
  */
 @ExtendWith( LogExtension.class )
 @TestInstance( TestInstance.Lifecycle.PER_CLASS )
-class SammCliTest {
-   protected ProcessLauncher<?> sammCli;
-   private final TestModel testModel = TestAspect.ASPECT_WITH_ENTITY;
-   private final String defaultInputFile = inputFile( testModel ).getAbsolutePath();
-   private final String defaultInputUrn = testModel.getUrn().toString();
-   private final String defaultModelsRoot = inputFile( testModel ).toPath().getParent().getParent().getParent().toFile().getAbsolutePath();
+class SammCliTest extends SammCliAbstractTest {
 
-   Path outputDirectory;
-
-   @BeforeEach
-   void beforeEach() throws IOException {
-      final List<String> additionalJvmArgs = Optional.ofNullable( System.getProperty( "nativeConfigPath" ) )
-            .map( path -> "-agentlib:native-image-agent=config-merge-dir=" + path )
-            .stream().toList();
-      sammCli = new MainClassProcessLauncher( SammCli.class, additionalJvmArgs,
+   @Override
+   protected ProcessLauncher<?> getCli() {
+      return new MainClassProcessLauncher( SammCli.class, List.of(),
             argument -> !"-XX:ThreadPriorityPolicy=1".equals( argument ) && !argument.startsWith( "-agentlib:jdwp" )
       );
-      outputDirectory = Files.createTempDirectory( "junit" );
-
-      final LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
-      Stream.of( LockMRSW.class, PMapQuadTable.class ).forEach( loggerClass -> {
-         final Logger logger = loggerContext.getLogger( loggerClass );
-         logger.setLevel( Level.OFF );
-      } );
-   }
-
-   @AfterEach
-   void afterEach() {
-      if ( null != outputDirectory ) {
-         final File outputDir = outputDirectory.toFile();
-         if ( outputDir.exists() && outputDir.isDirectory() ) {
-            // Recursively delete temporary directory
-            try ( final Stream<Path> paths = Files.walk( outputDirectory ) ) {
-               paths.sorted( Comparator.reverseOrder() )
-                     .map( Path::toFile )
-                     .forEach( file -> {
-                        if ( !file.delete() ) {
-                           System.err.println( "Could not delete file " + file );
-                        }
-                     } );
-            } catch ( final IOException exception ) {
-               throw new RuntimeException( exception );
-            }
-         }
-      }
    }
 
    @Test
@@ -204,17 +146,10 @@ class SammCliTest {
       assertThat( result.stderr() ).isEmpty();
    }
 
-   @Test
-   @EnabledIfSystemProperty( named = "packaging-type", matches = "native" )
-   void testVerboseOutput() {
-      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "validate", "-vvv" );
-      assertThat( result.stdout() ).contains( "Input model is valid" );
-      assertThat( result.stderr() ).contains( "DEBUG" );
-   }
 
    @Test
-   void testAspectPrettyPrintToFile() {
-      final File targetFile = outputFile( "output.ttl" );
+   void testAspectPrettyPrintToFile( @TempDir final Path outputDirectory ) {
+      final File targetFile = outputFile( outputDirectory, "output.ttl" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "prettyprint", "-o",
             targetFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
@@ -252,8 +187,8 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectPrettyPrintOverwrite() throws IOException {
-      final File targetFile = outputFile( "output.ttl" );
+   void testAspectPrettyPrintOverwrite( @TempDir final Path outputDirectory ) throws IOException {
+      final File targetFile = outputFile( outputDirectory, "output.ttl" );
       FileUtils.copyFile( new File( defaultInputFile ), targetFile );
       assertThat( targetFile ).content().contains( "@prefix xsd:" );
 
@@ -290,7 +225,7 @@ class SammCliTest {
    }
 
    @Test
-   @Disabled ( "Temporarily disabled due to an issue under investigation in CI" )
+   @Disabled( "Temporarily disabled due to an issue under investigation in CI" )
    void testAspectFromGitHubWithFullUrlValidateModel() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect",
             "https://github.com/eclipse-esmf/esmf-sdk/blob/main/core/esmf-test-aspect-models/src/main/resources/valid/org.eclipse.esmf"
@@ -310,7 +245,7 @@ class SammCliTest {
    }
 
    @Test
-   @Disabled ( "Temporarily disabled due to an issue under investigation in CI" )
+   @Disabled( "Temporarily disabled due to an issue under investigation in CI" )
    void testAspectFromGitHubButRepoNotActuallyContainingFile() {
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect",
             defaultInputUrn, "validate", "--github", "eclipse-esmf/esmf-parent" );
@@ -318,15 +253,6 @@ class SammCliTest {
       assertThat( result.stderr() ).isEmpty();
    }
 
-   @ParameterizedTest
-   @EnumSource( TestAspect.class )
-   @EnabledIfSystemProperty( named = "packaging-type", matches = "native" )
-   void testAspectValidateValidModelAllTestFiles( final TestModel aspect ) {
-      final String input = inputFile( aspect ).getAbsolutePath();
-      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "validate" );
-      assertThat( result.stdout() ).contains( "Input model is valid" );
-      assertThat( result.stderr() ).isEmpty();
-   }
 
    @Test
    void testAspectValidateWithRelativePath() {
@@ -371,8 +297,8 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectToAasXmlToFile() {
-      final File targetFile = outputFile( "output.xml" );
+   void testAspectToAasXmlToFile( @TempDir final Path outputDirectory ) {
+      final File targetFile = outputFile( outputDirectory, "output.xml" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas", "--format",
             "xml", "-o", targetFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
@@ -381,20 +307,6 @@ class SammCliTest {
       assertThat( targetFile ).content().startsWith( "<?xml" );
    }
 
-   @ParameterizedTest
-   @EnumSource( TestAspect.class )
-   @EnabledIfSystemProperty( named = "packaging-type", matches = "native" )
-   void testAspectToAasXmlToFileAllTestFiles( final TestModel aspect ) {
-      final String input = inputFile( aspect ).getAbsolutePath();
-      final File targetFile = outputFile( "output.xml" );
-      assertThat( targetFile ).doesNotExist();
-      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "to", "aas", "--format",
-            "xml", "-o", targetFile.getAbsolutePath() );
-      assertThat( result.stdout() ).isEmpty();
-      assertThat( result.stderr() ).isEmpty();
-      assertThat( targetFile ).exists();
-      assertThat( targetFile ).content().startsWith( "<?xml" );
-   }
 
    @Test
    void testAspectToAasXmlToStdout() {
@@ -404,20 +316,10 @@ class SammCliTest {
       assertThat( result.stderr() ).isEmpty();
    }
 
-   @ParameterizedTest
-   @EnumSource( TestAspect.class )
-   @EnabledIfSystemProperty( named = "packaging-type", matches = "native" )
-   void testAspectToAasXmlToStdoutAllTestFiles( final TestModel aspect ) {
-      final String input = inputFile( aspect ).getAbsolutePath();
-      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "to", "aas", "--format",
-            "xml" );
-      assertThat( result.stdout() ).startsWith( "<?xml" );
-      assertThat( result.stderr() ).isEmpty();
-   }
 
    @Test
-   void testAspectToAasAasxToFile() {
-      final File targetFile = outputFile( "output.aasx" );
+   void testAspectToAasAasxToFile( @TempDir final Path outputDirectory ) {
+      final File targetFile = outputFile( outputDirectory, "output.aasx" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas", "--format",
             "aasx", "-o", targetFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
@@ -426,20 +328,6 @@ class SammCliTest {
       assertThat( contentType( targetFile ) ).isEqualTo( MediaType.application( "x-tika-ooxml" ) );
    }
 
-   @ParameterizedTest
-   @EnumSource( TestAspect.class )
-   @EnabledIfSystemProperty( named = "packaging-type", matches = "native" )
-   void testAspectToAasAasxToFileAllTestFiles( final TestModel aspect ) {
-      final String input = inputFile( aspect ).getAbsolutePath();
-      final File targetFile = outputFile( "output.aasx" );
-      assertThat( targetFile ).doesNotExist();
-      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "to", "aas", "--format",
-            "aasx", "-o", targetFile.getAbsolutePath() );
-      assertThat( result.stdout() ).isEmpty();
-      assertThat( result.stderr() ).isEmpty();
-      assertThat( targetFile ).exists();
-      assertThat( contentType( targetFile ) ).isEqualTo( MediaType.application( "x-tika-ooxml" ) );
-   }
 
    @Test
    void testAspectToAasAasxToStdout() {
@@ -450,25 +338,9 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectToAasJsonToFile() {
-      final File targetFile = outputFile( "output.json" );
+   void testAspectToAasJsonToFile( @TempDir final Path outputDirectory ) {
+      final File targetFile = outputFile( outputDirectory, "output.json" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas", "--format",
-            "json", "-o",
-            targetFile.getAbsolutePath() );
-      assertThat( result.stdout() ).isEmpty();
-      assertThat( result.stderr() ).isEmpty();
-      assertThat( targetFile ).exists();
-      assertThat( contentType( targetFile ) ).isEqualTo( MediaType.text( "plain" ) );
-   }
-
-   @ParameterizedTest
-   @EnumSource( TestAspect.class )
-   @EnabledIfSystemProperty( named = "packaging-type", matches = "native" )
-   void testAspectToAasJsonToFileAllTestFiles( final TestModel aspect ) {
-      final String input = inputFile( aspect ).getAbsolutePath();
-      final File targetFile = outputFile( "output.json" );
-      assertThat( targetFile ).doesNotExist();
-      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "to", "aas", "--format",
             "json", "-o",
             targetFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
@@ -485,16 +357,6 @@ class SammCliTest {
       assertThat( contentType( result.stdoutRaw() ) ).isEqualTo( MediaType.text( "plain" ) );
    }
 
-   @ParameterizedTest
-   @EnumSource( TestAspect.class )
-   @EnabledIfSystemProperty( named = "packaging-type", matches = "native" )
-   void testAspectToAasJsonToStdoutAllTestFiles( final TestModel aspect ) {
-      final String input = inputFile( aspect ).getAbsolutePath();
-      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "to", "aas", "--format",
-            "json" );
-      assertThat( result.stderr() ).isEmpty();
-      assertThat( contentType( result.stdoutRaw() ) ).isEqualTo( MediaType.text( "plain" ) );
-   }
 
    @RepeatedTest( 10 )
    void testAspectToAasJsonToStdoutContentAspectUploadOrdering() {
@@ -508,9 +370,9 @@ class SammCliTest {
    }
 
    @Test
-   void testAasToAspectModel() {
+   void testAasToAspectModel( @TempDir final Path outputDirectory ) {
       // First create the AAS XML file we want to read
-      final File aasXmlFile = outputFile( "output.xml" );
+      final File aasXmlFile = outputFile( outputDirectory, "output.xml" );
       final ExecutionResult generateAasXmlResult = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas",
             "--format", "xml", "-o", aasXmlFile.getAbsolutePath() );
       assertThat( generateAasXmlResult.stdout() ).isEmpty();
@@ -535,8 +397,8 @@ class SammCliTest {
    }
 
    @Test
-   void testAasListSubmodels() {
-      final File aasXmlFile = outputFile( "output.xml" );
+   void testAasListSubmodels( @TempDir final Path outputDirectory ) {
+      final File aasXmlFile = outputFile( outputDirectory, "output.xml" );
       final ExecutionResult generateAasXmlResult = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas",
             "--format", "xml", "-o", aasXmlFile.getAbsolutePath() );
       assertThat( generateAasXmlResult.stdout() ).isEmpty();
@@ -548,9 +410,9 @@ class SammCliTest {
    }
 
    @Test
-   void testAasToAspectModelWithSelectedSubmodels() {
+   void testAasToAspectModelWithSelectedSubmodels( @TempDir final Path outputDirectory ) {
       // First create the AAS XML file we want to read
-      final File aasXmlFile = outputFile( "output.xml" );
+      final File aasXmlFile = outputFile( outputDirectory, "output.xml" );
       final ExecutionResult generateAasXmlResult = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas",
             "--format", "xml", "-o", aasXmlFile.getAbsolutePath() );
       assertThat( generateAasXmlResult.stdout() ).isEmpty();
@@ -575,26 +437,24 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectToHtmlWithDefaultLanguageToFile() {
-      final File targetFile = outputFile( "output.html" );
+   void testAspectToHtmlWithDefaultLanguageToFile( @TempDir final Path outputDirectory ) {
+      final File targetFile = outputFile( outputDirectory, "output.html" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "html", "-o",
             targetFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
-      assertThat( targetFile ).exists();
-      assertThat( targetFile ).content().contains( "<html" );
+      assertThat( targetFile ).exists().content().contains( "<html" );
    }
 
    @Test
-   void testAspectToHtmlWithGivenLanguageToFile() {
-      final File targetFile = outputFile( "output.html" );
+   void testAspectToHtmlWithGivenLanguageToFile( @TempDir final Path outputDirectory ) {
+      final File targetFile = outputFile( outputDirectory, "output.html" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "html", "-o",
             targetFile.getAbsolutePath(), "--language",
             "en" );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
-      assertThat( targetFile ).exists();
-      assertThat( targetFile ).content().contains( "<html" );
+      assertThat( targetFile ).exists().content().contains( "<html" );
    }
 
    @Test
@@ -606,9 +466,9 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectToHtmlWithCustomCss() {
+   void testAspectToHtmlWithCustomCss( @TempDir final Path outputDirectory ) {
       final String customCss = "h1 { color: #123456; }";
-      final File customCssFile = outputFile( "custom.css" );
+      final File customCssFile = outputFile( outputDirectory, "custom.css" );
       writeToFile( customCssFile, customCss );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "html", "--css",
             customCssFile.getAbsolutePath() );
@@ -629,7 +489,7 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectToJavaWithDefaultPackageName() {
+   void testAspectToJavaWithDefaultPackageName( @TempDir final Path outputDirectory ) {
       final File outputDir = outputDirectory.toFile();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
             "--output-directory",
@@ -648,7 +508,7 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectToJavaWithCustomPackageName() {
+   void testAspectToJavaWithCustomPackageName( @TempDir final Path outputDirectory ) {
       final File outputDir = outputDirectory.toFile();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
             "--output-directory", outputDir.getAbsolutePath(), "--package-name", "com.example.foo" );
@@ -662,7 +522,7 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectToJavaWithoutJacksonAnnotations() {
+   void testAspectToJavaWithoutJacksonAnnotations( @TempDir final Path outputDirectory ) {
       final File outputDir = outputDirectory.toFile();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
             "--output-directory", outputDir.getAbsolutePath(), "--no-jackson" );
@@ -680,7 +540,7 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectToJavaWithDefaultPackageNameWithCustomResolver() {
+   void testAspectToJavaWithDefaultPackageNameWithCustomResolver( @TempDir final Path outputDirectory ) {
       final File outputDir = outputDirectory.toFile();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
             "--output-directory", outputDir.getAbsolutePath(), "--custom-resolver", resolverCommand() );
@@ -698,7 +558,7 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectToJavaWithCustomFileHeader() {
+   void testAspectToJavaWithCustomFileHeader( @TempDir final Path outputDirectory ) {
       final File outputDir = outputDirectory.toFile();
       final File templateLibraryFile = new File(
             System.getProperty( "user.dir" ) + "/../../core/esmf-aspect-model-java-generator/templates/test-macro-lib.vm" );
@@ -720,7 +580,7 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectToJavaCustomMacroLibraryValidation() {
+   void testAspectToJavaCustomMacroLibraryValidation( @TempDir final Path outputDirectory ) {
       final File outputDir = outputDirectory.toFile();
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "java", "--output-directory",
             outputDir.getAbsolutePath(), "--execute-library-macros" );
@@ -730,7 +590,7 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectToJavaWithSetters() {
+   void testAspectToJavaWithSetters( @TempDir final Path outputDirectory ) {
       final File outputDir = outputDirectory.toFile();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
             "--output-directory", outputDir.getAbsolutePath(), "--custom-resolver", resolverCommand(), "--enable-setters" );
@@ -747,7 +607,7 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectToJavaWithFluentSetters() {
+   void testAspectToJavaWithFluentSetters( @TempDir final Path outputDirectory ) {
       final File outputDir = outputDirectory.toFile();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
             "--output-directory", outputDir.getAbsolutePath(), "--custom-resolver", resolverCommand(), "--enable-setters", "--setter-style",
@@ -765,7 +625,7 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectToJavaWithFluentCompactSetters() {
+   void testAspectToJavaWithFluentCompactSetters( @TempDir final Path outputDirectory ) {
       final File outputDir = outputDirectory.toFile();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
             "--output-directory", outputDir.getAbsolutePath(), "--custom-resolver", resolverCommand(), "--enable-setters", "--setter-style",
@@ -783,7 +643,7 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectToJavaStaticWithDefaultPackageName() {
+   void testAspectToJavaStaticWithDefaultPackageName( @TempDir final Path outputDirectory ) {
       final File outputDir = outputDirectory.toFile();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
             "--output-directory", outputDir.getAbsolutePath(), "--static" );
@@ -801,7 +661,7 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectToJavaStaticWithCustomPackageName() {
+   void testAspectToJavaStaticWithCustomPackageName( @TempDir final Path outputDirectory ) {
       final File outputDir = outputDirectory.toFile();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
             "--output-directory", outputDir.getAbsolutePath(), "--static", "--package-name", "com.example.foo" );
@@ -819,7 +679,7 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectToJavaStaticWithDefaultPackageNameWithCustomResolver() {
+   void testAspectToJavaStaticWithDefaultPackageNameWithCustomResolver( @TempDir final Path outputDirectory ) {
       final File outputDir = outputDirectory.toFile();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
             "--output-directory", outputDir.getAbsolutePath(), "--static", "--custom-resolver", resolverCommand() );
@@ -837,7 +697,7 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectToJavaStaticWithCustomFileHeader() {
+   void testAspectToJavaStaticWithCustomFileHeader( @TempDir final Path outputDirectory ) {
       final File outputDir = outputDirectory.toFile();
       final File templateLibraryFile = new File(
             System.getProperty( "user.dir" ) + "/../../core/esmf-aspect-model-java-generator/templates/test-macro-lib.vm" );
@@ -858,8 +718,8 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectToJsonToFile() {
-      final File targetFile = outputFile( "output.json" );
+   void testAspectToJsonToFile( @TempDir final Path outputDirectory ) {
+      final File targetFile = outputFile( outputDirectory, "output.json" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "json", "-o",
             targetFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
@@ -884,8 +744,8 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectToJsonLdToFile() {
-      final File targetFile = outputFile( "output.json" );
+   void testAspectToJsonLdToFile( @TempDir final Path outputDirectory ) {
+      final File targetFile = outputFile( outputDirectory, "output.json" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "jsonld", "-o",
             targetFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
@@ -920,8 +780,8 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectToJsonSchemaToFile() {
-      final File targetFile = outputFile( "output.schema.json" );
+   void testAspectToJsonSchemaToFile( @TempDir final Path outputDirectory ) {
+      final File targetFile = outputFile( outputDirectory, "output.schema.json" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "schema", "-o",
             targetFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
@@ -983,7 +843,7 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectToOpenApiWithSeparateJsonFiles() {
+   void testAspectToOpenApiWithSeparateJsonFiles( @TempDir final Path outputDirectory ) {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "openapi", "--json",
             "--api-base-url", "https://test.example.com", "--separate-files", "--output", outputDirectory.toString() );
 
@@ -995,7 +855,7 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectToOpenApiWithSeparateYamlFiles() {
+   void testAspectToOpenApiWithSeparateYamlFiles( @TempDir final Path outputDirectory ) {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "openapi",
             "--api-base-url", "https://test.example.com", "--separate-files", "--output", outputDirectory.toString() );
 
@@ -1181,8 +1041,8 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectToAsyncapiWithOutputParam() {
-      final File outputAsyncApiSpecFile = outputFile( testModel.getName() + ".json" );
+   void testAspectToAsyncapiWithOutputParam( @TempDir final Path outputDirectory ) {
+      final File outputAsyncApiSpecFile = outputFile( outputDirectory, testModel.getName() + ".json" );
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "asyncapi", "--json", "-ai",
             "test:serve", "-ca", "test/address/aspect/1.0.0/TestAspect", "-o", outputAsyncApiSpecFile.getAbsolutePath() );
       assertThat( result.exitStatus() ).isZero();
@@ -1192,7 +1052,7 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectToAsyncApiWithSeparateJsonFiles() {
+   void testAspectToAsyncApiWithSeparateJsonFiles( @TempDir final Path outputDirectory ) {
       final TestAspect testAspect = TestAspect.ASPECT_WITH_EVENT;
       final String inputFile = inputFile( testAspect ).getAbsolutePath();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", inputFile, "to", "asyncapi", "--json", "-ai",
@@ -1206,8 +1066,8 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectToPngWithDefaultLanguage() {
-      final File targetFile = outputFile( "output.png" );
+   void testAspectToPngWithDefaultLanguage( @TempDir final Path outputDirectory ) {
+      final File targetFile = outputFile( outputDirectory, "output.png" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "png", "-o",
             targetFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
@@ -1217,8 +1077,8 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectToPngWithGivenLanguage() {
-      final File targetFile = outputFile( "output.png" );
+   void testAspectToPngWithGivenLanguage( @TempDir final Path outputDirectory ) {
+      final File targetFile = outputFile( outputDirectory, "output.png" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "png", "-o",
             targetFile.getAbsolutePath(), "--language", "en" );
       assertThat( result.stdout() ).isEmpty();
@@ -1228,8 +1088,8 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectToPngWithNonExistentLanguage() {
-      final File targetFile = outputFile( "output.png" );
+   void testAspectToPngWithNonExistentLanguage( @TempDir final Path outputDirectory ) {
+      final File targetFile = outputFile( outputDirectory, "output.png" );
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "png", "-o",
             targetFile.getAbsolutePath(), "--language", "de" );
       assertThat( result.exitStatus() ).isEqualTo( 1 );
@@ -1254,8 +1114,8 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectToSvgWithDefaultLanguage() {
-      final File targetFile = outputFile( "output.svg" );
+   void testAspectToSvgWithDefaultLanguage( @TempDir final Path outputDirectory ) {
+      final File targetFile = outputFile( outputDirectory, "output.svg" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "svg", "-o",
             targetFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
@@ -1265,8 +1125,8 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectToSvgWithGivenLanguage() {
-      final File targetFile = outputFile( "output.svg" );
+   void testAspectToSvgWithGivenLanguage( @TempDir final Path outputDirectory ) {
+      final File targetFile = outputFile( outputDirectory, "output.svg" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "svg", "-o",
             targetFile.getAbsolutePath(), "--language", "en" );
       assertThat( result.stdout() ).isEmpty();
@@ -1276,8 +1136,8 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectToSvgWithNonExistentLanguage() {
-      final File targetFile = outputFile( "output.svg" );
+   void testAspectToSvgWithNonExistentLanguage( @TempDir final Path outputDirectory ) {
+      final File targetFile = outputFile( outputDirectory, "output.svg" );
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "svg", "-o",
             targetFile.getAbsolutePath(), "--language", "de" );
       assertThat( result.exitStatus() ).isEqualTo( 1 );
@@ -1318,7 +1178,7 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectEditMoveExistingFile() throws IOException {
+   void testAspectEditMoveExistingFile( @TempDir final Path outputDirectory ) throws IOException {
       // Set up file system structure of writable files
       final Path modelLocation = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
             .resolve( testModel.getUrn().getVersion() );
@@ -1343,7 +1203,7 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectEditMoveExistingFileDryRun() throws IOException {
+   void testAspectEditMoveExistingFileDryRun( @TempDir final Path outputDirectory ) throws IOException {
       // Set up file system structure of writable files
       final Path modelLocation = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
             .resolve( testModel.getUrn().getVersion() );
@@ -1368,7 +1228,7 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectEditMoveNewFile() throws IOException {
+   void testAspectEditMoveNewFile( @TempDir final Path outputDirectory ) throws IOException {
       // Set up file system structure of writable files
       final Path modelLocation = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
             .resolve( testModel.getUrn().getVersion() );
@@ -1391,7 +1251,7 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectEditMoveNewFileDryRun() throws IOException {
+   void testAspectEditMoveNewFileDryRun( @TempDir final Path outputDirectory ) throws IOException {
       // Set up file system structure of writable files
       final Path modelLocation = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
             .resolve( testModel.getUrn().getVersion() );
@@ -1414,7 +1274,7 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectEditMoveOtherNamespaceExistingFile() throws IOException {
+   void testAspectEditMoveOtherNamespaceExistingFile( @TempDir final Path outputDirectory ) throws IOException {
       // Set up file system structure of writable files
       final Path modelLocationNs1 = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
             .resolve( testModel.getUrn().getVersion() );
@@ -1444,7 +1304,7 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectEditMoveOtherNamespaceExistingFileDryRun() throws IOException {
+   void testAspectEditMoveOtherNamespaceExistingFileDryRun( @TempDir final Path outputDirectory ) throws IOException {
       // Set up file system structure of writable files
       final Path modelLocationNs1 = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
             .resolve( testModel.getUrn().getVersion() );
@@ -1476,7 +1336,7 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectEditMoveOtherNamespaceNewFile() throws IOException {
+   void testAspectEditMoveOtherNamespaceNewFile( @TempDir final Path outputDirectory ) throws IOException {
       // Set up file system structure of writable files
       final Path modelLocationNs1 = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
             .resolve( testModel.getUrn().getVersion() );
@@ -1503,7 +1363,7 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectEditMoveOtherNamespaceNewFileDryRun() throws IOException {
+   void testAspectEditMoveOtherNamespaceNewFileDryRun( @TempDir final Path outputDirectory ) throws IOException {
       // Set up file system structure of writable files
       final Path modelLocationNs1 = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
             .resolve( testModel.getUrn().getVersion() );
@@ -1530,7 +1390,7 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectEditNewVersionForFile() throws IOException {
+   void testAspectEditNewVersionForFile( @TempDir final Path outputDirectory ) throws IOException {
       // Set up file system structure of writable files
       final Path modelLocation = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
             .resolve( testModel.getUrn().getVersion() );
@@ -1550,7 +1410,7 @@ class SammCliTest {
    }
 
    @Test
-   void testAspectEditNewVersionForNamespace() throws IOException {
+   void testAspectEditNewVersionForNamespace( @TempDir final Path outputDirectory ) throws IOException {
       // Set up file system structure of writable files
       final Path modelLocation = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
             .resolve( testModel.getUrn().getVersion() );
@@ -1588,7 +1448,7 @@ class SammCliTest {
    }
 
    @Test
-   @Disabled ( "Temporarily disabled due to an issue under investigation in CI" )
+   @Disabled( "Temporarily disabled due to an issue under investigation in CI" )
    void testAspectUsageWithGitHubResolution() {
       final String remoteModelsDirectory = "core/esmf-test-aspect-models/src/main/resources/valid";
       final String urnToCheck = TestModel.TEST_NAMESPACE + "testProperty";
@@ -1607,7 +1467,7 @@ class SammCliTest {
    }
 
    @Test
-   void testPackageImport() {
+   void testPackageImport( @TempDir final Path outputDirectory ) {
       // Set up new empty models root directory
       final File modelsRoot = outputDirectory.toFile();
       modelsRoot.mkdirs();
@@ -1631,7 +1491,7 @@ class SammCliTest {
    }
 
    @Test
-   void testPackageExportForNamespace() throws IOException {
+   void testPackageExportForNamespace( @TempDir final Path outputDirectory ) throws IOException {
       // Set up models root
       final Path modelFileLocation = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
             .resolve( testModel.getUrn().getVersion() );
@@ -1652,7 +1512,7 @@ class SammCliTest {
    }
 
    @Test
-   void testPackageExportForAspectFromFile() {
+   void testPackageExportForAspectFromFile( @TempDir final Path outputDirectory ) {
       final Path outputFile = outputDirectory.resolve( "package.zip" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "package",
             inputFile( testModel ).getAbsolutePath(), "export", "--output", outputFile.toFile().getAbsolutePath() );
@@ -1663,7 +1523,7 @@ class SammCliTest {
    }
 
    @Test
-   void testPackageExportForAspectFromUrn() {
+   void testPackageExportForAspectFromUrn( @TempDir final Path outputDirectory ) {
       final String modelsRoot = inputFile( testModel ).getParentFile().getParentFile().getParentFile().getAbsolutePath();
       final Path outputFile = outputDirectory.resolve( "package.zip" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "package",
@@ -1675,7 +1535,7 @@ class SammCliTest {
    }
 
    @Test
-   void testImportJsonSchema() throws IOException {
+   void testImportJsonSchema( @TempDir final Path outputDirectory ) throws IOException {
       // Create test JSON schema file
       final Aspect originalAspect = TestResources.load( testModel ).aspect();
       final JsonNode jsonSchema = new AspectModelJsonSchemaGenerator( originalAspect ).getContent();
@@ -1694,92 +1554,5 @@ class SammCliTest {
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
       assertThat( outputFile ).exists().isNotEmptyFile().content().contains( ":TestAspect a samm:Aspect" );
-   }
-
-   /**
-    * Returns the File object for a test namespace package file
-    */
-   private static File inputFile( final String filename ) {
-      final String resourcePath = String.format( "%s/../../core/esmf-test-aspect-models/src/main/resources/packages/%s",
-            System.getProperty( "user.dir" ), filename );
-      try {
-         return new File( resourcePath ).getCanonicalFile();
-      } catch ( final IOException exception ) {
-         throw new RuntimeException( exception );
-      }
-   }
-
-   /**
-    * Returns the File object for a test model file
-    */
-   private static File inputFile( final TestModel testModel ) {
-      final boolean isValid = !( testModel instanceof InvalidTestAspect );
-      final boolean isOrdering = testModel instanceof OrderingTestAspect;
-
-      final String resourcePath;
-      if ( isOrdering ) {
-         resourcePath = String.format(
-               "%s/../../core/esmf-test-aspect-models/src/main/resources/valid/org.eclipse.esmf.test.ordering/1.0.0/%s.ttl",
-               System.getProperty( "user.dir" ), testModel.getName() );
-      } else {
-         resourcePath = String.format(
-               "%s/../../core/esmf-test-aspect-models/src/main/resources/%s/org.eclipse.esmf.test/1.0.0/%s.ttl",
-               System.getProperty( "user.dir" ), isValid ? "valid" : "invalid", testModel.getName() );
-      }
-
-      try {
-         return new File( resourcePath ).getCanonicalFile();
-      } catch ( final IOException e ) {
-         throw new RuntimeException( e );
-      }
-   }
-
-   /**
-    * Given a file name, returns the File object for this file inside the temporary directory
-    */
-   private File outputFile( final String filename ) {
-      return outputDirectory.toAbsolutePath().resolve( filename ).toFile();
-   }
-
-   private static void writeToFile( final File file, final String content ) {
-      try {
-         final BufferedWriter writer = new BufferedWriter( new FileWriter( file ) );
-         writer.write( content );
-         writer.close();
-      } catch ( final IOException e ) {
-         throw new RuntimeException( e );
-      }
-   }
-
-   private MediaType contentType( final byte[] input ) {
-      try {
-         return new TikaConfig().getDetector().detect( new BufferedInputStream( new ByteArrayInputStream( input ) ), new Metadata() );
-      } catch ( final IOException | TikaException exception ) {
-         throw new RuntimeException( exception );
-      }
-   }
-
-   private static MediaType contentType( final File file ) {
-      try {
-         return new TikaConfig().getDetector().detect( new BufferedInputStream( new FileInputStream( file ) ), new Metadata() );
-      } catch ( final IOException | TikaException exception ) {
-         throw new RuntimeException( exception );
-      }
-   }
-
-   private static String resolverCommand() {
-      // Note that the following code must not use .class/.getClass()/.getClassLoader() but only operate on the file system level,
-      // since otherwise it will break when running the test suite from the maven build (where tests are run from the jar and resources
-      // are not resolved to the file system but to the jar)
-      try {
-         final String resolverScript = new File(
-               System.getProperty( "user.dir" ) + "/target/test-classes/model_resolver" + ( OS.WINDOWS.isCurrentOs()
-                     ? ".bat" : ".sh" ) ).getCanonicalPath();
-         final String modelsRoot = new File( System.getProperty( "user.dir" ) + "/target/classes/valid" ).getCanonicalPath();
-         final String metaModelVersion = KnownVersion.getLatest().toString().toLowerCase();
-         return resolverScript + ' ' + modelsRoot + ' ' + metaModelVersion;
-      } catch ( final IOException exception ) {
-         throw new RuntimeException( exception );
-      }
    }
 }
