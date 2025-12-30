@@ -67,10 +67,10 @@ jobs:
           export MAVEN_OPTS="-Xmx4096m"
           export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
           # Actual build of core SDK
-          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Dmaven.wagon.httpconnectionManager.ttlSeconds=60 -DskipTests
+          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
           # Build samm-cli executable jar
           unset JAVA_TOOL_OPTIONS
-          mvn -B -pl tools/samm-cli clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60 -DskipTests
+          mvn -B -pl tools/samm-cli clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
         shell: bash
 
       - name: Build native image (Linux)
@@ -132,7 +132,6 @@ jobs:
 
           cat <<EOF > ./${bundle}/run.sh
           #!/usr/bin/env bash
-          touch "/Users/runner/Library/Application Support/warp/packages/samm/testfile"
 
           HERE=\${BASH_SOURCE%/*}
 
@@ -146,14 +145,6 @@ jobs:
           ./warp-packer --arch macos-x64 --input_dir ${bundle} --exec run.sh --output samm
           chmod +x samm
           cp samm tools/samm-cli/target/
-        shell: bash
-
-      - name: Integration tests for native images
-        run: |
-          export MAVEN_OPTS="-Xmx4096m"
-          # Run integration tests
-          cd tools/samm-cli
-          mvn -B -Dskip.maven.failsafe=false -Dpackaging-type=binary failsafe:integration-test
         shell: bash
 
       - name: Create convenience batch file
@@ -173,7 +164,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           cd tools/samm-cli
-          mvn -B -Dskip.maven.failsafe=false failsafe:integration-test
+          mvn -B -Dskip.maven.failsafe=false failsafe:integration-test -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
 
       - name: Upload executable jar
         # We only need one OS job to upload the jar

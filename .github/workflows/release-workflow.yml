@@ -152,6 +152,11 @@ jobs:
           java-version: '21.0.7'
           overwrite-settings: false
 
+      - name: Test executable jar on Temurin
+        run: |
+          cd tools/samm-cli
+          mvn -B -Dskip.maven.failsafe=false failsafe:integration-test -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+
       - name: Upload staging directory and Linux binary
         uses: actions/upload-artifact@v4
         with:

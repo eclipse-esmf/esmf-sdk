@@ -368,10 +368,8 @@
             <configuration>
                <skipITs>${skip.maven.failsafe}</skipITs>
                <systemPropertyVariables>
-                  <packaging-type>${packaging-type}</packaging-type>
                   <executableJar>${project.build.directory}/${project.artifactId}-${project.version}.jar
                   </executableJar>
-                  <binary>${project.build.directory}/${binary-name}</binary>
                   <forkCount>1</forkCount>
                   <reuseForks>true</reuseForks>
                   <argLine>-Xmx4096m</argLine>

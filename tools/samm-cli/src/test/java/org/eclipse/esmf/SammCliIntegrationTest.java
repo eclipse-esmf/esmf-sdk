@@ -18,7 +18,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ProcessExecutionException;
 import org.eclipse.esmf.aspectmodel.resolver.process.BinaryLauncher;
@@ -28,7 +27,6 @@ import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
 
 import org.apache.tika.mime.MediaType;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,29 +48,14 @@ public class SammCliIntegrationTest extends SammCliAbstractTest {
 
    @Override
    protected ProcessLauncher<?> getCli() {
-      if ( Optional.ofNullable( System.getProperty( "packaging-type" ) ).orElse( "jar" ).equals( "jar" ) ) {
-         final String jarFile = System.getProperty( "executableJar" );
-         if ( jarFile == null || !new File( jarFile ).exists() ) {
-            throw new ProcessExecutionException( "Executable jar " + jarFile + " not found" );
-         }
-         return new ExecutableJarLauncher( new File( jarFile ), List.of( "-Djava.awt.headless=true" ) );
-      } else {
-         String binary = System.getProperty( "binary" );
-         System.out.println( "Using binary: " + binary );
-         if ( System.getProperty( "os.name" ).startsWith( "Windows" ) ) {
-            binary = binary.replace( "/", "\\" );
-            binary = binary + ".exe";
-         }
-         final File binaryFile = new File( binary );
-         if ( binary == null || !binaryFile.exists() ) {
-            throw new ProcessExecutionException( "Binary " + binary + " not found" );
-         }
-         return new BinaryLauncher( binaryFile );
+      final String jarFile = System.getProperty( "executableJar" );
+      if ( jarFile == null || !new File( jarFile ).exists() ) {
+         throw new ProcessExecutionException( "Executable jar " + jarFile + " not found" );
       }
+      return new ExecutableJarLauncher( new File( jarFile ), List.of( "-Djava.awt.headless=true" ) );
    }
 
    @Test
-   @Disabled( " Not working without native-image build, double check it" )
    void testVerboseOutput() {
       final ProcessLauncher.ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile,
             "validate", "-vvv" );
