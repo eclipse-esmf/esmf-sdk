@@ -323,6 +323,8 @@ jobs:
       # with the deployment info available
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       # Required to have Maven settings.xml set up correctly
       - name: Set up JDK 21
@@ -371,7 +373,7 @@ jobs:
           yq eval -i '.version = "${release_version}"' documentation/developer-guide/antora.yml
 
       - name: Commit version changes and push to upstream repository
-        uses: stefanzweifel/git-auto-commit-action@8756aa072ef5b4a080af5dc8fef36c5d586e521d # v5
+        uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7.1.0
         with:
           branch: ${{ env.release_branch_name }}
           commit_user_name: github-actions
