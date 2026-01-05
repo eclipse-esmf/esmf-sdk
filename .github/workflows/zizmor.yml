@@ -1,3 +1,6 @@
+#
+# Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH, Germany. All rights reserved.
+#
 name: GitHub Actions SAST (zizmor)
 
 on:
