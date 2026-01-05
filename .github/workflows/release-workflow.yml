@@ -100,7 +100,7 @@ jobs:
         run: |
           export MAVEN_OPTS="-Xmx4096m"
           export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
-          release_version=${{ github.event.inputs.release_version }}
+          release_version="$RELEASE_VERSION"
 
           # Required for reactor dependencies
           mvn clean install -DskipTests -Dmaven.javadoc.skip=true
@@ -127,9 +127,9 @@ jobs:
           # Create .tar.gz of samm-cli
           pushd tools/samm-cli/target
           chmod a+x samm
-          tar cfvz samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz samm *.so
+          tar cfvz samm-cli-${release_version}-linux-x86_64.tar.gz samm *.so
           popd
-          mv tools/samm-cli/target/samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz .
+          mv tools/samm-cli/target/samm-cli-${release_version}-linux-x86_64.tar.gz .
           cp tools/samm-cli/target/samm-cli-*.jar .
         env:
           PGP_KEY_PASSWORD: ${{ secrets.PGP_KEY_PASSWORD }}
@@ -189,7 +189,7 @@ jobs:
           export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
           # Required for reactor dependencies
           mvn clean install -DskipTests -Dmaven.javadoc.skip=true
-          mvn versions:set -DnewVersion=${{ github.event.inputs.release_version }}
+          mvn versions:set -DnewVersion=${ RELEASE_VERSION }
           mvn versions:commit
           # Actual build of core SDK
           mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
@@ -200,6 +200,7 @@ jobs:
 
       - name: Build native executable
         run: |
+          release_version="$RELEASE_VERSION"
           bundle="samm-bundle-$(date +%s)"
           mkdir ${bundle}
           curl -Lo jre.tar.gz https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.7%2B6/OpenJDK21U-jre_x64_mac_hotspot_21.0.7_6.tar.gz
@@ -220,7 +221,7 @@ jobs:
           chmod +x warp-packer
           ./warp-packer --arch macos-x64 --input_dir ${bundle} --exec run.sh --output samm
           chmod a+x samm
-          tar cfvz samm-cli-${{ github.event.inputs.release_version }}-macos-x86_64.tar.gz samm
+          tar cfvz samm-cli-${release_version}-macos-x86_64.tar.gz samm
         shell: bash
 
       - name: Upload Mac binary
@@ -273,9 +274,10 @@ jobs:
         run: |
           export MAVEN_OPTS="-Xmx4096m"
           export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
+          release_version="$RELEASE_VERSION"
           # Required for reactor dependencies
           mvn clean install -DskipTests -Dmaven.javadoc.skip=true
-          mvn versions:set -DnewVersion=${{ github.event.inputs.release_version }}
+          mvn versions:set -DnewVersion=${release_version}
           mvn versions:commit
 
           # Actual build of core SDK
@@ -341,16 +343,16 @@ jobs:
       - name: Set versions
         continue-on-error: true
         run: |
-          release_version=${{ github.event.inputs.release_version }}
+          release_version="$RELEASE_VERSION"
           release_branch_name=${release_version%.*}.x
           echo "release_branch_name=$release_branch_name" >> $GITHUB_ENV
 
           # Set version in pom.xml files
           mvn -B clean install -DskipTests -Dmaven.javadoc.skip=true
-          mvn -B versions:set -DnewVersion=${{ github.event.inputs.release_version }}
+          mvn -B versions:set -DnewVersion=${release_version}
           mvn -B versions:commit
           # Set version in Antora module
-          yq eval -i '.version = "${{ github.event.inputs.release_version }}"' documentation/developer-guide/antora.yml
+          yq eval -i '.version = "${release_version}"' documentation/developer-guide/antora.yml
 
       - name: Commit version changes and push to upstream repository
         uses: stefanzweifel/git-auto-commit-action@8756aa072ef5b4a080af5dc8fef36c5d586e521d # v5
@@ -406,9 +408,10 @@ jobs:
         run: |
           ARTIFACT_URL_WIN="https://api.github.com/repos/eclipse-esmf/esmf-sdk/actions/artifacts/$ARTIFACT_ID/zip"
           BRANCH_NAME="pre_release_configuration"
+          release_version="$RELEASE_VERSION"
 
           echo "artifact_url_win=$ARTIFACT_URL_WIN" > parameters.txt
-          echo "version=${{ github.event.inputs.release_version }}" >> parameters.txt
+          echo "version=${release_version}" >> parameters.txt
 
           git config --global user.email "github-actions@github.com"
           git config --global user.name "github-actions"
