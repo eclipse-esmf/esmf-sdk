@@ -81,7 +81,7 @@ jobs:
           mkdir -p "${bundle}/jre"
           curl -Lo jre.tar.gz https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.1%2B8/OpenJDK25U-jre_x64_linux_hotspot_25.0.1_8.tar.gz
           tar -xvf jre.tar.gz
-          cp -r ./jdk-§+8-jre/* ./${bundle}/jre
+          cp -r ./jdk-25.0.1+8-jre/* ./${bundle}/jre
           cp tools/samm-cli/target/samm-cli-DEV-SNAPSHOT.jar ./${bundle}/
           
           cat <<EOF > ./${bundle}/run.sh
