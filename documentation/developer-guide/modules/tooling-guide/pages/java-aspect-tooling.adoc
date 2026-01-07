@@ -45,7 +45,7 @@ https://docs.github.com/en/packages/working-with-a-github-packages-registry/work
 [[jdk-requirements]]
 == JDK requirements
 
-The esmf-sdk components are built with Java 21 and require a JDK >= 21 such as
+The esmf-sdk components are built with Java 25 and require a JDK >= 25 such as
 https://adoptium.net/[Adoptium Temurin].
 
 

@@ -32,7 +32,7 @@ jobs:
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
-          java-version: '21.0.7'
+          java-version: '25.0.1'
           distribution: 'temurin'
 
       - name: Cache Maven packages
@@ -79,9 +79,9 @@ jobs:
           bundle="samm-bundle-DEV-SNAPSHOT-$(date +%s)"
           mkdir ${bundle}
           mkdir -p "${bundle}/jre"
-          curl -Lo jre.tar.gz https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.7%2B6/OpenJDK21U-jre_x64_linux_hotspot_21.0.7_6.tar.gz
+          curl -Lo jre.tar.gz https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.1%2B8/OpenJDK25U-jre_x64_linux_hotspot_25.0.1_8.tar.gz
           tar -xvf jre.tar.gz
-          cp -r ./jdk-21.0.7+6-jre/* ./${bundle}/jre
+          cp -r ./jdk-§+8-jre/* ./${bundle}/jre
           cp tools/samm-cli/target/samm-cli-DEV-SNAPSHOT.jar ./${bundle}/
           
           cat <<EOF > ./${bundle}/run.sh
@@ -108,9 +108,9 @@ jobs:
           $bundle = "samm-bundle-DEV-SNAPSHOT-$([int][double]::Parse((Get-Date -UFormat %s)))"
           mkdir $bundle
           New-Item -ItemType Directory -Path "$bundle\jre" -Force
-          curl -Lo jre.zip https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.7%2B6/OpenJDK21U-jre_x64_windows_hotspot_21.0.7_6.zip
+          curl -Lo jre.zip https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.1%2B8/OpenJDK25U-jre_x64_windows_hotspot_25.0.1_8.zip
           tar -xf jre.zip
-          Copy-Item .\jdk-21.0.7+6-jre\* .\$bundle\jre -Recurse
+          Copy-Item .\jdk-25.0.1+8-jre\* .\$bundle\jre -Recurse
           Copy-Item tools\samm-cli\target\samm-cli-DEV-SNAPSHOT.jar .\$bundle\
 
           Set-Content -Path .\$bundle\run.bat -Value "@echo off`n%~dp0jre\bin\java -jar %~dp0samm-cli-DEV-SNAPSHOT.jar %*"
@@ -125,9 +125,9 @@ jobs:
         run: |
           bundle="samm-bundle-DEV-SNAPSHOT-$(date +%s)"
           mkdir ${bundle}
-          curl -Lo jre.tar.gz https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.7%2B6/OpenJDK21U-jre_x64_mac_hotspot_21.0.7_6.tar.gz
+          curl -Lo jre.tar.gz https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.1%2B8/OpenJDK25U-jre_x64_mac_hotspot_25.0.1_8.tar.gz
           tar -xvf jre.tar.gz
-          cp -r ./jdk-21.0.7+6-jre/Contents/Home ./${bundle}/jre
+          cp -r ./jdk-25.0.1+8-jre/Contents/Home ./${bundle}/jre
           cp tools/samm-cli/target/samm-cli-DEV-SNAPSHOT.jar ./${bundle}/
 
           cat <<EOF > ./${bundle}/run.sh
@@ -157,7 +157,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '21'
+          java-version: '25'
           overwrite-settings: false
 
       - name: Test executable jar on Temurin

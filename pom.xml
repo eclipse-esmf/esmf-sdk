@@ -76,6 +76,8 @@
       <build-time-sources>${project.basedir}/src-buildtime</build-time-sources>
       <generated-sources>${project.basedir}/src-gen</generated-sources>
       <graalvm-version>24.1.2</graalvm-version>
+      <java-target-version>25</java-target-version>
+      <java-source-version>25</java-source-version>
    </properties>
 
    <dependencyManagement>
@@ -242,8 +244,8 @@
                   <configuration>
                      <rules>
                         <requireJavaVersion>
-                           <version>21</version>
-                           <message>Java 21 or newer is required to build this project</message>
+                           <version>25</version>
+                           <message>Java 25 or newer is required to build this project</message>
                         </requireJavaVersion>
                      </rules>
                   </configuration>

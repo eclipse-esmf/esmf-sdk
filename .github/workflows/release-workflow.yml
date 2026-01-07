@@ -16,11 +16,11 @@ jobs:
           submodules: recursive
 
       # Required for Maven
-      - name: Set up JDK 21
+      - name: Set up JDK 25
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '21.0.7'
+          java-version: '25.0.1'
           overwrite-settings: false
 
       - name: Setup Git
@@ -59,7 +59,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '21.0.7'
+          java-version: '25.0.1'
           server-id: central
           # The following variables are defined in https://github.com/eclipse-esmf/.eclipsefdn/blob/main/otterdog/eclipse-esmf.jsonnet
           gpg-private-key: ${{ secrets.PGP_KEY }}
@@ -71,7 +71,7 @@ jobs:
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
-          java-version: '21.0.7'
+          java-version: '25.0.1'
           distribution: 'temurin'
 
       - name: Cache Maven packages
@@ -120,9 +120,9 @@ jobs:
           bundle="samm-bundle-${{ github.event.inputs.release_version }}-linux-$(date +%s)"
           mkdir ${bundle}
           mkdir -p ${bundle}/jre
-          curl -Lo jre.tar.gz https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.7%2B6/OpenJDK21U-jre_x64_linux_hotspot_21.0.7_6.tar.gz
+          curl -Lo jre.tar.gz https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.1%2B8/OpenJDK25U-jre_x64_linux_hotspot_25.0.1_8.tar.gz
           tar -xvf jre.tar.gz
-          cp -r ./jdk-21.0.7+6-jre/* ./${bundle}/jre
+          cp -r ./jdk-25.0.1+8-jre/* ./${bundle}/jre
           cp samm-cli-${{ github.event.inputs.release_version }}.jar ./${bundle}/
 
           cat <<EOF > ./${bundle}/run.sh
@@ -149,7 +149,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '21.0.7'
+          java-version: '25.0.1'
           overwrite-settings: false
 
       - name: Test executable jar on Temurin
@@ -182,7 +182,7 @@ jobs:
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
-          java-version: '21.0.7'
+          java-version: '25.0.1'
           distribution: 'temurin'
 
       - name: Cache Maven packages
@@ -211,9 +211,9 @@ jobs:
         run: |
           bundle="samm-bundle-$(date +%s)"
           mkdir ${bundle}
-          curl -Lo jre.tar.gz https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.7%2B6/OpenJDK21U-jre_x64_mac_hotspot_21.0.7_6.tar.gz
+          curl -Lo jre.tar.gz https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.1%2B8/OpenJDK25U-jre_x64_mac_hotspot_25.0.1_8.tar.gz
           tar -xvf jre.tar.gz
-          cp -r ./jdk-21.0.7+6-jre/Contents/Home ./${bundle}/jre
+          cp -r ./jdk-25.0.1+8-jre/Contents/Home ./${bundle}/jre
           cp tools/samm-cli/target/samm-cli-${{ github.event.inputs.release_version }}.jar ./${bundle}/
 
           cat <<EOF > ./${bundle}/run.sh
@@ -254,7 +254,7 @@ jobs:
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
-          java-version: '21.0.7'
+          java-version: '25.0.1'
           distribution: 'temurin'
 
       - name: Cache Maven packages
@@ -296,9 +296,9 @@ jobs:
           $bundle = "samm-bundle-${{ github.event.inputs.release_version }}-windows-$([int][double]::Parse((Get-Date -UFormat %s)))"
           mkdir $bundle
           New-Item -ItemType Directory -Path "$bundle\jre" -Force
-          curl -Lo jre.zip https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.7%2B6/OpenJDK21U-jre_x64_windows_hotspot_21.0.7_6.zip
+          curl -Lo jre.zip https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.1%2B8/OpenJDK25U-jre_x64_windows_hotspot_25.0.1_8.zip
           tar -xf jre.zip
-          Copy-Item .\jdk-21.0.7+6-jre\* .\$bundle\jre -Recurse
+          Copy-Item .\jdk-25.0.1+8-jre\* .\$bundle\jre -Recurse
           Copy-Item tools\samm-cli\target\samm-cli-${{ github.event.inputs.release_version }}.jar .\$bundle\
 
           Set-Content -Path .\$bundle\run.bat -Value "@echo off`n%~dp0jre\bin\java -jar %~dp0samm-cli-${{ github.event.inputs.release_version }}.jar %*"
@@ -328,11 +328,11 @@ jobs:
         uses: actions/checkout@v4
 
       # Required to have Maven settings.xml set up correctly
-      - name: Set up JDK 21
+      - name: Set up JDK 25
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '21.0.7'
+          java-version: '25.0.1'
           server-id: central
           # The following variables are defined in https://github.com/eclipse-esmf/.eclipsefdn/blob/main/otterdog/eclipse-esmf.jsonnet
           server-username: CENTRAL_SONATYPE_TOKEN_USERNAME
@@ -342,7 +342,7 @@ jobs:
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
-          java-version: '21.0.7'
+          java-version: '25.0.1'
           distribution: 'temurin'
 
       - name: Fetch Linux Artifacts

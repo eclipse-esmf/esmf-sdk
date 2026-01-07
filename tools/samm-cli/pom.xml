@@ -33,6 +33,8 @@
       <binary-name>samm</binary-name>
       <skip.maven.failsafe>true</skip.maven.failsafe>
       <skip.maven.shade>false</skip.maven.shade>
+      <java-target-version>25</java-target-version>
+      <java-source-version>25</java-source-version>
    </properties>
 
    <dependencies>

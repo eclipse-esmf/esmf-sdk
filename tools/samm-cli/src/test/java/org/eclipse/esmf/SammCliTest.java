@@ -65,7 +65,7 @@ class SammCliTest extends SammCliAbstractTest {
    @Override
    protected ProcessLauncher<?> getCli() {
       return new MainClassProcessLauncher( SammCli.class, List.of(),
-            argument -> !"-XX:ThreadPriorityPolicy=1".equals( argument ) && !argument.startsWith( "-agentlib:jdwp" )
+            argument -> !"-XX:ThreadPriorityPolicy=1".equals( argument ) && !argument.startsWith( "-agentlib:jdwp" ), true
       );
    }
 
@@ -1554,5 +1554,22 @@ class SammCliTest extends SammCliAbstractTest {
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
       assertThat( outputFile ).exists().isNotEmptyFile().content().contains( ":TestAspect a samm:Aspect" );
+   }
+
+   // Test should be deleted after https://github.com/oracle/graal/issues/12623 is fixed and the GraalVM version is updated.
+   @Test
+   void testDiableWarning( @TempDir final Path outputDirectory ) {
+      final File targetFile = outputFile( outputDirectory, "output.ttl" );
+      ProcessLauncher<?> customSammCli = new MainClassProcessLauncher( SammCli.class, List.of(),
+            argument -> !"-XX:ThreadPriorityPolicy=1".equals( argument ) && !argument.startsWith( "-agentlib:jdwp" ), false
+      );
+      final ExecutionResult result = customSammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "prettyprint", "-o",
+            targetFile.getAbsolutePath() );
+      assertThat( result.stderr() ).isNotEmpty();
+      assertThat( result.stderr() )
+            .contains( "WARNING: A restricted method in java.lang.System has been called" )
+            .contains( "WARNING: java.lang.System::load has been called" )
+            .contains( "WARNING: A terminally deprecated method in sun.misc.Unsafe has been called" )
+            .contains( "WARNING: sun.misc.Unsafe::objectFieldOffset has been called" );
    }
 }

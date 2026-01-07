@@ -20,7 +20,6 @@ import java.nio.file.Path;
 import java.util.List;
 
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ProcessExecutionException;
-import org.eclipse.esmf.aspectmodel.resolver.process.BinaryLauncher;
 import org.eclipse.esmf.aspectmodel.resolver.process.ExecutableJarLauncher;
 import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher;
 import org.eclipse.esmf.test.TestAspect;
@@ -38,8 +37,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 
 /**
  * The CLI integration tests that are executed by Maven Failsafe.
- * The tests either execute the CLI's executable jar (using the {@link ExecutableJarLauncher}) or the CLI's native binary (using the
- * {@link BinaryLauncher}). Which one is executed is determined using the system property "packaging-type" which can be "jar" or "native".
+ * The tests either execute the CLI's executable jar (using the {@link ExecutableJarLauncher})
  * See the documentation of the respective launchers on how they are configured.
  */
 @ExtendWith( LogExtension.class )

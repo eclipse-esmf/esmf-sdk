@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -40,9 +41,18 @@ import org.slf4j.LoggerFactory;
 public class OsProcessLauncher extends ProcessLauncher<Process> {
    private static final Logger LOG = LoggerFactory.getLogger( OsProcessLauncher.class );
    private final List<String> commandWithArguments;
+   // Temporary flag to disable warning messages from the output error stream until https://github.com/oracle/graal/issues/12623 is resolved
+   private boolean diableWarning;
 
-   public OsProcessLauncher( final List<String> commandWithArguments ) {
-      this.commandWithArguments = commandWithArguments;
+   public OsProcessLauncher( final List<String> commandWithArguments, final boolean diableWarning ) {
+      this.diableWarning = diableWarning;
+      if ( diableWarning ) {
+         List<String> modifiedCommand = new ArrayList<>( commandWithArguments );
+         modifiedCommand.add( 1, "--enable-native-access=ALL-UNNAMED" );
+         this.commandWithArguments = modifiedCommand;
+      } else {
+         this.commandWithArguments = commandWithArguments;
+      }
    }
 
    protected File workingDirectoryForSubprocess( final ExecutionContext context ) {
@@ -87,15 +97,24 @@ public class OsProcessLauncher extends ProcessLauncher<Process> {
          } finally {
             executor.shutdown();
          }
+         String stderrFiltered = filterWarnings( new String( stderrRaw, StandardCharsets.UTF_8 ) );
 
          return new ExecutionResult( process.exitValue(), new String( stdoutRaw, StandardCharsets.UTF_8 ),
-               new String( stderrRaw, StandardCharsets.UTF_8 ),
+               stderrFiltered,
                stdoutRaw, stderrRaw );
       } catch ( final IOException | InterruptedException exception ) {
          throw new ProcessExecutionException( exception );
       }
    }
 
+   private String filterWarnings( String stderr ) {
+      if ( !diableWarning ) {
+         return stderr;
+      }
+      return Arrays.stream( stderr.split( "\\R" ) )
+            .filter( line -> !line.startsWith( "WARNING:" ) )
+            .collect( Collectors.joining( System.lineSeparator() ) );
+   }
    /**
     * Reads an InputStream until it's finished
     */
