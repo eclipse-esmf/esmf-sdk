@@ -1558,7 +1558,7 @@ class SammCliTest extends SammCliAbstractTest {
       assertThat( outputFile ).exists().isNotEmptyFile().content().contains( ":TestAspect a samm:Aspect" );
    }
 
-   // Test should be deleted after https://github.com/oracle/graal/issues/12623 is fixed and the GraalVM version is updated.
+   // Test should be deleted after https://github.com/oracle/graal/issues/12782 is fixed and the GraalVM version is updated.
    @Test
    void testDisableWarning( @TempDir final Path outputDirectory ) {
       final File targetFile = outputFile( outputDirectory, "output.ttl" );
