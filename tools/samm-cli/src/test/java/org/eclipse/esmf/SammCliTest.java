@@ -23,8 +23,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
 import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher;
@@ -1558,18 +1560,45 @@ class SammCliTest extends SammCliAbstractTest {
 
    // Test should be deleted after https://github.com/oracle/graal/issues/12623 is fixed and the GraalVM version is updated.
    @Test
-   void testDiableWarning( @TempDir final Path outputDirectory ) {
+   void testDisableWarning( @TempDir final Path outputDirectory ) {
       final File targetFile = outputFile( outputDirectory, "output.ttl" );
       ProcessLauncher<?> customSammCli = new MainClassProcessLauncher( SammCli.class, List.of(),
             argument -> !"-XX:ThreadPriorityPolicy=1".equals( argument ) && !argument.startsWith( "-agentlib:jdwp" ), false
       );
       final ExecutionResult result = customSammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "prettyprint", "-o",
             targetFile.getAbsolutePath() );
-      assertThat( result.stderr() ).isNotEmpty();
-      assertThat( result.stderr() )
-            .contains( "WARNING: A restricted method in java.lang.System has been called" )
-            .contains( "WARNING: java.lang.System::load has been called" )
-            .contains( "WARNING: A terminally deprecated method in sun.misc.Unsafe has been called" )
-            .contains( "WARNING: sun.misc.Unsafe::objectFieldOffset has been called" );
+
+      final List<Pattern> expectedPatterns = List.of(
+            Pattern.compile( "WARNING: A restricted method in java\\.lang\\.System has been called" ),
+            Pattern.compile( "WARNING: java\\.lang\\.System::load has been called by "
+                  + "com\\.oracle\\.truffle\\.runtime\\.ModulesSupport in an unnamed module \\(file:.*\\)$" ),
+            Pattern.compile( "WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module" ),
+            Pattern.compile( "WARNING: Restricted methods will be blocked in a future release unless native access is enabled" ),
+            Pattern.compile( "WARNING: A terminally deprecated method in sun\\.misc\\.Unsafe has been called" ),
+            Pattern.compile( "WARNING: sun\\.misc\\.Unsafe::objectFieldOffset has been called by "
+                  + "com\\.oracle\\.truffle\\.api\\.dsl\\.InlineSupport\\$UnsafeField \\(file:.*\\)$" ),
+            Pattern.compile( "WARNING: Please consider reporting this to the maintainers of class "
+                  + "com\\.oracle\\.truffle\\.api\\.dsl\\.InlineSupport\\$UnsafeField" ),
+            Pattern.compile( "WARNING: sun\\.misc\\.Unsafe::objectFieldOffset will be removed in a future release" )
+      );
+
+      var actualLines = Arrays.stream( result.stderr().split( "\\R" ) )
+            .map( String::trim )
+            .filter( s -> !s.isEmpty() )
+            .toList();
+
+      for ( var pattern : expectedPatterns ) {
+         boolean found = actualLines.stream().anyMatch( line -> pattern.matcher( line ).matches() );
+         assertThat( found )
+               .as( "Pattern not found: " + pattern.pattern() )
+               .isTrue();
+      }
+
+      for ( var line : actualLines ) {
+         boolean matchesAny = expectedPatterns.stream().anyMatch( pattern -> pattern.matcher( line ).matches() );
+         assertThat( matchesAny )
+               .as( "Unexpected line: " + line )
+               .isTrue();
+      }
    }
 }
