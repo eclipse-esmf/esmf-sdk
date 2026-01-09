@@ -11,16 +11,16 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.aspectmodel.resolver.process;
+package org.eclipse.esmf.substitution;
 
-import java.io.File;
-import java.util.List;
+import java.util.function.BooleanSupplier;
 
 /**
- * A {@link ProcessLauncher} that executes a native binary.
+ * Conditional to execute substitution only on Windows. Use with com.oracle.svm.core.annotate.Substitute's onlyWith attribute.
  */
-public class BinaryLauncher extends OsProcessLauncher {
-   public BinaryLauncher( final File binary ) {
-      super( List.of( binary.getAbsolutePath() ) );
+public class IsWindows implements BooleanSupplier {
+   @Override
+   public boolean getAsBoolean() {
+      return System.getProperty( "os.name", "" ).startsWith( "Windows" );
    }
 }

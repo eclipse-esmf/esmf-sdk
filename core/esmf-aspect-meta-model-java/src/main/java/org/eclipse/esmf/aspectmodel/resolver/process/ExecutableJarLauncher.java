@@ -26,7 +26,7 @@ public class ExecutableJarLauncher extends OsProcessLauncher {
    }
 
    public ExecutableJarLauncher( final File executableJar, final List<String> jvmArguments ) {
-      super( buildCommand( executableJar, jvmArguments ) );
+      super( buildCommand( executableJar, jvmArguments ), true );
    }
 
    private static List<String> buildCommand( final File executableJar, final List<String> jvmArguments ) {
