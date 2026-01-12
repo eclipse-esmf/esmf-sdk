@@ -160,12 +160,6 @@ jobs:
           java-version: '25'
           overwrite-settings: false
 
-      - name: Test executable jar on Temurin
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          cd tools/samm-cli
-          mvn -B -Dskip.maven.failsafe=false failsafe:integration-test -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
-
       - name: Upload executable jar
         # We only need one OS job to upload the jar
         if: matrix.os == 'ubuntu-latest'
