@@ -24,7 +24,6 @@ import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
-import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
@@ -186,66 +185,58 @@ class AspectModelDocumentationGeneratorTest {
    @Test
    void testMarkdownRenderingWithLink() {
       final String htmlResult = generateHtmlDocumentation( TestAspect.ASPECT_WITH_MARKDOWN_DESCRIPTION );
-      AssertionsForClassTypes.assertThat( htmlResult ).contains( "<a href=\"https://example.com\">Visit Example</a>" );
+      assertThat( htmlResult ).contains( "<a href=\"https://example.com\">Visit Example</a>" );
    }
 
    @Test
    void testAspectWithMarkdownDescription() {
       final String htmlResult = generateHtmlDocumentation( TestAspect.ASPECT_WITH_MARKDOWN_DESCRIPTION );
-      AssertionsForClassTypes.assertThat( htmlResult ).doesNotContain( "[link](https://www.example.com/spec)" );
+      assertThat( htmlResult ).doesNotContain( "[link](https://www.example.com/spec)" );
    }
 
    @Test
    void testHtmlOutputDoesNotContainMarkdownSyntax() {
       final String htmlResult = generateHtmlDocumentation( TestAspect.ASPECT_WITH_MARKDOWN_DESCRIPTION );
-      AssertionsForClassTypes.assertThat( htmlResult ).doesNotContain( "[Visit Example](https://example.com)" );
+      assertThat( htmlResult ).doesNotContain( "[Visit Example](https://example.com)" );
    }
 
    @Test
    void testMarkdownBlocksAndListsAreRenderedFromSammDescription() {
       final String htmlResult = generateHtmlDocumentation( TestAspect.ASPECT_WITH_MARKDOWN_DESCRIPTION );
 
-      AssertionsForClassTypes.assertThat( htmlResult )
+      assertThat( htmlResult )
             .contains( "This is a sample concept demonstrating" )
-            .contains( "Markdown" );
+            .contains( "Markdown" )
 
-      // NOTE block content must not disappear
-      AssertionsForClassTypes.assertThat( htmlResult )
+            // NOTE block content must not disappear
             .contains( "This is a note block." )
             .contains( "It supports multiple lines." )
-            .contains( "Here's a second line of the note." );
+            .contains( "Here's a second line of the note." )
 
-      // EXAMPLE blocks content must not disappear
-      AssertionsForClassTypes.assertThat( htmlResult )
+            // EXAMPLE blocks content must not disappear
             .contains( "This is the first example block." )
             .contains( "It can span several lines" )
             .contains( "This is the second example." )
-            .contains( "Also multiline, for testing multiple example entries." );
+            .contains( "Also multiline, for testing multiple example entries." )
 
-      // SOURCE block content + link text must not disappear
-      AssertionsForClassTypes.assertThat( htmlResult )
+            // SOURCE block content + link text must not disappear
             .contains( "ISO 12345:2023, section 4.2.1" )
             .contains( "with an inline" )
-            .contains( "link" );
+            .contains( "link" )
 
-      // Lists must be rendered as HTML lists (not plain markdown)
-      AssertionsForClassTypes.assertThat( htmlResult )
+            // Lists must be rendered as HTML lists (not plain markdown)
             .doesNotContain( "* Item A" )
-            .doesNotContain( "1. First" );
-
-      AssertionsForClassTypes.assertThat( htmlResult )
+            .doesNotContain( "1. First" )
             .contains( "<ul" )
             .containsPattern( "(?s)<ul[^>]*>.*Item A.*Item B.*Item C.*</ul>" )
             .contains( "<ol" )
-            .containsPattern( "(?s)<ol[^>]*>.*First.*Second.*Third.*</ol>" );
+            .containsPattern( "(?s)<ol[^>]*>.*First.*Second.*Third.*</ol>" )
 
-      // Inline markdown link should be rendered (at least the link text should remain)
-      AssertionsForClassTypes.assertThat( htmlResult )
+            // Inline markdown link should be rendered (at least the link text should remain)
             .doesNotContain( "[Visit Example](https://example.com)" )
-            .contains( "Visit Example" );
+            .contains( "Visit Example" )
 
-      // Paragraph flow: ensure later paragraph is still present
-      AssertionsForClassTypes.assertThat( htmlResult )
+            // Paragraph flow: ensure later paragraph is still present
             .contains( "Another paragraph after a blank line" );
    }
 

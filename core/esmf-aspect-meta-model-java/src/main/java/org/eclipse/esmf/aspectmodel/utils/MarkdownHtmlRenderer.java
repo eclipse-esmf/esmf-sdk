@@ -134,19 +134,19 @@ public class MarkdownHtmlRenderer {
       }
 
       // keep existing behavior: split EXAMPLE into list entries, NOTE/SOURCE as single block
-      List<String> items = splitBlockItems( currentType, blockBuffer.toString() );
+      List<String> items = splitBlockItems( blockBuffer.toString() );
       html.append( renderSpecialBlock( currentType, items ) );
 
       blockBuffer.setLength( 0 );
    }
 
-   private static List<String> splitBlockItems( final String type, final String blockText ) {
+   private static List<String> splitBlockItems( final String blockText ) {
       String normalized = blockText.strip();
 
-      // each "EXAMPLE X:" becomes a separate item (your BLOCK_PATTERN already captures the first line;
-      // this keeps multiline content per example together, separated by blank lines)
-      // If you already had logic in flushBlock(), reuse it here.
-      // simplest: treat each EXAMPLE header as separate via BLOCK_PATTERN starts
+      // Start a new item for each "EXAMPLE X:" header.
+      // BLOCK_PATTERN already matches the header line and should be used to detect block boundaries.
+      // Collect the following multiline text as the example content until a blank line or the next "EXAMPLE" header.
+      // Reuse existing flushBlock() logic to finalize and append the current item before starting the next one.
 
       return List.of( normalized );
    }
