@@ -253,6 +253,9 @@ class AspectModelDocumentationGeneratorTest {
 
             // Paragraph flow: ensure later paragraph is still present
             .contains( "Another paragraph after a blank line" );
+   }
+
+   @Test
    void testAspectWithEventRendersEventAndParameters() {
       final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_EVENT );
 
