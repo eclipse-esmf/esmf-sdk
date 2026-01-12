@@ -47,24 +47,27 @@ class AspectModelDocumentationGeneratorTest {
    void testAspectWithEntityCollection() throws Throwable {
       final String htmlResult = generateHtmlDocumentation( TestAspect.ASPECT_WITH_ENTITY_COLLECTION );
 
-      assertThat( htmlResult ).isNotEmpty();
-      assertThat( htmlResult ).contains( "<h1 id=\"AspectWithEntityCollection\">Aspect Model Test Aspect</h1>" );
-      assertThat( htmlResult ).contains(
-            "<h3 id=\"org-eclipse-esmf-test-AspectWithEntityCollection-org-eclipse-esmf-test-testProperty-property\">Test Property</h3>" );
-      assertThat( htmlResult ).contains(
-            "<h5 id=\"org-eclipse-esmf-test-TestEntity-org-eclipse-esmf-test-entityProperty-property\">Entity Property</h5>" );
+      assertThat( htmlResult )
+            .isNotEmpty()
+            .contains( "<h1 id=\"AspectWithEntityCollection\">Aspect Model Test Aspect</h1>" )
+            .contains(
+                  "<h3 id=\"org-eclipse-esmf-test-AspectWithEntityCollection-org-eclipse-esmf-test-testProperty-property\">Test "
+                        + "Property</h3>" )
+            .contains(
+                  "<h5 id=\"org-eclipse-esmf-test-TestEntity-org-eclipse-esmf-test-entityProperty-property\">Entity Property</h5>" );
    }
 
    @Test
    void testAspectWithCollectionOfSimpleType() throws Throwable {
       final String htmlResult = generateHtmlDocumentation( TestAspect.ASPECT_WITH_COLLECTION_OF_SIMPLE_TYPE );
 
-      assertThat( htmlResult ).isNotEmpty();
-      assertThat( htmlResult ).contains( "<h1 id=\"AspectWithCollectionOfSimpleType\">Aspect Model AspectWithCollectionOfSimpleType</h1>" );
-      assertThat( htmlResult ).contains(
-            "<h3 id=\"org-eclipse-esmf-test-AspectWithCollectionOfSimpleType-org-eclipse-esmf-test-testList-property\">testList</h3>" );
-      // example value
-      assertThat( htmlResult ).containsIgnoringWhitespaces( "<div class=\"w-80\">Characteristic</div>" );
+      assertThat( htmlResult )
+            .isNotEmpty()
+            .contains( "<h1 id=\"AspectWithCollectionOfSimpleType\">Aspect Model AspectWithCollectionOfSimpleType</h1>" )
+            .contains(
+                  "<h3 id=\"org-eclipse-esmf-test-AspectWithCollectionOfSimpleType-org-eclipse-esmf-test-testList-property\">testList</h3"
+                        + ">" )
+            .containsIgnoringWhitespaces( "<div class=\"w-80\">Characteristic</div>" );
    }
 
    @Test
@@ -126,39 +129,50 @@ class AspectModelDocumentationGeneratorTest {
    @Test
    void testAspectWithAbstractSingleEntityExpectSuccess() {
       final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_ABSTRACT_SINGLE_ENTITY );
-      assertThat( documentation ).contains(
-            "<h3 id=\"org-eclipse-esmf-test-AspectWithAbstractSingleEntity-org-eclipse-esmf-test-testProperty-property\">testProperty</h3"
-                  + ">" );
-      assertThat( documentation ).contains(
-            "<h5 id=\"org-eclipse-esmf-test-AbstractTestEntity-org-eclipse-esmf-test-abstractTestProperty-property\">abstractTestProperty"
-                  + "</h5>" );
-      assertThat( documentation ).contains(
-            "<h5 id=\"org-eclipse-esmf-test-ExtendingTestEntity-org-eclipse-esmf-test-entityProperty-property\">entityProperty</h5>" );
+      assertThat( documentation )
+            .contains(
+                  "<h3 id=\"org-eclipse-esmf-test-AspectWithAbstractSingleEntity-org-eclipse-esmf-test-testProperty-property"
+                        + "\">testProperty</h3"
+                        + ">" )
+            .contains(
+                  "<h5 id=\"org-eclipse-esmf-test-AbstractTestEntity-org-eclipse-esmf-test-abstractTestProperty-property"
+                        + "\">abstractTestProperty"
+                        + "</h5>" )
+            .contains(
+                  "<h5 id=\"org-eclipse-esmf-test-ExtendingTestEntity-org-eclipse-esmf-test-entityProperty-property\">entityProperty</h5"
+                        + ">" );
    }
 
    @Test
    void testAspectWithAbstractEntityExpectSuccess() {
       final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_ABSTRACT_ENTITY );
-      assertThat( documentation ).contains(
-            "<h3 id=\"org-eclipse-esmf-test-AspectWithAbstractEntity-org-eclipse-esmf-test-testProperty-property\">Test Property</h3>" );
-      assertThat( documentation ).contains(
-            "<h5 id=\"org-eclipse-esmf-test-AbstractTestEntity-org-eclipse-esmf-test-abstractTestProperty-property\">abstractTestProperty"
-                  + "</h5>" );
-      assertThat( documentation ).contains(
-            "<h5 id=\"org-eclipse-esmf-test-ExtendingTestEntity-org-eclipse-esmf-test-entityProperty-property\">Entity Property</h5>" );
+      assertThat( documentation )
+            .contains(
+                  "<h3 id=\"org-eclipse-esmf-test-AspectWithAbstractEntity-org-eclipse-esmf-test-testProperty-property\">Test "
+                        + "Property</h3>" )
+            .contains(
+                  "<h5 id=\"org-eclipse-esmf-test-AbstractTestEntity-org-eclipse-esmf-test-abstractTestProperty-property"
+                        + "\">abstractTestProperty"
+                        + "</h5>" )
+            .contains(
+                  "<h5 id=\"org-eclipse-esmf-test-ExtendingTestEntity-org-eclipse-esmf-test-entityProperty-property\">Entity "
+                        + "Property</h5>" );
    }
 
    @Test
    void testAspectWithCollectionWithAbstractEntityExpectSuccess() {
       final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY );
-      assertThat( documentation ).contains(
-            "<h3 id=\"org-eclipse-esmf-test-AspectWithCollectionWithAbstractEntity-org-eclipse-esmf-test-testProperty-property"
-                  + "\">testProperty</h3>" );
-      assertThat( documentation ).contains(
-            "<h5 id=\"org-eclipse-esmf-test-AbstractTestEntity-org-eclipse-esmf-test-abstractTestProperty-property\">abstractTestProperty"
-                  + "</h5>" );
-      assertThat( documentation ).contains(
-            "<h5 id=\"org-eclipse-esmf-test-ExtendingTestEntity-org-eclipse-esmf-test-entityProperty-property\">entityProperty</h5>" );
+      assertThat( documentation )
+            .contains(
+                  "<h3 id=\"org-eclipse-esmf-test-AspectWithCollectionWithAbstractEntity-org-eclipse-esmf-test-testProperty-property"
+                        + "\">testProperty</h3>" )
+            .contains(
+                  "<h5 id=\"org-eclipse-esmf-test-AbstractTestEntity-org-eclipse-esmf-test-abstractTestProperty-property"
+                        + "\">abstractTestProperty"
+                        + "</h5>" )
+            .contains(
+                  "<h5 id=\"org-eclipse-esmf-test-ExtendingTestEntity-org-eclipse-esmf-test-entityProperty-property\">entityProperty</h5"
+                        + ">" );
    }
 
    @Test
@@ -173,13 +187,14 @@ class AspectModelDocumentationGeneratorTest {
    @Test
    void testAspectWithConstraintWithSeeAttribute() {
       final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_CONSTRAINT_WITH_SEE_ATTRIBUTE );
-      assertThat( documentation ).contains(
-            "<h3 id=\"org-eclipse-esmf-test-AspectWithConstraintWithSeeAttribute-org-eclipse-esmf-test-testPropertyTwo-property"
-                  + "\">testPropertyTwo</h3>" );
-      assertThat( documentation ).contains(
-            "<div class=\"table-cell pb-3 col-span-2\">Trait</div>" );
-      assertThat( documentation ).contains(
-            "<li>http://example.com/me2</li>" );
+      assertThat( documentation )
+            .contains(
+                  "<h3 id=\"org-eclipse-esmf-test-AspectWithConstraintWithSeeAttribute-org-eclipse-esmf-test-testPropertyTwo-property"
+                        + "\">testPropertyTwo</h3>" )
+            .contains(
+                  "<div class=\"table-cell pb-3 col-span-2\">Trait</div>" )
+            .contains(
+                  "<li>http://example.com/me2</li>" );
    }
 
    @Test
@@ -238,6 +253,39 @@ class AspectModelDocumentationGeneratorTest {
 
             // Paragraph flow: ensure later paragraph is still present
             .contains( "Another paragraph after a blank line" );
+   void testAspectWithEventRendersEventAndParameters() {
+      final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_EVENT );
+
+      assertThat( documentation )
+            .contains( "id=\"events\"" )
+            .contains( ">Some Event</h3>" )
+            .contains( "This is some event" )
+            .contains( ">Test Property</h4>" )
+            .contains( "This is a test property." )
+
+            // exampleValue
+            .contains( "Example Value" )
+
+            // see links
+            .contains( "<li>http://example.com/</li>" )
+            .contains( "<li>http://example.com/me</li>" );
+   }
+
+   @Test
+   void testAspectWithEventRendersEventHeadingWithExpectedAnchor() {
+      final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_EVENT );
+
+      assertThat( documentation )
+            .contains( "<h3 id=\"org-eclipse-esmf-test-SomeEvent-event\">Some Event</h3>" );
+   }
+
+   @Test
+   void testAspectWithEventRendersParameterPropertyWithExpectedAnchor() {
+      final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_EVENT );
+
+      assertThat( documentation )
+            .contains(
+                  "<h4 id=\"org-eclipse-esmf-test-AspectWithEvent-org-eclipse-esmf-test-testProperty-property\">Test Property</h4>" );
    }
 
    private String generateHtmlDocumentation( final TestAspect testAspect ) {

@@ -107,3 +107,15 @@ a.toc-link {
     padding-left: 1.25rem;
     list-style-type: disc;
 }
+
+/* Events */
+.event-card {
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 20px;
+}
+.event-meta {
+    font-size: 0.875rem;
+    opacity: 0.85;
+}
