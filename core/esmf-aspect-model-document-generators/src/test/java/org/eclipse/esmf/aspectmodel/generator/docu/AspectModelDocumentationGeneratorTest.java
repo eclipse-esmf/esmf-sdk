@@ -24,7 +24,6 @@ import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
-import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
@@ -69,7 +68,7 @@ class AspectModelDocumentationGeneratorTest {
    }
 
    @Test
-   void testScriptTagIsEscaped() throws IOException {
+   void testScriptTagIsEscaped() {
       assertThat( generateHtmlDocumentation( TestAspect.ASPECT_WITH_SCRIPT_TAGS ) )
             .isNotEmpty()
             .doesNotContain( "Test preferred name with script: <script>alert('Should not be alerted');</script>" );
@@ -85,7 +84,7 @@ class AspectModelDocumentationGeneratorTest {
    }
 
    @Test
-   void testHtmlTagsAreEscaped() throws IOException {
+   void testHtmlTagsAreEscaped() {
       assertThat( generateHtmlDocumentation( TestAspect.ASPECT_WITH_HTML_TAGS ) )
             .isNotEmpty()
             .doesNotContain( "<img src=xss.png onerror=alert('Boom!')>" )
@@ -94,20 +93,20 @@ class AspectModelDocumentationGeneratorTest {
    }
 
    @Test
-   void testEncodedTextIsNotDecoded() throws IOException {
+   void testEncodedTextIsNotDecoded() {
       assertThat( generateHtmlDocumentation( TestAspect.ASPECT_WITH_ENCODED_STRINGS ) )
             .doesNotContain( "This is an Aspect with encoded text." )
             .contains( "VGhpcyBpcyBhbiBBc3BlY3Qgd2l0aCBlbmNvZGVkIHRleHQu" );
    }
 
    @Test
-   void testAspectModelUrnIsDisplayed() throws IOException {
+   void testAspectModelUrnIsDisplayed() {
       assertThat( generateHtmlDocumentation( TestAspect.ASPECT_WITH_HTML_TAGS ) )
             .contains( "urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithHtmlTags" );
    }
 
    @Test
-   void testDocInfosAreDisplayed() throws IOException {
+   void testDocInfosAreDisplayed() {
       assertThat( generateHtmlDocumentation( TestAspect.ASPECT_WITH_HTML_TAGS ) )
             .contains( ".toc-list" )
             .contains( "aspect-model-diagram" )
@@ -119,13 +118,13 @@ class AspectModelDocumentationGeneratorTest {
    }
 
    @Test
-   void testDocumentationIsNotEmptyForModelWithoutLanguageTags() throws IOException {
+   void testDocumentationIsNotEmptyForModelWithoutLanguageTags() {
       final String aspectWithoutLanguageTags = generateHtmlDocumentation( TestAspect.ASPECT_WITHOUT_LANGUAGE_TAGS );
       assertThat( aspectWithoutLanguageTags ).isNotEmpty();
    }
 
    @Test
-   void testAspectWithAbstractSingleEntityExpectSuccess() throws IOException {
+   void testAspectWithAbstractSingleEntityExpectSuccess() {
       final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_ABSTRACT_SINGLE_ENTITY );
       assertThat( documentation ).contains(
             "<h3 id=\"org-eclipse-esmf-test-AspectWithAbstractSingleEntity-org-eclipse-esmf-test-testProperty-property\">testProperty</h3"
@@ -138,7 +137,7 @@ class AspectModelDocumentationGeneratorTest {
    }
 
    @Test
-   void testAspectWithAbstractEntityExpectSuccess() throws IOException {
+   void testAspectWithAbstractEntityExpectSuccess() {
       final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_ABSTRACT_ENTITY );
       assertThat( documentation ).contains(
             "<h3 id=\"org-eclipse-esmf-test-AspectWithAbstractEntity-org-eclipse-esmf-test-testProperty-property\">Test Property</h3>" );
@@ -150,7 +149,7 @@ class AspectModelDocumentationGeneratorTest {
    }
 
    @Test
-   void testAspectWithCollectionWithAbstractEntityExpectSuccess() throws IOException {
+   void testAspectWithCollectionWithAbstractEntityExpectSuccess() {
       final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY );
       assertThat( documentation ).contains(
                   "<h3 id=\"org-eclipse-esmf-test-AspectWithCollectionWithAbstractEntity-org-eclipse-esmf-test-testProperty-property"
@@ -174,7 +173,7 @@ class AspectModelDocumentationGeneratorTest {
    }
 
    @Test
-   void testAspectWithConstraintWithSeeAttribute() throws IOException {
+   void testAspectWithConstraintWithSeeAttribute() {
       final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_CONSTRAINT_WITH_SEE_ATTRIBUTE );
       assertThat( documentation )
             .contains(
@@ -187,46 +186,40 @@ class AspectModelDocumentationGeneratorTest {
    }
 
    @Test
-   void testMarkdownRenderingWithLink() throws IOException {
+   void testMarkdownRenderingWithLink() {
       final String htmlResult = generateHtmlDocumentation( TestAspect.ASPECT_WITH_MARKDOWN_DESCRIPTION );
-      AssertionsForClassTypes.assertThat( htmlResult ).contains( "<a href=\"https://example.com\">Visit Example</a>" );
+      assertThat( htmlResult ).contains( "<a href=\"https://example.com\">Visit Example</a>" );
    }
 
    @Test
-   void testAspectWithMarkdownDescription() throws IOException {
+   void testAspectWithMarkdownDescription() {
       final String htmlResult = generateHtmlDocumentation( TestAspect.ASPECT_WITH_MARKDOWN_DESCRIPTION );
-      AssertionsForClassTypes.assertThat( htmlResult ).doesNotContain( "[link](https://www.example.com/spec)" );
+      assertThat( htmlResult ).doesNotContain( "[link](https://www.example.com/spec)" );
    }
 
    @Test
-   void testHtmlOutputDoesNotContainMarkdownSyntax() throws IOException {
+   void testHtmlOutputDoesNotContainMarkdownSyntax() {
       final String htmlResult = generateHtmlDocumentation( TestAspect.ASPECT_WITH_MARKDOWN_DESCRIPTION );
-      AssertionsForClassTypes.assertThat( htmlResult ).doesNotContain( "[Visit Example](https://example.com)" );
+      assertThat( htmlResult ).doesNotContain( "[Visit Example](https://example.com)" );
    }
 
    @Test
-   void testRangeConstraintRendersNumericBoundsCorrectly() throws Exception {
+   void testRangeConstraintRendersNumericBoundsCorrectly() {
       final String htmlResult = generateHtmlDocumentation( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT );
 
-      AssertionsForClassTypes.assertThat( htmlResult )
+      assertThat( htmlResult )
             .doesNotContain( "DefaultScalarValue[" )
-            .doesNotContain( "type='DefaultScalar" );
-
-      AssertionsForClassTypes.assertThat( htmlResult )
+            .doesNotContain( "type='DefaultScalar" )
             .contains( "2.3" )
             .contains( "10.5" )
-            .contains( "..." );
-
+            .contains( "..." )
       // Lower bound: AT_LEAST => >= 2.3
-      AssertionsForClassTypes.assertThat( htmlResult )
-            .containsPattern( ">=(?s).*?2\\.3" );
-
+            .containsPattern( ">=(?s).*?2\\.3" )
       // Upper bound: AT_MOST => <= 10.5
-      AssertionsForClassTypes.assertThat( htmlResult )
             .containsPattern( "<=(?s).*?10\\.5" );
    }
 
-   private String generateHtmlDocumentation( final TestAspect testAspect ) throws IOException {
+   private String generateHtmlDocumentation( final TestAspect testAspect ) {
       final Aspect aspect = TestResources.load( testAspect ).aspect();
       final AspectModelDocumentationGenerator aspectModelDocumentationGenerator = new AspectModelDocumentationGenerator( aspect );
       return aspectModelDocumentationGenerator.getContent();
