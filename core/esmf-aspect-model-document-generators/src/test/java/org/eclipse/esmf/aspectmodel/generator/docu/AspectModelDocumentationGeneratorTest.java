@@ -213,9 +213,9 @@ class AspectModelDocumentationGeneratorTest {
             .contains( "2.3" )
             .contains( "10.5" )
             .contains( "..." )
-      // Lower bound: AT_LEAST => >= 2.3
+            // Lower bound: AT_LEAST => >= 2.3
             .containsPattern( ">=(?s).*?2\\.3" )
-      // Upper bound: AT_MOST => <= 10.5
+            // Upper bound: AT_MOST => <= 10.5
             .containsPattern( "<=(?s).*?10\\.5" );
    }
 
