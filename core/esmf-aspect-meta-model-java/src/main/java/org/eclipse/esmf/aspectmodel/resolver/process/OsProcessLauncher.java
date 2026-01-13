@@ -41,8 +41,17 @@ public class OsProcessLauncher extends ProcessLauncher<Process> {
    private static final Logger LOG = LoggerFactory.getLogger( OsProcessLauncher.class );
    private final List<String> commandWithArguments;
 
-   public OsProcessLauncher( final List<String> commandWithArguments ) {
-      this.commandWithArguments = commandWithArguments;
+   public OsProcessLauncher( final List<String> commandWithArguments, final boolean diableWarning ) {
+      if ( diableWarning ) {
+         // Temporary disable warning messages from the output error stream until https://github.com/oracle/graal/issues/12623 is resolved
+         // Delete these two arguments in github actions too
+         List<String> modifiedCommand = new ArrayList<>( commandWithArguments );
+         modifiedCommand.add( 1, "--enable-native-access=ALL-UNNAMED" );
+         modifiedCommand.add( 2, "--sun-misc-unsafe-memory-access=allow" );
+         this.commandWithArguments = modifiedCommand;
+      } else {
+         this.commandWithArguments = commandWithArguments;
+      }
    }
 
    protected File workingDirectoryForSubprocess( final ExecutionContext context ) {
@@ -84,6 +93,8 @@ public class OsProcessLauncher extends ProcessLauncher<Process> {
             stderrRaw = stderrFuture.get().toByteArray();
          } catch ( final ExecutionException | InterruptedException exception ) {
             throw new ProcessExecutionException( exception );
+         } finally {
+            executor.shutdown();
          }
 
          return new ExecutionResult( process.exitValue(), new String( stdoutRaw, StandardCharsets.UTF_8 ),
@@ -106,9 +117,11 @@ public class OsProcessLauncher extends ProcessLauncher<Process> {
 
       @Override
       public ByteArrayOutputStream call() throws Exception {
-         final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-         in.transferTo( buffer );
-         return buffer;
+         try ( in ) {
+            final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            in.transferTo( buffer );
+            return buffer;
+         }
       }
    }
 }

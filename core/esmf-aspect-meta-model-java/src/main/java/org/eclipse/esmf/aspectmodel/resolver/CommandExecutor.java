@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ProcessExecutionException;
-import org.eclipse.esmf.aspectmodel.resolver.process.BinaryLauncher;
 import org.eclipse.esmf.aspectmodel.resolver.process.ExecutableJarLauncher;
 import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher;
 
@@ -30,9 +29,7 @@ public class CommandExecutor {
    public static String executeCommand( final String command ) {
       final List<String> parts = Arrays.asList( command.split( " " ) );
       final String executableOrJar = parts.get( 0 );
-      final ProcessLauncher<Process> processLauncher = executableOrJar.toLowerCase().endsWith( ".jar" )
-            ? new ExecutableJarLauncher( new File( executableOrJar ) )
-            : new BinaryLauncher( new File( executableOrJar ) );
+      final ProcessLauncher<Process> processLauncher = new ExecutableJarLauncher( new File( executableOrJar ) );
       final List<String> arguments = parts.size() == 1
             ? List.of()
             : parts.subList( 1, parts.size() );
