@@ -49,6 +49,12 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
    private String aspectApiBaseUrl = "";
 
    @Parameter
+   private String readApiPath;
+
+   @Parameter
+   private String queryApiPath;
+
+   @Parameter
    private String aspectParameterFile;
 
    @Parameter( defaultValue = "false" )
@@ -107,6 +113,8 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( useSemanticApiVersion )
             .baseUrl( aspectApiBaseUrl )
+            .readApiPath( readApiPath )
+            .queryApiPath( queryApiPath )
             .resourcePath( aspectResourcePath )
             .properties( readFile( aspectParameterFile ) )
             .template( readFile( templateFilePath ) )

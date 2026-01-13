@@ -69,7 +69,17 @@ public class AspectToOpenapiCommand extends AbstractCommand {
          names = { "--api-base-url", "-b" },
          description = "The base url for the Aspect API used in the OpenAPI specification.",
          required = true )
-   private String aspectApiBaseUrl = "";
+   private String aspectApiBaseUrl = null;
+
+   @CommandLine.Option(
+         names = { "--read-api-path", "-rap" },
+         description = "The path for the default endpoint, default '/api/vX', where X is the Aspect Model major version." )
+   private String readApiPath = null;
+
+   @CommandLine.Option(
+         names = { "--query-api-path", "-qap" },
+         description = "The path for the query endpoint, default '/query-api/vX', where X is the Aspect Model major version." )
+   private String queryApiPath = "";
 
    @CommandLine.Option(
          names = { "--json", "-j" },
@@ -201,6 +211,8 @@ public class AspectToOpenapiCommand extends AbstractCommand {
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( useSemanticApiVersion )
             .baseUrl( aspectApiBaseUrl )
+            .readApiPath( readApiPath )
+            .queryApiPath( queryApiPath )
             .resourcePath( aspectResourcePath )
             .properties( readFile( aspectParameterFile ) )
             .template( readFile( templateFilePath ) )
