@@ -44,6 +44,7 @@ public class OsProcessLauncher extends ProcessLauncher<Process> {
    public OsProcessLauncher( final List<String> commandWithArguments, final boolean diableWarning ) {
       if ( diableWarning ) {
          // Temporary disable warning messages from the output error stream until https://github.com/oracle/graal/issues/12623 is resolved
+         // Delete these two arguments in github actions too
          List<String> modifiedCommand = new ArrayList<>( commandWithArguments );
          modifiedCommand.add( 1, "--enable-native-access=ALL-UNNAMED" );
          modifiedCommand.add( 2, "--sun-misc-unsafe-memory-access=allow" );
