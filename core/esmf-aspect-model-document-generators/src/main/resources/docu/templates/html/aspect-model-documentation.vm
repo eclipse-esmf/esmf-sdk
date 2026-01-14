@@ -89,6 +89,7 @@
             </div>
         #end
 
+        <!-- Aspect Model Entities and related Types -->
         #if( !$aspectModelHelper.getEntities($aspectModel).isEmpty())
             <div class="heading" id="entities">
                 #title( $i18n.getText("docu.label.entities") "entities" "2" )
@@ -98,6 +99,18 @@
             #end
             </div>
         #end
+
+        <!-- Aspect Model Events and related Types -->
+        #if( !$aspectModel.events.isEmpty() )
+            <div class="heading" id="events">
+                #title( $i18n.getText("docu.label.events") "events" "2" )
+
+                #foreach( $event in $aspectModelHelper.sortEventsByPreferredName( $aspectModel.getEvents(), $i18n.getLocale() ) )
+                    #event( $event $aspectModel $aspectModelHelper $i18n "3" )
+                #end
+            </div>
+        #end
+
 
         <div class=" pt-15">
             <a href="javascript:toggleLicenseDetails()" class="underline text-sm">Third party licenses</a>

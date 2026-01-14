@@ -127,7 +127,7 @@ of model resolution] for more information.
                                    | _--name-postfix, -namePostfix_ : name postfix for generated Aspect, Entity Java classes | `samm aspect AspectModel.ttl to java -namePostfix "Postfix"`
                                    | _--enable-setters, -enableSetters_ : whether setters should be generated for Aspect, Entity Java classes    | `samm aspect AspectModel.ttl to java --enable-setters`
                                    | _--setter-style, -setterStyle_ : the style of setters to generate for Aspect, Entity Java classes | `samm aspect AspectModel.ttl to java --enable-setters --setter-style "FLUENT"`
-.21+| [[aspect-to-openapi]] aspect <model> to openapi | Generate https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification
+.23+| [[aspect-to-openapi]] aspect <model> to openapi | Generate https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification
                                      for an Aspect Model                                                                     | `samm aspect AspectModel.ttl to openapi -j`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--api-base-url, -b_ : the base url for the Aspect API used in the
@@ -140,6 +140,10 @@ of model resolution] for more information.
                                        API endpoints                                                                         | For detailed description, see the section below
                                    | _--semantic-version, -sv_ : use the full semantic version from the Aspect Model as the
                                        version for the Aspect API                                                            |
+                                   | _--read-api-path_, _-rap_ : Set the path for the default endpoint (default: `/api/vX`,
+                                       where X is the Aspect Model major version)                                            |
+                                   | _--query-api-path_, _-qap_ : Set the path for the query endpoint (default:
+                                     `/query-api/vX`, where X is the Aspect Model major version)                             |
                                    | _--resource-path, -r_ : the resource path for the Aspect API endpoints                  | For detailed description, see the section below
                                    | _--include-query-api, -q_ : include the path for the Query Aspect API Endpoint in the
                                        https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification                           |
