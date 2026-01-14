@@ -216,6 +216,59 @@ class AspectModelDocumentationGeneratorTest {
    }
 
    @Test
+   void testRangeConstraintRendersNumericBoundsCorrectly() {
+      final String htmlResult = generateHtmlDocumentation( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT );
+
+      assertThat( htmlResult )
+            .doesNotContain( "DefaultScalarValue[" )
+            .doesNotContain( "type='DefaultScalar" )
+            .contains( "2.3" )
+            .contains( "10.5" )
+            .contains( "..." )
+            // Lower bound: AT_LEAST => >= 2.3
+            .containsPattern( ">=(?s).*?2\\.3" )
+            // Upper bound: AT_MOST => <= 10.5
+            .containsPattern( "<=(?s).*?10\\.5" );
+   }
+
+   @Test
+   void testRangeConstraintRendersOnlyMinValueWithGreaterThanSymbol() {
+      final String html = generateHtmlDocumentation( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_MIN_VALUE )
+            .replace( "\r\n", "\n" );
+
+      assertThat( html )
+            .doesNotContain( "DefaultScalarValue[" )
+            .doesNotContain( "type='DefaultScalar" )
+            .containsPattern(
+                  "(?s)"
+                        + "<div class=\"flex border-b pb-1 py-4\">\\s*"
+                        + "<div class=\"flex mb-4\">\\s*"
+                        + "(?:>|&gt;)\\s*"
+                        + "<div class=\"w-80\">\\s*"
+                        + "5\\s*"
+                        + "</div>\\s*"
+                        + "</div>"
+            );
+   }
+
+   @Test
+   void testRangeConstraintRendersOnlyMaxValue() {
+      final String html = generateHtmlDocumentation( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_UPPER_BOUND )
+            .replace( "\r\n", "\n" );
+
+      assertThat( html )
+            .doesNotContain( "DefaultScalarValue[" )
+            .doesNotContain( "type='DefaultScalar" )
+            .containsPattern(
+                  "(?s)"
+                        + "<div class=\"w-80\">\\s*"
+                        + "(?:<|&lt;)\\s*"
+                        + "2\\.3\\s*"
+                        + "</div>"
+            );
+   }
+
+   @Test
    void testMarkdownBlocksAndListsAreRenderedFromSammDescription() {
       final String htmlResult = generateHtmlDocumentation( TestAspect.ASPECT_WITH_MARKDOWN_DESCRIPTION );
 
