@@ -16,14 +16,14 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
         with:
           submodules: recursive
           persist-credentials: false
 
       # Required for Maven
       - name: Set up JDK 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e #v5.1.0
         with:
           distribution: 'temurin'
           java-version: '21.0.7'
@@ -59,7 +59,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
         with:
           submodules: recursive
           persist-credentials: false
@@ -68,7 +68,7 @@ jobs:
       # (see below), we use the setup-java action to have GPG configured
       # so that it can be used from the maven-gpg-plugin.
       - name: Configure GPG
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e #v5.1.0
         with:
           distribution: 'temurin'
           java-version: '21.0.7'
@@ -89,7 +89,7 @@ jobs:
           native-image-job-reports: 'true'
 
       - name: Cache Maven packages
-        uses: actions/cache@v4
+        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb #v5.0.1
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -142,7 +142,7 @@ jobs:
           PGP_KEY_PASSWORD: ${{ secrets.PGP_KEY_PASSWORD }}
 
       - name: Switch to Temurin JDK
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e #v5.1.0
         with:
           distribution: 'temurin'
           java-version: '21.0.7'
@@ -154,7 +154,7 @@ jobs:
           mvn -B -Denforcer.skip -Dskip.maven.surefire failsafe:integration-test -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
 
       - name: Upload staging directory and Linux binary
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f #v6.0.0
         with:
           name: linux-artifacts
           path: |
@@ -173,7 +173,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
         with:
           submodules: recursive
           persist-credentials: false
@@ -187,7 +187,7 @@ jobs:
           native-image-job-reports: 'false'
 
       - name: Cache Maven packages
-        uses: actions/cache@v4
+        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb #v5.0.1
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -235,7 +235,7 @@ jobs:
         shell: bash
 
       - name: Upload Mac binary
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f #v6.0.0
         with:
           name: mac-artifacts
           path: |
@@ -251,7 +251,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
         with:
           submodules: recursive
           persist-credentials: false
@@ -265,7 +265,7 @@ jobs:
           native-image-job-reports: 'true'
 
       - name: Cache Maven packages
-        uses: actions/cache@v4
+        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb #v5.0.1
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -303,7 +303,7 @@ jobs:
         shell: bash
 
       - name: Upload Windows binary
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f #v6.0.0
         with:
           name: windows-artifacts
           path: |
@@ -322,13 +322,13 @@ jobs:
       # Need to checkout here too, so that we have the pom.xml
       # with the deployment info available
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
         with:
           persist-credentials: false
 
       # Required to have Maven settings.xml set up correctly
       - name: Set up JDK 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e #v5.1.0
         with:
           distribution: 'temurin'
           java-version: '21.0.7'
