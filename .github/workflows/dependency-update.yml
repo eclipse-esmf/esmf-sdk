@@ -6,15 +6,18 @@ on:
       - 'main'
   workflow_dispatch:
   
-permissions:
-  contents: write
+permissions: {}
 
 jobs:
   dependency:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+        with:
+          persist-credentials: false
 
       - name: Submit Dependency Snapshot
-        uses: advanced-security/maven-dependency-submission-action@v3
+        uses: advanced-security/maven-dependency-submission-action@b275d12641ac2d2108b2cbb7598b154ad2f2cee8
