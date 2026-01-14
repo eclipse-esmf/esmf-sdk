@@ -240,14 +240,14 @@ class AspectModelDocumentationGeneratorTest {
             .doesNotContain( "DefaultScalarValue[" )
             .doesNotContain( "type='DefaultScalar" )
             .containsPattern(
-                  "(?s)" +
-                        "<div class=\"flex border-b pb-1 py-4\">\\s*" +
-                        "<div class=\"flex mb-4\">\\s*" +
-                        "(?:>|&gt;)\\s*" +
-                        "<div class=\"w-80\">\\s*" +
-                        "5\\s*" +
-                        "</div>\\s*" +
-                        "</div>"
+                  "(?s)"
+                        + "<div class=\"flex border-b pb-1 py-4\">\\s*"
+                        + "<div class=\"flex mb-4\">\\s*"
+                        + "(?:>|&gt;)\\s*"
+                        + "<div class=\"w-80\">\\s*"
+                        + "5\\s*"
+                        + "</div>\\s*"
+                        + "</div>"
             );
    }
 
@@ -260,11 +260,11 @@ class AspectModelDocumentationGeneratorTest {
             .doesNotContain( "DefaultScalarValue[" )
             .doesNotContain( "type='DefaultScalar" )
             .containsPattern(
-                  "(?s)" +
-                        "<div class=\"w-80\">\\s*" +
-                        "(?:<|&lt;)\\s*" +
-                        "2\\.3\\s*" +
-                        "</div>"
+                  "(?s)"
+                        + "<div class=\"w-80\">\\s*"
+                        + "(?:<|&lt;)\\s*"
+                        + "2\\.3\\s*"
+                        + "</div>"
             );
    }
 
