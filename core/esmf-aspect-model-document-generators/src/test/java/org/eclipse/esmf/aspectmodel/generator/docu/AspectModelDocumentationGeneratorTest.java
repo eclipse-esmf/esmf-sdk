@@ -233,38 +233,38 @@ class AspectModelDocumentationGeneratorTest {
 
    @Test
    void testRangeConstraintRendersOnlyMinValueWithGreaterThanSymbol() {
-      final String htmlResult = generateHtmlDocumentation( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_MIN_VALUE );
+      final String html = generateHtmlDocumentation( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_MIN_VALUE )
+            .replace( "\r\n", "\n" );
 
-      assertThat( htmlResult )
+      assertThat( html )
             .doesNotContain( "DefaultScalarValue[" )
             .doesNotContain( "type='DefaultScalar" )
             .containsPattern(
-                  """
-                        <div class="flex border-b pb-1 py-4">
-                         {4}<div class="flex mb-4">
-                        >
-                         {4}<div class="w-80">
-                         {8}5
-                         {4}</div>
-                        </div>
-                        """
+                  "(?s)" +
+                        "<div class=\"flex border-b pb-1 py-4\">\\s*" +
+                        "<div class=\"flex mb-4\">\\s*" +
+                        "(?:>|&gt;)\\s*" +
+                        "<div class=\"w-80\">\\s*" +
+                        "5\\s*" +
+                        "</div>\\s*" +
+                        "</div>"
             );
    }
 
    @Test
    void testRangeConstraintRendersOnlyMaxValue() {
-      final String htmlResult = generateHtmlDocumentation( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_UPPER_BOUND );
+      final String html = generateHtmlDocumentation( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_UPPER_BOUND )
+            .replace( "\r\n", "\n" );
 
-      assertThat( htmlResult )
+      assertThat( html )
             .doesNotContain( "DefaultScalarValue[" )
             .doesNotContain( "type='DefaultScalar" )
             .containsPattern(
-                  """
-                        <div class="w-80">
-                        <
-                         {4}2.3
-                        </div>
-                        """
+                  "(?s)" +
+                        "<div class=\"w-80\">\\s*" +
+                        "(?:<|&lt;)\\s*" +
+                        "2\\.3\\s*" +
+                        "</div>"
             );
    }
 
