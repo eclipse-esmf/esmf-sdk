@@ -121,16 +121,17 @@ jobs:
           cat <<'EOR' > README.md
           # samm CLI
           
-          ## Usage
-          
-          On macOS, always use the `samm` script
-          to run the CLI:
+          On macOS, always use the `samm` script to run the CLI:
           
               ./samm [arguments]
           
-          This script automatically sets a temporary HOME directory (`/tmp/.warp_home`) to avoid issues with spaces in the path when running the native binary.
-          
-          Do **not** run `samm-default` directly.
+          Important:
+          - The 'samm-default' binary must be located in the same directory as the 'samm' script.
+          - The 'samm' script is a wrapper that prevents errors caused by spaces in the path to the temporary directory on macOS.
+          - When you run 'samm', it will automatically create a temporary directory ('/tmp/.warp_home') and set it as the HOME environment for the native binary.
+            This ensures that all temporary files are unpacked into a safe location without spaces in the path.
+            
+          Do not run 'samm-default' directly. Always use the 'samm' script.
           EOR
         shell: bash
 
