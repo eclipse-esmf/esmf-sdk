@@ -230,7 +230,44 @@ class AspectModelDocumentationGeneratorTest {
             // Upper bound: AT_MOST => <= 10.5
             .containsPattern( "<=(?s).*?10\\.5" );
    }
-  
+
+   @Test
+   void testRangeConstraintRendersOnlyMinValueWithGreaterThanSymbol() {
+      final String htmlResult = generateHtmlDocumentation( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_MIN_VALUE );
+
+      assertThat( htmlResult )
+            .doesNotContain( "DefaultScalarValue[" )
+            .doesNotContain( "type='DefaultScalar" )
+            .containsPattern(
+                  """
+                        <div class="flex border-b pb-1 py-4">
+                         {4}<div class="flex mb-4">
+                        >
+                         {4}<div class="w-80">
+                         {8}5
+                         {4}</div>
+                        </div>
+                        """
+            );
+   }
+
+   @Test
+   void testRangeConstraintRendersOnlyMaxValue() {
+      final String htmlResult = generateHtmlDocumentation( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_UPPER_BOUND );
+
+      assertThat( htmlResult )
+            .doesNotContain( "DefaultScalarValue[" )
+            .doesNotContain( "type='DefaultScalar" )
+            .containsPattern(
+                  """
+                        <div class="w-80">
+                        <
+                         {4}2.3
+                        </div>
+                        """
+            );
+   }
+
    @Test
    void testMarkdownBlocksAndListsAreRenderedFromSammDescription() {
       final String htmlResult = generateHtmlDocumentation( TestAspect.ASPECT_WITH_MARKDOWN_DESCRIPTION );
