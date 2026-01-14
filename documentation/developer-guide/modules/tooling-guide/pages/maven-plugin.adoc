@@ -326,6 +326,8 @@ Configuration Properties:
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated OpenAPI Specification will be written to. | `String` | none | {ok}
 | `aspectApiBaseUrl` | The base URL for the Aspect API OpenAPI specification. | `String` | none | {ok}
+| `readApiPath` | The path for the default endpoint. | `String` | `/api/vX`, where X is the Aspect major version | {nok}
+| `queryApiPath` | The path for the query endpoint. | `String` | `/query-api/vX`, where X is the Aspect major version | {nok}
 | `aspectParameterFile` | The path to a file including the schema description for the resource. For JSON the description has to be in json, for YAML it has to be in YAML. | `String` | none | {nok}
 | `useSemanticApiVersion` | Use the complete semantic version of the Aspect Model as the version of the Aspect API. | `Boolean` | `false` | {nok}
 | `aspectResourcePath` | The `resource-path` for the Aspect API endpoints. | `String` | none | {nok}
