@@ -35,7 +35,7 @@ jobs:
           git config user.email github-actions@github.com
 
       - name: Sanity check version
-        if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
+        if: ${{ !contains( env.RELEASE_VERSION, '-M' ) }}
         run: |
           current_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
 
@@ -157,11 +157,11 @@ jobs:
           name: linux-artifacts
           path: |
             central-bundle.zip
-            samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz
-            samm-cli-${{ github.event.inputs.release_version }}.jar
-            samm-cli-${{ github.event.inputs.release_version }}-javadoc.jar
-            samm-cli-${{ github.event.inputs.release_version }}-sources.jar
-            samm-cli-${{ github.event.inputs.release_version }}-tests.jar
+            samm-cli-${{ env.RELEASE_VERSION }}-linux-x86_64.tar.gz
+            samm-cli-${{ env.RELEASE_VERSION }}.jar
+            samm-cli-${{ env.RELEASE_VERSION }}-javadoc.jar
+            samm-cli-${{ env.RELEASE_VERSION }}-sources.jar
+            samm-cli-${{ env.RELEASE_VERSION }}-tests.jar
 
   build-macos:
     name: Mac build
@@ -236,7 +236,7 @@ jobs:
         with:
           name: mac-artifacts
           path: |
-            samm-cli-${{ github.event.inputs.release_version }}-macos-x86_64.tar.gz
+            samm-cli-${{ env.RELEASE_VERSION }}-macos-x86_64.tar.gz
 
   # The Windows build will build the Windows-specific samm-cli
   # and upload the binary to the build artifacts
@@ -378,23 +378,23 @@ jobs:
 
       # Full release: Github
       - name: "Create Github release (full)"
-        if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
+        if: ${{ !contains( env.RELEASE_VERSION, '-M' ) }}
         uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v0.1.15
         with:
-          body: "Release version ${{ github.event.inputs.release_version }}."
-          tag_name: v${{ github.event.inputs.release_version }}
+          body: "Release version ${{ env.RELEASE_VERSION }}."
+          tag_name: v${{ env.RELEASE_VERSION }}
           target_commitish: ${{ env.release_branch_name }}
           draft: false
           prerelease: false
           files: |
-            samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz
-            samm-cli-${{ github.event.inputs.release_version }}-macos-x86_64.tar.gz
+            samm-cli-${{ env.RELEASE_VERSION }}-linux-x86_64.tar.gz
+            samm-cli-${{ env.RELEASE_VERSION }}-macos-x86_64.tar.gz
             samm-cli-*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
 
       - name: "Notify issues of release their fix is contained in"
-        if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
+        if: ${{ !contains( env.RELEASE_VERSION, '-M' ) }}
         uses: apexskier/github-release-commenter@3bd413ad5e1d603bfe2282f9f06f2bdcec079327 # v1.3.6
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -443,7 +443,7 @@ jobs:
 
       # Full release: Maven Central
       - name: Release to Maven Central
-        if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
+        if: ${{ !contains( env.RELEASE_VERSION, '-M' ) }}
         run: |
           token_header=$(printf "$CENTRAL_USERNAME:$CENTRAL_TOKEN" | base64)
           curl --request POST \
@@ -456,7 +456,7 @@ jobs:
 
       # Milestone release: Write settings to deploy to Github repo
       - name: Write settings.xml
-        if: contains( github.event.inputs.release_version, '-M' )
+        if: contains( env.RELEASE_VERSION, '-M' )
         uses: DamianReeves/write-file-action@0a7fcbe1960c53fc08fe789fa4850d24885f4d84 # v1.2
         with:
           path: settings.xml
@@ -487,7 +487,7 @@ jobs:
 
       # Milestone release: Maven deploy to Github
       - name: Publish to Github
-        if: contains( github.event.inputs.release_version, '-M' )
+        if: contains( env.RELEASE_VERSION, '-M' )
         run: mvn -s ./settings.xml -B clean -pl '!documentation,!tools/samm-cli' deploy -DskipTests -Pmilestone-build,sign
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
@@ -495,17 +495,17 @@ jobs:
 
       # Milestone release: Github
       - name: "Create Github release (milestone)"
-        if: contains( github.event.inputs.release_version, '-M' )
+        if: contains( env.RELEASE_VERSION, '-M' )
         uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v0.1.15
         with:
-          body: "Release version ${{ github.event.inputs.release_version }}."
-          tag_name: v${{ github.event.inputs.release_version }}
+          body: "Release version ${{ env.RELEASE_VERSION }}."
+          tag_name: v${{ env.RELEASE_VERSION }}
           target_commitish: ${{ env.release_branch_name }}
           draft: false
           prerelease: true
           files: |
-            samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz
-            samm-cli-${{ github.event.inputs.release_version }}-macos-x86_64.tar.gz
+            samm-cli-${{ env.RELEASE_VERSION }}-linux-x86_64.tar.gz
+            samm-cli-${{ env.RELEASE_VERSION }}-macos-x86_64.tar.gz
             samm-cli-*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
