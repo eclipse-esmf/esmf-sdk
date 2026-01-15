@@ -1,0 +1,24 @@
+#parse("/ts/ts-pojo-property-lib.vm")
+
+/**
+* Generated class for $element.getPreferredName( $localeEn ) (${elementUrn}).
+* #if ( $element.getDescription( $localeEn ) ) $element.getDescription( $localeEn )#end
+* Generated "$codeGeneratorName", date = "$codeGeneratorDate"
+*/
+#macro( tsPojoClassBody )
+    #if ( $element.isCollectionAspect() )
+        ${util.determineCollectionAspectClassDefinition( $element, $codeGenerationConfig )} {
+    #elseif ( $element.isComplexType() )
+        #set( $complexElement = $util.castToComplexType( $element ) )
+        ${util.determineComplexTypeClassDefinition( $complexElement, $codeGenerationConfig )}
+    #else
+        export class $util.generateClassName($element, $codeGenerationConfig)$util.genericClassSignature($element) {
+    #end
+    #foreach ($property in $element.properties)
+        #tsPojoProperty($property)
+    #end
+    #foreach( $property in $deconstructor.allProperties )
+        #tsPojoProperty( $property )
+    #end
+}
+#end
