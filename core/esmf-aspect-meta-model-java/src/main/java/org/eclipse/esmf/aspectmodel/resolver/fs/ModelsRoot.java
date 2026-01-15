@@ -21,6 +21,7 @@ import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 import org.slf4j.Logger;
@@ -30,7 +31,6 @@ import org.slf4j.LoggerFactory;
 public abstract class ModelsRoot {
 
    private static final Logger LOG = LoggerFactory.getLogger( ModelsRoot.class );
-   private static final File EMPTY_FILE = new File( "" );
    private final Path root;
 
    protected ModelsRoot( final Path root ) {
@@ -84,6 +84,6 @@ public abstract class ModelsRoot {
       } catch ( IOException exception ) {
          LOG.error( "Error resolving canonical path for file: {}", file.getPath(), exception );
       }
-      return EMPTY_FILE;
+      throw new ModelResolutionException("Resolving path failed for file " + file.getPath());
    }
 }
