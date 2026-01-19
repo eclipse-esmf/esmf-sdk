@@ -151,6 +151,21 @@ public class AspectModelOpenApiGeneratorTest {
    }
 
    @Test
+   void testSetCustomReadApiPath() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_PROPERTY ).aspect();
+      final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
+            .baseUrl( TEST_BASE_URL )
+            .resourcePath( TEST_RESOURCE_PATH )
+            .readApiPath( "/custom/path" )
+            .build();
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
+      final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
+      final OpenAPI openApi = result.getOpenAPI();
+
+      assertThat( openApi.getServers() ).allMatch( server -> server.getUrl().endsWith( "/custom/path" ) );
+   }
+
+   @Test
    void testIncludeQueryApiWithSemanticVersion() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT ).aspect();
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
@@ -165,6 +180,23 @@ public class AspectModelOpenApiGeneratorTest {
       assertThat( openApi.getPaths().get( "/query-api/v1.0.0/" + TEST_RESOURCE_PATH ).getPost().getServers()
             .get( 0 ).getUrl() )
             .isEqualTo( "https://test-aspect.example.com/query-api/v1.0.0" );
+   }
+
+   @Test
+   void testSetCustomQueryApiPath() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT ).aspect();
+      final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
+            .baseUrl( TEST_BASE_URL )
+            .queryApiPath( "/custom/query-path" )
+            .resourcePath( TEST_RESOURCE_PATH )
+            .includeQueryApi( true )
+            .build();
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
+      final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
+      final OpenAPI openApi = result.getOpenAPI();
+      assertThat( openApi.getPaths().get( "/custom/query-path/" + TEST_RESOURCE_PATH ).getPost().getServers()
+            .get( 0 ).getUrl() )
+            .isEqualTo( "https://test-aspect.example.com/custom/query-path" );
    }
 
    @Test

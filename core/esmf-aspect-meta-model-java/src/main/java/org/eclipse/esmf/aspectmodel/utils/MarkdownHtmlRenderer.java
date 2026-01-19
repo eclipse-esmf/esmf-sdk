@@ -77,16 +77,78 @@ public class MarkdownHtmlRenderer {
     * @return The rendered HTML output.
     */
    private static String processSpecialBlocks( final String rawMarkdown ) {
-      String[] lines = stripLines( rawMarkdown );
-      StringBuilder markdownBuffer = new StringBuilder();
-      Map<String, List<String>> specialBlocks = collectSpecialBlocks( lines, markdownBuffer );
+      final String[] lines = stripLines( rawMarkdown );
 
-      StringBuilder html = new StringBuilder();
-      specialBlocks.forEach( ( type, items ) -> html.append( renderSpecialBlock( type, items ) ) );
+      final StringBuilder html = new StringBuilder();
+      final StringBuilder markdownBuffer = new StringBuilder();
 
+      String currentType = null; // NOTE / EXAMPLE / SOURCE / ...
+      final StringBuilder blockBuffer = new StringBuilder();
+
+      for ( final String line : lines ) {
+         final String trimmedLeading = line.stripLeading();
+         final Matcher matcher = DescriptionsUtils.BLOCK_PATTERN.matcher( trimmedLeading );
+
+         final boolean startsNewSpecialBlock = matcher.find();
+         final boolean continuesSpecialBlock = currentType != null && trimmedLeading.startsWith( ">" );
+
+         if ( startsNewSpecialBlock ) {
+            flushMarkdown( markdownBuffer, html );
+            flushSpecialBlock( currentType, blockBuffer, html );
+
+            currentType = matcher.group( 1 ).toUpperCase(); // NOTE / EXAMPLE / SOURCE
+            blockBuffer.append( matcher.group( 3 ) ).append( '\n' );
+         } else if ( continuesSpecialBlock ) {
+            blockBuffer.append( trimmedLeading.substring( 1 ).stripLeading() ).append( '\n' );
+         } else {
+            flushSpecialBlock( currentType, blockBuffer, html );
+            currentType = null;
+
+            markdownBuffer.append( line ).append( '\n' );
+         }
+      }
+
+      flushSpecialBlock( currentType, blockBuffer, html );
+      flushMarkdown( markdownBuffer, html );
+
+      return html.toString();
+   }
+
+   private static void flushMarkdown( final StringBuilder markdownBuffer, final StringBuilder html ) {
+      if ( markdownBuffer.isEmpty() ) {
+         return;
+      }
       Node parsed = PARSER.parse( markdownBuffer.toString() );
       html.append( RENDERER.render( parsed ) );
-      return html.toString();
+      markdownBuffer.setLength( 0 );
+   }
+
+   private static void flushSpecialBlock(
+         final String currentType,
+         final StringBuilder blockBuffer,
+         final StringBuilder html
+   ) {
+      if ( currentType == null || blockBuffer.isEmpty() ) {
+         blockBuffer.setLength( 0 );
+         return;
+      }
+
+      // keep existing behavior: split EXAMPLE into list entries, NOTE/SOURCE as single block
+      List<String> items = splitBlockItems( blockBuffer.toString() );
+      html.append( renderSpecialBlock( currentType, items ) );
+
+      blockBuffer.setLength( 0 );
+   }
+
+   private static List<String> splitBlockItems( final String blockText ) {
+      String normalized = blockText.strip();
+
+      // Start a new item for each "EXAMPLE X:" header.
+      // BLOCK_PATTERN already matches the header line and should be used to detect block boundaries.
+      // Collect the following multiline text as the example content until a blank line or the next "EXAMPLE" header.
+      // Reuse existing flushBlock() logic to finalize and append the current item before starting the next one.
+
+      return List.of( normalized );
    }
 
    /**

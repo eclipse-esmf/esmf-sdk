@@ -5,19 +5,25 @@ on:
       release_version:
         description: 'Version number of the release'
         required: true
+env:
+  RELEASE_VERSION: ${{ github.event.inputs.release_version }}
+permissions: {}
 jobs:
   check-preconditions:
     name: Check preconditions
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
         with:
           submodules: recursive
+          persist-credentials: false
 
       # Required for Maven
       - name: Set up JDK 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e #v5.1.0
         with:
           distribution: 'temurin'
           java-version: '21.0.7'
@@ -29,16 +35,15 @@ jobs:
           git config user.email github-actions@github.com
 
       - name: Sanity check version
-        if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
+        if: ${{ !contains( env.RELEASE_VERSION, '-M' ) }}
         run: |
           current_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          release_version=${{ github.event.inputs.release_version }}
 
-          if [[ $release_version =~ ^[0-9]+.[0-9]+.[0-9]+$ ]]
+          if [[ "${RELEASE_VERSION}" =~ ^[0-9]+.[0-9]+.[0-9]+$ ]]
           then
             echo version is valid
           else
-            echo release version $release_version is invalid
+            echo release version ${RELEASE_VERSION} is invalid
             exit 1
           fi
 
@@ -49,17 +54,20 @@ jobs:
     name: Linux build
     needs: [check-preconditions]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
         with:
           submodules: recursive
+          persist-credentials: false
 
       # Even though the build itself is done using the GraalVM JDK
       # (see below), we use the setup-java action to have GPG configured
       # so that it can be used from the maven-gpg-plugin.
       - name: Configure GPG
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e #v5.1.0
         with:
           distribution: 'temurin'
           java-version: '21.0.7'
@@ -80,7 +88,7 @@ jobs:
           native-image-job-reports: 'true'
 
       - name: Cache Maven packages
-        uses: actions/cache@v4
+        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb #v5.0.1
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -98,11 +106,10 @@ jobs:
         run: |
           export MAVEN_OPTS="-Xmx4096m"
           export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
-          release_version=${{ github.event.inputs.release_version }}
 
           # Required for reactor dependencies
           mvn clean install -DskipTests -Dmaven.javadoc.skip=true
-          mvn versions:set -DnewVersion=${release_version}
+          mvn versions:set -DnewVersion=${RELEASE_VERSION}
           mvn versions:commit
 
           # Actual build of core SDK
@@ -125,15 +132,15 @@ jobs:
           # Create .tar.gz of samm-cli
           pushd tools/samm-cli/target
           chmod a+x samm
-          tar cfvz samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz samm *.so
+          tar cfvz samm-cli-${RELEASE_VERSION}-linux-x86_64.tar.gz samm *.so
           popd
-          mv tools/samm-cli/target/samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz .
+          mv tools/samm-cli/target/samm-cli-${RELEASE_VERSION}-linux-x86_64.tar.gz .
           cp tools/samm-cli/target/samm-cli-*.jar .
         env:
           PGP_KEY_PASSWORD: ${{ secrets.PGP_KEY_PASSWORD }}
 
       - name: Switch to Temurin JDK
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e #v5.1.0
         with:
           distribution: 'temurin'
           java-version: '21.0.7'
@@ -145,26 +152,29 @@ jobs:
           mvn -B -Denforcer.skip -Dskip.maven.surefire failsafe:integration-test -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
 
       - name: Upload staging directory and Linux binary
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f #v6.0.0
         with:
           name: linux-artifacts
           path: |
             central-bundle.zip
-            samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz
-            samm-cli-${{ github.event.inputs.release_version }}.jar
-            samm-cli-${{ github.event.inputs.release_version }}-javadoc.jar
-            samm-cli-${{ github.event.inputs.release_version }}-sources.jar
-            samm-cli-${{ github.event.inputs.release_version }}-tests.jar
+            samm-cli-${{ env.RELEASE_VERSION }}-linux-x86_64.tar.gz
+            samm-cli-${{ env.RELEASE_VERSION }}.jar
+            samm-cli-${{ env.RELEASE_VERSION }}-javadoc.jar
+            samm-cli-${{ env.RELEASE_VERSION }}-sources.jar
+            samm-cli-${{ env.RELEASE_VERSION }}-tests.jar
 
   build-macos:
     name: Mac build
     needs: [check-preconditions]
     runs-on: macos-15-intel
+    permissions:
+      contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
         with:
           submodules: recursive
+          persist-credentials: false
 
       - name: Setup JDK
         uses: graalvm/setup-graalvm@01ed653ac833fe80569f1ef9f25585ba2811baab # v1.3.3
@@ -175,7 +185,7 @@ jobs:
           native-image-job-reports: 'false'
 
       - name: Cache Maven packages
-        uses: actions/cache@v4
+        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb #v5.0.1
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -187,7 +197,7 @@ jobs:
           export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
           # Required for reactor dependencies
           mvn clean install -DskipTests -Dmaven.javadoc.skip=true
-          mvn versions:set -DnewVersion=${{ github.event.inputs.release_version }}
+          mvn versions:set -DnewVersion=${ RELEASE_VERSION }
           mvn versions:commit
           # Actual build of core SDK
           mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
@@ -202,15 +212,15 @@ jobs:
           mkdir ${bundle}
           curl -Lo jre.tar.gz https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.7%2B6/OpenJDK21U-jre_x64_mac_hotspot_21.0.7_6.tar.gz
           tar -xvf jre.tar.gz
-          cp -r ./jdk-21.0.7+6-jre/Contents/Home ./${bundle}/jre
-          cp tools/samm-cli/target/samm-cli-${{ github.event.inputs.release_version }}.jar ./${bundle}/
+          cp -r ./jdk-21.0.7+6-jre ./${bundle}/jre
+          cp tools/samm-cli/target/samm-cli-${RELEASE_VERSION}.jar ./${bundle}/
 
           cat <<EOF > ./${bundle}/run.sh
           #!/usr/bin/env bash
 
           HERE=\${BASH_SOURCE%/*}
 
-          "\$HERE/jre/bin/java" -jar "\$HERE/samm-cli-${{ github.event.inputs.release_version }}.jar" "\$@"
+          "\$HERE/jre/Contents/Home/bin/java" -jar "\$HERE/samm-cli-${ RELEASE_VERSION }.jar" "\$@"
           EOF
           chmod +x ./${bundle}/run.sh
 
@@ -218,15 +228,15 @@ jobs:
           chmod +x warp-packer
           ./warp-packer --arch macos-x64 --input_dir ${bundle} --exec run.sh --output samm
           chmod a+x samm
-          tar cfvz samm-cli-${{ github.event.inputs.release_version }}-macos-x86_64.tar.gz samm
+          tar cfvz samm-cli-${RELEASE_VERSION}-macos-x86_64.tar.gz samm
         shell: bash
 
       - name: Upload Mac binary
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f #v6.0.0
         with:
           name: mac-artifacts
           path: |
-            samm-cli-${{ github.event.inputs.release_version }}-macos-x86_64.tar.gz
+            samm-cli-${{ env.RELEASE_VERSION }}-macos-x86_64.tar.gz
 
   # The Windows build will build the Windows-specific samm-cli
   # and upload the binary to the build artifacts
@@ -234,11 +244,14 @@ jobs:
     name: Windows build
     needs: [check-preconditions]
     runs-on: windows-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
         with:
           submodules: recursive
+          persist-credentials: false
 
       - name: Setup JDK
         uses: graalvm/setup-graalvm@01ed653ac833fe80569f1ef9f25585ba2811baab # v1.3.3
@@ -249,7 +262,7 @@ jobs:
           native-image-job-reports: 'true'
 
       - name: Cache Maven packages
-        uses: actions/cache@v4
+        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb #v5.0.1
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -273,7 +286,7 @@ jobs:
           export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
           # Required for reactor dependencies
           mvn clean install -DskipTests -Dmaven.javadoc.skip=true
-          mvn versions:set -DnewVersion=${{ github.event.inputs.release_version }}
+          mvn versions:set -DnewVersion=${RELEASE_VERSION}
           mvn versions:commit
 
           # Actual build of core SDK
@@ -286,7 +299,7 @@ jobs:
         shell: bash
 
       - name: Upload Windows binary
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f #v6.0.0
         with:
           name: windows-artifacts
           path: |
@@ -298,15 +311,20 @@ jobs:
     name: Release
     needs: [build-linux, build-windows, build-macos]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
     steps:
       # Need to checkout here too, so that we have the pom.xml
       # with the deployment info available
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+        with:
+          persist-credentials: false
 
       # Required to have Maven settings.xml set up correctly
       - name: Set up JDK 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e #v5.1.0
         with:
           distribution: 'temurin'
           java-version: '21.0.7'
@@ -327,31 +345,30 @@ jobs:
           native-image-job-reports: 'false'
 
       - name: Fetch Linux Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 #v6.0.0
         with:
           name: linux-artifacts
 
       - name: Fetch Mac Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 #v6.0.0
         with:
           name: mac-artifacts
 
       - name: Set versions
         continue-on-error: true
         run: |
-          release_version=${{ github.event.inputs.release_version }}
-          release_branch_name=${release_version%.*}.x
+          release_branch_name=${RELEASE_VERSION%.*}.x
           echo "release_branch_name=$release_branch_name" >> $GITHUB_ENV
 
           # Set version in pom.xml files
           mvn -B clean install -DskipTests -Dmaven.javadoc.skip=true
-          mvn -B versions:set -DnewVersion=${{ github.event.inputs.release_version }}
+          mvn -B versions:set -DnewVersion=${RELEASE_VERSION}
           mvn -B versions:commit
           # Set version in Antora module
-          yq eval -i '.version = "${{ github.event.inputs.release_version }}"' documentation/developer-guide/antora.yml
+          yq eval -i '.version = "${RELEASE_VERSION}"' documentation/developer-guide/antora.yml
 
       - name: Commit version changes and push to upstream repository
-        uses: stefanzweifel/git-auto-commit-action@8756aa072ef5b4a080af5dc8fef36c5d586e521d # v5
+        uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7.1.0
         with:
           branch: ${{ env.release_branch_name }}
           commit_user_name: github-actions
@@ -361,23 +378,23 @@ jobs:
 
       # Full release: Github
       - name: "Create Github release (full)"
-        if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
+        if: ${{ !contains( env.RELEASE_VERSION, '-M' ) }}
         uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v0.1.15
         with:
-          body: "Release version ${{ github.event.inputs.release_version }}."
-          tag_name: v${{ github.event.inputs.release_version }}
+          body: "Release version ${{ env.RELEASE_VERSION }}."
+          tag_name: v${{ env.RELEASE_VERSION }}
           target_commitish: ${{ env.release_branch_name }}
           draft: false
           prerelease: false
           files: |
-            samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz
-            samm-cli-${{ github.event.inputs.release_version }}-macos-x86_64.tar.gz
+            samm-cli-${{ env.RELEASE_VERSION }}-linux-x86_64.tar.gz
+            samm-cli-${{ env.RELEASE_VERSION }}-macos-x86_64.tar.gz
             samm-cli-*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
 
       - name: "Notify issues of release their fix is contained in"
-        if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
+        if: ${{ !contains( env.RELEASE_VERSION, '-M' ) }}
         uses: apexskier/github-release-commenter@3bd413ad5e1d603bfe2282f9f06f2bdcec079327 # v1.3.6
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -406,7 +423,7 @@ jobs:
           BRANCH_NAME="pre_release_configuration"
 
           echo "artifact_url_win=$ARTIFACT_URL_WIN" > parameters.txt
-          echo "version=${{ github.event.inputs.release_version }}" >> parameters.txt
+          echo "version=${RELEASE_VERSION}" >> parameters.txt
 
           git config --global user.email "github-actions@github.com"
           git config --global user.name "github-actions"
@@ -426,7 +443,7 @@ jobs:
 
       # Full release: Maven Central
       - name: Release to Maven Central
-        if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
+        if: ${{ !contains( env.RELEASE_VERSION, '-M' ) }}
         run: |
           token_header=$(printf "$CENTRAL_USERNAME:$CENTRAL_TOKEN" | base64)
           curl --request POST \
@@ -439,7 +456,7 @@ jobs:
 
       # Milestone release: Write settings to deploy to Github repo
       - name: Write settings.xml
-        if: contains( github.event.inputs.release_version, '-M' )
+        if: contains( env.RELEASE_VERSION, '-M' )
         uses: DamianReeves/write-file-action@0a7fcbe1960c53fc08fe789fa4850d24885f4d84 # v1.2
         with:
           path: settings.xml
@@ -470,7 +487,7 @@ jobs:
 
       # Milestone release: Maven deploy to Github
       - name: Publish to Github
-        if: contains( github.event.inputs.release_version, '-M' )
+        if: contains( env.RELEASE_VERSION, '-M' )
         run: mvn -s ./settings.xml -B clean -pl '!documentation,!tools/samm-cli' deploy -DskipTests -Pmilestone-build,sign
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
@@ -478,17 +495,17 @@ jobs:
 
       # Milestone release: Github
       - name: "Create Github release (milestone)"
-        if: contains( github.event.inputs.release_version, '-M' )
+        if: contains( env.RELEASE_VERSION, '-M' )
         uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v0.1.15
         with:
-          body: "Release version ${{ github.event.inputs.release_version }}."
-          tag_name: v${{ github.event.inputs.release_version }}
+          body: "Release version ${{ env.RELEASE_VERSION }}."
+          tag_name: v${{ env.RELEASE_VERSION }}
           target_commitish: ${{ env.release_branch_name }}
           draft: false
           prerelease: true
           files: |
-            samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz
-            samm-cli-${{ github.event.inputs.release_version }}-macos-x86_64.tar.gz
+            samm-cli-${{ env.RELEASE_VERSION }}-linux-x86_64.tar.gz
+            samm-cli-${{ env.RELEASE_VERSION }}-macos-x86_64.tar.gz
             samm-cli-*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
