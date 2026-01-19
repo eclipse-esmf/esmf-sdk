@@ -314,6 +314,8 @@ jobs:
     permissions:
       contents: write
       actions: read
+      issues: write
+      pull-requests: read
     steps:
       # Need to checkout here too, so that we have the pom.xml
       # with the deployment info available
