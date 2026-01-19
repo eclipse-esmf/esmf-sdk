@@ -314,13 +314,15 @@ jobs:
     permissions:
       contents: write
       actions: read
+      issues: write
+      pull-requests: read
     steps:
       # Need to checkout here too, so that we have the pom.xml
       # with the deployment info available
       - name: Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
         with:
-          persist-credentials: false
+          persist-credentials: true
 
       # Required to have Maven settings.xml set up correctly
       - name: Set up JDK 21
