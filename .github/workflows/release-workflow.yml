@@ -197,7 +197,7 @@ jobs:
           export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
           # Required for reactor dependencies
           mvn clean install -DskipTests -Dmaven.javadoc.skip=true
-          mvn versions:set -DnewVersion=${ RELEASE_VERSION }
+          mvn versions:set -DnewVersion=${RELEASE_VERSION}
           mvn versions:commit
           # Actual build of core SDK
           mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
@@ -220,7 +220,7 @@ jobs:
 
           HERE=\${BASH_SOURCE%/*}
 
-          "\$HERE/jre/Contents/Home/bin/java" -jar "\$HERE/samm-cli-${ RELEASE_VERSION }.jar" "\$@"
+          "\$HERE/jre/Contents/Home/bin/java" -jar "\$HERE/samm-cli-${RELEASE_VERSION}.jar" "\$@"
           EOF
           chmod +x ./${bundle}/run.sh
 
