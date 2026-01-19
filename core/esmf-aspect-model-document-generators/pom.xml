@@ -27,6 +27,11 @@
    <artifactId>esmf-aspect-model-document-generators</artifactId>
    <name>ESMF Aspect Model Document Generators</name>
    <packaging>jar</packaging>
+   <properties>
+      <npm-version>11.2.0</npm-version>
+      <node-version>v22.14.0</node-version>
+      <frontend-maven-plugin-version>1.15.4</frontend-maven-plugin-version>
+   </properties>
 
    <dependencies>
       <dependency>
@@ -183,6 +188,34 @@
                      <version>${record-builder-version}</version>
                   </path>
                </annotationProcessorPaths>
+            </configuration>
+         </plugin>
+         <plugin>
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+            <version>${frontend-maven-plugin-version}</version>
+            <executions>
+               <execution>
+                  <id>install node and npm</id>
+                  <goals>
+                     <goal>install-node-and-npm</goal>
+                  </goals>
+                  <phase>generate-resources</phase>
+               </execution>
+               <execution>
+                  <id>npm install</id>
+                  <goals>
+                     <goal>npm</goal>
+                  </goals>
+                  <configuration>
+                     <arguments>install prettier typescript</arguments>
+                  </configuration>
+                  <phase>generate-resources</phase>
+               </execution>
+            </executions>
+            <configuration>
+               <nodeVersion>${node-version}</nodeVersion>
+               <npmVersion>${npm-version}</npmVersion>
             </configuration>
          </plugin>
       </plugins>
