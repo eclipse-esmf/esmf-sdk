@@ -266,7 +266,7 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
       final boolean pagingSchemaExists = schemas.has( FIELD_PAGING_SCHEMA );
 
       final String schemaName =
-            (includePaging && pagingSchemaExists) ? FIELD_PAGING_SCHEMA : aspect.getName();
+            ( includePaging && pagingSchemaExists ) ? FIELD_PAGING_SCHEMA : aspect.getName();
 
       final ObjectNode referenceNode = FACTORY.objectNode()
             .put( REF, COMPONENTS_SCHEMAS + schemaName );

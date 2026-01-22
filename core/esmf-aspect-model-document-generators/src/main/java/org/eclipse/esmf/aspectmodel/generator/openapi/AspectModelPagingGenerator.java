@@ -52,9 +52,9 @@ class AspectModelPagingGenerator {
    /**
     * Sets the paging properties for an aspect to an given ObjectNode.
     *
-    * @param aspect The related aspect for the paging properties.
+    * @param aspect               The related aspect for the paging properties.
     * @param selectedPagingOption The selected paging option.
-    * @param objectNode The ObjectNode where the properties shall be inserted.
+    * @param objectNode           The ObjectNode where the properties shall be inserted.
     * @throws IOException In case the root property file can't be loaded.
     */
    public void setPagingProperties(
@@ -71,8 +71,8 @@ class AspectModelPagingGenerator {
 
       if ( possiblePagingOptions.isEmpty() ) {
          LOG.warn(
-               "Paging enabled via CLI, but no paging types detected by visitor. " +
-                     "Forcing paging request parameters. Aspect={}, pagingOption={}",
+               "Paging enabled via CLI, but no paging types detected by visitor. "
+                     + "Forcing paging request parameters. Aspect={}, pagingOption={}",
                aspect.getName(),
                selectedPagingOption
          );
@@ -100,9 +100,9 @@ class AspectModelPagingGenerator {
    /**
     * Sets the paging schema for an aspect to an given ObjectNode.
     *
-    * @param aspect The related aspect for the paging schema.
+    * @param aspect               The related aspect for the paging schema.
     * @param selectedPagingOption The selected paging option.
-    * @param schemaNode The ObjectNode where the schema shall be inserted.
+    * @param schemaNode           The ObjectNode where the schema shall be inserted.
     * @throws IOException In case the root schema file can't be loaded.
     */
    public void setSchemaInformationForPaging(
@@ -119,8 +119,8 @@ class AspectModelPagingGenerator {
 
       if ( possiblePagingOptions.isEmpty() ) {
          LOG.warn(
-               "Paging enabled via CLI, but no paging types detected by visitor. " +
-                     "Forcing paging schema generation. Aspect={}, pagingOption={}",
+               "Paging enabled via CLI, but no paging types detected by visitor. "
+                     + "Forcing paging schema generation. Aspect={}, pagingOption={}",
                aspect.getName(),
                selectedPagingOption
          );
