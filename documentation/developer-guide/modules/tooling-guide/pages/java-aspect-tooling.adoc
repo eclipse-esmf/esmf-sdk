@@ -48,16 +48,6 @@ https://docs.github.com/en/packages/working-with-a-github-packages-registry/work
 The esmf-sdk components are built with Java 21 and require a JDK >= 21 such as
 https://adoptium.net/[Adoptium Temurin].
 
-The esmf-sdk can also be used with a Java 21-compatible https://www.graalvm.org/[GraalVM JDK].
-
-[TIP]
-=====
-When using esmf-sdk with a GraalVM JDK and you target `native-image` compilation, add a
-dependency to the `esmf-native-support` module. This will add the necessary configuration for
-esmf-sdk resources, reflection and initialization that is required by the compiler:
-
-include::esmf-developer-guide:ROOT:partial$esmf-native-support-artifact.adoc[]
-=====
 
 [[parsing-aspect-model-urns]]
 == Parsing Aspect Model URNs

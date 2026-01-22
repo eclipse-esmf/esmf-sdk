@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -16,11 +16,11 @@ package org.eclipse.esmf.substitution;
 import java.util.function.BooleanSupplier;
 
 /**
- * Conditional to execute substitution only on Linux. Use with com.oracle.svm.core.annotate.Substitute's onlyWith attribute.
+ * Conditional to execute substitution only on Windows. Use with com.oracle.svm.core.annotate.Substitute's onlyWith attribute.
  */
-public class IsLinux implements BooleanSupplier {
+public class IsWindows implements BooleanSupplier {
    @Override
    public boolean getAsBoolean() {
-      return "Linux".equals( System.getProperty( "os.name" ) );
+      return System.getProperty( "os.name", "" ).startsWith( "Windows" );
    }
 }
