@@ -207,10 +207,6 @@ public class AspectToOpenapiCommand extends AbstractCommand {
 
       final Locale locale = Optional.ofNullable( language ).map( Locale::forLanguageTag ).orElse( Locale.ENGLISH );
       final Aspect aspect = getInputHandler( parentCommand.parentCommand.getInput() ).loadAspect();
-
-      final PagingOption pagingOption = getPaging();
-      validatePagingOption( aspect, pagingOption );
-
       final ObjectMapper objectMapper = new ObjectMapper();
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( useSemanticApiVersion )
@@ -317,18 +313,5 @@ public class AspectToOpenapiCommand extends AbstractCommand {
          return PagingOption.TIME_BASED_PAGING;
       }
       return null;
-   }
-
-   private void validatePagingOption( final Aspect aspect, final PagingOption pagingOption ) {
-      if ( pagingOption == null || pagingOption == PagingOption.NO_PAGING ) {
-         return;
-      }
-
-      if ( !aspect.isCollectionAspect() ) {
-         throw new CommandException(
-               "Paging is only supported for collection aspects. "
-                     + "Remove paging flags (-pc/-po/-pt) or use --paging-none (-pn)."
-         );
-      }
    }
 }

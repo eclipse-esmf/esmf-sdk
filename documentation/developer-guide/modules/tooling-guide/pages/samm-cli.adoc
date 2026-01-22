@@ -151,15 +151,14 @@ of model resolution] for more information.
                                    | _--include-post, -post_ : include the POST method in the OpenAPI specification          |
                                    | _--include-put, -put_ : include the PUT method in the OpenAPI specification             |
                                    | _--include-patch, -patch_ : include the PATCH method in the OpenAPI specification       |
-                                   | _--paging-none, -pn_ : exclude paging information for the Aspect API Endpoint in the
-                                       https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification. Paging is only applicable for
-                                       collection aspects                                                                    |
+                                                    | _--paging-none, -pn_ : exclude paging information for the Aspect API Endpoint in the
+                                       https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification                           |
                                    | _--paging-cursor-based, -pc_ : in case there is more than one paging possibility,
-                                       it must be cursor based paging. Only supported for collection aspects                 |
+                                       it must be cursor based paging                                                        |
                                    | _--paging-offset-based, -po_ : in case there is more than one paging possibility,
-                                       it must be offset based paging. Only supported for collection aspects                 |
+                                       it must be offset based paging                                                        |
                                    | _--paging-time-based, -pt_ : in case there is more than one paging possibility,
-                                       it must be time based paging. Only supported for collection aspects                   |
+                                       it must be time based paging                                                          |
                                    | _--language, -l_ : The language from the model for which an OpenAPI specification should
                                        be generated (default: en)                                                            | `samm aspect AspectModel.ttl to openapi -l de`
                                    | _--template-file, -t_ : the path to a file including a template for
