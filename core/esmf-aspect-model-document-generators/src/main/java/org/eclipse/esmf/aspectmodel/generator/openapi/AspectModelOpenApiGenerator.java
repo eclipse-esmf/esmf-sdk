@@ -169,7 +169,7 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
 
    private boolean includePaging( final Aspect aspect, final PagingOption pagingType ) {
       return pagingType != PagingOption.NO_PAGING
-            && PAGING_GENERATOR.isPagingPossible( aspect );
+            && aspect.isCollectionAspect();
    }
 
    private ObjectNode getPropertiesNode( final String resourcePath, final ObjectNode properties ) {

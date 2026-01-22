@@ -101,16 +101,6 @@ class AspectModelPagingGenerator {
       setSchemaInformation( aspect, pagingOption, schemaNode );
    }
 
-   /**
-    * Returns If paging is possible for the given aspect.
-    *
-    * @param aspect The aspect which shall be proofed.
-    * @return True if it is possible, false otherwise.
-    */
-   public boolean isPagingPossible( final Aspect aspect ) {
-      return !getPagingTypesForAspect( aspect ).isEmpty();
-   }
-
    private PagingOption pickOneOfManyPagingOptions( final Set<PagingOption> pagingOptions ) {
       if ( pagingOptions.contains( PagingOption.TIME_BASED_PAGING ) ) {
          return PagingOption.TIME_BASED_PAGING;
