@@ -143,12 +143,17 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
          final String apiPath = Optional.ofNullable( config.readApiPath() )
                .orElse( READ_SERVER_PATH.formatted( apiVersion ) );
          setServers( rootNode, config.baseUrl(), apiVersion, apiPath );
-         final boolean pagingEnabled = config.pagingOption() != PagingOption.NO_PAGING;
 
-         setOptionalSchemas( aspect(), config, pagingEnabled, rootNode );
+         final PagingOption selectedPaging = config.pagingOption();
+         final boolean pagingPossible = PAGING_GENERATOR.isPagingPossible( aspect() );
+         final boolean includePaging =
+               selectedPaging != PagingOption.NO_PAGING
+                     && (selectedPaging != null || pagingPossible);
+
+         setOptionalSchemas( aspect(), config, includePaging, rootNode );
          setAspectSchemas( aspect(), config, rootNode );
          setRequestBodies( aspect(), config, rootNode );
-         setResponseBodies( aspect(), rootNode, pagingEnabled );
+         setResponseBodies( aspect(), rootNode, includePaging );
 
          rootNode.set(
                "paths",
@@ -158,7 +163,7 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
                      apiVersion,
                      config.properties(),
                      config.queriesTemplate(),
-                     pagingEnabled
+                     includePaging
                )
          );
          artifact = new OpenApiSchemaArtifact( aspect().getName(), merge( rootNode, config.documentTemplate() ) );
@@ -177,11 +182,6 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
       node.set( "variables", variables );
       variables.set( "api-version", FACTORY.objectNode().put( "default", apiVersion ) );
       arrayNode.add( node );
-   }
-
-   private boolean includePaging( final Aspect aspect, final PagingOption pagingType ) {
-      return pagingType != PagingOption.NO_PAGING
-            && PAGING_GENERATOR.isPagingPossible( aspect );
    }
 
    private ObjectNode getPropertiesNode( final String resourcePath, final ObjectNode properties ) {
@@ -266,7 +266,7 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
       final boolean pagingSchemaExists = schemas.has( FIELD_PAGING_SCHEMA );
 
       final String schemaName =
-            ( includePaging && pagingSchemaExists ) ? FIELD_PAGING_SCHEMA : aspect.getName();
+            (includePaging && pagingSchemaExists) ? FIELD_PAGING_SCHEMA : aspect.getName();
 
       final ObjectNode referenceNode = FACTORY.objectNode()
             .put( REF, COMPONENTS_SCHEMAS + schemaName );

@@ -50,51 +50,50 @@ class AspectModelPagingGenerator {
    private static final String WRONG_TYPE_CHOSEN = "The specified paging type %s is not possible for the given aspect.";
 
    /**
-    * Sets the paging properties for an aspect to an given ObjectNode.
+    * Sets the paging properties for an aspect to a given ObjectNode.
     *
     * @param aspect               The related aspect for the paging properties.
     * @param selectedPagingOption The selected paging option.
     * @param objectNode           The ObjectNode where the properties shall be inserted.
-    * @throws IOException In case the root property file can't be loaded.
+    * @throws IOException In case, the root property file can't be loaded.
     */
    public void setPagingProperties(
          final Aspect aspect,
          final PagingOption selectedPagingOption,
          final ObjectNode objectNode
    ) throws IOException {
-
-      if ( selectedPagingOption == null || selectedPagingOption == PagingOption.NO_PAGING ) {
+      if ( selectedPagingOption == PagingOption.NO_PAGING ) {
          return;
       }
 
       final Set<PagingOption> possiblePagingOptions = getPagingTypesForAspect( aspect );
 
       if ( possiblePagingOptions.isEmpty() ) {
-         LOG.warn(
-               "Paging enabled via CLI, but no paging types detected by visitor. "
-                     + "Forcing paging request parameters. Aspect={}, pagingOption={}",
-               aspect.getName(),
-               selectedPagingOption
-         );
-         setPagingTypeToPath( selectedPagingOption, objectNode );
+
+         if ( selectedPagingOption != null ) {
+            LOG.warn(
+                  "Paging enabled via CLI, but no paging types detected by visitor. "
+                        + "Forcing paging properties generation. Aspect={}, pagingOption={}",
+                  aspect.getName(),
+                  selectedPagingOption
+            );
+            setPagingTypeToPath( selectedPagingOption, objectNode );
+         }
+
+         return;
+      }
+
+      if ( selectedPagingOption == null ) {
+         final PagingOption pagingOption = pickOneOfManyPagingOptions( possiblePagingOptions );
+         if ( possiblePagingOptions.size() > 1 ) {
+            LOG.info( String.format( UNSPECIFIC_PAGING_TYPE, pagingOption ) );
+         }
+         setPagingTypeToPath( pagingOption, objectNode );
          return;
       }
 
       validatePaging( selectedPagingOption, possiblePagingOptions );
-
-      if ( possiblePagingOptions.contains( selectedPagingOption ) ) {
-         setPagingTypeToPath( selectedPagingOption, objectNode );
-         return;
-      }
-
-      final PagingOption pagingOption = pickOneOfManyPagingOptions( possiblePagingOptions );
-
-      if ( possiblePagingOptions.size() > 1 ) {
-         final String message = String.format( UNSPECIFIC_PAGING_TYPE, pagingOption );
-         LOG.info( message );
-      }
-
-      setPagingTypeToPath( pagingOption, objectNode );
+      setPagingTypeToPath( selectedPagingOption, objectNode );
    }
 
    /**
@@ -111,38 +110,36 @@ class AspectModelPagingGenerator {
          final PagingOption selectedPagingOption
    ) throws IOException {
 
-      if ( selectedPagingOption == null || selectedPagingOption == PagingOption.NO_PAGING ) {
+      if ( selectedPagingOption == PagingOption.NO_PAGING ) {
          return;
       }
 
       final Set<PagingOption> possiblePagingOptions = getPagingTypesForAspect( aspect );
 
       if ( possiblePagingOptions.isEmpty() ) {
-         LOG.warn(
-               "Paging enabled via CLI, but no paging types detected by visitor. "
-                     + "Forcing paging schema generation. Aspect={}, pagingOption={}",
-               aspect.getName(),
-               selectedPagingOption
-         );
-         setSchemaInformation( aspect, selectedPagingOption, schemaNode );
+         if ( selectedPagingOption != null ) {
+            LOG.warn(
+                  "Paging enabled via CLI, but no paging types detected by visitor. "
+                        + "Forcing paging schema generation. Aspect={}, pagingOption={}",
+                  aspect.getName(),
+                  selectedPagingOption
+            );
+            setSchemaInformation( aspect, selectedPagingOption, schemaNode );
+         }
+         return;
+      }
+
+      if ( selectedPagingOption == null ) {
+         final PagingOption pagingOption = pickOneOfManyPagingOptions( possiblePagingOptions );
+         if ( possiblePagingOptions.size() > 1 ) {
+            LOG.info( String.format( UNSPECIFIC_PAGING_TYPE, pagingOption ) );
+         }
+         setSchemaInformation( aspect, pagingOption, schemaNode );
          return;
       }
 
       validatePaging( selectedPagingOption, possiblePagingOptions );
-
-      if ( possiblePagingOptions.contains( selectedPagingOption ) ) {
-         setSchemaInformation( aspect, selectedPagingOption, schemaNode );
-         return;
-      }
-
-      final PagingOption pagingOption = pickOneOfManyPagingOptions( possiblePagingOptions );
-
-      if ( possiblePagingOptions.size() > 1 ) {
-         final String message = String.format( UNSPECIFIC_PAGING_TYPE, pagingOption );
-         LOG.info( message );
-      }
-
-      setSchemaInformation( aspect, pagingOption, schemaNode );
+      setSchemaInformation( aspect, selectedPagingOption, schemaNode );
    }
 
    /**
