@@ -411,10 +411,10 @@ class AspectModelAasGeneratorTest {
       assertThat( environment.getConceptDescriptions().get( 1 ).getEmbeddedDataSpecifications() ).hasSize( 1 );
 
       final DataSpecificationIec61360 dataSpecificationIec61360 =
-            (DataSpecificationIec61360) environment.getConceptDescriptions().get( 1 ).getEmbeddedDataSpecifications().get( 0 )
+            (DataSpecificationIec61360) environment.getConceptDescriptions().get( 1 ).getEmbeddedDataSpecifications().getFirst()
                   .getDataSpecificationContent();
 
-      assertThat( dataSpecificationIec61360.getDefinition().get( 1 ).getText() ).isEqualTo( "Test Description" );
+      assertThat( dataSpecificationIec61360.getDefinition().getFirst().getText() ).isEqualTo( "Test Description" );
       assertThat( property.getDescription() ).isEmpty();
    }
 

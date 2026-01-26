@@ -19,47 +19,53 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
 class ModelsRootTest {
 
-   private static final File EMPTY_FILE = new File( "" );
-
    @Test
    void resolveByCanonicalPathShouldReturnFileWhenCanonicalPathMatches() throws Exception {
       Path testPath = Paths.get( "src/test/resources/resolve", "Aspect.ttl" ).toAbsolutePath();
 
-      File result = invokeResolveByCanonicalPath( testPath );
+      Optional<File> result = invokeResolveByCanonicalPath( testPath );
 
       assertThat( result )
-            .matches( File::exists )
-            .isEqualTo( testPath.toFile() );
+            .isPresent()
+            .hasValueSatisfying( file -> {
+               assertThat( file ).exists();
+               assertThat( file ).isEqualTo( testPath.toFile() );
+            } );
    }
 
    @Test
    void resolveByCanonicalPathShouldReturnFileWhenCanonicalPathMatchesForSpecificPath() throws Exception {
       Path testPath = Paths.get( "src/test/resources/../resources/resolve", "Aspect.ttl" ).toAbsolutePath();
 
-      File result = invokeResolveByCanonicalPath( testPath );
+      Optional<File> result = invokeResolveByCanonicalPath( testPath );
+
 
       assertThat( result )
-            .matches( File::exists )
-            .isEqualTo( testPath.toFile() );
+            .isPresent()
+            .hasValueSatisfying( file -> {
+               assertThat( file ).exists();
+               assertThat( file ).isEqualTo( testPath.toFile() );
+            } );
    }
 
    @Test
    void resolveByCanonicalPathShouldReturnEmptyFileWhenCanonicalPathDoesNotMatch() throws Exception {
       Path invalidPath = Paths.get( "src/test/resources/resolve", "aspect.ttl" ).toAbsolutePath();
 
-      File result = invokeResolveByCanonicalPath( invalidPath );
+      Optional<File> result = invokeResolveByCanonicalPath( invalidPath );
 
-      assertThat( result ).isEqualTo( EMPTY_FILE );
+      assertThat( result ).isNotPresent();
    }
 
-   private static File invokeResolveByCanonicalPath( Path path ) throws Exception {
+   private static Optional<File> invokeResolveByCanonicalPath( Path path ) throws Exception {
       Method method = ModelsRoot.class.getDeclaredMethod( "resolveByCanonicalPath", Path.class );
       method.setAccessible( true );
-      return (File) method.invoke( null, path );
+      return (Optional<File>) method.invoke( null, path );
    }
 }

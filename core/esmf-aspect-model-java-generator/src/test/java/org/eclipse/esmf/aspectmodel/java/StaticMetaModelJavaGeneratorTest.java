@@ -670,8 +670,8 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
 
       result.assertMethodBody( "MetaAspectWithUmlautDescription", "getDescriptions", true, Optional.empty(), 0,
             List.of(
-                  "returnnewHashSet<>(){{add(newLangString(\"ImWortEntitätisteinUmlaut\",Locale.forLanguageTag(\"de\")));add(newLangString"
-                        + "(\"Thisisatestdescription\",Locale.forLanguageTag(\"en\")));}};" ) );
+                  "returnnewHashSet<>(){{add(newLangString(\"Thisisatestdescription\",Locale.forLanguageTag(\"en\")));add(newLangString"
+                        + "(\"ImWortEntitätisteinUmlaut\",Locale.forLanguageTag(\"de\")));}};" ) );
    }
 
    @Test

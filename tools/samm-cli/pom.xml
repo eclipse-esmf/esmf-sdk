@@ -28,11 +28,10 @@
    <packaging>jar</packaging>
 
    <properties>
-      <packaging-type>jar</packaging-type>
       <main-class>org.eclipse.esmf.SammCli</main-class>
-      <binary-name>samm</binary-name>
-      <skip.maven.failsafe>true</skip.maven.failsafe>
       <skip.maven.shade>false</skip.maven.shade>
+      <java-target-version>25</java-target-version>
+      <java-source-version>25</java-source-version>
    </properties>
 
    <dependencies>
@@ -165,20 +164,10 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
-               <systemPropertyVariables>
-                  <packaging-type>${packaging-type}</packaging-type>
-                  <executableJar>${project.build.directory}/${project.artifactId}-${project.version}.jar</executableJar>
-                  <binary>${project.build.directory}/${binary-name}</binary>
-               </systemPropertyVariables>
                <forkCount>1</forkCount>
                <reuseForks>false</reuseForks>
                <argLine>-Xmx6g</argLine>
                <reportsDirectory>${project.build.directory}/${testreports.surefire}</reportsDirectory>
-               <!-- Do NOT wildcard include *Test.java, because then we would also run the SammCliIntegrationTest -->
-               <includes>
-                  <include>**/SammCliTest.java</include>
-                  <include>**/CommandExecutorTest.java</include>
-               </includes>
             </configuration>
          </plugin>
 
@@ -351,38 +340,6 @@
                   </configuration>
                </execution>
             </executions>
-         </plugin>
-
-         <!-- Configure maven failsave plugin (execution of integration tests) -->
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-failsafe-plugin</artifactId>
-            <version>${maven-failsafe-plugin-version}</version>
-            <executions>
-               <execution>
-                  <goals>
-                     <goal>integration-test</goal>
-                  </goals>
-               </execution>
-            </executions>
-            <configuration>
-               <skipITs>${skip.maven.failsafe}</skipITs>
-               <systemPropertyVariables>
-                  <executableJar>${project.build.directory}/${project.artifactId}-${project.version}.jar
-                  </executableJar>
-                  <forkCount>1</forkCount>
-                  <reuseForks>true</reuseForks>
-                  <argLine>-Xmx4096m</argLine>
-               </systemPropertyVariables>
-               <properties>
-                  <configurationParameters>
-                     junit.jupiter.execution.parallel.enabled = true
-                  </configurationParameters>
-               </properties>
-               <includes>
-                  <include>**/SammCliIntegrationTest.java</include>
-               </includes>
-            </configuration>
          </plugin>
 
          <plugin>
