@@ -13,19 +13,28 @@
 
 package org.eclipse.esmf;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
-import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ProcessExecutionException;
 import org.eclipse.esmf.aspectmodel.resolver.process.BinaryLauncher;
 import org.eclipse.esmf.aspectmodel.resolver.process.ExecutableJarLauncher;
+import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher;
+import org.eclipse.esmf.test.TestAspect;
+import org.eclipse.esmf.test.TestModel;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.apache.tika.mime.MediaType;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 /**
  * The CLI integration tests that are executed by Maven Failsafe.
@@ -35,28 +44,104 @@ import org.junit.jupiter.api.extension.ExtendWith;
  */
 @ExtendWith( LogExtension.class )
 @TestInstance( TestInstance.Lifecycle.PER_CLASS )
-public class SammCliIntegrationTest extends SammCliTest {
-   @BeforeEach
+public class SammCliIntegrationTest extends SammCliAbstractTest {
+
    @Override
-   public void beforeEach() throws IOException {
-      if ( Optional.ofNullable( System.getProperty( "packaging-type" ) ).orElse( "jar" ).equals( "jar" ) ) {
-         final String jarFile = System.getProperty( "executableJar" );
-         if ( jarFile == null || !new File( jarFile ).exists() ) {
-            throw new ProcessExecutionException( "Executable jar " + jarFile + " not found" );
-         }
-         sammCli = new ExecutableJarLauncher( new File( jarFile ), List.of( "-Djava.awt.headless=true" ) );
-      } else {
-         String binary = System.getProperty( "binary" );
-         if ( System.getProperty( "os.name" ).startsWith( "Windows" ) ) {
-            binary = binary.replace( "/", "\\" );
-            binary = binary + ".exe";
-         }
-         final File binaryFile = new File( binary );
-         if ( binary == null || !binaryFile.exists() ) {
-            throw new ProcessExecutionException( "Binary " + binary + " not found" );
-         }
-         sammCli = new BinaryLauncher( binaryFile );
+   protected ProcessLauncher<?> getCli() {
+      final String jarFile = System.getProperty( "executableJar" );
+      if ( jarFile == null || !new File( jarFile ).exists() ) {
+         throw new ProcessExecutionException( "Executable jar " + jarFile + " not found" );
       }
-      outputDirectory = Files.createTempDirectory( "junit" );
+      return new ExecutableJarLauncher( new File( jarFile ), List.of( "-Djava.awt.headless=true" ) );
+   }
+
+   @Test
+   void testVerboseOutput() {
+      final ProcessLauncher.ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile,
+            "validate", "-vvv" );
+      assertThat( result.stdout() ).contains( "Input model is valid" );
+      assertThat( result.stderr() ).contains( "DEBUG" );
+   }
+
+   @ParameterizedTest
+   @EnumSource( TestAspect.class )
+   @Execution( ExecutionMode.CONCURRENT )
+   void testAspectValidateValidModelAllTestFiles( final TestModel aspect ) {
+      final String input = inputFile( aspect ).getAbsolutePath();
+      final ProcessLauncher.ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "validate" );
+      assertThat( result.stdout() ).contains( "Input model is valid" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @ParameterizedTest
+   @EnumSource( TestAspect.class )
+   @Execution( ExecutionMode.CONCURRENT )
+   void testAspectToAasXmlToFileAllTestFiles( final TestModel aspect, @TempDir final Path outputDirectory ) {
+      final String input = inputFile( aspect ).getAbsolutePath();
+      final File targetFile = outputFile( outputDirectory, "output.xml" );
+      assertThat( targetFile ).doesNotExist();
+      final ProcessLauncher.ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "to", "aas",
+            "--format",
+            "xml", "-o", targetFile.getAbsolutePath() );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( targetFile ).exists();
+      assertThat( targetFile ).content().startsWith( "<?xml" );
+   }
+
+   @ParameterizedTest
+   @EnumSource( TestAspect.class )
+   @Execution( ExecutionMode.CONCURRENT )
+   void testAspectToAasXmlToStdoutAllTestFiles( final TestModel aspect ) {
+      final String input = inputFile( aspect ).getAbsolutePath();
+      final ProcessLauncher.ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "to", "aas",
+            "--format",
+            "xml" );
+      assertThat( result.stdout() ).startsWith( "<?xml" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @ParameterizedTest
+   @EnumSource( TestAspect.class )
+   @Execution( ExecutionMode.CONCURRENT )
+   void testAspectToAasAasxToFileAllTestFiles( final TestModel aspect, @TempDir final Path outputDirectory ) {
+      final String input = inputFile( aspect ).getAbsolutePath();
+      final File targetFile = outputFile( outputDirectory, "output.aasx" );
+      assertThat( targetFile ).doesNotExist();
+      final ProcessLauncher.ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "to", "aas",
+            "--format",
+            "aasx", "-o", targetFile.getAbsolutePath() );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( targetFile ).exists();
+      assertThat( contentType( targetFile ) ).isEqualTo( MediaType.application( "x-tika-ooxml" ) );
+   }
+
+   @ParameterizedTest
+   @EnumSource( TestAspect.class )
+   @Execution( ExecutionMode.CONCURRENT )
+   void testAspectToAasJsonToFileAllTestFiles( final TestModel aspect, @TempDir final Path outputDirectory ) {
+      final String input = inputFile( aspect ).getAbsolutePath();
+      final File targetFile = outputFile( outputDirectory, "output.json" );
+      assertThat( targetFile ).doesNotExist();
+      final ProcessLauncher.ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "to", "aas",
+            "--format",
+            "json", "-o",
+            targetFile.getAbsolutePath() );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( targetFile ).exists();
+      assertThat( contentType( targetFile ) ).isEqualTo( MediaType.text( "plain" ) );
+   }
+
+   @ParameterizedTest
+   @EnumSource( TestAspect.class )
+   @Execution( ExecutionMode.CONCURRENT )
+   void testAspectToAasJsonToStdoutAllTestFiles( final TestModel aspect ) {
+      final String input = inputFile( aspect ).getAbsolutePath();
+      final ProcessLauncher.ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "to", "aas",
+            "--format", "json" );
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( contentType( result.stdoutRaw() ) ).isEqualTo( MediaType.text( "plain" ) );
    }
 }
