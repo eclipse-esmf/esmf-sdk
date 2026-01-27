@@ -69,8 +69,8 @@
          <artifactId>log4j-core</artifactId>
       </dependency>
       <dependency>
-         <groupId>ch.qos.logback</groupId>
-         <artifactId>logback-classic</artifactId>
+         <groupId>com.bosch.bci.foundation</groupId>
+         <artifactId>foundation-logback-spring</artifactId>
       </dependency>
       <dependency>
          <groupId>info.picocli</groupId>
