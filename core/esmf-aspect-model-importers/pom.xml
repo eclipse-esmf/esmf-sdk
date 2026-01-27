@@ -78,8 +78,8 @@
          <scope>test</scope>
       </dependency>
       <dependency>
-         <groupId>com.bosch.bci.foundation</groupId>
-         <artifactId>foundation-logback-spring</artifactId>
+         <groupId>org.springframework.boot</groupId>
+         <artifactId>spring-boot-starter-logging</artifactId>
          <scope>test</scope>
       </dependency>
       <dependency>
