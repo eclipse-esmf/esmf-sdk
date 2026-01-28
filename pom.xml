@@ -18,7 +18,7 @@
    <parent>
       <groupId>org.eclipse.esmf</groupId>
       <artifactId>esmf-parent</artifactId>
-      <version>21</version>
+      <version>22</version>
    </parent>
 
    <artifactId>esmf-sdk-parent</artifactId>
@@ -63,7 +63,6 @@
       <module>core/esmf-aspect-model-urn</module>
       <module>core/esmf-aspect-model-validator</module>
       <module>core/esmf-aspect-static-meta-model-java</module>
-      <module>core/esmf-native-support</module>
       <module>core/esmf-test-aspect-models</module>
       <module>core/esmf-test-resources</module>
       <module>tools/esmf-aspect-model-maven-plugin</module>
@@ -76,11 +75,7 @@
       <skip.gpg.skip>true</skip.gpg.skip>
       <build-time-sources>${project.basedir}/src-buildtime</build-time-sources>
       <generated-sources>${project.basedir}/src-gen</generated-sources>
-      <relative-native-config-path>core/esmf-native-support/src-gen/main/resources/META-INF/native-image/${project.groupId}/esmf-native-support</relative-native-config-path>
-      <!-- The path to the native configs as it is reachable from the submodules -->
-      <native-config-path>${project.basedir}/../../${relative-native-config-path}</native-config-path>
-      <!-- Can be removed once configured in esmf-parent -->
-      <central-publishing-maven-plugin-version>0.8.0</central-publishing-maven-plugin-version>
+      <graalvm-version>24.1.2</graalvm-version>
    </properties>
 
    <dependencyManagement>
@@ -154,11 +149,6 @@
          <dependency>
             <groupId>org.eclipse.esmf</groupId>
             <artifactId>esmf-aspect-static-meta-model-java</artifactId>
-            <version>${project.version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.eclipse.esmf</groupId>
-            <artifactId>esmf-native-support</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
@@ -239,35 +229,18 @@
    </dependencies>
 
    <build>
-      <!-- Can be removed once configured in esmf-parent -->
-      <pluginManagement>
-         <plugins>
-            <plugin>
-               <groupId>org.sonatype.central</groupId>
-               <artifactId>central-publishing-maven-plugin</artifactId>
-               <version>${central-publishing-maven-plugin-version}</version>
-            </plugin>
-         </plugins>
-      </pluginManagement>
-
       <plugins>
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-enforcer-plugin</artifactId>
             <executions>
                <execution>
-                  <id>esmf-enforce-graalvm</id>
+                  <id>esmf-enforce</id>
                   <goals>
                      <goal>enforce</goal>
                   </goals>
                   <configuration>
                      <rules>
-                        <requireProperty>
-                           <property>java.vendor.version</property>
-                           <message>Could not determine JDK vendor version (java.vendor.version property)</message>
-                           <regex>.*GraalVM.*</regex>
-                           <regexMessage>A GraalVM JDK is required to build this project</regexMessage>
-                        </requireProperty>
                         <requireJavaVersion>
                            <version>21</version>
                            <message>Java 21 or newer is required to build this project</message>
@@ -294,12 +267,17 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-clean-plugin</artifactId>
             <inherited>false</inherited>
+         </plugin>
+
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
-               <filesets>
-                  <fileset>
-                     <directory>${relative-native-config-path}</directory>
-                  </fileset>
-               </filesets>
+               <properties>
+                  <configurationParameters>
+                     junit.jupiter.execution.parallel.enabled = true
+                  </configurationParameters>
+               </properties>
             </configuration>
          </plugin>
 
@@ -326,34 +304,4 @@
       </plugins>
    </build>
 
-   <profiles>
-      <profile>
-         <id>native</id>
-         <build>
-            <plugins>
-               <plugin>
-                  <groupId>org.apache.maven.plugins</groupId>
-                  <artifactId>maven-surefire-plugin</artifactId>
-                  <configuration>
-                     <skip>false</skip>
-                     <argLine>-agentlib:native-image-agent=config-merge-dir=${native-config-path}</argLine>
-                  </configuration>
-               </plugin>
-
-               <plugin>
-                  <groupId>org.apache.maven.plugins</groupId>
-                  <artifactId>maven-clean-plugin</artifactId>
-                  <inherited>false</inherited>
-                  <configuration>
-                     <filesets>
-                        <fileset>
-                           <directory>${relative-native-config-path}</directory>
-                        </fileset>
-                     </filesets>
-                  </configuration>
-               </plugin>
-            </plugins>
-         </build>
-      </profile>
-   </profiles>
 </project>

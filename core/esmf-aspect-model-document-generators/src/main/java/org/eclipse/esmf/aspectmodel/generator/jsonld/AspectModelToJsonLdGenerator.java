@@ -25,7 +25,7 @@ import org.apache.jena.riot.RDFLanguages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AspectModelToJsonLdGenerator extends JsonGenerator<JsonLdGenerationConfig, JsonNode, JsonLdArtifact> {
+public class AspectModelToJsonLdGenerator extends JsonGenerator<Aspect, JsonLdGenerationConfig, JsonNode, JsonLdArtifact> {
    public static final JsonLdGenerationConfig DEFAULT_CONFIG = JsonLdGenerationConfigBuilder.builder().build();
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelToJsonLdGenerator.class );
 
@@ -35,6 +35,10 @@ public class AspectModelToJsonLdGenerator extends JsonGenerator<JsonLdGeneration
 
    public AspectModelToJsonLdGenerator( final Aspect aspect, final JsonLdGenerationConfig config ) {
       super( aspect, config );
+   }
+
+   private Aspect aspect() {
+      return structureElement();
    }
 
    /**

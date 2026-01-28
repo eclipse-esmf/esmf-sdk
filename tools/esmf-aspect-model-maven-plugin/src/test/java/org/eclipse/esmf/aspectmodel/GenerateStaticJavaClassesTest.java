@@ -16,43 +16,52 @@ package org.eclipse.esmf.aspectmodel;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-import org.apache.maven.plugin.Mojo;
+import org.apache.maven.api.plugin.testing.InjectMojo;
+import org.apache.maven.api.plugin.testing.MojoTest;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-@SuppressWarnings( "JUnitMixedFramework" )
+@MojoTest
 public class GenerateStaticJavaClassesTest extends AspectModelMojoTest {
    @Test
-   public void testGenerateJavaClassesValidAspectModel() throws Exception {
-      final Mojo generateStaticJavaClasses = getMojo( "test-pom-valid-aspect-model-output-directory", "generateStaticJavaClasses" );
+   @InjectMojo(
+         goal = GenerateStaticJavaClasses.MAVEN_GOAL,
+         pom = "src/test/resources/test-pom-valid-aspect-model-output-directory/pom.xml"
+   )
+   public void testGenerateJavaClassesValidAspectModel( final GenerateStaticJavaClasses generateStaticJavaClasses ) {
       assertThatCode( generateStaticJavaClasses::execute ).doesNotThrowAnyException();
-
       final String packagePath = "org/eclipse/esmf/test";
       assertThat( generatedFilePath( packagePath, "MetaAspect.java" ) ).exists();
    }
 
    @Test
-   public void testGenerateJavaClassesCustomPackageName() throws Exception {
-      final Mojo generateStaticJavaClasses = getMojo( "generate-static-java-classes-pom-custom-package-name", "generateStaticJavaClasses" );
+   @InjectMojo(
+         goal = GenerateStaticJavaClasses.MAVEN_GOAL,
+         pom = "src/test/resources/generate-static-java-classes-pom-custom-package-name/pom.xml"
+   )
+   public void testGenerateJavaClassesCustomPackageName( final GenerateStaticJavaClasses generateStaticJavaClasses ) {
       assertThatCode( generateStaticJavaClasses::execute ).doesNotThrowAnyException();
-
       final String packagePath = "example/com";
       assertThat( generatedFilePath( packagePath, "MetaAspect.java" ) ).exists();
    }
 
    @Test
-   public void testGenerateJavaClassesPackageInterpolation() throws Exception {
-      final Mojo generateStaticJavaClasses = getMojo( "generate-static-java-classes-pom-package-interpolation",
-            "generateStaticJavaClasses" );
+   @InjectMojo(
+         goal = GenerateStaticJavaClasses.MAVEN_GOAL,
+         pom = "src/test/resources/generate-static-java-classes-pom-package-interpolation/pom.xml"
+   )
+   public void testGenerateJavaClassesPackageInterpolation( final GenerateStaticJavaClasses generateStaticJavaClasses ) {
       assertThatCode( generateStaticJavaClasses::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "com", "example", "shared", "v1", "v0", "v0", "MetaAspectWithExtendedEntity.java" ) ).exists();
       assertThat( generatedFilePath( "com", "example", "v1", "v0", "v0", "MetaAspect.java" ) ).exists();
    }
 
    @Test
-   public void testGenerateJavaClassesInvalidTemplateLibFile() throws Exception {
-      final Mojo generateStaticJavaClasses = getMojo( "generate-static-java-classes-pom-invalid-template-lib-file",
-            "generateStaticJavaClasses" );
+   @InjectMojo(
+         goal = GenerateStaticJavaClasses.MAVEN_GOAL,
+         pom = "src/test/resources/generate-static-java-classes-pom-invalid-template-lib-file/pom.xml"
+   )
+   public void testGenerateJavaClassesInvalidTemplateLibFile( final GenerateStaticJavaClasses generateStaticJavaClasses ) {
       assertThatCode( generateStaticJavaClasses::execute )
             .isInstanceOf( MojoExecutionException.class )
             .hasMessage( "Missing configuration. Valid path to velocity template library file must be provided." );

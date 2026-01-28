@@ -18,27 +18,27 @@ import java.util.Optional;
 
 import org.eclipse.esmf.samm.KnownVersion;
 
+import org.apache.jena.rdf.model.Resource;
+
 public class SammMetaModelVersionUriRewriter extends AbstractUriRewriter {
+
+   private static final int ORDER = 50;
+
    public SammMetaModelVersionUriRewriter( final KnownVersion sourceVersion, final KnownVersion targetVersion ) {
       super( sourceVersion, targetVersion );
    }
 
    @Override
    public int order() {
-      return 50;
+      return ORDER;
    }
 
-   @Override
-   protected Optional<String> rewriteUri( final String oldUri, final Map<String, String> oldToNewNamespaces ) {
-      final int indexOfHash = oldUri.indexOf( '#' );
-      if ( indexOfHash == -1 ) {
-         return Optional.empty();
-      }
-      final String newNamespace = oldToNewNamespaces.get( oldUri.substring( 0, indexOfHash + 1 ) );
-      if ( newNamespace == null ) {
-         return Optional.empty();
-      }
-      return Optional.of( newNamespace + oldUri.substring( indexOfHash + 1 ) );
+   protected Optional<String> rewriteUri( final Resource resource, final Map<String, String> oldToNewNamespaces ) {
+
+      final String oldNamespace = resource.getNameSpace();
+
+      return Optional.ofNullable( oldToNewNamespaces.get( oldNamespace ) )
+            .map( newNamespace -> newNamespace + resource.getLocalName() );
    }
 
    @Override

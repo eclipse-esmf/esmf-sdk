@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -37,7 +37,8 @@ import org.apache.commons.io.FilenameUtils;
 public class FileInputHandler extends AbstractInputHandler {
    private final File inputFile;
 
-   FileInputHandler( final String input, final ResolverConfigurationMixin resolverConfig, final boolean details, final boolean validate ) {
+   FileInputHandler( final String input, final ResolverConfigurationMixin resolverConfig, final boolean details,
+         final boolean validate ) {
       super( input, resolverConfig, details, validate );
       inputFile = absoluteFile( new File( input ) );
    }

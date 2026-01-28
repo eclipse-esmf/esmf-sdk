@@ -16,71 +16,75 @@ package org.eclipse.esmf.aspectmodel;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-import java.nio.file.Files;
+import java.io.IOException;
 import java.nio.file.Path;
 
-import org.apache.maven.plugin.Mojo;
+import org.apache.maven.api.plugin.testing.InjectMojo;
+import org.apache.maven.api.plugin.testing.MojoTest;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-@SuppressWarnings( "JUnitMixedFramework" )
+@MojoTest
 public class GenerateOpenApiSpecTest extends AspectModelMojoTest {
    @Test
-   public void testGenerateOpenApiSpecJsonValidAspectModel() throws Exception {
-      final Mojo generateOpenApiSpec = getMojo( "generate-openapi-spec-json-pom-valid-aspect-model", "generateOpenApiSpec" );
+   @InjectMojo(
+         goal = GenerateOpenApiSpec.MAVEN_GOAL,
+         pom = "src/test/resources/generate-openapi-spec-json-pom-valid-aspect-model/pom.xml"
+   )
+   public void testGenerateOpenApiSpecJsonValidAspectModel( final GenerateOpenApiSpec generateOpenApiSpec ) {
       assertThatCode( generateOpenApiSpec::execute ).doesNotThrowAnyException();
-
       final Path generatedFile = generatedFilePath( "Aspect.oai.json" );
-      assertThat( generatedFile ).exists();
-
-      final String yamlContent = new String( Files.readAllBytes( generatedFile ) );
-
-      assertThat( yamlContent ).contains( "postAspect" );
-      assertThat( yamlContent ).contains( "putAspect" );
-      assertThat( yamlContent ).contains( "patchAspect" );
+      assertThat( generatedFile ).exists()
+            .content()
+            .contains( "postAspect" )
+            .contains( "putAspect" )
+            .contains( "patchAspect" );
    }
 
    @Test
-   public void testGenerateOpenApiSpecJsonValidAspectModelWithCrudParameters() throws Exception {
-      final Mojo generateOpenApiSpec = getMojo( "generate-openapi-spec-json-pom-valid-aspect-model-with-crud-parameters",
-            "generateOpenApiSpec" );
+   @InjectMojo(
+         goal = GenerateOpenApiSpec.MAVEN_GOAL,
+         pom = "src/test/resources/generate-openapi-spec-json-pom-valid-aspect-model-with-crud-parameters/pom.xml"
+   )
+   public void testGenerateOpenApiSpecJsonValidAspectModelWithCrudParameters( final GenerateOpenApiSpec generateOpenApiSpec ) {
       assertThatCode( generateOpenApiSpec::execute ).doesNotThrowAnyException();
-
       final Path generatedFile = generatedFilePath( "Aspect.oai.json" );
-      assertThat( generatedFile ).exists();
-
-      final String yamlContent = new String( Files.readAllBytes( generatedFile ) );
-
-      assertThat( yamlContent ).contains( "postAspect" );
-      assertThat( yamlContent ).contains( "putAspect" );
-      assertThat( yamlContent ).contains( "patchAspect" );
+      assertThat( generatedFile ).exists()
+            .content()
+            .contains( "postAspect" )
+            .contains( "putAspect" )
+            .contains( "patchAspect" );
    }
 
    /**
     * Verify that a preferred language can be chosen during open api specification generation from the given aspect model.
-    *
-    * @throws Exception in case of any error during execution of the test.
     */
    @Test
-   public void testGenerateOpenApiSpecJsonValidAspectModelWithLanguageParameter() throws Exception {
-      final Mojo generateOpenApiSpec = getMojo( "generate-openapi-spec-json-pom-valid-aspect-model-language",
-            "generateOpenApiSpec" );
+   @InjectMojo(
+         goal = GenerateOpenApiSpec.MAVEN_GOAL,
+         pom = "src/test/resources/generate-openapi-spec-json-pom-valid-aspect-model-language/pom.xml"
+   )
+   public void testGenerateOpenApiSpecJsonValidAspectModelWithLanguageParameter( final GenerateOpenApiSpec generateOpenApiSpec ) {
       assertThatCode( generateOpenApiSpec::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "AspectWithEnglishAndGermanDescription.oai.json" ) ).exists();
    }
 
    @Test
-   public void testGenerateOpenApiSpecYamlValidAspectModel() throws Exception {
-      final Mojo generateOpenApiSpec = getMojo( "generate-openapi-spec-yaml-pom-valid-aspect-model",
-            "generateOpenApiSpec" );
+   @InjectMojo(
+         goal = GenerateOpenApiSpec.MAVEN_GOAL,
+         pom = "src/test/resources/generate-openapi-spec-yaml-pom-valid-aspect-model/pom.xml"
+   )
+   public void testGenerateOpenApiSpecYamlValidAspectModel( final GenerateOpenApiSpec generateOpenApiSpec ) {
       assertThatCode( generateOpenApiSpec::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "Aspect.oai.yaml" ) ).exists();
    }
 
    @Test
-   public void testGenerateOpenApiSpecJsonWithSeparateSchemaFiles() throws Exception {
-      final Mojo generateOpenApiSpec = getMojo( "generate-openapi-spec-json-pom-separate-schema-files",
-            "generateOpenApiSpec" );
+   @InjectMojo(
+         goal = GenerateOpenApiSpec.MAVEN_GOAL,
+         pom = "src/test/resources/generate-openapi-spec-json-pom-separate-schema-files/pom.xml"
+   )
+   public void testGenerateOpenApiSpecJsonWithSeparateSchemaFiles( final GenerateOpenApiSpec generateOpenApiSpec ) {
       assertThatCode( generateOpenApiSpec::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "AspectWithEntity.oai.json" ) ).exists();
       assertThat( generatedFilePath( "AspectWithEntity.json" ) ).exists();
@@ -88,9 +92,11 @@ public class GenerateOpenApiSpecTest extends AspectModelMojoTest {
    }
 
    @Test
-   public void testGenerateOpenApiSpecYamlWithSeparateSchemaFiles() throws Exception {
-      final Mojo generateOpenApiSpec = getMojo( "generate-openapi-spec-yaml-pom-separate-schema-files",
-            "generateOpenApiSpec" );
+   @InjectMojo(
+         goal = GenerateOpenApiSpec.MAVEN_GOAL,
+         pom = "src/test/resources/generate-openapi-spec-yaml-pom-separate-schema-files/pom.xml"
+   )
+   public void testGenerateOpenApiSpecYamlWithSeparateSchemaFiles( final GenerateOpenApiSpec generateOpenApiSpec ) {
       assertThatCode( generateOpenApiSpec::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "AspectWithEntity.oai.yaml" ) ).exists();
       assertThat( generatedFilePath( "AspectWithEntity.yaml" ) ).exists();
@@ -98,12 +104,27 @@ public class GenerateOpenApiSpecTest extends AspectModelMojoTest {
    }
 
    @Test
-   public void testGenerateOpenApiSpecInvalidOutputFormat() throws Exception {
-      final Mojo generateOpenApiSpec = getMojo( "generate-openapi-spec-pom-invalid-format",
-            "generateOpenApiSpec" );
+   @InjectMojo(
+         goal = GenerateOpenApiSpec.MAVEN_GOAL,
+         pom = "src/test/resources/generate-openapi-spec-pom-invalid-format/pom.xml"
+   )
+   public void testGenerateOpenApiSpecInvalidOutputFormat( final GenerateOpenApiSpec generateOpenApiSpec ) {
       assertThatCode( generateOpenApiSpec::execute )
             .isInstanceOf( MojoExecutionException.class )
             .hasMessage( "Invalid output format." );
       assertThat( generatedFilePath( "Aspect.oai.json" ) ).doesNotExist();
+   }
+
+   @Test
+   @InjectMojo(
+         goal = GenerateOpenApiSpec.MAVEN_GOAL,
+         pom = "src/test/resources/generate-openapi-spec-json-pom-custom-api-path/pom.xml"
+   )
+   public void testGenerateOpenApiSpecCustomApiPath( final GenerateOpenApiSpec generateOpenApiSpec ) throws IOException {
+      assertThatCode( generateOpenApiSpec::execute ).doesNotThrowAnyException();
+
+      final Path generatedFile = generatedFilePath( "Aspect.oai.json" );
+      assertThat( generatedFile ).exists()
+            .content().contains( "http://example.com/custom/path" );
    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -13,8 +13,10 @@
 
 package org.eclipse.esmf.test;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URL;
 import java.util.Collection;
 
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
@@ -84,6 +86,11 @@ public class TestResources {
 
    public static Try<JsonNode> loadPayload( final TestModel model ) {
       final String modelsRoot = "payloads";
-      return Try.of( () -> new ObjectMapper().readTree( Resources.getResource( modelsRoot + "/" + model.getName() + ".json" ) ) );
+      final URL resource = Resources.getResource( modelsRoot + "/" + model.getName() + ".json" );
+      try ( final InputStream input = resource.openStream() ) {
+         return Try.of( () -> new ObjectMapper().readTree( input ) );
+      } catch ( final IOException exception ) {
+         throw new RuntimeException( exception );
+      }
    }
 }

@@ -67,6 +67,7 @@ import org.eclipse.esmf.metamodel.constraint.LocaleConstraint;
 import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
 import org.eclipse.esmf.metamodel.constraint.RegularExpressionConstraint;
 import org.eclipse.esmf.metamodel.datatype.LangString;
+import org.eclipse.esmf.metamodel.datatype.SammType;
 import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
@@ -389,11 +390,11 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       final Model model = visitConstraint( lengthConstraint, null ).model();
       lengthConstraint.getMinValue().stream().map( minValue ->
                   createStatement( resource, SammNs.SAMMC.minValue(),
-                        serializeTypedValue( minValue.toString(), SammXsdType.NON_NEGATIVE_INTEGER ) ) )
+                        serializeTypedValue( minValue.toString(), SammType.NON_NEGATIVE_INTEGER ) ) )
             .forEach( model::add );
       lengthConstraint.getMaxValue().stream().map( maxValue ->
                   createStatement( resource, SammNs.SAMMC.maxValue(),
-                        serializeTypedValue( maxValue.toString(), SammXsdType.NON_NEGATIVE_INTEGER ) ) )
+                        serializeTypedValue( maxValue.toString(), SammType.NON_NEGATIVE_INTEGER ) ) )
             .forEach( model::add );
       model.add( resource, RDF.type, SammNs.SAMMC.LengthConstraint() );
       return new ElementModel( model, Optional.of( resource ) );
@@ -448,9 +449,9 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       final Model model = visitConstraint( fixedPointConstraint, null ).model();
       model.add( resource, RDF.type, SammNs.SAMMC.FixedPointConstraint() );
       model.add( resource, SammNs.SAMMC.integer(),
-            serializeTypedValue( fixedPointConstraint.getInteger().toString(), SammXsdType.POSITIVE_INTEGER ) );
+            serializeTypedValue( fixedPointConstraint.getInteger().toString(), SammType.POSITIVE_INTEGER ) );
       model.add( resource, SammNs.SAMMC.scale(),
-            serializeTypedValue( fixedPointConstraint.getScale().toString(), SammXsdType.POSITIVE_INTEGER ) );
+            serializeTypedValue( fixedPointConstraint.getScale().toString(), SammType.POSITIVE_INTEGER ) );
       return new ElementModel( model, Optional.of( resource ) );
    }
 
@@ -541,8 +542,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
          final LangString langString = (LangString) value.getValue();
          literal = ResourceFactory.createLangLiteral( langString.getValue(), langString.getLanguageTag().toLanguageTag() );
       } else {
-         final Optional<RDFDatatype> targetType = SammXsdType.ALL_TYPES.stream()
-               .filter( dataType -> dataType.getURI().equals( type.getUrn() ) ).findAny();
+         final Optional<SammType<?>> targetType = SammXsdType.typeByUri( type.getUrn() );
          if ( targetType.isEmpty() || type.getUrn().equals( XSD.xstring.getURI() ) ) {
             literal = ResourceFactory.createStringLiteral( value.getValue().toString() );
          } else {

@@ -84,6 +84,7 @@ However, there are still limitations:
 * samm-c:Either is mapped to aas:SubmodelElementCollection with two entries for left and right side
 * Recursive optional properties of SAMM model are not included in output but dropped straight away
 
+[[translate-aspect-model-to-aas]]
 == Translate Aspect Model to AAS
 
 The following code demonstrates how the API to translate an Aspect Model into one of the valid AAS
@@ -134,4 +135,5 @@ include::example$GenerateAspectFromAas.java[tags=imports]
 include::example$GenerateAspectFromAas.java[tags=generate]
 ----
 
-To include the translator artifact, use the same same dependencies as shown above in section <<translate-aas-to-aspect-model>>.
+To include the translator artifact, use the same same dependencies as shown above in section
+<<translate-aspect-model-to-aas>>.

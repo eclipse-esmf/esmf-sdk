@@ -5,19 +5,25 @@ on:
       - main
     paths-ignore:
       - 'documentation/decisions/**'
+
+permissions: {}
+
 jobs:
   build-and-test:
     name: ${{ matrix.os }} build
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
     strategy:
       fail-fast: true
       matrix:
         os: [windows-latest, ubuntu-latest, macos-15-intel]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
         with:
           submodules: recursive
+          persist-credentials: false
 
       - name: Check code style
         if: matrix.os == 'ubuntu-latest'
@@ -30,15 +36,13 @@ jobs:
           fail_on_error: true
 
       - name: Setup JDK
-        uses: graalvm/setup-graalvm@01ed653ac833fe80569f1ef9f25585ba2811baab # v1.3.3
+        uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e
         with:
           java-version: '21.0.7'
-          distribution: 'graalvm'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          native-image-job-reports: 'true'
+          distribution: 'temurin'
 
       - name: Cache Maven packages
-        uses: actions/cache@v4
+        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb #v5.0.1
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -69,30 +73,23 @@ jobs:
           export MAVEN_OPTS="-Xmx4096m"
           export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
           # Actual build of core SDK
-          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
-          # Build samm-cli executable jar and run integration tests
+          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+          # Build samm-cli executable jar
           unset JAVA_TOOL_OPTIONS
           mvn -B -pl tools/samm-cli clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
         shell: bash
 
-      - name: Build native image
-        if: matrix.os != 'macos-15-intel'
-        run: |
-          export MAVEN_OPTS="-Xmx4096m"
-          # Build native binary and run integration tests
-          mvn -B -pl tools/samm-cli verify -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
-        shell: bash
-
-      - name: Build native image (Mac)
-        if: matrix.os == 'macos-15-intel'
+      - name: Build native image (Linux)
+        if: matrix.os == 'ubuntu-latest'
         run: |
           bundle="samm-bundle-DEV-SNAPSHOT-$(date +%s)"
           mkdir ${bundle}
-          curl -Lo jre.tar.gz https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.7%2B6/OpenJDK21U-jre_x64_mac_hotspot_21.0.7_6.tar.gz
+          mkdir -p "${bundle}/jre"
+          curl -Lo jre.tar.gz https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.7%2B6/OpenJDK21U-jre_x64_linux_hotspot_21.0.7_6.tar.gz
           tar -xvf jre.tar.gz
-          cp -r ./jdk-21.0.7+6-jre/Contents/Home ./${bundle}/jre
+          cp -r ./jdk-21.0.7+6-jre/* ./${bundle}/jre
           cp tools/samm-cli/target/samm-cli-DEV-SNAPSHOT.jar ./${bundle}/
-
+          
           cat <<EOF > ./${bundle}/run.sh
           #!/usr/bin/env bash
 
@@ -102,10 +99,58 @@ jobs:
           EOF
           chmod +x ./${bundle}/run.sh
 
+          curl -Lo warp-packer https://github.com/dgiagio/warp/releases/download/v0.3.0/linux-x64.warp-packer
+          chmod +x warp-packer
+          
+          ./warp-packer --arch linux-x64 --input_dir ${bundle} --exec run.sh --output samm
+          chmod +x samm
+          
+          cp samm tools/samm-cli/target/
+        shell: bash
+
+      - name: Build native image (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          $bundle = "samm-bundle-DEV-SNAPSHOT-$([int][double]::Parse((Get-Date -UFormat %s)))"
+          mkdir $bundle
+          New-Item -ItemType Directory -Path "$bundle\jre" -Force
+          curl -Lo jre.zip https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.7%2B6/OpenJDK21U-jre_x64_windows_hotspot_21.0.7_6.zip
+          tar -xf jre.zip
+          Copy-Item .\jdk-21.0.7+6-jre\* .\$bundle\jre -Recurse
+          Copy-Item tools\samm-cli\target\samm-cli-DEV-SNAPSHOT.jar .\$bundle\
+
+          Set-Content -Path .\$bundle\run.bat -Value "@echo off`n%~dp0jre\bin\java -jar %~dp0samm-cli-DEV-SNAPSHOT.jar %*"
+
+          curl -Lo warp-packer.exe https://github.com/dgiagio/warp/releases/download/v0.3.0/windows-x64.warp-packer.exe
+          .\warp-packer.exe --arch windows-x64 --input_dir $bundle --exec run.bat --output samm.exe
+          Copy-Item samm.exe tools\samm-cli\target\samm.exe
+        shell: pwsh
+
+      - name: Build native image (Mac)
+        if: matrix.os == 'macos-15-intel'
+        run: |
+          bundle="samm-bundle-DEV-SNAPSHOT-$(date +%s)"
+          mkdir ${bundle}
+          curl -Lo jre.tar.gz https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.7%2B6/OpenJDK21U-jre_x64_mac_hotspot_21.0.7_6.tar.gz
+          tar -xvf jre.tar.gz
+          cp -r ./jdk-21.0.7+6-jre ./${bundle}/jre
+          cp tools/samm-cli/target/samm-cli-DEV-SNAPSHOT.jar ./${bundle}/
+
+          cat <<EOF > ./${bundle}/run.sh
+          #!/usr/bin/env bash
+
+          HERE=\${BASH_SOURCE%/*}
+
+          "\$HERE/jre/Contents/Home/bin/java" -jar "\$HERE/samm-cli-DEV-SNAPSHOT.jar" "\$@"
+          EOF
+          chmod +x ./${bundle}/run.sh
+
           curl -Lo warp-packer https://github.com/dgiagio/warp/releases/download/v0.3.0/macos-x64.warp-packer
           chmod +x warp-packer
+          
           ./warp-packer --arch macos-x64 --input_dir ${bundle} --exec run.sh --output samm
           chmod +x samm
+          cp samm tools/samm-cli/target/
         shell: bash
 
       - name: Create convenience batch file
@@ -115,7 +160,7 @@ jobs:
         shell: bash
 
       - name: Switch to Temurin JDK
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e #v5.1.0
         with:
           distribution: 'temurin'
           java-version: '21'
@@ -125,39 +170,35 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           cd tools/samm-cli
-          mvn -B -Denforcer.skip -Dskip.maven.surefire failsafe:integration-test -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+          mvn -B -Dskip.maven.failsafe=false failsafe:integration-test -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
 
       - name: Upload executable jar
         # We only need one OS job to upload the jar
         if: matrix.os == 'ubuntu-latest'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f #v6.0.0
         with:
           name: samm-cli-jar
           path: tools/samm-cli/target/samm-cli-*.jar
 
       - name: Upload binary (Windows)
         if: matrix.os == 'windows-latest'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f #v6.0.0
         with:
           name: samm-cli-binary-${{ matrix.os }}
           path: |
-            tools/samm-cli/target/samm.exe
-            tools/samm-cli/target/*.dll
-            tools/samm-cli/target/*.bat
-            tools/samm-cli/target/lib/
+            samm.exe
 
       - name: Upload binary (Linux)
         if: matrix.os == 'ubuntu-latest'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f #v6.0.0
         with:
           name: samm-cli-binary-${{ matrix.os }}
           path: |
-            tools/samm-cli/target/samm
-            tools/samm-cli/target/*.so
+            samm
 
       - name: Upload binary (Mac)
         if: matrix.os == 'macos-15-intel'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f #v6.0.0
         with:
           name: samm-cli-binary-${{ matrix.os }}
           path: |

@@ -84,6 +84,8 @@ public class OsProcessLauncher extends ProcessLauncher<Process> {
             stderrRaw = stderrFuture.get().toByteArray();
          } catch ( final ExecutionException | InterruptedException exception ) {
             throw new ProcessExecutionException( exception );
+         } finally {
+            executor.shutdown();
          }
 
          return new ExecutionResult( process.exitValue(), new String( stdoutRaw, StandardCharsets.UTF_8 ),
@@ -106,9 +108,11 @@ public class OsProcessLauncher extends ProcessLauncher<Process> {
 
       @Override
       public ByteArrayOutputStream call() throws Exception {
-         final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-         in.transferTo( buffer );
-         return buffer;
+         try ( in ) {
+            final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            in.transferTo( buffer );
+            return buffer;
+         }
       }
    }
 }
