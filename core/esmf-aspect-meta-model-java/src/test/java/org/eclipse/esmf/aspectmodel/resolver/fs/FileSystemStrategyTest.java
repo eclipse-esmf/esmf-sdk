@@ -38,6 +38,8 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 /**
  * Comprehensive test suite for {@link FileSystemStrategy} that validates:
@@ -108,7 +110,7 @@ class FileSystemStrategyTest {
    }
 
    @Test
-   void testLegacyPropertyFromDedicatedFile() {
+   void testLegacyPropertyFromDedicatedFileExpectSuccess() {
       final AspectModelUrn legacyPropertyUrn = urn( "legacyProperty" );
 
       assertThatCode( () -> {
@@ -119,40 +121,30 @@ class FileSystemStrategyTest {
 
    // ==================== Shared File Resolution Tests ====================
 
-   @Test
-   void testResolveElementFromSharedFileExpectSuccess() {
-      // Test resolving an element that doesn't have its own file but is defined in a shared file (aspectelements_shared.ttl)
-      final AspectModelUrn sharedPropertyUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "sharedProperty" );
+   @ParameterizedTest
+   @CsvSource( {
+         "sharedProperty, Property",
+         "sharedCharacteristic, Characteristic",
+         "SharedEntity, Entity"
+   } )
+   void testResolveElementFromSharedFileExpectSuccess( final String elementName, final String elementType ) {
+      // Test resolving elements that don't have their own files but are defined in aspectelements_shared.ttl
+      final AspectModelUrn elementUrn = urn( elementName );
 
       assertThatCode( () -> {
-         final AspectModel result = new AspectModelLoader( fileSystemStrategy ).load( sharedPropertyUrn );
-         final Resource property = createResource( sharedPropertyUrn.toString() );
-         assertThat( result.mergedModel().contains( property, RDF.type, SammNs.SAMM.Property() ) ).isTrue();
+         final AspectModel result = loadModel( elementUrn );
+         final Resource expectedType = getExpectedType( elementType );
+         assertResourceExistsWithType( result, elementName, expectedType );
       } ).doesNotThrowAnyException();
    }
 
-   @Test
-   void testResolveSharedCharacteristicFromSharedFileExpectSuccess() {
-      // Test resolving a characteristic from a shared file
-      final AspectModelUrn sharedCharacteristicUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "sharedCharacteristic" );
-
-      assertThatCode( () -> {
-         final AspectModel result = new AspectModelLoader( fileSystemStrategy ).load( sharedCharacteristicUrn );
-         final Resource characteristic = createResource( sharedCharacteristicUrn.toString() );
-         assertThat( result.mergedModel().contains( characteristic, RDF.type, SammNs.SAMM.Characteristic() ) ).isTrue();
-      } ).doesNotThrowAnyException();
-   }
-
-   @Test
-   void testResolveSharedEntityFromSharedFileExpectSuccess() {
-      // Test resolving an entity from a shared file
-      final AspectModelUrn sharedEntityUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "SharedEntity" );
-
-      assertThatCode( () -> {
-         final AspectModel result = new AspectModelLoader( fileSystemStrategy ).load( sharedEntityUrn );
-         final Resource entity = createResource( sharedEntityUrn.toString() );
-         assertThat( result.mergedModel().contains( entity, RDF.type, SammNs.SAMM.Entity() ) ).isTrue();
-      } ).doesNotThrowAnyException();
+   private Resource getExpectedType( final String elementType ) {
+      return switch ( elementType ) {
+         case "Property" -> SammNs.SAMM.Property();
+         case "Characteristic" -> SammNs.SAMM.Characteristic();
+         case "Entity" -> SammNs.SAMM.Entity();
+         default -> throw new IllegalArgumentException( "Unknown element type: " + elementType );
+      };
    }
 
    @Test
