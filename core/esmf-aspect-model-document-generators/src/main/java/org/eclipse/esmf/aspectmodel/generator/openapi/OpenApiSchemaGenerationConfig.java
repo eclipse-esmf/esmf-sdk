@@ -62,6 +62,9 @@ public record OpenApiSchemaGenerationConfig(
       if ( locale == null ) {
          locale = Locale.ENGLISH;
       }
+      if ( pagingOption == null ) {
+         pagingOption = PagingOption.AUTO;
+      }
    }
 
    public ObjectNode queriesTemplate() {

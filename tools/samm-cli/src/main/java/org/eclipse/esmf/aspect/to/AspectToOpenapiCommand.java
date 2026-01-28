@@ -312,6 +312,6 @@ public class AspectToOpenapiCommand extends AbstractCommand {
       if ( aspectTimeBasedPaging ) {
          return PagingOption.TIME_BASED_PAGING;
       }
-      return null;
+      return PagingOption.AUTO;
    }
 }
