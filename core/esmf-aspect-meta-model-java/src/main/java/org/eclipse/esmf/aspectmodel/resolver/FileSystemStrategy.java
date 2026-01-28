@@ -84,25 +84,36 @@ public class FileSystemStrategy implements ResolutionStrategy {
    public AspectModelFile apply( final AspectModelUrn aspectModelUrn, final ResolutionStrategySupport resolutionStrategySupport ) {
       final List<ModelResolutionException.LoadingFailure> checkedLocations = new ArrayList<>();
 
-      final File namedResourceFile = modelsRoot.resolveAspectModelFile( aspectModelUrn );
-      if ( namedResourceFile.exists() ) {
-         final Try<RawAspectModelFile> tryFile = Try.of( () -> AspectModelFileLoader.load( namedResourceFile ) );
-         if ( tryFile.isFailure() ) {
-            checkedLocations.add(
-                  new ModelResolutionException.LoadingFailure( aspectModelUrn, namedResourceFile.getAbsolutePath(),
-                        tryFile.getCause().getMessage(), tryFile.getCause() ) );
-         }
-         final RawAspectModelFile loadedFile = tryFile.get();
-         if ( resolutionStrategySupport.containsDefinition( loadedFile, aspectModelUrn ) ) {
-            return loadedFile;
+      final File namedResourceFile;
+      try {
+         namedResourceFile = modelsRoot.resolveAspectModelFile( aspectModelUrn );
+         if ( namedResourceFile.exists() ) {
+            final Try<RawAspectModelFile> tryFile = Try.of( () -> AspectModelFileLoader.load( namedResourceFile ) );
+            if ( tryFile.isFailure() ) {
+               checkedLocations.add(
+                     new ModelResolutionException.LoadingFailure( aspectModelUrn, namedResourceFile.getAbsolutePath(),
+                           tryFile.getCause().getMessage(), tryFile.getCause() ) );
+            }
+            final RawAspectModelFile loadedFile = tryFile.get();
+            if ( resolutionStrategySupport.containsDefinition( loadedFile, aspectModelUrn ) ) {
+               return loadedFile;
+            } else {
+               checkedLocations.add( new ModelResolutionException.LoadingFailure( aspectModelUrn, namedResourceFile.getAbsolutePath(),
+                     "File does not contain the element definition" ) );
+            }
          } else {
             checkedLocations.add( new ModelResolutionException.LoadingFailure( aspectModelUrn, namedResourceFile.getAbsolutePath(),
-                  "File does not contain the element definition" ) );
+                  "File does not exist" ) );
          }
-      } else {
-         checkedLocations.add( new ModelResolutionException.LoadingFailure( aspectModelUrn, namedResourceFile.getAbsolutePath(),
-               "File does not exist" ) );
+      } catch ( ModelResolutionException e ) {
+         return findInNamespaceFolder( aspectModelUrn, resolutionStrategySupport, checkedLocations );
       }
+
+      throw new ModelResolutionException( checkedLocations );
+   }
+
+   private AspectModelFile findInNamespaceFolder(final AspectModelUrn aspectModelUrn, final ResolutionStrategySupport resolutionStrategySupport,
+         final List<ModelResolutionException.LoadingFailure> checkedLocations) {
 
       for ( final Iterator<URI> it = modelsRoot.namespaceContents( aspectModelUrn ).iterator(); it.hasNext(); ) {
          final URI uri = it.next();

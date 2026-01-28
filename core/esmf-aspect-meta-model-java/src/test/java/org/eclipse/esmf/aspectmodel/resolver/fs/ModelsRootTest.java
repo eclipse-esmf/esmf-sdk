@@ -20,11 +20,10 @@ import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class ModelsRootTest {
-
-   private static final File EMPTY_FILE = new File( "" );
 
    @Test
    void resolveByCanonicalPathShouldReturnFileWhenCanonicalPathMatches() throws Exception {
@@ -49,12 +48,10 @@ class ModelsRootTest {
    }
 
    @Test
-   void resolveByCanonicalPathShouldReturnEmptyFileWhenCanonicalPathDoesNotMatch() throws Exception {
+   void resolveByCanonicalPathShouldReturnEmptyFileWhenCanonicalPathDoesNotMatch() {
       Path invalidPath = Paths.get( "src/test/resources/resolve", "aspect.ttl" ).toAbsolutePath();
 
-      File result = invokeResolveByCanonicalPath( invalidPath );
-
-      assertThat( result ).isEqualTo( EMPTY_FILE );
+      Assertions.assertThrows( Exception.class, () -> invokeResolveByCanonicalPath( invalidPath ) );
    }
 
    private static File invokeResolveByCanonicalPath( Path path ) throws Exception {
