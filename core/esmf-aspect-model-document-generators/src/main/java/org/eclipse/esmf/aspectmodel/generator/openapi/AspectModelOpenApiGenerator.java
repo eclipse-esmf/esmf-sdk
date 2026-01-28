@@ -146,9 +146,9 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
 
          final PagingOption selectedPaging = config.pagingOption();
          final boolean pagingPossible = PAGING_GENERATOR.isPagingPossible( aspect() );
-         final boolean includePaging =
-               selectedPaging != PagingOption.NO_PAGING
-                     && (selectedPaging != null || pagingPossible);
+         final boolean includePaging = selectedPaging == PagingOption.AUTO
+               ? pagingPossible
+               : selectedPaging != PagingOption.NO_PAGING;
 
          setOptionalSchemas( aspect(), config, includePaging, rootNode );
          setAspectSchemas( aspect(), config, rootNode );

@@ -62,38 +62,14 @@ class AspectModelPagingGenerator {
          final PagingOption selectedPagingOption,
          final ObjectNode objectNode
    ) throws IOException {
-      if ( selectedPagingOption == PagingOption.NO_PAGING ) {
+
+      final PagingOption resolved = resolvePagingOption( aspect, selectedPagingOption );
+
+      if ( resolved == PagingOption.NO_PAGING ) {
          return;
       }
 
-      final Set<PagingOption> possiblePagingOptions = getPagingTypesForAspect( aspect );
-
-      if ( possiblePagingOptions.isEmpty() ) {
-
-         if ( selectedPagingOption != null ) {
-            LOG.warn(
-                  "Paging enabled via CLI, but no paging types detected by visitor. "
-                        + "Forcing paging properties generation. Aspect={}, pagingOption={}",
-                  aspect.getName(),
-                  selectedPagingOption
-            );
-            setPagingTypeToPath( selectedPagingOption, objectNode );
-         }
-
-         return;
-      }
-
-      if ( selectedPagingOption == null ) {
-         final PagingOption pagingOption = pickOneOfManyPagingOptions( possiblePagingOptions );
-         if ( possiblePagingOptions.size() > 1 ) {
-            LOG.info( String.format( UNSPECIFIC_PAGING_TYPE, pagingOption ) );
-         }
-         setPagingTypeToPath( pagingOption, objectNode );
-         return;
-      }
-
-      validatePaging( selectedPagingOption, possiblePagingOptions );
-      setPagingTypeToPath( selectedPagingOption, objectNode );
+      setPagingTypeToPath( resolved, objectNode );
    }
 
    /**
@@ -119,7 +95,7 @@ class AspectModelPagingGenerator {
       if ( possiblePagingOptions.isEmpty() ) {
          if ( selectedPagingOption != null ) {
             LOG.warn(
-                  "Paging enabled via CLI, but no paging types detected by visitor. "
+                  "Paging enabled via config, but no paging types detected for Aspect. "
                         + "Forcing paging schema generation. Aspect={}, pagingOption={}",
                   aspect.getName(),
                   selectedPagingOption
@@ -171,22 +147,79 @@ class AspectModelPagingGenerator {
 
    private void setSchemaInformation( final Aspect aspect, final PagingOption pagingOption, final ObjectNode schemaNode )
          throws IOException {
-      final ObjectNode node = (ObjectNode) getPathRootNode( pagingOption ).get( "response" );
+
+      final PagingOption resolved = resolvePagingOption( aspect, pagingOption );
+      if ( resolved == PagingOption.NO_PAGING ) {
+         return;
+      }
+
+      final ObjectNode node = (ObjectNode) getPathRootNode( resolved ).get( "response" );
       schemaNode.set( AspectModelOpenApiGenerator.FIELD_PAGING_SCHEMA, node );
 
       final ObjectNode itemNode = (ObjectNode) node.get( "properties" ).get( "items" );
       itemNode.put( "$ref", "#/components/schemas/" + aspect.getName() );
    }
 
-   private void validatePaging( final PagingOption definedPagingOption, final Set<PagingOption> possiblePagingOptions ) {
-      if ( definedPagingOption != null && !possiblePagingOptions.contains( definedPagingOption ) ) {
+   private PagingOption resolvePagingOption( final Aspect aspect, final PagingOption selectedPagingOption ) {
+      final PagingOption option = (selectedPagingOption == null) ? PagingOption.AUTO : selectedPagingOption;
+
+      if ( option == PagingOption.NO_PAGING ) {
+         return PagingOption.NO_PAGING;
+      }
+
+      final Set<PagingOption> possiblePagingOptions = getPagingTypesForAspect( aspect );
+
+      if ( possiblePagingOptions == null || possiblePagingOptions.isEmpty() ) {
+
+         if ( option == PagingOption.AUTO ) {
+            return PagingOption.NO_PAGING;
+         }
+
+         LOG.warn(
+               "Paging enabled via config, but no paging types detected for Aspect. "
+                     + "Forcing paging properties generation. Aspect={}, pagingOption={}",
+               aspect.getName(),
+               option
+         );
+         return option;
+      }
+
+      if ( option == PagingOption.AUTO ) {
+         final PagingOption resolved = pickOneOfManyPagingOptions( possiblePagingOptions );
+         if ( possiblePagingOptions.size() > 1 ) {
+            LOG.info( String.format( UNSPECIFIC_PAGING_TYPE, resolved ) );
+         }
+         return resolved;
+      }
+
+      validatePaging( option, possiblePagingOptions );
+      return option;
+   }
+
+   private void validatePaging( final PagingOption definedPagingOption,
+         final Set<PagingOption> possiblePagingOptions ) {
+
+      // Explicitly disabling paging is always valid.
+      if ( definedPagingOption == PagingOption.NO_PAGING ) {
+         return;
+      }
+
+      // If the aspect offers no paging options, any attempt to include paging is invalid (including AUTO).
+      if ( possiblePagingOptions == null || possiblePagingOptions.isEmpty() ) {
+         LOG.error( NO_PAGING_POSSIBLE );
+         throw new IllegalArgumentException( NO_PAGING_POSSIBLE );
+      }
+
+      // Treat AUTO as "no explicit paging type chosen" (skip concrete validation).
+      if ( definedPagingOption == PagingOption.AUTO || definedPagingOption == null ) {
+         return;
+      }
+
+      // If a concrete paging type was chosen, it must be supported by the aspect.
+      if ( !possiblePagingOptions.contains( definedPagingOption ) ) {
          final String errorMessage = String.format( WRONG_TYPE_CHOSEN, definedPagingOption );
          LOG.error( errorMessage );
          throw new IllegalArgumentException( errorMessage );
-      }
-      if ( possiblePagingOptions.isEmpty() ) {
-         LOG.error( NO_PAGING_POSSIBLE );
-         throw new IllegalArgumentException( NO_PAGING_POSSIBLE );
       }
    }
 

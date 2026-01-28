@@ -18,7 +18,6 @@ import static org.eclipse.esmf.aspectmodel.generator.openapi.AspectModelOpenApiG
 import java.util.Locale;
 
 import org.eclipse.esmf.aspectmodel.generator.GenerationConfig;
-import org.eclipse.esmf.aspectmodel.generator.JsonGenerationConfig;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.soabase.recordbuilder.core.RecordBuilder;
@@ -61,6 +60,9 @@ public record OpenApiSchemaGenerationConfig(
    public OpenApiSchemaGenerationConfig {
       if ( locale == null ) {
          locale = Locale.ENGLISH;
+      }
+      if ( pagingOption == null ) {
+         pagingOption = PagingOption.AUTO;
       }
    }
 
