@@ -161,7 +161,7 @@ class AspectModelPagingGenerator {
    }
 
    private PagingOption resolvePagingOption( final Aspect aspect, final PagingOption selectedPagingOption ) {
-      final PagingOption option = (selectedPagingOption == null) ? PagingOption.AUTO : selectedPagingOption;
+      final PagingOption option = ( selectedPagingOption == null ) ? PagingOption.AUTO : selectedPagingOption;
 
       if ( option == PagingOption.NO_PAGING ) {
          return PagingOption.NO_PAGING;
