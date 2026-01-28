@@ -136,7 +136,7 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
          final ObjectNode rootNode = getRootJsonNode( config.generateCommentForSeeAttributes() );
          final String apiVersion = getApiVersion( aspect(), config.useSemanticVersion() );
 
-         ((ObjectNode) rootNode.get( "info" ))
+         ( (ObjectNode) rootNode.get( "info" ) )
                .put( "title", aspect().getPreferredName( config.locale() ) )
                .put( "version", apiVersion )
                .put( AspectModelJsonSchemaGenerator.SAMM_EXTENSION, aspect().urn().toString() );
@@ -259,11 +259,11 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
    }
 
    private void setResponseBodies( final Aspect aspect, final ObjectNode jsonNode, final boolean includePaging ) {
-      final ObjectNode components = (ObjectNode) jsonNode.get( FIELD_COMPONENTS );
-      final ObjectNode schemas = (ObjectNode) components.get( FIELD_SCHEMAS );
-      final ObjectNode responses = (ObjectNode) components.get( FIELD_RESPONSES );
+      final ObjectNode componentsResponseNode = (ObjectNode) jsonNode.get( FIELD_COMPONENTS );
+      final ObjectNode schemasResponseNode = (ObjectNode) componentsResponseNode.get( FIELD_SCHEMAS );
+      final ObjectNode responsesResponseNode = (ObjectNode) componentsResponseNode.get( FIELD_RESPONSES );
 
-      final boolean pagingSchemaExists = schemas.has( FIELD_PAGING_SCHEMA );
+      final boolean pagingSchemaExists = schemasResponseNode.has( FIELD_PAGING_SCHEMA );
 
       final String schemaName =
             ( includePaging && pagingSchemaExists ) ? FIELD_PAGING_SCHEMA : aspect.getName();
@@ -272,7 +272,7 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
             .put( REF, COMPONENTS_SCHEMAS + schemaName );
 
       final ObjectNode contentNode = getApplicationNode( referenceNode, false );
-      responses.set( aspect.getName(), contentNode );
+      responsesResponseNode.set( aspect.getName(), contentNode );
       contentNode.put( FIELD_DESCRIPTION, "The request was successful." );
 
       if ( !aspect.getOperations().isEmpty() ) {
@@ -280,7 +280,7 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
                .put( REF, COMPONENTS_SCHEMAS + FIELD_OPERATION_RESPONSE );
 
          final ObjectNode wrappedOperationNode = getApplicationNode( operationResponseNode, false );
-         responses.set( FIELD_OPERATION_RESPONSE, wrappedOperationNode );
+         responsesResponseNode.set( FIELD_OPERATION_RESPONSE, wrappedOperationNode );
          wrappedOperationNode.put( FIELD_DESCRIPTION, "The request was successful." );
       }
    }
