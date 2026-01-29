@@ -35,6 +35,7 @@ import org.eclipse.esmf.metamodel.characteristic.TimeSeries;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.vavr.collection.Stream;
 import org.apache.commons.io.IOUtils;
@@ -42,6 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class AspectModelPagingGenerator {
+   private static final JsonNodeFactory FACTORY = JsonNodeFactory.instance;
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelPagingGenerator.class );
 
    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -156,8 +158,16 @@ class AspectModelPagingGenerator {
       final ObjectNode node = (ObjectNode) getPathRootNode( resolved ).get( "response" );
       schemaNode.set( AspectModelOpenApiGenerator.FIELD_PAGING_SCHEMA, node );
 
-      final ObjectNode itemNode = (ObjectNode) node.get( "properties" ).get( "items" );
-      itemNode.put( "$ref", "#/components/schemas/" + aspect.getName() );
+      final Property property = aspect.getProperties().get( 0 );
+      final String propertyName = property.getName();
+
+      final ObjectNode propertiesNode = (ObjectNode) node.get( "properties" );
+
+      final ObjectNode arrayNode = FACTORY.objectNode();
+      arrayNode.put( "type", "array" );
+      arrayNode.set( "items", FACTORY.objectNode().put( "$ref", "#/components/schemas/" + aspect.getName() ) );
+
+      propertiesNode.set( propertyName, arrayNode );
    }
 
    private PagingOption resolvePagingOption( final Aspect aspect, final PagingOption selectedPagingOption ) {
