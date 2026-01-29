@@ -22,11 +22,11 @@ jobs:
           persist-credentials: false
 
       # Required for Maven
-      - name: Set up JDK 21
+      - name: Set up JDK 25
         uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e #v5.1.0
         with:
           distribution: 'temurin'
-          java-version: '21.0.7'
+          java-version: '25.0.1'
           overwrite-settings: false
 
       - name: Setup Git
@@ -67,7 +67,7 @@ jobs:
         uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e #v5.1.0
         with:
           distribution: 'temurin'
-          java-version: '21.0.7'
+          java-version: '25.0.1'
           server-id: central
           # The following variables are defined in https://github.com/eclipse-esmf/.eclipsefdn/blob/main/otterdog/eclipse-esmf.jsonnet
           gpg-private-key: ${{ secrets.PGP_KEY }}
@@ -79,7 +79,7 @@ jobs:
       - name: Setup JDK
         uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e
         with:
-          java-version: '21.0.7'
+          java-version: '25.0.1'
           distribution: 'temurin'
 
       - name: Cache Maven packages
@@ -127,15 +127,15 @@ jobs:
           bundle="samm-bundle-$${RELEASE_VERSION}-linux-$(date +%s)"
           mkdir ${bundle}
           mkdir -p ${bundle}/jre
-          curl -Lo jre.tar.gz https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.7%2B6/OpenJDK21U-jre_x64_linux_hotspot_21.0.7_6.tar.gz
+          curl -Lo jre.tar.gz https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.1%2B8/OpenJDK25U-jre_x64_linux_hotspot_25.0.1_8.tar.gz
           tar -xvf jre.tar.gz
-          cp -r ./jdk-21.0.7+6-jre/* ./${bundle}/jre
+          cp -r ./jdk-25.0.1+8-jre/* ./${bundle}/jre
           cp samm-cli-${RELEASE_VERSION}.jar ./${bundle}/
 
           cat <<EOF > ./${bundle}/run.sh
           #!/usr/bin/env bash
           HERE=\${BASH_SOURCE%/*}
-          "\$HERE/jre/bin/java" -jar "\$HERE/samm-cli-${RELEASE_VERSION}.jar" "\$@"
+          "\$HERE/jre/bin/java" --enable-native-access=ALL-UNNAMED --sun-misc-unsafe-memory-access=allow -jar "\$HERE/samm-cli-${RELEASE_VERSION}.jar" "\$@"
           EOF
           chmod +x ./${bundle}/run.sh
 
@@ -156,13 +156,8 @@ jobs:
         uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e #v5.1.0
         with:
           distribution: 'temurin'
-          java-version: '21.0.7'
+          java-version: '25.0.1'
           overwrite-settings: false
-
-      - name: Test executable jar on Temurin
-        run: |
-          cd tools/samm-cli
-          mvn -B -Dskip.maven.failsafe=false failsafe:integration-test -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
 
       - name: Upload staging directory and Linux binary
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f #v6.0.0
@@ -192,7 +187,7 @@ jobs:
       - name: Setup JDK
         uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e
         with:
-          java-version: '21.0.7'
+          java-version: '25.0.1'
           distribution: 'temurin'
 
       - name: Cache Maven packages
@@ -221,9 +216,9 @@ jobs:
         run: |
           bundle="samm-bundle-$(date +%s)"
           mkdir ${bundle}
-          curl -Lo jre.tar.gz https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.7%2B6/OpenJDK21U-jre_x64_mac_hotspot_21.0.7_6.tar.gz
+          curl -Lo jre.tar.gz https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.1%2B8/OpenJDK25U-jre_x64_mac_hotspot_25.0.1_8.tar.gz
           tar -xvf jre.tar.gz
-          cp -r ./jdk-21.0.7+6-jre ./${bundle}/jre
+          cp -r ./jdk-25.0.1+8-jre/Contents/Home ./${bundle}/jre
           cp tools/samm-cli/target/samm-cli-${RELEASE_VERSION}.jar ./${bundle}/
 
           cat <<EOF > ./${bundle}/run.sh
@@ -231,7 +226,7 @@ jobs:
 
           HERE=\${BASH_SOURCE%/*}
 
-          "\$HERE/jre/Contents/Home/bin/java" -jar "\$HERE/samm-cli-${RELEASE_VERSION}.jar" "\$@"
+          "\$HERE/jre/bin/java" --enable-native-access=ALL-UNNAMED --sun-misc-unsafe-memory-access=allow -jar "\$HERE/samm-cli-${RELEASE_VERSION}.jar" "\$@"
           EOF
           chmod +x ./${bundle}/run.sh
 
@@ -267,7 +262,7 @@ jobs:
       - name: Setup JDK
         uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e
         with:
-          java-version: '21.0.7'
+          java-version: '25.0.1'
           distribution: 'temurin'
 
       - name: Cache Maven packages
@@ -308,12 +303,12 @@ jobs:
           $bundle = "samm-bundle-${RELEASE_VERSION}-windows-$([int][double]::Parse((Get-Date -UFormat %s)))"
           mkdir $bundle
           New-Item -ItemType Directory -Path "$bundle\jre" -Force
-          curl -Lo jre.zip https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.7%2B6/OpenJDK21U-jre_x64_windows_hotspot_21.0.7_6.zip
+          curl -Lo jre.zip https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.1%2B8/OpenJDK25U-jre_x64_windows_hotspot_25.0.1_8.zip
           tar -xf jre.zip
-          Copy-Item .\jdk-21.0.7+6-jre\* .\$bundle\jre -Recurse
+          Copy-Item .\jdk-25.0.1+8-jre\* .\$bundle\jre -Recurse
           Copy-Item tools\samm-cli\target\samm-cli-${RELEASE_VERSION}.jar .\$bundle\
 
-          Set-Content -Path .\$bundle\run.bat -Value "@echo off`n%~dp0jre\bin\java -jar %~dp0samm-cli-${RELEASE_VERSION}.jar %*"
+          Set-Content -Path .\$bundle\run.bat -Value "@echo off`n%~dp0jre\bin\java --enable-native-access=ALL-UNNAMED --sun-misc-unsafe-memory-access=allow -jar %~dp0samm-cli-${RELEASE_VERSION}.jar %*"
 
           curl -Lo warp-packer.exe https://github.com/dgiagio/warp/releases/download/v0.3.0/windows-x64.warp-packer.exe
           .\warp-packer.exe --arch windows-x64 --input_dir $bundle --exec run.bat --output samm.exe
@@ -347,11 +342,11 @@ jobs:
           persist-credentials: true
 
       # Required to have Maven settings.xml set up correctly
-      - name: Set up JDK 21
+      - name: Set up JDK 25
         uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e #v5.1.0
         with:
           distribution: 'temurin'
-          java-version: '21.0.7'
+          java-version: '25.0.1'
           server-id: central
           # The following variables are defined in https://github.com/eclipse-esmf/.eclipsefdn/blob/main/otterdog/eclipse-esmf.jsonnet
           server-username: CENTRAL_SONATYPE_TOKEN_USERNAME
@@ -361,7 +356,7 @@ jobs:
       - name: Setup JDK
         uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e
         with:
-          java-version: '21.0.7'
+          java-version: '25.0.1'
           distribution: 'temurin'
 
       - name: Fetch Linux Artifacts

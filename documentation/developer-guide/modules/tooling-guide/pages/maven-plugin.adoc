@@ -913,7 +913,7 @@ Configuration Properties:
 It is possible to provide a custom model resolution strategy implementation to the
 `esmf-aspect-model-maven-plugin` that is used instead of the
 xref:maven-plugin.adoc#model-resolution[built-in resolution strategies]. This is done using the Java
-https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ServiceLoader.html[ServiceLoader].
+https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/ServiceLoader.html[ServiceLoader].
 To provide your own resolution strategy, you need to:
 
 . Create a class that implements `org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy`.
