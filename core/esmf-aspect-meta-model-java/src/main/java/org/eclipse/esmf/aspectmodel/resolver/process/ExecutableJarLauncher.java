@@ -22,16 +22,22 @@ import java.util.List;
  */
 public class ExecutableJarLauncher extends OsProcessLauncher {
    public ExecutableJarLauncher( final File executableJar ) {
-      this( executableJar, List.of() );
+      this( executableJar, List.of(), true );
    }
 
-   public ExecutableJarLauncher( final File executableJar, final List<String> jvmArguments ) {
-      super( buildCommand( executableJar, jvmArguments ), true );
+   public ExecutableJarLauncher( final File executableJar, final List<String> jvmArguments, final boolean disableWarning ) {
+      super( buildCommand( executableJar, jvmArguments, disableWarning ) );
    }
 
-   private static List<String> buildCommand( final File executableJar, final List<String> jvmArguments ) {
+   private static List<String> buildCommand( final File executableJar, final List<String> jvmArguments, final boolean disableWarning ) {
       final List<String> commandWithArguments = new ArrayList<>();
       commandWithArguments.add( ProcessHandle.current().info().command().orElse( "java" ) );
+      if ( disableWarning ) {
+         // Temporary disable warning messages from the output error stream until https://github.com/oracle/graal/issues/12623 is resolved
+         // Delete these two arguments in github actions too
+         commandWithArguments.add( "--enable-native-access=ALL-UNNAMED" );
+         commandWithArguments.add( "--sun-misc-unsafe-memory-access=allow" );
+      }
       commandWithArguments.addAll( jvmArguments );
       commandWithArguments.add( "-jar" );
       commandWithArguments.add( executableJar.getAbsolutePath() );

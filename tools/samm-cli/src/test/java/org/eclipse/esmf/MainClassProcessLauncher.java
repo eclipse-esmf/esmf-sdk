@@ -38,11 +38,11 @@ public class MainClassProcessLauncher extends OsProcessLauncher {
     */
    public MainClassProcessLauncher( final Class<?> mainClass, final List<String> additionalJvmArguments,
          final Predicate<String> keepJvmArgument, final boolean disableWarning ) {
-      super( buildCommand( mainClass, additionalJvmArguments, keepJvmArgument ), disableWarning );
+      super( buildCommand( mainClass, additionalJvmArguments, keepJvmArgument, disableWarning ) );
    }
 
    private static List<String> buildCommand( final Class<?> mainClass, final List<String> additionalJvmArguments,
-         final Predicate<String> keepJvmArgument ) {
+         final Predicate<String> keepJvmArgument, final boolean disableWarning ) {
       final List<String> jvmArguments = Stream.concat( ManagementFactory.getRuntimeMXBean().getInputArguments().stream(),
                   additionalJvmArguments.stream() )
             .filter( keepJvmArgument )
@@ -50,6 +50,12 @@ public class MainClassProcessLauncher extends OsProcessLauncher {
 
       final List<String> commandWithArguments = new ArrayList<>();
       commandWithArguments.add( ProcessHandle.current().info().command().orElse( "java" ) );
+      if ( disableWarning ) {
+         // Temporary disable warning messages from the output error stream until https://github.com/oracle/graal/issues/12623 is resolved
+         // Delete these two arguments in github actions too
+         commandWithArguments.add( "--enable-native-access=ALL-UNNAMED" );
+         commandWithArguments.add( "--sun-misc-unsafe-memory-access=allow" );
+      }
       commandWithArguments.addAll( jvmArguments );
       commandWithArguments.add( "--class-path" );
       commandWithArguments.add( System.getProperty( "java.class.path" ) );

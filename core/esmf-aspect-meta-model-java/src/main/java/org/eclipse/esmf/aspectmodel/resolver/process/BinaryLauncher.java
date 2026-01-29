@@ -21,6 +21,6 @@ import java.util.List;
  */
 public class BinaryLauncher extends OsProcessLauncher {
    public BinaryLauncher( final File binary ) {
-      super( List.of( binary.getAbsolutePath() ), true );
+      super( List.of( binary.getAbsolutePath() ) );
    }
 }
