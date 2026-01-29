@@ -41,8 +41,8 @@ public class OsProcessLauncher extends ProcessLauncher<Process> {
    private static final Logger LOG = LoggerFactory.getLogger( OsProcessLauncher.class );
    private final List<String> commandWithArguments;
 
-   public OsProcessLauncher( final List<String> commandWithArguments, final boolean diableWarning ) {
-      if ( diableWarning ) {
+   public OsProcessLauncher( final List<String> commandWithArguments, final boolean disableWarning ) {
+      if ( disableWarning ) {
          // Temporary disable warning messages from the output error stream until https://github.com/oracle/graal/issues/12623 is resolved
          // Delete these two arguments in github actions too
          List<String> modifiedCommand = new ArrayList<>( commandWithArguments );
