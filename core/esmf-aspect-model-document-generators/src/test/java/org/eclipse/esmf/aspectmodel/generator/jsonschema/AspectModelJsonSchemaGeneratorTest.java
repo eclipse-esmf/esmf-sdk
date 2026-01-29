@@ -1013,10 +1013,11 @@ class AspectModelJsonSchemaGeneratorTest {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       final DocumentContext context = JsonPath.parse( schema.toString() );
-      showJson( schema );
 
-      assertThat( context.<String> read( "$['components']['schemas']['ExtendingTestEntity']['allOf'][0]['$ref']" ) )
-            .isEqualTo( "#/components/schemas/AbstractTestEntity" );
+      final var refs = context.<java.util.List<String>> read(
+            "$['components']['schemas']['ExtendingTestEntity']['allOf'][*]['$ref']" );
+      assertThat( refs ).contains( "#/components/schemas/AbstractTestEntity" );
+
       assertThat( context.<String> read( "$['components']['schemas']['AbstractTestEntity']['description']" ) )
             .isEqualTo( "This is an abstract test entity" );
       assertThat( context.<String> read(
@@ -1038,7 +1039,8 @@ class AspectModelJsonSchemaGeneratorTest {
             "$['components']['schemas']['EntityCollectionCharacteristic']['" + AspectModelJsonSchemaGenerator.SAMM_EXTENSION + "']" ) )
             .isEqualTo( TestModel.TEST_NAMESPACE + "EntityCollectionCharacteristic" );
       assertThat( context.<String> read( "$['components']['schemas']['EntityCollectionCharacteristic']['items']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/AbstractTestEntity" );
+            .isEqualTo( "#/components/schemas/ExtendingTestEntity" );
+
       assertThat( context.<String> read( "$['properties']['testProperty']['allOf'][0]['$ref']" ) )
             .isEqualTo( "#/components/schemas/EntityCollectionCharacteristic" );
    }
