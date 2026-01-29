@@ -22,6 +22,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
@@ -84,23 +85,25 @@ public class FileSystemStrategy implements ResolutionStrategy {
    public AspectModelFile apply( final AspectModelUrn aspectModelUrn, final ResolutionStrategySupport resolutionStrategySupport ) {
       final List<ModelResolutionException.LoadingFailure> checkedLocations = new ArrayList<>();
 
-      final File namedResourceFile = modelsRoot.resolveAspectModelFile( aspectModelUrn );
-      if ( namedResourceFile.exists() ) {
-         final Try<RawAspectModelFile> tryFile = Try.of( () -> AspectModelFileLoader.load( namedResourceFile ) );
+      final Optional<File> namedResourceFile = modelsRoot.resolveAspectModelFile( aspectModelUrn );
+      if ( namedResourceFile.map( File::exists ).orElse( false ) ) {
+         final File resourceFile = namedResourceFile.get();
+         final Try<RawAspectModelFile> tryFile = Try.of( () -> AspectModelFileLoader.load( resourceFile ) );
          if ( tryFile.isFailure() ) {
             checkedLocations.add(
-                  new ModelResolutionException.LoadingFailure( aspectModelUrn, namedResourceFile.getAbsolutePath(),
+                  new ModelResolutionException.LoadingFailure( aspectModelUrn, resourceFile.getAbsolutePath(),
                         tryFile.getCause().getMessage(), tryFile.getCause() ) );
          }
          final RawAspectModelFile loadedFile = tryFile.get();
          if ( resolutionStrategySupport.containsDefinition( loadedFile, aspectModelUrn ) ) {
             return loadedFile;
          } else {
-            checkedLocations.add( new ModelResolutionException.LoadingFailure( aspectModelUrn, namedResourceFile.getAbsolutePath(),
+            checkedLocations.add( new ModelResolutionException.LoadingFailure( aspectModelUrn, resourceFile.getAbsolutePath(),
                   "File does not contain the element definition" ) );
          }
       } else {
-         checkedLocations.add( new ModelResolutionException.LoadingFailure( aspectModelUrn, namedResourceFile.getAbsolutePath(),
+         checkedLocations.add(
+               new ModelResolutionException.LoadingFailure( aspectModelUrn, namedResourceFile.map( File::getAbsolutePath ).orElse( "" ),
                "File does not exist" ) );
       }
 

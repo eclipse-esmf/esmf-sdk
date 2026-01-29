@@ -14,6 +14,7 @@
 package org.eclipse.esmf.aspectmodel.loader;
 
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -280,7 +281,7 @@ public class ModelElementFactory extends AttributeValueRetriever {
       return valueRetriever.attributeValues( modelElement, attribute ).stream()
             .filter( languageStatement -> !"und".equals( Locale.forLanguageTag( languageStatement.getLanguage() ).toLanguageTag() ) )
             .map( statement -> new LangString( statement.getString(), Locale.forLanguageTag( statement.getLanguage() ) ) )
-            .collect( Collectors.toSet() );
+            .collect( Collectors.toCollection( LinkedHashSet::new ) );
    }
 
    /**
