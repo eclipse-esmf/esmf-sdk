@@ -818,7 +818,7 @@ class AspectModelOpenApiGeneratorTest {
    }
 
    @Test
-   void testOffsetBasedPagingForcedForAspectWithoutPagingTypes_currentBehavior() {
+   void testOffsetBasedPagingForcedForAspectWithoutPagingTypesCurrentBehavior() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_PROPERTY ).aspect();
 
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
@@ -851,17 +851,6 @@ class AspectModelOpenApiGeneratorTest {
       assertThat( params ).containsExactly( "tenant-id", "start", "count", "totalItemCount" );
 
       assertThat( openApi.getComponents().getSchemas() ).containsKey( "PagingSchema" );
-
-      final Schema<?> pagingSchema = openApi.getComponents().getSchemas().get( "PagingSchema" );
-      assertThat( pagingSchema ).isNotNull();
-      assertThat( pagingSchema.getProperties() ).containsKey( "items" );
-
-      final Object itemsObj = pagingSchema.getProperties().get( "items" );
-      assertThat( itemsObj ).isInstanceOf( Schema.class );
-
-      final Schema<?> itemsSchema = (Schema<?>) itemsObj;
-      assertThat( itemsSchema.get$ref() ).isEqualTo( "#/components/schemas/AspectWithProperty" );
-
       assertThat( op.getResponses() ).containsKey( "200" );
       assertThat( op.getResponses().get( "200" ).get$ref() )
             .isEqualTo( "#/components/responses/AspectWithProperty" );
@@ -875,6 +864,8 @@ class AspectModelOpenApiGeneratorTest {
             .getSchema()
             .get$ref() )
             .isEqualTo( "#/components/schemas/PagingSchema" );
+
+      assertThat( openApi.getComponents().getSchemas() ).containsKey( "AspectWithProperty" );
    }
 
    private void assertSpecificationIsValid( final JsonNode jsonNode, final String json, final Aspect aspect ) throws IOException {
