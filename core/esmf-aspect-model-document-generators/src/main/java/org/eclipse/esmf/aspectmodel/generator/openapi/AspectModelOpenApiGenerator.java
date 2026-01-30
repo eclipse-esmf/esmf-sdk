@@ -85,6 +85,7 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
    private static final String FIELD_REQUEST_BODY = "requestBody";
    private static final String FIELD_REQUIRED = "required";
    private static final String FIELD_RESPONSES = "responses";
+   private static final String FIELD_ALL_OF = "allOf";
    private static final String FIELD_SCHEMA = "schema";
    private static final String FIELD_SCHEMAS = "schemas";
    private static final String FIELD_STRING = "string";
@@ -535,7 +536,9 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
       objectNode.set( FIELD_PARAMETERS, getRequiredParameters( parameterNode, isEmpty( resourcePath ) ) );
       final ObjectNode requestBody = FACTORY.objectNode();
       requestBody.put( FIELD_REQUIRED, true );
-      requestBody.put( REF, COMPONENTS_REQUESTS + aspect.getName() );
+
+      generateAllOfObjectForRef( requestBody, aspect.getName() );
+
       objectNode.set( FIELD_REQUEST_BODY, requestBody );
       objectNode.set( FIELD_RESPONSES, getResponsesForGet( aspect ) );
       return objectNode;
@@ -618,6 +621,20 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
             rootSchemaNode.set( nodeName, node );
          }
       }
+   }
+
+   private void generateAllOfObjectForRef( final ObjectNode requestBody, final String ref ) {
+      final ObjectNode contentNode = FACTORY.objectNode();
+      final ObjectNode appJsonNode = FACTORY.objectNode();
+      final ObjectNode schemaNode = FACTORY.objectNode();
+      final ArrayNode allOfArray = FACTORY.arrayNode();
+      final ObjectNode refNode = FACTORY.objectNode();
+      refNode.put( REF, COMPONENTS_REQUESTS + ref );
+      allOfArray.add( refNode );
+      schemaNode.set( FIELD_ALL_OF, allOfArray );
+      appJsonNode.set( FIELD_SCHEMA, schemaNode );
+      contentNode.set( APPLICATION_JSON, appJsonNode );
+      requestBody.set( FIELD_CONTENT, contentNode );
    }
 
    static final class ObjectNodeExtension {

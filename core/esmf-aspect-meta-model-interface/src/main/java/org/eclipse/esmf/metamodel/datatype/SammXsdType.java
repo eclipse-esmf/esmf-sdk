@@ -18,9 +18,11 @@ import static org.eclipse.esmf.aspectmodel.StreamUtil.asMap;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
+import java.util.AbstractList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -230,22 +232,77 @@ public abstract non-sealed class SammXsdType<T> extends XSDDatatype implements S
       return uri;
    }
 
-   public static final List<SammType<?>> ALL_TYPES = List
-         .of( SammType.STRING, SammType.BOOLEAN, SammType.DECIMAL, SammType.INTEGER, SammType.DOUBLE, SammType.FLOAT, SammType.DATE,
-               SammType.TIME, SammType.DATE_TIME, SammType.DATE_TIME_STAMP, SammType.G_YEAR, SammType.G_MONTH, SammType.G_YEAR_MONTH,
-               SammType.G_DAY, SammType.G_MONTH_DAY, SammType.DURATION, SammType.YEAR_MONTH_DURATION, SammType.DAY_TIME_DURATION,
-               SammType.BYTE, SammType.SHORT, SammType.INT, SammType.LONG, SammType.UNSIGNED_BYTE, SammType.UNSIGNED_SHORT,
-               SammType.UNSIGNED_INT, SammType.UNSIGNED_LONG, SammType.POSITIVE_INTEGER, SammType.NON_NEGATIVE_INTEGER,
-               SammType.NEGATIVE_INTEGER, SammType.NON_POSITIVE_INTEGER, SammType.HEX_BINARY, SammType.BASE64_BINARY, SammType.ANY_URI,
-               SammType.LANG_STRING, SammType.CURIE );
+   // --------- FIX: lazy init to avoid SammType <-> SammXsdType init cycles ---------
 
-   private static final Map<String, SammType<?>> TYPES_BY_URI = ALL_TYPES.stream()
-         .map( type -> Map.<String, SammType<?>> entry( type.getURI(), type ) )
-         .collect( asMap() );
+   private static volatile List<SammType<?>> allTypesCache;
+
+   private static List<SammType<?>> allTypesInternal() {
+      List<SammType<?>> local = allTypesCache;
+      if ( local == null ) {
+         synchronized ( SammXsdType.class ) {
+            local = allTypesCache;
+            if ( local == null ) {
+               local = List.of(
+                     SammType.STRING, SammType.BOOLEAN, SammType.DECIMAL, SammType.INTEGER, SammType.DOUBLE, SammType.FLOAT, SammType.DATE,
+                     SammType.TIME, SammType.DATE_TIME, SammType.DATE_TIME_STAMP, SammType.G_YEAR, SammType.G_MONTH, SammType.G_YEAR_MONTH,
+                     SammType.G_DAY, SammType.G_MONTH_DAY, SammType.DURATION, SammType.YEAR_MONTH_DURATION, SammType.DAY_TIME_DURATION,
+                     SammType.BYTE, SammType.SHORT, SammType.INT, SammType.LONG, SammType.UNSIGNED_BYTE, SammType.UNSIGNED_SHORT,
+                     SammType.UNSIGNED_INT, SammType.UNSIGNED_LONG, SammType.POSITIVE_INTEGER, SammType.NON_NEGATIVE_INTEGER,
+                     SammType.NEGATIVE_INTEGER, SammType.NON_POSITIVE_INTEGER, SammType.HEX_BINARY, SammType.BASE64_BINARY,
+                     SammType.ANY_URI,
+                     SammType.LANG_STRING, SammType.CURIE
+               );
+               allTypesCache = local;
+            }
+         }
+      }
+      return local;
+   }
+
+   /**
+    * Public list of all SAMM types.
+    * Implemented as a delegating list to avoid eager evaluation of SammType.* during class initialization.
+    */
+   public static final List<SammType<?>> ALL_TYPES = new AbstractList<>() {
+      @Override
+      public SammType<?> get( final int index ) {
+         return allTypesInternal().get( index );
+      }
+
+      @Override
+      public int size() {
+         return allTypesInternal().size();
+      }
+
+      @Override
+      public java.util.Iterator<SammType<?>> iterator() {
+         return allTypesInternal().iterator();
+      }
+   };
+
+   private static volatile Map<String, SammType<?>> typesByUriCache;
+
+   private static Map<String, SammType<?>> typesByUriInternal() {
+      Map<String, SammType<?>> local = typesByUriCache;
+      if ( local == null ) {
+         synchronized ( SammXsdType.class ) {
+            local = typesByUriCache;
+            if ( local == null ) {
+               local = allTypesInternal().stream()
+                     .map( type -> Map.<String, SammType<?>> entry( type.getURI(), type ) )
+                     .collect( asMap() );
+               typesByUriCache = local;
+            }
+         }
+      }
+      return local;
+   }
 
    public static Optional<SammType<?>> typeByUri( final String uri ) {
-      return Optional.ofNullable( TYPES_BY_URI.get( uri ) );
+      return Optional.ofNullable( typesByUriInternal().get( uri ) );
    }
+
+   // ------------------------------------------------------------------------------
 
    public static void setChecking( final boolean checking ) {
       SammXsdType.checking = checking;
