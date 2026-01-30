@@ -312,6 +312,13 @@ public abstract non-sealed class SammXsdType<T> extends XSDDatatype implements S
       return checking;
    }
 
+   /**
+    * Parses a lexical representation of a value of the type
+    *
+    * @param lexicalForm the lexical representation
+    * @return if the lexical representation is valid for the type, an object of the corresponding Java type (@see {@link #getJavaClass()}),
+    * otherwise the original lexical value.
+    */
    @Override
    public Object parse( final String lexicalForm ) {
       try {
@@ -367,6 +374,12 @@ public abstract non-sealed class SammXsdType<T> extends XSDDatatype implements S
       }
    }
 
+   /**
+    * Returns the Java class corresponding to a XSD type in a given meta model version.
+    *
+    * @param type the resource of the data type
+    * @return the java class
+    */
    public static Class<?> getJavaTypeForMetaModelType( final Resource type ) {
       return ALL_TYPES
             .stream()
