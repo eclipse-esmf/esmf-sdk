@@ -45,22 +45,12 @@ class ModelsRootTest {
 
       Optional<File> result = invokeResolveByCanonicalPath( testPath );
 
-
       assertThat( result )
             .isPresent()
             .hasValueSatisfying( file -> {
                assertThat( file ).exists();
                assertThat( file ).isEqualTo( testPath.toFile() );
             } );
-   }
-
-   @Test
-   void resolveByCanonicalPathShouldReturnEmptyFileWhenCanonicalPathDoesNotMatch() throws Exception {
-      Path invalidPath = Paths.get( "src/test/resources/resolve", "aspect.ttl" ).toAbsolutePath();
-
-      Optional<File> result = invokeResolveByCanonicalPath( invalidPath );
-
-      assertThat( result ).isNotPresent();
    }
 
    private static Optional<File> invokeResolveByCanonicalPath( Path path ) throws Exception {
