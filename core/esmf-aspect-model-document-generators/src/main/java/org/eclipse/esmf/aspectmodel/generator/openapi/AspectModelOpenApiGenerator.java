@@ -85,6 +85,7 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
    private static final String FIELD_REQUEST_BODY = "requestBody";
    private static final String FIELD_REQUIRED = "required";
    private static final String FIELD_RESPONSES = "responses";
+   private static final String FIELD_ALL_OF = "allOf";
    private static final String FIELD_SCHEMA = "schema";
    private static final String FIELD_SCHEMAS = "schemas";
    private static final String FIELD_STRING = "string";
@@ -143,12 +144,29 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
          final String apiPath = Optional.ofNullable( config.readApiPath() )
                .orElse( READ_SERVER_PATH.formatted( apiVersion ) );
          setServers( rootNode, config.baseUrl(), apiVersion, apiPath );
-         final boolean includePaging = includePaging( aspect(), config.pagingOption() );
+
+         final PagingOption selectedPaging = config.pagingOption();
+         final boolean pagingPossible = PAGING_GENERATOR.isPagingPossible( aspect() );
+         final boolean includePaging = selectedPaging == PagingOption.AUTO
+               ? pagingPossible
+               : selectedPaging != PagingOption.NO_PAGING;
+
          setOptionalSchemas( aspect(), config, includePaging, rootNode );
          setAspectSchemas( aspect(), config, rootNode );
          setRequestBodies( aspect(), config, rootNode );
          setResponseBodies( aspect(), rootNode, includePaging );
-         rootNode.set( "paths", getPathsNode( aspect(), config, apiVersion, config.properties(), config.queriesTemplate() ) );
+
+         rootNode.set(
+               "paths",
+               getPathsNode(
+                     aspect(),
+                     config,
+                     apiVersion,
+                     config.properties(),
+                     config.queriesTemplate(),
+                     includePaging
+               )
+         );
          artifact = new OpenApiSchemaArtifact( aspect().getName(), merge( rootNode, config.documentTemplate() ) );
       } catch ( final Exception exception ) {
          LOG.error( "There was an exception during the read of the root or the validation.", exception );
@@ -165,11 +183,6 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
       node.set( "variables", variables );
       variables.set( "api-version", FACTORY.objectNode().put( "default", apiVersion ) );
       arrayNode.add( node );
-   }
-
-   private boolean includePaging( final Aspect aspect, final PagingOption pagingType ) {
-      return pagingType != PagingOption.NO_PAGING
-            && PAGING_GENERATOR.isPagingPossible( aspect );
    }
 
    private ObjectNode getPropertiesNode( final String resourcePath, final ObjectNode properties ) {
@@ -247,17 +260,28 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
    }
 
    private void setResponseBodies( final Aspect aspect, final ObjectNode jsonNode, final boolean includePaging ) {
-      final ObjectNode componentsResponseNode = (ObjectNode) jsonNode.get( FIELD_COMPONENTS ).get( FIELD_RESPONSES );
+      final ObjectNode componentsResponseNode = (ObjectNode) jsonNode.get( FIELD_COMPONENTS );
+      final ObjectNode schemasResponseNode = (ObjectNode) componentsResponseNode.get( FIELD_SCHEMAS );
+      final ObjectNode responsesResponseNode = (ObjectNode) componentsResponseNode.get( FIELD_RESPONSES );
+
+      final boolean pagingSchemaExists = schemasResponseNode.has( FIELD_PAGING_SCHEMA );
+
+      final String schemaName =
+            ( includePaging && pagingSchemaExists ) ? FIELD_PAGING_SCHEMA : aspect.getName();
+
       final ObjectNode referenceNode = FACTORY.objectNode()
-            .put( REF, COMPONENTS_SCHEMAS + ( includePaging ? FIELD_PAGING_SCHEMA : aspect.getName() ) );
+            .put( REF, COMPONENTS_SCHEMAS + schemaName );
+
       final ObjectNode contentNode = getApplicationNode( referenceNode, false );
-      componentsResponseNode.set( aspect.getName(), contentNode );
+      responsesResponseNode.set( aspect.getName(), contentNode );
       contentNode.put( FIELD_DESCRIPTION, "The request was successful." );
+
       if ( !aspect.getOperations().isEmpty() ) {
          final ObjectNode operationResponseNode = FACTORY.objectNode()
                .put( REF, COMPONENTS_SCHEMAS + FIELD_OPERATION_RESPONSE );
+
          final ObjectNode wrappedOperationNode = getApplicationNode( operationResponseNode, false );
-         componentsResponseNode.set( FIELD_OPERATION_RESPONSE, wrappedOperationNode );
+         responsesResponseNode.set( FIELD_OPERATION_RESPONSE, wrappedOperationNode );
          wrappedOperationNode.put( FIELD_DESCRIPTION, "The request was successful." );
       }
    }
@@ -339,7 +363,7 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
    }
 
    private ObjectNode getPathsNode( final Aspect aspect, final OpenApiSchemaGenerationConfig config, final String apiVersion,
-         final ObjectNode properties, final ObjectNode queriesTemplate ) throws IOException {
+         final ObjectNode properties, final ObjectNode queriesTemplate, final boolean includePaging ) throws IOException {
       final ObjectNode endpointPathsNode = FACTORY.objectNode();
       final ObjectNode pathNode = FACTORY.objectNode();
       final ObjectNode propertiesNode = getPropertiesNode( config.resourcePath(), properties );
@@ -351,7 +375,7 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
 
       endpointPathsNode.set( finalResourcePath, pathNode );
 
-      if ( includePaging( aspect, config.pagingOption() ) ) {
+      if ( includePaging ) {
          PAGING_GENERATOR.setPagingProperties( aspect, config.pagingOption(), propertiesNode );
       }
 
@@ -508,11 +532,13 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
          final boolean isPut ) {
       final ObjectNode objectNode = FACTORY.objectNode();
       objectNode.set( "tags", FACTORY.arrayNode().add( aspect.getName() ) );
-      objectNode.put( FIELD_OPERATION_ID, ( isPut ? FIELD_PUT : FIELD_PATCH ) + aspect.getName() );
+      objectNode.put( FIELD_OPERATION_ID, (isPut ? FIELD_PUT : FIELD_PATCH) + aspect.getName() );
       objectNode.set( FIELD_PARAMETERS, getRequiredParameters( parameterNode, isEmpty( resourcePath ) ) );
       final ObjectNode requestBody = FACTORY.objectNode();
       requestBody.put( FIELD_REQUIRED, true );
-      requestBody.put( REF, COMPONENTS_REQUESTS + aspect.getName() );
+
+      generateAllOfObjectForRef( requestBody, aspect.getName() );
+
       objectNode.set( FIELD_REQUEST_BODY, requestBody );
       objectNode.set( FIELD_RESPONSES, getResponsesForGet( aspect ) );
       return objectNode;
@@ -595,6 +621,20 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
             rootSchemaNode.set( nodeName, node );
          }
       }
+   }
+
+   private void generateAllOfObjectForRef( final ObjectNode requestBody, final String ref ) {
+      final ObjectNode contentNode = FACTORY.objectNode();
+      final ObjectNode appJsonNode = FACTORY.objectNode();
+      final ObjectNode schemaNode = FACTORY.objectNode();
+      final ArrayNode allOfArray = FACTORY.arrayNode();
+      final ObjectNode refNode = FACTORY.objectNode();
+      refNode.put( REF, COMPONENTS_REQUESTS + ref );
+      allOfArray.add( refNode );
+      schemaNode.set( FIELD_ALL_OF, allOfArray );
+      appJsonNode.set( FIELD_SCHEMA, schemaNode );
+      contentNode.set( APPLICATION_JSON, appJsonNode );
+      requestBody.set( FIELD_CONTENT, contentNode );
    }
 
    static final class ObjectNodeExtension {

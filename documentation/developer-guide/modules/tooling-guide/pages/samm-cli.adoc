@@ -127,7 +127,7 @@ of model resolution] for more information.
                                    | _--name-postfix, -namePostfix_ : name postfix for generated Aspect, Entity Java classes | `samm aspect AspectModel.ttl to java -namePostfix "Postfix"`
                                    | _--enable-setters, -enableSetters_ : whether setters should be generated for Aspect, Entity Java classes    | `samm aspect AspectModel.ttl to java --enable-setters`
                                    | _--setter-style, -setterStyle_ : the style of setters to generate for Aspect, Entity Java classes | `samm aspect AspectModel.ttl to java --enable-setters --setter-style "FLUENT"`
-.23+| [[aspect-to-openapi]] aspect <model> to openapi | Generate https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification
+.25+| [[aspect-to-openapi]] aspect <model> to openapi | Generate https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification
                                      for an Aspect Model                                                                     | `samm aspect AspectModel.ttl to openapi -j`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--api-base-url, -b_ : the base url for the Aspect API used in the
