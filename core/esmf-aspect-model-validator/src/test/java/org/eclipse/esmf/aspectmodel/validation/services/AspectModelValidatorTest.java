@@ -177,7 +177,7 @@ class AspectModelValidatorTest {
       final Supplier<AspectModel> invalidTurtleSyntax = () -> TestResources.load( InvalidTestAspect.INVALID_SYNTAX );
       final List<Violation> violations = validator.validateModel( invalidTurtleSyntax );
       final String report = new DetailedViolationFormatter().apply( violations );
-      assertThat( report.contains( "documentation: https://eclipse-esmf.github.io/esmf-developer-guide/tooling-guide/error-codes.html#ERR-SYNTAX" ) ).isTrue();
+      assertThat( report.contains( "documentation: " + ViolationFormatter.ERROR_CODES_DOC_LINK + "ERR-SYNTAX" ) ).isTrue();
    }
 
    @Test

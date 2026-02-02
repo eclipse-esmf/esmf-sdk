@@ -143,7 +143,7 @@ public class DetailedViolationFormatter extends ViolationFormatter {
          }
       }
       // Add documentation link
-      builder.append( "  documentation: https://eclipse-esmf.github.io/esmf-developer-guide/tooling-guide/error-codes.html#"
+      builder.append( "  documentation: " + ERROR_CODES_DOC_LINK
             + violation.errorCode().toUpperCase().replace( "_", "-" ) );
       builder.append( indent( additionalAttributesSupplier.get(), 2 ) );
       if ( violation.context() != null ) {
