@@ -124,7 +124,7 @@ jobs:
 
           # Build native executable with warp-packer
           pushd tools/samm-cli/target
-          bundle="samm-bundle-$${RELEASE_VERSION}-linux-$(date +%s)"
+          bundle="samm-bundle-${RELEASE_VERSION}-linux-$(date +%s)"
           mkdir ${bundle}
           mkdir -p ${bundle}/jre
           curl -Lo jre.tar.gz https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.1%2B8/OpenJDK25U-jre_x64_linux_hotspot_25.0.1_8.tar.gz
