@@ -64,18 +64,6 @@ public sealed interface SammType<T> extends RDFDatatype, Scalar
     */
    String serialize( T value );
 
-   /**
-    * Serializes a value of this type to a String
-    *
-    * @param value the value
-    * @return the corresponding lexical representation
-    * @deprecated Use {@link #serialize(Object) instead}
-    */
-   @Deprecated( forRemoval = true )
-   default String unparseTyped( final T value ) {
-      return serialize( value );
-   }
-
    @Override
    Class<T> getJavaClass();
 

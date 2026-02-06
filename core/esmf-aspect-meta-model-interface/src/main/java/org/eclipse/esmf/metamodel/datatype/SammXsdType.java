@@ -15,9 +15,6 @@ package org.eclipse.esmf.metamodel.datatype;
 
 import static org.eclipse.esmf.aspectmodel.StreamUtil.asMap;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.net.URI;
 import java.util.AbstractList;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +22,6 @@ import java.util.Optional;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.jena.datatypes.DatatypeFormatException;
@@ -49,167 +45,6 @@ public abstract non-sealed class SammXsdType<T> extends XSDDatatype implements S
    private final String uri;
 
    private static boolean checking = true;
-
-   /**
-    * @deprecated Use {@link SammType#BOOLEAN} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static final SammType<Boolean> BOOLEAN = SammType.BOOLEAN;
-   /**
-    * @deprecated Use {@link SammType#DECIMAL} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static final SammType<BigDecimal> DECIMAL = SammType.DECIMAL;
-   /**
-    * @deprecated Use {@link SammType#INTEGER} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static final SammType<BigInteger> INTEGER = SammType.INTEGER;
-   /**
-    * @deprecated Use {@link SammType#DOUBLE} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static final SammType<Double> DOUBLE = SammType.DOUBLE;
-   /**
-    * @deprecated Use {@link SammType#FLOAT} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static final SammType<Float> FLOAT = SammType.FLOAT;
-   /**
-    * @deprecated Use {@link SammType#DATE} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static final SammType<XMLGregorianCalendar> DATE = SammType.DATE;
-   /**
-    * @deprecated Use {@link SammType#TIME} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static final SammType<XMLGregorianCalendar> TIME = SammType.TIME;
-   /**
-    * @deprecated Use {@link SammType#DATE_TIME} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static final SammType<XMLGregorianCalendar> DATE_TIME = SammType.DATE_TIME;
-   /**
-    * @deprecated Use {@link SammType#DATE_TIME_STAMP} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static final SammType<XMLGregorianCalendar> DATE_TIME_STAMP = SammType.DATE_TIME_STAMP;
-   /**
-    * @deprecated Use {@link SammType#G_YEAR} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static final SammType<XMLGregorianCalendar> G_YEAR = SammType.G_YEAR;
-   /**
-    * @deprecated Use {@link SammType#G_MONTH} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static final SammType<XMLGregorianCalendar> G_MONTH = SammType.G_MONTH;
-   /**
-    * @deprecated Use {@link SammType#G_DAY} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static final SammType<XMLGregorianCalendar> G_DAY = SammType.G_DAY;
-   /**
-    * @deprecated Use {@link SammType#G_YEAR_MONTH} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static final SammType<XMLGregorianCalendar> G_YEAR_MONTH = SammType.G_YEAR_MONTH;
-   /**
-    * @deprecated Use {@link SammType#G_MONTH_DAY} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static final SammType<XMLGregorianCalendar> G_MONTH_DAY = SammType.G_MONTH_DAY;
-   /**
-    * @deprecated Use {@link SammType#DURATION} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static final SammType<javax.xml.datatype.Duration> DURATION = SammType.DURATION;
-   /**
-    * @deprecated Use {@link SammType#YEAR_MONTH_DURATION} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static final SammType<javax.xml.datatype.Duration> YEAR_MONTH_DURATION = SammType.YEAR_MONTH_DURATION;
-   /**
-    * @deprecated Use {@link SammType#DAY_TIME_DURATION} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static final SammType<javax.xml.datatype.Duration> DAY_TIME_DURATION = SammType.DAY_TIME_DURATION;
-   /**
-    * @deprecated Use {@link SammType#BYTE} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static final SammType<Byte> BYTE = SammType.BYTE;
-   /**
-    * @deprecated Use {@link SammType#SHORT} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static final SammType<Short> SHORT = SammType.SHORT;
-   /**
-    * @deprecated Use {@link SammType#INT} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static final SammType<Integer> INT = SammType.INT;
-   /**
-    * @deprecated Use {@link SammType#LONG} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static final SammType<Long> LONG = SammType.LONG;
-   /**
-    * @deprecated Use {@link SammType#UNSIGNED_BYTE} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static final SammType<Short> UNSIGNED_BYTE = SammType.UNSIGNED_BYTE;
-   /**
-    * @deprecated Use {@link SammType#UNSIGNED_SHORT} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static final SammType<Integer> UNSIGNED_SHORT = SammType.UNSIGNED_SHORT;
-   /**
-    * @deprecated Use {@link SammType#UNSIGNED_INT} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static final SammType<Long> UNSIGNED_INT = SammType.UNSIGNED_INT;
-   /**
-    * @deprecated Use {@link SammType#UNSIGNED_LONG} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static final SammType<BigInteger> UNSIGNED_LONG = SammType.UNSIGNED_LONG;
-   /**
-    * @deprecated Use {@link SammType#POSITIVE_INTEGER} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static final SammType<BigInteger> POSITIVE_INTEGER = SammType.POSITIVE_INTEGER;
-   /**
-    * @deprecated Use {@link SammType#NON_NEGATIVE_INTEGER} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static final SammType<BigInteger> NON_NEGATIVE_INTEGER = SammType.NON_NEGATIVE_INTEGER;
-   /**
-    * @deprecated Use {@link SammType#NEGATIVE_INTEGER} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static final SammType<BigInteger> NEGATIVE_INTEGER = SammType.NEGATIVE_INTEGER;
-   /**
-    * @deprecated Use {@link SammType#NON_POSITIVE_INTEGER} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static final SammType<BigInteger> NON_POSITIVE_INTEGER = SammType.NON_POSITIVE_INTEGER;
-   /**
-    * @deprecated Use {@link SammType#HEX_BINARY} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static final SammType<byte[]> HEX_BINARY = SammType.HEX_BINARY;
-   /**
-    * @deprecated Use {@link SammType#BASE64_BINARY} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static final SammType<byte[]> BASE64_BINARY = SammType.BASE64_BINARY;
-   /**
-    * @deprecated Use {@link SammType#ANY_URI} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static final SammType<URI> ANY_URI = SammType.ANY_URI;
 
    protected SammXsdType( final Resource dataTypeResource, final Class<T> correspondingJavaClass ) {
       super( dataTypeResource.getLocalName() );

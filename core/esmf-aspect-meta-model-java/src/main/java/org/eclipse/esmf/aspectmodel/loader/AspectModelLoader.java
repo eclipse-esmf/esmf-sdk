@@ -348,36 +348,6 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
    }
 
    /**
-    * Load an Aspect Model (.ttl) from an input stream and optionally set the source location for this input. For loading
-    * an Aspect Model Namespace Package (.zip), use {@link #loadNamespacePackage(InputStream, URI)} instead.
-    *
-    * @param inputStream the input stream
-    * @param sourceLocation the source location for the model
-    * @return the Aspect Model
-    * @deprecated Use {@link #load(InputStream, URI)} instead
-    */
-   @Deprecated( forRemoval = true )
-   public AspectModel load( final InputStream inputStream, final Optional<URI> sourceLocation ) {
-      final AspectModelFile rawFile = AspectModelFileLoader.load( inputStream, sourceLocation );
-      final AspectModelFile migratedModel = migrate( rawFile );
-      final LoaderContext loaderContext = new LoaderContext();
-      resolve( List.of( migratedModel ), loaderContext );
-      return loadAspectModelFiles( loaderContext.loadedFiles() );
-   }
-
-   /**
-    * Load an Aspect Model from an input stream
-    *
-    * @param inputStream the input stream
-    * @return the Aspect Model
-    * @deprecated Use {@link #load(InputStream, URI)} instead
-    */
-   @Deprecated( forRemoval = true )
-   public AspectModel load( final InputStream inputStream ) {
-      return load( inputStream, Optional.empty() );
-   }
-
-   /**
     * Load a Namespace Package (Archive) from a File
     *
     * @param namespacePackage the archive file
@@ -429,18 +399,6 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
       final LoaderContext loaderContext = new LoaderContext();
       resolve( packageFiles, loaderContext );
       return loadAspectModelFiles( loaderContext.loadedFiles() );
-   }
-
-   /**
-    * Load a Namespace Package (Archive) from an InputStream
-    *
-    * @param inputStream the input stream
-    * @return the Aspect Model
-    * @deprecated Use {@link #loadNamespacePackage(InputStream, URI)} instead
-    */
-   @Deprecated
-   public AspectModel loadNamespacePackage( final InputStream inputStream ) {
-      return loadNamespacePackage( inputStream, URI.create( "file:unknown" ) );
    }
 
    private AspectModelFile migrate( final AspectModelFile file ) {
