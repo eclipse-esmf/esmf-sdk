@@ -403,9 +403,8 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
                merge( getRequestEndpointFilter( aspect, propertiesNode, config.baseUrl(), apiVersion, config.resourcePath() ),
                      queriesTemplate, FIELD_POST ) );
          final String queryApiPath = Optional.ofNullable( config.queryApiPath() )
-               .orElse( QUERY_SERVER_PATH.formatted( apiVersion ) ) + finalResourcePath;
-         endpointPathsNode.set( queryApiPath, //String.format( QUERY_SERVER_PATH, apiVersion ) + finalResourcePath,
-               includeQueryPathNode );
+               .orElse( QUERY_SERVER_PATH.formatted( apiVersion ) + finalResourcePath );
+         endpointPathsNode.set( queryApiPath, includeQueryPathNode );
       }
 
       final Optional<ObjectNode> operationsNode = getRequestEndpointOperations( aspect, propertiesNode, config.baseUrl(), apiVersion,

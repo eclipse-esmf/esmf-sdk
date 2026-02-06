@@ -175,13 +175,12 @@ class AspectModelOpenApiGeneratorTest {
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .baseUrl( TEST_BASE_URL )
             .queryApiPath( "/custom/query-path" )
-            .resourcePath( TEST_RESOURCE_PATH )
             .includeQueryApi( true )
             .build();
       final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
-      assertThat( openApi.getPaths().get( "/custom/query-path/" + TEST_RESOURCE_PATH ).getPost().getServers()
+      assertThat( openApi.getPaths().get( "/custom/query-path" ).getPost().getServers()
             .getFirst().getUrl() )
             .isEqualTo( "https://test-aspect.example.com/custom/query-path" );
    }

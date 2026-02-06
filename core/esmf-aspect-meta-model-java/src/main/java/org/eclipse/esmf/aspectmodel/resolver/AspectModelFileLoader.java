@@ -75,18 +75,6 @@ public class AspectModelFileLoader {
     * Loads the content of an AspectModelFile from an RDF/Turtle string
     *
     * @param rdfTurtle the model in RDF/Turtle syntax
-    * @return the loaded file content
-    * @deprecated Use {@link #load(String, URI)} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static RawAspectModelFile load( final String rdfTurtle ) {
-      return load( rdfTurtle, buildArtificialUri( rdfTurtle, "rdfturtle" ) );
-   }
-
-   /**
-    * Loads the content of an AspectModelFile from an RDF/Turtle string
-    *
-    * @param rdfTurtle the model in RDF/Turtle syntax
     * @param sourceLocation the logical location of the file source
     * @return the loaded file content
     */
@@ -105,48 +93,11 @@ public class AspectModelFileLoader {
     * Loads the content of an AspectModelFile from an input stream
     *
     * @param inputStream the input stream
-    * @return the loaded file content
-    * @deprecated Use {@link #load(InputStream, URI)}  instead
-    */
-   @Deprecated( forRemoval = true )
-   public static RawAspectModelFile load( final InputStream inputStream ) {
-      return load( inputStream, buildArtificialUri( inputStream, "inputstream" ) );
-   }
-
-   /**
-    * Loads the content of an AspectModelFile from an input stream
-    *
-    * @param inputStream the input stream
     * @param sourceLocation the logical location of the file source
     * @return the loaded file content
     */
    public static RawAspectModelFile load( final InputStream inputStream, final URI sourceLocation ) {
       return load( content( inputStream, sourceLocation ), sourceLocation );
-   }
-
-   /**
-    * Loads the content of an AspectModelFile from an input stream
-    *
-    * @param inputStream the input stream
-    * @param sourceLocation the logical location of the file source
-    * @return the loaded file content
-    * @deprecated Use {@link #load(InputStream, URI)}  instead
-    */
-   @Deprecated( forRemoval = true )
-   public static RawAspectModelFile load( final InputStream inputStream, final Optional<URI> sourceLocation ) {
-      return load( inputStream, sourceLocation.orElse( buildArtificialUri( inputStream, "inputstream" ) ) );
-   }
-
-   /**
-    * Loads the content of an AspectModelFile from an RDF model
-    *
-    * @param model the input model
-    * @return the loaded file content
-    * @deprecated Use {@link #load(Model, URI)} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static RawAspectModelFile load( final Model model ) {
-      return load( model, buildArtificialUri( model, "model" ) );
    }
 
    /**
@@ -172,31 +123,6 @@ public class AspectModelFileLoader {
    }
 
    /**
-    * Loads the content of an AspectModelFile from raw bytes
-    *
-    * @param content the file content
-    * @param sourceLocation the logical location of the source file
-    * @return the loaded file content
-    * @deprecated Use {@link #load(byte[], URI)} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static RawAspectModelFile load( final byte[] content, final Optional<URI> sourceLocation ) {
-      return load( new ByteArrayInputStream( content ), sourceLocation );
-   }
-
-   /**
-    * Loads the content of an AspectModelFile from raw bytes
-    *
-    * @param content the file content
-    * @return the loaded file content
-    * @deprecated Use {@link #load(byte[], URI)} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static RawAspectModelFile load( final byte[] content ) {
-      return load( new ByteArrayInputStream( content ), buildArtificialUri( content, "bytes" ) );
-   }
-
-   /**
     * Loads the content of an AspectModelFile from a URL
     *
     * @param url the source location of the file
@@ -210,13 +136,18 @@ public class AspectModelFileLoader {
             throw new ModelResolutionException( "Can not load model from file URL", exception );
          }
       } else if ( url.getProtocol().equals( "http" ) || url.getProtocol().equals( "https" ) ) {
-         // Downloading from http(s) should take proxy settings into consideration, so we don't just .openStream() here
+         // Downloading from http(s) should take proxy settings into consideration, so we don't just
+         // .openStream() here
          final byte[] fileContent = new Download().downloadFile( url );
-         return load( fileContent );
+         try {
+            return load( fileContent, url.toURI() );
+         } catch ( final URISyntaxException exception ) {
+            throw new ModelResolutionException( "Can not load model from URL", exception );
+         }
       }
       try {
          // Other URLs (e.g. resource://) we just load using openStream()
-         return load( url.openStream(), Optional.of( url.toURI() ) );
+         return load( url.openStream(), url.toURI() );
       } catch ( final IOException | URISyntaxException exception ) {
          throw new ModelResolutionException( "Can not load model from URL", exception );
       }
