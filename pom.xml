@@ -18,7 +18,7 @@
    <parent>
       <groupId>org.eclipse.esmf</groupId>
       <artifactId>esmf-parent</artifactId>
-      <version>22</version>
+      <version>23</version>
    </parent>
 
    <artifactId>esmf-sdk-parent</artifactId>
@@ -75,7 +75,6 @@
       <skip.gpg.skip>true</skip.gpg.skip>
       <build-time-sources>${project.basedir}/src-buildtime</build-time-sources>
       <generated-sources>${project.basedir}/src-gen</generated-sources>
-      <graalvm-version>24.1.2</graalvm-version>
       <java-target-version>25</java-target-version>
       <java-source-version>25</java-source-version>
    </properties>
@@ -183,31 +182,6 @@
             <type>pom</type>
             <scope>import</scope>
          </dependency>
-         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-to-slf4j</artifactId>
-            <version>${log4j-version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>${log4j-version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>${log4j-version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.twdata.maven</groupId>
-            <artifactId>mojo-executor</artifactId>
-            <version>${mojo-executor-version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.graphper</groupId>
-            <artifactId>graph-support-core</artifactId>
-            <version>${graph-support-version}</version>
-         </dependency>
       </dependencies>
    </dependencyManagement>
 
@@ -244,8 +218,8 @@
                   <configuration>
                      <rules>
                         <requireJavaVersion>
-                           <version>25</version>
-                           <message>Java 25 or newer is required to build this project</message>
+                           <version>${java-target-version}</version>
+                           <message>Java ${java-target-version} or newer is required to build this project</message>
                         </requireJavaVersion>
                      </rules>
                   </configuration>
@@ -280,13 +254,13 @@
                      junit.jupiter.execution.parallel.enabled = true
                   </configurationParameters>
                </properties>
+               <argLine>--enable-native-access=ALL-UNNAMED --sun-misc-unsafe-memory-access=allow</argLine>
             </configuration>
          </plugin>
 
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-deploy-plugin</artifactId>
-            <version>${maven-deploy-plugin-version}</version>
             <configuration>
                <skip>true</skip>
             </configuration>
@@ -305,5 +279,4 @@
          </plugin>
       </plugins>
    </build>
-
 </project>
