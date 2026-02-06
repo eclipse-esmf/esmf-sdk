@@ -17,6 +17,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -100,6 +101,7 @@ import org.slf4j.LoggerFactory;
 
 public class AasToAspectModelGenerator extends Generator<Environment, AspectModelUrn, Aspect, AspectGenerationConfig, AspectArtifact> {
    public static final AspectGenerationConfig DEFAULT_CONFIG = AspectGenerationConfigBuilder.builder().build();
+   private static final String EXAMPLE_NAMESPACE = "com.example";
    private static final Logger LOG = LoggerFactory.getLogger( AasToAspectModelGenerator.class );
    private final Map<SubmodelElement, Property> properties = new HashMap<>();
    private final ValueInstantiator valueInstantiator = new ValueInstantiator();
@@ -217,9 +219,10 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
                   .flatMap( value -> iri( value ).stream() )
                   .map( this::iriToReversedHostNameNotation )
                   .findFirst() ) )
+            .map( this::sanitizeNamespace )
             .orElseGet( () -> {
                LOG.warn( "Did not find any id, ConceptDescription or GlobalReference with a valid IRI, defaulting to com.example" );
-               return "com.example";
+               return EXAMPLE_NAMESPACE;
             } );
    }
 
@@ -251,13 +254,94 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
       return new ElementName( sanitizeAspectModelElementName( namePrefix + idPart, upperCase ), false );
    }
 
+   // sanitize ModelElementName so that it matches regex "\\p{Alpha}\\p{Alnum}*"
    private String sanitizeAspectModelElementName( final String potentialIdentifier, final boolean upperCase ) {
       final String identifier = potentialIdentifier.chars()
-            .dropWhile( character -> !Character.isJavaIdentifierStart( character ) )
-            .filter( Character::isJavaIdentifierPart )
+            .dropWhile( character -> !Character.isLetter( character ) )
+            .filter( Character::isLetterOrDigit )
             .mapToObj( character -> String.valueOf( (char) character ) )
             .collect( Collectors.joining() );
+
+      if ( identifier.isEmpty() ) {
+         return upperCase ?
+               StringUtils.capitalize( randomElementName( potentialIdentifier ) ) :
+               StringUtils.uncapitalize( randomElementName( potentialIdentifier ) );
+      }
+
       return upperCase ? StringUtils.capitalize( identifier ) : StringUtils.uncapitalize( identifier );
+   }
+
+   // sanitize Namespace so that it matches regex "[a-zA-Z][a-zA-Z0-9]{1,62}(\\.[a-zA-Z0-9_-]{1,63})*"
+   private String sanitizeNamespace( final String namespace ) {
+      if ( namespace == null || namespace.isEmpty() ) {
+         return EXAMPLE_NAMESPACE;
+      }
+
+      final List<String> parts = Arrays.stream( namespace.split( "\\." ) ).toList();
+      if ( parts.size() < 2 ) {
+         LOG.warn( "Invalid namespace {}, defaulting to com.example", namespace );
+         return EXAMPLE_NAMESPACE;
+      }
+
+      final List<String> sanitizedParts = new ArrayList<>();
+      sanitizedParts.add( sanitizeFirstNamespacePart( parts.get( 0 ) ) );
+      sanitizedParts.add( sanitizeSecondNamespacePart( parts.get( 1 ) ) );
+      if ( parts.size() > 2 ) {
+         sanitizedParts.addAll( parts.subList( 2, parts.size() ).stream()
+               .map( this::sanitizeRemainingNamespaceParts )
+               .flatMap( Optional::stream )
+               .toList() );
+      }
+
+      return String.join( ".", sanitizedParts );
+   }
+
+   // First part: alphanumeric only, 2-63 chars, starts with letter. ([a-zA-Z][a-zA-Z0-9]{1,62})
+   private String sanitizeFirstNamespacePart( final String namespacePart ) {
+      final String sanitizedNamespacePart = namespacePart.chars()
+            .dropWhile( character -> !Character.isLetter( character ) )
+            .filter( Character::isLetterOrDigit )
+            .mapToObj( ch -> String.valueOf( (char) ch ) )
+            .collect( Collectors.joining() );
+
+      if ( sanitizedNamespacePart.length() < 2 || sanitizedNamespacePart.length() > 63 ) {
+         return "com";
+      }
+      return sanitizedNamespacePart;
+   }
+
+   // Second part: alphanumeric + hyphen only, 1-63 chars ([a-zA-Z0-9-]{1,63})
+   private String sanitizeSecondNamespacePart( final String namespacePart ) {
+      final String sanitizedNamespacePart = namespacePart.chars()
+            .dropWhile( character -> !Character.isLetterOrDigit( character ) && character != '-' )
+            .filter( character -> Character.isLetterOrDigit( character ) || character == '-' )
+            .mapToObj( ch -> String.valueOf( (char) ch ) )
+            .collect( Collectors.joining() );
+
+      if ( sanitizedNamespacePart.isEmpty() ) {
+         return "example";
+      }
+      if ( sanitizedNamespacePart.length() > 63 ) {
+         return sanitizedNamespacePart.substring( 0, 62 );
+      }
+      return sanitizedNamespacePart;
+   }
+
+   // 3+ part: alphanumeric + hyphen + underscore only, 1-63 chars ([a-zA-Z0-9_-]{1,63})
+   private Optional<String> sanitizeRemainingNamespaceParts( final String namespacePart ) {
+      final String sanitizedNamespacePart = namespacePart.chars()
+            .dropWhile( character -> !Character.isLetterOrDigit( character ) && character != '-' && character != '_' )
+            .filter( character -> Character.isLetterOrDigit( character ) || character == '-' || character == '_' )
+            .mapToObj( ch -> String.valueOf( (char) ch ) )
+            .collect( Collectors.joining() );
+
+      if ( sanitizedNamespacePart.isEmpty() ) {
+         return Optional.empty();
+      }
+      if ( sanitizedNamespacePart.length() > 63 ) {
+         return Optional.of( sanitizedNamespacePart.substring( 0, 62 ) );
+      }
+      return Optional.of( sanitizedNamespacePart );
    }
 
    private Optional<AspectModelUrn> aspectModelUrnFromId( final Identifiable element ) {

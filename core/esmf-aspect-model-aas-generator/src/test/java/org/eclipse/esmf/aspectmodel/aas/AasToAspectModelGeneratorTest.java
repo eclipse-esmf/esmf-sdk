@@ -103,22 +103,23 @@ class AasToAspectModelGeneratorTest {
    }
 
    private static final List<String> IGNORED_AASX_FILES = List.of(
-         "IDTA02026-1-0_Template_ProvisionOf3DModels.aasx",
-         "IDTA 02004-1-2_Template_Handover Documentation.aasx",
-         "Sample_ZVEI_Digital_Nameplate_V10.aasx",
-         "SMT_Pure_Technical_Data_V11.aasx",
-         "sample-zvei-techdata-V11.aasx",
-         "SMT_qualified_Technical_Data_V11.aasx",
-         "IDTA 02010-1-0_Template_ServiceRequestNotification.aasx",
+         "IDTA 02004-2-0_Example_HandoverDocumentation.aasx",
          "IDTA 02011-1-0_Template_HierarchicalStructuresEnablingBoM.aasx",
-         "IDTA 02011-1-1_Template_HSEBoM.aasx"
+         "IDTA 02011-1-1_Template_HSEBoM.aasx",
+         "IDTA 02011-1-1-1_Template_HSEBoM.aasx",
+         "IDTA 02011-1-1-1_Template_HSEBoM_forAASMetamodelV3.1.aasx",
+         "IDTA 02011-1-1-1 _Template_BoM_ExtensionbasedonIEC81346.aasx",
+         "IDTA 02011-1-1-1 _Template_BoM_ExtensionbasedonIEC81346_forAASMetamodelV3.1.aasx",
+         "IDTA 02011-1_Template_BoM_ExtensionbasedonIEC81346.aasx",
+         "IDTA 02003_Sample_TechnicalData_forAASMetamodelV3.1.aasx",
+         "IDTA 02003_Sample_TechnicalData.aasx"
    );
 
    protected static Stream<Arguments> idtaSubmodelFiles() throws URISyntaxException, IOException {
       final String submodelTemplatesMissing =
             "IDTA AASX files not found. Please make sure they are available; in the project root run: git submodule update --init "
                   + "--recursive";
-      final URL resource = AasToAspectModelGeneratorTest.class.getResource( "/submodel-templates" );
+      final URL resource = AasToAspectModelGeneratorTest.class.getResource( "/submodel-templates/published" );
       try ( final Stream<Path> stream = Files.walk( Paths.get( resource.toURI() ) ) ) {
          final List<Arguments> list = stream.filter( Files::isRegularFile )
                .filter( file -> file.getFileName().toString().endsWith( ".aasx" ) )
