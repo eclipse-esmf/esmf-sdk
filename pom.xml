@@ -75,8 +75,6 @@
       <skip.gpg.skip>true</skip.gpg.skip>
       <build-time-sources>${project.basedir}/src-buildtime</build-time-sources>
       <generated-sources>${project.basedir}/src-gen</generated-sources>
-      <java-target-version>25</java-target-version>
-      <java-source-version>25</java-source-version>
    </properties>
 
    <dependencyManagement>
@@ -178,7 +176,7 @@
          <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-dependencies</artifactId>
-            <version>${spring-boot-version}</version>
+            <version>${spring-boot.version}</version>
             <type>pom</type>
             <scope>import</scope>
          </dependency>
@@ -218,8 +216,8 @@
                   <configuration>
                      <rules>
                         <requireJavaVersion>
-                           <version>${java-target-version}</version>
-                           <message>Java ${java-target-version} or newer is required to build this project</message>
+                           <version>${java-target.version}</version>
+                           <message>Java ${java-target.version} or newer is required to build this project</message>
                         </requireJavaVersion>
                      </rules>
                   </configuration>

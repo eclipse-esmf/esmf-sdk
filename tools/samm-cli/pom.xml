@@ -30,8 +30,6 @@
    <properties>
       <main-class>org.eclipse.esmf.SammCli</main-class>
       <skip.maven.shade>false</skip.maven.shade>
-      <java-target-version>25</java-target-version>
-      <java-source-version>25</java-source-version>
    </properties>
 
    <dependencies>
@@ -302,7 +300,7 @@
                   <path>
                      <groupId>info.picocli</groupId>
                      <artifactId>picocli-codegen</artifactId>
-                     <version>${picocli-version}</version>
+                     <version>${picocli.version}</version>
                   </path>
                </annotationProcessorPaths>
                <forceLegacyJavacApi>true</forceLegacyJavacApi>
