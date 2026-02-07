@@ -115,7 +115,7 @@ public class FileSystemStrategy implements ResolutionStrategy {
 
    private AspectModelFile findInNamespaceFolder( final AspectModelUrn aspectModelUrn,
          final ResolutionStrategySupport resolutionStrategySupport,
-         final List<ModelResolutionException.LoadingFailure> checkedLocations) {
+         final List<ModelResolutionException.LoadingFailure> checkedLocations ) {
 
       for ( final Iterator<URI> it = modelsRoot.namespaceContents( aspectModelUrn ).iterator(); it.hasNext(); ) {
          final URI uri = it.next();
