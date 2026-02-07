@@ -99,12 +99,12 @@ public class FileSystemStrategy implements ResolutionStrategy {
             if ( resolutionStrategySupport.containsDefinition( loadedFile, aspectModelUrn ) ) {
                return loadedFile;
             } else {
-               checkedLocations.add( new ModelResolutionException.LoadingFailure( aspectModelUrn, namedResourceFile.orElseThrow().getAbsolutePath(),
-                     "File does not contain the element definition" ) );
+               checkedLocations.add( new ModelResolutionException.LoadingFailure( aspectModelUrn,
+                     namedResourceFile.orElseThrow().getAbsolutePath(), "File does not contain the element definition" ) );
             }
          } else {
-            checkedLocations.add( new ModelResolutionException.LoadingFailure( aspectModelUrn, namedResourceFile.orElseThrow().getAbsolutePath(),
-                  "File does not exist" ) );
+            checkedLocations.add( new ModelResolutionException.LoadingFailure( aspectModelUrn,
+                  namedResourceFile.orElseThrow().getAbsolutePath(), "File does not exist" ) );
          }
       } catch ( ModelResolutionException e ) {
          return findInNamespaceFolder( aspectModelUrn, resolutionStrategySupport, checkedLocations );
@@ -113,7 +113,8 @@ public class FileSystemStrategy implements ResolutionStrategy {
       throw new ModelResolutionException( checkedLocations );
    }
 
-   private AspectModelFile findInNamespaceFolder(final AspectModelUrn aspectModelUrn, final ResolutionStrategySupport resolutionStrategySupport,
+   private AspectModelFile findInNamespaceFolder( final AspectModelUrn aspectModelUrn,
+         final ResolutionStrategySupport resolutionStrategySupport,
          final List<ModelResolutionException.LoadingFailure> checkedLocations) {
 
       for ( final Iterator<URI> it = modelsRoot.namespaceContents( aspectModelUrn ).iterator(); it.hasNext(); ) {

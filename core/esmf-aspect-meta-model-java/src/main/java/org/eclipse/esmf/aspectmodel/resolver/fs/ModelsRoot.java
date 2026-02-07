@@ -85,6 +85,6 @@ public abstract class ModelsRoot {
       } catch ( IOException exception ) {
          LOG.error( "Error resolving canonical path for file: {}", file.getPath(), exception );
       }
-      throw new ModelResolutionException("Resolving path failed for file " + file.getPath());
+      throw new ModelResolutionException( "Resolving path failed for file " + file.getPath() );
    }
 }
