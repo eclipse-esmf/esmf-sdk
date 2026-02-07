@@ -173,6 +173,14 @@ class AspectModelValidatorTest {
    }
 
    @Test
+   void testDocumentationLinkInDetailedMessage() {
+      final Supplier<AspectModel> invalidTurtleSyntax = () -> TestResources.load( InvalidTestAspect.INVALID_SYNTAX );
+      final List<Violation> violations = validator.validateModel( invalidTurtleSyntax );
+      final String report = new DetailedViolationFormatter().apply( violations );
+      assertThat( report.contains( "documentation: " + ViolationFormatter.ERROR_CODES_DOC_LINK + "ERR-SYNTAX" ) ).isTrue();
+   }
+
+   @Test
    void testNonTurtleFile() {
       final Supplier<AspectModel> invalidTurtleSyntax = () -> TestResources.load( InvalidTestAspect.ACTUALLY_JSON );
       final List<Violation> violations = validator.validateModel( invalidTurtleSyntax );

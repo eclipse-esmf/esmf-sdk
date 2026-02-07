@@ -30,8 +30,6 @@
    <properties>
       <main-class>org.eclipse.esmf.SammCli</main-class>
       <skip.maven.shade>false</skip.maven.shade>
-      <java-target-version>25</java-target-version>
-      <java-source-version>25</java-source-version>
    </properties>
 
    <dependencies>
@@ -80,26 +78,18 @@
          <artifactId>jansi</artifactId>
       </dependency>
       <dependency>
-         <groupId>org.graalvm.sdk</groupId>
-         <artifactId>graal-sdk</artifactId>
-         <version>${graalvm-version}</version>
-      </dependency>
-      <dependency>
          <groupId>org.graalvm.polyglot</groupId>
          <artifactId>polyglot</artifactId>
-         <version>${graalvm-version}</version>
       </dependency>
       <dependency>
          <groupId>org.graalvm.polyglot</groupId>
          <artifactId>js</artifactId>
-         <version>${graalvm-version}</version>
          <type>pom</type>
       </dependency>
       <dependency>
          <groupId>org.graalvm.js</groupId>
          <artifactId>js-scriptengine</artifactId>
          <type>jar</type>
-         <version>${graalvm-version}</version>
       </dependency>
       <dependency>
          <groupId>org.jspecify</groupId>
@@ -310,7 +300,7 @@
                   <path>
                      <groupId>info.picocli</groupId>
                      <artifactId>picocli-codegen</artifactId>
-                     <version>${picocli-version}</version>
+                     <version>${picocli.version}</version>
                   </path>
                </annotationProcessorPaths>
                <forceLegacyJavacApi>true</forceLegacyJavacApi>

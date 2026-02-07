@@ -215,7 +215,7 @@
                   <path>
                      <groupId>io.soabase.record-builder</groupId>
                      <artifactId>record-builder-processor</artifactId>
-                     <version>${record-builder-version}</version>
+                     <version>${record-builder.version}</version>
                   </path>
                </annotationProcessorPaths>
             </configuration>
