@@ -22,6 +22,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 import org.slf4j.Logger;
@@ -84,6 +85,6 @@ public abstract class ModelsRoot {
       } catch ( IOException exception ) {
          LOG.error( "Error resolving canonical path for file: {}", file.getPath(), exception );
       }
-      return Optional.empty();
+      throw new ModelResolutionException( "Resolving path failed for file " + file.getPath() );
    }
 }
