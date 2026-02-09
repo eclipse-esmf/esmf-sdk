@@ -33,6 +33,10 @@
          <artifactId>jena-core</artifactId>
       </dependency>
       <dependency>
+         <groupId>com.github.curious-odd-man</groupId>
+         <artifactId>rgxgen</artifactId>
+      </dependency>
+      <dependency>
          <groupId>org.eclipse.esmf</groupId>
          <artifactId>esmf-semantic-aspect-meta-model</artifactId>
       </dependency>
@@ -43,12 +47,10 @@
       <dependency>
          <groupId>org.graalvm.polyglot</groupId>
          <artifactId>polyglot</artifactId>
-         <version>${graalvm-version}</version>
       </dependency>
       <dependency>
          <groupId>org.graalvm.polyglot</groupId>
          <artifactId>js</artifactId>
-         <version>${graalvm-version}</version>
          <type>pom</type>
       </dependency>
       <dependency>
@@ -58,6 +60,10 @@
       <dependency>
          <groupId>org.slf4j</groupId>
          <artifactId>slf4j-api</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>xerces</groupId>
+         <artifactId>xercesImpl</artifactId>
       </dependency>
 
       <!-- Test dependencies -->
@@ -81,4 +87,17 @@
          <artifactId>esmf-aspect-meta-model-java</artifactId>
       </dependency>
    </dependencies>
+
+   <build>
+      <plugins>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+               <argLine>-Xmx6g --enable-native-access=ALL-UNNAMED</argLine>
+            </configuration>
+         </plugin>
+      </plugins>
+   </build>
 </project>
+

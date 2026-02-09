@@ -13,7 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.importer.jsonschema;
 
-import static org.eclipse.esmf.metamodel.builder.SammBuilder.regularExpressionConstraint;
+import static org.eclipse.esmf.metamodel.builder.SammBuilder.*;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -63,19 +63,8 @@ public enum JsonSchemaFormat {
          .preferredName( "internationalized email address" )
          .description( "Matches international email addresses as defined in RFC 6531 section 3.3" )
          .see( "https://datatracker.ietf.org/doc/html/rfc6531#section-3.3" )
-         .value( Pattern.compile(
-               "^(([0-9a-zA-Z!#$%&'*+\\-/=?^_`{|}~\\x{80}-\\x{10FFFF}]+(\\"
-                     + ".[0-9a-zA-Z!#$%&'*+\\-/=?^_`{|}~\\x{80}-\\x{10FFFF}]+)*)|(\""
-                     + "([\\x20-\\x21\\x23-\\x5B\\x5D-\\x7E\\x{80}-\\x{10FFFF}]|\\\\[\\x20-\\x7E])*\"))(?<!.{64,})@"
-                     + "((\\[((\\d{1,3}(\\.\\d{1,3}){3})|"
-                     + "(IPv6:[0-9a-fA-F]{1,4}(:[0-9a-fA-F]{1,4}){7})|"
-                     + "(IPv6:([0-9a-fA-F]{1,4}(:[0-9a-fA-F]{1,4}){0,5})?::([0-9a-fA-F]{1,4}(:[0-9a-fA-F]{1,4}){0,5})?)|"
-                     + "(IPv6:[0-9a-fA-F]{1,4}(:[0-9a-fA-F]{1,4}){5}:\\d{1,3}(\\.\\d{1,3}){3})|(IPv6:"
-                     + "([0-9a-fA-F]{1,4}"
-                     + "(:[0-9a-fA-F]{1,4}){0,3})?::([0-9a-fA-F]{1,4}(:[0-9a-fA-F]{1,4}){0,3}:)?\\d{1,3}(\\.\\d{1,3}){3})|"
-                     + "([a-zA-Z0-9\\-]*\\[[a-zA-Z0-9]:[\\x21-\\x5A\\x5E-\\x7E]+))])|((?!.{256,})"
-                     + "([0-9a-zA-Z\\x{80}-\\x{10FFFF}]([0-9a-zA-Z\\-\\x{80}-\\x{10FFFF}]*[0-9a-zA-Z\\x{80}-\\x{10FFFF}])?)(\\."
-                     + "([0-9a-zA-Z\\x{80}-\\x{10FFFF}]([0-9a-zA-Z\\-\\x{80}-\\x{10FFFF}]*[0-9a-zA-Z\\x{80}-\\x{10FFFF}])?))*))$" ) )
+         .value( Pattern.compile( "^([a-zA-Z0-9+._/&!][-a-zA-Z0-9+._/&!]*)@("
+               + "([a-zA-Z0-9][-a-zA-Z0-9]*\\.)([-a-zA-Z0-9]+\\.)*[a-zA-Z]{2,})$" ) )
          .build() ),
 
    /**

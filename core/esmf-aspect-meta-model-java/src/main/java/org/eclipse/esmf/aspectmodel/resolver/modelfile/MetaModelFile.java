@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 import org.eclipse.esmf.aspectmodel.AspectLoadingException;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
-import org.eclipse.esmf.metamodel.datatype.SammXsdType;
+import org.eclipse.esmf.metamodel.datatype.SammType;
 import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.samm.KnownVersion;
@@ -111,7 +111,7 @@ public enum MetaModelFile implements AspectModelFile {
                   .stream()
                   .map( newUrl ->
                         ResourceFactory.createStatement( statement.getSubject(), statement.getPredicate(),
-                              ResourceFactory.createTypedLiteral( newUrl, SammXsdType.ANY_URI ) ) )
+                              ResourceFactory.createTypedLiteral( newUrl, SammType.ANY_URI ) ) )
                   .map( newStatement -> new Tuple2<>( statement, newStatement ) ) )
             .collect( Collectors.toSet() );
    }

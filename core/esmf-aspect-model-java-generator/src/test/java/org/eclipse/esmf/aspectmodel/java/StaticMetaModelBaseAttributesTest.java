@@ -144,16 +144,16 @@ class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorTest {
       final String getPreferredNamesBody = "return new HashSet<>() {\n"
             + "\n"
             + "    {\n"
-            + "        add(new LangString(\"Aspekt Mit Boolean\", Locale.forLanguageTag(\"de\")));\n"
             + "        add(new LangString(\"Aspect With Boolean\", Locale.forLanguageTag(\"en\")));\n"
+            + "        add(new LangString(\"Aspekt Mit Boolean\", Locale.forLanguageTag(\"de\")));\n"
             + "    }\n"
             + "};";
 
       final String getDescriptionsBody = "return new HashSet<>() {\n"
             + "\n"
             + "    {\n"
-            + "        add(new LangString(\"Test Beschreibung\", Locale.forLanguageTag(\"de\")));\n"
             + "        add(new LangString(\"Test Description\", Locale.forLanguageTag(\"en\")));\n"
+            + "        add(new LangString(\"Test Beschreibung\", Locale.forLanguageTag(\"de\")));\n"
             + "    }\n"
             + "};";
 
@@ -185,8 +185,8 @@ class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorTest {
       final String getPreferredNamesBody = "return new HashSet<>() {\n"
             + "\n"
             + "    {\n"
-            + "        add(new LangString(\"Aspekt Mit Boolean\", Locale.forLanguageTag(\"de\")));\n"
             + "        add(new LangString(\"Aspect With Boolean\", Locale.forLanguageTag(\"en\")));\n"
+            + "        add(new LangString(\"Aspekt Mit Boolean\", Locale.forLanguageTag(\"de\")));\n"
             + "    }\n"
             + "};";
 
@@ -216,8 +216,8 @@ class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorTest {
       final String getDescriptionsBody = "return new HashSet<>() {\n"
             + "\n"
             + "    {\n"
-            + "        add(new LangString(\"Test Beschreibung\", Locale.forLanguageTag(\"de\")));\n"
             + "        add(new LangString(\"Test Description\", Locale.forLanguageTag(\"en\")));\n"
+            + "        add(new LangString(\"Test Beschreibung\", Locale.forLanguageTag(\"de\")));\n"
             + "    }\n"
             + "};";
 

@@ -15,43 +15,67 @@ package org.eclipse.esmf.aspectmodel;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import java.util.List;
+import java.io.StringReader;
+import javax.inject.Inject;
 
-import org.eclipse.esmf.aspectmodel.resolver.github.GithubModelSourceConfig;
-
-import org.apache.maven.plugin.Mojo;
+import org.apache.maven.api.plugin.testing.InjectMojo;
+import org.apache.maven.api.plugin.testing.MojoTest;
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.junit.Test;
+import org.apache.maven.settings.Server;
+import org.apache.maven.settings.Settings;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
+import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
+import org.junit.jupiter.api.Test;
 
-@SuppressWarnings( "JUnitMixedFramework" )
+@MojoTest
 public class MojoConfigTest extends AspectModelMojoTest {
+   @Inject
+   private MavenSession session;
+
    @Test
-   public void testInvalidModelsRoot() throws Exception {
-      final Mojo validate = getMojo( "test-pom-invalid-models-root", "validate" );
+   @InjectMojo(
+         goal = Validate.MAVEN_GOAL,
+         pom = "src/test/resources/test-pom-invalid-models-root/pom.xml"
+   )
+   public void testInvalidModelsRoot( final Validate validate ) {
       assertThatCode( validate::execute )
             .isInstanceOf( MojoExecutionException.class );
    }
 
    @Test
-   public void testMissingIncludes() throws Exception {
-      final Mojo validate = getMojo( "test-pom-missing-includes", "validate" );
+   @InjectMojo(
+         goal = Validate.MAVEN_GOAL,
+         pom = "src/test/resources/test-pom-missing-includes/pom.xml"
+   )
+   public void testMissingIncludes( final Validate validate ) {
       assertThatCode( validate::execute )
             .isInstanceOf( MojoExecutionException.class )
             .hasMessage( "Missing configuration. Please provide Aspect Models to be included." );
    }
 
    @Test
-   public void testMissingInclude() throws Exception {
-      final Mojo validate = getMojo( "test-pom-missing-include", "validate" );
+   @InjectMojo(
+         goal = Validate.MAVEN_GOAL,
+         pom = "src/test/resources/test-pom-missing-include/pom.xml"
+   )
+   public void testMissingInclude( final Validate validate ) {
       assertThatCode( validate::execute )
             .isInstanceOf( MojoExecutionException.class )
             .hasMessage( "Missing configuration. Please provide Aspect Models to be included." );
    }
 
    @Test
-   public void testGitHubServerConfig() throws Exception {
-      final String serverConfig = """
+   @InjectMojo(
+         goal = Validate.MAVEN_GOAL,
+         pom = "src/test/resources/test-pom-github-server-config/pom.xml"
+   )
+   public void testGitHubServerConfig( final Validate validate ) throws Exception {
+      // Inject <configuration> block into session's config
+      final String serverConfigXml = """
             <configuration>
                 <repository>test-org/test-repository</repository>
                 <directory>src/main/resources/aspects</directory>
@@ -59,15 +83,21 @@ public class MojoConfigTest extends AspectModelMojoTest {
                 <token>THE_TOKEN</token>
             </configuration>
             """;
-      final AspectModelMojo validate = (AspectModelMojo) getMojo( "test-pom-github-server-config", "validate", serverConfig );
-      validate.execute();
-      final List<GithubModelSourceConfig> configs = validate.gitHubConfigs;
-      for ( GithubModelSourceConfig config : configs ) {
+      final Xpp3Dom serverConfig = Xpp3DomBuilder.build( new StringReader( serverConfigXml ) );
+      final Server server = new Server();
+      server.setId( GITHUB_SERVER_CONFIG_ID );
+      server.setConfiguration( serverConfig );
+      final Settings settings = mock( Settings.class );
+      when( session.getSettings() ).thenReturn( settings );
+      when( settings.getServer( GITHUB_SERVER_CONFIG_ID ) ).thenReturn( server );
+
+      assertThatCode( validate::execute ).doesNotThrowAnyException();
+      assertThat( validate.gitHubConfigs ).isNotEmpty().allSatisfy( config -> {
          assertThat( config.repository().owner() ).isEqualTo( "test-org" );
          assertThat( config.repository().repository() ).isEqualTo( "test-repository" );
          assertThat( config.directory() ).isEqualTo( "src/main/resources/aspects" );
          assertThat( config.repository().branchOrTag().name() ).isEqualTo( "main" );
          assertThat( config.token() ).isEqualTo( "THE_TOKEN" );
-      }
+      } );
    }
 }

@@ -70,6 +70,7 @@ public class AspectModelDocumentationGenerator extends
                   + DOCU_TEMPLATE_ROOT_DIR + "/html/entity-documentation-lib.vm,"
                   + DOCU_TEMPLATE_ROOT_DIR + "/html/operation-documentation-lib.vm,"
                   + DOCU_TEMPLATE_ROOT_DIR + "/html/property-documentation-lib.vm,"
+                  + DOCU_TEMPLATE_ROOT_DIR + "/html/events-documentation-lib.vm,"
                   + DOCU_TEMPLATE_ROOT_DIR + "/html/common-documentation-lib.vm" );
    }
 

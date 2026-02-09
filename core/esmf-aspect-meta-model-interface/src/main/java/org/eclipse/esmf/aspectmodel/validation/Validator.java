@@ -20,7 +20,6 @@ import org.eclipse.esmf.metamodel.AspectModel;
 
 import io.vavr.control.Either;
 import io.vavr.control.Try;
-import org.apache.jena.rdf.model.Model;
 
 /**
  * Generic validator for Aspect Models, either on the raw RDF input or on the already loaded Aspect Model
@@ -28,23 +27,7 @@ import org.apache.jena.rdf.model.Model;
  * @param <P> the "problem" type that describes loading or validation failures
  * @param <C> the "collection of problem" type that constitutes a validation report
  */
-public interface Validator<P, C extends Collection<? super P>> {
-   /**
-    * Validates a complete RDF input (i.e., this model is expected to contain all necessary definitions, including meta model definitions)
-    *
-    * @param model the input model
-    * @return the validation report
-    */
-   C validateModel( Model model );
-
-   /**
-    * Validates a loaded Aspect Model
-    *
-    * @param aspectModel the Aspect Model
-    * @return the validation report
-    */
-   C validateModel( AspectModel aspectModel );
-
+public interface Validator<P, C extends Collection<? super P>> extends RdfBasedValidator<P, C>, AspectModelBasedValidator<P, C> {
    /**
     * Convenience function that takes an Aspect Model loading function as an input and returns the resulting Aspect Model on success,
     * or a validation report describing the loading failures on failure

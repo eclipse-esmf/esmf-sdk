@@ -53,9 +53,10 @@ Constraints specific macros will be joined together in the main macro (see above
 <div class="flex border-b pb-1 py-4">
     <div class="flex mb-4">
 >#if( $rangeConstraint.getLowerBoundDefinition().name().equals( "AT_LEAST" ) || $rangeConstraint.getLowerBoundDefinition().name().equals( "AT_MOST" ) )=#end
-        <div class="w-80">
- $rangeConstraint.getMinValue().get()
-        </div>
+    <div class="w-80">
+        #set($min = $rangeConstraint.getMinValue().get())
+        $min.getValue()
+    </div>
 #if( $rangeConstraint.getMaxValue().isPresent() )
         <div class="w-80">...</div>
 #end
@@ -63,7 +64,8 @@ Constraints specific macros will be joined together in the main macro (see above
 #if( $rangeConstraint.getMaxValue().isPresent() )
 <div class="w-80">
 <#if( $rangeConstraint.getUpperBoundDefinition().name().equals( "LESS_THAN" ) || $rangeConstraint.getUpperBoundDefinition().name().equals( "GREATER_THAN" ) )=#end
- $rangeConstraint.getMaxValue().get()
+    #set($max = $rangeConstraint.getMaxValue().get())
+    $max.getValue()
 #end
 </div>
 #end

@@ -142,7 +142,7 @@ public abstract class AspectModelMojo extends AbstractMojo {
          strategies.add( new FileSystemStrategy( modelsRoot ) );
       }
       if ( !gitHubConfigs.isEmpty() ) {
-         for ( GithubModelSourceConfig gitHubConfig : gitHubConfigs ) {
+         for ( final GithubModelSourceConfig gitHubConfig : gitHubConfigs ) {
             strategies.add( new GitHubStrategy( gitHubConfig ) );
          }
       }
@@ -212,7 +212,7 @@ public abstract class AspectModelMojo extends AbstractMojo {
          if ( mavenSession == null ) {
             getLog().warn( "Could not read Maven session, ignoring GitHub server configuration." );
          } else {
-            for ( String serverId : githubServerIds ) {
+            for ( final String serverId : githubServerIds ) {
                final Server server = mavenSession.getSettings().getServer( serverId );
                if ( server != null ) {
                   final Xpp3Dom dom = (Xpp3Dom) server.getConfiguration();
@@ -247,7 +247,7 @@ public abstract class AspectModelMojo extends AbstractMojo {
                         .orElse( ProxyConfig.detectProxySettings() );
 
                   final GithubRepository repository = new GithubRepository( repositoryParts[0], repositoryParts[1], ref );
-                  GithubModelSourceConfig gitHubConfig = GithubModelSourceConfigBuilder.builder()
+                  final GithubModelSourceConfig gitHubConfig = GithubModelSourceConfigBuilder.builder()
                         .proxyConfig( proxyConfig )
                         .repository( repository )
                         .directory( directory )

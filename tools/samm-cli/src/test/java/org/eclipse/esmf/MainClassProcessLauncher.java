@@ -33,15 +33,16 @@ public class MainClassProcessLauncher extends OsProcessLauncher {
     * @param mainClass the main class to execute
     * @param additionalJvmArguments additional arguments to add to the JVM
     * @param keepJvmArgument predicate used to adjust the list of JVM arguments from the currently JVM: Only those arguments kept by this
+    * @param disableWarning exclude warning message from output error stream
     * filter are kept in the newly launched JVM
     */
    public MainClassProcessLauncher( final Class<?> mainClass, final List<String> additionalJvmArguments,
-         final Predicate<String> keepJvmArgument ) {
-      super( buildCommand( mainClass, additionalJvmArguments, keepJvmArgument ) );
+         final Predicate<String> keepJvmArgument, final boolean disableWarning ) {
+      super( buildCommand( mainClass, additionalJvmArguments, keepJvmArgument, disableWarning ) );
    }
 
    private static List<String> buildCommand( final Class<?> mainClass, final List<String> additionalJvmArguments,
-         final Predicate<String> keepJvmArgument ) {
+         final Predicate<String> keepJvmArgument, final boolean disableWarning ) {
       final List<String> jvmArguments = Stream.concat( ManagementFactory.getRuntimeMXBean().getInputArguments().stream(),
                   additionalJvmArguments.stream() )
             .filter( keepJvmArgument )
@@ -49,6 +50,12 @@ public class MainClassProcessLauncher extends OsProcessLauncher {
 
       final List<String> commandWithArguments = new ArrayList<>();
       commandWithArguments.add( ProcessHandle.current().info().command().orElse( "java" ) );
+      if ( disableWarning ) {
+         // Temporary disable warning messages from the output error stream until https://github.com/oracle/graal/issues/12623 is resolved
+         // Delete these two arguments in github actions too
+         commandWithArguments.add( "--enable-native-access=ALL-UNNAMED" );
+         commandWithArguments.add( "--sun-misc-unsafe-memory-access=allow" );
+      }
       commandWithArguments.addAll( jvmArguments );
       commandWithArguments.add( "--class-path" );
       commandWithArguments.add( System.getProperty( "java.class.path" ) );

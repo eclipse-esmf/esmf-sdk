@@ -216,6 +216,17 @@ See https://www.w3.org/TR/shacl/#NotConstraintComponent[sh:not] for more informa
 
 **Resolution:** Modify the element to violate the negated constraint. The element should not satisfy the condition specified in the NOT constraint.
 
+[[other-specific-violations]]
+== Other specific violations
+
+ERR_INVALID_REGEX - The model contains a
+xref:samm-specification:ROOT:characteristics.adoc#regular-expression-constraint[samm-c:RegularExpressionConstraint]
+with an invalid regular expression.
+
+**Resolution:** Make sure the regular expression adheres to the XQuery 1.0 and XPath 2.0 Functions
+  and Operators
+  xref:samm-specification:appendix:bibliography.adoc#xpath-functions[[xpath-functions\]].
+
 [[error-contexts]]
 == Error Contexts
 

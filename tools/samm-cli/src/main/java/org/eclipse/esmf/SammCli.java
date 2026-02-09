@@ -36,7 +36,6 @@ import org.eclipse.esmf.importer.ImportCommand;
 import org.eclipse.esmf.namespacepackage.PackageCommand;
 import org.eclipse.esmf.namespacepackage.PackageExportCommand;
 import org.eclipse.esmf.namespacepackage.PackageImportCommand;
-import org.eclipse.esmf.substitution.IsWindows;
 
 import org.fusesource.jansi.AnsiConsole;
 import picocli.CommandLine;
@@ -149,7 +148,7 @@ public class SammCli extends AbstractCommand {
    public static void main( final String[] argv ) {
       // Check if the .exe was started on Windows without arguments: Most likely opened from Explorer or Desktop.
       // If yes, open a command prompt to continue working instead.
-      if ( new IsWindows().getAsBoolean() && argv.length == 0 ) {
+      if ( System.getProperty( "os.name", "" ).startsWith( "Windows" ) && argv.length == 0 ) {
          ProcessHandle.current().info().command().ifPresent( executable -> {
             // Only spawn terminals for native executable
             if ( !executable.endsWith( "java.exe" ) ) {
@@ -166,8 +165,6 @@ public class SammCli extends AbstractCommand {
             }
          } );
       }
-
-      NativeImageHelpers.ensureRequiredEnvironment();
 
       // The disabling color switch needs to be checked before PicoCLI initialization
       boolean disableColor = false;

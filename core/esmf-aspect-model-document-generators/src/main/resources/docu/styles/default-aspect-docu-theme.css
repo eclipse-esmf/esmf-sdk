@@ -66,3 +66,56 @@ a.toc-link {
     width: 1px;
     right: 1px;
 }
+
+/* Markdown rendering inside property descriptions */
+.md-content ul,
+.md-content ol {
+    list-style-position: outside;
+    margin: 0.5rem 0 0.5rem 1.25rem;
+    padding-left: 1.25rem;
+}
+
+.md-content ul { list-style-type: disc; }
+.md-content ol { list-style-type: decimal; }
+
+.md-content li {
+    display: list-item;         /* critical if global CSS sets li { display:block } */
+    list-style: inherit;        /* override list-style: none */
+    margin: 0.25rem 0;
+    padding: 0;
+}
+
+/* Nested lists */
+.md-content li > ul,
+.md-content li > ol {
+    margin-top: 0.25rem;
+}
+
+/* Optional: paragraphs spacing */
+.md-content p { margin: 0.5rem 0; }
+
+/* Optional: callouts */
+.md-content .note,
+.md-content .source {
+    padding: 0.75rem 1rem;
+    border-left: 4px solid currentColor;
+    margin: 0.75rem 0;
+}
+
+.md-content .example-list {
+    margin: 0.5rem 0 0.5rem 1.25rem;
+    padding-left: 1.25rem;
+    list-style-type: disc;
+}
+
+/* Events */
+.event-card {
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 20px;
+}
+.event-meta {
+    font-size: 0.875rem;
+    opacity: 0.85;
+}

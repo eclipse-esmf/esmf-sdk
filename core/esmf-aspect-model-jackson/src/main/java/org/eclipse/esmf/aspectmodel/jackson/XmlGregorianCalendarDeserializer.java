@@ -14,6 +14,7 @@
 package org.eclipse.esmf.aspectmodel.jackson;
 
 import java.io.IOException;
+import java.io.Serial;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -30,6 +31,7 @@ import org.slf4j.LoggerFactory;
  * Jackson deserializer for {@see XMLGregorianCalendar}.
  */
 public class XmlGregorianCalendarDeserializer extends StdScalarDeserializer<XMLGregorianCalendar> {
+   @Serial
    private static final long serialVersionUID = 8911315963918963886L;
    private static final Logger LOG = LoggerFactory.getLogger( XmlGregorianCalendarDeserializer.class );
    public static final XmlGregorianCalendarDeserializer INSTANCE = new XmlGregorianCalendarDeserializer();

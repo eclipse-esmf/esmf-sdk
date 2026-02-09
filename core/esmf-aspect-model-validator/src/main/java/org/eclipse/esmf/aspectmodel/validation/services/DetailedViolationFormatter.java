@@ -81,6 +81,7 @@ import org.eclipse.esmf.aspectmodel.validation.CycleViolation;
 import org.eclipse.esmf.aspectmodel.validation.InvalidLexicalValueViolation;
 import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
 import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
+import org.eclipse.esmf.aspectmodel.validation.RegularExpressionConstraintViolation;
 
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Property;
@@ -142,8 +143,8 @@ public class DetailedViolationFormatter extends ViolationFormatter {
          }
       }
       // Add documentation link
-      builder.append( " documentation: https://eclipse-esmf.github.io/esmf-developer-guide/tooling-guide/error-codes.html"
-            + violation.errorCode().toLowerCase().replace( "_", "-" ) );
+      builder.append( "  documentation: " + ERROR_CODES_DOC_LINK
+            + violation.errorCode().toUpperCase().replace( "_", "-" ) );
       builder.append( indent( additionalAttributesSupplier.get(), 2 ) );
       if ( violation.context() != null ) {
          builder.append( String.format( "  caused-by-shape:%n" ) );
@@ -297,6 +298,13 @@ public class DetailedViolationFormatter extends ViolationFormatter {
       return formatViolation( violation, () ->
             String.format( "properties-in-path: %s%n",
                   violation.path().stream().map( Resource::getURI ).collect( Collectors.joining( ", " ) ) ) );
+   }
+
+   @Override
+   public String visitRegularExpressionConstraint( final RegularExpressionConstraintViolation violation ) {
+      return formatViolation( violation, () ->
+            String.format( "properties-in-regular-expression-constraint: %s%n",
+                  Optional.ofNullable( violation.context().value( violation.context().element() ) ) ) );
    }
 
    @Override

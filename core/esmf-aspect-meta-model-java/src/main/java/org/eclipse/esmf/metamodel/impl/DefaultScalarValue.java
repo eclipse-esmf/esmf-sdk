@@ -120,7 +120,7 @@ public class DefaultScalarValue implements ScalarValue {
    public String toString() {
       return new StringJoiner( ", ", DefaultScalarValue.class.getSimpleName() + "[", "]" )
             .add( "value=" + value )
-            .add( "typeUri='" + type + "'" )
+            .add( "type='" + type + "'" )
             .toString();
    }
 

@@ -16,14 +16,18 @@ package org.eclipse.esmf.aspectmodel;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-import org.apache.maven.plugin.Mojo;
-import org.junit.Test;
+import org.apache.maven.api.plugin.testing.InjectMojo;
+import org.apache.maven.api.plugin.testing.MojoTest;
+import org.junit.jupiter.api.Test;
 
-@SuppressWarnings( "JUnitMixedFramework" )
+@MojoTest
 public class GenerateAspectFromAasTest extends AspectModelMojoTest {
    @Test
-   public void testGenerateAspectFromAas() throws Exception {
-      final Mojo generateAspectFromAas = getMojo( "generate-aspect-from-aas-valid", "generateAspectFromAas" );
+   @InjectMojo(
+         goal = GenerateAspectFromAas.MAVEN_GOAL,
+         pom = "src/test/resources/generate-aspect-from-aas-valid/pom.xml"
+   )
+   public void testGenerateAspectFromAas( final GenerateAspectFromAas generateAspectFromAas ) {
       assertThatCode( generateAspectFromAas::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "com.example", "1.0.0", "Submodel1.ttl" ) ).exists();
    }

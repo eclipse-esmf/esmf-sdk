@@ -67,6 +67,10 @@
          <groupId>org.commonmark</groupId>
          <artifactId>commonmark</artifactId>
       </dependency>
+      <dependency>
+         <groupId>org.jspecify</groupId>
+         <artifactId>jspecify</artifactId>
+      </dependency>
 
       <!-- Test dependencies -->
       <dependency>
@@ -211,7 +215,7 @@
                   <path>
                      <groupId>io.soabase.record-builder</groupId>
                      <artifactId>record-builder-processor</artifactId>
-                     <version>${record-builder-version}</version>
+                     <version>${record-builder.version}</version>
                   </path>
                </annotationProcessorPaths>
             </configuration>

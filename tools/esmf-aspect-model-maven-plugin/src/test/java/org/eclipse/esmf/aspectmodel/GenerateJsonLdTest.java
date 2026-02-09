@@ -16,14 +16,18 @@ package org.eclipse.esmf.aspectmodel;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-import org.apache.maven.plugin.Mojo;
-import org.junit.Test;
+import org.apache.maven.api.plugin.testing.InjectMojo;
+import org.apache.maven.api.plugin.testing.MojoTest;
+import org.junit.jupiter.api.Test;
 
-@SuppressWarnings( "JUnitMixedFramework" )
+@MojoTest
 public class GenerateJsonLdTest extends AspectModelMojoTest {
    @Test
-   public void testGenerateJsonLdValidAspectModel() throws Exception {
-      final Mojo generateJsonLd = getMojo( "generate-jsonld-spec-json-pom-to-file", "generateJsonLd" );
+   @InjectMojo(
+         goal = GenerateJsonLd.MAVEN_GOAL,
+         pom = "src/test/resources/generate-jsonld-spec-json-pom-to-file/pom.xml"
+   )
+   public void testGenerateJsonLdValidAspectModel( final GenerateJsonLd generateJsonLd ) {
       assertThatCode( generateJsonLd::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "AspectWithEvent.json" ) ).exists();
    }

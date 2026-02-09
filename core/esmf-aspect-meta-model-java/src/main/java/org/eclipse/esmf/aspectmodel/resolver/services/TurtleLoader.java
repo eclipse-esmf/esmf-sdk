@@ -22,8 +22,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import org.eclipse.esmf.aspectmodel.ValueParsingException;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
@@ -37,6 +35,8 @@ import org.apache.jena.riot.RDFParser;
 import org.apache.jena.riot.RDFParserRegistry;
 import org.apache.jena.riot.RiotException;
 import org.apache.jena.riot.system.FactoryRDFStd;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,7 +92,7 @@ public final class TurtleLoader {
     * @param location the location of the input source
     * @return the model on success, a corresponding exception otherwise
     */
-   public static Try<Model> loadTurtle( @Nonnull final String modelContent, @Nullable final URI location ) {
+   public static Try<Model> loadTurtle( @NonNull final String modelContent, @Nullable final URI location ) {
       init();
       try ( final InputStream turtleInputStream = new ByteArrayInputStream( modelContent.getBytes( StandardCharsets.UTF_8 ) ) ) {
          final Model streamModel = RDFParser.create()

@@ -89,6 +89,12 @@ public class GenerateAspectImplementationStub extends CodeGenerationMojo {
    private String aspectApiBaseUrl = "";
 
    @Parameter
+   private String readApiPath;
+
+   @Parameter
+   private String queryApiPath;
+
+   @Parameter
    private String aspectParameterFile;
 
    @Parameter( defaultValue = "false" )
@@ -217,6 +223,8 @@ public class GenerateAspectImplementationStub extends CodeGenerationMojo {
       return OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( useSemanticApiVersion )
             .baseUrl( aspectApiBaseUrl )
+            .readApiPath( readApiPath )
+            .queryApiPath( queryApiPath )
             .resourcePath( aspectResourcePath )
             .properties( readFile( aspectParameterFile ) )
             .template( readFile( templateFilePath ) )

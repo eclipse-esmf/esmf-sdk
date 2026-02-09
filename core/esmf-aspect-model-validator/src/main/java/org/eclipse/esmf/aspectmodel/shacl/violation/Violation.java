@@ -25,6 +25,7 @@ import org.eclipse.esmf.aspectmodel.validation.CycleViolation;
 import org.eclipse.esmf.aspectmodel.validation.InvalidLexicalValueViolation;
 import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
 import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
+import org.eclipse.esmf.aspectmodel.validation.RegularExpressionConstraintViolation;
 
 import org.apache.jena.rdf.model.RDFNode;
 
@@ -99,6 +100,10 @@ public interface Violation {
       }
 
       default T visitCycleViolation( final CycleViolation violation ) {
+         return visit( violation );
+      }
+
+      default T visitRegularExpressionConstraint( final RegularExpressionConstraintViolation violation ) {
          return visit( violation );
       }
 

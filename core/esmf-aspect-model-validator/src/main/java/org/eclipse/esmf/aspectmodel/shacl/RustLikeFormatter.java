@@ -23,7 +23,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
-import javax.annotation.Nullable;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.parser.PlainTextFormatter;
@@ -39,6 +38,7 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.sparql.graph.NodeConst;
 import org.apache.jena.vocabulary.RDF;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Rust-like message formatter. Formatted messages look something like the following example:

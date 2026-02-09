@@ -67,6 +67,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -129,6 +130,13 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
     * The attribute that can be added parallel to enums that describes their values, as used by CycloneDX schema
     */
    protected static final JsonProperty META_ENUM = new JsonProperty.Named( "meta:enum" );
+
+   /**
+    * The JSON Schema composition keyword used to combine multiple subschemas.
+    * In the schemas it is commonly used as a “$ref wrapper” (e.g., allOf: [ { "$ref": "..." } ])
+    * to allow adding sibling attributes like description or x-* fields alongside the referenced schema.
+    */
+   protected static final JsonProperty ALL_OF = new JsonProperty.Named( "allOf" );
 
    /**
     * The evaluation context when recursively traversing the schema document
@@ -492,7 +500,10 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
    }
 
    protected Characteristic buildCharacteristic( final JsonNode propertyNode, final Context context ) {
-      final Optional<JsonNode> refNode = jsonProperty( propertyNode, $REF );
+      final Optional<JsonNode> refNode =
+            jsonProperty( propertyNode, $REF )
+                  .or( () -> findRefNodeInAllOf( propertyNode ) );
+
       if ( refNode.isPresent() ) {
          return buildCharacteristicFromReferencedSchema( refNode.get(), context );
       }
@@ -830,5 +841,14 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
             .build();
       context.generatedElementsByUrn().put( propertyUrn, result );
       return result;
+   }
+
+   private Optional<JsonNode> findRefNodeInAllOf( final JsonNode propertyNode ) {
+      return jsonProperty( propertyNode, ALL_OF )
+            .filter( JsonNode::isArray )
+            .flatMap( allOf -> Streams.stream( allOf.elements() )
+                  .map( n -> n.get( "$ref" ) )
+                  .filter( Objects::nonNull )
+                  .findFirst() );
    }
 }

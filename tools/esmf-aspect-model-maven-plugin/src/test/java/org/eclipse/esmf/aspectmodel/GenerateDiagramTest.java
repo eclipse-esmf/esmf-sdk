@@ -16,23 +16,30 @@ package org.eclipse.esmf.aspectmodel;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-import org.apache.maven.plugin.Mojo;
+import org.apache.maven.api.plugin.testing.InjectMojo;
+import org.apache.maven.api.plugin.testing.MojoTest;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-@SuppressWarnings( "JUnitMixedFramework" )
+@MojoTest
 public class GenerateDiagramTest extends AspectModelMojoTest {
    @Test
-   public void testGenerateDiagramsValidAspectModel() throws Exception {
-      final Mojo generateDiagram = getMojo( "generate-diagram-pom-valid-aspect-model", "generateDiagram" );
+   @InjectMojo(
+         goal = GenerateDiagram.MAVEN_GOAL,
+         pom = "src/test/resources/generate-diagram-pom-valid-aspect-model/pom.xml"
+   )
+   public void testGenerateDiagramsValidAspectModel( final GenerateDiagram generateDiagram ) {
       assertThatCode( generateDiagram::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "Aspect_en.svg" ) ).exists();
       assertThat( generatedFilePath( "Aspect_en.png" ) ).exists();
    }
 
    @Test
-   public void testGenerateDiagramsInvalidTargetFormat() throws Exception {
-      final Mojo generateDiagram = getMojo( "generate-diagram-pom-invalid-target-format", "generateDiagram" );
+   @InjectMojo(
+         goal = GenerateDiagram.MAVEN_GOAL,
+         pom = "src/test/resources/generate-diagram-pom-invalid-target-format/pom.xml"
+   )
+   public void testGenerateDiagramsInvalidTargetFormat( final GenerateDiagram generateDiagram ) {
       assertThatCode( generateDiagram::execute )
             .isInstanceOf( MojoExecutionException.class )
             .hasMessage( "Invalid target format: jpg. Valid formats are SVG, PNG." );

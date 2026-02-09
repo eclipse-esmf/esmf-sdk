@@ -29,6 +29,7 @@ import org.eclipse.esmf.aspectmodel.shacl.path.PathNodeRetriever;
 import org.eclipse.esmf.aspectmodel.shacl.path.PredicatePath;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+import org.eclipse.esmf.aspectmodel.validation.RdfBasedValidator;
 
 import com.google.common.collect.Streams;
 import org.apache.jena.query.Query;
@@ -48,7 +49,7 @@ import org.apache.jena.vocabulary.RDF;
  * Implementation of a SHACL engine that allows validation on a per-element basis: {@link #validateElement(Resource)} can be used to
  * retrieve validation results only for this specific resource.
  */
-public class ShaclValidator {
+public class ShaclValidator implements RdfBasedValidator<Violation, List<Violation>> {
    private final List<Shape.Node> shapes;
    private final Map<Resource, List<Shape.Node>> shapesWithClassTargets;
    private final Model shapesModel;
@@ -117,6 +118,7 @@ public class ShaclValidator {
     * @param model the model to be validated
     * @return the list of {@link Violation}s if there are violations
     */
+   @Override
    public List<Violation> validateModel( final Model model ) {
       final Map<Resource, List<Shape.Node>> sparqlTargetsWithShapes = findSparqlTargets( model );
       return Streams.stream( model.listStatements( null, RDF.type, (RDFNode) null ) )

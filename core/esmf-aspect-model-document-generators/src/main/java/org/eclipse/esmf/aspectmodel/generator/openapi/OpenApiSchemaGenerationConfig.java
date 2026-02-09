@@ -44,6 +44,8 @@ public record OpenApiSchemaGenerationConfig(
       boolean generateCommentForSeeAttributes,
       boolean useSemanticVersion,
       String baseUrl,
+      String readApiPath,
+      String queryApiPath,
       String resourcePath,
       ObjectNode properties,
       PagingOption pagingOption,
@@ -59,6 +61,9 @@ public record OpenApiSchemaGenerationConfig(
    public OpenApiSchemaGenerationConfig {
       if ( locale == null ) {
          locale = Locale.ENGLISH;
+      }
+      if ( pagingOption == null ) {
+         pagingOption = PagingOption.AUTO;
       }
    }
 

@@ -15,9 +15,8 @@ package org.eclipse.esmf.metamodel.datatype;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
+import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import org.apache.jena.datatypes.DatatypeFormatException;
@@ -27,20 +26,22 @@ import org.apache.jena.graph.impl.LiteralLabel;
 /**
  * Represents the samm:curie datatype itself. For the class that represents a Curie value, see {@link Curie}.
  */
-public class CurieType implements SammType<Curie> {
+public final class CurieType implements SammType<Curie> {
    public static final CurieType INSTANCE = new CurieType();
    public static final String CURIE_REGEX = "[a-zA-Z]*:[a-zA-Z]+";
-   private final Function<String, Curie> parser = Curie::new;
-   private final Function<Curie, String> unparser = Curie::value;
-   private final Predicate<String> lexicalValidator = value -> value.matches( CURIE_REGEX );
 
    private CurieType() {
    }
 
    @Override
+   public <T, C> T accept( final AspectVisitor<T, C> visitor, final C context ) {
+      return visitor.visitCurieType( this, context );
+   }
+
+   @Override
    public Optional<Curie> parseTyped( final String lexicalForm ) {
       try {
-         return Optional.of( parser.apply( lexicalForm ) );
+         return Optional.of( new Curie( lexicalForm ) );
       } catch ( final RuntimeException exception ) {
          if ( SammXsdType.isCheckingEnabled() ) {
             throw exception;
@@ -50,8 +51,8 @@ public class CurieType implements SammType<Curie> {
    }
 
    @Override
-   public String unparseTyped( final Curie value ) {
-      return unparser.apply( value );
+   public String serialize( final Curie value ) {
+      return value.value();
    }
 
    @Override
@@ -61,13 +62,13 @@ public class CurieType implements SammType<Curie> {
 
    @Override
    public String unparse( final Object value ) {
-      return unparseTyped( (Curie) value );
+      return serialize( (Curie) value );
    }
 
    @Override
    public Object parse( final String lexicalForm ) throws DatatypeFormatException {
       try {
-         return parser.apply( lexicalForm );
+         return new Curie( lexicalForm );
       } catch ( final Exception exception ) {
          if ( SammXsdType.isCheckingEnabled() ) {
             throw exception;
@@ -78,7 +79,7 @@ public class CurieType implements SammType<Curie> {
 
    @Override
    public boolean isValid( final String lexicalForm ) {
-      return lexicalValidator.test( lexicalForm );
+      return lexicalForm.matches( CURIE_REGEX );
    }
 
    @Override
@@ -88,7 +89,7 @@ public class CurieType implements SammType<Curie> {
 
    @Override
    public boolean isValidLiteral( final LiteralLabel lit ) {
-      return lexicalValidator.test( lit.getValue().toString() );
+      return isValid( lit.getValue().toString() );
    }
 
    @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -50,6 +50,13 @@ public class AspectToJsonCommand extends AbstractCommand {
          description = "Print detailed reports on errors" )
    private boolean details = false;
 
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+         names = { "--fail-on-empty-example-value" },
+         description = "Fail if an example value cannot be generated for a regular expression constraint, "
+               + "instead of returning an empty value." )
+   private boolean failOnEmptyExampleValue = false;
+
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
 
@@ -66,7 +73,9 @@ public class AspectToJsonCommand extends AbstractCommand {
 
       final JsonPayloadGenerationConfig config = JsonPayloadGenerationConfigBuilder.builder()
             .addTypeAttributeForEntityInheritance( addTypeAttribute )
+            .failOnInvalidRegularExpressions( failOnEmptyExampleValue )
             .build();
+
       final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator(
             getInputHandler( parentCommand.parentCommand.getInput() ).loadAspect(), config );
       // we intentionally override the name of the generated artifact here to the name explicitly desired by the user (outputFilePath),

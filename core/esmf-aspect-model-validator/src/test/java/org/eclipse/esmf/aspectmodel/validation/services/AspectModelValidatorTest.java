@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -173,6 +173,14 @@ class AspectModelValidatorTest {
    }
 
    @Test
+   void testDocumentationLinkInDetailedMessage() {
+      final Supplier<AspectModel> invalidTurtleSyntax = () -> TestResources.load( InvalidTestAspect.INVALID_SYNTAX );
+      final List<Violation> violations = validator.validateModel( invalidTurtleSyntax );
+      final String report = new DetailedViolationFormatter().apply( violations );
+      assertThat( report.contains( "documentation: " + ViolationFormatter.ERROR_CODES_DOC_LINK + "ERR-SYNTAX" ) ).isTrue();
+   }
+
+   @Test
    void testNonTurtleFile() {
       final Supplier<AspectModel> invalidTurtleSyntax = () -> TestResources.load( InvalidTestAspect.ACTUALLY_JSON );
       final List<Violation> violations = validator.validateModel( invalidTurtleSyntax );
@@ -255,5 +263,27 @@ class AspectModelValidatorTest {
       final List<Violation> violations = result.getLeft();
       assertThat( violations ).hasSize( 1 );
       assertThat( violations.getFirst().violationSpecificMessage() ).contains( "is no valid value for type" );
+   }
+
+   @Test
+   void testValidateRegularExpressionExampleValueValidator() {
+      final Either<List<Violation>, AspectModel> result = TestResources.loadWithValidation(
+            InvalidTestAspect.ASPECT_WITH_INVALID_REGEX_CONSTRAINT, validator );
+      assertThat( result.isLeft() ).isTrue();
+      final List<Violation> violations = result.getLeft();
+      assertThat( violations ).hasSize( 1 );
+      assertThat( violations.getFirst().violationSpecificMessage() ).contains(
+            "Regular expression on :TestRegularExpressionConstraint is invalid" );
+   }
+
+   @Test
+   void testValidateAnonymousRegularExpressionExampleValueValidator() {
+      final Either<List<Violation>, AspectModel> result = TestResources.loadWithValidation(
+            InvalidTestAspect.ASPECT_WITH_INVALID_ANONYMOUS_REGEX_CONSTRAINT, validator );
+      assertThat( result.isLeft() ).isTrue();
+      final List<Violation> violations = result.getLeft();
+      assertThat( violations ).hasSize( 1 );
+      assertThat( violations.getFirst().violationSpecificMessage() ).contains(
+            "Regular expression on anonymous element is invalid" );
    }
 }

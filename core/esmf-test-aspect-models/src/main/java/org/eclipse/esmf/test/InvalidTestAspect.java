@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -17,6 +17,8 @@ import org.apache.commons.text.CaseUtils;
 
 public enum InvalidTestAspect implements TestModel {
    ACTUALLY_JSON,
+   ASPECT_WITH_INVALID_ANONYMOUS_REGEX_CONSTRAINT,
+   ASPECT_WITH_INVALID_REGEX_CONSTRAINT,
    ASPECT_WITH_INVALID_VERSION,
    ASPECT_WITH_RECURSIVE_PROPERTY,
    INVALID_SYNTAX,

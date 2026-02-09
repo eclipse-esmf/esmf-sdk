@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.validation.CycleViolation;
+import org.eclipse.esmf.aspectmodel.validation.RdfBasedValidator;
 import org.eclipse.esmf.metamodel.vocabulary.SAMM;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
@@ -55,7 +56,7 @@ import org.apache.jena.vocabulary.RDF;
  * So a depth-first traversal of the "resolved" (via Characteristics/Entities etc.) property references is able to deliver all cycles
  * present in the model.
  */
-public class ModelCycleDetector {
+public class ModelCycleDetector implements RdfBasedValidator<Violation, List<Violation>> {
    final Set<Resource> discovered = new LinkedHashSet<>();
    final Set<Resource> discoveredOptionals = new HashSet<>();
    final Set<Resource> finished = new HashSet<>();
@@ -67,6 +68,7 @@ public class ModelCycleDetector {
 
    final List<Violation> cycleDetectionReport = new ArrayList<>();
 
+   @Override
    public List<Violation> validateModel( final Model rawModel ) {
       discovered.clear();
       discoveredOptionals.clear();

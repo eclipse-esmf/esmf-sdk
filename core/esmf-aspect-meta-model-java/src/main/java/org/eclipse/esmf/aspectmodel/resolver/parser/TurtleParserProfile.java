@@ -114,6 +114,11 @@ public class TurtleParserProfile implements ParserProfile {
    }
 
    @Override
+   public Node createLangDirLiteral( final String lexical, final String langTag, final String direction, final long line, final long col ) {
+      return parserProfile.createLangDirLiteral( lexical, langTag, direction, line, col );
+   }
+
+   @Override
    public Node createStringLiteral( final String lexical, final long line, final long col ) {
       return parserProfile.createStringLiteral( lexical, line, col );
    }
@@ -133,13 +138,13 @@ public class TurtleParserProfile implements ParserProfile {
    }
 
    @Override
-   public Node createTripleNode( final Node subject, final Node predicate, final Node object, final long line, final long col ) {
-      return parserProfile.createTripleNode( subject, predicate, object, line, col );
+   public Node createTripleTerm( final Node subject, final Node predicate, final Node object, final long line, final long col ) {
+      return parserProfile.createTripleTerm( subject, predicate, object, line, col );
    }
 
    @Override
-   public Node createTripleNode( final Triple triple, final long line, final long col ) {
-      return parserProfile.createTripleNode( triple, line, col );
+   public Node createTripleTerm( final Triple triple, final long line, final long col ) {
+      return parserProfile.createTripleTerm( triple, line, col );
    }
 
    @Override

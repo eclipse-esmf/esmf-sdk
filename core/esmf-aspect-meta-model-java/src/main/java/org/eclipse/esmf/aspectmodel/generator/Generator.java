@@ -28,9 +28,9 @@ import org.slf4j.LoggerFactory;
 /**
  * Base class for the generation of {@link Artifact}s.
  *
- * @param <F> the focus type, e.g. Aspect or AspectModel
+ * @param <F> the focus type, e.g. Aspect or AspectModel; the "input" type of the generation function
  * @param <I> the type that uniquely identifies the artifact in the scope of the generation process
- * @param <T> the artifact's content type, e.g. String or byte[]
+ * @param <T> the artifact's content type, e.g. String or byte[]; the "output" type of the generation function
  * @param <C> the config object for the generator
  * @param <A> the type of the artifact that is generated
  */
@@ -40,7 +40,7 @@ public abstract class Generator<F, I, T, C extends GenerationConfig, A extends A
    /**
     * The "focus" element, i.e., the main "input" for the generation process
     */
-   protected final F focus;
+   private final F focus;
 
    protected final C config;
    protected final Comparator<ModelElement> uniqueByModelElementIdentifier = ( modelElementOne, modelElementTwo ) -> {
