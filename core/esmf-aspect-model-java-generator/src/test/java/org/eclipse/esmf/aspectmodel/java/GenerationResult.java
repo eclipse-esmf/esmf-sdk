@@ -105,10 +105,10 @@ class GenerationResult {
    }
 
    /**
-    * Allows asserting the fields of a generated class. Expected field definitions have to be given as a {@code Map}
-    * where the key is the field name and the value is either the expected type or the type name (type names have to
-    * be used for types that are part of the generation process).
-    * Note, that ALL fields have to be passed for assertion, you can't assert only a subset.
+    * Allows asserting the fields of a generated class. Expected field definitions have to be given as
+    * a {@code Map} where the key is the field name and the value is either the expected type or the
+    * type name (type names have to be used for types that are part of the generation process). Note,
+    * that ALL fields have to be passed for assertion, you can't assert only a subset.
     *
     * @param className the name of the generated Java class analyze
     * @param fieldTypesOrTypeNames the expected fields and their types or type names
@@ -139,9 +139,8 @@ class GenerationResult {
                   } );
 
       if ( !annotations.isEmpty() ) {
-         assertThat( fields ).allSatisfy( field ->
-               assertThat( annotations.get( field.resolve().getName() ) ).isEqualTo(
-                     field.getAnnotations().stream().map( Node::toString ).collect( Collectors.joining() ) ) );
+         assertThat( fields ).allSatisfy( field -> assertThat( annotations.get( field.resolve().getName() ) ).isEqualTo(
+               field.getAnnotations().stream().map( Node::toString ).collect( Collectors.joining() ) ) );
       }
    }
 
@@ -169,8 +168,8 @@ class GenerationResult {
       assertThat( parameters ).hasSize( fieldTypesOrTypeNames.size() );
 
       if ( !expectedParameterAnnotations.isEmpty() ) {
-         assertThat( parameters ).allSatisfy( parameter ->
-               assertThat( expectedParameterAnnotations.get( parameter.resolve().getName() ) ).isEqualTo(
+         assertThat( parameters )
+               .allSatisfy( parameter -> assertThat( expectedParameterAnnotations.get( parameter.resolve().getName() ) ).isEqualTo(
                      parameter.getAnnotations().stream().map( Node::toString ).collect( Collectors.joining() ) ) );
          return;
       }
@@ -235,9 +234,9 @@ class GenerationResult {
          rawType = Class.forName( toResolve.getClassNameToResolve() );
       } catch ( final ClassNotFoundException e ) {
          // No class loadable using default class loader, try to find it in generated classes
-         rawType = generatedClasses.entrySet().stream().filter( entry ->
-                     entry.getKey().toString().equals( toResolve.getClassNameToResolve() ) )
-               .findAny().map( Map.Entry::getValue ).orElseThrow( () -> new RuntimeException( e ) );
+         rawType =
+               generatedClasses.entrySet().stream().filter( entry -> entry.getKey().toString().equals( toResolve.getClassNameToResolve() ) )
+                     .findAny().map( Map.Entry::getValue ).orElseThrow( () -> new RuntimeException( e ) );
       }
       if ( !toResolve.getToResolve().isReferenceType() || ( (ResolvedReferenceType) toResolve.getToResolve() )
             .getTypeParametersMap().isEmpty() ) {
@@ -260,8 +259,9 @@ class GenerationResult {
     *
     * @param className the name of the {@code Enumeration} to be tested
     * @param expectedConstants a list of the expected constants
-    * @param expectedConstantArguments a {@code Map} containing the {@code String} representation of the argument for a constant. The key is
-    * the name of the constant. If this map is given, the number of entries should match the number of expected constants.
+    * @param expectedConstantArguments a {@code Map} containing the {@code String} representation of
+    *        the argument for a constant. The key is the name of the constant. If this map is given,
+    *        the number of entries should match the number of expected constants.
     */
    void assertEnumConstants( final String className, final Collection<String> expectedConstants,
          final Map<String, String> expectedConstantArguments ) {

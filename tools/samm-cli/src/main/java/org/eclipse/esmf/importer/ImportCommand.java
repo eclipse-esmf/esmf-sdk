@@ -39,15 +39,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import picocli.CommandLine;
 
 @CommandLine.Command(
-      name = ImportCommand.COMMAND_NAME,
-      description = "Imports other formats to Aspect Models. Supported types: *.schema.json",
-      subcommands = {
-            CommandLine.HelpCommand.class
-      },
-      descriptionHeading = "%n@|bold Description|@:%n%n",
-      parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n"
-)
+   name = ImportCommand.COMMAND_NAME,
+   description = "Imports other formats to Aspect Models. Supported types: *.schema.json",
+   subcommands = {
+         CommandLine.HelpCommand.class
+   },
+   descriptionHeading = "%n@|bold Description|@:%n%n",
+   parameterListHeading = "%n@|bold Parameters|@:%n",
+   optionListHeading = "%n@|bold Options|@:%n" )
 public class ImportCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "import";
 
@@ -55,55 +54,48 @@ public class ImportCommand extends AbstractCommand {
    private LoggingMixin loggingMixin;
 
    @CommandLine.Parameters(
-         paramLabel = "INPUT",
-         description = "Input file",
-         arity = "1",
-         index = "0" )
+      paramLabel = "INPUT",
+      description = "Input file",
+      arity = "1",
+      index = "0" )
    private String input;
 
    @CommandLine.Parameters(
-         paramLabel = "URN",
-         description = "Aspect Model URN of the Aspect Model element to create",
-         arity = "1",
-         index = "1",
-         converter = AspectModelUrnConverter.class
-   )
+      paramLabel = "URN",
+      description = "Aspect Model URN of the Aspect Model element to create",
+      arity = "1",
+      index = "1",
+      converter = AspectModelUrnConverter.class )
    private AspectModelUrn elementUrn;
 
    @CommandLine.Option(
-         names = { "-js", "--json-schema" },
-         description = "Interpret the input file as JSON Schema"
-   )
+      names = { "-js", "--json-schema" },
+      description = "Interpret the input file as JSON Schema" )
    private boolean jsonSchema;
 
    @CommandLine.Option(
-         names = { "--output-directory", "-d" },
-         description = "Output directory to write files to"
-   )
+      names = { "--output-directory", "-d" },
+      description = "Output directory to write files to" )
    private String outputPath = ".";
 
    @CommandLine.Option(
-         names = { "--dry-run" },
-         description = "Emulate import operation and print a report of changes that would be performed"
-   )
+      names = { "--dry-run" },
+      description = "Emulate import operation and print a report of changes that would be performed" )
    private boolean dryRun;
 
    @CommandLine.Option(
-         names = { "--force" },
-         description = "Force creation/overwriting of existing files"
-   )
+      names = { "--force" },
+      description = "Force creation/overwriting of existing files" )
    private boolean force;
 
    @CommandLine.Option(
-         names = { "-e", "--entity" },
-         description = "Create a samm:Entity instead of a samm:Aspect"
-   )
+      names = { "-e", "--entity" },
+      description = "Create a samm:Entity instead of a samm:Aspect" )
    private boolean entityInsteadOfAspect;
 
    @CommandLine.Option(
-         names = { "-t", "--todo" },
-         description = "Add TODO descriptions to otherwise undescribed model elements"
-   )
+      names = { "-t", "--todo" },
+      description = "Add TODO descriptions to otherwise undescribed model elements" )
    private boolean addTodoComments;
 
    @Override

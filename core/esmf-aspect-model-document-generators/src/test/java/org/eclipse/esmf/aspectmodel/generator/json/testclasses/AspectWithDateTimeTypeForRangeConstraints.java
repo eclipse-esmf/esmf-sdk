@@ -26,24 +26,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /** Generated class for AspectWithDateTimeTypeForRangeConstraints. */
 public class AspectWithDateTimeTypeForRangeConstraints {
 
-   @GregorianCalendarMin( value = "2000-01-01T14:23:00", boundDefinition = BoundDefinition.AT_LEAST )
-   @GregorianCalendarMax( value = "2000-01-02T15:23:00", boundDefinition = BoundDefinition.AT_MOST )
+   @GregorianCalendarMin( value = "2000-01-01T14:23:00",
+      boundDefinition = BoundDefinition.AT_LEAST )
+   @GregorianCalendarMax( value = "2000-01-02T15:23:00",
+      boundDefinition = BoundDefinition.AT_MOST )
    private XMLGregorianCalendar TestPropertyWithDateTime;
 
    @GregorianCalendarMin(
-         value = "2000-01-01T14:23:00.66372+14:00",
-         boundDefinition = BoundDefinition.AT_LEAST )
+      value = "2000-01-01T14:23:00.66372+14:00",
+      boundDefinition = BoundDefinition.AT_LEAST )
    @GregorianCalendarMax(
-         value = "2000-01-01T15:23:00.66372+14:00",
-         boundDefinition = BoundDefinition.AT_MOST )
+      value = "2000-01-01T15:23:00.66372+14:00",
+      boundDefinition = BoundDefinition.AT_MOST )
    private XMLGregorianCalendar TestPropertyWithDateTimeStamp;
 
    @JsonCreator
    public AspectWithDateTimeTypeForRangeConstraints(
-         @JsonProperty( value = "TestPropertyWithDateTime" )
-               XMLGregorianCalendar TestPropertyWithDateTime,
-         @JsonProperty( value = "TestPropertyWithDateTimeStamp" )
-               XMLGregorianCalendar TestPropertyWithDateTimeStamp ) {
+         @JsonProperty( value = "TestPropertyWithDateTime" ) XMLGregorianCalendar TestPropertyWithDateTime,
+         @JsonProperty( value = "TestPropertyWithDateTimeStamp" ) XMLGregorianCalendar TestPropertyWithDateTimeStamp ) {
       this.TestPropertyWithDateTime = TestPropertyWithDateTime;
       this.TestPropertyWithDateTimeStamp = TestPropertyWithDateTimeStamp;
    }

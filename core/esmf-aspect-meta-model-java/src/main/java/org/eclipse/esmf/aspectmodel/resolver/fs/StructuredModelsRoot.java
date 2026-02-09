@@ -32,8 +32,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Represents the root directory of the directory hierarchy in which Aspect Models are organized.
- * The directory is assumed to contain a file system hierarchy as follows: {@code N/V/X.ttl} where N is the namespace,
- * V is the version of the namespace and X is the name of the model element (Aspect, Characteristic, ...).
+ * The directory is assumed to contain a file system hierarchy as follows: {@code N/V/X.ttl} where N
+ * is the namespace, V is the version of the namespace and X is the name of the model element
+ * (Aspect, Characteristic, ...).
+ * 
  * <pre>
  * models   <-- this is the modelsRoot
  * └── com.example
@@ -70,7 +72,8 @@ public class StructuredModelsRoot extends ModelsRoot {
                   .filter( file -> file.getName().endsWith( ".ttl" ) )
                   .filter( file -> VersionNumber.tryParse( file.getParentFile().getName() )
                         .flatMap( versionNumber -> AspectModelUrn.from(
-                              file.getParentFile().getParentFile().getName(), versionNumber.toString() ) ).isSuccess() )
+                              file.getParentFile().getParentFile().getName(), versionNumber.toString() ) )
+                        .isSuccess() )
                   .sorted( Comparator.comparing( File::getName ) )
                   .map( File::getAbsoluteFile )
                   .map( File::toURI )

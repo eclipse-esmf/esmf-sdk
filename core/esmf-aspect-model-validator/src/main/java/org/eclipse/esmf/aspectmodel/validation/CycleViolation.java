@@ -24,12 +24,14 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 
 /**
- * Represents the violation of cycle rules: A cycle in a model (graph) is only allowed, when one of the Properties on the cycle
- * path is marked as optional
+ * Represents the violation of cycle rules: A cycle in a model (graph) is only allowed, when one of
+ * the Properties on the cycle path is marked as optional
  *
  * @param path the path of properties in the model that form a cycle
  */
-public record CycleViolation( List<Resource> path ) implements Violation {
+public record CycleViolation(
+      List<Resource> path
+) implements Violation {
    public static final String ERROR_CODE = "ERR_CYCLE";
 
    @Override

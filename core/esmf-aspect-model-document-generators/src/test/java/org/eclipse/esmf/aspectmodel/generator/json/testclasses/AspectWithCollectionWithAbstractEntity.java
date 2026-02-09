@@ -28,7 +28,8 @@ public class AspectWithCollectionWithAbstractEntity implements CollectionAspect<
    private final Collection<AbstractTestEntity> testProperty;
 
    @JsonCreator
-   public AspectWithCollectionWithAbstractEntity( @JsonProperty( value = "testProperty" ) final Collection<AbstractTestEntity> testProperty ) {
+   public AspectWithCollectionWithAbstractEntity(
+         @JsonProperty( value = "testProperty" ) final Collection<AbstractTestEntity> testProperty ) {
       super();
       this.testProperty = testProperty;
    }

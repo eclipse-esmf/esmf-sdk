@@ -28,8 +28,8 @@ import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
 import org.eclipse.esmf.metamodel.AspectModel;
 
 /**
- * Generator for Namespace Packages as described in <a
- * href="https://github.com/eclipse-esmf/esmf-semantic-aspect-meta-model/blob/main/documentation/decisions/0009-namespace-packages.md">
+ * Generator for Namespace Packages as described in <a href=
+ * "https://github.com/eclipse-esmf/esmf-semantic-aspect-meta-model/blob/main/documentation/decisions/0009-namespace-packages.md">
  * ADR-0009</a>.
  */
 public class AspectModelNamespacePackageCreator

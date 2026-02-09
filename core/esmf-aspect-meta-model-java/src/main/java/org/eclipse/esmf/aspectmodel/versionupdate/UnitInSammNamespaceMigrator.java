@@ -24,7 +24,8 @@ import org.eclipse.esmf.samm.KnownVersion;
 import org.apache.jena.rdf.model.Resource;
 
 /**
- * Migrates references to meta model elements and attributes in the unit: namespace to use the samm: namespace instead.
+ * Migrates references to meta model elements and attributes in the unit: namespace to use the samm:
+ * namespace instead.
  */
 public class UnitInSammNamespaceMigrator extends AbstractUriRewriter {
    private static final KnownVersion OLD = KnownVersion.SAMM_1_0_0;

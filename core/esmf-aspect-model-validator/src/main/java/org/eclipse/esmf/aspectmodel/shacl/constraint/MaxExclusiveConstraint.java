@@ -26,11 +26,14 @@ import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.RDFNode;
 
 /**
- * Implements <a href="https://www.w3.org/TR/shacl/#MaxExclusiveConstraintComponent">sh:maxExclusive</a>
+ * Implements
+ * <a href="https://www.w3.org/TR/shacl/#MaxExclusiveConstraintComponent">sh:maxExclusive</a>
  *
  * @param maxValue the max value
  */
-public record MaxExclusiveConstraint( Literal maxValue ) implements Constraint {
+public record MaxExclusiveConstraint(
+      Literal maxValue
+) implements Constraint {
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
       final List<Violation> nodeKindViolations = new NodeKindConstraint( Shape.NodeKind.Literal ).apply( rdfNode, context );

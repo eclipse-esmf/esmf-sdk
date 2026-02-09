@@ -17,11 +17,14 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 
 /**
- * Meta violation: The validation was unsuccessful, for example because the model could not be loaded or not be resolved
+ * Meta violation: The validation was unsuccessful, for example because the model could not be
+ * loaded or not be resolved
  *
  * @param cause the cause
  */
-public record ProcessingViolation( String violationSpecificMessage, Throwable cause ) implements Violation {
+public record ProcessingViolation(
+      String violationSpecificMessage, Throwable cause
+) implements Violation {
    public static final String ERROR_CODE = "ERR_PROCESSING";
 
    @Override

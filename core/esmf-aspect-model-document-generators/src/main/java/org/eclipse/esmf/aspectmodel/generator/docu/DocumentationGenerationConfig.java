@@ -27,5 +27,4 @@ import io.soabase.recordbuilder.core.RecordBuilder;
 public record DocumentationGenerationConfig(
       Locale locale,
       String stylesheet
-) implements GenerationConfig {
-}
+) implements GenerationConfig {}

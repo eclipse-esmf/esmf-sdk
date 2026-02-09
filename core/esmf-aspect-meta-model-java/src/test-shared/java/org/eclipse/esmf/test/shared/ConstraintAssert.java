@@ -307,8 +307,8 @@ public class ConstraintAssert<SELF extends ConstraintAssert<SELF, ACTUAL>, ACTUA
     * @param <SELF> the self type
     * @param <ACTUAL> the element type
     */
-   public static class RegularExpressionConstraintAssert<SELF extends RegularExpressionConstraintAssert<SELF, ACTUAL>,
-         ACTUAL extends RegularExpressionConstraint> extends ConstraintAssert<SELF, ACTUAL> {
+   public static class RegularExpressionConstraintAssert<SELF extends RegularExpressionConstraintAssert<SELF, ACTUAL>, ACTUAL extends RegularExpressionConstraint>
+         extends ConstraintAssert<SELF, ACTUAL> {
       public RegularExpressionConstraintAssert( final ACTUAL actual ) {
          super( actual, RegularExpressionConstraintAssert.class, "RegularExpressionConstraint" );
       }
@@ -349,8 +349,8 @@ public class ConstraintAssert<SELF extends ConstraintAssert<SELF, ACTUAL>, ACTUA
     * @param <SELF> the self type
     * @param <ACTUAL> the element type
     */
-   public static class FixedPointConstraintAssert<SELF extends FixedPointConstraintAssert<SELF, ACTUAL>,
-         ACTUAL extends FixedPointConstraint> extends ConstraintAssert<SELF, ACTUAL> {
+   public static class FixedPointConstraintAssert<SELF extends FixedPointConstraintAssert<SELF, ACTUAL>, ACTUAL extends FixedPointConstraint>
+         extends ConstraintAssert<SELF, ACTUAL> {
       public FixedPointConstraintAssert( final ACTUAL actual ) {
          super( actual, FixedPointConstraintAssert.class, "FixedPointConstraint" );
       }

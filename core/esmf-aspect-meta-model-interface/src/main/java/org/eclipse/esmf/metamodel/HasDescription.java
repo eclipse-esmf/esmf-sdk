@@ -59,9 +59,9 @@ public interface HasDescription {
    }
 
    /**
-    * Gets the description for the Aspect Model element for a specific language, if the language is present.
-    * If the language is not present, the description in English is returned. If there is also not description
-    * in English, returns null.
+    * Gets the description for the Aspect Model element for a specific language, if the language is
+    * present. If the language is not present, the description in English is returned. If there is also
+    * not description in English, returns null.
     *
     * @param locale of the specific text
     * @return the language specific text or null

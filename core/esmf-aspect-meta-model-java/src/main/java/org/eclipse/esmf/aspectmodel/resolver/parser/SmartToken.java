@@ -22,8 +22,8 @@ import org.apache.jena.riot.tokens.Token;
 import org.apache.jena.riot.tokens.TokenType;
 
 /**
- * Wrapper class for a {@link Token}. This provides access to the actual string representation of the token, 1-based line and
- * column information.
+ * Wrapper class for a {@link Token}. This provides access to the actual string representation of
+ * the token, 1-based line and column information.
  */
 public final class SmartToken {
    private final Token token;
@@ -85,9 +85,10 @@ public final class SmartToken {
    }
 
    /**
-    * Determines the actual content of a token. Although tokens do store their content, this is often times simplified, e.g. a
-    * token with type DIRECTIVE will have the content "prefix" even though in the actual source document, it's "@prefix".
-    * So this method will return the actual string content for a token.
+    * Determines the actual content of a token. Although tokens do store their content, this is often
+    * times simplified, e.g. a token with type DIRECTIVE will have the content "prefix" even though in
+    * the actual source document, it's "@prefix". So this method will return the actual string content
+    * for a token.
     *
     * @return the token's effective content
     */
@@ -96,7 +97,7 @@ public final class SmartToken {
          case IRI -> "<" + token.getImage() + ">";
          case DIRECTIVE -> "@" + token.getImage();
          case PREFIXED_NAME ->
-               Optional.ofNullable( token.getImage() ).orElse( "" ) + ":" + Optional.ofNullable( token.getImage2() ).orElse( "" );
+            Optional.ofNullable( token.getImage() ).orElse( "" ) + ":" + Optional.ofNullable( token.getImage2() ).orElse( "" );
          case LT -> "<";
          case GT -> ">";
          case LE -> "<=";
@@ -124,7 +125,7 @@ public final class SmartToken {
          case STRING -> "\"" + token.getImage() + "\"";
          case LITERAL_LANG -> String.format( "\"%s\"@%s", token.getImage(), token.getImage2() );
          case LITERAL_DT ->
-               String.format( "\"%s\"^^%s:%s", token.getImage(), token.getSubToken2().getImage(), token.getSubToken2().getImage2() );
+            String.format( "\"%s\"^^%s:%s", token.getImage(), token.getSubToken2().getImage(), token.getSubToken2().getImage2() );
          default -> token.getImage();
       };
    }

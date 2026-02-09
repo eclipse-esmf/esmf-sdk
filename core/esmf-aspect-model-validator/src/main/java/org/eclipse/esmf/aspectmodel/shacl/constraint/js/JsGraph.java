@@ -19,10 +19,12 @@ import org.apache.jena.graph.Triple;
 import org.apache.jena.util.iterator.ExtendedIterator;
 
 /**
- * The wrapper that wraps a {@link Graph} in the JavaScript context.
- * Implements <a href="https://www.w3.org/TR/shacl-js/#js-api-graphs">SHACL JS Graph</a>.
+ * The wrapper that wraps a {@link Graph} in the JavaScript context. Implements
+ * <a href="https://www.w3.org/TR/shacl-js/#js-api-graphs">SHACL JS Graph</a>.
  */
-public record JsGraph( Graph graph ) {
+public record JsGraph(
+      Graph graph
+) {
 
    @SuppressWarnings( "unused" ) // The find function is called from JavaScript contexts
    public JsTripleIterator find( final Object subject, final Object predicate, final Object object ) {
@@ -33,7 +35,7 @@ public record JsGraph( Graph graph ) {
       if ( obj == null ) {
          return null;
       } else if ( obj instanceof JsTerm ) {
-         return ((JsTerm) obj).getNode();
+         return ( (JsTerm) obj ).getNode();
       } else {
          throw new IllegalArgumentException( "Unsupported term type " + obj );
       }

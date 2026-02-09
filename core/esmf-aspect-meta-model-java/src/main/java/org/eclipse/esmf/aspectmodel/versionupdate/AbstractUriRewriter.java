@@ -40,7 +40,8 @@ public abstract class AbstractUriRewriter extends AbstractSammMigrator {
    }
 
    /**
-    * The URI rewriter implementation decides whether a URI needs to be rewritten, given the map of old to new namespaces
+    * The URI rewriter implementation decides whether a URI needs to be rewritten, given the map of old
+    * to new namespaces
     *
     * @param resource the RDF resource whose URI may be rewritten
     * @param oldToNewNamespaces the map of old to new namespaces
@@ -53,13 +54,11 @@ public abstract class AbstractUriRewriter extends AbstractSammMigrator {
          return resource;
       }
 
-      return rewriteUri( resource, oldToNewNamespaces ).map( uriref ->
-            resource.getModel().createResource( uriref ) ).orElse( resource );
+      return rewriteUri( resource, oldToNewNamespaces ).map( uriref -> resource.getModel().createResource( uriref ) ).orElse( resource );
    }
 
    protected Property updateProperty( final Property property, final Map<String, String> oldToNewNamespaces ) {
-      return rewriteUri( property, oldToNewNamespaces ).map( uriref ->
-            property.getModel().createProperty( uriref ) ).orElse( property );
+      return rewriteUri( property, oldToNewNamespaces ).map( uriref -> property.getModel().createProperty( uriref ) ).orElse( property );
    }
 
    protected Literal updateLiteral( final Literal literal, final Map<String, String> oldToNewNamespaces ) {
@@ -105,8 +104,8 @@ public abstract class AbstractUriRewriter extends AbstractSammMigrator {
     */
    protected Map<String, String> buildPrefixMap( final Model sourceModel, final Map<String, String> targetPrefixes,
          final Map<String, String> oldToNewNamespaces ) {
-      return sourceModel.getNsPrefixMap().keySet().stream().map( prefix ->
-                  Map.<String, String> entry( prefix, targetPrefixes.getOrDefault( prefix, sourceModel.getNsPrefixURI( prefix ) ) ) )
+      return sourceModel.getNsPrefixMap().keySet().stream().map(
+            prefix -> Map.<String, String>entry( prefix, targetPrefixes.getOrDefault( prefix, sourceModel.getNsPrefixURI( prefix ) ) ) )
             .collect( asMap() );
    }
 

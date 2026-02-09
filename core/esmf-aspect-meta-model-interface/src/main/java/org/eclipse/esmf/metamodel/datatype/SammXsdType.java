@@ -34,7 +34,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The custom RDF type implementations that have deterministic and typed parsers and unparsers (i.e., serializers).
+ * The custom RDF type implementations that have deterministic and typed parsers and unparsers
+ * (i.e., serializers).
  *
  * @param <T> the Java class that represents values for the type
  */
@@ -95,8 +96,8 @@ public abstract non-sealed class SammXsdType<T> extends XSDDatatype implements S
    }
 
    /**
-    * Public list of all SAMM types.
-    * Implemented as a delegating list to avoid eager evaluation of SammType.* during class initialization.
+    * Public list of all SAMM types. Implemented as a delegating list to avoid eager evaluation of
+    * SammType.* during class initialization.
     */
    public static final List<SammType<?>> ALL_TYPES = new AbstractList<>() {
       @Override
@@ -124,7 +125,7 @@ public abstract non-sealed class SammXsdType<T> extends XSDDatatype implements S
             local = typesByUriCache;
             if ( local == null ) {
                local = allTypesInternal().stream()
-                     .map( type -> Map.<String, SammType<?>> entry( type.getURI(), type ) )
+                     .map( type -> Map.<String, SammType<?>>entry( type.getURI(), type ) )
                      .collect( asMap() );
                typesByUriCache = local;
             }
@@ -151,8 +152,8 @@ public abstract non-sealed class SammXsdType<T> extends XSDDatatype implements S
     * Parses a lexical representation of a value of the type
     *
     * @param lexicalForm the lexical representation
-    * @return if the lexical representation is valid for the type, an object of the corresponding Java type (@see {@link #getJavaClass()}),
-    * otherwise the original lexical value.
+    * @return if the lexical representation is valid for the type, an object of the corresponding Java
+    *         type (@see {@link #getJavaClass()}), otherwise the original lexical value.
     */
    @Override
    public Object parse( final String lexicalForm ) {
@@ -230,7 +231,8 @@ public abstract non-sealed class SammXsdType<T> extends XSDDatatype implements S
    }
 
    /**
-    * Separate implementation for the "extended" RDF types that can not be based on {@link XSDDatatype}.
+    * Separate implementation for the "extended" RDF types that can not be based on
+    * {@link XSDDatatype}.
     *
     * @param <T> the Java class that represents values for the type
     */
@@ -240,8 +242,7 @@ public abstract non-sealed class SammXsdType<T> extends XSDDatatype implements S
 
       public SammExtendedXsdType(
             final Resource dataTypeResource,
-            final Class<T> javaClass
-      ) {
+            final Class<T> javaClass ) {
          uri = dataTypeResource.getURI();
          this.javaClass = javaClass;
       }

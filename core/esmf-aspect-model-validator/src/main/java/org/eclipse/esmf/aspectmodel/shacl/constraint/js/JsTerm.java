@@ -27,7 +27,7 @@ public abstract class JsTerm {
 
    @Override
    public boolean equals( final Object other ) {
-      return other instanceof JsTerm && node.equals( ((JsTerm) other).node );
+      return other instanceof JsTerm && node.equals( ( (JsTerm) other ).node );
    }
 
    public Node getNode() {

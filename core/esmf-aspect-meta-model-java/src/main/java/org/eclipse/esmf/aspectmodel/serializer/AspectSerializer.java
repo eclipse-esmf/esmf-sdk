@@ -43,7 +43,8 @@ import org.eclipse.esmf.metamodel.vocabulary.SimpleRdfNamespace;
 import org.apache.jena.rdf.model.Model;
 
 /**
- * Functions to write Aspect Models and Aspect Model files to Strings or their respective source locations
+ * Functions to write Aspect Models and Aspect Model files to Strings or their respective source
+ * locations
  */
 public class AspectSerializer {
    public static final AspectSerializer INSTANCE = new AspectSerializer();
@@ -62,8 +63,9 @@ public class AspectSerializer {
    }
 
    /**
-    * Serializes all files of an Aspect Model to their respective source locations.
-    * <b>Attention:</b> This method does not check validity of paths or existance of files and will overwrite without further checks.
+    * Serializes all files of an Aspect Model to their respective source locations. <b>Attention:</b>
+    * This method does not check validity of paths or existance of files and will overwrite without
+    * further checks.
     *
     * @param aspectModel the Aspect Model
     */
@@ -76,7 +78,8 @@ public class AspectSerializer {
     *
     * @param aspectModelFile the input Aspect Model file
     * @return the Aspect Model file's location as URL
-    * @throws SerializationException if the file has no source location or the source location URI is no URL
+    * @throws SerializationException if the file has no source location or the source location URI is
+    *         no URL
     */
    public URL aspectModelFileUrl( final AspectModelFile aspectModelFile ) {
       if ( aspectModelFile.sourceLocation().isEmpty() ) {
@@ -108,8 +111,8 @@ public class AspectSerializer {
       }
 
       final String content = aspectModelFileToString( aspectModelFile );
-      try ( final OutputStream out = protocolHandler.apply( aspectModelFile.sourceLocation().orElseThrow( () ->
-            new SerializationException( "Can not write Aspect Model File: No source location is set"
+      try ( final OutputStream out = protocolHandler.apply( aspectModelFile.sourceLocation()
+            .orElseThrow( () -> new SerializationException( "Can not write Aspect Model File: No source location is set"
                   + aspectModelFile.filename().map( name -> ": " + name ).orElse( "" ) ) ) ) ) {
          out.write( content.getBytes( StandardCharsets.UTF_8 ) );
       } catch ( final IOException exception ) {

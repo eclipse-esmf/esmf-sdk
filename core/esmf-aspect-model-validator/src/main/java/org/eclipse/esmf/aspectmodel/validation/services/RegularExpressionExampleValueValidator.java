@@ -34,7 +34,8 @@ import org.apache.xerces.impl.xpath.regex.RegularExpression;
 
 /**
  * Validates that the samm:value of each samm-c:RegularExpressionConstraint adheres to
- * <a href="https://www.w3.org/TR/xpath-functions-3/#regex-syntax">XQuery 1.0 and XPath 2.0 Functions and Operators</a>
+ * <a href="https://www.w3.org/TR/xpath-functions-3/#regex-syntax">XQuery 1.0 and XPath 2.0
+ * Functions and Operators</a>
  */
 public class RegularExpressionExampleValueValidator implements RdfBasedValidator<Violation, List<Violation>> {
    @Override
@@ -44,7 +45,7 @@ public class RegularExpressionExampleValueValidator implements RdfBasedValidator
             .map( Statement::getSubject )
             .flatMap( constraint -> Streams.stream( model.listStatements( constraint, SammNs.SAMM.value(), (RDFNode) null ) )
                   .filter( Objects::nonNull )
-                  .<Violation> flatMap( statement -> {
+                  .<Violation>flatMap( statement -> {
                      final String regex = statement.getLiteral().getString();
                      try {
                         new RegularExpression( regex, "m" );

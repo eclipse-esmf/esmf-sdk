@@ -47,7 +47,9 @@ import org.apache.jena.sparql.syntax.syntaxtransform.QueryTransformOps;
  * @param message the message returned by the SPARQL query
  * @param query the query
  */
-public record SparqlConstraint( String message, Query query ) implements Constraint {
+public record SparqlConstraint(
+      String message, Query query
+) implements Constraint {
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
       final Map<Var, ? extends RDFNode> substitutions = Map.of( Var.alloc( "this" ), context.element() );
@@ -78,8 +80,8 @@ public record SparqlConstraint( String message, Query query ) implements Constra
    }
 
    /**
-    * Perform proper query substitutions; unfortunately the substitutions done by {@see org.apache.jena.query.ParameterizedSparqlString} are
-    * not always correct.
+    * Perform proper query substitutions; unfortunately the substitutions done by
+    * {@see org.apache.jena.query.ParameterizedSparqlString} are not always correct.
     *
     * @param query the query
     * @param substitutions the map of substitutions to perform

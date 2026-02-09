@@ -52,13 +52,13 @@ public class VersionNumberTest {
 
       assertThat(
             VersionNumber.parse( versionNumber.version ).nextMinor().greaterThan( versionNumber.versionNumber ) )
-            .isTrue();
+                  .isTrue();
       assertThat(
             VersionNumber.parse( versionNumber.version ).nextMicro().greaterThan( versionNumber.versionNumber ) )
-            .isTrue();
+                  .isTrue();
       assertThat(
             VersionNumber.parse( versionNumber.version ).nextMajor().greaterThan( versionNumber.versionNumber ) )
-            .isTrue();
+                  .isTrue();
    }
 
    @ParameterizedTest

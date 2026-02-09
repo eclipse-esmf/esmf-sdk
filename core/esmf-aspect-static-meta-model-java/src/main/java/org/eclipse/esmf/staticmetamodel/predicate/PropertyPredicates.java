@@ -21,7 +21,8 @@ import org.eclipse.esmf.staticmetamodel.propertychain.PropertyChain;
 
 /**
  * Provides type safe {@link Predicate}s on properties allowing convenient and expressive filtering.
- * Property predicates can also be used with {@link PropertyChain}s in order to filter on parent elements using nested properties.
+ * Property predicates can also be used with {@link PropertyChain}s in order to filter on parent
+ * elements using nested properties.
  *
  * @see PropertyPredicateBuilder
  */

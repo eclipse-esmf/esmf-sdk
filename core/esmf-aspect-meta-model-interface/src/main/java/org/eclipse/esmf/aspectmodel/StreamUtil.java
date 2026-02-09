@@ -42,7 +42,8 @@ public class StreamUtil {
    }
 
    /**
-    * Returns a collector that turns a stream of Map entries into a map, while keeping the original stream element order
+    * Returns a collector that turns a stream of Map entries into a map, while keeping the original
+    * stream element order
     *
     * @param <K> the map's key type
     * @param <V> the map's value type
@@ -55,7 +56,8 @@ public class StreamUtil {
    }
 
    /**
-    * Returns a collector that turns a stream of objects into a set. This collector automatically removes 'null' objects.
+    * Returns a collector that turns a stream of objects into a set. This collector automatically
+    * removes 'null' objects.
     *
     * @param <T> the type of the set
     * @return the set of elements
@@ -68,14 +70,14 @@ public class StreamUtil {
                   set.add( object );
                }
             }, ( left, right ) -> {
-         if ( left.size() < right.size() ) {
-            right.addAll( left );
-            return right;
-         } else {
-            left.addAll( right );
-            return left;
-         }
-      },
+               if ( left.size() < right.size() ) {
+                  right.addAll( left );
+                  return right;
+               } else {
+                  left.addAll( right );
+                  return left;
+               }
+            },
             castingIdentity(),
             Collections.unmodifiableSet( EnumSet.of( Collector.Characteristics.UNORDERED, Collector.Characteristics.IDENTITY_FINISH ) ) );
    }
@@ -89,8 +91,7 @@ public class StreamUtil {
          BinaryOperator<A> combiner,
          Function<A, R> finisher,
          Set<Characteristics> characteristics
-   ) implements Collector<T, A, R> {
-   }
+   ) implements Collector<T, A, R> {}
 
    @SuppressWarnings( "unchecked" )
    private static <I, R> Function<I, R> castingIdentity() {

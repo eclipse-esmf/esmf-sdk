@@ -62,8 +62,9 @@ import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
 
 /**
- * Serializes an {@link AspectModelFile} to RDF/Turtle while following the formatting rules for Aspect Models.
- * Initialize with {@link #PrettyPrinter(AspectModelFile, PrintWriter)}, then run {@link #print()}.
+ * Serializes an {@link AspectModelFile} to RDF/Turtle while following the formatting rules for
+ * Aspect Models. Initialize with {@link #PrettyPrinter(AspectModelFile, PrintWriter)}, then run
+ * {@link #print()}.
  */
 public class PrettyPrinter {
    private static final String INDENT = "   ";
@@ -158,10 +159,9 @@ public class PrettyPrinter {
       predefinedPropertyOrder.add( SammNs.SAMMC.integer() );
       predefinedPropertyOrder.add( SammNs.SAMMC.scale() );
 
-      return Comparator.<Property> comparingInt( property ->
-                  predefinedPropertyOrder.contains( property )
-                        ? predefinedPropertyOrder.indexOf( property )
-                        : Integer.MAX_VALUE )
+      return Comparator.<Property>comparingInt( property -> predefinedPropertyOrder.contains( property )
+            ? predefinedPropertyOrder.indexOf( property )
+            : Integer.MAX_VALUE )
             .thenComparing( Property::getLocalName );
    }
 
@@ -176,10 +176,9 @@ public class PrettyPrinter {
       predefinedPrefixOrder.add( "xsd" );
       predefinedPrefixOrder.add( "" );
 
-      return Comparator.<Map.Entry<String, String>> comparingInt( entry ->
-                  predefinedPrefixOrder.contains( entry.getKey() )
-                        ? predefinedPrefixOrder.indexOf( entry.getKey() )
-                        : Integer.MAX_VALUE )
+      return Comparator.<Map.Entry<String, String>>comparingInt( entry -> predefinedPrefixOrder.contains( entry.getKey() )
+            ? predefinedPrefixOrder.indexOf( entry.getKey() )
+            : Integer.MAX_VALUE )
             .thenComparing( Map.Entry::getKey );
    }
 
@@ -321,7 +320,8 @@ public class PrettyPrinter {
    @SuppressWarnings( "UnnecessaryUnicodeEscape" )
    private void escapeStringAndAppendToBuilder( final String input, final StringBuilder builder ) {
       final String escapedSpecialCharacters = StringEscapeUtils.escapeJava( input );
-      // The following replaces unicode escape sequences such as \uABCD with the corresponding unicode character
+      // The following replaces unicode escape sequences such as \uABCD with the corresponding unicode
+      // character
       final char[] chars = escapedSpecialCharacters.toCharArray();
       int index = 0;
       while ( index < chars.length ) {
@@ -370,9 +370,8 @@ public class PrettyPrinter {
             .sorted( propertyOrder )
             .flatMap( property -> statements( resource, property, null ).stream() )
             .distinct()
-            .map( statement ->
-                  String.format( "%s %s", serialize( statement.getPredicate(), indentationLevel ),
-                        serialize( statement.getObject(), indentationLevel ) ) )
+            .map( statement -> String.format( "%s %s", serialize( statement.getPredicate(), indentationLevel ),
+                  serialize( statement.getObject(), indentationLevel ) ) )
             .collect( Collectors.joining( "; ", "[ ", " ]" ) );
    }
 
@@ -414,7 +413,7 @@ public class PrettyPrinter {
 
       final String firstLine = element.isAnon()
             ? String.format( "[%n%s%s %s", INDENT.repeat( indentationLevel + 1 ), serializedProperty,
-            serializedObject )
+                  serializedObject )
             : String.format( "%s %s %s", serialize( element, indentationLevel ), serializedProperty, serializedObject );
 
       processedResources.add( element );
@@ -452,7 +451,9 @@ public class PrettyPrinter {
       return (String) node.asNode().visitWith( printVisitor );
    }
 
-   record PrintVisitor( Model model ) implements NodeVisitor {
+   record PrintVisitor(
+         Model model
+   ) implements NodeVisitor {
       @Override
       public Object visitAny( final Node_ANY it ) {
          return "*";

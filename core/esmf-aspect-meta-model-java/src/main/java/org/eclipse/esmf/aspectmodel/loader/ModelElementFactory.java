@@ -87,8 +87,8 @@ import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 
 /**
- * Used as part of the loading process in the {@link AspectModelLoader}, it creates instance for the {@link ModelElement}s
- * in an AspectModel.
+ * Used as part of the loading process in the {@link AspectModelLoader}, it creates instance for the
+ * {@link ModelElement}s in an AspectModel.
  */
 public class ModelElementFactory extends AttributeValueRetriever {
    private final Model model;
@@ -113,8 +113,8 @@ public class ModelElementFactory extends AttributeValueRetriever {
       registerInstantiator( SammNs.SAMM.Property(), new PropertyInstantiator( this ) );
 
       /*
-       * Registers an instantiator for the {@link Value} type.
-       * In aspect-meta-model, {@link Value} corresponds to {@link ScalarValueInstantiator} in the SDK.
+       * Registers an instantiator for the {@link Value} type. In aspect-meta-model, {@link Value}
+       * corresponds to {@link ScalarValueInstantiator} in the SDK.
        */
       registerInstantiator( SammNs.SAMM.Value(), new ScalarValueInstantiator( this ) );
 
@@ -189,12 +189,12 @@ public class ModelElementFactory extends AttributeValueRetriever {
    public Unit findOrCreateUnit( final Resource unitResource ) {
       if ( SammNs.UNIT.getNamespace().equals( unitResource.getNameSpace() ) ) {
          final AspectModelUrn unitUrn = AspectModelUrn.fromUrn( unitResource.getURI() );
-         return Units.fromName( unitUrn.getName() ).orElseThrow( () ->
-               new AspectLoadingException( "Unit definition for " + unitUrn + " is invalid" ) );
+         return Units.fromName( unitUrn.getName() )
+               .orElseThrow( () -> new AspectLoadingException( "Unit definition for " + unitUrn + " is invalid" ) );
       }
 
       final Set<QuantityKind> quantityKinds = Streams.stream(
-                  model.listStatements( unitResource, SammNs.SAMM.quantityKind(), (RDFNode) null ) )
+            model.listStatements( unitResource, SammNs.SAMM.quantityKind(), (RDFNode) null ) )
             .map( quantityKindStatement -> findOrCreateQuantityKind( quantityKindStatement.getObject().asResource() ) )
             .collect( Collectors.toSet() );
       return new DefaultUnit(
@@ -207,14 +207,13 @@ public class ModelElementFactory extends AttributeValueRetriever {
    }
 
    private Resource resourceType( final Resource resource ) {
-      final Supplier<Optional<Resource>> directType = () ->
-            optionalAttributeValue( resource, RDF.type ).map( Statement::getResource );
-      final Supplier<Optional<Resource>> propertyUsageType = () ->
-            optionalAttributeValue( resource, SammNs.SAMM.property() ).map( statement -> resourceType( statement.getResource() ) );
-      final Supplier<Optional<Resource>> subClassType = () ->
-            optionalAttributeValue( resource, RDFS.subClassOf ).map( Statement::getResource ).map( this::resourceType );
-      final Supplier<Optional<Resource>> extendsType = () ->
-            optionalAttributeValue( resource, SammNs.SAMM._extends() ).map( Statement::getResource ).map( this::resourceType );
+      final Supplier<Optional<Resource>> directType = () -> optionalAttributeValue( resource, RDF.type ).map( Statement::getResource );
+      final Supplier<Optional<Resource>> propertyUsageType =
+            () -> optionalAttributeValue( resource, SammNs.SAMM.property() ).map( statement -> resourceType( statement.getResource() ) );
+      final Supplier<Optional<Resource>> subClassType =
+            () -> optionalAttributeValue( resource, RDFS.subClassOf ).map( Statement::getResource ).map( this::resourceType );
+      final Supplier<Optional<Resource>> extendsType =
+            () -> optionalAttributeValue( resource, SammNs.SAMM._extends() ).map( Statement::getResource ).map( this::resourceType );
 
       return Stream.of( directType, propertyUsageType, subClassType, extendsType )
             .map( Supplier::get )
@@ -271,10 +270,13 @@ public class ModelElementFactory extends AttributeValueRetriever {
    }
 
    /**
-    * @param modelElement the RDF {@link Resource} representing the Aspect Model element to be processed
-    * @param attribute the RDF {@link org.apache.jena.rdf.model.Property} for which the values will be retrieved
+    * @param modelElement the RDF {@link Resource} representing the Aspect Model element to be
+    *        processed
+    * @param attribute the RDF {@link org.apache.jena.rdf.model.Property} for which the values will be
+    *        retrieved
     * @param valueRetriever the {@link AttributeValueRetriever} used to retrieve the attribute values
-    * @return a {@link List} containing all values for the given Property in the given Aspect Model element
+    * @return a {@link List} containing all values for the given Property in the given Aspect Model
+    *         element
     */
    private static Set<LangString> getLanguages( final Resource modelElement,
          final org.apache.jena.rdf.model.Property attribute, final AttributeValueRetriever valueRetriever ) {
@@ -318,15 +320,18 @@ public class ModelElementFactory extends AttributeValueRetriever {
       return parentModelElementName + modelElementTypeName;
    }
 
-   // We have to be careful when searching for the parent nodes with a regular name - the "listStatements" API returns the matching nodes
-   // in no particular order; with some very specific models this could lead to non-deterministic behavior.
-   // In the following very simplified example we are looking for ":NumberList" as the parent of "_:blankNode", but could get the
+   // We have to be careful when searching for the parent nodes with a regular name - the
+   // "listStatements" API returns the matching nodes
+   // in no particular order; with some very specific models this could lead to non-deterministic
+   // behavior.
+   // In the following very simplified example we are looking for ":NumberList" as the parent of
+   // "_:blankNode", but could get the
    // anonymous node [] instead.
    // [
-   //  aux:contains _:blankNode ;
+   // aux:contains _:blankNode ;
    // ] .
    // :NumberList a samm-c:List ;
-   //    samm-c:elementCharacteristic _:blankNode .
+   // samm-c:elementCharacteristic _:blankNode .
    // _:blankNode a samm-c:Trait ;
    private static Resource getNamedParent( final Resource modelElement, final Model model ) {
       final StmtIterator elements = model.listStatements( null, null, modelElement );
@@ -350,7 +355,8 @@ public class ModelElementFactory extends AttributeValueRetriever {
          return typeStatement.getObject().asResource();
       }
 
-      // If the model element is a Property reference, the actual type will be found when we follow samm:property
+      // If the model element is a Property reference, the actual type will be found when we follow
+      // samm:property
       final Statement propertyStatement = modelElement.getProperty( SammNs.SAMM.property() );
       if ( propertyStatement != null ) {
          return getModelElementType( propertyStatement.getObject().asResource() );

@@ -77,7 +77,8 @@ import org.apache.jena.util.PrintUtil;
 import org.apache.jena.vocabulary.RDF;
 
 /**
- * Takes an RDF model describing one or more SHACL shapes as input and parses them into {@link Shape}s
+ * Takes an RDF model describing one or more SHACL shapes as input and parses them into
+ * {@link Shape}s
  */
 public class ShapeLoader implements Function<Model, List<Shape.Node>> {
    private static final SHACL SHACL = new SHACL();
@@ -89,96 +90,103 @@ public class ShapeLoader implements Function<Model, List<Shape.Node>> {
    /**
     * When constraints are instantiated for a shape, the context is passed as input
     *
-    * @param path If the parent shape of the constraint is a property shape, the path determines what the property shape refers to
+    * @param path If the parent shape of the constraint is a property shape, the path determines what
+    *        the property shape refers to
     */
-   private record ShapeContext( Statement statement, Optional<Path> path ) {
-   }
+   private record ShapeContext(
+         Statement statement, Optional<Path> path
+   ) {}
 
    /**
-    * Encodes the logic of how to build an instance of {@link Constraint} from given RDF predicates on the value node
+    * Encodes the logic of how to build an instance of {@link Constraint} from given RDF predicates on
+    * the value node
     */
-   private final Map<Property, Function<ShapeContext, Constraint>> constraintLoaders = ImmutableMap.<Property, Function<ShapeContext,
-               Constraint>> builder()
-         .put( SHACL.class_(), context -> new ClassConstraint( context.statement().getResource() ) )
-         .put( SHACL.datatype(), context -> new DatatypeConstraint( context.statement().getResource().getURI() ) )
-         .put( SHACL.nodeKind(), context ->
-               new NodeKindConstraint( Shape.NodeKind.valueOf( context.statement().getResource().getLocalName() ) ) )
-         .put( SHACL.minCount(), context -> new MinCountConstraint( context.statement().getLiteral().getInt() ) )
-         .put( SHACL.maxCount(), context -> new MaxCountConstraint( context.statement().getLiteral().getInt() ) )
-         .put( SHACL.minExclusive(), context -> new MinExclusiveConstraint( context.statement().getLiteral() ) )
-         .put( SHACL.minInclusive(), context -> new MinInclusiveConstraint( context.statement().getLiteral() ) )
-         .put( SHACL.maxExclusive(), context -> new MaxExclusiveConstraint( context.statement().getLiteral() ) )
-         .put( SHACL.maxInclusive(), context -> new MaxInclusiveConstraint( context.statement().getLiteral() ) )
-         .put( SHACL.minLength(), context -> new MinLengthConstraint( context.statement().getLiteral().getInt() ) )
-         .put( SHACL.maxLength(), context -> new MaxLengthConstraint( context.statement().getLiteral().getInt() ) )
-         .put( SHACL.pattern(), context -> {
-            String flagsString = Optional.ofNullable( context.statement().getSubject().getProperty( SHACL.flags() ) )
-                  .map( Statement::getString ).orElse( "" );
-            return new PatternConstraint( buildPattern( context.statement().getLiteral().getString(), flagsString ) );
-         } )
-         .put( SHACL.languageIn(), context ->
-               new AllowedLanguagesConstraint( context.statement().getResource().as( RDFList.class ).mapWith( rdfNode ->
-                     rdfNode.asLiteral().getString() ).toList() ) )
-         .put( SHACL.uniqueLang(), context -> new UniqueLangConstraint() )
-         .put( SHACL.equals(), context -> new EqualsConstraint(
-               context.statement().getModel().createProperty( context.statement().getResource().getURI() ) ) )
-         .put( SHACL.disjoint(), context ->
-               new DisjointConstraint( context.statement().getModel().createProperty( context.statement().getResource().getURI() ) ) )
-         .put( SHACL.lessThan(), context ->
-               new LessThanConstraint( context.statement().getModel().createProperty( context.statement().getResource().getURI() ) ) )
-         .put( SHACL.lessThanOrEquals(), context ->
-               new LessThanOrEqualsConstraint(
+   private final Map<Property, Function<ShapeContext, Constraint>> constraintLoaders =
+         ImmutableMap.<Property, Function<ShapeContext, Constraint>>builder()
+               .put( SHACL.class_(), context -> new ClassConstraint( context.statement().getResource() ) )
+               .put( SHACL.datatype(), context -> new DatatypeConstraint( context.statement().getResource().getURI() ) )
+               .put( SHACL.nodeKind(),
+                     context -> new NodeKindConstraint( Shape.NodeKind.valueOf( context.statement().getResource().getLocalName() ) ) )
+               .put( SHACL.minCount(), context -> new MinCountConstraint( context.statement().getLiteral().getInt() ) )
+               .put( SHACL.maxCount(), context -> new MaxCountConstraint( context.statement().getLiteral().getInt() ) )
+               .put( SHACL.minExclusive(), context -> new MinExclusiveConstraint( context.statement().getLiteral() ) )
+               .put( SHACL.minInclusive(), context -> new MinInclusiveConstraint( context.statement().getLiteral() ) )
+               .put( SHACL.maxExclusive(), context -> new MaxExclusiveConstraint( context.statement().getLiteral() ) )
+               .put( SHACL.maxInclusive(), context -> new MaxInclusiveConstraint( context.statement().getLiteral() ) )
+               .put( SHACL.minLength(), context -> new MinLengthConstraint( context.statement().getLiteral().getInt() ) )
+               .put( SHACL.maxLength(), context -> new MaxLengthConstraint( context.statement().getLiteral().getInt() ) )
+               .put( SHACL.pattern(), context -> {
+                  String flagsString = Optional.ofNullable( context.statement().getSubject().getProperty( SHACL.flags() ) )
+                        .map( Statement::getString ).orElse( "" );
+                  return new PatternConstraint( buildPattern( context.statement().getLiteral().getString(), flagsString ) );
+               } )
+               .put( SHACL.languageIn(),
+                     context -> new AllowedLanguagesConstraint( context.statement().getResource().as( RDFList.class )
+                           .mapWith( rdfNode -> rdfNode.asLiteral().getString() ).toList() ) )
+               .put( SHACL.uniqueLang(), context -> new UniqueLangConstraint() )
+               .put( SHACL.equals(), context -> new EqualsConstraint(
                      context.statement().getModel().createProperty( context.statement().getResource().getURI() ) ) )
-         .put( SHACL.not(), context ->
-               new NotConstraint( constraints( context.statement().getObject().asResource(), context.path() ).get( 0 ) ) )
-         .put( SHACL.and(), context -> new AndConstraint( nestedShapesList( context.statement() ) ) )
-         .put( SHACL.or(), context -> new OrConstraint( nestedShapesList( context.statement() ) ) )
-         .put( SHACL.xone(), context -> new XoneConstraint( nestedShapesList( context.statement() ) ) )
-         .put( SHACL.node(), context -> {
-            // Since sh:node can recursively refer to the same NodeShape it is used in when shapes define recursive structures,
-            // the NodeConstraint is built using a Supplier for the actual NodeShape. Only if the NodeShape has not yet been
-            // seen (i.e., it could be in the process of being built right now), create it now.
-            final Resource resource = context.statement().getObject().asResource();
-            if ( !seenNodeShapes.contains( resource ) ) {
-               nodeShape( resource );
-            }
-            return new NodeConstraint( () -> nodeShapes.get( resource ), context.path() );
-         } )
-         .put( SHACL.in(), context -> new AllowedValuesConstraint( context.statement().getResource().as( RDFList.class ).asJavaList() ) )
-         .put( SHACL.closed(), context -> {
-            boolean closed = context.statement().getBoolean();
-            if ( !closed ) {
-               throw new ShaclValidationException( "Value of sh:closed may only be true" );
-            }
-            Set<Property> ignoredProperties = Optional.ofNullable(
+               .put( SHACL.disjoint(),
+                     context -> new DisjointConstraint(
+                           context.statement().getModel().createProperty( context.statement().getResource().getURI() ) ) )
+               .put( SHACL.lessThan(),
+                     context -> new LessThanConstraint(
+                           context.statement().getModel().createProperty( context.statement().getResource().getURI() ) ) )
+               .put( SHACL.lessThanOrEquals(), context -> new LessThanOrEqualsConstraint(
+                     context.statement().getModel().createProperty( context.statement().getResource().getURI() ) ) )
+               .put( SHACL.not(),
+                     context -> new NotConstraint( constraints( context.statement().getObject().asResource(), context.path() ).get( 0 ) ) )
+               .put( SHACL.and(), context -> new AndConstraint( nestedShapesList( context.statement() ) ) )
+               .put( SHACL.or(), context -> new OrConstraint( nestedShapesList( context.statement() ) ) )
+               .put( SHACL.xone(), context -> new XoneConstraint( nestedShapesList( context.statement() ) ) )
+               .put( SHACL.node(), context -> {
+                  // Since sh:node can recursively refer to the same NodeShape it is used in when shapes define
+                  // recursive structures,
+                  // the NodeConstraint is built using a Supplier for the actual NodeShape. Only if the NodeShape has
+                  // not yet been
+                  // seen (i.e., it could be in the process of being built right now), create it now.
+                  final Resource resource = context.statement().getObject().asResource();
+                  if ( !seenNodeShapes.contains( resource ) ) {
+                     nodeShape( resource );
+                  }
+                  return new NodeConstraint( () -> nodeShapes.get( resource ), context.path() );
+               } )
+               .put( SHACL.in(),
+                     context -> new AllowedValuesConstraint( context.statement().getResource().as( RDFList.class ).asJavaList() ) )
+               .put( SHACL.closed(), context -> {
+                  boolean closed = context.statement().getBoolean();
+                  if ( !closed ) {
+                     throw new ShaclValidationException( "Value of sh:closed may only be true" );
+                  }
+                  Set<Property> ignoredProperties = Optional.ofNullable(
                         context.statement().getSubject().getProperty( SHACL.ignoredProperties() ) )
-                  .map( Statement::getResource )
-                  .map( resource -> resource.as( RDFList.class ) )
-                  .map( RDFList::asJavaList )
-                  .stream()
-                  .flatMap( Collection::stream )
-                  .map( RDFNode::asResource )
-                  .map( Resource::getURI )
-                  .map( uri -> context.statement().getModel().createProperty( uri ) )
-                  .collect( Collectors.toSet() );
-            return new ClosedConstraint( ignoredProperties );
-         } )
-         .put( SHACL.hasValue(), context -> new HasValueConstraint( context.statement().getObject() ) )
-         .put( SHACL.sparql(), context -> {
-            final Resource constraintNode = context.statement().getResource();
-            final String message = Optional.ofNullable( constraintNode.getProperty( SHACL.message() ) ).map( Statement::getString )
-                  .orElse( "" );
-            return new SparqlConstraint( message, sparqlQuery( constraintNode ) );
-         } )
-         .put( SHACL.js(), context -> {
-            final Resource constraintNode = context.statement().getResource();
-            final JsLibrary library = jsLibrary( constraintNode.getProperty( SHACL.jsLibrary() ).getResource() );
-            final String functionName = constraintNode.getProperty( SHACL.jsFunctionName() ).getString();
-            final String message = Optional.ofNullable( constraintNode.getProperty( SHACL.message() ) ).map( Statement::getString )
-                  .orElse( "" );
-            return new JsConstraint( message, library, functionName );
-         } )
-         .build();
+                        .map( Statement::getResource )
+                        .map( resource -> resource.as( RDFList.class ) )
+                        .map( RDFList::asJavaList )
+                        .stream()
+                        .flatMap( Collection::stream )
+                        .map( RDFNode::asResource )
+                        .map( Resource::getURI )
+                        .map( uri -> context.statement().getModel().createProperty( uri ) )
+                        .collect( Collectors.toSet() );
+                  return new ClosedConstraint( ignoredProperties );
+               } )
+               .put( SHACL.hasValue(), context -> new HasValueConstraint( context.statement().getObject() ) )
+               .put( SHACL.sparql(), context -> {
+                  final Resource constraintNode = context.statement().getResource();
+                  final String message = Optional.ofNullable( constraintNode.getProperty( SHACL.message() ) ).map( Statement::getString )
+                        .orElse( "" );
+                  return new SparqlConstraint( message, sparqlQuery( constraintNode ) );
+               } )
+               .put( SHACL.js(), context -> {
+                  final Resource constraintNode = context.statement().getResource();
+                  final JsLibrary library = jsLibrary( constraintNode.getProperty( SHACL.jsLibrary() ).getResource() );
+                  final String functionName = constraintNode.getProperty( SHACL.jsFunctionName() ).getString();
+                  final String message = Optional.ofNullable( constraintNode.getProperty( SHACL.message() ) ).map( Statement::getString )
+                        .orElse( "" );
+                  return new JsConstraint( message, library, functionName );
+               } )
+               .build();
 
    private List<Constraint> nestedConstraintList( final Statement statement, final Optional<Path> path ) {
       return statement.getObject().as( RDFList.class ).asJavaList().stream()
@@ -381,7 +389,8 @@ public class ShapeLoader implements Function<Model, List<Shape.Node>> {
       final ParameterizedSparqlString parameterizedSparqlString = new ParameterizedSparqlString();
       parameterizedSparqlString.setCommandText( queryString );
       parameterizedSparqlString.setNsPrefixes( prefixMap );
-      // Although the SPARQLTarget's query returns a variable "$this" do NOT parameterizedSparqlString.setIRI() for "$this" here.
+      // Although the SPARQLTarget's query returns a variable "$this" do NOT
+      // parameterizedSparqlString.setIRI() for "$this" here.
       // See https://www.w3.org/TR/shacl-af/#SPARQLTarget
       return parameterizedSparqlString.asQuery();
    }

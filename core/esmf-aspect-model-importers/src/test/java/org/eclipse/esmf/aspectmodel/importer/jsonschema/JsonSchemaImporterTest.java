@@ -113,46 +113,49 @@ public class JsonSchemaImporterTest {
    }
 
    /**
-    * For several test models, valid schemas can be generated but they don't match the payload structure of the original Aspect Model.
-    * This is to be expected due to the structural differences between Aspect Models and JSON schema, so we exclude them here.
-    * The point of the test is to provide a regression test for the remaining models where the structure described by the imported
+    * For several test models, valid schemas can be generated but they don't match the payload
+    * structure of the original Aspect Model. This is to be expected due to the structural differences
+    * between Aspect Models and JSON schema, so we exclude them here. The point of the test is to
+    * provide a regression test for the remaining models where the structure described by the imported
     * Aspect corresponds to the original schema.
     */
    @ParameterizedTest
    @Execution( ExecutionMode.CONCURRENT )
-   @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
-         "ASPECT_WITH_ABSTRACT_ENTITY",
-         "ASPECT_WITH_ABSTRACT_PROPERTY",
-         "ASPECT_WITH_ABSTRACT_SINGLE_ENTITY",
-         "ASPECT_WITH_COLLECTION_AND_ELEMENT_CHARACTERISTIC",
-         "ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY",
-         "ASPECT_WITH_COMPLEX_COLLECTION_ENUM",
-         "ASPECT_WITH_COMPLEX_ENTITY_COLLECTION_ENUM",
-         "ASPECT_WITH_COMPLEX_ENUM",
-         "ASPECT_WITH_COMPLEX_ENUM_INCL_OPTIONAL",
-         "ASPECT_WITH_COMPLEX_SET",
-         "ASPECT_WITH_CURIE_ENUMERATION",
-         "ASPECT_WITH_ENTITY",
-         "ASPECT_WITH_ENTITY_ENUMERATION_AND_LANG_STRING",
-         "ASPECT_WITH_ENTITY_ENUMERATION_AND_NOT_IN_PAYLOAD_PROPERTIES",
-         "ASPECT_WITH_ENTITY_ENUMERATION_WITH_NOT_EXISTING_ENUM",
-         "ASPECT_WITH_ENTITY_INSTANCE_WITH_SCALAR_LIST_PROPERTY",
-         "ASPECT_WITH_ENTITY_WITH_NESTED_ENTITY_LIST_PROPERTY",
-         "ASPECT_WITH_ENTITY_WITHOUT_PROPERTY",
-         "ASPECT_WITH_ENUM_HAVING_NESTED_ENTITIES",
-         "ASPECT_WITH_EXTENDED_ENTITY",
-         "ASPECT_WITH_EXTENDED_ENUMS",
-         "ASPECT_WITH_EXTENDED_ENUMS_WITH_NOT_IN_PAYLOAD_PROPERTY",
-         "ASPECT_WITH_LIST_ENTITY_ENUMERATION",
-         "ASPECT_WITH_MULTIPLE_ENUMERATIONS_ON_MULTIPLE_LEVELS",
-         "ASPECT_WITH_OPTIONAL_PROPERTIES_AND_ENTITY_WITH_SEPARATE_FILES",
-         "ASPECT_WITH_QUANTITY",
-         "ASPECT_WITH_RECURSIVE_PROPERTY_WITH_OPTIONAL_AND_ENTITY_PROPERTY",
-         "ASPECT_WITH_SIMPLE_ENTITY",
-         "ASPECT_WITH_TIME_SERIES",
-         "MODEL_WITH_BROKEN_CYCLES",
-         "ASPECT_WITH_VALID_ANNOTATION_TEST"
-   } )
+   @EnumSource( value = TestAspect.class,
+      mode = EnumSource.Mode.EXCLUDE,
+      names = {
+            "ASPECT_WITH_ABSTRACT_ENTITY",
+            "ASPECT_WITH_ABSTRACT_PROPERTY",
+            "ASPECT_WITH_ABSTRACT_SINGLE_ENTITY",
+            "ASPECT_WITH_COLLECTION_AND_ELEMENT_CHARACTERISTIC",
+            "ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY",
+            "ASPECT_WITH_COMPLEX_COLLECTION_ENUM",
+            "ASPECT_WITH_COMPLEX_ENTITY_COLLECTION_ENUM",
+            "ASPECT_WITH_COMPLEX_ENUM",
+            "ASPECT_WITH_COMPLEX_ENUM_INCL_OPTIONAL",
+            "ASPECT_WITH_COMPLEX_SET",
+            "ASPECT_WITH_CURIE_ENUMERATION",
+            "ASPECT_WITH_ENTITY",
+            "ASPECT_WITH_ENTITY_ENUMERATION_AND_LANG_STRING",
+            "ASPECT_WITH_ENTITY_ENUMERATION_AND_NOT_IN_PAYLOAD_PROPERTIES",
+            "ASPECT_WITH_ENTITY_ENUMERATION_WITH_NOT_EXISTING_ENUM",
+            "ASPECT_WITH_ENTITY_INSTANCE_WITH_SCALAR_LIST_PROPERTY",
+            "ASPECT_WITH_ENTITY_WITH_NESTED_ENTITY_LIST_PROPERTY",
+            "ASPECT_WITH_ENTITY_WITHOUT_PROPERTY",
+            "ASPECT_WITH_ENUM_HAVING_NESTED_ENTITIES",
+            "ASPECT_WITH_EXTENDED_ENTITY",
+            "ASPECT_WITH_EXTENDED_ENUMS",
+            "ASPECT_WITH_EXTENDED_ENUMS_WITH_NOT_IN_PAYLOAD_PROPERTY",
+            "ASPECT_WITH_LIST_ENTITY_ENUMERATION",
+            "ASPECT_WITH_MULTIPLE_ENUMERATIONS_ON_MULTIPLE_LEVELS",
+            "ASPECT_WITH_OPTIONAL_PROPERTIES_AND_ENTITY_WITH_SEPARATE_FILES",
+            "ASPECT_WITH_QUANTITY",
+            "ASPECT_WITH_RECURSIVE_PROPERTY_WITH_OPTIONAL_AND_ENTITY_PROPERTY",
+            "ASPECT_WITH_SIMPLE_ENTITY",
+            "ASPECT_WITH_TIME_SERIES",
+            "MODEL_WITH_BROKEN_CYCLES",
+            "ASPECT_WITH_VALID_ANNOTATION_TEST"
+      } )
    void testRoundTripTranslation( final TestModel testAspect ) {
       final Aspect originalAspect = TestResources.load( testAspect ).aspect();
       final JsonNode jsonSchema = new AspectModelJsonSchemaGenerator( originalAspect ).getContent();

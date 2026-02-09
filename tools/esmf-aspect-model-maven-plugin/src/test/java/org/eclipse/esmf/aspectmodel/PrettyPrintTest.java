@@ -25,9 +25,8 @@ import org.junit.jupiter.api.Test;
 public class PrettyPrintTest extends AspectModelMojoTest {
    @Test
    @InjectMojo(
-         goal = PrettyPrint.MAVEN_GOAL,
-         pom = "src/test/resources/test-pom-valid-aspect-model-output-directory/pom.xml"
-   )
+      goal = PrettyPrint.MAVEN_GOAL,
+      pom = "src/test/resources/test-pom-valid-aspect-model-output-directory/pom.xml" )
    public void testPrettyPrintValidAspectModel( final PrettyPrint prettyPrint ) {
       assertThatCode( prettyPrint::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "Aspect.ttl" ) ).exists();
@@ -35,9 +34,8 @@ public class PrettyPrintTest extends AspectModelMojoTest {
 
    @Test
    @InjectMojo(
-         goal = PrettyPrint.MAVEN_GOAL,
-         pom = "src/test/resources/prettyprint-pom-invalid-aspect-model/pom.xml"
-   )
+      goal = PrettyPrint.MAVEN_GOAL,
+      pom = "src/test/resources/prettyprint-pom-invalid-aspect-model/pom.xml" )
    public void testPrettyPrintInvalidAspectModel( final PrettyPrint prettyPrint ) {
       assertThatCode( prettyPrint::execute )
             .isInstanceOf( MojoExecutionException.class )

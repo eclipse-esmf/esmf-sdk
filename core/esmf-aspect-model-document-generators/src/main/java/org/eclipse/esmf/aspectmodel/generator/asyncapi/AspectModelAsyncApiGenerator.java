@@ -231,8 +231,8 @@ public class AspectModelAsyncApiGenerator extends JsonGenerator<Aspect, AsyncApi
       final AspectModelUrn aspectModelUrn = aspect.urn();
 
       channelNode.put( "address", StringUtils.isNotBlank( config.channelAddress() )
-            ? config.channelAddress() :
-            String.format( "/%s/%s/%s", aspectModelUrn.getNamespaceMainPart(), aspectModelUrn.getVersion(), aspect.getName() ) );
+            ? config.channelAddress()
+            : String.format( "/%s/%s/%s", aspectModelUrn.getNamespaceMainPart(), aspectModelUrn.getVersion(), aspect.getName() ) );
       channelNode.put( DESCRIPTION_FIELD, "This channel for updating " + aspect.getName() + " Aspect." );
 
       final ObjectNode parametersNode = FACTORY.objectNode();

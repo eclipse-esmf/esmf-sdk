@@ -74,7 +74,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Generator for random JSON payloads corresponding to a given StructureElement (e.g., {@link Aspect} or {@link Entity}).
+ * Generator for random JSON payloads corresponding to a given StructureElement (e.g.,
+ * {@link Aspect} or {@link Entity}).
  *
  * @param <S> the element type
  */
@@ -105,12 +106,14 @@ public class JsonPayloadGenerator<S extends StructureElement>
     *
     * @param constraints the constraints that apply to the current position
     * @param visitedProperties the Properties that were visited during the traversal
-    * @param ignoreExampleValue whether or not the exampleValue for the next level of Properties should be ignored
+    * @param ignoreExampleValue whether or not the exampleValue for the next level of Properties should
+    *        be ignored
     */
    public record Context(
          List<Constraint> constraints,
          Set<Property> visitedProperties,
-         boolean ignoreExampleValue ) {
+         boolean ignoreExampleValue
+   ) {
       private Context() {
          this( List.of(), new HashSet<>(), false );
       }
@@ -124,7 +127,9 @@ public class JsonPayloadGenerator<S extends StructureElement>
       }
    }
 
-   private record Range( BigDecimal min, BigDecimal max ) {
+   private record Range(
+         BigDecimal min, BigDecimal max
+   ) {
       static final Range OPEN = new Range( null, (BigDecimal) null );
 
       Range( final Double min, final Double max ) {
@@ -202,27 +207,31 @@ public class JsonPayloadGenerator<S extends StructureElement>
 
       static Range fromRangeConstraints( final List<Constraint> constraints, final boolean floatingPoint ) {
          return constraints.stream()
-               .<Optional<Range>> map( constraint -> {
+               .<Optional<Range>>map( constraint -> {
                   if ( constraint instanceof final RangeConstraint rangeConstraint ) {
                      if ( floatingPoint ) {
                         final Optional<Double> min = rangeConstraint.getMinValue()
                               .map( value -> getScalarValue( value ).doubleValue() )
                               .map( value -> BoundDefinition.GREATER_THAN.equals( rangeConstraint.getLowerBoundDefinition() )
-                                    ? value + EPSILON : value );
+                                    ? value + EPSILON
+                                    : value );
                         final Optional<Double> max = rangeConstraint.getMaxValue()
                               .map( value -> getScalarValue( value ).doubleValue() )
                               .map( value -> BoundDefinition.LESS_THAN.equals( rangeConstraint.getLowerBoundDefinition() )
-                                    ? value - EPSILON : value );
+                                    ? value - EPSILON
+                                    : value );
                         return Optional.of( new Range( min.orElse( null ), max.orElse( null ) ) );
                      } // else
                      final Optional<BigDecimal> min = rangeConstraint.getMinValue()
                            .map( Range::getScalarValue )
                            .map( value -> BoundDefinition.GREATER_THAN.equals( rangeConstraint.getLowerBoundDefinition() )
-                                 ? value.add( BigDecimal.ONE ) : value );
+                                 ? value.add( BigDecimal.ONE )
+                                 : value );
                      final Optional<BigDecimal> max = rangeConstraint.getMaxValue()
                            .map( Range::getScalarValue )
                            .map( value -> BoundDefinition.LESS_THAN.equals( rangeConstraint.getLowerBoundDefinition() )
-                                 ? value.add( BigDecimal.valueOf( -1L ) ) : value );
+                                 ? value.add( BigDecimal.valueOf( -1L ) )
+                                 : value );
                      return Optional.of( new Range( min.orElse( null ), max.orElse( null ) ) );
                   }
                   return Optional.empty();
@@ -289,7 +298,8 @@ public class JsonPayloadGenerator<S extends StructureElement>
       if ( property.isNotInPayload() ) {
          return null;
       }
-      // For optional Properties, always generate a payload, except when the Property's optionality breaks a cycle in the model.
+      // For optional Properties, always generate a payload, except when the Property's optionality breaks
+      // a cycle in the model.
       // If this specific Property was already processed, it means there's a cycle.
       if ( property.isOptional() && context.visitedProperties().contains( property ) ) {
          return null;
@@ -345,9 +355,11 @@ public class JsonPayloadGenerator<S extends StructureElement>
    }
 
    /**
-    * For the case of a Set or SortedSet with a minimum cardinality of 2 and an Entity type, only the first example element's
-    * value may be based on the exampleValue, otherwise the generated structure violates the corresponding JSON Schema's
-    * "uniqueItems" constraint. In other words, the following would not be valid, because both values are identical:
+    * For the case of a Set or SortedSet with a minimum cardinality of 2 and an Entity type, only the
+    * first example element's value may be based on the exampleValue, otherwise the generated structure
+    * violates the corresponding JSON Schema's "uniqueItems" constraint. In other words, the following
+    * would not be valid, because both values are identical:
+    * 
     * <pre>
     *  {
     *   "someProperty" : [ {

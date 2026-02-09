@@ -41,21 +41,20 @@ import org.fusesource.jansi.AnsiConsole;
 import picocli.CommandLine;
 
 @CommandLine.Command( name = SammCli.COMMAND_NAME,
-      description = "Command line tool for working with Aspect Models",
-      subcommands = { CommandLine.HelpCommand.class },
-      headerHeading = "@|bold Usage|@:%n%n",
-      descriptionHeading = "%n@|bold Description|@:%n%n",
-      parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n",
-      footer = "%nRun @|bold " + SammCli.COMMAND_NAME + " help <command>|@ to display its help, e.g.:%n"
-            + "   @|bold " + SammCli.COMMAND_NAME + " help "
-            + AspectCommand.COMMAND_NAME + " " + AspectToCommand.COMMAND_NAME + " " + AspectToSvgCommand.COMMAND_NAME + "|@%n"
-            + "or @|bold " + SammCli.COMMAND_NAME + " help "
-            + AspectCommand.COMMAND_NAME + " " + AspectPrettyPrintCommand.COMMAND_NAME + "|@%n"
-            + "or @|bold " + SammCli.COMMAND_NAME + " help "
-            + AasCommand.COMMAND_NAME + " " + AasToCommand.COMMAND_NAME + " " + AasToAspectCommand.COMMAND_NAME + "|@%n"
-            + "%nDocumentation: https://eclipse-esmf.github.io/esmf-documentation/index.html"
-)
+   description = "Command line tool for working with Aspect Models",
+   subcommands = { CommandLine.HelpCommand.class },
+   headerHeading = "@|bold Usage|@:%n%n",
+   descriptionHeading = "%n@|bold Description|@:%n%n",
+   parameterListHeading = "%n@|bold Parameters|@:%n",
+   optionListHeading = "%n@|bold Options|@:%n",
+   footer = "%nRun @|bold " + SammCli.COMMAND_NAME + " help <command>|@ to display its help, e.g.:%n"
+         + "   @|bold " + SammCli.COMMAND_NAME + " help "
+         + AspectCommand.COMMAND_NAME + " " + AspectToCommand.COMMAND_NAME + " " + AspectToSvgCommand.COMMAND_NAME + "|@%n"
+         + "or @|bold " + SammCli.COMMAND_NAME + " help "
+         + AspectCommand.COMMAND_NAME + " " + AspectPrettyPrintCommand.COMMAND_NAME + "|@%n"
+         + "or @|bold " + SammCli.COMMAND_NAME + " help "
+         + AasCommand.COMMAND_NAME + " " + AasToCommand.COMMAND_NAME + " " + AasToAspectCommand.COMMAND_NAME + "|@%n"
+         + "%nDocumentation: https://eclipse-esmf.github.io/esmf-documentation/index.html" )
 @SuppressWarnings( "squid:S1147" ) // System.exit is really required here, this is a CLI tool
 public class SammCli extends AbstractCommand {
    public static final String COMMAND_NAME = "samm";
@@ -110,8 +109,10 @@ public class SammCli extends AbstractCommand {
       commandLine = initialCommandLine.setExecutionExceptionHandler( ( exception, commandLine, parseResult ) -> {
          if ( exception.getClass().getName()
                .equals( String.format( "%s.MainClassProcessLauncher$SystemExitCaptured", SammCli.class.getPackageName() ) ) ) {
-            // If the exception we encounter is a SystemExitCaptured, this is part of the security manager in the test suite that
-            // captures System.exit() calls and throws an exception there. We don't want PicoCli to do anything further with that
+            // If the exception we encounter is a SystemExitCaptured, this is part of the security manager in
+            // the test suite that
+            // captures System.exit() calls and throws an exception there. We don't want PicoCli to do anything
+            // further with that
             // (i.e., serialize the stacktrace to stderr), so we'll just return here.
             return 1;
          }
@@ -127,7 +128,8 @@ public class SammCli extends AbstractCommand {
             commandLine.getErr().println( exception.getMessage() );
             return 1;
          }
-         // For higher log levels or unexpected exceptions, delegate to the default execution exception handler
+         // For higher log levels or unexpected exceptions, delegate to the default execution exception
+         // handler
          return defaultExecutionExceptionHandler.handleExecutionException( exception, commandLine, parseResult );
       } );
    }
@@ -135,10 +137,12 @@ public class SammCli extends AbstractCommand {
    @CommandLine.Mixin
    LoggingMixin loggingMixin;
 
-   @CommandLine.Option( names = { "--version" }, description = "Show current version" )
+   @CommandLine.Option( names = { "--version" },
+      description = "Show current version" )
    private boolean version;
 
-   @CommandLine.Option( names = { "--disable-color", "-D" }, description = "Disable colored output" )
+   @CommandLine.Option( names = { "--disable-color", "-D" },
+      description = "Disable colored output" )
    private boolean disableColor;
 
    int run( final String... argv ) {
@@ -146,7 +150,8 @@ public class SammCli extends AbstractCommand {
    }
 
    public static void main( final String[] argv ) {
-      // Check if the .exe was started on Windows without arguments: Most likely opened from Explorer or Desktop.
+      // Check if the .exe was started on Windows without arguments: Most likely opened from Explorer or
+      // Desktop.
       // If yes, open a command prompt to continue working instead.
       if ( System.getProperty( "os.name", "" ).startsWith( "Windows" ) && argv.length == 0 ) {
          ProcessHandle.current().info().command().ifPresent( executable -> {
@@ -199,10 +204,9 @@ public class SammCli extends AbstractCommand {
    }
 
    /**
-    * Explicitly allow 'samm help command subcommand...' also if the subcommand is 'to' (e.g., aspect to, aas to) and
-    * usually receives a mandatory input file as its first parameter, e.g.:
-    * What a user wants to enter: "help aspect to sql"
-    * What we need to provide to picocli: "aspect _ to help sql"
+    * Explicitly allow 'samm help command subcommand...' also if the subcommand is 'to' (e.g., aspect
+    * to, aas to) and usually receives a mandatory input file as its first parameter, e.g.: What a user
+    * wants to enter: "help aspect to sql" What we need to provide to picocli: "aspect _ to help sql"
     *
     * @param argv the original command line arguments
     * @return the adjusted command line arguments

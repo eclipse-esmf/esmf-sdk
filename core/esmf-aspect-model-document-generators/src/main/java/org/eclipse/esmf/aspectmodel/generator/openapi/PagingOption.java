@@ -14,9 +14,5 @@
 package org.eclipse.esmf.aspectmodel.generator.openapi;
 
 public enum PagingOption {
-   NO_PAGING,
-   AUTO,
-   CURSOR_BASED_PAGING,
-   OFFSET_BASED_PAGING,
-   TIME_BASED_PAGING
+   NO_PAGING, AUTO, CURSOR_BASED_PAGING, OFFSET_BASED_PAGING, TIME_BASED_PAGING
 }

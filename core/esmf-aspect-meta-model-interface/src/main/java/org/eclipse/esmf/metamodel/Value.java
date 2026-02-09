@@ -14,7 +14,8 @@
 package org.eclipse.esmf.metamodel;
 
 /**
- * Base interface for values: Each value can be either a literal (e.g. string or integer), a complex value (Entity) or a collection.
+ * Base interface for values: Each value can be either a literal (e.g. string or integer), a complex
+ * value (Entity) or a collection.
  */
 public interface Value extends ModelElement {
    Type getType();

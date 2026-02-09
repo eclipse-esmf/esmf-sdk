@@ -23,15 +23,20 @@ import io.soabase.recordbuilder.core.RecordBuilder;
 /**
  * A {@link GenerationConfig} for Java code.
  *
- * @param enableJacksonAnnotations Controls whether Jackson annotations should be added to the generated Java classes
- * @param jsonTypeInfo Corresponds to com.fasterxml.jackson.annotation.JsonTypeInfo.Id and selects which JsonTypeInfo kind is used
+ * @param enableJacksonAnnotations Controls whether Jackson annotations should be added to the
+ *        generated Java classes
+ * @param jsonTypeInfo Corresponds to com.fasterxml.jackson.annotation.JsonTypeInfo.Id and selects
+ *        which JsonTypeInfo kind is used
  * @param packageName the package name that classes should be created in
  * @param importTracker the instance of the tracker that tracks imports during code generation
- * @param executeLibraryMacros determines whether template macros given in templateLibFile should be evaluated
- * @param templateLibFile a file containing velocity macros overriding sections in the default code templates
+ * @param executeLibraryMacros determines whether template macros given in templateLibFile should be
+ *        evaluated
+ * @param templateLibFile a file containing velocity macros overriding sections in the default code
+ *        templates
  * @param namePrefix custom class name prefix
  * @param namePostfix custom class name postfix
- * @param enableSetters controls whether setters should be generated for the properties of the generated Java classes
+ * @param enableSetters controls whether setters should be generated for the properties of the
+ *        generated Java classes
  * @param setterStyle the style of setters to be generated, if {@code enableSetters} is true
  */
 @RecordBuilder
@@ -69,7 +74,7 @@ public record JavaCodeGenerationConfig(
       if ( importTracker == null ) {
          importTracker = new ImportTracker();
       }
-      if ( executeLibraryMacros && (templateLibFile == null || templateLibFile.toString().isEmpty()) ) {
+      if ( executeLibraryMacros && ( templateLibFile == null || templateLibFile.toString().isEmpty() ) ) {
          throw new CodeGenerationException( "Missing configuration. Please provide path to velocity template library file." );
       }
       if ( executeLibraryMacros && !templateLibFile.exists() ) {

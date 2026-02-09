@@ -84,19 +84,19 @@ public abstract class AbstractInputHandler implements InputHandler {
          return List.of();
       }
       return Stream.of(
-                  Optional.ofNullable( resolverConfig.modelsRoots ).orElse( List.of() )
-                        .stream()
-                        .map( modelsRoot -> new FileSystemStrategy( new StructuredModelsRoot( Path.of( modelsRoot ) ) ) ),
-                  Optional.ofNullable( resolverConfig.commandLine )
-                        .orElse( List.of() )
-                        .stream()
-                        .map( ExternalResolverStrategy::new ),
-                  Optional.ofNullable( resolverConfig.gitHubResolverOptions ).orElse( List.of() )
-                        .stream()
-                        .map( options -> buildGithubModelSourceConfig( options, resolverConfig.gitHubToken ) )
-                        .flatMap( Optional::stream )
-                        .map( GitHubStrategy::new ) )
-            .<ResolutionStrategy> flatMap( Function.identity() )
+            Optional.ofNullable( resolverConfig.modelsRoots ).orElse( List.of() )
+                  .stream()
+                  .map( modelsRoot -> new FileSystemStrategy( new StructuredModelsRoot( Path.of( modelsRoot ) ) ) ),
+            Optional.ofNullable( resolverConfig.commandLine )
+                  .orElse( List.of() )
+                  .stream()
+                  .map( ExternalResolverStrategy::new ),
+            Optional.ofNullable( resolverConfig.gitHubResolverOptions ).orElse( List.of() )
+                  .stream()
+                  .map( options -> buildGithubModelSourceConfig( options, resolverConfig.gitHubToken ) )
+                  .flatMap( Optional::stream )
+                  .map( GitHubStrategy::new ) )
+            .<ResolutionStrategy>flatMap( Function.identity() )
             .toList();
    }
 
@@ -134,8 +134,7 @@ public abstract class AbstractInputHandler implements InputHandler {
    }
 
    protected AspectModel applyAspectModelLoader( final Function<AspectModelLoader, AspectModel> loader ) {
-      final Either<List<Violation>, AspectModel> validModelOrViolations = validator.loadModel( () ->
-            loader.apply( aspectModelLoader() ) );
+      final Either<List<Violation>, AspectModel> validModelOrViolations = validator.loadModel( () -> loader.apply( aspectModelLoader() ) );
       return getAspectModelOrPrintValidationReport( validModelOrViolations );
    }
 
@@ -156,7 +155,7 @@ public abstract class AbstractInputHandler implements InputHandler {
             .orElseThrow( () -> new ModelResolutionException(
                   "Found multiple Aspects in the input " + input + ", but none is called '"
                         + expectedAspectName + "': " + aspectModel.aspects().stream().map( Aspect::getName )
-                        .collect( Collectors.joining( ", " ) ) ) );
+                              .collect( Collectors.joining( ", " ) ) ) );
    }
 
    @Override

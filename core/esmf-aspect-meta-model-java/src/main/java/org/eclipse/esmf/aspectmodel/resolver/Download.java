@@ -31,7 +31,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Convenience class to download a file via HTTP, which the ability to auto-detect and use proxy settings
+ * Convenience class to download a file via HTTP, which the ability to auto-detect and use proxy
+ * settings
  */
 public class Download {
    private static final Logger LOG = LoggerFactory.getLogger( Download.class );

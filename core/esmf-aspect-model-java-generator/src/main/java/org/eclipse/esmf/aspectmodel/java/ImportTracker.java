@@ -20,9 +20,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Tracks necessary Java imports during type resolution so that code generators can apply this information in order
- * to avoid statically bulk-importing all classes one might need. Code generators should use {@link #getUsedImportsWithoutJavaLang()} to
- * generate a final list of imports.
+ * Tracks necessary Java imports during type resolution so that code generators can apply this
+ * information in order to avoid statically bulk-importing all classes one might need. Code
+ * generators should use {@link #getUsedImportsWithoutJavaLang()} to generate a final list of
+ * imports.
  */
 public class ImportTracker {
    private static final String GENERICS_START = "<";
@@ -65,7 +66,8 @@ public class ImportTracker {
    }
 
    /**
-    * Explicitly adds an import. If the Class object is known, use {@link #importExplicit(Class)} instead.
+    * Explicitly adds an import. If the Class object is known, use {@link #importExplicit(Class)}
+    * instead.
     *
     * @param clazz the fully qualified class name to add to the imported classes
     */
@@ -83,8 +85,8 @@ public class ImportTracker {
    }
 
    /**
-    * Returns all used imports EXCEPT for imports of other generated classes as those will reside in the same target
-    * package.
+    * Returns all used imports EXCEPT for imports of other generated classes as those will reside in
+    * the same target package.
     *
     * @return the used imports
     */
@@ -93,9 +95,9 @@ public class ImportTracker {
    }
 
    /**
-    * Returns all used imports EXCEPT for imports of other generated classes and those from {@code java.lang} as they
-    * are implicitly imported and don't need to be added to the list of imports.
-    * The imports are returned in natural order.
+    * Returns all used imports EXCEPT for imports of other generated classes and those from
+    * {@code java.lang} as they are implicitly imported and don't need to be added to the list of
+    * imports. The imports are returned in natural order.
     *
     * @return the used imports without classes from {@code java.lang}
     */

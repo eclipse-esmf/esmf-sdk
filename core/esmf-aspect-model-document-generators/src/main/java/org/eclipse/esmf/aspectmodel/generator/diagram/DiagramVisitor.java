@@ -216,11 +216,10 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
       final Diagram result = defaultBox( unit, "Unit", Diagram.Color.UNIT );
       final Diagram.Box box = result.getFocusBox();
       unit.getSymbol().ifPresent( symbol -> box.addEntry( attribute( "symbol", String.class, () -> symbol ) ) );
-      unit.getReferenceUnit().ifPresent( referenceUnit ->
-            box.addEntry( attribute( "referenceUnit", String.class, () -> referenceUnit ) ) );
+      unit.getReferenceUnit().ifPresent( referenceUnit -> box.addEntry( attribute( "referenceUnit", String.class, () -> referenceUnit ) ) );
       unit.getCode().ifPresent( code -> box.addEntry( attribute( "code", String.class, () -> code ) ) );
-      unit.getConversionFactor().ifPresent( conversionFactor ->
-            box.addEntry( attribute( "conversionFactor", String.class, () -> conversionFactor ) ) );
+      unit.getConversionFactor()
+            .ifPresent( conversionFactor -> box.addEntry( attribute( "conversionFactor", String.class, () -> conversionFactor ) ) );
       return result;
    }
 
@@ -370,7 +369,8 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
 
       final Diagram result;
       if ( collection.getElementCharacteristic().isPresent() ) {
-         // If the collection has an elementCharacteristic, don't use visitCharacteristic to prevent additional dataType edge
+         // If the collection has an elementCharacteristic, don't use visitCharacteristic to prevent
+         // additional dataType edge
          result = defaultBox( collection, "Collection", Diagram.Color.COLLECTION );
       } else {
          result = visitCharacteristic( (Characteristic) collection, context );
@@ -378,8 +378,8 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
       }
 
       final Diagram.Box box = result.getFocusBox();
-      collection.getElementCharacteristic().ifPresent( elementCharacteristic ->
-            result.add( childElementDiagram( box, elementCharacteristic, "elementCharacteristic" ) ) );
+      collection.getElementCharacteristic()
+            .ifPresent( elementCharacteristic -> result.add( childElementDiagram( box, elementCharacteristic, "elementCharacteristic" ) ) );
       return result;
    }
 
@@ -551,7 +551,8 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
                result.addEdge( new Diagram.Edge( box, valueDiagram.getFocusBox(), propertyName ) );
             }
          } else {
-            // If the value's diagram representation's scalar value is set, use it for an attribute entry in the entity instance's box
+            // If the value's diagram representation's scalar value is set, use it for an attribute entry in the
+            // entity instance's box
             box.addEntry( attribute( propertyName, String.class, valueDiagram::getScalarValue ) );
          }
       }
@@ -595,14 +596,12 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
             .filter( preferredName -> preferredName.getLanguageTag().equals( locale ) )
             .findFirst()
             .map( LangString::getValue )
-            .ifPresent( preferredName ->
-                  standardAttributes.addAll( attribute( "preferredName", String.class, () -> preferredName ) ) );
+            .ifPresent( preferredName -> standardAttributes.addAll( attribute( "preferredName", String.class, () -> preferredName ) ) );
       element.getDescriptions().stream()
             .filter( description -> description.getLanguageTag().equals( locale ) )
             .findFirst()
             .map( LangString::getValue )
-            .ifPresent( description ->
-                  standardAttributes.addAll( attribute( "description", String.class, () -> description ) ) );
+            .ifPresent( description -> standardAttributes.addAll( attribute( "description", String.class, () -> description ) ) );
       if ( !element.getSee().isEmpty() ) {
          standardAttributes.addAll( attribute( "see", String.class, () -> String.join( ", ", element.getSee() ) ) );
       }

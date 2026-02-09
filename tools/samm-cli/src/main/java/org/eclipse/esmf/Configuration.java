@@ -22,9 +22,11 @@ import io.vavr.control.Either;
 
 public interface Configuration {
    sealed interface Argument<T> {
-      interface ParserErrorOrResult<T> extends Either<String, T> {}
+      interface ParserErrorOrResult<T> extends Either<String, T> {
+      }
 
-      interface Parser<T> extends Function<String, ParserErrorOrResult<T>> {}
+      interface Parser<T> extends Function<String, ParserErrorOrResult<T>> {
+      }
    }
 
    record Option<T>(

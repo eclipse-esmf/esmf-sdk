@@ -18,6 +18,5 @@ import org.eclipse.esmf.aspectmodel.generator.JsonGenerationConfig;
 import io.soabase.recordbuilder.core.RecordBuilder;
 
 @RecordBuilder
-public record JsonLdGenerationConfig( )
-      implements JsonGenerationConfig {
-}
+public record JsonLdGenerationConfig()
+      implements JsonGenerationConfig {}

@@ -81,8 +81,8 @@ public class AspectWithEnumHavingNestedEntities {
 
       public static Optional<EvaluationResults> fromValue( final EvaluationResult value ) {
          return Arrays.stream( EvaluationResults.values() )
-                      .filter( enumValue -> compareEnumValues( enumValue, value ) )
-                      .findAny();
+               .filter( enumValue -> compareEnumValues( enumValue, value ) )
+               .findAny();
       }
 
       private static boolean compareEnumValues( final EvaluationResults enumValue, final EvaluationResult value ) {
@@ -157,8 +157,7 @@ public class AspectWithEnumHavingNestedEntities {
 
    @JsonFormat( shape = JsonFormat.Shape.OBJECT )
    public enum YesNo {
-      YES( "Yes" ),
-      NO( "No" );
+      YES( "Yes" ), NO( "No" );
 
       private final String value;
 
@@ -178,8 +177,8 @@ public class AspectWithEnumHavingNestedEntities {
 
       public static Optional<YesNo> fromValue( final String value ) {
          return Arrays.stream( YesNo.values() )
-                      .filter( enumValue -> compareEnumValues( enumValue, value ) )
-                      .findAny();
+               .filter( enumValue -> compareEnumValues( enumValue, value ) )
+               .findAny();
       }
 
       private static boolean compareEnumValues( final YesNo enumValue, final String value ) {

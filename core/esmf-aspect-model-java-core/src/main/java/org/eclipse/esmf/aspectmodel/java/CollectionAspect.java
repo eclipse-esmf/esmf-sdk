@@ -19,7 +19,8 @@ import java.util.Collection;
  * Interface which defines the type of {@link Collection} provided by a Collection Aspect.
  *
  * @param <C> the type of collection provided by the Collection Aspect
- * @param <T> the data type contained with in the {@link Collection} provided by the Collection Aspect
+ * @param <T> the data type contained with in the {@link Collection} provided by the Collection
+ *        Aspect
  */
 @SuppressWarnings( "squid:S2326" ) // Type parameter is used in runtime byte code generation
 public interface CollectionAspect<C extends Collection<T>, T> {

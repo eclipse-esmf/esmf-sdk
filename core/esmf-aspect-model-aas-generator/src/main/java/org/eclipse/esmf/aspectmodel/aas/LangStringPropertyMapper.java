@@ -29,7 +29,8 @@ import org.eclipse.digitaltwin.aas4j.v3.model.MultiLanguageProperty;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultMultiLanguageProperty;
 
 /**
- * Special mapper to create {@link MultiLanguageProperty}s from Aspect Model properties that carry multiple localized strings.
+ * Special mapper to create {@link MultiLanguageProperty}s from Aspect Model properties that carry
+ * multiple localized strings.
  */
 public class LangStringPropertyMapper implements PropertyMapper<MultiLanguageProperty> {
 

@@ -49,27 +49,36 @@ import org.apache.jena.rdf.model.Statement;
  */
 public enum MetaModelFile implements AspectModelFile {
    UNITS( "unit", "units.ttl", SammNs.UNIT, MetaModelFileType.ELEMENT_DEFINITION ),
-   FILE_RESOURCE( "entity", "FileResource.ttl", SammNs.SAMME, MetaModelFileType.ELEMENT_DEFINITION ),
-   POINT_3D( "entity", "Point3d.ttl", SammNs.SAMME, MetaModelFileType.ELEMENT_DEFINITION ),
-   TIME_SERIES_ENTITY( "entity", "TimeSeriesEntity.ttl", SammNs.SAMME, MetaModelFileType.ELEMENT_DEFINITION ),
-   QUANTITY( "entity", "Quantity.ttl", SammNs.SAMME, MetaModelFileType.ELEMENT_DEFINITION ),
-   CHARACTERISTIC_INSTANCES( "characteristic", "characteristic-instances.ttl", SammNs.SAMMC,
+   FILE_RESOURCE( "entity", "FileResource.ttl",
+         SammNs.SAMME, MetaModelFileType.ELEMENT_DEFINITION ),
+   POINT_3D( "entity", "Point3d.ttl", SammNs.SAMME,
+         MetaModelFileType.ELEMENT_DEFINITION ),
+   TIME_SERIES_ENTITY( "entity", "TimeSeriesEntity.ttl", SammNs.SAMME,
+         MetaModelFileType.ELEMENT_DEFINITION ),
+   QUANTITY( "entity", "Quantity.ttl", SammNs.SAMME,
+         MetaModelFileType.ELEMENT_DEFINITION ),
+   CHARACTERISTIC_INSTANCES( "characteristic",
+         "characteristic-instances.ttl", SammNs.SAMMC,
          MetaModelFileType.ELEMENT_DEFINITION ),
 
-   TYPE_CONVERSIONS( "meta-model", "type-conversions.ttl", SammNs.SAMM, MetaModelFileType.META_MODEL_DEFINITION ),
-   ASPECT_META_MODEL_DEFINITIONS( "meta-model", "aspect-meta-model-definitions.ttl", SammNs.SAMM,
+   TYPE_CONVERSIONS( "meta-model", "type-conversions.ttl", SammNs.SAMM,
          MetaModelFileType.META_MODEL_DEFINITION ),
-   CHARACTERISTIC_DEFINITIONS( "characteristic", "characteristic-definitions.ttl", SammNs.SAMMC,
+   ASPECT_META_MODEL_DEFINITIONS( "meta-model", "aspect-meta-model-definitions.ttl",
+         SammNs.SAMM,
+         MetaModelFileType.META_MODEL_DEFINITION ),
+   CHARACTERISTIC_DEFINITIONS( "characteristic", "characteristic-definitions.ttl",
+         SammNs.SAMMC,
          MetaModelFileType.META_MODEL_DEFINITION ),
 
-   ASPECT_META_MODEL_SHAPES( "meta-model", "aspect-meta-model-shapes.ttl", SammNs.SAMM, MetaModelFileType.SHAPE_DEFINITION ),
-   PREFIX_DECLARATIONS( "meta-model", "prefix-declarations.ttl", SammNs.SAMM, MetaModelFileType.SHAPE_DEFINITION ),
-   CHARACTERISTIC_SHAPES( "characteristic", "characteristic-shapes.ttl", SammNs.SAMMC, MetaModelFileType.SHAPE_DEFINITION );
+   ASPECT_META_MODEL_SHAPES( "meta-model", "aspect-meta-model-shapes.ttl", SammNs.SAMM,
+         MetaModelFileType.SHAPE_DEFINITION ),
+   PREFIX_DECLARATIONS( "meta-model", "prefix-declarations.ttl", SammNs.SAMM,
+         MetaModelFileType.SHAPE_DEFINITION ),
+   CHARACTERISTIC_SHAPES( "characteristic", "characteristic-shapes.ttl", SammNs.SAMMC,
+         MetaModelFileType.SHAPE_DEFINITION );
 
    public enum MetaModelFileType {
-      ELEMENT_DEFINITION,
-      META_MODEL_DEFINITION,
-      SHAPE_DEFINITION
+      ELEMENT_DEFINITION, META_MODEL_DEFINITION, SHAPE_DEFINITION
    }
 
    private final RdfNamespace rdfNamespace;
@@ -96,8 +105,9 @@ public enum MetaModelFile implements AspectModelFile {
    }
 
    /**
-    * Determines all statements that refer to a samm:// URL and their replacements where the samm:// URL has
-    * been replaced with a URL that is resolvable in the current context (e.g. to the class path or via HTTP).
+    * Determines all statements that refer to a samm:// URL and their replacements where the samm://
+    * URL has been replaced with a URL that is resolvable in the current context (e.g. to the class
+    * path or via HTTP).
     *
     * @param model the input model
     * @return the tuples of the original statement to replace and the replacement statement
@@ -109,18 +119,18 @@ public enum MetaModelFile implements AspectModelFile {
             .filter( statement -> statement.getObject().asLiteral().getString().startsWith( "samm://" ) )
             .flatMap( statement -> rewriteSammUrl( statement.getObject().asLiteral().getString() )
                   .stream()
-                  .map( newUrl ->
-                        ResourceFactory.createStatement( statement.getSubject(), statement.getPredicate(),
-                              ResourceFactory.createTypedLiteral( newUrl, SammType.ANY_URI ) ) )
+                  .map( newUrl -> ResourceFactory.createStatement( statement.getSubject(), statement.getPredicate(),
+                        ResourceFactory.createTypedLiteral( newUrl, SammType.ANY_URI ) ) )
                   .map( newStatement -> new Tuple2<>( statement, newStatement ) ) )
             .collect( Collectors.toSet() );
    }
 
    /**
-    * URLs inside meta model shapes, in particular those used with sh:jsLibraryURL, are given as samm:// URLs
-    * in order to decouple them from the way they are resolved (i.e. currently to a file in the class path, but
-    * in the future this could be resolved using the URL of a suitable service). This method takes a samm:// URL
-    * and rewrites it to the respective URL of the object on the class path.
+    * URLs inside meta model shapes, in particular those used with sh:jsLibraryURL, are given as
+    * samm:// URLs in order to decouple them from the way they are resolved (i.e. currently to a file
+    * in the class path, but in the future this could be resolved using the URL of a suitable service).
+    * This method takes a samm:// URL and rewrites it to the respective URL of the object on the class
+    * path.
     *
     * @param sammUrl the samm URL in the format samm://PART/VERSION/FILENAME
     * @return The corresponding class path URL to resolve the meta model resource

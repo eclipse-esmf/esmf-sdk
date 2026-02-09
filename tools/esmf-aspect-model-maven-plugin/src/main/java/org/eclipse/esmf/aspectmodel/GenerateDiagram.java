@@ -30,12 +30,14 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Mojo( name = GenerateDiagram.MAVEN_GOAL, defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
+@Mojo( name = GenerateDiagram.MAVEN_GOAL,
+   defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateDiagram extends AspectModelMojo {
    public static final String MAVEN_GOAL = "generateDiagram";
    private static final Logger LOG = LoggerFactory.getLogger( GenerateDiagram.class );
 
-   @Parameter( required = true, property = "targetFormat" )
+   @Parameter( required = true,
+      property = "targetFormat" )
    private Set<String> targetFormats;
 
    @Override

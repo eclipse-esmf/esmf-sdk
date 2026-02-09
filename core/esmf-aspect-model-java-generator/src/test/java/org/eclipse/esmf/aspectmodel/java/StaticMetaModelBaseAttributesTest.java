@@ -31,10 +31,10 @@ class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorTest {
             JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
       result.assertNumberOfFiles( 2 );
 
-      final ImmutableSet<String> expectedArguments = ImmutableSet.<String> builder()
+      final ImmutableSet<String> expectedArguments = ImmutableSet.<String>builder()
             .add( "AspectModelUrn.fromUrn(NAMESPACE + \"testBoolean\")" )
             .build();
-      final ImmutableMap<String, Set<String>> expectedMetaModelBaseAttributeArguments = ImmutableMap.<String, Set<String>> builder()
+      final ImmutableMap<String, Set<String>> expectedMetaModelBaseAttributeArguments = ImmutableMap.<String, Set<String>>builder()
             .put( "TEST_BOOLEAN", expectedArguments ).build();
 
       result.assertMetaModelBaseAttributesForProperties( "MetaAspectWithBoolean", expectedMetaModelBaseAttributeArguments );
@@ -58,7 +58,7 @@ class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorTest {
             + ".build()";
 
       result.assertConstructorArgumentForProperties( "MetaAspectWithPropertyWithAllBaseAttributes",
-            ImmutableMap.<String, String> builder().put( "TEST_BOOLEAN", expectedMetaModelBaseAttributeBuilderCall ).build(), 0 );
+            ImmutableMap.<String, String>builder().put( "TEST_BOOLEAN", expectedMetaModelBaseAttributeBuilderCall ).build(), 0 );
    }
 
    @Test
@@ -75,7 +75,7 @@ class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorTest {
             + ".build()";
 
       result.assertConstructorArgumentForProperties( "MetaAspectWithPropertyWithPreferredNames",
-            ImmutableMap.<String, String> builder().put( "TEST_BOOLEAN", expectedMetaModelBaseAttributeBuilderCall ).build(), 0 );
+            ImmutableMap.<String, String>builder().put( "TEST_BOOLEAN", expectedMetaModelBaseAttributeBuilderCall ).build(), 0 );
    }
 
    @Test
@@ -92,7 +92,7 @@ class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorTest {
             + ".build()";
 
       result.assertConstructorArgumentForProperties( "MetaAspectWithPropertyWithDescriptions",
-            ImmutableMap.<String, String> builder().put( "TEST_BOOLEAN", expectedMetaModelBaseAttributeBuilderCall ).build(), 0 );
+            ImmutableMap.<String, String>builder().put( "TEST_BOOLEAN", expectedMetaModelBaseAttributeBuilderCall ).build(), 0 );
    }
 
    @Test
@@ -109,7 +109,7 @@ class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorTest {
             + ".build()";
 
       result.assertConstructorArgumentForProperties( "MetaAspectWithPropertyWithSee",
-            ImmutableMap.<String, String> builder().put( "TEST_BOOLEAN", expectedMetaModelBaseAttributeBuilderCall ).build(), 0 );
+            ImmutableMap.<String, String>builder().put( "TEST_BOOLEAN", expectedMetaModelBaseAttributeBuilderCall ).build(), 0 );
    }
 
    @Test
@@ -119,7 +119,7 @@ class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorTest {
             .apply( getGenerators( aspect, false, JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
       result.assertNumberOfFiles( 2 );
 
-      final ImmutableMap<String, String> expectedMethodBodies = ImmutableMap.<String, String> builder()
+      final ImmutableMap<String, String> expectedMethodBodies = ImmutableMap.<String, String>builder()
             .put( "getModelClass", "return AspectWithBoolean.class;" )
             .put( "getAspectModelUrn", "return AspectModelUrn.fromUrn(MODEL_ELEMENT_URN);" )
             .put( "getMetaModelVersion", "return KnownVersion.getLatest();" )
@@ -157,7 +157,7 @@ class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorTest {
             + "    }\n"
             + "};";
 
-      final ImmutableMap<String, String> expectedMethodBodies = ImmutableMap.<String, String> builder()
+      final ImmutableMap<String, String> expectedMethodBodies = ImmutableMap.<String, String>builder()
             .put( "getModelClass", "return AspectWithAllBaseAttributes.class;" )
             .put( "getAspectModelUrn", "return AspectModelUrn.fromUrn(MODEL_ELEMENT_URN);" )
             .put( "getMetaModelVersion", "return KnownVersion.getLatest();" )
@@ -190,7 +190,7 @@ class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorTest {
             + "    }\n"
             + "};";
 
-      final ImmutableMap<String, String> expectedMethodBodies = ImmutableMap.<String, String> builder()
+      final ImmutableMap<String, String> expectedMethodBodies = ImmutableMap.<String, String>builder()
             .put( "getModelClass", "return AspectWithPreferredNames.class;" )
             .put( "getAspectModelUrn", "return AspectModelUrn.fromUrn(MODEL_ELEMENT_URN);" )
             .put( "getMetaModelVersion", "return KnownVersion.getLatest();" )
@@ -221,7 +221,7 @@ class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorTest {
             + "    }\n"
             + "};";
 
-      final ImmutableMap<String, String> expectedMethodBodies = ImmutableMap.<String, String> builder()
+      final ImmutableMap<String, String> expectedMethodBodies = ImmutableMap.<String, String>builder()
             .put( "getModelClass", "return AspectWithDescriptions.class;" )
             .put( "getAspectModelUrn", "return AspectModelUrn.fromUrn(MODEL_ELEMENT_URN);" )
             .put( "getMetaModelVersion", "return KnownVersion.getLatest();" )
@@ -244,7 +244,7 @@ class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorTest {
             .apply( getGenerators( aspect, false, JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
       result.assertNumberOfFiles( 2 );
 
-      final ImmutableMap<String, String> expectedMethodBodies = ImmutableMap.<String, String> builder()
+      final ImmutableMap<String, String> expectedMethodBodies = ImmutableMap.<String, String>builder()
             .put( "getModelClass", "return AspectWithPropertyWithSee.class;" )
             .put( "getAspectModelUrn", "return AspectModelUrn.fromUrn(MODEL_ELEMENT_URN);" )
             .put( "getMetaModelVersion", "return KnownVersion.getLatest();" )

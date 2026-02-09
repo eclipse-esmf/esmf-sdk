@@ -17,7 +17,8 @@ import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 /**
- * An instance of this interface provides utilies for the implementation of a {@link ResolutionStrategy}.
+ * An instance of this interface provides utilies for the implementation of a
+ * {@link ResolutionStrategy}.
  */
 public interface ResolutionStrategySupport {
    /**

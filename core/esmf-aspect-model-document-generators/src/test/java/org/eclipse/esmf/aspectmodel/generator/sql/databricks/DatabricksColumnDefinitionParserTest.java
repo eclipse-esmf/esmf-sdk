@@ -47,7 +47,7 @@ class DatabricksColumnDefinitionParserTest extends DatabricksTestBase {
             .map( line -> "  " + line.trim() )
             .map( line -> line.replaceAll( ",$", "" ) )
             .collect( Collectors.joining( "\n" ) ) )
-            .isEqualTo( parsedAndSerializedSql );
+                  .isEqualTo( parsedAndSerializedSql );
    }
 
    @Test

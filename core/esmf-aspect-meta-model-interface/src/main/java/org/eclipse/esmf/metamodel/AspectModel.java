@@ -24,9 +24,9 @@ import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.apache.jena.rdf.model.Model;
 
 /**
- * The core interface that represents an Aspect Model. It contains the underlying RDF model, the list of model elements
- * (as instances of {@link ModelElement} and provides information about the {@link Namespace}s and the source files
- * ({@link AspectModelFile}) that make up the model.
+ * The core interface that represents an Aspect Model. It contains the underlying RDF model, the
+ * list of model elements (as instances of {@link ModelElement} and provides information about the
+ * {@link Namespace}s and the source files ({@link AspectModelFile}) that make up the model.
  */
 public interface AspectModel extends ModelElementGroup {
    /**

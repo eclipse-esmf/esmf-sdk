@@ -33,8 +33,7 @@ import org.slf4j.LoggerFactory;
 public class LanguageCollector {
    private static final Logger LOG = LoggerFactory.getLogger( LanguageCollector.class );
 
-   private LanguageCollector() {
-   }
+   private LanguageCollector() {}
 
    /**
     * Returns the set of language tags used in the Aspect model

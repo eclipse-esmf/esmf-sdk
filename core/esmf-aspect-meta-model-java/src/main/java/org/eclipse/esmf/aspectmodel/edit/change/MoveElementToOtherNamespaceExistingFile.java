@@ -59,8 +59,8 @@ public class MoveElementToOtherNamespaceExistingFile extends StructuralChange {
 
    public MoveElementToOtherNamespaceExistingFile( final AspectModelUrn elementUrn, final AspectModelFile targetFile,
          final Namespace targetNamespace ) {
-      this( elementUrn, targetFile.sourceLocation().orElseThrow( () ->
-            new ModelChangeException( "Can move element only to named file" ) ), targetNamespace );
+      this( elementUrn, targetFile.sourceLocation().orElseThrow( () -> new ModelChangeException( "Can move element only to named file" ) ),
+            targetNamespace );
    }
 
    @Override

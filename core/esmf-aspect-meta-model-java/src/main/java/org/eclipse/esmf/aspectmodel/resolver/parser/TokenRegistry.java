@@ -22,18 +22,18 @@ import com.google.common.collect.MapMaker;
 import org.apache.jena.graph.Node;
 
 /**
- * This map keeps track of location information for nodes, i.e., when an RDF document is parsed using {@link TurtleParserProfile}
- * (i.e., also when using {@link TurtleLoader}), the TokenRegistry will know about line/column/token information for each RDF node
- * in the document.
+ * This map keeps track of location information for nodes, i.e., when an RDF document is parsed
+ * using {@link TurtleParserProfile} (i.e., also when using {@link TurtleLoader}), the TokenRegistry
+ * will know about line/column/token information for each RDF node in the document.
  */
 public class TokenRegistry {
    /**
-    * The map that holds the node->token relations. It's important that this map shares the properties of both an
-    * IdentityHashMap (key identity must be determined using == instead of equals(), because Jena's Node_URI will be equal
-    * to another if the URI matches, but here we need to distinguish between their actual occurences) and a
-    * WeakHashMap (because we'd cause a memory leak if we keep token information around once a node is GC'ed).
-    * For this reason, Guava MapMaker with weakKeys() is used for the map implementation, as it defaults to object
-    * identity for comparison.
+    * The map that holds the node->token relations. It's important that this map shares the properties
+    * of both an IdentityHashMap (key identity must be determined using == instead of equals(), because
+    * Jena's Node_URI will be equal to another if the URI matches, but here we need to distinguish
+    * between their actual occurences) and a WeakHashMap (because we'd cause a memory leak if we keep
+    * token information around once a node is GC'ed). For this reason, Guava MapMaker with weakKeys()
+    * is used for the map implementation, as it defaults to object identity for comparison.
     */
    private static final Map<Node, SmartToken> TOKENS = new MapMaker().weakKeys().makeMap();
 

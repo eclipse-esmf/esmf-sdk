@@ -134,11 +134,10 @@ public class AspectWithComplexEntityCollectionEnum {
       static MyEnumerationOne enumDeserializationConstructor( MyEntityOne value ) {
          return fromValue( value )
                .orElseThrow(
-                     () ->
-                           new EnumAttributeNotFoundException(
-                                 "Tried to parse value \""
-                                       + value
-                                       + "\", but there is no enum field like that in MyEnumerationOne" ) );
+                     () -> new EnumAttributeNotFoundException(
+                           "Tried to parse value \""
+                                 + value
+                                 + "\", but there is no enum field like that in MyEnumerationOne" ) );
       }
 
       @JsonValue
@@ -148,8 +147,8 @@ public class AspectWithComplexEntityCollectionEnum {
 
       public static Optional<MyEnumerationOne> fromValue( MyEntityOne value ) {
          return Arrays.stream( MyEnumerationOne.values() )
-                      .filter( enumValue -> compareEnumValues( enumValue, value ) )
-                      .findAny();
+               .filter( enumValue -> compareEnumValues( enumValue, value ) )
+               .findAny();
       }
 
       private static boolean compareEnumValues( MyEnumerationOne enumValue, MyEntityOne value ) {

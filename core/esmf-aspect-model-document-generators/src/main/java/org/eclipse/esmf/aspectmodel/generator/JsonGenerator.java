@@ -34,8 +34,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
  * @param <R> the result type, e.g., JsonNode or ObjectNode
  * @param <A> the corresponding artifact type
  */
-public abstract class JsonGenerator<S extends StructureElement, C extends JsonGenerationConfig, R extends JsonNode,
-      A extends JsonArtifact<R>> extends StructureElementGenerator<S, String, R, C, A> {
+public abstract class JsonGenerator<S extends StructureElement, C extends JsonGenerationConfig, R extends JsonNode, A extends JsonArtifact<R>>
+      extends StructureElementGenerator<S, String, R, C, A> {
    protected final ObjectMapper objectMapper;
 
    public JsonGenerator( final S element, final C config ) {

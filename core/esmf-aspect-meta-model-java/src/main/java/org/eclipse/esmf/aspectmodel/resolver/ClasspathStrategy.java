@@ -45,17 +45,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Resolution strategy to resolve Aspect models by URN from a well-defined directory structure from the class path.
+ * Resolution strategy to resolve Aspect models by URN from a well-defined directory structure from
+ * the class path.
  */
 public class ClasspathStrategy implements ResolutionStrategy {
    private static final Logger LOG = LoggerFactory.getLogger( ClasspathStrategy.class );
    private final String modelsRoot;
 
    /**
-    * Initialize the ClasspathStrategy with an empty root path for models. The classpath
-    * is assumed to contain a file system hierarchy as follows: {@code N/V/X.ttl} where N is the namespace,
-    * V is the version of the namespace and X is the name of the model element (Aspect, Characteristic, ...).
+    * Initialize the ClasspathStrategy with an empty root path for models. The classpath is assumed to
+    * contain a file system hierarchy as follows: {@code N/V/X.ttl} where N is the namespace, V is the
+    * version of the namespace and X is the name of the model element (Aspect, Characteristic, ...).
     * Example:
+    * 
     * <pre>
     * {@code
     * models   <-- should be configured as modelsRoot
@@ -74,10 +76,11 @@ public class ClasspathStrategy implements ResolutionStrategy {
    }
 
    /**
-    * Initialize the ClasspathStrategy with the root path of models. The directory
-    * is assumed to contain a file system hierarchy as follows: {@code N/V/X.ttl} where N is the namespace,
-    * V is the version of the namespace and X is the name of the model element (Aspect, Characteristic, ...).
+    * Initialize the ClasspathStrategy with the root path of models. The directory is assumed to
+    * contain a file system hierarchy as follows: {@code N/V/X.ttl} where N is the namespace, V is the
+    * version of the namespace and X is the name of the model element (Aspect, Characteristic, ...).
     * Example:
+    * 
     * <pre>
     * {@code
     * models   <-- should be configured as modelsRoot
@@ -116,8 +119,9 @@ public class ClasspathStrategy implements ResolutionStrategy {
    }
 
    private Optional<File> getDirectoryFile( final String directory ) {
-      // The incoming URL will look like this:  jar:file:/pathToJar/o.jar/packageName/className
-      // In case we run the code from a jar. Because of that we need to deconstruct the path to get the path to the jar only and remove
+      // The incoming URL will look like this: jar:file:/pathToJar/o.jar/packageName/className
+      // In case we run the code from a jar. Because of that we need to deconstruct the path to get the
+      // path to the jar only and remove
       // the unwanted part of the URL.
       final URL url = getClass().getClassLoader().getResource( directory );
       if ( url == null ) {

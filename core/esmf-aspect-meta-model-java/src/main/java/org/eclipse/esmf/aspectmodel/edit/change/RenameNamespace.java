@@ -29,7 +29,8 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 
 /**
- * RDF-level refactoring operation: Renames all occurences of a namespace in model element URNs to something else.
+ * RDF-level refactoring operation: Renames all occurences of a namespace in model element URNs to
+ * something else.
  */
 public class RenameNamespace extends EditAspectModel {
    private final AspectModelUrn from;

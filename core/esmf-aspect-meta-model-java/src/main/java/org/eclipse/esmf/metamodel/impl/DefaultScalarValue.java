@@ -43,7 +43,8 @@ public class DefaultScalarValue implements ScalarValue {
    }
 
    /**
-    * Standard constructor for scalar values that provides context information such as the value's descriptions
+    * Standard constructor for scalar values that provides context information such as the value's
+    * descriptions
     *
     * @param metaModelBaseAttributes the base attributes
     * @param value the value

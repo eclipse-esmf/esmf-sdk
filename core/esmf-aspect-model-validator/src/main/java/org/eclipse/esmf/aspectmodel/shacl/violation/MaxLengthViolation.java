@@ -24,7 +24,9 @@ import org.apache.jena.rdf.model.RDFNode;
  * @param max the given maximum value
  * @param actual the encountered value
  */
-public record MaxLengthViolation( EvaluationContext context, int max, int actual ) implements Violation {
+public record MaxLengthViolation(
+      EvaluationContext context, int max, int actual
+) implements Violation {
    public static final String ERROR_CODE = "ERR_MAX_LENGTH";
 
    @Override

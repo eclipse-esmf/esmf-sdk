@@ -117,7 +117,8 @@ public class AspectModelHelper {
       if ( modelElement.is( Property.class ) ) {
          final Property property = modelElement.as( Property.class );
          if ( property.getExtends().isPresent() ) {
-            // The Property actually extends another (possibly Abstract) Property, so it won't have an Aspect Model URN on its own.
+            // The Property actually extends another (possibly Abstract) Property, so it won't have an Aspect
+            // Model URN on its own.
             // Use the parent element's namespace for the anchor.
             return parentPart + parentNamespaceAnchorPart + "-" + property.getName() + "-" + suffix;
          }

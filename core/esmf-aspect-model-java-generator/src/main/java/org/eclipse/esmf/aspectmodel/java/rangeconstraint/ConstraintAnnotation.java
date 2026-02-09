@@ -26,6 +26,6 @@ public abstract class ConstraintAnnotation implements AnnotationExpression {
    public String apply( final Object value, final BoundDefinition boundDefinition ) {
       return buildConstraintAnnotation( targetAnnotation,
             new AnnotationFieldBuilder().setValueWithQuotesForAnnotation( value ).setBoundDefinition( boundDefinition )
-                                        .build() );
+                  .build() );
    }
 }

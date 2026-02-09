@@ -25,8 +25,7 @@ public class DefaultCharacteristic extends ModelElementImpl implements Character
 
    public DefaultCharacteristic(
          final MetaModelBaseAttributes metaModelBaseAttributes,
-         final Optional<Type> dataType
-   ) {
+         final Optional<Type> dataType ) {
       super( metaModelBaseAttributes );
       this.dataType = dataType;
    }

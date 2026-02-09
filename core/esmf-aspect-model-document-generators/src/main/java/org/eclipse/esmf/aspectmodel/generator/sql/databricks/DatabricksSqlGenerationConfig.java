@@ -23,12 +23,14 @@ import io.soabase.recordbuilder.core.RecordBuilder;
 /**
  * Configuration specific to the Databricks denormalized SQL generation.
  *
- * @param createTableCommandPrefix the command for table creation, default is "CREATE TABLE IF NOT EXISTS"
+ * @param createTableCommandPrefix the command for table creation, default is "CREATE TABLE IF NOT
+ *        EXISTS"
  * @param includeTableComment whether to include a comment for the table
  * @param includeColumnComments whether to include comments for the columns
  * @param commentLanguage the language to use for comments
- * @param decimalPrecision the precision to use for decimal columns, see <a
- * href="https://docs.databricks.com/en/sql/language-manual/data-types/decimal-type.html">DECIMAL type</a> for more info.
+ * @param decimalPrecision the precision to use for decimal columns, see <a href=
+ *        "https://docs.databricks.com/en/sql/language-manual/data-types/decimal-type.html">DECIMAL
+ *        type</a> for more info.
  * @param customColumns custom columns to add to the table
  */
 @RecordBuilder

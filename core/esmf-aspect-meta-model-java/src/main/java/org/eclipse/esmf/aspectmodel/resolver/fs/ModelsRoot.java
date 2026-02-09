@@ -58,10 +58,12 @@ public abstract class ModelsRoot {
    /**
     * Resolve the aspect model file for the given {@link AspectModelUrn}.
     *
-    * <p>Constructs the file path by resolving the namespace directory.
-    * Validates the file using its canonical path.
+    * <p>
+    * Constructs the file path by resolving the namespace directory. Validates the file using its
+    * canonical path.
     *
-    * <p>Returns Optional.empty() if the resolution fails or file does not exist.
+    * <p>
+    * Returns Optional.empty() if the resolution fails or file does not exist.
     *
     * @param urn the {@link AspectModelUrn} representing the aspect model.
     * @return Optional of the resolved {@link File}, or Optional.empty() if resolution fails.

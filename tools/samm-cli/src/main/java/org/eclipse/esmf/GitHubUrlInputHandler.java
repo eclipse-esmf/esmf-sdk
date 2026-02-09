@@ -33,8 +33,8 @@ import org.eclipse.esmf.metamodel.AspectModel;
 import io.vavr.control.Either;
 
 /**
- * The GitHubUrlInputHandler knows how to load an Aspect Model from a given URL which points to a location in a models root
- * stored in a GitHub repository
+ * The GitHubUrlInputHandler knows how to load an Aspect Model from a given URL which points to a
+ * location in a models root stored in a GitHub repository
  */
 public class GitHubUrlInputHandler extends AbstractInputHandler {
    private final String url;
@@ -43,8 +43,8 @@ public class GitHubUrlInputHandler extends AbstractInputHandler {
    public GitHubUrlInputHandler( final String input, final ResolverConfigurationMixin resolverConfig, final boolean details,
          final boolean validate ) {
       super( input, resolverConfig, details, validate );
-      location = GitHubFileLocation.parse( input ).orElseThrow( () ->
-            new CommandException( "Input URL format is not supported: " + input ) );
+      location =
+            GitHubFileLocation.parse( input ).orElseThrow( () -> new CommandException( "Input URL format is not supported: " + input ) );
       url = input;
    }
 
@@ -75,8 +75,8 @@ public class GitHubUrlInputHandler extends AbstractInputHandler {
       final AspectModelUrn urn = AspectModelUrn.from( location.namespaceMainPart(), location.version(), expectedAspectName() )
             .getOrElseThrow( () -> new CommandException( "Could not construct valid Aspect Model URN from input URL: " + url ) );
       final Function<AspectModelLoader, AspectModel> loaderFunction = validate
-            ? ( (Function<AspectModelLoader, Either<List<Violation>, AspectModel>>) loader ->
-            loader.withValidation( validator ).load( urn ) ).andThen( this::getAspectModelOrPrintValidationReport )
+            ? ( (Function<AspectModelLoader, Either<List<Violation>, AspectModel>>) loader -> loader.withValidation( validator )
+                  .load( urn ) ).andThen( this::getAspectModelOrPrintValidationReport )
             : ( aspectModelLoader -> aspectModelLoader.load( urn ) );
       return applyAspectModelLoader( loaderFunction );
    }

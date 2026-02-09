@@ -41,8 +41,8 @@ public class ValueToEnumKeyVisitor implements AspectVisitor<String, Void> {
       }
 
       return AspectModelJavaUtil.toConstant( stringValue
-                  .replaceAll( "([^\\p{Alnum}_])", "_" )
-                  .replaceAll( "^[^\\p{Alpha}_]", "_" ) )
+            .replaceAll( "([^\\p{Alnum}_])", "_" )
+            .replaceAll( "^[^\\p{Alpha}_]", "_" ) )
             .replaceAll( "__*", "_" );
    }
 

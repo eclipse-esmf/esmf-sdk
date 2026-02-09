@@ -26,12 +26,13 @@ import io.soabase.recordbuilder.core.RecordBuilder;
  * Configuration for the JSON Schema importer
  *
  * @param aspectModelUrn the URN of the element (Aspect or Entity) to generate
- * @param addTodo determines whether descriptions with "TO DO" comments should be added to new elements that don't have descriptions
- * attached in the original schema
- * @param customRefResolver function to override resolution of "$ref" attributes. If the schema to parse contains "$ref"s that are
- * not local, i.e., don't start with '#', then the customRefResolver must be provided to resolve the corresponding JsonNodes, e.g.,
- * when the $ref points to a path in a different file (which could be a local file, a remote resource, etc.), it must load that file and
- * return the corresponding JsonNode.
+ * @param addTodo determines whether descriptions with "TO DO" comments should be added to new
+ *        elements that don't have descriptions attached in the original schema
+ * @param customRefResolver function to override resolution of "$ref" attributes. If the schema to
+ *        parse contains "$ref"s that are not local, i.e., don't start with '#', then the
+ *        customRefResolver must be provided to resolve the corresponding JsonNodes, e.g., when the
+ *        $ref points to a path in a different file (which could be a local file, a remote resource,
+ *        etc.), it must load that file and return the corresponding JsonNode.
  */
 @RecordBuilder
 public record JsonSchemaImporterConfig(

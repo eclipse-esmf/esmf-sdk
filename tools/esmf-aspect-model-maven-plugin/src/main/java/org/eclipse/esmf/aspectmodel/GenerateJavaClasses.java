@@ -29,7 +29,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Mojo( name = GenerateJavaClasses.MAVEN_GOAL, defaultPhase = LifecyclePhase.GENERATE_SOURCES )
+@Mojo( name = GenerateJavaClasses.MAVEN_GOAL,
+   defaultPhase = LifecyclePhase.GENERATE_SOURCES )
 public class GenerateJavaClasses extends JavaCodeGenerationMojo {
    public static final String MAVEN_GOAL = "generateJavaClasses";
    private static final Logger LOG = LoggerFactory.getLogger( GenerateJavaClasses.class );
@@ -46,8 +47,7 @@ public class GenerateJavaClasses extends JavaCodeGenerationMojo {
    /**
     * Default constructor used by Maven plugin instantiation
     */
-   public GenerateJavaClasses() {
-   }
+   public GenerateJavaClasses() {}
 
    public GenerateJavaClasses(
          final boolean disableJacksonAnnotations,
@@ -60,8 +60,7 @@ public class GenerateJavaClasses extends JavaCodeGenerationMojo {
          final String namePrefix,
          final String namePostfix,
          final boolean enableSetters,
-         final String setterStyle
-   ) {
+         final String setterStyle ) {
       this.disableJacksonAnnotations = disableJacksonAnnotations;
       this.disableJacksonAnnotationJsonFormatShapeObject = disableJacksonAnnotationJsonFormatShapeObject;
       this.jsonTypeInfo = jsonTypeInfo;

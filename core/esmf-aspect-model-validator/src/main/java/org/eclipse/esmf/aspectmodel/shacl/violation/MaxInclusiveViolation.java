@@ -25,7 +25,9 @@ import org.apache.jena.rdf.model.RDFNode;
  * @param max the given maximum value
  * @param actual the encountered value
  */
-public record MaxInclusiveViolation( EvaluationContext context, Literal max, Literal actual ) implements Violation {
+public record MaxInclusiveViolation(
+      EvaluationContext context, Literal max, Literal actual
+) implements Violation {
    public static final String ERROR_CODE = "ERR_MAX_INCLUSIVE";
 
    @Override

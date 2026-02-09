@@ -37,7 +37,7 @@ code generators, validators etc.
 This document provides an overall overview of the SDK, and the concepts applied throughout it.
 Detailed documentation and concepts for each component can be found in the respective subfolders.
 
-This repository contains a detailed developer documentation written in AsciiDoc. 
+This repository contains a detailed developer documentation written in AsciiDoc.
 The source files (AsciiDoc) are located [here](documentation/developer-guide) and are built using
 [Antora](https://antora.org/) which generates the documentation as HTML files. A site generated using Antora is self-contained and can be viewed entirely offline via a web browser without setting up a web server.
 To build the documentation locally, please check out and follow the instructions in [ESMF documentation repository](https://github.com/eclipse-esmf/eclipse-esmf.github.io).
@@ -58,7 +58,7 @@ Building the SDK requires a Java 25 version.
 
 To build the SDK core components, run the following command:
 ```bash
-mvn -pl '!org.eclipse.esmf:samm-cli' clean install 
+mvn -pl '!org.eclipse.esmf:samm-cli' clean install
 ```
 
 To also build SDK core components and the CLI tool, run the above command, followed by:

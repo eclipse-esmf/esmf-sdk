@@ -41,8 +41,9 @@ import org.apache.jena.vocabulary.RDF;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Rust-like message formatter. Formatted messages look something like the following example:
- * <br/><br/>
+ * Rust-like message formatter. Formatted messages look something like the following example: <br/>
+ * <br/>
+ * 
  * <pre>
  * ---> Error at line 11 column 20
  *    |
@@ -57,12 +58,15 @@ public class RustLikeFormatter {
    private final RdfTextFormatter textFormatter;
    private StringBuffer buffer;
 
-   // some statements (like anonymous nodes or lists) can be handled out-of-order, so we remember them to not go over them twice
+   // some statements (like anonymous nodes or lists) can be handled out-of-order, so we remember them
+   // to not go over them twice
    private final Set<Statement> seen = new HashSet<>();
    private List<Statement> candidateStatements;
 
-   // The parsed model does not contain all the original tokens (braces in lists, semicolons between statements etc.). But as we want to
-   // achieve as nice and natural formatting as possible, we look at the available information to achieve the proper spacing.
+   // The parsed model does not contain all the original tokens (braces in lists, semicolons between
+   // statements etc.). But as we want to
+   // achieve as nice and natural formatting as possible, we look at the available information to
+   // achieve the proper spacing.
    private List<Integer> knownPositions;
 
    // Will use the PlainTextFormatter as default formatter.
@@ -81,7 +85,8 @@ public class RustLikeFormatter {
    public String constructDetailedMessage( final RDFNode highlight, final String message, @Nullable final Model rawModel ) {
       highlightToken = extractToken( highlight );
       if ( highlightToken == null ) {
-         // without meaningful position information (line/col), we are not able to provide any additional context/details
+         // without meaningful position information (line/col), we are not able to provide any additional
+         // context/details
          return message;
       }
       final Optional<AspectModelFile> sourceFile = Optional.ofNullable( highlightToken.getOriginatingFile() );
@@ -168,7 +173,8 @@ public class RustLikeFormatter {
       return buffer.toString();
    }
 
-   // model.listStatements() returns the statements in random order, but we want to format them as they appear in the source document,
+   // model.listStatements() returns the statements in random order, but we want to format them as they
+   // appear in the source document,
    // so reconstruct the original sequence
    private List<Statement> sortSequentially( final List<Statement> statements ) {
       return Ordering.from( this::documentOrder ).immutableSortedCopy( statements );
@@ -178,7 +184,8 @@ public class RustLikeFormatter {
       final SmartToken t1;
       final SmartToken t2;
       if ( Objects.equals( s1.getSubject(), s2.getSubject() ) ) {
-         // several statements can share a subject with the same position, so try to determine the source order based on predicates and
+         // several statements can share a subject with the same position, so try to determine the source
+         // order based on predicates and
          // objects
          t1 = excludeSubject( s1 );
          t2 = excludeSubject( s2 );
@@ -216,7 +223,8 @@ public class RustLikeFormatter {
       if ( isListStatement( statement ) ) { // special case: an element in the "middle" of a list
          final Statement listHead = findListHead( statement );
          final Statement listOwner = listHead.getModel().listStatements( null, null, listHead.getSubject() ).nextStatement();
-         // to be able to render everything correctly, we need to start rendering at the list-owning statement
+         // to be able to render everything correctly, we need to start rendering at the list-owning
+         // statement
          return formatStatement( listOwner );
       }
 
@@ -250,7 +258,8 @@ public class RustLikeFormatter {
       return true;
    }
 
-   // as the "whitespace" is not preserved by the parser ( in this case ';' and '.' ), we have to reconstruct it by looking at the
+   // as the "whitespace" is not preserved by the parser ( in this case ';' and '.' ), we have to
+   // reconstruct it by looking at the
    // relative positions of the
    // statements as they would appear in the original document
    private boolean isLastSubjectedStatement( final Statement statement ) {
@@ -262,7 +271,8 @@ public class RustLikeFormatter {
    private boolean formatNode( final RDFNode node ) {
       final SmartToken nodePosition = extractToken( node );
       if ( null == nodePosition ) {
-         // ugly special case: Jena internally replaces the RDF keyword 'a' with 'rdf:type' without position information
+         // ugly special case: Jena internally replaces the RDF keyword 'a' with 'rdf:type' without position
+         // information
          if ( NodeConst.nodeRDFType.equals( node.asNode() ) ) {
             spacedIfPossible( "a " );
          }
@@ -275,12 +285,14 @@ public class RustLikeFormatter {
          return true;
       }
 
-      // one RDF statement can span multiple lines, we are only interested in parts located on exactly the given line and not rendered yet
+      // one RDF statement can span multiple lines, we are only interested in parts located on exactly the
+      // given line and not rendered yet
       if ( nodePosition.line() != highlightToken.line() || nodePosition.column() < currentColumn ) {
          return !( nodePosition.line() > highlightToken.line() );
       }
 
-      // whitespace is swallowed by the lexer, but we can reconstruct the proper positioning from the position information
+      // whitespace is swallowed by the lexer, but we can reconstruct the proper positioning from the
+      // position information
       final int colDiff = nodePosition.column() - currentColumn;
       formatText( " ".repeat( colDiff ) );
       formatText( nodePosition );

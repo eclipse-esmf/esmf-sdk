@@ -30,8 +30,8 @@ import org.apache.jena.datatypes.RDFDatatype;
  */
 @SuppressWarnings( { "NewClassNamingConvention", "UnusedReturnValue", "checkstyle:ClassTypeParameterName",
       "checkstyle:MethodTypeParameterName" } )
-public abstract class AbstractCharacteristicAssert<SELF extends AbstractCharacteristicAssert<SELF, ACTUAL>,
-      ACTUAL extends Characteristic> extends ModelElementAssert<SELF, ACTUAL> {
+public abstract class AbstractCharacteristicAssert<SELF extends AbstractCharacteristicAssert<SELF, ACTUAL>, ACTUAL extends Characteristic>
+      extends ModelElementAssert<SELF, ACTUAL> {
    protected AbstractCharacteristicAssert( final ACTUAL actual, final Class<?> selfType, final String modelElementType ) {
       super( actual, selfType, modelElementType );
    }

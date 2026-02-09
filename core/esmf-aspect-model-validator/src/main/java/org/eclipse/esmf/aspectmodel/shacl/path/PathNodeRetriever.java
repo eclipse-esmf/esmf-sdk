@@ -74,9 +74,8 @@ public class PathNodeRetriever implements Path.Visitor<List<Statement>> {
       if ( path.path() instanceof final PredicatePath predicatePath ) {
          return resource.getModel().listStatements( null, predicatePath.predicate(), resource )
                .filterKeep( statement -> statement.getObject().isResource() )
-               .mapWith( statement ->
-                     resource.getModel()
-                           .createStatement( statement.getObject().asResource(), statement.getPredicate(), statement.getSubject() ) )
+               .mapWith( statement -> resource.getModel()
+                     .createStatement( statement.getObject().asResource(), statement.getPredicate(), statement.getSubject() ) )
                .toList();
       }
       throw new UnsupportedOperationException( "Inverse property path is only supported for named properties" );

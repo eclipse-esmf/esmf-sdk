@@ -45,35 +45,35 @@ class AspectModelAsyncApiGeneratorTest {
 
       final JsonNode expectedJson = OBJECT_MAPPER.readTree(
             """
-                     {
-                        "asyncapi": "3.0.0",
-                        "id": "urn:samm:test:test:serve",
-                        "info": {
-                           "title": "Test Aspect MQTT API",
-                           "version": "v1",
-                           "description": "This is a test description",
-                           "x-samm-aspect-model-urn":"urn:samm:org.eclipse.esmf.test:1.0.0#Aspect"
-                        },
-                        "defaultContentType": "application/json",
-                        "channels": {
-                           "Aspect": {
-                              "address": "123/456/test/1.0.0/TestAspect",
-                              "description": "This channel for updating Aspect Aspect.",
-                              "parameters": {
-                                 "namespace": "org.eclipse.esmf.test",
-                                 "version": "1.0.0",
-                                 "aspect-name": "Aspect"
-                              },
-                              "messages": {}
-                           }
-                        },
-                        "operations": {},
-                        "components": {
-                          "messages": {},
-                          "schemas": {}
+                  {
+                     "asyncapi": "3.0.0",
+                     "id": "urn:samm:test:test:serve",
+                     "info": {
+                        "title": "Test Aspect MQTT API",
+                        "version": "v1",
+                        "description": "This is a test description",
+                        "x-samm-aspect-model-urn":"urn:samm:org.eclipse.esmf.test:1.0.0#Aspect"
+                     },
+                     "defaultContentType": "application/json",
+                     "channels": {
+                        "Aspect": {
+                           "address": "123/456/test/1.0.0/TestAspect",
+                           "description": "This channel for updating Aspect Aspect.",
+                           "parameters": {
+                              "namespace": "org.eclipse.esmf.test",
+                              "version": "1.0.0",
+                              "aspect-name": "Aspect"
+                           },
+                           "messages": {}
                         }
+                     },
+                     "operations": {},
+                     "components": {
+                       "messages": {},
+                       "schemas": {}
                      }
-                  """
+                  }
+               """
       );
 
       assertThat( json ).isEqualTo( expectedJson );
@@ -109,50 +109,50 @@ class AspectModelAsyncApiGeneratorTest {
 
       final JsonNode expectedChannels = OBJECT_MAPPER.readTree(
             """
-                     {
-                        "AspectWithEvent": {
-                           "address": "123/456/test/1.0.0/TestAspect",
-                           "description": "This channel for updating AspectWithEvent Aspect.",
-                           "parameters": {
-                              "namespace": "org.eclipse.esmf.test",
-                              "version": "1.0.0",
-                              "aspect-name": "AspectWithEvent"
-                           },
-                           "messages": {
-                              "SomeEvent": {
-                                 "$ref": "#/components/messages/SomeEvent"
-                              }
+                  {
+                     "AspectWithEvent": {
+                        "address": "123/456/test/1.0.0/TestAspect",
+                        "description": "This channel for updating AspectWithEvent Aspect.",
+                        "parameters": {
+                           "namespace": "org.eclipse.esmf.test",
+                           "version": "1.0.0",
+                           "aspect-name": "AspectWithEvent"
+                        },
+                        "messages": {
+                           "SomeEvent": {
+                              "$ref": "#/components/messages/SomeEvent"
                            }
                         }
                      }
-                  """ );
+                  }
+               """ );
       final JsonNode expectedComponentsMessages = OBJECT_MAPPER.readTree(
             """
-                     {
-                        "SomeEvent": {
-                           "name": "SomeEvent",
-                           "title": "Some Event",
-                           "summary": "This is some event",
-                           "contentType": "application/json",
-                           "payload": {
-                              "$ref": "#/components/schemas/SomeEvent"
-                           }
+                  {
+                     "SomeEvent": {
+                        "name": "SomeEvent",
+                        "title": "Some Event",
+                        "summary": "This is some event",
+                        "contentType": "application/json",
+                        "payload": {
+                           "$ref": "#/components/schemas/SomeEvent"
                         }
                      }
-                  """ );
+                  }
+               """ );
       final JsonNode expectedComponentsSchemas = OBJECT_MAPPER.readTree(
             """
-                     {
-                        "type": "object",
-                        "properties": {
-                           "testProperty": {
-                              "title": "testProperty",
-                              "type": "string",
-                              "description": "This is a test property."
-                           }
+                  {
+                     "type": "object",
+                     "properties": {
+                        "testProperty": {
+                           "title": "testProperty",
+                           "type": "string",
+                           "description": "This is a test property."
                         }
                      }
-                  """ );
+                  }
+               """ );
 
       assertThat( json.get( "info" ).get( "title" ).asText() ).isEqualTo( "Test Aspect MQTT API" );
       assertThat( json.get( "info" ).get( "description" ).asText() ).isEqualTo( "This is a test description" );
@@ -176,67 +176,67 @@ class AspectModelAsyncApiGeneratorTest {
 
       final JsonNode expectedChannels = OBJECT_MAPPER.readTree(
             """
-                     {
-                        "AspectWithOperation": {
-                           "address": "123/456/test/1.0.0/TestAspect",
-                           "description": "This channel for updating AspectWithOperation Aspect.",
-                           "parameters": {
-                              "namespace": "org.eclipse.esmf.test",
-                              "version": "1.0.0",
-                              "aspect-name": "AspectWithOperation"
+                  {
+                     "AspectWithOperation": {
+                        "address": "123/456/test/1.0.0/TestAspect",
+                        "description": "This channel for updating AspectWithOperation Aspect.",
+                        "parameters": {
+                           "namespace": "org.eclipse.esmf.test",
+                           "version": "1.0.0",
+                           "aspect-name": "AspectWithOperation"
+                        },
+                        "messages": {
+                           "input": {
+                              "$ref": "#/components/messages/input"
                            },
-                           "messages": {
-                              "input": {
-                                 "$ref": "#/components/messages/input"
-                              },
-                              "output": {
-                                 "$ref": "#/components/messages/output"
-                              }
+                           "output": {
+                              "$ref": "#/components/messages/output"
                            }
                         }
                      }
-                  """ );
+                  }
+               """ );
       final JsonNode expectedComponentsMessageInput = OBJECT_MAPPER.readTree(
             """
-                  {
-                     "name": "input",
-                     "title": "input",
-                     "summary": null,
-                     "contentType": "application/json",
-                     "payload": {
-                        "$ref": "#/components/schemas/input"
-                     }
+               {
+                  "name": "input",
+                  "title": "input",
+                  "summary": null,
+                  "contentType": "application/json",
+                  "payload": {
+                     "$ref": "#/components/schemas/input"
                   }
-                  """
+               }
+               """
       );
       final JsonNode expectedComponentsMessageOutput = OBJECT_MAPPER.readTree(
             """
-                     {
-                        "name": "output",
-                        "title": "output",
-                        "summary": null,
-                        "contentType": "application/json",
-                        "payload": {
-                           "$ref": "#/components/schemas/output"
-                        }
+                  {
+                     "name": "output",
+                     "title": "output",
+                     "summary": null,
+                     "contentType": "application/json",
+                     "payload": {
+                        "$ref": "#/components/schemas/output"
                      }
-                  """
+                  }
+               """
       );
       final JsonNode expectedComponentsSchemaInput = OBJECT_MAPPER.readTree(
-            """
-                     {
-                        "type": "string",
-                        "description": ""
-                     }
-                  """
-      );
-      final JsonNode expectedComponentsSchemaOutput = OBJECT_MAPPER.readTree(
             """
                   {
                      "type": "string",
                      "description": ""
                   }
-                  """
+               """
+      );
+      final JsonNode expectedComponentsSchemaOutput = OBJECT_MAPPER.readTree(
+            """
+               {
+                  "type": "string",
+                  "description": ""
+               }
+               """
       );
 
       assertThat( json.get( "info" ).get( "title" ).asText() ).isEqualTo( "AspectWithOperation MQTT API" );

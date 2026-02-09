@@ -31,7 +31,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Represents the identifier URN of an Aspect Model.
  *
- * @see <a href="https://eclipse-esmf.github.io/samm-specification/2.0.0/namespaces.html">Definition of the URN</a>
+ * @see <a href="https://eclipse-esmf.github.io/samm-specification/2.0.0/namespaces.html">Definition
+ *      of the URN</a>
  */
 public class AspectModelUrn implements Comparable<AspectModelUrn> {
    public static final String NAMESPACE_REGEX = "[a-zA-Z][a-zA-Z0-9]{1,62}\\.[a-zA-Z0-9-]{1,63}(\\.[a-zA-Z0-9_-]{1,63})*";
@@ -274,12 +275,14 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
    }
 
    /**
-    * Determines whether the given URN identifies a root model element or a model element (see {@link ElementType}), and
-    * returns either the given {@link ElementType} or the given Model {@link ElementType}.
+    * Determines whether the given URN identifies a root model element or a model element (see
+    * {@link ElementType}), and returns either the given {@link ElementType} or the given Model
+    * {@link ElementType}.
     *
     * @param urnParts the URN being processed split up into its individual parts
     * @param elementType the root element type of element identified by the given URN
-    * @param modelElementType the element type to be used in case the given URN does not identify a root element
+    * @param modelElementType the element type to be used in case the given URN does not identify a
+    *        root element
     */
    private static ElementType getModelElementType( final List<String> urnParts, final ElementType elementType,
          final ElementType modelElementType ) {
@@ -328,7 +331,7 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
          return modelElementName;
       }
       if ( MODEL_ELEMENT_TYPES.contains( elementType ) ) {
-         //Check root model element name before current element name
+         // Check root model element name before current element name
          checkElementName( urnParts.get( ASPECT_NAME_INDEX ), "model element" );
 
          final String modelElementName = urnParts.get( MODEL_ELEMENT_NAME_INDEX );
@@ -350,7 +353,8 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
    }
 
    /**
-    * Determines whether the given URN identifies an element which is defined in the context of the SAMM.
+    * Determines whether the given URN identifies an element which is defined in the context of the
+    * SAMM.
     *
     * @return true if the element is defined in the context of the SAMM, false otherwise.
     */
@@ -419,8 +423,8 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
    }
 
    /**
-    * Returns the namespace identifier, i.e. the part of the URN before the # symbol
-    * e.g. urn:samm:com.foo.example:1.0.0
+    * Returns the namespace identifier, i.e. the part of the URN before the # symbol e.g.
+    * urn:samm:com.foo.example:1.0.0
     *
     * @return the prefix part of the URN
     */
@@ -429,8 +433,8 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
    }
 
    /**
-    * Returns the RDF prefix part of the URN, i.e. the part up to and including the # but not including the local name,
-    * e.g. urn:samm:com.foo.example:1.0.0#
+    * Returns the RDF prefix part of the URN, i.e. the part up to and including the # but not including
+    * the local name, e.g. urn:samm:com.foo.example:1.0.0#
     *
     * @return the prefix part of the URN
     */

@@ -60,8 +60,8 @@ public class PropertyInstantiator extends Instantiator<Property> {
             .map( Statement::getString );
       final Optional<Resource> extendsResource = optionalAttributeValue( property, SammNs.SAMM._extends() )
             .map( Statement::getResource );
-      final Optional<Property> extends_ = extendsResource.map( superElementResource ->
-            modelElementFactory.create( Property.class, superElementResource ) );
+      final Optional<Property> extends_ =
+            extendsResource.map( superElementResource -> modelElementFactory.create( Property.class, superElementResource ) );
       final boolean isAbstract = !property.isAnon()
             && property.getModel().contains( property, RDF.type, SammNs.SAMM.AbstractProperty() );
 

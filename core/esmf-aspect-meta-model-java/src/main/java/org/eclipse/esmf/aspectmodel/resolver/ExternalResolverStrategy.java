@@ -21,7 +21,8 @@ import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 /**
- * A ResolutionStrategy that executes an external command, which will be executed using a {@link CommandExecutor}.
+ * A ResolutionStrategy that executes an external command, which will be executed using a
+ * {@link CommandExecutor}.
  */
 public class ExternalResolverStrategy implements ResolutionStrategy {
    private final String command;

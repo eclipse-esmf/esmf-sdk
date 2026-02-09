@@ -43,10 +43,11 @@ public class FileSystemStrategy implements ResolutionStrategy {
    protected final ModelsRoot modelsRoot;
 
    /**
-    * Initialize the FileSystemStrategy with the root path of models. The directory
-    * is assumed to contain a file system hierarchy as follows: {@code N/V/X.ttl} where N is the namespace,
-    * V is the version of the namespace and X is the name of the model element (Aspect, Characteristic, ...).
+    * Initialize the FileSystemStrategy with the root path of models. The directory is assumed to
+    * contain a file system hierarchy as follows: {@code N/V/X.ttl} where N is the namespace, V is the
+    * version of the namespace and X is the name of the model element (Aspect, Characteristic, ...).
     * Example:
+    * 
     * <pre>
     * models   <-- must be configured as modelsRoot
     * └── com.example
@@ -78,8 +79,9 @@ public class FileSystemStrategy implements ResolutionStrategy {
     *
     * @param aspectModelUrn The model URN
     * @return The model on success, {@link IllegalArgumentException} if the model file can not be read,
-    * {@link RiotException} on parser error, {@link MalformedURLException} if the AspectModelUrn is invalid,
-    * {@link FileNotFoundException} if no file containing the element was found
+    *         {@link RiotException} on parser error, {@link MalformedURLException} if the
+    *         AspectModelUrn is invalid, {@link FileNotFoundException} if no file containing the
+    *         element was found
     */
    @Override
    public AspectModelFile apply( final AspectModelUrn aspectModelUrn, final ResolutionStrategySupport resolutionStrategySupport ) {
@@ -104,7 +106,7 @@ public class FileSystemStrategy implements ResolutionStrategy {
       } else {
          checkedLocations.add(
                new ModelResolutionException.LoadingFailure( aspectModelUrn, namedResourceFile.map( File::getAbsolutePath ).orElse( "" ),
-               "File does not exist" ) );
+                     "File does not exist" ) );
       }
 
       for ( final Iterator<URI> it = modelsRoot.namespaceContents( aspectModelUrn ).iterator(); it.hasNext(); ) {
@@ -147,8 +149,8 @@ public class FileSystemStrategy implements ResolutionStrategy {
    public Stream<AspectModelFile> loadContents() {
       return modelsRoot.paths()
             .map( Path::toFile )
-            .map( file -> Try.of( () -> AspectModelFileLoader.load( file ) ).getOrElseThrow( throwable ->
-                  new ModelResolutionException( "Could not load file", throwable ) ) );
+            .map( file -> Try.of( () -> AspectModelFileLoader.load( file ) )
+                  .getOrElseThrow( throwable -> new ModelResolutionException( "Could not load file", throwable ) ) );
    }
 
    @Override
@@ -156,7 +158,7 @@ public class FileSystemStrategy implements ResolutionStrategy {
       return modelsRoot.namespaceContents( namespace )
             .map( Paths::get )
             .map( Path::toFile )
-            .map( file -> Try.of( () -> AspectModelFileLoader.load( file ) ).getOrElseThrow( throwable ->
-                  new ModelResolutionException( "Could not load file", throwable ) ) );
+            .map( file -> Try.of( () -> AspectModelFileLoader.load( file ) )
+                  .getOrElseThrow( throwable -> new ModelResolutionException( "Could not load file", throwable ) ) );
    }
 }

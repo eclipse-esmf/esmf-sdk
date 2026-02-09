@@ -133,13 +133,16 @@ abstract class SammCliAbstractTest {
    }
 
    protected static String resolverCommand() {
-      // Note that the following code must not use .class/.getClass()/.getClassLoader() but only operate on the file system level,
-      // since otherwise it will break when running the test suite from the maven build (where tests are run from the jar and resources
+      // Note that the following code must not use .class/.getClass()/.getClassLoader() but only operate
+      // on the file system level,
+      // since otherwise it will break when running the test suite from the maven build (where tests are
+      // run from the jar and resources
       // are not resolved to the file system but to the jar)
       try {
          final String resolverScript = new File(
                System.getProperty( "user.dir" ) + "/target/test-classes/model_resolver" + ( OS.WINDOWS.isCurrentOs()
-                     ? ".bat" : ".sh" ) ).getCanonicalPath();
+                     ? ".bat"
+                     : ".sh" ) ).getCanonicalPath();
          final String modelsRoot = new File( System.getProperty( "user.dir" ) + "/target/classes/valid" ).getCanonicalPath();
          final String metaModelVersion = KnownVersion.getLatest().toString().toLowerCase();
          return resolverScript + ' ' + modelsRoot + ' ' + metaModelVersion;

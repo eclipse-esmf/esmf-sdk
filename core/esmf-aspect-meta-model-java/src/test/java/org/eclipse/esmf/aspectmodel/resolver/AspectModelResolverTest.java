@@ -68,38 +68,38 @@ class AspectModelResolverTest {
    void testLoadModelWithNoEmptyLineAfterHeaderCommentBlock() {
       final URI inputLocation = URI.create( "testmodel:inmemory" );
       assertThat( AspectModelFileLoader.load( """
-            #
-            # Test copyright
-            #
-            @prefix : <urn:samm:com.xyz:0.0.1#> .
-            """, inputLocation ) )
+         #
+         # Test copyright
+         #
+         @prefix : <urn:samm:com.xyz:0.0.1#> .
+         """, inputLocation ) )
             .headerComment().hasSize( 3 ).matches( list -> list.get( 1 ).contains( "Test copyright" ) );
       assertThat( AspectModelFileLoader.load( """
-            #
-            # Test copyright
-            #
-            
-            @prefix : <urn:samm:com.xyz:0.0.1#> .
-            """, inputLocation ) )
+         #
+         # Test copyright
+         #
+
+         @prefix : <urn:samm:com.xyz:0.0.1#> .
+         """, inputLocation ) )
             .headerComment().hasSize( 3 ).matches( list -> list.get( 1 ).contains( "Test copyright" ) );
       assertThat( AspectModelFileLoader.load( """
-            #
-            # Test copyright
-            #
-            
-            # Another comment
-            @prefix : <urn:samm:com.xyz:0.0.1#> .
-            """, inputLocation ) )
+         #
+         # Test copyright
+         #
+
+         # Another comment
+         @prefix : <urn:samm:com.xyz:0.0.1#> .
+         """, inputLocation ) )
             .headerComment().hasSize( 3 ).matches( list -> list.get( 1 ).contains( "Test copyright" ) );
       assertThat( AspectModelFileLoader.load( """
-            #
-            # Test copyright
-            #
-            
-            # Another comment
-            
-            @prefix : <urn:samm:com.xyz:0.0.1#> .
-            """, inputLocation ) )
+         #
+         # Test copyright
+         #
+
+         # Another comment
+
+         @prefix : <urn:samm:com.xyz:0.0.1#> .
+         """, inputLocation ) )
             .headerComment().hasSize( 3 ).matches( list -> list.get( 1 ).contains( "Test copyright" ) );
    }
 
@@ -170,7 +170,8 @@ class AspectModelResolverTest {
       final ResolutionStrategy inMemoryStrategy = new FromLoadedFileStrategy( AspectModelFileLoader.load(
             AspectModelResolverTest.class.getResourceAsStream(
                   "/" + KnownVersion.getLatest().toString().toLowerCase()
-                        + "/org.eclipse.esmf.test/1.0.0/Test.ttl" ), URI.create( "testmodel:inmemory" ) ) );
+                        + "/org.eclipse.esmf.test/1.0.0/Test.ttl" ),
+            URI.create( "testmodel:inmemory" ) ) );
       final EitherStrategy inMemoryResolutionStrategy = new EitherStrategy( urnStrategy, inMemoryStrategy );
 
       final AspectModelUrn testUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "AnotherTest" );

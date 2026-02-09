@@ -24,7 +24,8 @@ import jakarta.validation.constraints.NotNull;
 
 @JsonTypeInfo( use = JsonTypeInfo.Id.DEDUCTION )
 @JsonSubTypes( {
-      @JsonSubTypes.Type( value = ExtendingTestEntity.class, name = "ExtendingTestEntity" )
+      @JsonSubTypes.Type( value = ExtendingTestEntity.class,
+         name = "ExtendingTestEntity" )
 } )
 public class AbstractTestEntity {
 

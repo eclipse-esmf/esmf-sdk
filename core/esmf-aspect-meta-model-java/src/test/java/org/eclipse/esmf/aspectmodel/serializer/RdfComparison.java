@@ -64,10 +64,10 @@ public class RdfComparison {
 
    static String modelToString( final Model model ) {
       return Arrays.stream( RdfUtil.modelToString( model )
-                  .replaceAll( ";", "" )
-                  .replaceAll( "\\.", "" )
-                  .replaceAll( " +", "" )
-                  .split( "\\n" ) )
+            .replaceAll( ";", "" )
+            .replaceAll( "\\.", "" )
+            .replaceAll( " +", "" )
+            .split( "\\n" ) )
             .filter( line -> !line.contains( "samm-c:values" ) )
             .filter( line -> !line.contains( "samm:see" ) )
             .map( RdfComparison::sortLineWithRdfListOrLangString )
@@ -77,10 +77,10 @@ public class RdfComparison {
    }
 
    /**
-    * In some test models, lines with RDF lists appear, e.g.:
-    * :property ( "foo" "bar" )
-    * However, for some serialized models, the order of elements is non-deterministic since the underlying collection is a Set.
-    * In order to check that the line is present in the two models, we simply tokenize and sort both lines, so we can compare them.
+    * In some test models, lines with RDF lists appear, e.g.: :property ( "foo" "bar" ) However, for
+    * some serialized models, the order of elements is non-deterministic since the underlying
+    * collection is a Set. In order to check that the line is present in the two models, we simply
+    * tokenize and sort both lines, so we can compare them.
     */
    static String sortLineWithRdfListOrLangString( final String line ) {
       if ( line.contains( " ( " ) || line.contains( "@" ) ) {

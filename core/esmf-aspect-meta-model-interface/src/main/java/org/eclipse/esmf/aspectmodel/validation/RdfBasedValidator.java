@@ -25,7 +25,8 @@ import org.apache.jena.rdf.model.Model;
  */
 public interface RdfBasedValidator<P, C extends Collection<? super P>> {
    /**
-    * Validates a complete RDF input (i.e., this model is expected to contain all necessary definitions, including meta model definitions)
+    * Validates a complete RDF input (i.e., this model is expected to contain all necessary
+    * definitions, including meta model definitions)
     *
     * @param model the input model
     * @return the validation report

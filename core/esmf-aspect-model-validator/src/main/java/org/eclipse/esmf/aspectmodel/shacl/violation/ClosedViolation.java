@@ -30,8 +30,10 @@ import org.apache.jena.rdf.model.RDFNode;
  * @param ignoredProperties the properties that were ignored in the validation
  * @param actual the actually encountered property
  */
-public record ClosedViolation( EvaluationContext context, Set<Property> allowedProperties, Set<Property> ignoredProperties,
-      Property actual ) implements Violation {
+public record ClosedViolation(
+      EvaluationContext context, Set<Property> allowedProperties, Set<Property> ignoredProperties,
+      Property actual
+) implements Violation {
    /**
     * The error code for this violation
     */

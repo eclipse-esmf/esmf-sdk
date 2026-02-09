@@ -23,9 +23,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * The result of generating an OpenAPI specification from an Aspect Model. The result can be retrieved in JSON ({@link #getContent()}
- * or YAML ({@link #getContentAsYaml()} formats as self-contained schemas, or as {@link #getContentWithSeparateSchemasAsJson()} and
- * {@link #getContentWithSeparateSchemasAsYaml()} as a map with that contains separate schema documents.
+ * The result of generating an OpenAPI specification from an Aspect Model. The result can be
+ * retrieved in JSON ({@link #getContent()} or YAML ({@link #getContentAsYaml()} formats as
+ * self-contained schemas, or as {@link #getContentWithSeparateSchemasAsJson()} and
+ * {@link #getContentWithSeparateSchemasAsYaml()} as a map with that contains separate schema
+ * documents.
  */
 public class OpenApiSchemaArtifact extends AbstractSchemaArtifact<ObjectNode> {
    protected OpenApiSchemaArtifact( final String id, final ObjectNode content ) {
@@ -43,9 +45,9 @@ public class OpenApiSchemaArtifact extends AbstractSchemaArtifact<ObjectNode> {
    }
 
    /**
-    * Returns the OpenAPI schema with separate files for schemas. In the resulting map, the key is the path
-    * that names a schema and the value is the corresponding JSON structure. The root schema will be called
-    * like the originating Aspect with a ".oai.json" suffix.
+    * Returns the OpenAPI schema with separate files for schemas. In the resulting map, the key is the
+    * path that names a schema and the value is the corresponding JSON structure. The root schema will
+    * be called like the originating Aspect with a ".oai.json" suffix.
     *
     * @return the OpenAPI schema definition as separate files
     */
@@ -55,9 +57,9 @@ public class OpenApiSchemaArtifact extends AbstractSchemaArtifact<ObjectNode> {
    }
 
    /**
-    * Returns the OpenAPI schema with separate files for schemas. In the resulting map, the key is the path
-    * that names a schema and the value is the corresponding YAML structure. The root schema will be called
-    * like the originating Aspect with a ".oai.yaml" suffix.
+    * Returns the OpenAPI schema with separate files for schemas. In the resulting map, the key is the
+    * path that names a schema and the value is the corresponding YAML structure. The root schema will
+    * be called like the originating Aspect with a ".oai.yaml" suffix.
     *
     * @return the OpenAPI schema definition as separate files
     */

@@ -90,7 +90,8 @@ public abstract class AbstractCommand implements Runnable {
       if ( !languagesUsedInModel.contains( Locale.forLanguageTag( languageTag ) ) ) {
          throw new CommandException( String.format( "The model does not contain the desired language: %s.", languageTag ) );
       }
-      // we intentionally override the name of the generated artifact here to the name explicitly desired by the user (outputFileName),
+      // we intentionally override the name of the generated artifact here to the name explicitly desired
+      // by the user (outputFileName),
       // as opposed to what the model thinks it should be called (name)
       final DiagramGenerationConfig config = DiagramGenerationConfigBuilder.builder()
             .format( targetFormat )
@@ -170,8 +171,9 @@ public abstract class AbstractCommand implements Runnable {
          public String visitWriteFailure( final WriteResult.WriteFailure failure ) {
             return "Writing failed:\n"
                   + failure.errorMessages().stream()
-                  .map( message -> "- " + message )
-                  .collect( Collectors.joining( "\n" ) ) + "\n";
+                        .map( message -> "- " + message )
+                        .collect( Collectors.joining( "\n" ) )
+                  + "\n";
          }
 
          @Override

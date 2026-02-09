@@ -25,7 +25,9 @@ import org.apache.jena.rdf.model.Resource;
  * @param allowedClass the allowed class
  * @param actualClass the actually encountered class
  */
-public record ClassTypeViolation( EvaluationContext context, Resource allowedClass, Resource actualClass ) implements Violation {
+public record ClassTypeViolation(
+      EvaluationContext context, Resource allowedClass, Resource actualClass
+) implements Violation {
    /**
     * The error code for this violation
     */

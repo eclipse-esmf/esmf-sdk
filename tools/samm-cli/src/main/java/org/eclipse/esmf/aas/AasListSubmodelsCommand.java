@@ -28,13 +28,12 @@ import org.eclipse.digitaltwin.aas4j.v3.model.Referable;
 import picocli.CommandLine;
 
 @CommandLine.Command(
-      name = AasListSubmodelsCommand.COMMAND_NAME,
-      description = "Get list of submodel templates of AAS input",
-      descriptionHeading = "%n@|bold Description|@:%n%n",
-      parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n",
-      mixinStandardHelpOptions = true
-)
+   name = AasListSubmodelsCommand.COMMAND_NAME,
+   description = "Get list of submodel templates of AAS input",
+   descriptionHeading = "%n@|bold Description|@:%n%n",
+   parameterListHeading = "%n@|bold Parameters|@:%n",
+   optionListHeading = "%n@|bold Options|@:%n",
+   mixinStandardHelpOptions = true )
 public class AasListSubmodelsCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "list";
 

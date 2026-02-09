@@ -24,14 +24,16 @@ import java.util.function.Function;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ProcessExecutionException;
 
 /**
- * This class abstracts running a "process", i.e. running a program by providing its arguments, optional stdin and its working directory,
- * and representing the output using exit status and stdout and stderr streams.
+ * This class abstracts running a "process", i.e. running a program by providing its arguments,
+ * optional stdin and its working directory, and representing the output using exit status and
+ * stdout and stderr streams.
  *
  * @param <T> the type of "process" that is created (such as {@link Process} or {@link Thread})
  */
 public abstract class ProcessLauncher<T> implements Function<ProcessLauncher<T>.ExecutionContext, ProcessLauncher.ExecutionResult> {
    /**
-    * Convenience method to apply the launcher to a list of arguments with empty stdin and default working directory
+    * Convenience method to apply the launcher to a list of arguments with empty stdin and default
+    * working directory
     */
    public ExecutionResult apply( final String... arguments ) {
       return apply( new ExecutionContext( Arrays.asList( arguments ), Optional.empty(), new File( System.getProperty( "user.dir" ) ) ) );
@@ -56,7 +58,8 @@ public abstract class ProcessLauncher<T> implements Function<ProcessLauncher<T>.
    }
 
    /**
-    * The execution context determines inputs for the new process: arguments, stdin and working directory
+    * The execution context determines inputs for the new process: arguments, stdin and working
+    * directory
     */
    public final class ExecutionContext {
       private final List<String> arguments;
@@ -100,7 +103,8 @@ public abstract class ProcessLauncher<T> implements Function<ProcessLauncher<T>.
          if ( obj == null || obj.getClass() != getClass() ) {
             return false;
          }
-         @SuppressWarnings( "unchecked" ) final ExecutionContext that = (ExecutionContext) obj;
+         @SuppressWarnings( "unchecked" )
+         final ExecutionContext that = (ExecutionContext) obj;
          return Objects.equals( arguments, that.arguments )
                && Objects.equals( stdin, that.stdin )
                && Objects.equals( workingDirectory, that.workingDirectory )

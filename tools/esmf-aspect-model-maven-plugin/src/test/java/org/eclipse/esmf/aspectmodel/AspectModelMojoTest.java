@@ -21,7 +21,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 public abstract class AspectModelMojoTest {
-   // Due to the nature of how the maven plugin testing harness works, we use a temp directory relative to the project
+   // Due to the nature of how the maven plugin testing harness works, we use a temp directory relative
+   // to the project
    protected static final Path TEMP_DIR = Path.of( System.getProperty( "user.dir" ), "target", "test-artifacts" );
    protected static final String GITHUB_SERVER_CONFIG_ID = "test-github-config";
 

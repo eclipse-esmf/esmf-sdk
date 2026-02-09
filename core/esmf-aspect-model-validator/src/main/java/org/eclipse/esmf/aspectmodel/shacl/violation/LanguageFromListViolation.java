@@ -26,7 +26,9 @@ import org.apache.jena.rdf.model.RDFNode;
  * @param allowed the list of allowed languages
  * @param actual the encountered language
  */
-public record LanguageFromListViolation( EvaluationContext context, List<String> allowed, String actual ) implements Violation {
+public record LanguageFromListViolation(
+      EvaluationContext context, List<String> allowed, String actual
+) implements Violation {
    public static final String ERROR_CODE = "ERR_LANGUAGE";
 
    @Override

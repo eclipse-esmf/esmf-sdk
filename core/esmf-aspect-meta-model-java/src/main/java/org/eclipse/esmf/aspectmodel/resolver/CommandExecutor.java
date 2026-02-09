@@ -24,7 +24,8 @@ import org.eclipse.esmf.aspectmodel.resolver.process.ExecutableJarLauncher;
 import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher;
 
 /**
- * Executes an external resolver via the underlying OS command and returns the stdout from the command as result.
+ * Executes an external resolver via the underlying OS command and returns the stdout from the
+ * command as result.
  */
 public class CommandExecutor {
    public static String executeCommand( final String command ) {

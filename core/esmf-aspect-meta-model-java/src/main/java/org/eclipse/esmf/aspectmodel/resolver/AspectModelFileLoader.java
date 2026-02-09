@@ -43,9 +43,9 @@ import io.vavr.control.Try;
 import org.apache.jena.rdf.model.Model;
 
 /**
- * Loads an input source into a {@link RawAspectModelFile}, i.e., an Aspect Model file that does not yet provide information
- * about its model elements. This class should normally not be directly used as it is part of the regular Aspect Model loader.
- * Use {@link AspectModelLoader} instead.
+ * Loads an input source into a {@link RawAspectModelFile}, i.e., an Aspect Model file that does not
+ * yet provide information about its model elements. This class should normally not be directly used
+ * as it is part of the regular Aspect Model loader. Use {@link AspectModelLoader} instead.
  */
 public class AspectModelFileLoader {
    /**

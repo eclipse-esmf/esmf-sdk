@@ -112,8 +112,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Base class for translators from JSON Schema to {@link StructureElement}s. For concrete usage, see {@link JsonSchemaToAspect} and
- * {@link JsonSchemaToEntity}.
+ * Base class for translators from JSON Schema to {@link StructureElement}s. For concrete usage, see
+ * {@link JsonSchemaToAspect} and {@link JsonSchemaToEntity}.
  *
  * @param <T> the type of StructureElement, e.g., {@link Aspect} or {@link Entity}.
  * @param <A> the corresponding {@link Artifact} type
@@ -127,14 +127,15 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
    protected static final String TODO_COMMENT = "TODO";
 
    /**
-    * The attribute that can be added parallel to enums that describes their values, as used by CycloneDX schema
+    * The attribute that can be added parallel to enums that describes their values, as used by
+    * CycloneDX schema
     */
    protected static final JsonProperty META_ENUM = new JsonProperty.Named( "meta:enum" );
 
    /**
-    * The JSON Schema composition keyword used to combine multiple subschemas.
-    * In the schemas it is commonly used as a “$ref wrapper” (e.g., allOf: [ { "$ref": "..." } ])
-    * to allow adding sibling attributes like description or x-* fields alongside the referenced schema.
+    * The JSON Schema composition keyword used to combine multiple subschemas. In the schemas it is
+    * commonly used as a “$ref wrapper” (e.g., allOf: [ { "$ref": "..." } ]) to allow adding sibling
+    * attributes like description or x-* fields alongside the referenced schema.
     */
    protected static final JsonProperty ALL_OF = new JsonProperty.Named( "allOf" );
 
@@ -142,13 +143,17 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
     * The evaluation context when recursively traversing the schema document
     *
     * @param propertyName the name of the JSON property currently being processed
-    * @param path the nested path of JSON properties pointing to the current position in the schema document
+    * @param path the nested path of JSON properties pointing to the current position in the schema
+    *        document
     * @param type the JSON type of the current schema
     * @param characteristicUrn the URN of the Characteristic to create for the current schema
     * @param generatedElementsByUrn the generated elements indexed by URN
-    * @param schemaCharacteristicsByNode Characteristics generated from named schemas indexed by schema node
-    * @param schemaCharacteristicsByPath Characteristics generated from named schemas indexed by JSON path pointing to them
-    * @param schemaCharacteristicsInProgress Characteristics generated from named schemas indexed by local name
+    * @param schemaCharacteristicsByNode Characteristics generated from named schemas indexed by schema
+    *        node
+    * @param schemaCharacteristicsByPath Characteristics generated from named schemas indexed by JSON
+    *        path pointing to them
+    * @param schemaCharacteristicsInProgress Characteristics generated from named schemas indexed by
+    *        local name
     */
    protected record Context(
          String propertyName,
@@ -288,7 +293,8 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
    }
 
    /**
-    * Gets a description text for the node, either from its "description" attribute or its "$comment", if present
+    * Gets a description text for the node, either from its "description" attribute or its "$comment",
+    * if present
     *
     * @param node the node
     * @return the description
@@ -307,10 +313,9 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
     * @return which properties are required
     */
    protected Set<String> determineRequiredProperties( final JsonNode node ) {
-      return jsonProperty( node, REQUIRED ).map( required ->
-            Streams.stream( required.elements() )
-                  .map( JsonNode::asText )
-                  .collect( Collectors.toSet() ) ).orElse( Set.of() );
+      return jsonProperty( node, REQUIRED ).map( required -> Streams.stream( required.elements() )
+            .map( JsonNode::asText )
+            .collect( Collectors.toSet() ) ).orElse( Set.of() );
    }
 
    protected List<Property> buildPropertiesList( final JsonNode node, final Context context ) {
@@ -344,8 +349,8 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
             .map( JsonNode::intValue );
       return minLength.isPresent() || maxLength.isPresent()
             ? Optional.of( lengthConstraint()
-            .minValue( minLength.map( BigInteger::valueOf ).orElse( null ) )
-            .maxValue( maxLength.map( BigInteger::valueOf ).orElse( null ) ).build() )
+                  .minValue( minLength.map( BigInteger::valueOf ).orElse( null ) )
+                  .maxValue( maxLength.map( BigInteger::valueOf ).orElse( null ) ).build() )
             : Optional.empty();
    }
 
@@ -377,12 +382,12 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
       return jsonProperty( propertyNode, FORMAT )
             .map( JsonNode::textValue )
             .flatMap( formatString -> Try.of(
-                        () -> JsonSchemaFormat.valueOf( formatString.toUpperCase().replace( "-", "_" ) ) )
+                  () -> JsonSchemaFormat.valueOf( formatString.toUpperCase().replace( "-", "_" ) ) )
                   .toJavaOptional() );
    }
 
    protected Scalar determinePropertyType( final JsonNode propertyNode, final String propertyName, final String jsonType ) {
-      //noinspection DataFlowIssue
+      // noinspection DataFlowIssue
       return determineFormat( propertyNode )
             .map( format -> switch ( format ) {
                case DATE -> xsd.date;
@@ -406,7 +411,7 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
             buildRegularExpressionConstraint( propertyNode ),
             buildLengthConstraint( propertyNode ),
             buildRangeConstraint( propertyNode, type )
-      ).<Constraint> flatMap( Optional::stream ).toList();
+      ).<Constraint>flatMap( Optional::stream ).toList();
    }
 
    protected String determineEntityName( final String propertyName ) {
@@ -435,7 +440,7 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
             context.withNoCharacteristicUrn().withPropertyName( elements.get( 0 ).getKey() ) );
       final Characteristic right = elements.size() == 2
             ? buildCharacteristic( elements.get( 1 ).getValue(),
-            context.withNoCharacteristicUrn().withPropertyName( elements.get( 1 ).getKey() ) )
+                  context.withNoCharacteristicUrn().withPropertyName( elements.get( 1 ).getKey() ) )
             : buildEither( elements.subList( 1, elements.size() ), context.withNoCharacteristicUrn() );
       return either( context.characteristicUrn() )
             .left( left )
@@ -445,8 +450,8 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
 
    /**
     * When a schema's type is "array" and the value is an array itself, which indicates
-    * <a href="https://json-schema.org/understanding-json-schema/reference/array#tupleValidation">Tuple validation</a>
-    * in JSON Schema Draft 4 - 2019-09, build the corresponding Characteristic
+    * <a href="https://json-schema.org/understanding-json-schema/reference/array#tupleValidation">Tuple
+    * validation</a> in JSON Schema Draft 4 - 2019-09, build the corresponding Characteristic
     *
     * @param elements the elements of the ArrayNode
     * @param context the translation context
@@ -519,8 +524,8 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
                final List<JsonNode> elements = Lists.newArrayList( node.elements() );
                // Check if this is a "oneOf [ { required: X }, { required: Y } ]" construct.
                // In this case build an Either of the Properties themselves.
-               final boolean propertiesAreEitherElements = elements.stream().allMatch( elementNode ->
-                     jsonProperty( elementNode, TYPE ).isEmpty() && jsonProperty( elementNode, REQUIRED ).isPresent() );
+               final boolean propertiesAreEitherElements = elements.stream().allMatch(
+                     elementNode -> jsonProperty( elementNode, TYPE ).isEmpty() && jsonProperty( elementNode, REQUIRED ).isPresent() );
                final Optional<JsonNode> properties = jsonProperty( propertyNode, PROPERTIES );
                if ( propertiesAreEitherElements && properties.isPresent() ) {
                   return buildEither( Streams.stream( properties.get().fields() ).toList(), context );
@@ -562,7 +567,8 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
    }
 
    protected Characteristic buildCharacteristicFromReferencedSchema( final JsonNode refNode, final Context context ) {
-      // Prevent infinite recursion: If the Property being referenced is already in the process of being constructed,
+      // Prevent infinite recursion: If the Property being referenced is already in the process of being
+      // constructed,
       // return a forward reference instead.
       final String reference = refNode.asText();
       final Characteristic schemaCharacteristic = context.schemaCharacteristicsByPath().get( reference );
@@ -593,7 +599,8 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
       context.schemaCharacteristicsInProgress().put( reference, forwardReferences );
       final Characteristic result = buildCharacteristic( resolveRef( refNode.asText() ),
             context.withCharacteristicUrn( characteristicUrn ) );
-      // If this is the end of the recursion, update the forward references with the created Characteristic
+      // If this is the end of the recursion, update the forward references with the created
+      // Characteristic
       if ( !( result instanceof DefaultCharacteristicWrapper ) ) {
          context.schemaCharacteristicsByPath().put( reference, result );
          for ( final DefaultCharacteristicWrapper p : forwardReferences ) {
@@ -704,8 +711,10 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
    }
 
    protected JsonNode resolveRef( final String ref ) {
-      // First check if a custom ref resolver is present. This is required for handling references to external files,
-      // because only the caller knows how to open/resolve those: They could be local files, or remote resources
+      // First check if a custom ref resolver is present. This is required for handling references to
+      // external files,
+      // because only the caller knows how to open/resolve those: They could be local files, or remote
+      // resources
       // or something else.
       final Function<String, Optional<JsonNode>> customResolver = config.customRefResolver();
       if ( customResolver != null ) {
@@ -803,16 +812,17 @@ public abstract class JsonSchemaImporter<T extends StructureElement, A extends A
             .flatMap( node -> Streams.stream( node.elements() ).findFirst() )
             .flatMap( example -> characteristic.getDataType().isPresent()
                   && characteristic.getDataType().get() instanceof final Scalar scalar
-                  ? Optional.of( value( example.asText(), scalar ) )
-                  : Optional.empty() );
+                        ? Optional.of( value( example.asText(), scalar ) )
+                        : Optional.empty() );
 
       if ( previouslyGeneratedElement instanceof final Property previouslyGeneratedProperty ) {
          final boolean descriptionsAreEqual = Optional.ofNullable( previouslyGeneratedProperty.getDescription( Locale.ENGLISH ) )
                .map( description -> description.equals( descriptionForThisElement ) ).orElse( false );
          final boolean preferredNamesAreEqual = Optional.ofNullable( previouslyGeneratedProperty.getPreferredName( Locale.ENGLISH ) )
                .map( preferredName -> preferredName.equals( preferredNameForThisElement ) ).orElse( false );
-         final boolean exampleValuesAreEqual = previouslyGeneratedProperty.getExampleValue().flatMap( previousExampleValue ->
-               exampleValueForThisElement.map( exampleValue -> previousExampleValue == exampleValue ) ).orElse( false );
+         final boolean exampleValuesAreEqual = previouslyGeneratedProperty.getExampleValue()
+               .flatMap( previousExampleValue -> exampleValueForThisElement.map( exampleValue -> previousExampleValue == exampleValue ) )
+               .orElse( false );
          if ( descriptionsAreEqual && preferredNamesAreEqual && exampleValuesAreEqual && characteristicsAreLogicallyEquivalent(
                previouslyGeneratedProperty.getCharacteristic().orElse( null ), characteristic ) ) {
             return previouslyGeneratedProperty;

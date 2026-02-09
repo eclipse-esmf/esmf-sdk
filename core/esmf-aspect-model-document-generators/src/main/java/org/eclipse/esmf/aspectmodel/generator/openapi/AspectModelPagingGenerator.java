@@ -54,16 +54,15 @@ class AspectModelPagingGenerator {
    /**
     * Sets the paging properties for an aspect to a given ObjectNode.
     *
-    * @param aspect               The related aspect for the paging properties.
+    * @param aspect The related aspect for the paging properties.
     * @param selectedPagingOption The selected paging option.
-    * @param objectNode           The ObjectNode where the properties shall be inserted.
+    * @param objectNode The ObjectNode where the properties shall be inserted.
     * @throws IOException In case, the root property file can't be loaded.
     */
    public void setPagingProperties(
          final Aspect aspect,
          final PagingOption selectedPagingOption,
-         final ObjectNode objectNode
-   ) throws IOException {
+         final ObjectNode objectNode ) throws IOException {
 
       final PagingOption resolved = resolvePagingOption( aspect, selectedPagingOption );
 
@@ -77,16 +76,15 @@ class AspectModelPagingGenerator {
    /**
     * Sets the paging schema for an aspect to an given ObjectNode.
     *
-    * @param aspect               The related aspect for the paging schema.
+    * @param aspect The related aspect for the paging schema.
     * @param selectedPagingOption The selected paging option.
-    * @param schemaNode           The ObjectNode where the schema shall be inserted.
+    * @param schemaNode The ObjectNode where the schema shall be inserted.
     * @throws IOException In case the root schema file can't be loaded.
     */
    public void setSchemaInformationForPaging(
          final Aspect aspect,
          final ObjectNode schemaNode,
-         final PagingOption selectedPagingOption
-   ) throws IOException {
+         final PagingOption selectedPagingOption ) throws IOException {
 
       if ( selectedPagingOption == PagingOption.NO_PAGING ) {
          return;
@@ -214,7 +212,8 @@ class AspectModelPagingGenerator {
          return;
       }
 
-      // If the aspect offers no paging options, any attempt to include paging is invalid (including AUTO).
+      // If the aspect offers no paging options, any attempt to include paging is invalid (including
+      // AUTO).
       if ( possiblePagingOptions == null || possiblePagingOptions.isEmpty() ) {
          LOG.error( NO_PAGING_POSSIBLE );
          throw new IllegalArgumentException( NO_PAGING_POSSIBLE );

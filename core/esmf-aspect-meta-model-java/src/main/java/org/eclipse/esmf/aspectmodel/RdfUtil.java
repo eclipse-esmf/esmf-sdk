@@ -56,8 +56,7 @@ import org.apache.jena.vocabulary.RDFS;
 import org.apache.jena.vocabulary.XSD;
 
 public class RdfUtil {
-   private RdfUtil() {
-   }
+   private RdfUtil() {}
 
    public static Model getModelElementDefinition( final Resource element ) {
       final Model result = ModelFactory.createDefaultModel();
@@ -120,17 +119,17 @@ public class RdfUtil {
       } );
       // XSD
       Stream.concat(
-                  Streams.stream( model.listObjects() )
-                        .filter( RDFNode::isLiteral )
-                        .map( RDFNode::asLiteral )
-                        .map( Literal::getDatatypeURI )
-                        .filter( type -> type.startsWith( XSD.NS ) )
-                        .filter( type -> !type.equals( XSD.xstring.getURI() ) ),
-                  Streams.stream( model.listObjects() )
-                        .filter( RDFNode::isURIResource )
-                        .map( RDFNode::asResource )
-                        .map( Resource::getURI )
-                        .filter( type -> type.startsWith( XSD.NS ) ) )
+            Streams.stream( model.listObjects() )
+                  .filter( RDFNode::isLiteral )
+                  .map( RDFNode::asLiteral )
+                  .map( Literal::getDatatypeURI )
+                  .filter( type -> type.startsWith( XSD.NS ) )
+                  .filter( type -> !type.equals( XSD.xstring.getURI() ) ),
+            Streams.stream( model.listObjects() )
+                  .filter( RDFNode::isURIResource )
+                  .map( RDFNode::asResource )
+                  .map( Resource::getURI )
+                  .filter( type -> type.startsWith( XSD.NS ) ) )
             .findAny()
             .ifPresent( resource -> model.setNsPrefix( "xsd", XSD.NS ) );
       // Empty (namespace) prefix
@@ -151,16 +150,15 @@ public class RdfUtil {
                && !model.getNsPrefixMap().containsValue( uri )
                && !uri.equals( XSD.NS )
                && ( !uri.startsWith( AspectModelUrn.PROTOCOL_AND_NAMESPACE_PREFIX )
-               || AspectModelUrn.fromUrn( uri + "x" ).getElementType() == ElementType.NONE )
-         ) {
+                     || AspectModelUrn.fromUrn( uri + "x" ).getElementType() == ElementType.NONE ) ) {
             model.setNsPrefix( prefix, uri );
          }
       } );
    }
 
    /**
-    * Remove redundant type assertions: If {@code :x a :y} and {@code :x a :z} are asserted, and {@code :z} is a subtype of {@code :y},
-    * remove the {@code :x a :y} assertion
+    * Remove redundant type assertions: If {@code :x a :y} and {@code :x a :z} are asserted, and
+    * {@code :z} is a subtype of {@code :y}, remove the {@code :x a :y} assertion
     *
     * @param model the model
     */
@@ -169,7 +167,7 @@ public class RdfUtil {
       modelToCheck.add( model );
       modelToCheck.add( MetaModelFile.metaModelDefinitions() );
       final Map<Resource, List<Resource>> elementsWithMultipleTypeAssertions = Streams.stream(
-                  modelToCheck.listStatements( null, RDF.type, (RDFNode) null ) )
+            modelToCheck.listStatements( null, RDF.type, (RDFNode) null ) )
             .collect( Collectors.groupingBy( Statement::getSubject ) )
             .entrySet()
             .stream()
@@ -190,7 +188,8 @@ public class RdfUtil {
    }
 
    /**
-    * Checks whether type1 is the same or a subtype of type2, i.e., whether {@code ?type1 rdfs:subClassOf* ?type2}.
+    * Checks whether type1 is the same or a subtype of type2, i.e., whether
+    * {@code ?type1 rdfs:subClassOf* ?type2}.
     *
     * @param type1 the first type
     * @param type2 the second type
@@ -208,7 +207,8 @@ public class RdfUtil {
    }
 
    /**
-    * Checks if a given element is of a given type or one of its subtypes, i.e., whether {@code ?element/rdf:type/rdfs:subClassOf* ?type}
+    * Checks if a given element is of a given type or one of its subtypes, i.e., whether
+    * {@code ?element/rdf:type/rdfs:subClassOf* ?type}
     *
     * @param element the resource
     * @param type the type
@@ -229,8 +229,8 @@ public class RdfUtil {
    }
 
    /**
-    * Turn a an RDF model to its String representation. Note that this method should only be used where {@link AspectSerializer} can
-    * not be used since it does not honor Aspect Model formatting rules.
+    * Turn a an RDF model to its String representation. Note that this method should only be used where
+    * {@link AspectSerializer} can not be used since it does not honor Aspect Model formatting rules.
     *
     * @param model the input model
     * @return the rendered model
@@ -240,8 +240,9 @@ public class RdfUtil {
    }
 
    /**
-    * Returns the List of named resources that transitively point to a given node. Transtively here means that the given node
-    * is reachable from the named resource via any number of anonymous nodes inbetween.
+    * Returns the List of named resources that transitively point to a given node. Transtively here
+    * means that the given node is reachable from the named resource via any number of anonymous nodes
+    * inbetween.
     *
     * @param node the target node
     * @return the list of resources that point to the node
@@ -261,9 +262,10 @@ public class RdfUtil {
    }
 
    /**
-    * Merges an RDF-model into another on a per-element basis instead of a per-statement basis. This means only those model element
-    * definitions from the model to merge are merged into the target model that are not already present in the target model.
-    * This prevents duplicate assertions of statements where the object is a blank node.
+    * Merges an RDF-model into another on a per-element basis instead of a per-statement basis. This
+    * means only those model element definitions from the model to merge are merged into the target
+    * model that are not already present in the target model. This prevents duplicate assertions of
+    * statements where the object is a blank node.
     *
     * @param target the model to merge into
     * @param modelToMerge the source model of model element definitions to merge
@@ -289,8 +291,9 @@ public class RdfUtil {
    }
 
    /**
-    * Creates a merged view of a multiple RDF models: The resulting model will contain new Resource/Property/Literal objects
-    * which are based on the same {@link Node}s from the originating models
+    * Creates a merged view of a multiple RDF models: The resulting model will contain new
+    * Resource/Property/Literal objects which are based on the same {@link Node}s from the originating
+    * models
     *
     * @param models the models to create the view for, each identified by a URI
     * @return the merged view
@@ -311,9 +314,9 @@ public class RdfUtil {
    }
 
    /**
-    * Create an RDF short name ("curie") from a URI with a "well-known" namespace, i.e., samm, samm-c, samm-e, unit, xsd, rdf or rdfs.
-    * For example, for "http://www.w3.org/2001/XMLSchema#float" the result is "xsd:float". For URIs from other/unknown namespaces,
-    * the URI is returned as-is.
+    * Create an RDF short name ("curie") from a URI with a "well-known" namespace, i.e., samm, samm-c,
+    * samm-e, unit, xsd, rdf or rdfs. For example, for "http://www.w3.org/2001/XMLSchema#float" the
+    * result is "xsd:float". For URIs from other/unknown namespaces, the URI is returned as-is.
     *
     * @param uri The URI
     * @return the corresponding curie

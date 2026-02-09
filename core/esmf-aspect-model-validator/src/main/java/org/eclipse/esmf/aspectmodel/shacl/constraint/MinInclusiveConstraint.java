@@ -26,11 +26,14 @@ import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.RDFNode;
 
 /**
- * Implements <a href="https://www.w3.org/TR/shacl/#MinInclusiveConstraintComponent">sh:minInclusive</a>
+ * Implements
+ * <a href="https://www.w3.org/TR/shacl/#MinInclusiveConstraintComponent">sh:minInclusive</a>
  *
  * @param minValue the min value
  */
-public record MinInclusiveConstraint( Literal minValue ) implements Constraint {
+public record MinInclusiveConstraint(
+      Literal minValue
+) implements Constraint {
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
       final List<Violation> nodeKindViolations = new NodeKindConstraint( Shape.NodeKind.Literal ).apply( rdfNode, context );

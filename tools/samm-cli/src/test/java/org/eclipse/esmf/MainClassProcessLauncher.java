@@ -23,8 +23,9 @@ import org.eclipse.esmf.aspectmodel.resolver.process.OsProcessLauncher;
 import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher;
 
 /**
- * A {@link ProcessLauncher} that executes the static main(String[] args) function of a given class by running it in a new JVM
- * process. The class path and JVM arguments are adapted from the currently running process.
+ * A {@link ProcessLauncher} that executes the static main(String[] args) function of a given class
+ * by running it in a new JVM process. The class path and JVM arguments are adapted from the
+ * currently running process.
  */
 public class MainClassProcessLauncher extends OsProcessLauncher {
    /**
@@ -32,9 +33,10 @@ public class MainClassProcessLauncher extends OsProcessLauncher {
     *
     * @param mainClass the main class to execute
     * @param additionalJvmArguments additional arguments to add to the JVM
-    * @param keepJvmArgument predicate used to adjust the list of JVM arguments from the currently JVM: Only those arguments kept by this
-    * @param disableWarning exclude warning message from output error stream
-    * filter are kept in the newly launched JVM
+    * @param keepJvmArgument predicate used to adjust the list of JVM arguments from the currently JVM:
+    *        Only those arguments kept by this
+    * @param disableWarning exclude warning message from output error stream filter are kept in the
+    *        newly launched JVM
     */
    public MainClassProcessLauncher( final Class<?> mainClass, final List<String> additionalJvmArguments,
          final Predicate<String> keepJvmArgument, final boolean disableWarning ) {
@@ -44,14 +46,15 @@ public class MainClassProcessLauncher extends OsProcessLauncher {
    private static List<String> buildCommand( final Class<?> mainClass, final List<String> additionalJvmArguments,
          final Predicate<String> keepJvmArgument, final boolean disableWarning ) {
       final List<String> jvmArguments = Stream.concat( ManagementFactory.getRuntimeMXBean().getInputArguments().stream(),
-                  additionalJvmArguments.stream() )
+            additionalJvmArguments.stream() )
             .filter( keepJvmArgument )
             .toList();
 
       final List<String> commandWithArguments = new ArrayList<>();
       commandWithArguments.add( ProcessHandle.current().info().command().orElse( "java" ) );
       if ( disableWarning ) {
-         // Temporary disable warning messages from the output error stream until https://github.com/oracle/graal/issues/12623 is resolved
+         // Temporary disable warning messages from the output error stream until
+         // https://github.com/oracle/graal/issues/12623 is resolved
          // Delete these two arguments in github actions too
          commandWithArguments.add( "--enable-native-access=ALL-UNNAMED" );
          commandWithArguments.add( "--sun-misc-unsafe-memory-access=allow" );

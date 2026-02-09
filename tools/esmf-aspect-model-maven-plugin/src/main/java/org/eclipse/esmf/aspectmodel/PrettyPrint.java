@@ -28,7 +28,8 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Mojo( name = PrettyPrint.MAVEN_GOAL, defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
+@Mojo( name = PrettyPrint.MAVEN_GOAL,
+   defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class PrettyPrint extends AspectModelMojo {
    public static final String MAVEN_GOAL = "prettyPrint";
    private static final Logger LOG = LoggerFactory.getLogger( PrettyPrint.class );

@@ -35,8 +35,8 @@ public class DefaultOperation extends ModelElementImpl implements Operation {
    }
 
    /**
-    * A list of input parameters for the Operation. If the operation does not take any input parameters, the input may
-    * be omitted.
+    * A list of input parameters for the Operation. If the operation does not take any input
+    * parameters, the input may be omitted.
     *
     * @return the input.
     */
@@ -46,7 +46,8 @@ public class DefaultOperation extends ModelElementImpl implements Operation {
    }
 
    /**
-    * The return value of the Operation. If the Operation does not return anything, the output may be omitted.
+    * The return value of the Operation. If the Operation does not return anything, the output may be
+    * omitted.
     *
     * @return the output.
     */

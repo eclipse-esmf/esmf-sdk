@@ -14,8 +14,7 @@
 package org.eclipse.esmf.metamodel.builder;
 
 public class AspectModelBuildingException extends RuntimeException {
-   public AspectModelBuildingException() {
-   }
+   public AspectModelBuildingException() {}
 
    public AspectModelBuildingException( final String message ) {
       super( message );

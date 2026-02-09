@@ -85,10 +85,9 @@ import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
 
 /**
- * AspectVisitor that translates an {@link Aspect} into the corresponding {@link Model}.
- * The usual usage is calling {@link #visitAspect(Aspect, ModelElement)}.
- * The context (i.e., the second argument of the visit methods) refers to the parent element in the model graph
- * traversal.
+ * AspectVisitor that translates an {@link Aspect} into the corresponding {@link Model}. The usual
+ * usage is calling {@link #visitAspect(Aspect, ModelElement)}. The context (i.e., the second
+ * argument of the visit methods) refers to the parent element in the model graph traversal.
  */
 @SuppressWarnings( "squid:S3655" ) // Optional<AspectModelUrn> is checked with isEmpty()
 public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisitor.ElementModel, ModelElement>, Function<Aspect, Model> {
@@ -102,7 +101,9 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
     * E.g., a (Jena) Model that describes an (Aspect) Model element, the focus element is the resource
     * of the described element while the rest of the model are the corresponding assertions.
     */
-   public record ElementModel( Model model, Optional<RDFNode> focusElement ) {
+   public record ElementModel(
+         Model model, Optional<RDFNode> focusElement
+   ) {
       public static final ElementModel EMPTY = new ElementModel( ModelFactory.createDefaultModel(), Optional.empty() );
    }
 
@@ -147,15 +148,16 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    private Model serializeDescriptions( final Resource elementResource, final ModelElement element ) {
       final Model model = ModelFactory.createDefaultModel();
       element.getSee().forEach( seeValue -> model.add( elementResource, SammNs.SAMM.see(), createResource( seeValue ) ) );
-      element.getPreferredNames().stream().map( this::serializeLocalizedString ).forEach( preferredName ->
-            model.add( elementResource, SammNs.SAMM.preferredName(), preferredName ) );
-      element.getDescriptions().stream().map( this::serializeLocalizedString ).forEach( description ->
-            model.add( elementResource, SammNs.SAMM.description(), description ) );
+      element.getPreferredNames().stream().map( this::serializeLocalizedString )
+            .forEach( preferredName -> model.add( elementResource, SammNs.SAMM.preferredName(), preferredName ) );
+      element.getDescriptions().stream().map( this::serializeLocalizedString )
+            .forEach( description -> model.add( elementResource, SammNs.SAMM.description(), description ) );
       return model;
    }
 
    @SuppressWarnings( "squid:S2250" )
-   // Amount of elements in list is regarding amount of properties in Aspect Model. Even in bigger aspects this should not lead to
+   // Amount of elements in list is regarding amount of properties in Aspect Model. Even in bigger
+   // aspects this should not lead to
    // performance issues
    private Model serializePropertiesOrParameters( final Resource elementResource, final HasProperties element,
          final org.apache.jena.rdf.model.Property theProperty ) {
@@ -388,13 +390,11 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
          return referenceTo( resource );
       }
       final Model model = visitConstraint( lengthConstraint, null ).model();
-      lengthConstraint.getMinValue().stream().map( minValue ->
-                  createStatement( resource, SammNs.SAMMC.minValue(),
-                        serializeTypedValue( minValue.toString(), SammType.NON_NEGATIVE_INTEGER ) ) )
+      lengthConstraint.getMinValue().stream().map( minValue -> createStatement( resource, SammNs.SAMMC.minValue(),
+            serializeTypedValue( minValue.toString(), SammType.NON_NEGATIVE_INTEGER ) ) )
             .forEach( model::add );
-      lengthConstraint.getMaxValue().stream().map( maxValue ->
-                  createStatement( resource, SammNs.SAMMC.maxValue(),
-                        serializeTypedValue( maxValue.toString(), SammType.NON_NEGATIVE_INTEGER ) ) )
+      lengthConstraint.getMaxValue().stream().map( maxValue -> createStatement( resource, SammNs.SAMMC.maxValue(),
+            serializeTypedValue( maxValue.toString(), SammType.NON_NEGATIVE_INTEGER ) ) )
             .forEach( model::add );
       model.add( resource, RDF.type, SammNs.SAMMC.LengthConstraint() );
       return new ElementModel( model, Optional.of( resource ) );
@@ -556,7 +556,8 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       }
 
       // Create a separate RDF node for the value.
-      // Don't use getElementResource() here because we do not want to cache and reuse anonymous samm:Value resources.
+      // Don't use getElementResource() here because we do not want to cache and reuse anonymous
+      // samm:Value resources.
       final Resource resource = value.isAnonymous() ? createResource() : createResource( value.urn().toString() );
       model.add( resource, RDF.type, SammNs.SAMM.Value() );
       model.add( serializeDescriptions( resource, value ) );
@@ -751,8 +752,8 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       property.getExampleValue().ifPresent( exampleValue -> {
          final ElementModel exampleValueElementModel = exampleValue.accept( this, property );
          model.add( exampleValueElementModel.model() );
-         exampleValueElementModel.focusElement().ifPresent( exampleValueNode ->
-               model.add( resource, SammNs.SAMM.exampleValue(), exampleValueNode ) );
+         exampleValueElementModel.focusElement()
+               .ifPresent( exampleValueNode -> model.add( resource, SammNs.SAMM.exampleValue(), exampleValueNode ) );
       } );
 
       property.getCharacteristic().ifPresent( characteristic -> {

@@ -21,7 +21,9 @@ import org.apache.jena.rdf.model.Resource;
  *
  * @param predicate the predicate
  */
-public record PredicatePath( Property predicate ) implements Path {
+public record PredicatePath(
+      Property predicate
+) implements Path {
    @Override
    public <T> T accept( final Resource resource, final Visitor<T> visitor ) {
       return visitor.visitPredicatePath( resource, this );

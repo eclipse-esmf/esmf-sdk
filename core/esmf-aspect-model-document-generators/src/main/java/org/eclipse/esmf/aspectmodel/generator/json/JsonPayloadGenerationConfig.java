@@ -24,8 +24,10 @@ import io.soabase.recordbuilder.core.RecordBuilder;
  * A {@link GenerationConfig} for JSON sample payload generation.
  *
  * @param randomStrategy the Random instance to use for random value generation
- * @param addTypeAttributeForEntityInheritance if set to true, adds "@type" attribute in payloads for inherited entities
- * @param failOnInvalidRegularExpressions if a sample value for a regex can not be generated, fail instead of creating a fallback
+ * @param addTypeAttributeForEntityInheritance if set to true, adds "@type" attribute in payloads
+ *        for inherited entities
+ * @param failOnInvalidRegularExpressions if a sample value for a regex can not be generated, fail
+ *        instead of creating a fallback
  */
 @RecordBuilder
 public record JsonPayloadGenerationConfig(

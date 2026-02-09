@@ -30,10 +30,11 @@ public class ChangeReportFormatter implements ChangeReport.Visitor<String, Chang
       BiFunction<ChangeReport, AspectChangeManagerConfig, String> {
    public static final ChangeReportFormatter INSTANCE = new ChangeReportFormatter();
 
-   private ChangeReportFormatter() {
-   }
+   private ChangeReportFormatter() {}
 
-   public record Context( int indentationLevel, AspectChangeManagerConfig config ) {
+   public record Context(
+         int indentationLevel, AspectChangeManagerConfig config
+   ) {
       public Context indent() {
          return new Context( indentationLevel() + 1, config() );
       }

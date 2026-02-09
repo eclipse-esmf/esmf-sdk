@@ -35,15 +35,17 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 
 /**
- * A {@link AbstractUriRewriter} that replaces all references to the legacy BAMM Aspect Meta Model to their corresponding SAMM counterparts
+ * A {@link AbstractUriRewriter} that replaces all references to the legacy BAMM Aspect Meta Model
+ * to their corresponding SAMM counterparts
  */
 public class BammUriRewriter extends AbstractUriRewriter {
    private final BammVersion bammVersion;
 
    public BammUriRewriter( final BammVersion bammVersion ) {
-      // Translating versions will only fail if there are no SAMM versions (i.e., KnownVersion) for the versions in BAMM_VERSION
-      super( KnownVersion.fromVersionString( bammVersion.versionString() ).orElseThrow( () ->
-                  new InvalidVersionException( "BAMM version " + bammVersion.versionString() + " can not be translated to SAMM" ) ),
+      // Translating versions will only fail if there are no SAMM versions (i.e., KnownVersion) for the
+      // versions in BAMM_VERSION
+      super( KnownVersion.fromVersionString( bammVersion.versionString() ).orElseThrow(
+            () -> new InvalidVersionException( "BAMM version " + bammVersion.versionString() + " can not be translated to SAMM" ) ),
             KnownVersion.getLatest() );
       this.bammVersion = bammVersion;
    }
@@ -72,7 +74,8 @@ public class BammUriRewriter extends AbstractUriRewriter {
 
    @Override
    protected Map<String, String> buildReplacementPrefixMap( final Model sourceModel, final Map<String, String> targetPrefixes ) {
-      // The mapping of the URNs of the legacy BAMM Aspect Meta model to their corresponding SAMM counterparts
+      // The mapping of the URNs of the legacy BAMM Aspect Meta model to their corresponding SAMM
+      // counterparts
       return Map.of(
             "urn:bamm:io.openmanufacturing:meta-model:" + bammVersion.versionString() + "#",
             targetPrefixes.get( SammNs.SAMM.getShortForm() ),
@@ -103,14 +106,13 @@ public class BammUriRewriter extends AbstractUriRewriter {
 
    private boolean modelContainsBammPrefixes( final Model model ) {
       final String bammPrefix = "urn:bamm:io.openmanufacturing:meta-model:";
-      final Predicate<String> isBammRelated = uri ->
-            uri.startsWith( bammPrefix ) && uri.contains( bammVersion.versionString() );
+      final Predicate<String> isBammRelated = uri -> uri.startsWith( bammPrefix ) && uri.contains( bammVersion.versionString() );
       return // BAMM prefix is present
-            model.getNsPrefixMap().values().stream().anyMatch( isBammRelated )
-                  || // Or any referred resource uses a BAMM URN
-                  Streams.stream( model.listObjectsOfProperty( RDF.type ) )
-                        .flatMap( object -> object.isURIResource() ? Stream.of( object.asResource().getURI() ) : Stream.empty() )
-                        .anyMatch( isBammRelated );
+      model.getNsPrefixMap().values().stream().anyMatch( isBammRelated )
+            || // Or any referred resource uses a BAMM URN
+            Streams.stream( model.listObjectsOfProperty( RDF.type ) )
+                  .flatMap( object -> object.isURIResource() ? Stream.of( object.asResource().getURI() ) : Stream.empty() )
+                  .anyMatch( isBammRelated );
    }
 
    @Override
@@ -124,9 +126,10 @@ public class BammUriRewriter extends AbstractUriRewriter {
 
       final List<Statement> remappedStatements = new ArrayList<>();
 
-      // it is important to do the remapping "in situ" (in the same model), because otherwise the position information would be lost.
-      sourceModel.listStatements().forEach( statement ->
-            remappedStatements.add( sourceModel.createStatement( updateResource( statement.getSubject(), oldToNewNamespaces ),
+      // it is important to do the remapping "in situ" (in the same model), because otherwise the position
+      // information would be lost.
+      sourceModel.listStatements().forEach(
+            statement -> remappedStatements.add( sourceModel.createStatement( updateResource( statement.getSubject(), oldToNewNamespaces ),
                   updateProperty( statement.getPredicate(), oldToNewNamespaces ),
                   updateRdfNode( statement.getObject(), oldToNewNamespaces ) ) )
       );
@@ -139,8 +142,7 @@ public class BammUriRewriter extends AbstractUriRewriter {
    }
 
    public enum BammVersion {
-      BAMM_1_0_0( "1.0.0" ),
-      BAMM_2_0_0( "2.0.0" );
+      BAMM_1_0_0( "1.0.0" ), BAMM_2_0_0( "2.0.0" );
 
       private final String versionString;
 

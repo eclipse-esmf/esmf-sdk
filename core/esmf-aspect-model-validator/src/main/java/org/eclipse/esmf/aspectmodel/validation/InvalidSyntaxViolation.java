@@ -27,7 +27,9 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
  * @param column the column in the source file
  * @param location the source location of the violation
  */
-public record InvalidSyntaxViolation( String violationSpecificMessage, String source, long line, long column, URI location )
+public record InvalidSyntaxViolation(
+      String violationSpecificMessage, String source, long line, long column, URI location
+)
       implements Violation {
    public static final String ERROR_CODE = "ERR_SYNTAX";
 

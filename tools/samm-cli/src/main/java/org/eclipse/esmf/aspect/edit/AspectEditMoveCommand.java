@@ -46,12 +46,11 @@ import org.eclipse.esmf.metamodel.impl.DefaultNamespace;
 import picocli.CommandLine;
 
 @CommandLine.Command(
-      name = AspectEditMoveCommand.COMMAND_NAME,
-      description = "Move elements to other files or namespaces",
-      descriptionHeading = "%n@|bold Description|@:%n%n",
-      parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n"
-)
+   name = AspectEditMoveCommand.COMMAND_NAME,
+   description = "Move elements to other files or namespaces",
+   descriptionHeading = "%n@|bold Description|@:%n%n",
+   parameterListHeading = "%n@|bold Parameters|@:%n",
+   optionListHeading = "%n@|bold Options|@:%n" )
 @SuppressWarnings( "UseOfSystemOutOrSystemErr" )
 public class AspectEditMoveCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "move";
@@ -66,52 +65,45 @@ public class AspectEditMoveCommand extends AbstractCommand {
    private ResolverConfigurationMixin resolverConfiguration;
 
    @CommandLine.Parameters(
-         paramLabel = "ELEMENT",
-         description = "Full URN or local name of the model element to move",
-         arity = "1",
-         index = "0"
-   )
+      paramLabel = "ELEMENT",
+      description = "Full URN or local name of the model element to move",
+      arity = "1",
+      index = "0" )
    private String elementName;
 
    @CommandLine.Parameters(
-         paramLabel = "TARGETFILE",
-         description = "Target file to move the element to",
-         arity = "1",
-         index = "1"
-   )
+      paramLabel = "TARGETFILE",
+      description = "Target file to move the element to",
+      arity = "1",
+      index = "1" )
    private String targetFile;
 
    @CommandLine.Parameters(
-         paramLabel = "TARGETNAMESPACE",
-         description = "Target namespace to move the element to",
-         arity = "0..1",
-         index = "2"
-   )
+      paramLabel = "TARGETNAMESPACE",
+      description = "Target namespace to move the element to",
+      arity = "0..1",
+      index = "2" )
    private String targetNamespace;
 
    @CommandLine.Option(
-         names = { "--dry-run" },
-         description = "Emulate edit operation and print a report of changes that would be performed"
-   )
+      names = { "--dry-run" },
+      description = "Emulate edit operation and print a report of changes that would be performed" )
    private boolean dryRun;
 
    @CommandLine.Option(
-         names = { "--details" },
-         description = "When using --dry-run, print details about RDF statements that are added and removed"
-   )
+      names = { "--details" },
+      description = "When using --dry-run, print details about RDF statements that are added and removed" )
    private boolean details;
 
    @CommandLine.Option(
-         names = { "--copy-file-header" },
-         description = "If set, newly created files will contain the same file header (e.g., copyright notice) as the source file of the "
-               + "move operation"
-   )
+      names = { "--copy-file-header" },
+      description = "If set, newly created files will contain the same file header (e.g., copyright notice) as the source file of the "
+            + "move operation" )
    private boolean copyHeader;
 
    @CommandLine.Option(
-         names = { "--force" },
-         description = "Force creation/overwriting of existing files"
-   )
+      names = { "--force" },
+      description = "Force creation/overwriting of existing files" )
    private boolean force;
 
    @Override
@@ -176,7 +168,8 @@ public class AspectEditMoveCommand extends AbstractCommand {
    }
 
    /**
-    * Supports the case {@code samm aspect Aspect.ttl edit move MyAspect newFile.ttl urn:samm:com.example.othernamespace:1.0.0}
+    * Supports the case
+    * {@code samm aspect Aspect.ttl edit move MyAspect newFile.ttl urn:samm:com.example.othernamespace:1.0.0}
     */
    private void moveElementToOtherNamespaceNewFile( final AspectModelUrn targetNamespaceUrn, final File targetFileInNewNamespace ) {
       final String input = parentCommand.parentCommand.getInput();
@@ -227,7 +220,8 @@ public class AspectEditMoveCommand extends AbstractCommand {
    }
 
    /**
-    * Supports the case {@code samm aspect Aspect.ttl edit move MyAspect existingFile.ttl urn:samm:com.example.othernamespace:1.0.0}
+    * Supports the case
+    * {@code samm aspect Aspect.ttl edit move MyAspect existingFile.ttl urn:samm:com.example.othernamespace:1.0.0}
     */
    private void moveElementToOtherNamespaceExistingFile( final AspectModelUrn targetNamespaceUrn, final File targetFileInOtherNamespace ) {
       final AspectModel sourceAspectModel = getInputHandler( parentCommand.parentCommand.getInput() ).loadAspectModel();
@@ -271,8 +265,8 @@ public class AspectEditMoveCommand extends AbstractCommand {
       if ( potentialElements.size() > 1 ) {
          System.out.println( "Found more than one element identified by " + elementName + ": "
                + potentialElements.stream()
-               .map( element -> element.urn().toString() ).collect(
-                     Collectors.joining( ", ", "[", "]" ) )
+                     .map( element -> element.urn().toString() ).collect(
+                           Collectors.joining( ", ", "[", "]" ) )
                + "\nPlease use the element's full URN." );
          System.exit( 1 );
       }

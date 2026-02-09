@@ -34,7 +34,7 @@ public class JsTriple {
    @Override
    public boolean equals( final Object obj ) {
       if ( obj instanceof JsTriple ) {
-         return triple.equals( ((JsTriple) obj).triple );
+         return triple.equals( ( (JsTriple) obj ).triple );
       } else {
          return false;
       }

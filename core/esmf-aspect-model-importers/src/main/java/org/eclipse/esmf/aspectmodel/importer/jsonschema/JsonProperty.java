@@ -16,6 +16,7 @@ package org.eclipse.esmf.aspectmodel.importer.jsonschema;
 public interface JsonProperty {
    String key();
 
-   record Named( String key ) implements JsonProperty {
-   }
+   record Named(
+         String key
+   ) implements JsonProperty {}
 }

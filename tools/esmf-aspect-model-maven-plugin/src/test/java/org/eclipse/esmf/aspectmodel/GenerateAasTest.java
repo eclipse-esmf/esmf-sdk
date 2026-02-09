@@ -25,9 +25,8 @@ import org.junit.jupiter.api.Test;
 public class GenerateAasTest extends AspectModelMojoTest {
    @Test
    @InjectMojo(
-         goal = GenerateAas.MAVEN_GOAL,
-         pom = "src/test/resources/generate-aas-xml-pom-valid-aspect-model/pom.xml"
-   )
+      goal = GenerateAas.MAVEN_GOAL,
+      pom = "src/test/resources/generate-aas-xml-pom-valid-aspect-model/pom.xml" )
    public void testGenerateAasXmlValidAspectModel( final GenerateAas generateAas ) {
       assertThatCode( generateAas::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "Aspect.xml" ) ).exists();
@@ -35,9 +34,8 @@ public class GenerateAasTest extends AspectModelMojoTest {
 
    @Test
    @InjectMojo(
-         goal = GenerateAas.MAVEN_GOAL,
-         pom = "src/test/resources/generate-aas-json-pom-valid-aspect-model/pom.xml"
-   )
+      goal = GenerateAas.MAVEN_GOAL,
+      pom = "src/test/resources/generate-aas-json-pom-valid-aspect-model/pom.xml" )
    public void testGenerateAasJsonValidAspectModel( final GenerateAas generateAas ) {
       assertThatCode( generateAas::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "Aspect.json" ) ).exists();
@@ -45,9 +43,8 @@ public class GenerateAasTest extends AspectModelMojoTest {
 
    @Test
    @InjectMojo(
-         goal = GenerateAas.MAVEN_GOAL,
-         pom = "src/test/resources/generate-aas-aasx-pom-valid-aspect-model/pom.xml"
-   )
+      goal = GenerateAas.MAVEN_GOAL,
+      pom = "src/test/resources/generate-aas-aasx-pom-valid-aspect-model/pom.xml" )
    public void testGenerateAasAasxValidAspectModel( final GenerateAas generateAas ) {
       assertThatCode( generateAas::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "Aspect.aasx" ) ).exists();
@@ -55,9 +52,8 @@ public class GenerateAasTest extends AspectModelMojoTest {
 
    @Test
    @InjectMojo(
-         goal = GenerateAas.MAVEN_GOAL,
-         pom = "src/test/resources/generate-aas-pom-invalid-target-format/pom.xml"
-   )
+      goal = GenerateAas.MAVEN_GOAL,
+      pom = "src/test/resources/generate-aas-pom-invalid-target-format/pom.xml" )
    public void testGenerateAasInvalidTargetFormat( final GenerateAas generateAas ) {
       assertThatCode( generateAas::execute )
             .isInstanceOf( MojoExecutionException.class )

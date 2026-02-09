@@ -32,14 +32,17 @@ public interface Shape {
    <T> T accept( Visitor<T> visitor );
 
    /**
-    * Implements the valid values for <a href="https://www.w3.org/TR/shacl/#NodeKindConstraintComponent">sh:nodeKind</a>
+    * Implements the valid values for
+    * <a href="https://www.w3.org/TR/shacl/#NodeKindConstraintComponent">sh:nodeKind</a>
     */
    enum NodeKind {
       BlankNode( "an anonymous node" ),
       IRI( "a named element" ),
       Literal( "a value" ),
-      BlankNodeOrIRI( "an anonymous node or a named element" ),
-      BlankNodeOrLiteral( "an anonymous node or a value" ),
+      BlankNodeOrIRI(
+            "an anonymous node or a named element" ),
+      BlankNodeOrLiteral(
+            "an anonymous node or a value" ),
       IRIOrLiteral( "a named element or a value" );
 
       private final String humanRepresentation;
@@ -82,8 +85,7 @@ public interface Shape {
          Optional<String> message,
          Severity severity,
          List<Constraint> constraints
-   ) {
-   }
+   ) {}
 
    enum Severity {
       INFO, WARNING, VIOLATION

@@ -39,19 +39,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The AspectChangeManager is the central place to perform changes/edits/refactorings of an {@link AspectModel}. The AspectChangeManager
- * wraps an AspectModel and allows applying instances of the {@link Change} class using the {@link #applyChange(Change)} method.
- * Calling this method returns a {@link ChangeReport} that describes the performed changes in a structured way. Use the
+ * The AspectChangeManager is the central place to perform changes/edits/refactorings of an
+ * {@link AspectModel}. The AspectChangeManager wraps an AspectModel and allows applying instances
+ * of the {@link Change} class using the {@link #applyChange(Change)} method. Calling this method
+ * returns a {@link ChangeReport} that describes the performed changes in a structured way. Use the
  * {@link ChangeReportFormatter} to render the ChangeReport to a structured string representation.
  * <br/>
  * Note the following points:
  * <ul>
- *    <li>Only one AspectChangeManager must wrap a given AspectModel at any time</li>
- *    <li>All changes are done <i>in-memory</i>. In order to write them to the file system, use {@link #writeChangesToDisk(WriteConfig)}
- *    </li>
- *    <li>After performing an {@link #applyChange(Change)}, {@link #undoChange()} or {@link #redoChange()} operation, and until the
- *    next call of one of them, the methods {@link #modifiedFiles()}, {@link #createdFiles()} and {@link #removedFiles()} indicate
- *    corresponding changes in the AspectModel's files.
+ * <li>Only one AspectChangeManager must wrap a given AspectModel at any time</li>
+ * <li>All changes are done <i>in-memory</i>. In order to write them to the file system, use
+ * {@link #writeChangesToDisk(WriteConfig)}</li>
+ * <li>After performing an {@link #applyChange(Change)}, {@link #undoChange()} or
+ * {@link #redoChange()} operation, and until the next call of one of them, the methods
+ * {@link #modifiedFiles()}, {@link #createdFiles()} and {@link #removedFiles()} indicate
+ * corresponding changes in the AspectModel's files.
  * </ul>
  */
 public class AspectChangeManager implements ChangeContext {
@@ -68,7 +70,8 @@ public class AspectChangeManager implements ChangeContext {
    }
 
    /**
-    * Apply the change manager using an explicit configuration and the target Aspect Model to perform changes on
+    * Apply the change manager using an explicit configuration and the target Aspect Model to perform
+    * changes on
     *
     * @param config the configuration
     * @param aspectModel the target Aspect Model
@@ -223,8 +226,8 @@ public class AspectChangeManager implements ChangeContext {
    }
 
    /**
-    * Syncs all queued changes to the file system. This is the operation that acutally performs operations such as deleting, creating and
-    * writing files.
+    * Syncs all queued changes to the file system. This is the operation that acutally performs
+    * operations such as deleting, creating and writing files.
     */
    public synchronized WriteResult writeChangesToDisk( final WriteConfig config ) {
       final WriteResult writeResult = checkFileSystemConsistency( config );

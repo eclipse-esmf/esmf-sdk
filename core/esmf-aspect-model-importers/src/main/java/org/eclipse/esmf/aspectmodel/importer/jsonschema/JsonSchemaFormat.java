@@ -23,7 +23,8 @@ import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.constraint.RegularExpressionConstraint;
 
 /**
- * Represents JSON Schema <a href="https://www.learnjsonschema.com/2020-12/format-annotation/format/">format</a> fields
+ * Represents JSON Schema
+ * <a href="https://www.learnjsonschema.com/2020-12/format-annotation/format/">format</a> fields
  */
 public enum JsonSchemaFormat {
    DATE,
@@ -54,10 +55,11 @@ public enum JsonSchemaFormat {
          .build() ),
 
    /**
-    * {@link RegularExpressionConstraint} for internationalized email addresses, as defined in RFC 6531 and implemented in <a
-    * href="https://gist.github.com/baker-ling/3b4b014ee809aa9732f9873fe060c098">gist</a>.
-    * Adapted for use in Java: (1) removed redundant escapes, (2) added character ranges to match case-insensitive (instead of i flag);
-    * replaced Unicode code point references from \\u to \\x.
+    * {@link RegularExpressionConstraint} for internationalized email addresses, as defined in RFC 6531
+    * and implemented in
+    * <a href="https://gist.github.com/baker-ling/3b4b014ee809aa9732f9873fe060c098">gist</a>. Adapted
+    * for use in Java: (1) removed redundant escapes, (2) added character ranges to match
+    * case-insensitive (instead of i flag); replaced Unicode code point references from \\u to \\x.
     */
    IDN_EMAIL( urn -> regularExpressionConstraint( urn )
          .preferredName( "internationalized email address" )
@@ -68,7 +70,8 @@ public enum JsonSchemaFormat {
          .build() ),
 
    /**
-    * {@link RegularExpressionConstraint} for internationalized hostnames as defined in RFC 1123 and RFC 5890
+    * {@link RegularExpressionConstraint} for internationalized hostnames as defined in RFC 1123 and
+    * RFC 5890
     */
    IDN_HOSTNAME( urn -> regularExpressionConstraint( urn )
          .preferredName( "internationalized host name" )
@@ -91,9 +94,9 @@ public enum JsonSchemaFormat {
          .build() ),
 
    /**
-    * {@link RegularExpressionConstraint} for IPv6 addresses as defined in RFC 4291 section 2.2 and implemented in <a
-    * href="https://stackoverflow.com/a/17871737/12105820">this post</a>.
-    * Adapted: Simplified groupings (e.g., {7,7} -> {7})
+    * {@link RegularExpressionConstraint} for IPv6 addresses as defined in RFC 4291 section 2.2 and
+    * implemented in <a href="https://stackoverflow.com/a/17871737/12105820">this post</a>. Adapted:
+    * Simplified groupings (e.g., {7,7} -> {7})
     */
    IPV6( urn -> regularExpressionConstraint( urn )
          .preferredName( "IPv6 address" )
@@ -126,8 +129,8 @@ public enum JsonSchemaFormat {
    URI_REFERENCE,
 
    /**
-    * {@link RegularExpressionConstraint} for URI templates as defined in RFC 6570 and implemented in <a
-    * href="https://stackoverflow.com/a/61645285/12105820">this post</a>
+    * {@link RegularExpressionConstraint} for URI templates as defined in RFC 6570 and implemented in
+    * <a href="https://stackoverflow.com/a/61645285/12105820">this post</a>
     */
    URI_TEMPLATE( urn -> regularExpressionConstraint( urn )
          .preferredName( "URI template" )

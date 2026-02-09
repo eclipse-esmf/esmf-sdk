@@ -28,11 +28,13 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
-@Mojo( name = GenerateAas.MAVEN_GOAL, defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
+@Mojo( name = GenerateAas.MAVEN_GOAL,
+   defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateAas extends AspectModelMojo {
    public static final String MAVEN_GOAL = "generateAas";
 
-   @Parameter( required = true, property = "targetFormat" )
+   @Parameter( required = true,
+      property = "targetFormat" )
    private String targetFormat;
 
    @Override

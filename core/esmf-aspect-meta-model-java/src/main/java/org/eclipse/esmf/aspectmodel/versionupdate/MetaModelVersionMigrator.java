@@ -44,10 +44,9 @@ public class MetaModelVersionMigrator implements UnaryOperator<AspectModelFile> 
    private static final Logger LOG = LoggerFactory.getLogger( MetaModelVersionMigrator.class );
    private static final VersionNumber LATEST_SAMM = VersionNumber.parse( KnownVersion.getLatest().toVersionString() );
 
-   private MetaModelVersionMigrator() {
-   }
+   private MetaModelVersionMigrator() {}
 
-   private final List<Migrator> migrators = ImmutableList.<Migrator> builder()
+   private final List<Migrator> migrators = ImmutableList.<Migrator>builder()
          .add( new SammMetaModelVersionUriRewriter( KnownVersion.SAMM_2_1_0, KnownVersion.SAMM_2_2_0 ) )
          .add( new SammMetaModelVersionUriRewriter( KnownVersion.SAMM_2_0_0, KnownVersion.SAMM_2_1_0 ) )
          .add( new SammMetaModelVersionUriRewriter( KnownVersion.SAMM_1_0_0, KnownVersion.SAMM_2_0_0 ) )
@@ -85,7 +84,8 @@ public class MetaModelVersionMigrator implements UnaryOperator<AspectModelFile> 
          return VersionNumber.parse( sammUri.substring( sammUri.lastIndexOf( ":" ) + 1, sammUri.length() - 1 ) );
       }
 
-      // The file does not contain a "@prefix samm:" declaration: Determine the version from the triple URIs
+      // The file does not contain a "@prefix samm:" declaration: Determine the version from the triple
+      // URIs
       final String sammUrnStart = String.format( "%s:%s", AspectModelUrn.VALID_PROTOCOL, AspectModelUrn.VALID_NAMESPACE_IDENTIFIER );
       final Set<VersionNumber> result = model.listObjects()
             .toList()
@@ -111,12 +111,13 @@ public class MetaModelVersionMigrator implements UnaryOperator<AspectModelFile> 
    }
 
    /**
-    * Semantically migrates an Aspect model file from its current meta model version to a given target meta model version.
-    * This is done by composing the {@link Migrator}s that update from one version to the next into one function
-    * which is then applied to the given source model.
+    * Semantically migrates an Aspect model file from its current meta model version to a given target
+    * meta model version. This is done by composing the {@link Migrator}s that update from one version
+    * to the next into one function which is then applied to the given source model.
     *
     * @param modelFile the source model file
-    * @return the resulting {@link AspectModelFile} that corresponds to the input Aspect model file, but with the new meta model version
+    * @return the resulting {@link AspectModelFile} that corresponds to the input Aspect model file,
+    *         but with the new meta model version
     */
    @Override
    public AspectModelFile apply( final AspectModelFile modelFile ) {

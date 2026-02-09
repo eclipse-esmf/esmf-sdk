@@ -248,7 +248,7 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
       context.codeGenerationConfig().importTracker().importExplicit( quantifiable.getClass() );
       context.codeGenerationConfig().importTracker().importExplicit( Units.class );
       return "new " + quantifiable.getClass().getSimpleName() + "("
-            // MetaModelBaseAttributes
+      // MetaModelBaseAttributes
             + getMetaModelBaseAttributes( quantifiable, context ) + ","
             // Type dataType
             + quantifiable.getDataType().orElseThrow( noTypeException ).accept( this, context ) + ","
@@ -279,9 +279,9 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
             + optionalString( unit.getConversionFactor() ) + ","
             + "new HashSet<>(){{"
             + unit.getQuantityKinds().stream()
-            .map( quantityKind -> quantityKind.accept( this, context ) )
-            .map( quantityKindInitializer -> String.format( "add(%s);", quantityKindInitializer ) )
-            .collect( Collectors.joining() )
+                  .map( quantityKind -> quantityKind.accept( this, context ) )
+                  .map( quantityKindInitializer -> String.format( "add(%s);", quantityKindInitializer ) )
+                  .collect( Collectors.joining() )
             + "}}"
             + "))";
    }
@@ -314,8 +314,9 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
             + state.getDataType().orElseThrow( noTypeException ).accept( this, context ) + ","
             // List<Value> values
             + "new ArrayList<Value>(){{" + state.getValues().stream().sorted()
-            .map( value -> String.format( "add(%s);", value.accept( this, context ) ) )
-            .collect( Collectors.joining() ) + "}},"
+                  .map( value -> String.format( "add(%s);", value.accept( this, context ) ) )
+                  .collect( Collectors.joining() )
+            + "}},"
             // Value defaultValue
             + state.getDefaultValue().accept( this, context ) + ")";
    }
@@ -332,8 +333,9 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
             + enumeration.getDataType().orElseThrow( noTypeException ).accept( this, context ) + ","
             // List<Value> values
             + "new ArrayList<Value>(){{" + enumeration.getValues().stream().sorted()
-            .map( value -> String.format( "add(%s);", value.accept( this, context ) ) )
-            .collect( Collectors.joining() ) + "}})";
+                  .map( value -> String.format( "add(%s);", value.accept( this, context ) ) )
+                  .collect( Collectors.joining() )
+            + "}})";
    }
 
    @Override
@@ -341,12 +343,18 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
       context.codeGenerationConfig().importTracker().importExplicit( DefaultStructuredValue.class );
       context.codeGenerationConfig().importTracker().importExplicit( ArrayList.class );
 
-      // The referenced Properties created by the StructuredValuePropertiesDeconstructor could differ from the referenced Properties
-      // given in the StructuredValue: For example, when two properties "startDate" and "endDate" both use a StructuredValue
-      // with elements ( :year "-" :month "-" :day ), the StructuredValue will refer to "year", "month" and "day", while
-      // referencedProperties retrieved here will refer to "startDateYear", "startDateMonth", "starteDateDay" or
-      // "endDateYear", "endDateMonth", "endDateDay", respectively; since those are the names of the fields created (to prevent
-      // name clashes). The latter are the names we need to refer to in the "new DefaultStructuredValue" call.
+      // The referenced Properties created by the StructuredValuePropertiesDeconstructor could differ from
+      // the referenced Properties
+      // given in the StructuredValue: For example, when two properties "startDate" and "endDate" both use
+      // a StructuredValue
+      // with elements ( :year "-" :month "-" :day ), the StructuredValue will refer to "year", "month"
+      // and "day", while
+      // referencedProperties retrieved here will refer to "startDateYear", "startDateMonth",
+      // "starteDateDay" or
+      // "endDateYear", "endDateMonth", "endDateDay", respectively; since those are the names of the
+      // fields created (to prevent
+      // name clashes). The latter are the names we need to refer to in the "new DefaultStructuredValue"
+      // call.
       final Property originalProperty = context.currentProperty();
       final StructuredValuePropertiesDeconstructor deconstructor = new StructuredValuePropertiesDeconstructor( context.currentElement() );
       final List<Property> referencedProperties = deconstructor.getDeconstructionSets()
@@ -365,25 +373,27 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
             + AspectModelJavaUtil.createLiteral( structuredValue.getDeconstructionRule() ) + ","
             // List<Object> elements
             + "new ArrayList<Object>(){{" + structuredValue.getElements().stream().sequential()
-            .map( element -> {
-               if ( element instanceof final Property referencedPropertyFromStructuredValue ) {
-                  // Find the qualified property in the referencedProperties list that corresponds to referencedPropertyFromStructuredValue
-                  final String targetName = deconstructor.createQualifiedPropertyName( originalProperty,
-                        referencedPropertyFromStructuredValue );
-                  final Property referencedProperty = referencedProperties.stream()
-                        .filter( p -> p.urn().equals( referencedPropertyFromStructuredValue.urn() ) )
-                        .findFirst()
-                        .or( () -> referencedProperties.stream()
-                              .filter( p -> p.getName().equals( targetName ) )
-                              .findFirst() )
-                        .orElseThrow();
-                  return AspectModelJavaUtil.toConstant( referencedProperty.getName() );
-               } else {
-                  return AspectModelJavaUtil.createLiteral( element.toString() );
-               }
-            } )
-            .map( s -> "add(" + s + ");" )
-            .collect( Collectors.joining() ) + "}})";
+                  .map( element -> {
+                     if ( element instanceof final Property referencedPropertyFromStructuredValue ) {
+                        // Find the qualified property in the referencedProperties list that corresponds to
+                        // referencedPropertyFromStructuredValue
+                        final String targetName = deconstructor.createQualifiedPropertyName( originalProperty,
+                              referencedPropertyFromStructuredValue );
+                        final Property referencedProperty = referencedProperties.stream()
+                              .filter( p -> p.urn().equals( referencedPropertyFromStructuredValue.urn() ) )
+                              .findFirst()
+                              .or( () -> referencedProperties.stream()
+                                    .filter( p -> p.getName().equals( targetName ) )
+                                    .findFirst() )
+                              .orElseThrow();
+                        return AspectModelJavaUtil.toConstant( referencedProperty.getName() );
+                     } else {
+                        return AspectModelJavaUtil.createLiteral( element.toString() );
+                     }
+                  } )
+                  .map( s -> "add(" + s + ");" )
+                  .collect( Collectors.joining() )
+            + "}})";
    }
 
    @Override
@@ -397,8 +407,9 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
             + trait.getBaseCharacteristic().accept( this, context ) + ","
             // List<Constraint> constraints
             + "new ArrayList<Constraint>(){{" + trait.getConstraints().stream().sorted()
-            .map( constraint -> String.format( "add(%s);", constraint.accept( this, context.withCurrentCharacteristic( trait ) ) ) )
-            .collect( Collectors.joining() ) + "}})";
+                  .map( constraint -> String.format( "add(%s);", constraint.accept( this, context.withCurrentCharacteristic( trait ) ) ) )
+                  .collect( Collectors.joining() )
+            + "}})";
    }
 
    @Override
@@ -528,7 +539,8 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
             + extendsComplexType( abstractEntity, context ) + ","
             // List<AspectModelUrn> extendingElements
             + "List.of(" + abstractEntity.getExtendingElements().stream().sorted()
-            .map( extendingElement -> "AspectModelUrn.fromUrn(\"" + extendingElement.getUrn() + "\")" ).collect( Collectors.joining( "," ) )
+                  .map( extendingElement -> "AspectModelUrn.fromUrn(\"" + extendingElement.getUrn() + "\")" )
+                  .collect( Collectors.joining( "," ) )
             + "))";
    }
 
@@ -557,8 +569,9 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
             + "Meta"
             + abstractEntity.getName() + ".INSTANCE.getProperties()," + extendsComplexType( abstractEntity, context ) + "," + "List.of("
             + abstractEntity.getExtendingElements().stream().sorted()
-            .map( extendingElement -> "AspectModelUrn.fromUrn( \"" + extendingElement.getUrn() + "\" )" )
-            .collect( Collectors.joining( "," ) ) + ")" + "))";
+                  .map( extendingElement -> "AspectModelUrn.fromUrn( \"" + extendingElement.getUrn() + "\" )" )
+                  .collect( Collectors.joining( "," ) )
+            + ")" + "))";
    }
 
    private <T> String getOptionalStaticDeclarationValue( final Type type, final Optional<T> optionalValue,

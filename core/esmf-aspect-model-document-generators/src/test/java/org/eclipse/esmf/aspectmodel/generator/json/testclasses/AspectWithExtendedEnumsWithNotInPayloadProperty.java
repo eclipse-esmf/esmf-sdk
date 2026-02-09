@@ -113,8 +113,8 @@ public class AspectWithExtendedEnumsWithNotInPayloadProperty {
 
       public static Optional<EvaluationResults> fromValue( EvaluationResult value ) {
          return Arrays.stream( EvaluationResults.values() )
-                      .filter( enumValue -> compareEnumValues( enumValue, value ) )
-                      .findAny();
+               .filter( enumValue -> compareEnumValues( enumValue, value ) )
+               .findAny();
       }
 
       private static boolean compareEnumValues( EvaluationResults enumValue, EvaluationResult value ) {
@@ -173,8 +173,7 @@ public class AspectWithExtendedEnumsWithNotInPayloadProperty {
    /** Generated class {@link YesNo}. */
    @JsonFormat( shape = JsonFormat.Shape.OBJECT )
    public enum YesNo {
-      YES( "Yes" ),
-      NO( "No" );
+      YES( "Yes" ), NO( "No" );
 
       private final String value;
 
@@ -196,8 +195,8 @@ public class AspectWithExtendedEnumsWithNotInPayloadProperty {
 
       public static Optional<YesNo> fromValue( String value ) {
          return Arrays.stream( YesNo.values() )
-                      .filter( enumValue -> compareEnumValues( enumValue, value ) )
-                      .findAny();
+               .filter( enumValue -> compareEnumValues( enumValue, value ) )
+               .findAny();
       }
 
       private static boolean compareEnumValues( YesNo enumValue, String value ) {

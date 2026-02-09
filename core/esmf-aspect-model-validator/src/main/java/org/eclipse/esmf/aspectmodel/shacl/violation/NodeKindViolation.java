@@ -25,7 +25,9 @@ import org.apache.jena.rdf.model.RDFNode;
  * @param allowedNodeKind the allowed kind of node
  * @param actualNodeKind the encountered kind of node
  */
-public record NodeKindViolation( EvaluationContext context, Shape.NodeKind allowedNodeKind, Shape.NodeKind actualNodeKind )
+public record NodeKindViolation(
+      EvaluationContext context, Shape.NodeKind allowedNodeKind, Shape.NodeKind actualNodeKind
+)
       implements Violation {
    public static final String ERROR_CODE = "ERR_NODEKIND";
 
@@ -46,9 +48,9 @@ public record NodeKindViolation( EvaluationContext context, Shape.NodeKind allow
       }
       return context.element().isAnon()
             ? String.format( "The element is %s, but it must be %s.",
-            actualNodeKind.humanReadable(), allowedNodeKind.humanReadable() )
+                  actualNodeKind.humanReadable(), allowedNodeKind.humanReadable() )
             : String.format( "Element %s is %s, but it must be %s.",
-            context.elementName(), actualNodeKind.humanReadable(), allowedNodeKind.humanReadable() );
+                  context.elementName(), actualNodeKind.humanReadable(), allowedNodeKind.humanReadable() );
    }
 
    @Override
