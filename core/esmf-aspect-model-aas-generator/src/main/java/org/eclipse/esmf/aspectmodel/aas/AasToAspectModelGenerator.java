@@ -265,9 +265,8 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
             .collect( Collectors.joining() );
 
       if ( identifier.isEmpty() ) {
-         return upperCase ?
-               StringUtils.capitalize( randomElementName( potentialIdentifier ) ) :
-               StringUtils.uncapitalize( randomElementName( potentialIdentifier ) );
+         return upperCase ? StringUtils.capitalize( randomElementName( potentialIdentifier ) )
+               : StringUtils.uncapitalize( randomElementName( potentialIdentifier ) );
       }
 
       return upperCase ? StringUtils.capitalize( identifier ) : StringUtils.uncapitalize( identifier );
