@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Locale;
@@ -76,7 +77,7 @@ public class AspectToAsyncapiCommand extends AbstractCommand {
    @CommandLine.Option(
          names = { "--application-id", "-ai" },
          description = "Use this param for provide application id." )
-   private String applicationId;
+   private URI applicationId;
 
    @CommandLine.Option(
          names = { "--channel-address", "-ca" },
@@ -112,6 +113,10 @@ public class AspectToAsyncapiCommand extends AbstractCommand {
 
    @Override
    public void run() {
+      if ( applicationId != null && !applicationId.isAbsolute() ) {
+         throw new CommandException( "Application id must be an absolute URI." );
+      }
+
       setDetails( details );
       setResolverConfig( resolverConfiguration );
 
@@ -119,7 +124,7 @@ public class AspectToAsyncapiCommand extends AbstractCommand {
       final Aspect aspect = getInputHandler( parentCommand.parentCommand.getInput() ).loadAspect();
       final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( useSemanticApiVersion )
-            .applicationId( applicationId )
+            .applicationId( applicationId == null ? null : applicationId.toString() )
             .channelAddress( channelAddress )
             .locale( locale )
             .build();
