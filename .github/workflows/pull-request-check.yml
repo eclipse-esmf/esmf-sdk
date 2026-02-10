@@ -25,6 +25,12 @@ jobs:
           submodules: recursive
           persist-credentials: false
 
+      - name: Enable long paths (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          git config --global core.longpaths true
+
 #      - name: Check code style
 #        if: matrix.os == 'ubuntu-latest'
 #        uses: dbelyaev/action-checkstyle@e89baf0f8b488b946345b7de8e975be1e3606387 # v1.5.6
