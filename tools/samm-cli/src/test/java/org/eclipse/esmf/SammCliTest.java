@@ -1023,6 +1023,14 @@ class SammCliTest extends SammCliAbstractTest {
    }
 
    @Test
+   void testAspectToAsyncapiWithInvalidApplicationId() {
+      final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "asyncapi", "-ai", "test" );
+      assertThat( result.exitStatus() ).isOne();
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).contains( "Application id must be an absolute URI." );
+   }
+
+   @Test
    void testAspectToAsyncapiWithoutChannelAddress() {
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "asyncapi" );
       assertThat( result.exitStatus() ).isZero();
