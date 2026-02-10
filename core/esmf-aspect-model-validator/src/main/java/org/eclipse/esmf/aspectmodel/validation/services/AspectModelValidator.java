@@ -23,6 +23,10 @@ import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import org.apache.jena.query.ARQ;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Resource;
+
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.aspectmodel.ValueParsingException;
@@ -40,9 +44,6 @@ import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import io.vavr.control.Either;
-import org.apache.jena.query.ARQ;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.Resource;
 
 /**
  * Uses SHACL to validate an Aspect Model against the defined semantics of the Aspect Meta Model.
@@ -107,7 +108,7 @@ public class AspectModelValidator implements Validator<Violation, List<Violation
                exception.getSourceLocation() ) ) );
       } catch ( final ValueParsingException exception ) {
          // Failure to parse value literals
-         final String sourceLine = exception.getSourceDocument().split( System.lineSeparator() )[(int) exception.getLine() - 1];
+         final String sourceLine = exception.getSourceDocument().split( "\\r?\\r|\\r" )[(int) exception.getLine() - 1];
          return Either.left( List.of( new InvalidLexicalValueViolation( exception.getType(), exception.getValue(),
                (int) exception.getLine(), (int) exception.getColumn(), sourceLine, exception.getSourceLocation() ) ) );
       } catch ( final CancelValidation cancelValidation ) {
