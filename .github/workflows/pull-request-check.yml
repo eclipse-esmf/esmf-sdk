@@ -19,17 +19,29 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-15-intel]
     steps:
-      - name: Checkout repository
+      - name: Enable long paths for checkout (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        env:
+          GIT_CONFIG_GLOBAL: ${{ runner.temp }}\.gitconfig
+        run: |
+          git config --global core.longpaths true
+
+      - name: Checkout repository (Windows)
+        if: matrix.os == 'windows-latest'
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+        env:
+          GIT_CONFIG_GLOBAL: ${{ runner.temp }}\.gitconfig
         with:
           submodules: recursive
           persist-credentials: false
 
-      - name: Enable long paths (Windows)
-        if: matrix.os == 'windows-latest'
-        shell: pwsh
-        run: |
-          git config --global core.longpaths true
+      - name: Checkout repository (non-Windows)
+        if: matrix.os != 'windows-latest'
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+        with:
+          submodules: recursive
+          persist-credentials: false
 
 #      - name: Check code style
 #        if: matrix.os == 'ubuntu-latest'
