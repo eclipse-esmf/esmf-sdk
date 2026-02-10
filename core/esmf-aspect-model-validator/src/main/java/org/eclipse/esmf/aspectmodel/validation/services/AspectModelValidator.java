@@ -108,7 +108,7 @@ public class AspectModelValidator implements Validator<Violation, List<Violation
                exception.getSourceLocation() ) ) );
       } catch ( final ValueParsingException exception ) {
          // Failure to parse value literals
-         final String sourceLine = exception.getSourceDocument().split( "\\r?\\n|\\r" )[(int) exception.getLine() - 1];
+         final String sourceLine = exception.getSourceDocument().lines().toList().get( (int) exception.getLine() - 1 );
          return Either.left( List.of( new InvalidLexicalValueViolation( exception.getType(), exception.getValue(),
                (int) exception.getLine(), (int) exception.getColumn(), sourceLine, exception.getSourceLocation() ) ) );
       } catch ( final CancelValidation cancelValidation ) {
