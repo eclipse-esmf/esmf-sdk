@@ -67,21 +67,21 @@ public abstract class ModelsRoot {
     * @return Optional of the resolved {@link File}, or Optional.empty() if resolution fails.
     */
    public Optional<File> resolveAspectModelFile( final AspectModelUrn urn ) {
-      Path path = constructAspectModelFilePath( urn );
+      final Path path = constructAspectModelFilePath( urn );
       return resolveByCanonicalPath( path );
    }
 
-   private Path constructAspectModelFilePath( final AspectModelUrn urn ) {
+   public Path constructAspectModelFilePath( final AspectModelUrn urn ) {
       return directoryForNamespace( urn ).resolve( urn.getName() + ".ttl" );
    }
 
    private static Optional<File> resolveByCanonicalPath( final Path path ) {
-      File file = path.toFile();
+      final File file = path.toFile();
       try {
          if ( file.exists() && Objects.equals( path.normalize().toString(), file.getCanonicalPath() ) ) {
             return Optional.of( file );
          }
-      } catch ( IOException exception ) {
+      } catch ( final IOException exception ) {
          LOG.error( "Error resolving canonical path for file: {}", file.getPath(), exception );
       }
       return Optional.empty();
