@@ -19,8 +19,9 @@ public record DatabricksCommentDefinition(
    @Override
    public String toString() {
       return "COMMENT '" + comment
+            .replace( "\r\n", "\n" )
             .replace( "'", "\\'" )
-            .replace( System.lineSeparator(), "\\n" )
+            .replace( "\n", "\\n" )
             + "'";
    }
 }
