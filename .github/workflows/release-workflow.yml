@@ -132,6 +132,10 @@ jobs:
           chmod +x ./${bundle}/run.sh
 
           curl -Lo warp-packer https://github.com/dgiagio/warp/releases/download/v0.3.0/linux-x64.warp-packer
+          if [ "$(sha256sum warp-packer | cut -d' ' -f1)" != "ba5da4d224077fffea78c7872df47413234e4ee179c941c821aae0b33bd9f594" ]; then
+            echo "Warp packer checksum does not match"
+            exit 1
+          fi
           chmod +x warp-packer
 
           ./warp-packer --arch linux-x64 --input_dir ${bundle} --exec run.sh --output samm
@@ -211,7 +215,12 @@ jobs:
           chmod +x ./${bundle}/run.sh
 
           curl -Lo warp-packer https://github.com/dgiagio/warp/releases/download/v0.3.0/macos-x64.warp-packer
+          if [ "$(sha256sum warp-packer | cut -d' ' -f1)" != "01d00038dbbe4e5a6e2ca19c1235f051617ac0e6e582d2407a06cec33125044b" ]; then
+            echo "Warp packer checksum does not match"
+            exit 1
+          fi
           chmod +x warp-packer
+
           ./warp-packer --arch macos-x64 --input_dir ${bundle} --exec run.sh --output samm
           chmod a+x samm
           tar cfvz samm-cli-${RELEASE_VERSION}-macos-x86_64.tar.gz samm
@@ -301,6 +310,10 @@ jobs:
           EOF
 
           curl -Lo warp-packer.exe https://github.com/dgiagio/warp/releases/download/v0.3.0/windows-x64.warp-packer.exe
+          if [ "$(sha256sum warp-packer | cut -d' ' -f1)" != "4f9a0f223f0e9f689fc718fdf86a147a357921ffa69c236deadc3274091070c1" ]; then
+            echo "Warp packer checksum does not match"
+            exit 1
+          fi
 
           ./warp-packer.exe --arch windows-x64 --input_dir ${bundle} --exec run.bat --output samm.exe
           7z a samm-cli-${RELEASE_VERSION}-windows-x86_64.zip samm.exe
