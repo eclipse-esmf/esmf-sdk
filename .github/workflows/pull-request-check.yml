@@ -177,13 +177,6 @@ jobs:
           echo "start cmd /k samm.exe help" > tools/samm-cli/target/start-samm-cli.bat
         shell: bash
 
-      - name: Switch to Temurin JDK
-        uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e #v5.1.0
-        with:
-          distribution: 'temurin'
-          java-version: '25'
-          overwrite-settings: false
-
       - name: Upload executable jar
         # We only need one OS job to upload the jar
         if: matrix.os == 'ubuntu-latest'
