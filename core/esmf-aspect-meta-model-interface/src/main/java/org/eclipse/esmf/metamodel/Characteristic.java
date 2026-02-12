@@ -16,7 +16,8 @@ package org.eclipse.esmf.metamodel;
 import java.util.Optional;
 
 /**
- * Description of a Property in the scope of an Aspect that determines the Property's data type and other qualities.
+ * Description of a Property in the scope of an Aspect that determines the Property's data type and
+ * other qualities.
  *
  * @since SAMM 1.0.0
  */

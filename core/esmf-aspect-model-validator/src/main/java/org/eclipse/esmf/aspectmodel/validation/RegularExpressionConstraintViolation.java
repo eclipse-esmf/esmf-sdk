@@ -27,7 +27,9 @@ import org.apache.jena.rdf.model.RDFNode;
  * @param context the evaluation context
  * @param regexp the problematic regular expression
  */
-public record RegularExpressionConstraintViolation( EvaluationContext context, String regexp ) implements Violation {
+public record RegularExpressionConstraintViolation(
+      EvaluationContext context, String regexp
+) implements Violation {
    public static final String ERROR_CODE = "ERR_INVALID_REGEX";
 
    @Override

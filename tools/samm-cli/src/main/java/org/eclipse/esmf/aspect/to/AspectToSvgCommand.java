@@ -25,31 +25,30 @@ import org.eclipse.esmf.exception.CommandException;
 import picocli.CommandLine;
 
 @CommandLine.Command(
-      name = AspectToSvgCommand.COMMAND_NAME,
-      description = "Generate SVG diagram for an Aspect Model",
-      descriptionHeading = "%n@|bold Description|@:%n%n",
-      parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n"
-)
+   name = AspectToSvgCommand.COMMAND_NAME,
+   description = "Generate SVG diagram for an Aspect Model",
+   descriptionHeading = "%n@|bold Description|@:%n%n",
+   parameterListHeading = "%n@|bold Parameters|@:%n",
+   optionListHeading = "%n@|bold Options|@:%n" )
 public class AspectToSvgCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "svg";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--output", "-o" },
-         description = "Output file path" )
+      names = { "--output", "-o" },
+      description = "Output file path" )
    private String outputFilePath = "-";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--language", "-l" },
-         description = "The language from the model for which the diagram should be generated (default: en)" )
+      names = { "--language", "-l" },
+      description = "The language from the model for which the diagram should be generated (default: en)" )
    private String language = "en";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--details" },
-         description = "Print detailed reports on errors" )
+      names = { "--details" },
+      description = "Print detailed reports on errors" )
    private boolean details = false;
 
    @CommandLine.ParentCommand

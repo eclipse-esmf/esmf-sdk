@@ -50,18 +50,18 @@ public abstract class AbstractSchemaArtifact<T extends JsonNode> extends JsonArt
    }
 
    /**
-    * Returns the OpenAPI schema with separate files for schemas. In the resulting map, the key is the path
-    * that names a schema and the value is the corresponding JSON structure. The root schema will be called
-    * like the originating Aspect with a ".oai.json" suffix.
+    * Returns the OpenAPI schema with separate files for schemas. In the resulting map, the key is the
+    * path that names a schema and the value is the corresponding JSON structure. The root schema will
+    * be called like the originating Aspect with a ".oai.json" suffix.
     *
     * @return the OpenAPI schema definition as separate files
     */
    public abstract Map<Path, JsonNode> getContentWithSeparateSchemasAsJson();
 
    /**
-    * Returns the OpenAPI schema with separate files for schemas. In the resulting map, the key is the path
-    * that names a schema and the value is the corresponding YAML structure. The root schema will be called
-    * like the originating Aspect with a ".oai.yaml" suffix.
+    * Returns the OpenAPI schema with separate files for schemas. In the resulting map, the key is the
+    * path that names a schema and the value is the corresponding YAML structure. The root schema will
+    * be called like the originating Aspect with a ".oai.yaml" suffix.
     *
     * @return the OpenAPI schema definition as separate files
     */
@@ -71,8 +71,7 @@ public abstract class AbstractSchemaArtifact<T extends JsonNode> extends JsonArt
          final Optional<String> mainSpec ) {
       final ObjectMapper objectMapper = new ObjectMapper();
       // Create a copy of the content, because we change the root node in-place
-      final JsonNode json = Try.of( () ->
-                  objectMapper.readTree( objectMapper.writer().writeValueAsString( getContent() ) ) )
+      final JsonNode json = Try.of( () -> objectMapper.readTree( objectMapper.writer().writeValueAsString( getContent() ) ) )
             .getOrElseThrow( DocumentGenerationException::new );
       final ImmutableMap.Builder<Path, JsonNode> builder = ImmutableMap.builder();
 

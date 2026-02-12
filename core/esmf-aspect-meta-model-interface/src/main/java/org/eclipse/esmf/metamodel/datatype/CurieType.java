@@ -24,14 +24,14 @@ import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.graph.impl.LiteralLabel;
 
 /**
- * Represents the samm:curie datatype itself. For the class that represents a Curie value, see {@link Curie}.
+ * Represents the samm:curie datatype itself. For the class that represents a Curie value, see
+ * {@link Curie}.
  */
 public final class CurieType implements SammType<Curie> {
    public static final CurieType INSTANCE = new CurieType();
    public static final String CURIE_REGEX = "[a-zA-Z]*:[a-zA-Z]+";
 
-   private CurieType() {
-   }
+   private CurieType() {}
 
    @Override
    public <T, C> T accept( final AspectVisitor<T, C> visitor, final C context ) {

@@ -65,9 +65,8 @@ class NamespacePackageTest {
          Assertions.assertThat( aspectsNames ).contains( aspectModelFile.aspect().getName() );
       } );
 
-      assertThat( aspectModel ).files().allMatch( file ->
-            file.sourceLocation().orElseThrow().toString().matches(
-                  "^jar:file:[^!]*namespaces\\.zip!/org\\.eclipse\\.esmf\\.examples/\\d\\.\\d\\.\\d/" + file.filename().orElseThrow() ) );
+      assertThat( aspectModel ).files().allMatch( file -> file.sourceLocation().orElseThrow().toString().matches(
+            "^jar:file:[^!]*namespaces\\.zip!/org\\.eclipse\\.esmf\\.examples/\\d\\.\\d\\.\\d/" + file.filename().orElseThrow() ) );
    }
 
    @Test
@@ -210,7 +209,8 @@ class NamespacePackageTest {
       final File archivePath = getPackage( "namespaces.zip" ).toFile();
       try ( final InputStream input = new FileInputStream( archivePath ) ) {
          final NamespacePackage namespacePackage = new NamespacePackage( input, archivePath.toURI() );
-         // By using the NamespacePackage as an AspectModelLoader constructor argument, it is used as a ResolutionStrategy
+         // By using the NamespacePackage as an AspectModelLoader constructor argument, it is used as a
+         // ResolutionStrategy
          final AspectModelLoader aspectModelLoader = new AspectModelLoader( namespacePackage );
          final AspectModel aspectModel = aspectModelLoader.load(
                AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.examples:1.0.0#Movement" ) );

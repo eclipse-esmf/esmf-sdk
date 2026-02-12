@@ -78,6 +78,6 @@ public class TemplateEngine implements UnaryOperator<String> {
     */
    public TemplateEngine with( final String key, final Object value ) {
       return new TemplateEngine( engine,
-            ImmutableMap.<String, Object> builder().putAll( context ).put( key, value ).build() );
+            ImmutableMap.<String, Object>builder().putAll( context ).put( key, value ).build() );
    }
 }

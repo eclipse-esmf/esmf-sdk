@@ -28,9 +28,8 @@ import org.junit.jupiter.api.Test;
 public class GenerateSqlTest extends AspectModelMojoTest {
    @Test
    @InjectMojo(
-         goal = GenerateSql.MAVEN_GOAL,
-         pom = "src/test/resources/generate-sql-pom-valid-aspect-model-default-settings/pom.xml"
-   )
+      goal = GenerateSql.MAVEN_GOAL,
+      pom = "src/test/resources/generate-sql-pom-valid-aspect-model-default-settings/pom.xml" )
    public void testGenerateSqlWithDefaultSettings( final GenerateSql generateSql ) throws IOException {
       assertThatCode( generateSql::execute ).doesNotThrowAnyException();
       final Path generatedFile = generatedFilePath( "AspectWithSimpleTypes.sql" );
@@ -42,9 +41,8 @@ public class GenerateSqlTest extends AspectModelMojoTest {
 
    @Test
    @InjectMojo(
-         goal = GenerateSql.MAVEN_GOAL,
-         pom = "src/test/resources/generate-sql-pom-valid-aspect-model-adjusted-settings/pom.xml"
-   )
+      goal = GenerateSql.MAVEN_GOAL,
+      pom = "src/test/resources/generate-sql-pom-valid-aspect-model-adjusted-settings/pom.xml" )
    public void testGenerateSqlWithAdjustedSettings( final GenerateSql generateSql ) throws IOException {
       assertThatCode( generateSql::execute ).doesNotThrowAnyException();
       final Path generatedFile = generatedFilePath( "AspectWithSimpleTypes.sql" );

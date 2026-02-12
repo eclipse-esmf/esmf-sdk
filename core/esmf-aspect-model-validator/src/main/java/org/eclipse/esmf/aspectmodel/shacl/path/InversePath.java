@@ -20,7 +20,9 @@ import org.apache.jena.rdf.model.Resource;
  *
  * @param path the path of which this is an inverse
  */
-public record InversePath( Path path ) implements Path {
+public record InversePath(
+      Path path
+) implements Path {
    @Override
    public <T> T accept( final Resource resource, final Visitor<T> visitor ) {
       return visitor.visitInversePath( resource, this );

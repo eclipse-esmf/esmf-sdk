@@ -60,10 +60,11 @@ import org.apache.jena.rdf.model.Model;
 import org.assertj.core.api.InstanceOfAssertFactory;
 
 /**
- * Convenience wrapper for the construction of all SAMM-related assertsThat() methods. Intended use is by
- * {@code import static org.eclipse.esmf.test.AspectModelAsserts.assertThat;}.
+ * Convenience wrapper for the construction of all SAMM-related assertsThat() methods. Intended use
+ * is by {@code import static org.eclipse.esmf.test.AspectModelAsserts.assertThat;}.
  */
-// Note that this class uses a lot of @SuppressWarnings( "IncorrectFormatting" ); for some reason IntelliJ code style does not
+// Note that this class uses a lot of @SuppressWarnings( "IncorrectFormatting" ); for some reason
+// IntelliJ code style does not
 // use correct continuation indents.
 @SuppressWarnings( { "NewClassNamingConvention", "UnusedReturnValue", "checkstyle:ClassTypeParameterName",
       "checkstyle:MethodTypeParameterName" } )
@@ -402,9 +403,12 @@ public class AspectModelAsserts {
       return new ConstraintAssert.FixedPointConstraintAssert<>( element );
    }
 
-   // Assertion factories that are required when asserts for collections should be chained with their actual type, e.g.:
-   // assertThat( aspectModel ).namespaces().first( as( NAMESPACE ) ).hasName( "urn:samm:org.eclipse.esmf.test:1.0.0" );
-   // Without the InstanceOfAssertFactory, first() on a ListAssert would only provide a generic ObjectAssert;
+   // Assertion factories that are required when asserts for collections should be chained with their
+   // actual type, e.g.:
+   // assertThat( aspectModel ).namespaces().first( as( NAMESPACE ) ).hasName(
+   // "urn:samm:org.eclipse.esmf.test:1.0.0" );
+   // Without the InstanceOfAssertFactory, first() on a ListAssert would only provide a generic
+   // ObjectAssert;
    // with it the result of first() is an actual NamespaceAssert.
 
    public static final InstanceOfAssertFactory<AbstractEntity, AbstractEntityAssert<?, ?>> ABSTRACT_ENTITY =

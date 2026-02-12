@@ -45,7 +45,8 @@ public interface PropertyMapper<T extends SubmodelElement> extends Comparable<Pr
    T mapToAasProperty( Type type, Property property, Context context );
 
    /**
-    * Whether this {@code PropertyMapper} can handle the given property. Defaults to {@code true}, implementors should override.
+    * Whether this {@code PropertyMapper} can handle the given property. Defaults to {@code true},
+    * implementors should override.
     *
     * @param property the property to test
     * @return {@code true} if this property mapper can handle the given property, {@code false} else
@@ -57,11 +58,15 @@ public interface PropertyMapper<T extends SubmodelElement> extends Comparable<Pr
    /**
     * Returns the ordering value for this property mapper.
     *
-    * <p>The order is used to determine the correct mapper if multiple matches can occur. By default mappers have
-    * {@link Integer#MAX_VALUE} applied as their order value, meaning they will be sorted to the very end.
+    * <p>
+    * The order is used to determine the correct mapper if multiple matches can occur. By default
+    * mappers have {@link Integer#MAX_VALUE} applied as their order value, meaning they will be sorted
+    * to the very end.
     *
-    * <p>One example for the need of a proper ordering is, if a general mapper for a specific property type is used, but an even more
-    * specific mapper should be used for one exact property, that also has this type.
+    * <p>
+    * One example for the need of a proper ordering is, if a general mapper for a specific property
+    * type is used, but an even more specific mapper should be used for one exact property, that also
+    * has this type.
     *
     * @return the order value
     */

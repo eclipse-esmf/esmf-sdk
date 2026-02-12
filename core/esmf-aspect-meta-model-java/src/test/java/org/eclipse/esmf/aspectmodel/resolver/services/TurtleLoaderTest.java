@@ -33,9 +33,9 @@ import org.junit.jupiter.api.Test;
 
 public class TurtleLoaderTest {
    private static final String MODEL = """
-           @prefix : <urn:samm:com.example:1.2.0#> .
-           :x a ([ a aPrefix:c]) .
-         """;
+        @prefix : <urn:samm:com.example:1.2.0#> .
+        :x a ([ a aPrefix:c]) .
+      """;
 
    @Test
    void turtleLoaderFailsWithNullPointerIfPrefixIsNotDefined() {

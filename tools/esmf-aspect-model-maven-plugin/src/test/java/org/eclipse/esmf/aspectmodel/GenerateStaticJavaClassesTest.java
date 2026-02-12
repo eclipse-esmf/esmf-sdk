@@ -25,9 +25,8 @@ import org.junit.jupiter.api.Test;
 public class GenerateStaticJavaClassesTest extends AspectModelMojoTest {
    @Test
    @InjectMojo(
-         goal = GenerateStaticJavaClasses.MAVEN_GOAL,
-         pom = "src/test/resources/test-pom-valid-aspect-model-output-directory/pom.xml"
-   )
+      goal = GenerateStaticJavaClasses.MAVEN_GOAL,
+      pom = "src/test/resources/test-pom-valid-aspect-model-output-directory/pom.xml" )
    public void testGenerateJavaClassesValidAspectModel( final GenerateStaticJavaClasses generateStaticJavaClasses ) {
       assertThatCode( generateStaticJavaClasses::execute ).doesNotThrowAnyException();
       final String packagePath = "org/eclipse/esmf/test";
@@ -36,9 +35,8 @@ public class GenerateStaticJavaClassesTest extends AspectModelMojoTest {
 
    @Test
    @InjectMojo(
-         goal = GenerateStaticJavaClasses.MAVEN_GOAL,
-         pom = "src/test/resources/generate-static-java-classes-pom-custom-package-name/pom.xml"
-   )
+      goal = GenerateStaticJavaClasses.MAVEN_GOAL,
+      pom = "src/test/resources/generate-static-java-classes-pom-custom-package-name/pom.xml" )
    public void testGenerateJavaClassesCustomPackageName( final GenerateStaticJavaClasses generateStaticJavaClasses ) {
       assertThatCode( generateStaticJavaClasses::execute ).doesNotThrowAnyException();
       final String packagePath = "example/com";
@@ -47,9 +45,8 @@ public class GenerateStaticJavaClassesTest extends AspectModelMojoTest {
 
    @Test
    @InjectMojo(
-         goal = GenerateStaticJavaClasses.MAVEN_GOAL,
-         pom = "src/test/resources/generate-static-java-classes-pom-package-interpolation/pom.xml"
-   )
+      goal = GenerateStaticJavaClasses.MAVEN_GOAL,
+      pom = "src/test/resources/generate-static-java-classes-pom-package-interpolation/pom.xml" )
    public void testGenerateJavaClassesPackageInterpolation( final GenerateStaticJavaClasses generateStaticJavaClasses ) {
       assertThatCode( generateStaticJavaClasses::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "com", "example", "shared", "v1", "v0", "v0", "MetaAspectWithExtendedEntity.java" ) ).exists();
@@ -58,9 +55,8 @@ public class GenerateStaticJavaClassesTest extends AspectModelMojoTest {
 
    @Test
    @InjectMojo(
-         goal = GenerateStaticJavaClasses.MAVEN_GOAL,
-         pom = "src/test/resources/generate-static-java-classes-pom-invalid-template-lib-file/pom.xml"
-   )
+      goal = GenerateStaticJavaClasses.MAVEN_GOAL,
+      pom = "src/test/resources/generate-static-java-classes-pom-invalid-template-lib-file/pom.xml" )
    public void testGenerateJavaClassesInvalidTemplateLibFile( final GenerateStaticJavaClasses generateStaticJavaClasses ) {
       assertThatCode( generateStaticJavaClasses::execute )
             .isInstanceOf( MojoExecutionException.class )

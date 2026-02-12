@@ -21,7 +21,8 @@ import org.apache.jena.rdf.model.Resource;
 /**
  * Vocabulary for the Shapes Constraint Language (SHACL).
  */
-// Since the class is an RDF vocabulary, naming rules for the class and for several methods (which should be named identically
+// Since the class is an RDF vocabulary, naming rules for the class and for several methods (which
+// should be named identically
 // to the corresponding model elements) are suppressed.
 @SuppressWarnings( { "checkstyle:AbbreviationAsWordInName", "NewMethodNamingConvention", "unused" } )
 public class SHACL implements RdfNamespace {
@@ -43,8 +44,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * The (single) value of this property must be a list of path elements, representing
-    * the elements of alternative paths.
+    * The (single) value of this property must be a list of path elements, representing the elements of
+    * alternative paths.
     */
    public Property alternativePath() {
       return property( "alternativePath" );
@@ -66,8 +67,7 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * The name of the SPARQL variable from the SELECT clause that shall be used
-    * for the values.
+    * The name of the SPARQL variable from the SELECT clause that shall be used for the values.
     */
    public Property annotationVarName() {
       return property( "annotationVarName" );
@@ -89,8 +89,7 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * The shapes that the focus nodes need to conform to before a rule is executed
-    * on them.
+    * The shapes that the focus nodes need to conform to before a rule is executed on them.
     */
    public Property condition() {
       return property( "condition" );
@@ -122,40 +121,37 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A default value for a property, for example for user interface tools to pre-populate
-    * input fields.
+    * A default value for a property, for example for user interface tools to pre-populate input
+    * fields.
     */
    public Property defaultValue() {
       return property( "defaultValue" );
    }
 
    /**
-    * Human-readable descriptions for the property in the context of the surrounding
-    * shape.
+    * Human-readable descriptions for the property in the context of the surrounding shape.
     */
    public Property description() {
       return property( "description" );
    }
 
    /**
-    * Links a result with other results that provide more details, for example to
-    * describe violations against nested shapes.
+    * Links a result with other results that provide more details, for example to describe violations
+    * against nested shapes.
     */
    public Property detail() {
       return property( "detail" );
    }
 
    /**
-    * Specifies a property where the set of values must be disjoint with the value
-    * nodes.
+    * Specifies a property where the set of values must be disjoint with the value nodes.
     */
    public Property disjoint() {
       return property( "disjoint" );
    }
 
    /**
-    * An entailment regime that indicates what kind of inferencing is required by
-    * a shapes graph.
+    * An entailment regime that indicates what kind of inferencing is required by a shapes graph.
     */
    public Property entailment() {
       return property( "entailment" );
@@ -187,8 +183,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * Can be used to link to a property group to indicate that a property shape
-    * belongs to a group of related property shapes.
+    * Can be used to link to a property group to indicate that a property shape belongs to a group of
+    * related property shapes.
     */
    public Property group() {
       return property( "group" );
@@ -200,16 +196,16 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * An optional RDF list of properties that are also permitted in addition to
-    * those explicitly enumerated via sh:property/sh:path.
+    * An optional RDF list of properties that are also permitted in addition to those explicitly
+    * enumerated via sh:property/sh:path.
     */
    public Property ignoredProperties() {
       return property( "ignoredProperties" );
    }
 
    /**
-    * Specifies a list of allowed values so that each value node must be among the
-    * members of the given list.
+    * Specifies a list of allowed values so that each value node must be among the members of the given
+    * list.
     */
    public Property in() {
       return property( "in" );
@@ -221,8 +217,7 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * The (single) value of this property represents an inverse path (object to
-    * subject).
+    * The (single) value of this property represents an inverse path (object to subject).
     */
    public Property inversePath() {
       return property( "inversePath" );
@@ -244,17 +239,17 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * Declares the URLs of a JavaScript library. This should be the absolute URL
-    * of a JavaScript file. Implementations may redirect those to local files.
+    * Declares the URLs of a JavaScript library. This should be the absolute URL of a JavaScript file.
+    * Implementations may redirect those to local files.
     */
    public Property jsLibraryURL() {
       return property( "jsLibraryURL" );
    }
 
    /**
-    * Outlines how human-readable labels of instances of the associated Parameterizable
-    * shall be produced. The values can contain {?paramName} as placeholders for
-    * the actual values of the given parameter.
+    * Outlines how human-readable labels of instances of the associated Parameterizable shall be
+    * produced. The values can contain {?paramName} as placeholders for the actual values of the given
+    * parameter.
     */
    public Property labelTemplate() {
       return property( "labelTemplate" );
@@ -271,8 +266,7 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * Specifies a property that must have smaller or equal values than the value
-    * nodes.
+    * Specifies a property that must have smaller or equal values than the value nodes.
     */
    public Property lessThanOrEquals() {
       return property( "lessThanOrEquals" );
@@ -299,8 +293,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A human-readable message (possibly with placeholders for variables) explaining
-    * the cause of the result.
+    * A human-readable message (possibly with placeholders for variables) explaining the cause of the
+    * result.
     */
    public Property message() {
       return property( "message" );
@@ -367,8 +361,7 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * The (single) value of this property represents a path that is matched one
-    * or more times.
+    * The (single) value of this property represents a path that is matched one or more times.
     */
    public Property oneOrMorePath() {
       return property( "oneOrMorePath" );
@@ -380,16 +373,15 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * Specifies a list of shapes so that the value nodes must conform to at least
-    * one of the shapes.
+    * Specifies a list of shapes so that the value nodes must conform to at least one of the shapes.
     */
    public Property or() {
       return property( "or" );
    }
 
    /**
-    * Specifies the relative order of this compared to its siblings. For example
-    * use 0 for the first, 1 for the second.
+    * Specifies the relative order of this compared to its siblings. For example use 0 for the first, 1
+    * for the second.
     */
    public Property order() {
       return property( "order" );
@@ -406,8 +398,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * Specifies a regular expression pattern that the string representations of
-    * the value nodes must match.
+    * Specifies a regular expression pattern that the string representations of the value nodes must
+    * match.
     */
    public Property pattern() {
       return property( "pattern" );
@@ -434,8 +426,7 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * The validator(s) used to evaluate a constraint in the context of a property
-    * shape.
+    * The validator(s) used to evaluate a constraint in the context of a property shape.
     */
    public Property propertyValidator() {
       return property( "propertyValidator" );
@@ -457,8 +448,7 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * Can be used to mark the qualified value shape to be disjoint with its sibling
-    * shapes.
+    * Can be used to mark the qualified value shape to be disjoint with its sibling shapes.
     */
    public Property qualifiedValueShapesDisjoint() {
       return property( "qualifiedValueShapesDisjoint" );
@@ -470,9 +460,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * Links a SPARQL validator with zero or more sh:ResultAnnotation instances,
-    * defining how to derive additional result properties based on the variables
-    * of the SELECT query.
+    * Links a SPARQL validator with zero or more sh:ResultAnnotation instances, defining how to derive
+    * additional result properties based on the variables of the SELECT query.
     */
    public Property resultAnnotation() {
       return property( "resultAnnotation" );
@@ -484,8 +473,7 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * The path of a validation result, based on the path of the validated property
-    * shape.
+    * The path of a validation result, based on the path of the validated property shape.
     */
    public Property resultPath() {
       return property( "resultPath" );
@@ -512,8 +500,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * Defines the severity that validation results produced by a shape must have.
-    * Defaults to sh:Violation.
+    * Defines the severity that validation results produced by a shape must have. Defaults to
+    * sh:Violation.
     */
    public Property severity() {
       return property( "severity" );
@@ -525,8 +513,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * If true then the validation engine was certain that the shapes graph has passed
-    * all SHACL syntax requirements during the validation process.
+    * If true then the validation engine was certain that the shapes graph has passed all SHACL syntax
+    * requirements during the validation process.
     */
    public Property shapesGraphWellFormed() {
       return property( "shapesGraphWellFormed" );
@@ -558,48 +546,46 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * Suggested shapes graphs for this ontology. The values of this property may
-    * be used in the absence of specific sh:shapesGraph statements.
+    * Suggested shapes graphs for this ontology. The values of this property may be used in the absence
+    * of specific sh:shapesGraph statements.
     */
    public Property suggestedShapesGraph() {
       return property( "suggestedShapesGraph" );
    }
 
    /**
-    * Links a shape to a target specified by an extension language, for example
-    * instances of sh:SPARQLTarget.
+    * Links a shape to a target specified by an extension language, for example instances of
+    * sh:SPARQLTarget.
     */
    public Property target() {
       return property( "target" );
    }
 
    /**
-    * Links a shape to a class, indicating that all instances of the class must
-    * conform to the shape.
+    * Links a shape to a class, indicating that all instances of the class must conform to the shape.
     */
    public Property targetClass() {
       return property( "targetClass" );
    }
 
    /**
-    * Links a shape to individual nodes, indicating that these nodes must conform
-    * to the shape.
+    * Links a shape to individual nodes, indicating that these nodes must conform to the shape.
     */
    public Property targetNode() {
       return property( "targetNode" );
    }
 
    /**
-    * Links a shape to a property, indicating that all all objects of triples that
-    * have the given property as their predicate must conform to the shape.
+    * Links a shape to a property, indicating that all all objects of triples that have the given
+    * property as their predicate must conform to the shape.
     */
    public Property targetObjectsOf() {
       return property( "targetObjectsOf" );
    }
 
    /**
-    * Links a shape to a property, indicating that all subjects of triples that
-    * have the given property as their predicate must conform to the shape.
+    * Links a shape to a property, indicating that all subjects of triples that have the given property
+    * as their predicate must conform to the shape.
     */
    public Property targetSubjectsOf() {
       return property( "targetSubjectsOf" );
@@ -631,24 +617,21 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * Specifies a list of shapes so that the value nodes must conform to exactly
-    * one of the shapes.
+    * Specifies a list of shapes so that the value nodes must conform to exactly one of the shapes.
     */
    public Property xone() {
       return property( "xone" );
    }
 
    /**
-    * The (single) value of this property represents a path that is matched zero
-    * or more times.
+    * The (single) value of this property represents a path that is matched zero or more times.
     */
    public Property zeroOrMorePath() {
       return property( "zeroOrMorePath" );
    }
 
    /**
-    * The (single) value of this property represents a path that is matched zero
-    * or one times.
+    * The (single) value of this property represents a path that is matched zero or one times.
     */
    public Property zeroOrOnePath() {
       return property( "zeroOrOnePath" );
@@ -661,8 +644,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A constraint component that can be used to test whether a value node conforms
-    * to all members of a provided list of shapes.
+    * A constraint component that can be used to test whether a value node conforms to all members of a
+    * provided list of shapes.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource AndConstraintComponent() {
@@ -693,8 +676,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A constraint component that can be used to verify that each value node is
-    * an instance of a given type.
+    * A constraint component that can be used to verify that each value node is an instance of a given
+    * type.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource ClassConstraintComponent() {
@@ -707,9 +690,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A constraint component that can be used to indicate that focus nodes must
-    * only have values for those properties that have been explicitly enumerated
-    * via sh:property/sh:path.
+    * A constraint component that can be used to indicate that focus nodes must only have values for
+    * those properties that have been explicitly enumerated via sh:property/sh:path.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource ClosedConstraintComponent() {
@@ -733,8 +715,7 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A constraint component that can be used to restrict the datatype of all value
-    * nodes.
+    * A constraint component that can be used to restrict the datatype of all value nodes.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource DatatypeConstraintComponent() {
@@ -747,9 +728,9 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A constraint component that can be used to verify that the set of value nodes
-    * is disjoint with the set of nodes that have the focus node as subject
-    * and the value of a given property as predicate.
+    * A constraint component that can be used to verify that the set of value nodes is disjoint with
+    * the set of nodes that have the focus node as subject and the value of a given property as
+    * predicate.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource DisjointConstraintComponent() {
@@ -762,9 +743,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A constraint component that can be used to verify that the set of value nodes
-    * is equal to the set of nodes that have the focus node as subject and the value
-    * of a given property as predicate.
+    * A constraint component that can be used to verify that the set of value nodes is equal to the set
+    * of nodes that have the focus node as subject and the value of a given property as predicate.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource EqualsConstraintComponent() {
@@ -777,8 +757,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A constraint component that can be used to verify that a given node expression
-    * produces true for all value nodes.
+    * A constraint component that can be used to verify that a given node expression produces true for
+    * all value nodes.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource ExpressionConstraintComponent() {
@@ -797,8 +777,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A constraint component that can be used to verify that one of the value nodes
-    * is a given RDF node.
+    * A constraint component that can be used to verify that one of the value nodes is a given RDF
+    * node.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource HasValueConstraintComponent() {
@@ -823,8 +803,7 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A constraint component that can be used to exclusively enumerate the permitted
-    * value nodes.
+    * A constraint component that can be used to exclusively enumerate the permitted value nodes.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource InConstraintComponent() {
@@ -854,8 +833,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A constraint component with the parameter sh:js linking to a sh:JSConstraint
-    * containing a sh:script.
+    * A constraint component with the parameter sh:js linking to a sh:JSConstraint containing a
+    * sh:script.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource JSConstraintComponent() {
@@ -875,8 +854,7 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * Represents a JavaScript library, typically identified by one or more URLs
-    * of files to include.
+    * Represents a JavaScript library, typically identified by one or more URLs of files to include.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource JSLibrary() {
@@ -896,8 +874,7 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * The (meta) class for parameterizable targets that are based on JavaScript
-    * functions.
+    * The (meta) class for parameterizable targets that are based on JavaScript functions.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource JSTargetType() {
@@ -905,8 +882,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A SHACL validator based on JavaScript. This can be used to declare SHACL constraint
-    * components that perform JavaScript-based validation when used.
+    * A SHACL validator based on JavaScript. This can be used to declare SHACL constraint components
+    * that perform JavaScript-based validation when used.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource JSValidator() {
@@ -914,8 +891,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A constraint component that can be used to enumerate language tags that all
-    * value nodes must have.
+    * A constraint component that can be used to enumerate language tags that all value nodes must
+    * have.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource LanguageInConstraintComponent() {
@@ -928,9 +905,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A constraint component that can be used to verify that each value node is
-    * smaller than all the nodes that have the focus node as subject and the value
-    * of a given property as predicate.
+    * A constraint component that can be used to verify that each value node is smaller than all the
+    * nodes that have the focus node as subject and the value of a given property as predicate.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource LessThanConstraintComponent() {
@@ -943,9 +919,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A constraint component that can be used to verify that every value node is
-    * smaller than all the nodes that have the focus node as subject and the value
-    * of a given property as predicate.
+    * A constraint component that can be used to verify that every value node is smaller than all the
+    * nodes that have the focus node as subject and the value of a given property as predicate.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource LessThanOrEqualsConstraintComponent() {
@@ -964,8 +939,7 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A constraint component that can be used to restrict the maximum number of
-    * value nodes.
+    * A constraint component that can be used to restrict the maximum number of value nodes.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource MaxCountConstraintComponent() {
@@ -978,8 +952,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A constraint component that can be used to restrict the range of value nodes
-    * with a maximum exclusive value.
+    * A constraint component that can be used to restrict the range of value nodes with a maximum
+    * exclusive value.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource MaxExclusiveConstraintComponent() {
@@ -992,8 +966,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A constraint component that can be used to restrict the range of value nodes
-    * with a maximum inclusive value.
+    * A constraint component that can be used to restrict the range of value nodes with a maximum
+    * inclusive value.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource MaxInclusiveConstraintComponent() {
@@ -1006,8 +980,7 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A constraint component that can be used to restrict the maximum string length
-    * of value nodes.
+    * A constraint component that can be used to restrict the maximum string length of value nodes.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource MaxLengthConstraintComponent() {
@@ -1020,8 +993,7 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A constraint component that can be used to restrict the minimum number of
-    * value nodes.
+    * A constraint component that can be used to restrict the minimum number of value nodes.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource MinCountConstraintComponent() {
@@ -1034,8 +1006,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A constraint component that can be used to restrict the range of value nodes
-    * with a minimum exclusive value.
+    * A constraint component that can be used to restrict the range of value nodes with a minimum
+    * exclusive value.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource MinExclusiveConstraintComponent() {
@@ -1048,8 +1020,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A constraint component that can be used to restrict the range of value nodes
-    * with a minimum inclusive value.
+    * A constraint component that can be used to restrict the range of value nodes with a minimum
+    * inclusive value.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource MinInclusiveConstraintComponent() {
@@ -1062,8 +1034,7 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A constraint component that can be used to restrict the minimum string length
-    * of value nodes.
+    * A constraint component that can be used to restrict the minimum string length of value nodes.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource MinLengthConstraintComponent() {
@@ -1076,8 +1047,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A constraint component that can be used to verify that all value nodes conform
-    * to the given node shape.
+    * A constraint component that can be used to verify that all value nodes conform to the given node
+    * shape.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource NodeConstraintComponent() {
@@ -1090,8 +1061,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * The class of all node kinds, including sh:BlankNode, sh:IRI, sh:Literal or
-    * the combinations of these: sh:BlankNodeOrIRI, sh:BlankNodeOrLiteral, sh:IRIOrLiteral.
+    * The class of all node kinds, including sh:BlankNode, sh:IRI, sh:Literal or the combinations of
+    * these: sh:BlankNodeOrIRI, sh:BlankNodeOrLiteral, sh:IRIOrLiteral.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource NodeKind() {
@@ -1099,8 +1070,7 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A constraint component that can be used to restrict the RDF node kind of each
-    * value node.
+    * A constraint component that can be used to restrict the RDF node kind of each value node.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource NodeKindConstraintComponent() {
@@ -1113,8 +1083,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A node shape is a shape that specifies constraint that need to be met with
-    * respect to focus nodes.
+    * A node shape is a shape that specifies constraint that need to be met with respect to focus
+    * nodes.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource NodeShape() {
@@ -1122,8 +1092,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A constraint component that can be used to verify that value nodes do not
-    * conform to a given shape.
+    * A constraint component that can be used to verify that value nodes do not conform to a given
+    * shape.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource NotConstraintComponent() {
@@ -1136,8 +1106,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A constraint component that can be used to restrict the value nodes so that
-    * they conform to at least one out of several provided shapes.
+    * A constraint component that can be used to restrict the value nodes so that they conform to at
+    * least one out of several provided shapes.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource OrConstraintComponent() {
@@ -1150,8 +1120,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * The class of parameter declarations, consisting of a path predicate and (possibly)
-    * information about allowed value type, cardinality and other characteristics.
+    * The class of parameter declarations, consisting of a path predicate and (possibly) information
+    * about allowed value type, cardinality and other characteristics.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Parameter() {
@@ -1159,8 +1129,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * Superclass of components that can take parameters, especially functions and
-    * constraint components.
+    * Superclass of components that can take parameters, especially functions and constraint
+    * components.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Parameterizable() {
@@ -1168,8 +1138,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A constraint component that can be used to verify that every value node matches
-    * a given regular expression.
+    * A constraint component that can be used to verify that every value node matches a given regular
+    * expression.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource PatternConstraintComponent() {
@@ -1193,8 +1163,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A constraint component that can be used to verify that all value nodes conform
-    * to the given property shape.
+    * A constraint component that can be used to verify that all value nodes conform to the given
+    * property shape.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource PropertyConstraintComponent() {
@@ -1213,8 +1183,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A property shape is a shape that specifies constraints on the values of a
-    * focus node for a given property or path.
+    * A property shape is a shape that specifies constraints on the values of a focus node for a given
+    * property or path.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource PropertyShape() {
@@ -1222,8 +1192,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A constraint component that can be used to verify that a specified maximum
-    * number of value nodes conforms to a given shape.
+    * A constraint component that can be used to verify that a specified maximum number of value nodes
+    * conforms to a given shape.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource QualifiedMaxCountConstraintComponent() {
@@ -1246,8 +1216,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A constraint component that can be used to verify that a specified minimum
-    * number of value nodes conforms to a given shape.
+    * A constraint component that can be used to verify that a specified minimum number of value nodes
+    * conforms to a given shape.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource QualifiedMinCountConstraintComponent() {
@@ -1270,8 +1240,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A class of result annotations, which define the rules to derive the values
-    * of a given annotation property as extra values for a validation result.
+    * A class of result annotations, which define the rules to derive the values of a given annotation
+    * property as extra values for a validation result.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource ResultAnnotation() {
@@ -1291,8 +1261,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * The class of validators based on SPARQL ASK queries. The queries are evaluated
-    * for each value node and are supposed to return true if the given node conforms.
+    * The class of validators based on SPARQL ASK queries. The queries are evaluated for each value
+    * node and are supposed to return true if the given node conforms.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource SPARQLAskValidator() {
@@ -1306,8 +1276,7 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A constraint component that can be used to define constraints based on SPARQL
-    * queries.
+    * A constraint component that can be used to define constraints based on SPARQL queries.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource SPARQLConstraintComponent() {
@@ -1350,9 +1319,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * The class of validators based on SPARQL SELECT queries. The queries are evaluated
-    * for each focus node and are supposed to produce bindings for all focus nodes
-    * that do not conform.
+    * The class of validators based on SPARQL SELECT queries. The queries are evaluated for each focus
+    * node and are supposed to produce bindings for all focus nodes that do not conform.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource SPARQLSelectValidator() {
@@ -1378,8 +1346,7 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * The class of validation result severity levels, including violation and warning
-    * levels.
+    * The class of validation result severity levels, including violation and warning levels.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Severity() {
@@ -1399,8 +1366,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * The (meta) class for parameterizable targets. Instances of this are instantiated
-    * as values of the sh:target property.
+    * The (meta) class for parameterizable targets. Instances of this are instantiated as values of the
+    * sh:target property.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource TargetType() {
@@ -1413,8 +1380,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A constraint component that can be used to specify that no pair of value nodes
-    * may use the same language tag.
+    * A constraint component that can be used to specify that no pair of value nodes may use the same
+    * language tag.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource UniqueLangConstraintComponent() {
@@ -1439,9 +1406,9 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * The class of validators, which provide instructions on how to process a constraint
-    * definition. This class serves as base class for the SPARQL-based validators
-    * and other possible implementations.
+    * The class of validators, which provide instructions on how to process a constraint definition.
+    * This class serves as base class for the SPARQL-based validators and other possible
+    * implementations.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Validator() {
@@ -1461,8 +1428,8 @@ public class SHACL implements RdfNamespace {
    }
 
    /**
-    * A constraint component that can be used to restrict the value nodes so that
-    * they conform to exactly one out of several provided shapes.
+    * A constraint component that can be used to restrict the value nodes so that they conform to
+    * exactly one out of several provided shapes.
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource XoneConstraintComponent() {

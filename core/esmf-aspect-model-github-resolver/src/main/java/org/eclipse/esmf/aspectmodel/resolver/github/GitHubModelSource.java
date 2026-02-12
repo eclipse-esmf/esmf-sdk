@@ -54,7 +54,8 @@ public class GitHubModelSource implements ModelSource {
    }
 
    /**
-    * Convenience constructor for public repositories. Proxy settings are automatically detected, no authentication is used.
+    * Convenience constructor for public repositories. Proxy settings are automatically detected, no
+    * authentication is used.
     *
     * @param repository the repository this model sources refers to
     * @param directory the relative directory inside the repository
@@ -112,7 +113,7 @@ public class GitHubModelSource implements ModelSource {
             final String[] parts = path.split( "/" );
             if ( parts.length < 3 || AspectModelUrn.from( parts[parts.length - 3], parts[parts.length - 2] ).isFailure() ) {
                LOG.debug( "Tried to load file {} but the path contains no valid URN structure", zipEntry.getName() );
-               return Stream.<AspectModelFile> empty();
+               return Stream.<AspectModelFile>empty();
             }
             final URI uri = URI.create( sourceUrl( path ) );
             final Try<RawAspectModelFile> file = Try.of( () -> zipFile.getInputStream( zipEntry ) )

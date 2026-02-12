@@ -35,7 +35,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Mojo( name = GenerateSql.MAVEN_GOAL, defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
+@Mojo( name = GenerateSql.MAVEN_GOAL,
+   defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateSql extends AspectModelMojo {
    public static final String MAVEN_GOAL = "generateSql";
    private static final Logger LOG = LoggerFactory.getLogger( GenerateSql.class );

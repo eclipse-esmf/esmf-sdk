@@ -78,13 +78,12 @@ class AspectModelAasGeneratorTest {
             .singleElement()
             .satisfies( subModel -> assertThat( subModel.getSubmodelElements() )
                   .singleElement()
-                  .satisfies( property ->
-                        assertThat( property ).asInstanceOf( type( MultiLanguageProperty.class ) )
-                              .extracting( MultiLanguageProperty::getValue )
-                              .asInstanceOf( InstanceOfAssertFactories.LIST )
-                              .hasSize( 2 )
-                              .allSatisfy( langString ->
-                                    assertThat( List.of( "en", "de" ) ).contains( ( (AbstractLangString) langString ).getLanguage() ) ) ) );
+                  .satisfies( property -> assertThat( property ).asInstanceOf( type( MultiLanguageProperty.class ) )
+                        .extracting( MultiLanguageProperty::getValue )
+                        .asInstanceOf( InstanceOfAssertFactories.LIST )
+                        .hasSize( 2 )
+                        .allSatisfy( langString -> assertThat( List.of( "en", "de" ) )
+                              .contains( ( (AbstractLangString) langString ).getLanguage() ) ) ) );
    }
 
    @Test
@@ -93,17 +92,15 @@ class AspectModelAasGeneratorTest {
       assertThat( env.getSubmodels() )
             .singleElement()
             .satisfies( subModel -> assertThat( subModel.getSubmodelElements() )
-                  .anySatisfy( sme ->
-                        assertThat( sme ).asInstanceOf( type( SubmodelElementList.class ) )
-                              .extracting( SubmodelElementList::getValue )
+                  .anySatisfy( sme -> assertThat( sme ).asInstanceOf( type( SubmodelElementList.class ) )
+                        .extracting( SubmodelElementList::getValue )
+                        .asInstanceOf( InstanceOfAssertFactories.LIST )
+                        .anySatisfy( entity -> assertThat( entity ).asInstanceOf( type( SubmodelElementCollection.class ) )
+                              .extracting( SubmodelElementCollection::getValue )
                               .asInstanceOf( InstanceOfAssertFactories.LIST )
-                              .anySatisfy( entity ->
-                                    assertThat( entity ).asInstanceOf( type( SubmodelElementCollection.class ) )
-                                          .extracting( SubmodelElementCollection::getValue )
-                                          .asInstanceOf( InstanceOfAssertFactories.LIST )
-                                          .singleElement( type( Property.class ) )
-                                          .extracting( Property::getValue )
-                                          .isEqualTo( "The result" ) ) ) );
+                              .singleElement( type( Property.class ) )
+                              .extracting( Property::getValue )
+                              .isEqualTo( "The result" ) ) ) );
    }
 
    @Test
@@ -113,19 +110,17 @@ class AspectModelAasGeneratorTest {
             .singleElement()
             .satisfies( subModel -> assertThat( subModel.getSubmodelElements() )
                   .anySatisfy( sme -> {
-                           assertThat( sme ).asInstanceOf( type( SubmodelElementList.class ) )
-                                 .extracting( SubmodelElementList::getValue )
+                     assertThat( sme ).asInstanceOf( type( SubmodelElementList.class ) )
+                           .extracting( SubmodelElementList::getValue )
+                           .asInstanceOf( InstanceOfAssertFactories.LIST )
+                           .anySatisfy( entity -> assertThat( entity ).asInstanceOf( type( SubmodelElementCollection.class ) )
+                                 .extracting( SubmodelElementCollection::getValue )
                                  .asInstanceOf( InstanceOfAssertFactories.LIST )
-                                 .anySatisfy( entity ->
-                                       assertThat( entity ).asInstanceOf( type( SubmodelElementCollection.class ) )
-                                             .extracting( SubmodelElementCollection::getValue )
-                                             .asInstanceOf( InstanceOfAssertFactories.LIST )
-                                             .anySatisfy( property ->
-                                                   assertThat( property ).asInstanceOf( type( Property.class ) )
-                                                         .extracting( Property::getValue )
-                                                         .isEqualTo( "2.25" ) ) );
-                           assertThat( ( (SubmodelElementList) sme ).getOrderRelevant() ).isFalse();
-                        }
+                                 .anySatisfy( property -> assertThat( property ).asInstanceOf( type( Property.class ) )
+                                       .extracting( Property::getValue )
+                                       .isEqualTo( "2.25" ) ) );
+                     assertThat( ( (SubmodelElementList) sme ).getOrderRelevant() ).isFalse();
+                  }
                   ) );
    }
 
@@ -135,15 +130,13 @@ class AspectModelAasGeneratorTest {
       assertThat( env.getSubmodels() )
             .singleElement()
             .satisfies( subModel -> assertThat( subModel.getSubmodelElements() )
-                  .anySatisfy( sme ->
-                        assertThat( sme ).asInstanceOf( type( SubmodelElementList.class ) )
-                              .extracting( SubmodelElementList::getValue )
-                              .asInstanceOf( InstanceOfAssertFactories.LIST )
-                              .singleElement()
-                              .satisfies( element ->
-                                    assertThat( element ).asInstanceOf( type( Blob.class ) )
-                                          .extracting( Blob::getValue )
-                                          .satisfies( blobData -> assertThat( new String( blobData ) ).isEqualTo( "1,2,3,4,5,6" ) ) ) ) );
+                  .anySatisfy( sme -> assertThat( sme ).asInstanceOf( type( SubmodelElementList.class ) )
+                        .extracting( SubmodelElementList::getValue )
+                        .asInstanceOf( InstanceOfAssertFactories.LIST )
+                        .singleElement()
+                        .satisfies( element -> assertThat( element ).asInstanceOf( type( Blob.class ) )
+                              .extracting( Blob::getValue )
+                              .satisfies( blobData -> assertThat( new String( blobData ) ).isEqualTo( "1,2,3,4,5,6" ) ) ) ) );
    }
 
    @Test
@@ -153,15 +146,13 @@ class AspectModelAasGeneratorTest {
       assertThat( env.getSubmodels() )
             .singleElement()
             .satisfies( subModel -> assertThat( subModel.getSubmodelElements() )
-                  .anySatisfy( sme ->
-                        assertThat( sme ).asInstanceOf( type( SubmodelElementList.class ) )
-                              .extracting( SubmodelElementList::getValue )
-                              .asInstanceOf( InstanceOfAssertFactories.LIST )
-                              .allSatisfy( element ->
-                                    assertThat( element ).asInstanceOf( type( DefaultProperty.class ) )
-                                          .extracting( DefaultProperty::getValue )
-                                          .satisfies(
-                                                intString -> assertThat( Integer.parseInt( intString ) ).isBetween( 1, 6 ) ) ) ) );
+                  .anySatisfy( sme -> assertThat( sme ).asInstanceOf( type( SubmodelElementList.class ) )
+                        .extracting( SubmodelElementList::getValue )
+                        .asInstanceOf( InstanceOfAssertFactories.LIST )
+                        .allSatisfy( element -> assertThat( element ).asInstanceOf( type( DefaultProperty.class ) )
+                              .extracting( DefaultProperty::getValue )
+                              .satisfies(
+                                    intString -> assertThat( Integer.parseInt( intString ) ).isBetween( 1, 6 ) ) ) ) );
    }
 
    @Test
@@ -363,7 +354,8 @@ class AspectModelAasGeneratorTest {
    }
 
    /*
-    * Anonymous enumeration in test has no URN for enum values but is required for Concept Description referencing
+    * Anonymous enumeration in test has no URN for enum values but is required for Concept Description
+    * referencing
     */
    @ParameterizedTest
    @Execution( ExecutionMode.CONCURRENT )
@@ -496,9 +488,9 @@ class AspectModelAasGeneratorTest {
       final List<String> supp = smc.getSupplementalSemanticIds() == null
             ? List.of()
             : smc.getSupplementalSemanticIds().stream()
-            .flatMap( r -> r.getKeys().stream() )
-            .map( Key::getValue )
-            .toList();
+                  .flatMap( r -> r.getKeys().stream() )
+                  .map( Key::getValue )
+                  .toList();
 
       assertThat( supp )
             .allMatch( v -> !v.startsWith( "file:" ) && !v.matches( "^[A-Za-z]:[\\\\/].*" ) )
@@ -516,9 +508,9 @@ class AspectModelAasGeneratorTest {
       final Set<String> supp = smc.getSupplementalSemanticIds() == null
             ? Set.of()
             : smc.getSupplementalSemanticIds().stream()
-            .flatMap( r -> r.getKeys().stream() )
-            .map( Key::getValue )
-            .collect( Collectors.toSet() );
+                  .flatMap( r -> r.getKeys().stream() )
+                  .map( Key::getValue )
+                  .collect( Collectors.toSet() );
 
       assertThat( supp ).contains(
             "urn:irdi:0173-1%2302-ABG854%23003",

@@ -75,8 +75,7 @@ public class ModelResolutionException extends RuntimeException {
          }
          return super.getMessage();
       }
-      return getCheckedLocations().stream().map( failure ->
-                  "%s (%s)".formatted( failure.description(), failure.location() ) )
+      return getCheckedLocations().stream().map( failure -> "%s (%s)".formatted( failure.description(), failure.location() ) )
             .collect( Collectors.joining( "; " ) );
    }
 }

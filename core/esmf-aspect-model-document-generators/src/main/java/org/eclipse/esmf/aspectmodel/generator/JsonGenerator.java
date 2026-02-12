@@ -18,7 +18,6 @@ import java.io.OutputStream;
 import java.util.function.Function;
 
 import org.eclipse.esmf.aspectmodel.jackson.AspectModelJacksonModule;
-import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.StructureElement;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -35,7 +34,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
  * @param <A> the corresponding artifact type
  */
 public abstract class JsonGenerator<S extends StructureElement, C extends JsonGenerationConfig, R extends JsonNode,
-      A extends JsonArtifact<R>> extends StructureElementGenerator<S, String, R, C, A> {
+      A extends JsonArtifact<R>>
+      extends StructureElementGenerator<S, String, R, C, A> {
    protected final ObjectMapper objectMapper;
 
    public JsonGenerator( final S element, final C config ) {

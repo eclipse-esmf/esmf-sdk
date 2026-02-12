@@ -47,17 +47,18 @@ public abstract class ComplexTypeInstantiator<T extends ComplexType> extends Ins
    }
 
    /**
-    * Initializes a {@link DefaultAbstractEntity}.
-    * Since {@link ComplexType}s have a reference to the element which is extended by a particular {@link ComplexType},
-    * and the {@link AbstractEntity} has a list of references to all elements which extend the {@link AbstractEntity},
-    * a circular dependency exists between the {@link ComplexType} and the {@link AbstractEntity}.
-    * The reference between the {@link ComplexType}s represents the `extends` relationship between an {@link Entity} or
-    * an {@link AbstractEntity} and another {@link Entity} or {@link AbstractEntity}.
-    * The list of references between an {@link AbstractEntity} and all {@link ComplexType}s extending the
-    * {@link AbstractEntity} has been implemented to ensure that all extending {@link ComplexType}s are loaded into the
-    * {@link Aspect} whether they are directly linked to that Aspect or not. This
-    * scenario may occur for example when the Aspect Model contains a {@link Collection}
-    * with an {@link AbstractEntity} as its data type with multiple Entities extending the {@link AbstractEntity}.
+    * Initializes a {@link DefaultAbstractEntity}. Since {@link ComplexType}s have a reference to the
+    * element which is extended by a particular {@link ComplexType}, and the {@link AbstractEntity} has
+    * a list of references to all elements which extend the {@link AbstractEntity}, a circular
+    * dependency exists between the {@link ComplexType} and the {@link AbstractEntity}. The reference
+    * between the {@link ComplexType}s represents the `extends` relationship between an {@link Entity}
+    * or an {@link AbstractEntity} and another {@link Entity} or {@link AbstractEntity}. The list of
+    * references between an {@link AbstractEntity} and all {@link ComplexType}s extending the
+    * {@link AbstractEntity} has been implemented to ensure that all extending {@link ComplexType}s are
+    * loaded into the {@link Aspect} whether they are directly linked to that Aspect or not. This
+    * scenario may occur for example when the Aspect Model contains a {@link Collection} with an
+    * {@link AbstractEntity} as its data type with multiple Entities extending the
+    * {@link AbstractEntity}.
     */
    @Override
    public T apply( final Resource resource ) {

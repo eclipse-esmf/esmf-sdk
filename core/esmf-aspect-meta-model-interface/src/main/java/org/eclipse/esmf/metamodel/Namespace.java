@@ -30,8 +30,8 @@ public interface Namespace extends ModelElementGroup, HasDescription {
 
    /**
     * The package part of the model namespace is an identifier given in
-    * <a href="https://en.wikipedia.org/wiki/Reverse_domain_name_notation">reverse domain name notation</a>, e.g.,
-    * {@code com.example.myapp}.
+    * <a href="https://en.wikipedia.org/wiki/Reverse_domain_name_notation">reverse domain name
+    * notation</a>, e.g., {@code com.example.myapp}.
     *
     * @return the package part of the namespace
     */

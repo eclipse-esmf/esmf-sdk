@@ -314,7 +314,8 @@ public class DataTypeTest {
             ) )
       );
 
-      @SuppressWarnings( "unchecked" ) final Stream<TestConfiguration<Curie>> curieTypes =
+      @SuppressWarnings( "unchecked" )
+      final Stream<TestConfiguration<Curie>> curieTypes =
             SammXsdType.ALL_TYPES.stream()
                   .filter( dataType -> dataType.getJavaClass() != null
                         && dataType.getJavaClass().equals( Curie.class ) )

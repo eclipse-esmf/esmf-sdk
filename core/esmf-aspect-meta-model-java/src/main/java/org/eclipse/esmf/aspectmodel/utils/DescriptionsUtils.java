@@ -20,22 +20,23 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * Utility class for extracting and rendering structured content blocks (such as NOTE, EXAMPLE, SOURCE)
- * from SAMM-compliant Markdown descriptions.
+ * Utility class for extracting and rendering structured content blocks (such as NOTE, EXAMPLE,
+ * SOURCE) from SAMM-compliant Markdown descriptions.
  *
- * <p>This class supports parsing multi-line Markdown-style input and extracting semantically significant
- * sections such as {@code > NOTE: ...}, {@code > EXAMPLE: ...}, and {@code > SOURCE: ...}.
- * These blocks can be retrieved as plain text or rendered into HTML using {@link MarkdownHtmlRenderer}.
+ * <p>
+ * This class supports parsing multi-line Markdown-style input and extracting semantically
+ * significant sections such as {@code > NOTE: ...}, {@code > EXAMPLE: ...}, and
+ * {@code > SOURCE: ...}. These blocks can be retrieved as plain text or rendered into HTML using
+ * {@link MarkdownHtmlRenderer}.
  */
 public class DescriptionsUtils {
 
-   private DescriptionsUtils() {
-   }
+   private DescriptionsUtils() {}
 
    /**
-    * A regex pattern used to identify special SAMM-style Markdown blocks.
-    * Matches lines beginning with {@code > NOTE:}, {@code > EXAMPLE:}, or {@code > SOURCE:},
-    * optionally followed by a number (e.g., {@code > EXAMPLE 2: ...}).
+    * A regex pattern used to identify special SAMM-style Markdown blocks. Matches lines beginning with
+    * {@code > NOTE:}, {@code > EXAMPLE:}, or {@code > SOURCE:}, optionally followed by a number (e.g.,
+    * {@code > EXAMPLE 2: ...}).
     */
    static final Pattern BLOCK_PATTERN = Pattern.compile(
          "^>\\s*(NOTE|EXAMPLE|SOURCE)(\\s+\\d+)?:\\s*(.*)",
@@ -73,8 +74,8 @@ public class DescriptionsUtils {
    }
 
    /**
-    * Renders the given set of Markdown description strings into semantic HTML.
-    * Uses {@link MarkdownHtmlRenderer} to process both special blocks and general Markdown syntax.
+    * Renders the given set of Markdown description strings into semantic HTML. Uses
+    * {@link MarkdownHtmlRenderer} to process both special blocks and general Markdown syntax.
     *
     * @param description A line of Markdown description string.
     * @return The HTML representation of the combined input.
@@ -84,10 +85,12 @@ public class DescriptionsUtils {
    }
 
    /**
-    * Extracts all blocks of a specified type (e.g., NOTE, EXAMPLE, SOURCE) from a set of Markdown strings.
+    * Extracts all blocks of a specified type (e.g., NOTE, EXAMPLE, SOURCE) from a set of Markdown
+    * strings.
     *
-    * <p>Each block is expected to begin with a {@code > TYPE:} line and may span multiple lines,
-    * each of which begins with {@code >}.
+    * <p>
+    * Each block is expected to begin with a {@code > TYPE:} line and may span multiple lines, each of
+    * which begins with {@code >}.
     *
     * @param description A line Markdown description string.
     * @param type The type of block to extract ("NOTE", "EXAMPLE", or "SOURCE").

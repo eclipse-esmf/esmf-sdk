@@ -42,17 +42,19 @@ import org.junit.jupiter.params.provider.CsvSource;
 /**
  * Comprehensive test suite for {@link FileSystemStrategy} that validates:
  * <ul>
- *   <li>Element resolution from dedicated files</li>
- *   <li>Element resolution from shared files (primary focus)</li>
- *   <li>Mixed resolution scenarios (shared + dedicated files)</li>
- *   <li>Transitive dependency resolution</li>
- *   <li>Error handling and messaging</li>
- *   <li>API correctness (apply, load, listing methods)</li>
+ * <li>Element resolution from dedicated files</li>
+ * <li>Element resolution from shared files (primary focus)</li>
+ * <li>Mixed resolution scenarios (shared + dedicated files)</li>
+ * <li>Transitive dependency resolution</li>
+ * <li>Error handling and messaging</li>
+ * <li>API correctness (apply, load, listing methods)</li>
  * </ul>
  *
- * <p>This test class specifically focuses on validating the fix for resolving elements
+ * <p>
+ * This test class specifically focuses on validating the fix for resolving elements
  * from shared files when they don't have dedicated files, which is critical for
- * flexible model organization.</p>
+ * flexible model organization.
+ * </p>
  */
 class FileSystemStrategyTest {
 
@@ -126,7 +128,8 @@ class FileSystemStrategyTest {
          "SharedEntity, Entity"
    } )
    void testResolveElementFromSharedFileExpectSuccess( final String elementName, final String elementType ) {
-      // Test resolving elements that don't have their own files but are defined in aspectelements_shared.ttl
+      // Test resolving elements that don't have their own files but are defined in
+      // aspectelements_shared.ttl
       final AspectModelUrn elementUrn = urn( elementName );
 
       assertThatCode( () -> {
@@ -147,7 +150,8 @@ class FileSystemStrategyTest {
 
    @Test
    void testResolveAspectThatUsesSharedElementsExpectSuccess() {
-      // Test that an Aspect using shared elements can be loaded and its dependencies resolved from aspectelements_shared.ttl
+      // Test that an Aspect using shared elements can be loaded and its dependencies resolved from
+      // aspectelements_shared.ttl
       final AspectModelUrn aspectUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "AspectUsingSharedElements" );
 
       assertThatCode( () -> {

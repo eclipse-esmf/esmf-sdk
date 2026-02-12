@@ -27,7 +27,9 @@ import org.apache.jena.rdf.model.RDFNode;
  *
  * @param maxLength the max length
  */
-public record MaxLengthConstraint( int maxLength ) implements Constraint {
+public record MaxLengthConstraint(
+      int maxLength
+) implements Constraint {
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
       // sh:maxLength is applicable to literals and IRIs, but not blank nodes

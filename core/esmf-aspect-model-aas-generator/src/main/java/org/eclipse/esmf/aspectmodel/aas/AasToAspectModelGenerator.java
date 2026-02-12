@@ -107,7 +107,9 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
    private final ValueInstantiator valueInstantiator = new ValueInstantiator();
    private AspectModelUrn aspectUrn;
 
-   private record ElementName( String name, boolean isSynthetic ) {}
+   private record ElementName(
+         String name, boolean isSynthetic
+   ) {}
 
    private AasToAspectModelGenerator( final Environment aasEnvironment ) {
       super( aasEnvironment, DEFAULT_CONFIG );
@@ -239,8 +241,8 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
       // suffix to prevent name clashes.
       final String id = submodel.getId();
       LOG.warn( "Submodel with id {} has no idShort", id );
-      final Optional<String> nameFromIrdi = Irdi.from( id ).map( irdi ->
-            sanitizeAspectModelElementName( irdi.toString(), upperCase ) + DigestUtils.sha1Hex( id ).substring( 0, 8 ) );
+      final Optional<String> nameFromIrdi = Irdi.from( id )
+            .map( irdi -> sanitizeAspectModelElementName( irdi.toString(), upperCase ) + DigestUtils.sha1Hex( id ).substring( 0, 8 ) );
       // Fallback: Hash the id
       return new ElementName( nameFromIrdi.orElseGet( () -> randomElementName( id ) ), true );
    }
@@ -263,9 +265,8 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
             .collect( Collectors.joining() );
 
       if ( identifier.isEmpty() ) {
-         return upperCase ?
-               StringUtils.capitalize( randomElementName( potentialIdentifier ) ) :
-               StringUtils.uncapitalize( randomElementName( potentialIdentifier ) );
+         return upperCase ? StringUtils.capitalize( randomElementName( potentialIdentifier ) )
+               : StringUtils.uncapitalize( randomElementName( potentialIdentifier ) );
       }
 
       return upperCase ? StringUtils.capitalize( identifier ) : StringUtils.uncapitalize( identifier );
@@ -354,11 +355,10 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
    }
 
    private Optional<AspectModelUrn> aspectModelUrnFromSemanticId( final HasSemantics element ) {
-      return Optional.ofNullable( element.getSemanticId() ).flatMap( semanticId ->
-            semanticId.getKeys().stream()
-                  .filter( key -> key.getType() == KeyTypes.CONCEPT_DESCRIPTION || key.getType() == KeyTypes.GLOBAL_REFERENCE )
-                  .flatMap( key -> AspectModelUrn.from( key.getValue() ).toJavaOptional().stream() )
-                  .findFirst() );
+      return Optional.ofNullable( element.getSemanticId() ).flatMap( semanticId -> semanticId.getKeys().stream()
+            .filter( key -> key.getType() == KeyTypes.CONCEPT_DESCRIPTION || key.getType() == KeyTypes.GLOBAL_REFERENCE )
+            .flatMap( key -> AspectModelUrn.from( key.getValue() ).toJavaOptional().stream() )
+            .findFirst() );
    }
 
    private Aspect submodelToAspect( final Submodel submodel ) {
@@ -385,8 +385,8 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
 
    private List<Property> createProperties( final Submodel submodel ) {
       return submodel.getSubmodelElements().stream()
-            .filter( submodelElement ->
-                  !org.eclipse.digitaltwin.aas4j.v3.model.Operation.class.isAssignableFrom( submodelElement.getClass() )
+            .filter(
+                  submodelElement -> !org.eclipse.digitaltwin.aas4j.v3.model.Operation.class.isAssignableFrom( submodelElement.getClass() )
                         && !EventElement.class.isAssignableFrom( submodelElement.getClass() ) )
             .map( this::createProperty ).toList();
    }
@@ -412,7 +412,8 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
             .flatMap( type -> {
                if ( type instanceof final Scalar scalarType ) {
                   // We can set languageTag to null, because AAS does not use rdf:langString, property values
-                  // can never provide a language tag, therefore we'll never create a ScalarValue with rdf:langString type.
+                  // can never provide a language tag, therefore we'll never create a ScalarValue with rdf:langString
+                  // type.
                   // https://aas-core-works.github.io/aas-core-meta/v3/DataTypeDefXsd.html
                   final Optional<ScalarValue> exampleValue =
                         valueInstantiator.buildScalarValue( lexicalRepresentation, null, scalarType.getUrn() );
@@ -445,15 +446,20 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
       return validIrdiOrUri( submodel.getId() ).stream().toList();
    }
 
-   private sealed interface ElementNamingStrategy permits DetermineAutomatically, UseGivenUrn {}
+   private sealed interface ElementNamingStrategy permits DetermineAutomatically, UseGivenUrn {
+   }
 
-   private record DetermineAutomatically( String namePrefix ) implements ElementNamingStrategy {
+   private record DetermineAutomatically(
+         String namePrefix
+   ) implements ElementNamingStrategy {
       private DetermineAutomatically() {
          this( "" );
       }
    }
 
-   private record UseGivenUrn( AspectModelUrn aspectModelUrn ) implements ElementNamingStrategy {}
+   private record UseGivenUrn(
+         AspectModelUrn aspectModelUrn
+   ) implements ElementNamingStrategy {}
 
    private MetaModelBaseAttributes baseAttributes( final SubmodelElement element, final ElementNamingStrategy elementNamingStrategy,
          final boolean upperCase ) {
@@ -490,8 +496,7 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
       final Optional<ScalarValue> exampleValue =
             submodelElement instanceof final org.eclipse.digitaltwin.aas4j.v3.model.Property property
                   ? Optional.ofNullable( property.getValue() )
-                  .flatMap( lexicalRepresentation ->
-                        exampleValueForProperty( lexicalRepresentation, characteristic.getDataType() ) )
+                        .flatMap( lexicalRepresentation -> exampleValueForProperty( lexicalRepresentation, characteristic.getDataType() ) )
                   : Optional.empty();
       final Property result = new DefaultProperty(
             metaModelBaseAttributes,
@@ -538,7 +543,8 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
 
    private Event createEvent( final EventElement event ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = baseAttributes( event, new DetermineAutomatically(), true );
-      // Since an AAS EventElement/BasicEvent does not have Properties but only info about the broker, we can't create anything
+      // Since an AAS EventElement/BasicEvent does not have Properties but only info about the broker, we
+      // can't create anything
       // meaningful here
       LOG.warn( "Creating event {} with empty list of properties", metaModelBaseAttributes.urn().getName() );
       return new DefaultEvent( metaModelBaseAttributes, List.of() );
@@ -585,10 +591,9 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
          case EXTERNAL_REFERENCE -> "External reference ";
       } + ref.getKeys().stream().map( Key::getValue ).collect( Collectors.joining( "/" ) );
 
-      final Function<Reference, Optional<String>> referenceToUri = ref ->
-            ref.getKeys().isEmpty()
-                  ? Optional.empty()
-                  : validIrdiOrUri( ref.getKeys().get( ref.getKeys().size() - 1 ).getValue() );
+      final Function<Reference, Optional<String>> referenceToUri = ref -> ref.getKeys().isEmpty()
+            ? Optional.empty()
+            : validIrdiOrUri( ref.getKeys().get( ref.getKeys().size() - 1 ).getValue() );
 
       final String characteristicDescription = "First reference: %s, second reference: %s".formatted(
             describeReference.apply( relationshipElement.getFirst() ), describeReference.apply( relationshipElement.getSecond() ) );
@@ -718,9 +723,8 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
                }
             } )
             .findFirst()
-            .orElseThrow( () ->
-                  new AspectModelGenerationException(
-                        "Encountered unsupported SubmodelElement type " + element.getClass().getSimpleName() ) );
+            .orElseThrow( () -> new AspectModelGenerationException(
+                  "Encountered unsupported SubmodelElement type " + element.getClass().getSimpleName() ) );
    }
 
    private Characteristic createDefaultScalarCharacteristic( final SubmodelElement submodelElement, final String dataTypeUri,

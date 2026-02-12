@@ -25,9 +25,10 @@ import org.eclipse.esmf.metamodel.Namespace;
 import org.apache.jena.rdf.model.Model;
 
 /**
- * An AspectModelFile is the abstraction of one "code unit". When its source location is in a file system, the
- * AspectModelFile corresponds to one file, but this does not have to be the case: An AspectModelFile could also
- * exist in memory, or purely virtually (e.g., as an abstraction of a sub-graph in a triple store).
+ * An AspectModelFile is the abstraction of one "code unit". When its source location is in a file
+ * system, the AspectModelFile corresponds to one file, but this does not have to be the case: An
+ * AspectModelFile could also exist in memory, or purely virtually (e.g., as an abstraction of a
+ * sub-graph in a triple store).
  */
 public interface AspectModelFile extends ModelElementGroup {
    /**
@@ -45,8 +46,8 @@ public interface AspectModelFile extends ModelElementGroup {
    String sourceRepresentation();
 
    /**
-    * The list of Strings that are contained as a comment block at the start of the file. This is often used
-    * for copyright and license information.
+    * The list of Strings that are contained as a comment block at the start of the file. This is often
+    * used for copyright and license information.
     *
     * @return the header comment
     */
@@ -67,18 +68,18 @@ public interface AspectModelFile extends ModelElementGroup {
    }
 
    /**
-    * The URI that denominates the source location, if present. It can be a file:// or https:// URL, but it
-    * could for example also be an Aspect Model URN, if it refers to a file that is part of the SAMM specification.
-    * Generally, this should be the physical location, not a logical identifier, in other words, where was this
-    * AspectModelFile loaded from.
+    * The URI that denominates the source location, if present. It can be a file:// or https:// URL,
+    * but it could for example also be an Aspect Model URN, if it refers to a file that is part of the
+    * SAMM specification. Generally, this should be the physical location, not a logical identifier, in
+    * other words, where was this AspectModelFile loaded from.
     *
     * @return the source location
     */
    Optional<URI> sourceLocation();
 
    /**
-    * Convenience method to help printing the location of a file: It returns its source location URI if present, or "unknown file"
-    * if the file does not have a source location.
+    * Convenience method to help printing the location of a file: It returns its source location URI if
+    * present, or "unknown file" if the file does not have a source location.
     *
     * @return the human readable source location
     */
@@ -87,7 +88,8 @@ public interface AspectModelFile extends ModelElementGroup {
    }
 
    /**
-    * Returns the local file name ("something.ttl") of this AspectModelFile, based on its source location.
+    * Returns the local file name ("something.ttl") of this AspectModelFile, based on its source
+    * location.
     *
     * @return the local Aspect Model file
     */

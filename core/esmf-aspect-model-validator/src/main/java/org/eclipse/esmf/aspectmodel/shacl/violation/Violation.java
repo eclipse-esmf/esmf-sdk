@@ -30,11 +30,12 @@ import org.eclipse.esmf.aspectmodel.validation.RegularExpressionConstraintViolat
 import org.apache.jena.rdf.model.RDFNode;
 
 /**
- * Represents a single violation raised by one or more SHACL shapes against an RDF model.
- * A human-readable representation of the violation is available via {@link #message()} while details about the context
- * in which the violation occurred (such as offending model element, RDF statements and the SHACL shape that raised the
- * violation) are available via {@link #context()}. To handle information specific to each type of violation,
- * implement {@link Visitor} and call {@link #accept(Visitor)} on the violation(s).
+ * Represents a single violation raised by one or more SHACL shapes against an RDF model. A
+ * human-readable representation of the violation is available via {@link #message()} while details
+ * about the context in which the violation occurred (such as offending model element, RDF
+ * statements and the SHACL shape that raised the violation) are available via {@link #context()}.
+ * To handle information specific to each type of violation, implement {@link Visitor} and call
+ * {@link #accept(Visitor)} on the violation(s).
  */
 public interface Violation {
    /**
@@ -43,7 +44,8 @@ public interface Violation {
    String errorCode();
 
    /**
-    * The evaluation context providing information about the source location, context element etc. if available.
+    * The evaluation context providing information about the source location, context element etc. if
+    * available.
     *
     * @return the evalauation context if available, or null
     */
@@ -62,7 +64,8 @@ public interface Violation {
    }
 
    /**
-    * The logical location of the input (e.g., {@link AspectModelFile}) the violation applies to if known
+    * The logical location of the input (e.g., {@link AspectModelFile}) the violation applies to if
+    * known
     */
    default Optional<URI> sourceLocation() {
       return Optional.ofNullable( highlight() ).map( RDFNode::asNode )

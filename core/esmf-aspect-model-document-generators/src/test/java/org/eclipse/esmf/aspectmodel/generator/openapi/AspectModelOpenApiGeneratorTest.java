@@ -166,7 +166,7 @@ class AspectModelOpenApiGeneratorTest {
       final OpenAPI openApi = result.getOpenAPI();
       assertThat( openApi.getPaths().get( "/query-api/v1.0.0/" + TEST_RESOURCE_PATH ).getPost().getServers()
             .getFirst().getUrl() )
-            .isEqualTo( "https://test-aspect.example.com/query-api/v1.0.0" );
+                  .isEqualTo( "https://test-aspect.example.com/query-api/v1.0.0" );
    }
 
    @Test
@@ -182,7 +182,7 @@ class AspectModelOpenApiGeneratorTest {
       final OpenAPI openApi = result.getOpenAPI();
       assertThat( openApi.getPaths().get( "/custom/query-path" ).getPost().getServers()
             .getFirst().getUrl() )
-            .isEqualTo( "https://test-aspect.example.com/custom/query-path" );
+                  .isEqualTo( "https://test-aspect.example.com/custom/query-path" );
    }
 
    @Test
@@ -319,7 +319,7 @@ class AspectModelOpenApiGeneratorTest {
             .toList();
       assertThat( logResults )
             .contains(
-               "The parameter name test-\\Id is not in the correct form. A valid form is described as: ^[a-zA-Z][a-zA-Z0-9-_]*" )
+                  "The parameter name test-\\Id is not in the correct form. A valid form is described as: ^[a-zA-Z][a-zA-Z0-9-_]*" )
             .contains( "There was an exception during the read of the root or the validation." );
    }
 
@@ -404,7 +404,7 @@ class AspectModelOpenApiGeneratorTest {
       assertThat(
             openApi.getComponents().getResponses().get( "AspectWithCollection" ).getContent().get( "application/json" ).getSchema()
                   .get$ref() )
-            .isEqualTo( "#/components/schemas/PagingSchema" );
+                        .isEqualTo( "#/components/schemas/PagingSchema" );
    }
 
    @Test
@@ -455,11 +455,11 @@ class AspectModelOpenApiGeneratorTest {
       assertThat(
             openApi.getComponents().getResponses().get( "AspectWithCollection" ).getContent().get( "application/json" ).getSchema()
                   .get$ref() )
-            .isEqualTo( "#/components/schemas/PagingSchema" );
+                        .isEqualTo( "#/components/schemas/PagingSchema" );
       assertThat(
             openApi.getComponents().getResponses().get( "AspectWithCollection" ).getContent().get( "application/json" ).getSchema()
                   .get$ref() )
-            .isEqualTo( "#/components/schemas/PagingSchema" );
+                        .isEqualTo( "#/components/schemas/PagingSchema" );
 
       final Schema<?> pagingSchema = openApi.getComponents()
             .getSchemas()
@@ -549,7 +549,7 @@ class AspectModelOpenApiGeneratorTest {
       assertThat(
             ( (Schema) openApi.getComponents().getSchemas().get( "testOperation" ).getAllOf()
                   .get( 1 ) ).getProperties() ).doesNotContainKey(
-            "params" );
+                        "params" );
       assertThat( ( (Schema) openApi.getComponents().getSchemas().get( "testOperationTwo" ).getAllOf()
             .get( 1 ) ).getProperties() ).doesNotContainKey( "params" );
    }
@@ -691,7 +691,7 @@ class AspectModelOpenApiGeneratorTest {
             "See: http://example.com/" );
       assertThat( ( (Schema) openApi.getComponents().getSchemas().get( "AspectWithCollection" ).getProperties()
             .get( "testProperty" ) ).get$comment() )
-            .isEqualTo( "See: http://example.com/, http://example.com/me" );
+                  .isEqualTo( "See: http://example.com/, http://example.com/me" );
       assertThat( openApi.getComponents().getSchemas().get( "TestCollection" ).get$comment() )
             .isEqualTo( "See: http://example.com/" );
    }
@@ -804,7 +804,7 @@ class AspectModelOpenApiGeneratorTest {
             .getResponses()
             .get( "200" )
             .get$ref() )
-            .isEqualTo( "#/components/responses/AspectWithProperty" );
+                  .isEqualTo( "#/components/responses/AspectWithProperty" );
 
       assertThat( openApi.getComponents()
             .getResponses()
@@ -813,7 +813,7 @@ class AspectModelOpenApiGeneratorTest {
             .get( "application/json" )
             .getSchema()
             .get$ref() )
-            .isEqualTo( "#/components/schemas/AspectWithProperty" );
+                  .isEqualTo( "#/components/schemas/AspectWithProperty" );
    }
 
    @Test
@@ -862,7 +862,7 @@ class AspectModelOpenApiGeneratorTest {
             .get( "application/json" )
             .getSchema()
             .get$ref() )
-            .isEqualTo( "#/components/schemas/PagingSchema" );
+                  .isEqualTo( "#/components/schemas/PagingSchema" );
 
       assertThat( openApi.getComponents().getSchemas() ).containsKey( "AspectWithProperty" );
    }
@@ -877,20 +877,20 @@ class AspectModelOpenApiGeneratorTest {
       validateOpenApiSpec( jsonNode, openApi, aspect );
 
       final DocumentContext context = JsonPath.parse( json );
-      assertThat( context.<Object> read( "$['components']['schemas']['" + aspect.getName() + "']" ) ).isNotNull();
-      assertThat( context.<String> read(
+      assertThat( context.<Object>read( "$['components']['schemas']['" + aspect.getName() + "']" ) ).isNotNull();
+      assertThat( context.<String>read(
             "$['components']['schemas']['" + aspect.getName() + "']['" + AspectModelJsonSchemaGenerator.SAMM_EXTENSION + "']" ) ).isEqualTo(
-            aspect.urn().toString() );
+                  aspect.urn().toString() );
 
       for ( final Property property : aspect.getProperties() ) {
-         assertThat( context.<String> read( "$['components']['schemas']"
+         assertThat( context.<String>read( "$['components']['schemas']"
                + "['" + aspect.getName() + "']['properties']['" + property.getPayloadName() + "']['"
                + AspectModelJsonSchemaGenerator.SAMM_EXTENSION
                + "']" ) ).isEqualTo( property.urn().toString() );
       }
 
       // $comment keywords should only be generated on demand, not by default
-      assertThat( context.<Object> read( "$..$comment" ) ).asInstanceOf( InstanceOfAssertFactories.LIST ).isEmpty();
+      assertThat( context.<Object>read( "$..$comment" ) ).asInstanceOf( InstanceOfAssertFactories.LIST ).isEmpty();
       if ( !aspect.getOperations().isEmpty() ) {
          validateOperation( openApi );
       } else {
@@ -939,7 +939,7 @@ class AspectModelOpenApiGeneratorTest {
          final String[] text = node.asText().split( "/" );
          final DocumentContext context = JsonPath.using( config ).parse( rootNode.toString() );
          final LinkedHashMap<String, Object> read = context
-               .<LinkedHashMap<String, Object>> read( String.format( "$['%s']['%s']['%s']", text[1], text[2], text[3] ) );
+               .<LinkedHashMap<String, Object>>read( String.format( "$['%s']['%s']['%s']", text[1], text[2], text[3] ) );
          assertThat( read ).isNotNull();
       } );
    }

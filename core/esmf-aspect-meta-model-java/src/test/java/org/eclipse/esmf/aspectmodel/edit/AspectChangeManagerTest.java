@@ -171,15 +171,15 @@ class AspectChangeManagerTest {
       final AspectModelFile aspectModelFile = RawAspectModelFileBuilder.builder()
             .sourceLocation( Optional.of( URI.create( "file:///temp/test.ttl" ) ) )
             .sourceModel( createModel( """
-                  @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> .
-                  @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-                  @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
-                  
-                  :Aspect a samm:Aspect ;
-                     samm:description "This is a test description"@en ;
-                     samm:properties ( ) ;
-                     samm:operations ( ) .
-                  """.formatted( KnownVersion.getLatest().toVersionString() )
+               @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> .
+               @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+               @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
+
+               :Aspect a samm:Aspect ;
+                  samm:description "This is a test description"@en ;
+                  samm:properties ( ) ;
+                  samm:operations ( ) .
+               """.formatted( KnownVersion.getLatest().toVersionString() )
             ) )
             .build();
       final Change addFile = new AddAspectModelFile( aspectModelFile );
@@ -210,15 +210,15 @@ class AspectChangeManagerTest {
             new AddAspectModelFile( aspectModelFile ),
             new AddElementDefinition( AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.test:1.0.0#Aspect" ),
                   createModel( """
-                        @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> .
-                        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-                        @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
-                        
-                        :Aspect a samm:Aspect ;
-                           samm:description "This is a test description"@en ;
-                           samm:properties ( ) ;
-                           samm:operations ( ) .
-                        """.formatted( KnownVersion.getLatest().toVersionString() ) ), aspectModelFile )
+                     @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> .
+                     @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+                     @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
+
+                     :Aspect a samm:Aspect ;
+                        samm:description "This is a test description"@en ;
+                        samm:properties ( ) ;
+                        samm:operations ( ) .
+                     """.formatted( KnownVersion.getLatest().toVersionString() ) ), aspectModelFile )
       );
 
       changeManager.applyChange( changes );
@@ -279,15 +279,15 @@ class AspectChangeManagerTest {
       final AspectModelFile file1 = RawAspectModelFileBuilder.builder()
             .sourceLocation( file1Location )
             .sourceModel( createModel( """
-                  @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> .
-                  @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-                  @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
-                  
-                  :Aspect a samm:Aspect ;
-                     samm:description "This is a test description"@en ;
-                     samm:properties ( ) ;
-                     samm:operations ( ) .
-                  """.formatted( KnownVersion.getLatest().toVersionString() )
+               @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> .
+               @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+               @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
+
+               :Aspect a samm:Aspect ;
+                  samm:description "This is a test description"@en ;
+                  samm:properties ( ) ;
+                  samm:operations ( ) .
+               """.formatted( KnownVersion.getLatest().toVersionString() )
             ) )
             .build();
       final AspectModelFile file2 = RawAspectModelFileBuilder.builder().sourceLocation( file2Location ).build();
@@ -360,15 +360,15 @@ class AspectChangeManagerTest {
       final AspectModelFile file1 = RawAspectModelFileBuilder.builder()
             .sourceLocation( file1Location )
             .sourceModel( createModel( """
-                  @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> .
-                  @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-                  @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
-                  
-                  :Aspect a samm:Aspect ;
-                     samm:description "This is a test description"@en ;
-                     samm:properties ( ) ;
-                     samm:operations ( ) .
-                  """.formatted( KnownVersion.getLatest().toVersionString() )
+               @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> .
+               @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+               @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
+
+               :Aspect a samm:Aspect ;
+                  samm:description "This is a test description"@en ;
+                  samm:properties ( ) ;
+                  samm:operations ( ) .
+               """.formatted( KnownVersion.getLatest().toVersionString() )
             ) )
             .build();
       final AspectModelFile file2 = RawAspectModelFileBuilder.builder().sourceLocation( file2Location ).build();
@@ -503,7 +503,8 @@ class AspectChangeManagerTest {
       final String oldNsPrefix = originalFile.namespace().urn().toString() + "#";
       final String propertyLocalName = "testProperty";
 
-      // sanity: ensure the fixture really contains a reference to the property in old namespace (e.g., via rdf:first)
+      // sanity: ensure the fixture really contains a reference to the property in old namespace (e.g.,
+      // via rdf:first)
       assertThat( originalFile.sourceModel()
             .listStatements( null, null, originalFile.sourceModel().createResource( oldNsPrefix + propertyLocalName ) )
             .hasNext()

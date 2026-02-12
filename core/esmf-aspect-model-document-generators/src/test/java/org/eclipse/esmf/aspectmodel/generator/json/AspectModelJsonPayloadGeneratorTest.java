@@ -120,9 +120,11 @@ class AspectModelJsonPayloadGeneratorTest {
 
    @ParameterizedTest
    @Execution( ExecutionMode.CONCURRENT )
-   @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
-         "ASPECT_WITH_MULTIPLE_ENTITIES_SAME_EXTEND" // will only work if "addTypeAttributeForEntityInheritance" is true in the config
-   } )
+   @EnumSource( value = TestAspect.class,
+      mode = EnumSource.Mode.EXCLUDE,
+      names = {
+            "ASPECT_WITH_MULTIPLE_ENTITIES_SAME_EXTEND" // will only work if "addTypeAttributeForEntityInheritance" is true in the config
+      } )
    void testDeserializationForGeneratedJson( final TestAspect testAspect ) {
       final Aspect aspect = TestResources.load( testAspect ).aspect();
       final JavaCompiler.CompilationResult compilationResult = compile( aspect );
@@ -143,8 +145,9 @@ class AspectModelJsonPayloadGeneratorTest {
    }
 
    /**
-    * Tests the combination of code generation using JsonTypeInfo.Id.NAME with corresponding JSON payload that contains a @type
-    * attribute for the case that there are ambiguous entities inheriting from an AbstractEntity
+    * Tests the combination of code generation using JsonTypeInfo.Id.NAME with corresponding JSON
+    * payload that contains a @type attribute for the case that there are ambiguous entities inheriting
+    * from an AbstractEntity
     */
    @Test
    void testDeserializationForAmbiguousSubEntities() {
@@ -347,10 +350,13 @@ class AspectModelJsonPayloadGeneratorTest {
 
    @Test
    void testGenerateJsonForAspectWithComplexCollectionOfMinSize2AndExampleValue() throws IOException {
-      // We generate a payload for the set of entities, where the Entity's single property has an example value and the
+      // We generate a payload for the set of entities, where the Entity's single property has an example
+      // value and the
       // set has a minimum size of 2. This means that the exampleValue may not reused for every entry.
-      // We parse the generated JSON using a List instead of a Set though, so that Jackson doesn't "solve" the problem
-      // by swallowing duplicate values: We want to ensure that the JSON does indeed not contain two duplicate entries
+      // We parse the generated JSON using a List instead of a Set though, so that Jackson doesn't "solve"
+      // the problem
+      // by swallowing duplicate values: We want to ensure that the JSON does indeed not contain two
+      // duplicate entries
       // (i.e., keeps the "set" semantics)
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_COMPLEX_SET );
       final AspectWithComplexSetAsList aspectWithComplexSet = parseJson( generatedJson, AspectWithComplexSetAsList.class );
@@ -449,8 +455,8 @@ class AspectModelJsonPayloadGeneratorTest {
    void testGenerateAspectWithMultiLanguageText() throws IOException {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_MULTI_LANGUAGE_TEXT );
       final AspectWithMultiLanguageText aspectWithMultiLanguageText = parseJson( generatedJson, AspectWithMultiLanguageText.class );
-      assertThat( aspectWithMultiLanguageText.getProp() ).matches( langString ->
-            langString.getLanguageTag().equals( Locale.ENGLISH ) || langString.getLanguageTag().equals( Locale.GERMAN ) );
+      assertThat( aspectWithMultiLanguageText.getProp() ).matches(
+            langString -> langString.getLanguageTag().equals( Locale.ENGLISH ) || langString.getLanguageTag().equals( Locale.GERMAN ) );
    }
 
    @Test
@@ -458,8 +464,9 @@ class AspectModelJsonPayloadGeneratorTest {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_MULTILANGUAGE_EXAMPLE_VALUE );
       final AspectWithMultilanguageExampleValue aspectWithMultiLanguageText = parseJson( generatedJson,
             AspectWithMultilanguageExampleValue.class );
-      assertThat( aspectWithMultiLanguageText.getProp() ).matches( langString ->
-            langString.getValue().equals( "Multilanguage example value." ) && langString.getLanguageTag().equals( Locale.GERMAN ) );
+      assertThat( aspectWithMultiLanguageText.getProp() )
+            .matches( langString -> langString.getValue().equals( "Multilanguage example value." )
+                  && langString.getLanguageTag().equals( Locale.GERMAN ) );
    }
 
    @Test

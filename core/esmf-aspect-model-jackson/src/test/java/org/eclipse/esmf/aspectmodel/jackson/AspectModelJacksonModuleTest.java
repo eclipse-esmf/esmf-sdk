@@ -98,13 +98,11 @@ class AspectModelJacksonModuleTest {
       final Class<?> clazz = instance.getClass();
 
       final List<Integer> listProperty = getValue( clazz, instance, "listProperty",
-            new TypeToken<List<Integer>>() {
-            }.getType() );
+            new TypeToken<List<Integer>>() {}.getType() );
       assertThat( listProperty ).contains( 1, 2, 3 );
 
       final Set<String> setProperty = getValue( clazz, instance, "setProperty",
-            new TypeToken<Set<String>>() {
-            }.getType() );
+            new TypeToken<Set<String>>() {}.getType() );
       assertThat( setProperty ).containsExactlyInAnyOrder( "foo", "bar" );
    }
 
@@ -131,8 +129,7 @@ class AspectModelJacksonModuleTest {
       assertThat( timestamp.toXMLFormat() ).isEqualTo( "2018-08-08T12:00:00.0000+01:00" );
 
       final Optional<BigInteger> number = getValue( clazz, instance, "numberProperty",
-            new TypeToken<Optional<BigInteger>>() {
-            }.getType() );
+            new TypeToken<Optional<BigInteger>>() {}.getType() );
       assertThat( number ).isEmpty();
    }
 
@@ -195,8 +192,8 @@ class AspectModelJacksonModuleTest {
 
    @Test
    void testAspectWithEntityEnumerationWithNotExistingEnum() {
-      assertThatExceptionOfType( EnumAttributeNotFoundException.class ).isThrownBy( () ->
-                  generateInstance( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_WITH_NOT_EXISTING_ENUM ) )
+      assertThatExceptionOfType( EnumAttributeNotFoundException.class )
+            .isThrownBy( () -> generateInstance( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_WITH_NOT_EXISTING_ENUM ) )
             .withMessageContainingAll( "Tried to parse value", "but there is no enum field like that" );
    }
 
@@ -228,7 +225,8 @@ class AspectModelJacksonModuleTest {
       assertThat( testPropertyType ).isEqualTo( Either.class );
 
       // It's an Either<LeftEntity, RightEntity> with LeftEntity and RightEntity being classes that are
-      // generated from the Entities in the Aspect Model, and compiled in-memory, so we can only refer to them
+      // generated from the Entities in the Aspect Model, and compiled in-memory, so we can only refer to
+      // them
       // as ? here
       final Either<?, ?> eitherValue = (Either<?, ?>) testProperty.get( instance );
       assertThat( eitherValue.getRight() ).isEmpty();

@@ -29,7 +29,9 @@ import org.apache.jena.rdf.model.RDFNode;
  *
  * @param pattern the pattern
  */
-public record PatternConstraint( Pattern pattern ) implements Constraint {
+public record PatternConstraint(
+      Pattern pattern
+) implements Constraint {
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
       final List<Violation> nodeKindViolations = new NodeKindConstraint( Shape.NodeKind.Literal ).apply( rdfNode, context );

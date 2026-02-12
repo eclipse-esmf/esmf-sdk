@@ -59,8 +59,7 @@ import org.apache.velocity.runtime.RuntimeConstants;
 import org.jboss.forge.roaster.Roaster;
 
 /**
- * A {@link ArtifactGenerator} that generates Java Pojo code
- * for {@link StructureElement}s
+ * A {@link ArtifactGenerator} that generates Java Pojo code for {@link StructureElement}s
  *
  * @param <E> the element type
  */
@@ -86,7 +85,7 @@ public class StructureElementJavaArtifactGenerator<E extends StructureElement> i
       importTracker.importExplicit( java.util.Objects.class );
       importTracker.importExplicit( Generated.class );
 
-      final Map<String, Object> context = ImmutableMap.<String, Object> builder()
+      final Map<String, Object> context = ImmutableMap.<String, Object>builder()
             .put( "ArrayList", ArrayList.class )
             .put( "Base64BinarySerializer", "org.eclipse.esmf.aspectmodel.jackson.Base64BinarySerializer" )
             .put( "Base64BinaryDeserializer", "org.eclipse.esmf.aspectmodel.jackson.Base64BinaryDeserializer" )

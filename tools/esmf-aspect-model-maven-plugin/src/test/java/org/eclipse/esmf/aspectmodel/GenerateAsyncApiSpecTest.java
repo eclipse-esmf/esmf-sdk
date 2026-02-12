@@ -25,22 +25,21 @@ import org.junit.jupiter.api.Test;
 public class GenerateAsyncApiSpecTest extends AspectModelMojoTest {
    @Test
    @InjectMojo(
-         goal = GenerateAsyncApiSpec.MAVEN_GOAL,
-         pom = "src/test/resources/generate-asyncapi-spec-json-pom-valid-aspect-model/pom.xml"
-   )
+      goal = GenerateAsyncApiSpec.MAVEN_GOAL,
+      pom = "src/test/resources/generate-asyncapi-spec-json-pom-valid-aspect-model/pom.xml" )
    public void testGenerateAsyncApiSpecJsonValidAspectModel( final GenerateAsyncApiSpec generateAsyncApiSpec ) {
       assertThatCode( generateAsyncApiSpec::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "Aspect.aai.json" ) ).exists();
    }
 
    /**
-    * Verify that a preferred language can be chosen during async api specification generation from the given aspect model.
+    * Verify that a preferred language can be chosen during async api specification generation from the
+    * given aspect model.
     */
    @Test
    @InjectMojo(
-         goal = GenerateAsyncApiSpec.MAVEN_GOAL,
-         pom = "src/test/resources/generate-asyncapi-spec-json-pom-valid-aspect-model-language/pom.xml"
-   )
+      goal = GenerateAsyncApiSpec.MAVEN_GOAL,
+      pom = "src/test/resources/generate-asyncapi-spec-json-pom-valid-aspect-model-language/pom.xml" )
    public void testGenerateAsyncApiSpecJsonValidAspectModelWithLanguageParameter( final GenerateAsyncApiSpec generateAsyncApiSpec ) {
       assertThatCode( generateAsyncApiSpec::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "AspectWithEnglishAndGermanDescription.aai.json" ) ).exists();
@@ -48,9 +47,8 @@ public class GenerateAsyncApiSpecTest extends AspectModelMojoTest {
 
    @Test
    @InjectMojo(
-         goal = GenerateAsyncApiSpec.MAVEN_GOAL,
-         pom = "src/test/resources/generate-asyncapi-spec-json-pom-separate-schema-files/pom.xml"
-   )
+      goal = GenerateAsyncApiSpec.MAVEN_GOAL,
+      pom = "src/test/resources/generate-asyncapi-spec-json-pom-separate-schema-files/pom.xml" )
    public void testGenerateAsyncApiSpecJsonWithSeparateSchemaFiles( final GenerateAsyncApiSpec generateAsyncApiSpec ) {
       assertThatCode( generateAsyncApiSpec::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "AspectWithEvent.aai.json" ) ).exists();
@@ -59,9 +57,8 @@ public class GenerateAsyncApiSpecTest extends AspectModelMojoTest {
 
    @Test
    @InjectMojo(
-         goal = GenerateAsyncApiSpec.MAVEN_GOAL,
-         pom = "src/test/resources/generate-asyncapi-spec-pom-invalid-format/pom.xml"
-   )
+      goal = GenerateAsyncApiSpec.MAVEN_GOAL,
+      pom = "src/test/resources/generate-asyncapi-spec-pom-invalid-format/pom.xml" )
    public void testGenerateAsyncApiSpecInvalidOutputFormat( final GenerateAsyncApiSpec generateAsyncApiSpec ) {
       assertThatCode( generateAsyncApiSpec::execute )
             .isInstanceOf( MojoExecutionException.class )

@@ -26,7 +26,9 @@ import org.apache.jena.rdf.model.RDFNode;
  *
  * @param allowedValue the allowed value
  */
-public record HasValueConstraint( RDFNode allowedValue ) implements Constraint {
+public record HasValueConstraint(
+      RDFNode allowedValue
+) implements Constraint {
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
       return rdfNode.equals( allowedValue )

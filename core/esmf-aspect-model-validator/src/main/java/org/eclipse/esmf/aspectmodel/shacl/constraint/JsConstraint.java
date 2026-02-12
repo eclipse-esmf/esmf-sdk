@@ -41,13 +41,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Represents a SHACL JavaScript constraint as specified by the <a href="https://www.w3.org/TR/shacl-js/">SHACL JavaScript Extensions</a>.
- * The given JavaScript function can refer to the variables "TermFactory" (see {@link TermFactory}), "$data" (the data graph) and "$shapes"
- * (the shapes graph).
- * It can return either a boolean (with true indicating successfull validation and false a validation error) or a JavaScript object with
- * context information;
- * every key in the object must be a string.
- * The JavaScript object can contain a key "message" which, if present, overrides the sh:message defined in the shape.
+ * Represents a SHACL JavaScript constraint as specified by the
+ * <a href="https://www.w3.org/TR/shacl-js/">SHACL JavaScript Extensions</a>. The given JavaScript
+ * function can refer to the variables "TermFactory" (see {@link TermFactory}), "$data" (the data
+ * graph) and "$shapes" (the shapes graph). It can return either a boolean (with true indicating
+ * successfull validation and false a validation error) or a JavaScript object with context
+ * information; every key in the object must be a string. The JavaScript object can contain a key
+ * "message" which, if present, overrides the sh:message defined in the shape.
  */
 public class JsConstraint implements Constraint {
    private static final Logger LOG = LoggerFactory.getLogger( JsConstraint.class );
@@ -67,12 +67,17 @@ public class JsConstraint implements Constraint {
          return;
       }
 
-      // The guest application (i.e., the JavaScript) can only be compiled at runtime if either the host application runs via GraalVM
-      // or, on a regular JVMCI-enabled JDK, the Graal Compiler is set up (additional JIT compilers are added). Otherwise, the script runs
-      // in interpreted mode, which will be slower and print a corresponding warning. Since in the SHACL validation only very little
+      // The guest application (i.e., the JavaScript) can only be compiled at runtime if either the host
+      // application runs via GraalVM
+      // or, on a regular JVMCI-enabled JDK, the Graal Compiler is set up (additional JIT compilers are
+      // added). Otherwise, the script runs
+      // in interpreted mode, which will be slower and print a corresponding warning. Since in the SHACL
+      // validation only very little
       // JavaScript
-      // code is executed, this is not a problem. The following the property disables the corresponding warning.
-      // See https://www.graalvm.org/22.3/reference-manual/js/FAQ/#warning-implementation-does-not-support-runtime-compilation
+      // code is executed, this is not a problem. The following the property disables the corresponding
+      // warning.
+      // See
+      // https://www.graalvm.org/22.3/reference-manual/js/FAQ/#warning-implementation-does-not-support-runtime-compilation
       System.setProperty( "polyglot.engine.WarnInterpreterOnly", "false" );
       engine = new ScriptEngineManager().getEngineByName( "JavaScript" );
       if ( engine == null ) {
@@ -80,7 +85,8 @@ public class JsConstraint implements Constraint {
                + "in the list of dependencies and/or the 'js' component is installed in your GraalVM runtime." );
       }
       final Bindings bindings = engine.getBindings( ScriptContext.ENGINE_SCOPE );
-      // The following settings are required to allow the script to access methods and fields on the injected objects
+      // The following settings are required to allow the script to access methods and fields on the
+      // injected objects
       bindings.put( "polyglot.js.allowHostAccess", true );
       bindings.put( "polyglot.js.allowHostClassLookup", (Predicate<String>) s -> true );
       bindings.put( "TermFactory", new TermFactory() );
@@ -101,7 +107,7 @@ public class JsConstraint implements Constraint {
       JsConstraint.evaluateJavaScript = doEvaluate;
    }
 
-   @SuppressWarnings( "LocalVariableNamingConvention" )  // use this_
+   @SuppressWarnings( "LocalVariableNamingConvention" ) // use this_
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
       if ( !evaluateJavaScript ) {

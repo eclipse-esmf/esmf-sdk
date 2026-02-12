@@ -20,7 +20,8 @@ import org.eclipse.esmf.metamodel.ModelElement;
  *
  * @param <E> the model element type
  * @param <I> the type that uniquely identifies the artifact in the scope of the generation process
- * @param <T> the artifact's content type, e.g. String or byte[]; the "output" type of the generation function
+ * @param <T> the artifact's content type, e.g. String or byte[]; the "output" type of the
+ *        generation function
  * @param <C> the config object for the generator
  * @param <A> the type of the artifact that is generated
  */

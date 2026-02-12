@@ -26,9 +26,9 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 
 /**
- * Refactoring operation: Copy an existing Aspect Model file to a new location.
- * Note that this operation only makes sense with additional changes, such as removing/adding elements or adjusting the
- * default RDF namespace.
+ * Refactoring operation: Copy an existing Aspect Model file to a new location. Note that this
+ * operation only makes sense with additional changes, such as removing/adding elements or adjusting
+ * the default RDF namespace.
  */
 public class CopyAspectModelFile extends StructuralChange {
    private final AspectModelFile source;

@@ -28,9 +28,11 @@ import org.slf4j.LoggerFactory;
 /**
  * Base class for the generation of {@link Artifact}s.
  *
- * @param <F> the focus type, e.g. Aspect or AspectModel; the "input" type of the generation function
+ * @param <F> the focus type, e.g. Aspect or AspectModel; the "input" type of the generation
+ *        function
  * @param <I> the type that uniquely identifies the artifact in the scope of the generation process
- * @param <T> the artifact's content type, e.g. String or byte[]; the "output" type of the generation function
+ * @param <T> the artifact's content type, e.g. String or byte[]; the "output" type of the
+ *        generation function
  * @param <C> the config object for the generator
  * @param <A> the type of the artifact that is generated
  */
@@ -55,9 +57,10 @@ public abstract class Generator<F, I, T, C extends GenerationConfig, A extends A
    }
 
    /**
-    * Generates artifacts from the given Aspect model. As this generation may produce multiple artifacts, the generator
-    * provides the caller with the identifier of the respective artifact via the callback function. The caller needs to
-    * provide an {@link OutputStream} for the artifact, e.g. a suitable FileOutputStream.
+    * Generates artifacts from the given Aspect model. As this generation may produce multiple
+    * artifacts, the generator provides the caller with the identifier of the respective artifact via
+    * the callback function. The caller needs to provide an {@link OutputStream} for the artifact, e.g.
+    * a suitable FileOutputStream.
     *
     * @param nameMapper the callback function that maps artifact identifiers to OutputStreams
     */
@@ -66,7 +69,8 @@ public abstract class Generator<F, I, T, C extends GenerationConfig, A extends A
    }
 
    /**
-    * Similar to {@link #generate(Function)}, except the name mapper function can also write an exception
+    * Similar to {@link #generate(Function)}, except the name mapper function can also write an
+    * exception
     *
     * @param nameMapper the callback function that maps artifact identifiers to OutputStreams
     * @param <E> the type of exception that can be thrown by the name mapper

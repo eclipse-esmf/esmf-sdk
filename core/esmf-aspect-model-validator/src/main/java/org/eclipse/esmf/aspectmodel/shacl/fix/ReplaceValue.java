@@ -19,7 +19,9 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 
 import org.apache.jena.rdf.model.Literal;
 
-public record ReplaceValue( EvaluationContext context, Literal oldValue, Literal newValue, Optional<String> customDescription )
+public record ReplaceValue(
+      EvaluationContext context, Literal oldValue, Literal newValue, Optional<String> customDescription
+)
       implements Fix {
    @Override
    public String description() {

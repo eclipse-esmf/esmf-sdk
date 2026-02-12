@@ -57,8 +57,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 /**
- * The tests for the CLI that are executed by Maven Surefire. They work using the {@link MainClassProcessLauncher}, i.e. directly call
- * the main function in {@link SammCli}.
+ * The tests for the CLI that are executed by Maven Surefire. They work using the
+ * {@link MainClassProcessLauncher}, i.e. directly call the main function in {@link SammCli}.
  */
 @ExtendWith( LogExtension.class )
 @TestInstance( TestInstance.Lifecycle.PER_CLASS )
@@ -231,7 +231,8 @@ class SammCliTest extends SammCliAbstractTest {
    void testAspectFromGitHubWithFullUrlValidateModel() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect",
             "https://github.com/eclipse-esmf/esmf-sdk/blob/main/core/esmf-test-aspect-models/src/main/resources/valid/org.eclipse.esmf"
-                  + ".test/1.0.0/AspectWithEntity.ttl", "validate" );
+                  + ".test/1.0.0/AspectWithEntity.ttl",
+            "validate" );
       assertThat( result.stdout() ).contains( "Input model is valid" );
       assertThat( result.stderr() ).isEmpty();
    }
@@ -876,27 +877,27 @@ class SammCliTest extends SammCliAbstractTest {
       assertThat( result.stdout() ).contains( "/{tenant-id}/aspect-with-entity:" );
       assertThat( result.stdout() ).contains(
             """
-                  post:
-                        tags:
-                        - AspectWithEntity
-                        operationId: postAspectWithEntity
-                  """
+               post:
+                     tags:
+                     - AspectWithEntity
+                     operationId: postAspectWithEntity
+               """
       );
       assertThat( result.stdout() ).contains(
             """
-                  put:
-                        tags:
-                        - AspectWithEntity
-                        operationId: putAspectWithEntity
-                  """
+               put:
+                     tags:
+                     - AspectWithEntity
+                     operationId: putAspectWithEntity
+               """
       );
       assertThat( result.stdout() ).contains(
             """
-                  patch:
-                        tags:
-                        - AspectWithEntity
-                        operationId: patchAspectWithEntity
-                  """
+               patch:
+                     tags:
+                     - AspectWithEntity
+                     operationId: patchAspectWithEntity
+               """
       );
       assertThat( result.stderr() ).isEmpty();
    }
@@ -909,11 +910,11 @@ class SammCliTest extends SammCliAbstractTest {
       assertThat( result.stdout() ).contains( "/{tenant-id}/aspect-with-entity:" );
       assertThat( result.stdout() ).contains(
             """
-                  post:
-                        tags:
-                        - AspectWithEntity
-                        operationId: postAspectWithEntity
-                  """
+               post:
+                     tags:
+                     - AspectWithEntity
+                     operationId: postAspectWithEntity
+               """
       );
       assertThat( result.stderr() ).isEmpty();
    }
@@ -926,11 +927,11 @@ class SammCliTest extends SammCliAbstractTest {
       assertThat( result.stdout() ).contains( "/{tenant-id}/aspect-with-entity:" );
       assertThat( result.stdout() ).contains(
             """
-                  put:
-                        tags:
-                        - AspectWithEntity
-                        operationId: putAspectWithEntity
-                  """
+               put:
+                     tags:
+                     - AspectWithEntity
+                     operationId: putAspectWithEntity
+               """
       );
       assertThat( result.stderr() ).isEmpty();
    }
@@ -943,11 +944,11 @@ class SammCliTest extends SammCliAbstractTest {
       assertThat( result.stdout() ).contains( "/{tenant-id}/aspect-with-entity:" );
       assertThat( result.stdout() ).contains(
             """
-                  patch:
-                        tags:
-                        - AspectWithEntity
-                        operationId: patchAspectWithEntity
-                  """
+               patch:
+                     tags:
+                     - AspectWithEntity
+                     operationId: patchAspectWithEntity
+               """
       );
       assertThat( result.stderr() ).isEmpty();
    }
@@ -960,19 +961,19 @@ class SammCliTest extends SammCliAbstractTest {
       assertThat( result.stdout() ).contains( "/{tenant-id}/aspect-with-entity:" );
       assertThat( result.stdout() ).contains(
             """
-                  patch:
-                        tags:
-                        - AspectWithEntity
-                        operationId: patchAspectWithEntity
-                  """
+               patch:
+                     tags:
+                     - AspectWithEntity
+                     operationId: patchAspectWithEntity
+               """
       );
       assertThat( result.stdout() ).contains(
             """
-                  put:
-                        tags:
-                        - AspectWithEntity
-                        operationId: putAspectWithEntity
-                  """
+               put:
+                     tags:
+                     - AspectWithEntity
+                     operationId: putAspectWithEntity
+               """
       );
       assertThat( result.stderr() ).isEmpty();
    }
@@ -985,19 +986,19 @@ class SammCliTest extends SammCliAbstractTest {
       assertThat( result.stdout() ).contains( "/{tenant-id}/aspect-with-entity:" );
       assertThat( result.stdout() ).contains(
             """
-                  post:
-                        tags:
-                        - AspectWithEntity
-                        operationId: postAspectWithEntity
-                  """
+               post:
+                     tags:
+                     - AspectWithEntity
+                     operationId: postAspectWithEntity
+               """
       );
       assertThat( result.stdout() ).contains(
             """
-                  put:
-                        tags:
-                        - AspectWithEntity
-                        operationId: putAspectWithEntity
-                  """
+               put:
+                     tags:
+                     - AspectWithEntity
+                     operationId: putAspectWithEntity
+               """
       );
       assertThat( result.stderr() ).isEmpty();
    }
@@ -1566,7 +1567,8 @@ class SammCliTest extends SammCliAbstractTest {
       assertThat( outputFile ).exists().isNotEmptyFile().content().contains( ":TestAspect a samm:Aspect" );
    }
 
-   // Test should be deleted after https://github.com/oracle/graal/issues/12782 is fixed and the GraalVM version is updated.
+   // Test should be deleted after https://github.com/oracle/graal/issues/12782 is fixed and the
+   // GraalVM version is updated.
    @Test
    void testDisableWarning( @TempDir final Path outputDirectory ) {
       final File targetFile = outputFile( outputDirectory, "output.ttl" );

@@ -31,8 +31,7 @@ public class PropertyChainElementAccessors {
       DEFAULT_ACCESSOR = getAccessorByName( DefaultPropertyChainElementAccessor.class.getName() );
    }
 
-   private PropertyChainElementAccessors() {
-   }
+   private PropertyChainElementAccessors() {}
 
    /**
     * @return all available {@link PropertyChainElementAccessor} implementations

@@ -25,9 +25,8 @@ import org.junit.jupiter.api.Test;
 public class GenerateDiagramTest extends AspectModelMojoTest {
    @Test
    @InjectMojo(
-         goal = GenerateDiagram.MAVEN_GOAL,
-         pom = "src/test/resources/generate-diagram-pom-valid-aspect-model/pom.xml"
-   )
+      goal = GenerateDiagram.MAVEN_GOAL,
+      pom = "src/test/resources/generate-diagram-pom-valid-aspect-model/pom.xml" )
    public void testGenerateDiagramsValidAspectModel( final GenerateDiagram generateDiagram ) {
       assertThatCode( generateDiagram::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "Aspect_en.svg" ) ).exists();
@@ -36,9 +35,8 @@ public class GenerateDiagramTest extends AspectModelMojoTest {
 
    @Test
    @InjectMojo(
-         goal = GenerateDiagram.MAVEN_GOAL,
-         pom = "src/test/resources/generate-diagram-pom-invalid-target-format/pom.xml"
-   )
+      goal = GenerateDiagram.MAVEN_GOAL,
+      pom = "src/test/resources/generate-diagram-pom-invalid-target-format/pom.xml" )
    public void testGenerateDiagramsInvalidTargetFormat( final GenerateDiagram generateDiagram ) {
       assertThatCode( generateDiagram::execute )
             .isInstanceOf( MojoExecutionException.class )

@@ -74,7 +74,8 @@ public abstract class AspectModelMojo extends AbstractMojo {
    @Parameter
    protected String modelsRootDirectory;
 
-   @Parameter( required = true, property = "include" )
+   @Parameter( required = true,
+      property = "include" )
    protected Set<String> includes;
 
    @Parameter
@@ -89,7 +90,8 @@ public abstract class AspectModelMojo extends AbstractMojo {
    @Parameter
    protected List<String> githubServerIds;
 
-   @Parameter( defaultValue = "${session}", readonly = true )
+   @Parameter( defaultValue = "${session}",
+      readonly = true )
    protected MavenSession mavenSession;
 
    @Parameter
@@ -99,8 +101,7 @@ public abstract class AspectModelMojo extends AbstractMojo {
 
    private Map<AspectModel, Aspect> aspects;
 
-   public AspectModelMojo() {
-   }
+   public AspectModelMojo() {}
 
    protected AspectModelMojo( final Map<AspectModel, Aspect> aspects ) {
       this.aspects = aspects;
@@ -109,7 +110,9 @@ public abstract class AspectModelMojo extends AbstractMojo {
    /**
     * Skip the execution.
     */
-   @Parameter( name = "skip", property = "gen.skip", defaultValue = "false" )
+   @Parameter( name = "skip",
+      property = "gen.skip",
+      defaultValue = "false" )
    private Boolean skip;
 
    protected void validateParameters() throws MojoExecutionException {
@@ -163,8 +166,8 @@ public abstract class AspectModelMojo extends AbstractMojo {
       final AspectModelLoader aspectModelLoader = createAspectModelLoader();
       for ( final String inputUrn : includes ) {
          final AspectModelUrn urn = AspectModelUrn.fromUrn( inputUrn );
-         final Either<List<Violation>, AspectModel> loadingResult = new AspectModelValidator().loadModel( () ->
-               aspectModelLoader.load( urn ) );
+         final Either<List<Violation>, AspectModel> loadingResult =
+               new AspectModelValidator().loadModel( () -> aspectModelLoader.load( urn ) );
          if ( loadingResult.isLeft() ) {
             final List<Violation> violations = loadingResult.getLeft();
             final String errorMessage = detailedValidationMessages
@@ -228,8 +231,7 @@ public abstract class AspectModelMojo extends AbstractMojo {
                         .orElse( null );
 
                   final GithubRepository.Ref ref = Optional.ofNullable( dom.getChild( "branch" ) )
-                        .map( Xpp3Dom::getValue )
-                        .<GithubRepository.Ref> map( GithubRepository.Branch::new )
+                        .map( Xpp3Dom::getValue ).<GithubRepository.Ref>map( GithubRepository.Branch::new )
                         .or( () -> Optional.ofNullable( dom.getChild( "tag" ) )
                               .map( Xpp3Dom::getValue )
                               .map( GithubRepository.Tag::new ) )

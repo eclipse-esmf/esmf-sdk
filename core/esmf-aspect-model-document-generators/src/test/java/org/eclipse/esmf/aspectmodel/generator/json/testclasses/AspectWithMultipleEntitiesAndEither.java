@@ -23,8 +23,7 @@ public class AspectWithMultipleEntitiesAndEither {
    public AspectWithMultipleEntitiesAndEither(
          @JsonProperty( "testEntityOne" ) final TestEntityWithSimpleTypes testEntityOne,
          @JsonProperty( "testEntityTwo" ) final TestEntityWithSimpleTypes testEntityTwo,
-         @JsonProperty( "testEitherProperty" ) final Either<TestEntityWithSimpleTypes, TestEntityWithSimpleTypes> testEitherProperty
-   ) {
+         @JsonProperty( "testEitherProperty" ) final Either<TestEntityWithSimpleTypes, TestEntityWithSimpleTypes> testEitherProperty ) {
       this.testEntityOne = testEntityOne;
       this.testEntityTwo = testEntityTwo;
       this.testEitherProperty = testEitherProperty;

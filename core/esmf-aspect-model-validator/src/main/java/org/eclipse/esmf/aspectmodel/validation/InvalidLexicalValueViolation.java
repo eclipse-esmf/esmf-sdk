@@ -29,7 +29,9 @@ import org.apache.jena.rdf.model.Resource;
  * @param value the invalid value
  * @param location the source location of the violation
  */
-public record InvalidLexicalValueViolation( Resource type, Object value, int line, int column, String sourceLine, URI location )
+public record InvalidLexicalValueViolation(
+      Resource type, Object value, int line, int column, String sourceLine, URI location
+)
       implements Violation {
    public static final String ERROR_CODE = "ERR_INVALID_LEXICAL_VALUE";
 

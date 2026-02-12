@@ -1,12 +1,12 @@
 # AAS Generator Module of the ESMF SDK
 
-The Asset Administration Shell (AAS) and its information model [1] is a widely recognized standard developed by the 
-Industrial Digital Twin Association (IDTA) [2] to express and handle Digital Twins. Central element of the AAS is 
+The Asset Administration Shell (AAS) and its information model [1] is a widely recognized standard developed by the
+Industrial Digital Twin Association (IDTA) [2] to express and handle Digital Twins. Central element of the AAS is
 the concept of Submodels, which describe certain aspects of a Digital Twin.
 
-The Semantic Aspect Meta Model allows to specify aspects of a digital twin and its semantics. 
+The Semantic Aspect Meta Model allows to specify aspects of a digital twin and its semantics.
 The AAS Generator module provides mapping implementations to derive AAS Submodels from SAMM Aspect Models
-and by that allows to on the one hand integrate SAMM models in AAS environments and on the other hand allow 
+and by that allows to on the one hand integrate SAMM models in AAS environments and on the other hand allow
 AAS Submodels to be described with rich semantics, as it is possible with SAMM.
 
 The implementation relies on the AAS Meta Model implementation [3] and the AAS file serializers provided by [4].
@@ -22,10 +22,10 @@ java -jar samm-cli.jar aspect org.idtwin/1.0.0/Nameplate.ttl to aas -f aasx -o n
 ```
 The first call generates a plain xml representation of the AAS whereas the second one generates an AASX archive
 with the AAS xml file in it.
- 
+
 Should the generator be integrated into custom implementations, the class `AspectModelAASGenerator`
-with its method `org.eclipse.esmf.aspectmodel.aas.AspectModelAasGenerator.generateOutput` is the 
-proper entry point. It expects an `org.eclipse.esmf.metamodel.Aspect` and returns a 
+with its method `org.eclipse.esmf.aspectmodel.aas.AspectModelAasGenerator.generateOutput` is the
+proper entry point. It expects an `org.eclipse.esmf.metamodel.Aspect` and returns a
 `ByteArrayOutputStream`.
 
 

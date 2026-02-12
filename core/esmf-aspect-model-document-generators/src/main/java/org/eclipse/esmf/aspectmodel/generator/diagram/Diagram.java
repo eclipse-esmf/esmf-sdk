@@ -20,14 +20,16 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * An abstract representation of a diagram consisting of {@link Box}es and {@link Edge}s between them
+ * An abstract representation of a diagram consisting of {@link Box}es and {@link Edge}s between
+ * them
  */
 public class Diagram {
    private final Box focusBox;
    private final Set<Box> boxes;
    private final Set<Edge> edges;
 
-   // Used for the special case where a value element is rendered as a string (as part of a parent's attribute)
+   // Used for the special case where a value element is rendered as a string (as part of a parent's
+   // attribute)
    private String scalarValue = null;
 
    public Diagram( final Box focusBox ) {
@@ -131,8 +133,9 @@ public class Diagram {
     * @param to the target box
     * @param label the label on the edge
     */
-   public record Edge( Box from, Box to, String label ) {
-   }
+   public record Edge(
+         Box from, Box to, String label
+   ) {}
 
    public enum Color {
       FALLBACK( "#ffffff" ),

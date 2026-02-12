@@ -38,9 +38,8 @@ public class MojoConfigTest extends AspectModelMojoTest {
 
    @Test
    @InjectMojo(
-         goal = Validate.MAVEN_GOAL,
-         pom = "src/test/resources/test-pom-invalid-models-root/pom.xml"
-   )
+      goal = Validate.MAVEN_GOAL,
+      pom = "src/test/resources/test-pom-invalid-models-root/pom.xml" )
    public void testInvalidModelsRoot( final Validate validate ) {
       assertThatCode( validate::execute )
             .isInstanceOf( MojoExecutionException.class );
@@ -48,9 +47,8 @@ public class MojoConfigTest extends AspectModelMojoTest {
 
    @Test
    @InjectMojo(
-         goal = Validate.MAVEN_GOAL,
-         pom = "src/test/resources/test-pom-missing-includes/pom.xml"
-   )
+      goal = Validate.MAVEN_GOAL,
+      pom = "src/test/resources/test-pom-missing-includes/pom.xml" )
    public void testMissingIncludes( final Validate validate ) {
       assertThatCode( validate::execute )
             .isInstanceOf( MojoExecutionException.class )
@@ -59,9 +57,8 @@ public class MojoConfigTest extends AspectModelMojoTest {
 
    @Test
    @InjectMojo(
-         goal = Validate.MAVEN_GOAL,
-         pom = "src/test/resources/test-pom-missing-include/pom.xml"
-   )
+      goal = Validate.MAVEN_GOAL,
+      pom = "src/test/resources/test-pom-missing-include/pom.xml" )
    public void testMissingInclude( final Validate validate ) {
       assertThatCode( validate::execute )
             .isInstanceOf( MojoExecutionException.class )
@@ -70,19 +67,18 @@ public class MojoConfigTest extends AspectModelMojoTest {
 
    @Test
    @InjectMojo(
-         goal = Validate.MAVEN_GOAL,
-         pom = "src/test/resources/test-pom-github-server-config/pom.xml"
-   )
+      goal = Validate.MAVEN_GOAL,
+      pom = "src/test/resources/test-pom-github-server-config/pom.xml" )
    public void testGitHubServerConfig( final Validate validate ) throws Exception {
       // Inject <configuration> block into session's config
       final String serverConfigXml = """
-            <configuration>
-                <repository>test-org/test-repository</repository>
-                <directory>src/main/resources/aspects</directory>
-                <branch>main</branch>
-                <token>THE_TOKEN</token>
-            </configuration>
-            """;
+         <configuration>
+             <repository>test-org/test-repository</repository>
+             <directory>src/main/resources/aspects</directory>
+             <branch>main</branch>
+             <token>THE_TOKEN</token>
+         </configuration>
+         """;
       final Xpp3Dom serverConfig = Xpp3DomBuilder.build( new StringReader( serverConfigXml ) );
       final Server server = new Server();
       server.setId( GITHUB_SERVER_CONFIG_ID );

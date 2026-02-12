@@ -70,10 +70,12 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
    }
 
    /**
-    * Extracts all {@link SAMM#Property()} model elements which are referenced in the given Property List, e.g.
-    * {@link SAMM#properties()}, and creates {@link Property} instances for these model elements.
+    * Extracts all {@link SAMM#Property()} model elements which are referenced in the given Property
+    * List, e.g. {@link SAMM#properties()}, and creates {@link Property} instances for these model
+    * elements.
     *
-    * @param elementWithProperties the {@link Resource} which has the propertyRdfClass list for which the model elements are extracted
+    * @param elementWithProperties the {@link Resource} which has the propertyRdfClass list for which
+    *        the model elements are extracted
     * @param rootProperty the {@link org.apache.jena.rdf.model.Property} defining the property list
     * @return a {@link List} containing the {@link Property} instances
     */
@@ -135,17 +137,18 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
    protected Optional<Characteristic> getElementCharacteristic( final Resource collection ) {
       return optionalAttributeValue( collection, SammNs.SAMMC.elementCharacteristic() )
             .map( Statement::getResource )
-            .map( elementCharacteristicResource ->
-                  modelElementFactory.create( Characteristic.class, elementCharacteristicResource ) );
+            .map( elementCharacteristicResource -> modelElementFactory.create( Characteristic.class, elementCharacteristicResource ) );
    }
 
    /**
-    * Creates a {@link Value} from a given constant value in the RDF model. This can be either a scalar, a collection or an Entity.
-    * What is constructed can depend on the type of RDF node, but also on the Characteristic of the Property this value is used for.
+    * Creates a {@link Value} from a given constant value in the RDF model. This can be either a
+    * scalar, a collection or an Entity. What is constructed can depend on the type of RDF node, but
+    * also on the Characteristic of the Property this value is used for.
     *
     * @param node the RDF node that represents the value
-    * @param characteristicResource the resources that represents the Characteristic that describes the value. This can be empty for the
-    * values of collections that have no samm-c:elementCharacterisic set
+    * @param characteristicResource the resources that represents the Characteristic that describes the
+    *        value. This can be empty for the values of collections that have no
+    *        samm-c:elementCharacterisic set
     * @param type the type that describes the value
     * @return a value instance
     */
@@ -175,7 +178,7 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
          final Resource characteristic = characteristicResource.get();
          final Optional<Resource> elementCharacteristic = optionalAttributeValue( characteristic,
                SammNs.SAMMC.elementCharacteristic() ).map(
-               Statement::getResource );
+                     Statement::getResource );
          CollectionValue.CollectionType collectionType = null;
          if ( RdfUtil.isTypeOfOrSubtypeOf( characteristic, SammNs.SAMMC.Set() ) ) {
             collectionType = CollectionValue.CollectionType.SET;

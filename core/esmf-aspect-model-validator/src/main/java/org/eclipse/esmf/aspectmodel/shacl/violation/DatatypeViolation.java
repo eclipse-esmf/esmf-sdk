@@ -37,7 +37,9 @@ import org.apache.jena.vocabulary.XSD;
  * @param allowedTypeUri the URI of the XSD or RDF class type that was allowed
  * @param actualTypeUri the URI that was encountered instead
  */
-public record DatatypeViolation( EvaluationContext context, String allowedTypeUri, String actualTypeUri ) implements Violation {
+public record DatatypeViolation(
+      EvaluationContext context, String allowedTypeUri, String actualTypeUri
+) implements Violation {
    public static final String ERROR_CODE = "ERR_TYPE";
 
    @Override

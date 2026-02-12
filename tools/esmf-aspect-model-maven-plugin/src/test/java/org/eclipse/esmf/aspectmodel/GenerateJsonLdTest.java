@@ -24,9 +24,8 @@ import org.junit.jupiter.api.Test;
 public class GenerateJsonLdTest extends AspectModelMojoTest {
    @Test
    @InjectMojo(
-         goal = GenerateJsonLd.MAVEN_GOAL,
-         pom = "src/test/resources/generate-jsonld-spec-json-pom-to-file/pom.xml"
-   )
+      goal = GenerateJsonLd.MAVEN_GOAL,
+      pom = "src/test/resources/generate-jsonld-spec-json-pom-to-file/pom.xml" )
    public void testGenerateJsonLdValidAspectModel( final GenerateJsonLd generateJsonLd ) {
       assertThatCode( generateJsonLd::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "AspectWithEvent.json" ) ).exists();

@@ -35,7 +35,8 @@ public class XoneConstraint extends AbstractLogicalConstraint {
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
       final List<List<Violation>> violationsPerConstraint = violationsPerShape( rdfNode, context );
       final long numberOfEmptyViolationLists = numberOfEmptyViolationLists( violationsPerConstraint );
-      // The 'xone' constraint is evaluated successfully if exactly one of the provided constraints evaluates successfully
+      // The 'xone' constraint is evaluated successfully if exactly one of the provided constraints
+      // evaluates successfully
       if ( numberOfEmptyViolationLists == 1 ) {
          return List.of();
       }

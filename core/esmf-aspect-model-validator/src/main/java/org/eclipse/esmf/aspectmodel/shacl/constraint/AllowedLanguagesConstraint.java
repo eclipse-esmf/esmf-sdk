@@ -27,7 +27,9 @@ import org.apache.jena.rdf.model.RDFNode;
  *
  * @param allowedLanguages the list of allowed language tags
  */
-public record AllowedLanguagesConstraint( List<String> allowedLanguages ) implements Constraint {
+public record AllowedLanguagesConstraint(
+      List<String> allowedLanguages
+) implements Constraint {
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
       final List<Violation> nodeKindViolations = new NodeKindConstraint( Shape.NodeKind.Literal ).apply( rdfNode, context );

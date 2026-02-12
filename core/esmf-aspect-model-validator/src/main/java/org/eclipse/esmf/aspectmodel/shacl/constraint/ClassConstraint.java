@@ -34,7 +34,9 @@ import org.apache.jena.vocabulary.RDF;
  *
  * @param allowedClass the allowed class
  */
-public record ClassConstraint( Resource allowedClass ) implements Constraint {
+public record ClassConstraint(
+      Resource allowedClass
+) implements Constraint {
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
       if ( !rdfNode.isResource() ) {

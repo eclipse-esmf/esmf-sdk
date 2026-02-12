@@ -50,10 +50,9 @@ public class Context {
    }
 
    /**
-    * When iterating over the aspect data of a collection-valued property, this method has to be used to track the iteration for each
-    * property in the property
-    * graph.
-    * Iteration is always forward, i.e. the index will always increase by 1.
+    * When iterating over the aspect data of a collection-valued property, this method has to be used
+    * to track the iteration for each property in the property graph. Iteration is always forward, i.e.
+    * the index will always increase by 1.
     *
     * @param collectionProperty the property being iterated
     * @return {@code this} context
@@ -170,9 +169,11 @@ public class Context {
    }
 
    /**
-    * Retrieves the string value at the current property path or the given default value, if none exists.
+    * Retrieves the string value at the current property path or the given default value, if none
+    * exists.
     *
-    * @param defaultValue the default value to use when no value could be found at the current property path
+    * @param defaultValue the default value to use when no value could be found at the current property
+    *        path
     * @return the property value at the current property path
     */
    public String getPropertyValue( final String defaultValue ) {
@@ -182,7 +183,8 @@ public class Context {
    /**
     * Retrieves the raw JSON property value at the current property path.
     *
-    * @return a present {@link Optional} with the {@link JsonNode} if it could be found, {@link Optional#empty()} else.
+    * @return a present {@link Optional} with the {@link JsonNode} if it could be found,
+    *         {@link Optional#empty()} else.
     */
    public Optional<JsonNode> getRawPropertyValue() {
       if ( aspectData == null ) {

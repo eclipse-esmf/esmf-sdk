@@ -27,12 +27,14 @@ import org.commonmark.renderer.html.HtmlRenderer;
 /**
  * A utility class for converting SAMM-flavored Markdown descriptions into HTML.
  *
- * <p>This renderer supports a limited subset of Markdown syntax and introduces
- * custom processing for specific annotated blocks commonly used in SAMM descriptions,
- * such as {@code > NOTE: ...}, {@code > EXAMPLE: ...}, and {@code > SOURCE: ...}.
- * These blocks are extracted and rendered into semantically meaningful HTML
- * structures (e.g., {@code <div class="note">}, {@code <ul class="example-list">}, etc.).
- * Remaining content is rendered using the CommonMark parser.
+ * <p>
+ * This renderer supports a limited subset of Markdown syntax and introduces custom processing for
+ * specific annotated blocks commonly used in SAMM descriptions, such as {@code > NOTE: ...},
+ * {@code > EXAMPLE: ...}, and {@code > SOURCE: ...}. These blocks are extracted and rendered into
+ * semantically meaningful HTML structures (e.g., {@code <div class="note">}, {@code 
+ * 
+<ul class="example-list">
+ * }, etc.). Remaining content is rendered using the CommonMark parser.
  */
 public class MarkdownHtmlRenderer {
 
@@ -51,12 +53,11 @@ public class MarkdownHtmlRenderer {
    /**
     * Private constructor to prevent instantiation. This class is intended to be used statically.
     */
-   private MarkdownHtmlRenderer() {
-   }
+   private MarkdownHtmlRenderer() {}
 
    /**
-    * Converts a set of multi-line Markdown descriptions into a single HTML string.
-    * Each entry in the set is processed independently and merged in the resulting output.
+    * Converts a set of multi-line Markdown descriptions into a single HTML string. Each entry in the
+    * set is processed independently and merged in the resulting output.
     *
     * @param description A line of Markdown description blocks to render.
     * @return Combined HTML output representing all given descriptions.
@@ -68,9 +69,9 @@ public class MarkdownHtmlRenderer {
    /**
     * Parses a single Markdown block:
     * <ul>
-    *   <li>Identifies and extracts special block types: NOTE, EXAMPLE, and SOURCE</li>
-    *   <li>Renders those blocks using custom HTML wrappers</li>
-    *   <li>Processes the remaining Markdown using the CommonMark renderer</li>
+    * <li>Identifies and extracts special block types: NOTE, EXAMPLE, and SOURCE</li>
+    * <li>Renders those blocks using custom HTML wrappers</li>
+    * <li>Processes the remaining Markdown using the CommonMark renderer</li>
     * </ul>
     *
     * @param rawMarkdown The full Markdown string to process.
@@ -126,8 +127,7 @@ public class MarkdownHtmlRenderer {
    private static void flushSpecialBlock(
          final String currentType,
          final StringBuilder blockBuffer,
-         final StringBuilder html
-   ) {
+         final StringBuilder html ) {
       if ( currentType == null || blockBuffer.isEmpty() ) {
          blockBuffer.setLength( 0 );
          return;
@@ -145,8 +145,10 @@ public class MarkdownHtmlRenderer {
 
       // Start a new item for each "EXAMPLE X:" header.
       // BLOCK_PATTERN already matches the header line and should be used to detect block boundaries.
-      // Collect the following multiline text as the example content until a blank line or the next "EXAMPLE" header.
-      // Reuse existing flushBlock() logic to finalize and append the current item before starting the next one.
+      // Collect the following multiline text as the example content until a blank line or the next
+      // "EXAMPLE" header.
+      // Reuse existing flushBlock() logic to finalize and append the current item before starting the
+      // next one.
 
       return List.of( normalized );
    }
@@ -154,10 +156,16 @@ public class MarkdownHtmlRenderer {
    /**
     * Renders a list of extracted special blocks into HTML.
     *
-    * <p>- For {@code NOTE} and {@code SOURCE}, each entry is rendered in a {@code <div>} with a matching class.<br>
-    *    - For {@code EXAMPLE}, a single example is rendered as a {@code <div>}; multiple examples as a {@code <ul>}.
+    * <p>
+    * - For {@code NOTE} and {@code SOURCE}, each entry is rendered in a {@code <div>} with a matching
+    * class.<br>
+    * - For {@code EXAMPLE}, a single example is rendered as a {@code <div>}; multiple examples as a
+    * {@code 
+    * 
+   <ul>
+    * }.
     *
-    * @param type  The type of the special block (e.g., "NOTE", "EXAMPLE", "SOURCE").
+    * @param type The type of the special block (e.g., "NOTE", "EXAMPLE", "SOURCE").
     * @param items The list of block contents for that type.
     * @return The rendered HTML string for the block.
     */
@@ -192,10 +200,10 @@ public class MarkdownHtmlRenderer {
    }
 
    /**
-    * Collects all special block entries (NOTE, EXAMPLE, SOURCE) from the input lines.
-    * Lines not belonging to special blocks are appended to the {@code markdownBuffer}.
+    * Collects all special block entries (NOTE, EXAMPLE, SOURCE) from the input lines. Lines not
+    * belonging to special blocks are appended to the {@code markdownBuffer}.
     *
-    * @param lines          Stripped lines from the raw markdown block.
+    * @param lines Stripped lines from the raw markdown block.
     * @param markdownBuffer Buffer to store non-special markdown content.
     * @return A map of special block types to their associated content.
     */
@@ -228,8 +236,8 @@ public class MarkdownHtmlRenderer {
     * Flushes the current block to the target map if non-empty.
     *
     * @param currentType The type of block being collected.
-    * @param block       The current content buffer for the block.
-    * @param target      The target map of blocks.
+    * @param block The current content buffer for the block.
+    * @param target The target map of blocks.
     */
    private static void flushBlock( final String currentType, final StringBuilder block, final Map<String, List<String>> target ) {
       if ( currentType != null && !block.isEmpty() ) {
@@ -254,9 +262,8 @@ public class MarkdownHtmlRenderer {
    }
 
    /**
-    * Renders a single markdown line (inline) to HTML using CommonMark.
-    * This is used for special blocks (e.g., NOTE/EXAMPLE/SOURCE) where
-    * markdown is allowed but not block-level structure.
+    * Renders a single markdown line (inline) to HTML using CommonMark. This is used for special blocks
+    * (e.g., NOTE/EXAMPLE/SOURCE) where markdown is allowed but not block-level structure.
     *
     * @param text Markdown content.
     * @return HTML output as string.

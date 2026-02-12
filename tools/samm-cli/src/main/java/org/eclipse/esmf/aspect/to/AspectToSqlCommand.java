@@ -35,76 +35,74 @@ import org.eclipse.esmf.metamodel.Aspect;
 import picocli.CommandLine;
 
 @CommandLine.Command(
-      name = AspectToSqlCommand.COMMAND_NAME,
-      description = "Generate SQL table creation script for an Aspect Model",
-      descriptionHeading = "%n@|bold Description|@:%n%n",
-      parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n"
-)
+   name = AspectToSqlCommand.COMMAND_NAME,
+   description = "Generate SQL table creation script for an Aspect Model",
+   descriptionHeading = "%n@|bold Description|@:%n%n",
+   parameterListHeading = "%n@|bold Parameters|@:%n",
+   optionListHeading = "%n@|bold Options|@:%n" )
 public class AspectToSqlCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "sql";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--output", "-o" },
-         description = "Output file path" )
+      names = { "--output", "-o" },
+      description = "Output file path" )
    private String outputFilePath = "-";
 
    @CommandLine.Option(
-         names = { "--dialect", "-d" },
-         description = "The SQL dialect to generate for (default: ${DEFAULT-VALUE})" )
+      names = { "--dialect", "-d" },
+      description = "The SQL dialect to generate for (default: ${DEFAULT-VALUE})" )
    private SqlGenerationConfig.Dialect dialect = SqlGenerationConfig.Dialect.DATABRICKS;
 
    @CommandLine.Option(
-         names = { "--mapping-strategy", "-s" },
-         description = "The mapping strategy to use (default: ${DEFAULT-VALUE})" )
+      names = { "--mapping-strategy", "-s" },
+      description = "The mapping strategy to use (default: ${DEFAULT-VALUE})" )
    private SqlGenerationConfig.MappingStrategy strategy = SqlGenerationConfig.MappingStrategy.DENORMALIZED;
 
    @CommandLine.Option(
-         names = { "--language", "-l" },
-         description = "The language from the model for which comments should be generated (default: ${DEFAULT-VALUE})" )
+      names = { "--language", "-l" },
+      description = "The language from the model for which comments should be generated (default: ${DEFAULT-VALUE})" )
    private String language = DatabricksSqlGenerationConfig.DEFAULT_COMMENT_LANGUAGE.getLanguage();
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--include-table-comment", "-tc" },
-         description = "Include table comment in the generated SQL script (default: ${DEFAULT-VALUE})" )
+      names = { "--include-table-comment", "-tc" },
+      description = "Include table comment in the generated SQL script (default: ${DEFAULT-VALUE})" )
    private boolean includeTableComment = DatabricksSqlGenerationConfig.DEFAULT_INCLUDE_TABLE_COMMENT;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--include-column-comments", "-cc" },
-         description = "Include column comments in the generated SQL script (default: ${DEFAULT-VALUE})" )
+      names = { "--include-column-comments", "-cc" },
+      description = "Include column comments in the generated SQL script (default: ${DEFAULT-VALUE})" )
    private boolean includeColumnComments = DatabricksSqlGenerationConfig.DEFAULT_INCLUDE_COLUMN_COMMENTS;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--table-command-prefix", "-tcp" },
-         description = "The prefix to use for Databricks table creation commands (default: ${DEFAULT-VALUE})" )
+      names = { "--table-command-prefix", "-tcp" },
+      description = "The prefix to use for Databricks table creation commands (default: ${DEFAULT-VALUE})" )
    private String tableCommandPrefix = DatabricksSqlGenerationConfig.DEFAULT_TABLE_COMMAND_PREFIX;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--decimal-precision", "-dp" },
-         description = "The precision to use for Databricks decimal columns, between 1 and 38. (default: ${DEFAULT-VALUE})" )
+      names = { "--decimal-precision", "-dp" },
+      description = "The precision to use for Databricks decimal columns, between 1 and 38. (default: ${DEFAULT-VALUE})" )
    private int decimalPrecision = DatabricksSqlGenerationConfig.DECIMAL_DEFAULT_PRECISION;
 
    @CommandLine.Option(
-           names = { "--decimal-scale", "-ds" },
-           description =
-                   "The scale to use for Databricks decimal columns, between 0 and the value of precision. (default: ${DEFAULT-VALUE})" )
+      names = { "--decimal-scale", "-ds" },
+      description = "The scale to use for Databricks decimal columns, between 0 and the value of precision. (default: ${DEFAULT-VALUE})" )
    private int decimalScale = DatabricksSqlGenerationConfig.DECIMAL_DEFAULT_SCALE;
 
    @CommandLine.Option(
-         names = { "--custom-column", "-col" },
-         description = "Custom column to add to the table, can be repeated for multiple columns",
-         converter = DatabricksColumnDefinitionTypeConverter.class )
+      names = { "--custom-column", "-col" },
+      description = "Custom column to add to the table, can be repeated for multiple columns",
+      converter = DatabricksColumnDefinitionTypeConverter.class )
    private List<DatabricksColumnDefinition> customColumns;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--details" },
-         description = "Print detailed reports on errors" )
+      names = { "--details" },
+      description = "Print detailed reports on errors" )
    private boolean details = false;
 
    @CommandLine.ParentCommand

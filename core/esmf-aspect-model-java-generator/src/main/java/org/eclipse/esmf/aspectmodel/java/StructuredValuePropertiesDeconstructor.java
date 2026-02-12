@@ -29,9 +29,9 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * When a {@link Property} uses the {@link StructuredValue} Characteristic, this class retrieves the
- * Properties that are referenced in the Characteristic so that they are available for POJO code generation.
- * In other words, it "deconstructs" a Property into a List of Properties, all of which must be handled
- * in POJO initialization and (differently) in the POJO's constructor.
+ * Properties that are referenced in the Characteristic so that they are available for POJO code
+ * generation. In other words, it "deconstructs" a Property into a List of Properties, all of which
+ * must be handled in POJO initialization and (differently) in the POJO's constructor.
  */
 public class StructuredValuePropertiesDeconstructor {
    private final List<DeconstructionSet> deconstructionSets;
@@ -54,7 +54,9 @@ public class StructuredValuePropertiesDeconstructor {
     * @return the list of {@link DeconstructionSet}s
     */
    private List<DeconstructionSet> deconstructProperties( final HasProperties element ) {
-      record Association( Property originalProperty, String deconstructionRule, Property referredProperty ) {}
+      record Association(
+            Property originalProperty, String deconstructionRule, Property referredProperty
+      ) {}
 
       final List<Association> associations = element.getProperties().stream()
             .flatMap( property -> {
@@ -63,8 +65,8 @@ public class StructuredValuePropertiesDeconstructor {
                   return structuredValue.getElements().stream()
                         .filter( Property.class::isInstance )
                         .map( Property.class::cast )
-                        .map( structuredValueProperty ->
-                              new Association( property, structuredValue.getDeconstructionRule(), structuredValueProperty ) );
+                        .map( structuredValueProperty -> new Association( property, structuredValue.getDeconstructionRule(),
+                              structuredValueProperty ) );
                }
                return Stream.empty();
             } )
@@ -75,7 +77,8 @@ public class StructuredValuePropertiesDeconstructor {
             .anyMatch( association -> associations.stream()
                   .filter( a -> a.referredProperty().equals( association.referredProperty() ) )
                   .count() > 1 ) ) {
-         // At least one property is referred to multiple times, so the field names are prefixed with the referring property
+         // At least one property is referred to multiple times, so the field names are prefixed with the
+         // referring property
          return associations.stream()
                .collect( Collectors.groupingBy( association -> association.originalProperty ) )
                .entrySet()
@@ -134,8 +137,8 @@ public class StructuredValuePropertiesDeconstructor {
    }
 
    /**
-    * Returns true if the given model element uses a StructuredValue Characteristic, i.e. if DeconstructionSets
-    * are available for the model element
+    * Returns true if the given model element uses a StructuredValue Characteristic, i.e. if
+    * DeconstructionSets are available for the model element
     *
     * @return true if DeconstructionSets are available for the model element, otherwise false
     */

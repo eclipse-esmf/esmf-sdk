@@ -352,7 +352,8 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
 
    private ObjectNode getRootJsonNode( final boolean generateCommentForSeeAttributes ) throws IOException {
       try ( final InputStream inputStream = getClass().getResourceAsStream( "/openapi/OpenApiRootJson.json" ) ) {
-         // at least one important OpenAPI tool (swagger-ui) still does not support v3.1, so for the time being we stay with the version
+         // at least one important OpenAPI tool (swagger-ui) still does not support v3.1, so for the time
+         // being we stay with the version
          // 3.0.3;
          // only when $comment is explicitly requested (a v3.1 feature) we switch to 3.1.0
          Objects.requireNonNull( inputStream, "OpenApiRootJson.json not found" );
@@ -531,7 +532,7 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
          final boolean isPut ) {
       final ObjectNode objectNode = FACTORY.objectNode();
       objectNode.set( "tags", FACTORY.arrayNode().add( aspect.getName() ) );
-      objectNode.put( FIELD_OPERATION_ID, (isPut ? FIELD_PUT : FIELD_PATCH) + aspect.getName() );
+      objectNode.put( FIELD_OPERATION_ID, ( isPut ? FIELD_PUT : FIELD_PATCH ) + aspect.getName() );
       objectNode.set( FIELD_PARAMETERS, getRequiredParameters( parameterNode, isEmpty( resourcePath ) ) );
       final ObjectNode requestBody = FACTORY.objectNode();
       requestBody.put( FIELD_REQUIRED, true );
@@ -659,7 +660,7 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
          if ( extension == null || extension.isEmpty() ) {
             return node;
          }
-         //  cycle for result.fields()
+         // cycle for result.fields()
          extension.fields().forEachRemaining( entry -> {
             final String key = entry.getKey();
             final JsonNode value = entry.getValue();
@@ -708,8 +709,8 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
             return node;
          }
 
-         final Function<String, Function<JsonNode, String>> getText = fieldName -> objNode ->
-               Optional.ofNullable( objNode.get( fieldName ) )
+         final Function<String, Function<JsonNode, String>> getText =
+               fieldName -> objNode -> Optional.ofNullable( objNode.get( fieldName ) )
                      .filter( Predicate.not( JsonNode::isNull ) )
                      .map( JsonNode::asText )
                      .orElse( null );
@@ -722,8 +723,7 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
          extension.forEach( nd -> {
             if ( !original.contains( nd )
                   && !originalNames.contains( getText.apply( "name" ).apply( nd ) )
-                  && !originalUrls.contains( getText.apply( "url" ).apply( nd ) )
-            ) {
+                  && !originalUrls.contains( getText.apply( "url" ).apply( nd ) ) ) {
                result.add( nd );
             }
          } );

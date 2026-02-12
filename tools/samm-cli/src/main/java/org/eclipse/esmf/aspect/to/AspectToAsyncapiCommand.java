@@ -44,12 +44,11 @@ import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
 @CommandLine.Command(
-      name = AspectToAsyncapiCommand.COMMAND_NAME,
-      description = "Generate AsyncAPI specification for an Aspect Model",
-      descriptionHeading = "%n@|bold Description|@:%n%n",
-      parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n"
-)
+   name = AspectToAsyncapiCommand.COMMAND_NAME,
+   description = "Generate AsyncAPI specification for an Aspect Model",
+   descriptionHeading = "%n@|bold Description|@:%n%n",
+   parameterListHeading = "%n@|bold Parameters|@:%n",
+   optionListHeading = "%n@|bold Options|@:%n" )
 public class AspectToAsyncapiCommand extends AbstractCommand {
 
    public static final String COMMAND_NAME = "asyncapi";
@@ -59,47 +58,47 @@ public class AspectToAsyncapiCommand extends AbstractCommand {
    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
    @CommandLine.Option(
-         names = { "--json", "-j" },
-         description = "Generate AsyncAPI JSON specification for an Aspect Model (when not given, YAML is generated as default format)" )
+      names = { "--json", "-j" },
+      description = "Generate AsyncAPI JSON specification for an Aspect Model (when not given, YAML is generated as default format)" )
    private boolean generateJsonAsyncApiSpec = false;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--separate-files", "-sf" },
-         description = "Write separate files for the root document and referenced schemas." )
+      names = { "--separate-files", "-sf" },
+      description = "Write separate files for the root document and referenced schemas." )
    private boolean writeSeparateFiles = false;
 
    @CommandLine.Option(
-         names = { "--output", "-o" },
-         description = "Output path; if --separate-files is given, this must be a directory." )
+      names = { "--output", "-o" },
+      description = "Output path; if --separate-files is given, this must be a directory." )
    private String outputFilePath = "-";
 
    @CommandLine.Option(
-         names = { "--application-id", "-ai" },
-         description = "Use this param for provide application id." )
+      names = { "--application-id", "-ai" },
+      description = "Use this param for provide application id." )
    private URI applicationId;
 
    @CommandLine.Option(
-         names = { "--channel-address", "-ca" },
-         description = "Use this param make possible provide channel address." )
+      names = { "--channel-address", "-ca" },
+      description = "Use this param make possible provide channel address." )
    private String channelAddress;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--semantic-version", "-sv" },
-         description = "Use the full semantic version from the Aspect Model as the version for the Aspect API." )
+      names = { "--semantic-version", "-sv" },
+      description = "Use the full semantic version from the Aspect Model as the version for the Aspect API." )
    private boolean useSemanticApiVersion = false;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--language", "-l" },
-         description = "The language from the model for which the AsyncAPI specification should be generated (default: en)" )
+      names = { "--language", "-l" },
+      description = "The language from the model for which the AsyncAPI specification should be generated (default: en)" )
    private String language = "en";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--details" },
-         description = "Print detailed reports on errors" )
+      names = { "--details" },
+      description = "Print detailed reports on errors" )
    private boolean details = false;
 
    @CommandLine.ParentCommand

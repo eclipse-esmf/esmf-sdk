@@ -19,8 +19,9 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.eclipse.esmf.metamodel.vocabulary.SAMMC;
 
 /**
- * Defines the possible values for the {@link SAMMC#lowerBoundDefinition()} and {@link SAMMC#upperBoundDefinition()}
- * attributes of the {@link SAMMC#RangeConstraint()} for {@link Comparable} and {@link Duration}.
+ * Defines the possible values for the {@link SAMMC#lowerBoundDefinition()} and
+ * {@link SAMMC#upperBoundDefinition()} attributes of the {@link SAMMC#RangeConstraint()} for
+ * {@link Comparable} and {@link Duration}.
  */
 public enum BoundDefinition {
 

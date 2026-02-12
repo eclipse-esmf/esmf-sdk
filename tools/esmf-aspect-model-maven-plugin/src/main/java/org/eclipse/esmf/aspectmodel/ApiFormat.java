@@ -14,6 +14,5 @@
 package org.eclipse.esmf.aspectmodel;
 
 public enum ApiFormat {
-   JSON,
-   YAML
+   JSON, YAML
 }

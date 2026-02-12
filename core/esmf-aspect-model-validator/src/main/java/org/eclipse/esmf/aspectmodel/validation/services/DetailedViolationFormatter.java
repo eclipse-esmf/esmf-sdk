@@ -90,9 +90,10 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.XSD;
 
 /**
- * Formats one or multiple {@link Violation}s in a human-readable way and provides detailed information.
- * Note that this is intended only for places with raw textual output, such as a text console.
- * For a more sensible representation of violations in other contexts, implement {@link Violation.Visitor}.
+ * Formats one or multiple {@link Violation}s in a human-readable way and provides detailed
+ * information. Note that this is intended only for places with raw textual output, such as a text
+ * console. For a more sensible representation of violations in other contexts, implement
+ * {@link Violation.Visitor}.
  */
 public class DetailedViolationFormatter extends ViolationFormatter {
    @Override
@@ -164,14 +165,14 @@ public class DetailedViolationFormatter extends ViolationFormatter {
       shape.attributes().name().ifPresent( name -> builder.append( String.format( "name: %s%n", name ) ) );
       shape.attributes().message().ifPresent( message -> builder.append( String.format( "message: %s%n", message ) ) );
       shape.attributes().description().ifPresent( description -> builder.append( String.format( "description: %s%n", description ) ) );
-      shape.attributes().targetClass().ifPresent( targetClass ->
-            builder.append( String.format( "target-class: %s%n", formatResource( violation, targetClass ) ) ) );
-      shape.attributes().targetNode().ifPresent( targetNode ->
-            builder.append( String.format( "target-node: %s%n", formatResource( violation, targetNode ) ) ) );
-      shape.attributes().targetObjectsOf().ifPresent( targetObjectsOf ->
-            builder.append( String.format( "target-objects-of: %s%n", formatResource( violation, targetObjectsOf ) ) ) );
-      shape.attributes().targetSubjectsOf().ifPresent( targetSubjectsOf ->
-            builder.append( String.format( "target-subjects-of: %s%n", formatResource( violation, targetSubjectsOf ) ) ) );
+      shape.attributes().targetClass()
+            .ifPresent( targetClass -> builder.append( String.format( "target-class: %s%n", formatResource( violation, targetClass ) ) ) );
+      shape.attributes().targetNode()
+            .ifPresent( targetNode -> builder.append( String.format( "target-node: %s%n", formatResource( violation, targetNode ) ) ) );
+      shape.attributes().targetObjectsOf().ifPresent(
+            targetObjectsOf -> builder.append( String.format( "target-objects-of: %s%n", formatResource( violation, targetObjectsOf ) ) ) );
+      shape.attributes().targetSubjectsOf().ifPresent( targetSubjectsOf -> builder
+            .append( String.format( "target-subjects-of: %s%n", formatResource( violation, targetSubjectsOf ) ) ) );
       shape.attributes().targetSparql().ifPresent( targetSparql -> {
          builder.append( String.format( "sparql-target: |%n" ) );
          builder.append( indent( targetSparql.toString(), 2 ) );
@@ -264,11 +265,10 @@ public class DetailedViolationFormatter extends ViolationFormatter {
     */
    @Override
    public String visitInvalidSyntaxViolation( final InvalidSyntaxViolation violation ) {
-      return formatViolation( violation, () ->
-            String.format( "line: %d%n", violation.line() )
-                  + String.format( "column: %d%n", violation.column() )
-                  + String.format( "source-context: |%n" )
-                  + formatSourceLines( sourceContext( violation.source(), violation.line() ), violation.line() ) );
+      return formatViolation( violation, () -> String.format( "line: %d%n", violation.line() )
+            + String.format( "column: %d%n", violation.column() )
+            + String.format( "source-context: |%n" )
+            + formatSourceLines( sourceContext( violation.source(), violation.line() ), violation.line() ) );
    }
 
    protected String formatSourceLines( final Map<Integer, String> lines, final long focusLine ) {
@@ -284,125 +284,110 @@ public class DetailedViolationFormatter extends ViolationFormatter {
 
    @Override
    public String visitInvalidLexicalValueViolation( final InvalidLexicalValueViolation violation ) {
-      return formatViolation( violation, () ->
-            String.format( "type: %s%n", RdfUtil.curie( violation.type().getURI() ) )
-                  + String.format( "value: %s%n", violation.value() )
-                  + String.format( "line: %d%n", violation.line() )
-                  + String.format( "column: %d%n", violation.column() )
-                  + String.format( "source-context: |%n" )
-                  + formatSourceLines( Map.of( violation.line(), violation.sourceLine() ), violation.line() ) );
+      return formatViolation( violation, () -> String.format( "type: %s%n", RdfUtil.curie( violation.type().getURI() ) )
+            + String.format( "value: %s%n", violation.value() )
+            + String.format( "line: %d%n", violation.line() )
+            + String.format( "column: %d%n", violation.column() )
+            + String.format( "source-context: |%n" )
+            + formatSourceLines( Map.of( violation.line(), violation.sourceLine() ), violation.line() ) );
    }
 
    @Override
    public String visitCycleViolation( final CycleViolation violation ) {
-      return formatViolation( violation, () ->
-            String.format( "properties-in-path: %s%n",
-                  violation.path().stream().map( Resource::getURI ).collect( Collectors.joining( ", " ) ) ) );
+      return formatViolation( violation, () -> String.format( "properties-in-path: %s%n",
+            violation.path().stream().map( Resource::getURI ).collect( Collectors.joining( ", " ) ) ) );
    }
 
    @Override
    public String visitRegularExpressionConstraint( final RegularExpressionConstraintViolation violation ) {
-      return formatViolation( violation, () ->
-            String.format( "properties-in-regular-expression-constraint: %s%n",
-                  Optional.ofNullable( violation.context().value( violation.context().element() ) ) ) );
+      return formatViolation( violation, () -> String.format( "properties-in-regular-expression-constraint: %s%n",
+            Optional.ofNullable( violation.context().value( violation.context().element() ) ) ) );
    }
 
    @Override
    public String visitClassTypeViolation( final ClassTypeViolation violation ) {
-      return formatViolation( violation, () ->
-            String.format( "allowed-class: %s%n", violation.context().shortUri( violation.allowedClass().getURI() ) )
+      return formatViolation( violation,
+            () -> String.format( "allowed-class: %s%n", violation.context().shortUri( violation.allowedClass().getURI() ) )
                   + String.format( "actual-class: %s%n", violation.context().shortUri( violation.actualClass().getURI() ) ) );
    }
 
    @Override
    public String visitDatatypeViolation( final DatatypeViolation violation ) {
-      return formatViolation( violation, () ->
-            String.format( "allowed-type: %s%n", violation.context().shortUri( violation.allowedTypeUri() ) )
+      return formatViolation( violation,
+            () -> String.format( "allowed-type: %s%n", violation.context().shortUri( violation.allowedTypeUri() ) )
                   + String.format( "actual-type: %s%n", violation.context().shortUri( violation.actualTypeUri() ) ) );
    }
 
    @Override
    public String visitInvalidValueViolation( final InvalidValueViolation violation ) {
-      return formatViolation( violation, () ->
-            String.format( "allowed-value: %s%n", formatRdfNode( violation.allowed(), violation ) )
-                  + String.format( "actual-value: %s%n", formatRdfNode( violation.actual(), violation ) ) );
+      return formatViolation( violation, () -> String.format( "allowed-value: %s%n", formatRdfNode( violation.allowed(), violation ) )
+            + String.format( "actual-value: %s%n", formatRdfNode( violation.actual(), violation ) ) );
    }
 
    @Override
    public String visitLanguageFromListViolation( final LanguageFromListViolation violation ) {
-      return formatViolation( violation, () ->
-            String.format( "allowed-values: %s%n", String.join( ", ", violation.allowed() ) )
-                  + String.format( "actual-value: %s%n", violation.actual() ) );
+      return formatViolation( violation, () -> String.format( "allowed-values: %s%n", String.join( ", ", violation.allowed() ) )
+            + String.format( "actual-value: %s%n", violation.actual() ) );
    }
 
    @Override
    public String visitMaxCountViolation( final MaxCountViolation violation ) {
-      return formatViolation( violation, () ->
-            String.format( "allowed-value: %d%n", violation.allowed() )
-                  + String.format( "actual-value: %d%n", violation.actual() ) );
+      return formatViolation( violation, () -> String.format( "allowed-value: %d%n", violation.allowed() )
+            + String.format( "actual-value: %d%n", violation.actual() ) );
    }
 
    @Override
    public String visitMaxExclusiveViolation( final MaxExclusiveViolation violation ) {
-      return formatViolation( violation, () ->
-            String.format( "max-value: %s%n", formatRdfNode( violation.max(), violation ) )
-                  + String.format( "actual-value: %s%n", formatRdfNode( violation.actual(), violation ) ) );
+      return formatViolation( violation, () -> String.format( "max-value: %s%n", formatRdfNode( violation.max(), violation ) )
+            + String.format( "actual-value: %s%n", formatRdfNode( violation.actual(), violation ) ) );
    }
 
    @Override
    public String visitMaxInclusiveViolation( final MaxInclusiveViolation violation ) {
-      return formatViolation( violation, () ->
-            String.format( "max-value: %s%n", formatRdfNode( violation.max(), violation ) )
-                  + String.format( "actual-value: %s%n", formatRdfNode( violation.actual(), violation ) ) );
+      return formatViolation( violation, () -> String.format( "max-value: %s%n", formatRdfNode( violation.max(), violation ) )
+            + String.format( "actual-value: %s%n", formatRdfNode( violation.actual(), violation ) ) );
    }
 
    @Override
    public String visitMaxLengthViolation( final MaxLengthViolation violation ) {
-      return formatViolation( violation, () ->
-            String.format( "max-value: %d%n", violation.max() )
-                  + String.format( "actual-value: %d%n", violation.actual() ) );
+      return formatViolation( violation, () -> String.format( "max-value: %d%n", violation.max() )
+            + String.format( "actual-value: %d%n", violation.actual() ) );
    }
 
    @Override
    public String visitMinCountViolation( final MinCountViolation violation ) {
-      return formatViolation( violation, () ->
-            String.format( "allowed-value: %d%n", violation.allowed() )
-                  + String.format( "actual-value: %d%n", violation.actual() ) );
+      return formatViolation( violation, () -> String.format( "allowed-value: %d%n", violation.allowed() )
+            + String.format( "actual-value: %d%n", violation.actual() ) );
    }
 
    @Override
    public String visitMinExclusiveViolation( final MinExclusiveViolation violation ) {
-      return formatViolation( violation, () ->
-            String.format( "min-value: %s%n", formatRdfNode( violation.min(), violation ) )
-                  + String.format( "actual-value: %s%n", formatRdfNode( violation.actual(), violation ) ) );
+      return formatViolation( violation, () -> String.format( "min-value: %s%n", formatRdfNode( violation.min(), violation ) )
+            + String.format( "actual-value: %s%n", formatRdfNode( violation.actual(), violation ) ) );
    }
 
    @Override
    public String visitMinInclusiveViolation( final MinInclusiveViolation violation ) {
-      return formatViolation( violation, () ->
-            String.format( "min-value: %s%n", formatRdfNode( violation.min(), violation ) )
-                  + String.format( "actual-value: %s%n", formatRdfNode( violation.actual(), violation ) ) );
+      return formatViolation( violation, () -> String.format( "min-value: %s%n", formatRdfNode( violation.min(), violation ) )
+            + String.format( "actual-value: %s%n", formatRdfNode( violation.actual(), violation ) ) );
    }
 
    @Override
    public String visitMinLengthViolation( final MinLengthViolation violation ) {
-      return formatViolation( violation, () ->
-            String.format( "min-value: %d%n", violation.min() )
-                  + String.format( "actual-value: %d%n", violation.actual() ) );
+      return formatViolation( violation, () -> String.format( "min-value: %d%n", violation.min() )
+            + String.format( "actual-value: %d%n", violation.actual() ) );
    }
 
    @Override
    public String visitNodeKindViolation( final NodeKindViolation violation ) {
-      return formatViolation( violation, () ->
-            String.format( "allowed-nodekind: %s%n", violation.allowedNodeKind() )
-                  + String.format( "actual-nodekind: %s%n", violation.actualNodeKind() ) );
+      return formatViolation( violation, () -> String.format( "allowed-nodekind: %s%n", violation.allowedNodeKind() )
+            + String.format( "actual-nodekind: %s%n", violation.actualNodeKind() ) );
    }
 
    @Override
    public String visitPatternViolation( final PatternViolation violation ) {
-      return formatViolation( violation, () ->
-            String.format( "pattern: %s%n", violation.pattern() )
-                  + String.format( "actual-value: %s%n", violation.actual() ) );
+      return formatViolation( violation, () -> String.format( "pattern: %s%n", violation.pattern() )
+            + String.format( "actual-value: %s%n", violation.actual() ) );
    }
 
    @Override
@@ -419,62 +404,57 @@ public class DetailedViolationFormatter extends ViolationFormatter {
 
    @Override
    public String visitJsViolation( final JsConstraintViolation violation ) {
-      return formatViolation( violation, () ->
-            String.format( "js-library: %s%n",
-                  violation.library().uri().map( uri -> violation.context().shortUri( uri ) ).orElse( "anonymous element" ) )
-                  + String.format( "js-function: %s%n", violation.functionName() ) );
+      return formatViolation( violation, () -> String.format( "js-library: %s%n",
+            violation.library().uri().map( uri -> violation.context().shortUri( uri ) ).orElse( "anonymous element" ) )
+            + String.format( "js-function: %s%n", violation.functionName() ) );
    }
 
    @Override
    public String visitUniqueLanguageViolation( final UniqueLanguageViolation violation ) {
-      return formatViolation( violation, () ->
-            String.format( "duplicates: %s%n", String.join( ", ", violation.duplicates() ) ) );
+      return formatViolation( violation, () -> String.format( "duplicates: %s%n", String.join( ", ", violation.duplicates() ) ) );
    }
 
    @Override
    public String visitEqualsViolation( final EqualsViolation violation ) {
-      return formatViolation( violation, () ->
-            String.format( "allowed-value: %s%n", formatRdfNode( violation.allowedValue(), violation ) )
-                  + String.format( "actual-value: %s%n", formatRdfNode( violation.actualValue(), violation ) ) );
+      return formatViolation( violation, () -> String.format( "allowed-value: %s%n", formatRdfNode( violation.allowedValue(), violation ) )
+            + String.format( "actual-value: %s%n", formatRdfNode( violation.actualValue(), violation ) ) );
    }
 
    @Override
    public String visitDisjointViolation( final DisjointViolation violation ) {
-      return formatViolation( violation, () ->
-            String.format( "other-property: %s%n", violation.context().shortUri( violation.otherProperty().getURI() ) )
+      return formatViolation( violation,
+            () -> String.format( "other-property: %s%n", violation.context().shortUri( violation.otherProperty().getURI() ) )
                   + String.format( "other-value: %s%n", formatRdfNode( violation.otherValue(), violation ) ) );
    }
 
    @Override
    public String visitLessThanViolation( final LessThanViolation violation ) {
-      return formatViolation( violation, () ->
-            String.format( "other-property: %s%n", violation.context().shortUri( violation.otherProperty().getURI() ) )
+      return formatViolation( violation,
+            () -> String.format( "other-property: %s%n", violation.context().shortUri( violation.otherProperty().getURI() ) )
                   + String.format( "other-value: %s%n", formatRdfNode( violation.otherValue(), violation ) ) );
    }
 
    @Override
    public String visitLessThanOrEqualsViolation( final LessThanOrEqualsViolation violation ) {
-      return formatViolation( violation, () ->
-            String.format( "other-property: %s%n", violation.context().shortUri( violation.otherProperty().getURI() ) )
+      return formatViolation( violation,
+            () -> String.format( "other-property: %s%n", violation.context().shortUri( violation.otherProperty().getURI() ) )
                   + String.format( "other-value: %s%n", formatRdfNode( violation.otherValue(), violation ) ) );
    }
 
    @Override
    public String visitValueFromListViolation( final ValueFromListViolation violation ) {
-      return formatViolation( violation, () ->
-            String.format( "allowed-values: %s%n",
-                  violation.allowed().stream().map( rdfNode -> formatRdfNode( rdfNode, violation ) ).collect( Collectors.joining( ", " ) ) )
-                  + String.format( "actual-value: %s%n", formatRdfNode( violation.actual(), violation ) ) );
+      return formatViolation( violation, () -> String.format( "allowed-values: %s%n",
+            violation.allowed().stream().map( rdfNode -> formatRdfNode( rdfNode, violation ) ).collect( Collectors.joining( ", " ) ) )
+            + String.format( "actual-value: %s%n", formatRdfNode( violation.actual(), violation ) ) );
    }
 
    @Override
    public String visitClosedViolation( final ClosedViolation violation ) {
-      return formatViolation( violation, () ->
-            String.format( "allowed-properties: %s%n", violation.allowedProperties().stream()
+      return formatViolation( violation, () -> String.format( "allowed-properties: %s%n", violation.allowedProperties().stream()
+            .map( Property::getURI ).map( uri -> violation.context().shortUri( uri ) ).collect( Collectors.joining( ", " ) ) )
+            + String.format( "ignored-properties: %s%n", violation.ignoredProperties().stream()
                   .map( Property::getURI ).map( uri -> violation.context().shortUri( uri ) ).collect( Collectors.joining( ", " ) ) )
-                  + String.format( "ignored-properties: %s%n", violation.ignoredProperties().stream()
-                  .map( Property::getURI ).map( uri -> violation.context().shortUri( uri ) ).collect( Collectors.joining( ", " ) ) )
-                  + String.format( "actual: %s%n", violation.context().shortUri( violation.actual().getURI() ) ) );
+            + String.format( "actual: %s%n", violation.context().shortUri( violation.actual().getURI() ) ) );
    }
 
    @Override

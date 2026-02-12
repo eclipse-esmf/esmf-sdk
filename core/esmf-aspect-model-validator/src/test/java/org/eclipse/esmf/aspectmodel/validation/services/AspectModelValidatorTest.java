@@ -107,9 +107,9 @@ class AspectModelValidatorTest {
       assertThat( violations )
             .hasSize( 1 )
             .first()
-            .satisfies( violation ->
-                  assertThat( violation ).isInstanceOfSatisfying( CycleViolation.class, cycleViolation ->
-                        assertThat( cycleViolation.violationSpecificMessage() ).contains( ":testProperty -> :testProperty" ) ) );
+            .satisfies( violation -> assertThat( violation ).isInstanceOfSatisfying( CycleViolation.class,
+                  cycleViolation -> assertThat( cycleViolation.violationSpecificMessage() )
+                        .contains( ":testProperty -> :testProperty" ) ) );
    }
 
    @ParameterizedTest
@@ -198,9 +198,8 @@ class AspectModelValidatorTest {
       assertThat( violations )
             .hasSize( 1 )
             .first()
-            .satisfies( violation ->
-                  assertThat( violation ).isInstanceOfSatisfying( ProcessingViolation.class, processingViolation ->
-                        assertThat( processingViolation.message() ).contains( "is not supported" ) ) );
+            .satisfies( violation -> assertThat( violation ).isInstanceOfSatisfying( ProcessingViolation.class,
+                  processingViolation -> assertThat( processingViolation.message() ).contains( "is not supported" ) ) );
    }
 
    @Test

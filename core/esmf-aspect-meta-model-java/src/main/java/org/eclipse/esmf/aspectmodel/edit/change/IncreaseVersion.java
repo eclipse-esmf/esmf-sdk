@@ -18,9 +18,7 @@ import java.util.function.UnaryOperator;
 import org.eclipse.esmf.aspectmodel.VersionNumber;
 
 public enum IncreaseVersion implements UnaryOperator<VersionNumber> {
-   MAJOR,
-   MINOR,
-   MICRO;
+   MAJOR, MINOR, MICRO;
 
    @Override
    public VersionNumber apply( final VersionNumber previous ) {

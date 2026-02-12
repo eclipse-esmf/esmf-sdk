@@ -29,8 +29,9 @@ import org.apache.jena.riot.tokens.TokenType;
 import org.apache.jena.sparql.core.Quad;
 
 /**
- * Customized parser profile that delegates to Jena's built-in Node generation but also registers the nodes in the {@link TokenRegistry},
- * where information about the line/column/token can be retrieved at a later time.
+ * Customized parser profile that delegates to Jena's built-in Node generation but also registers
+ * the nodes in the {@link TokenRegistry}, where information about the line/column/token can be
+ * retrieved at a later time.
  */
 public class TurtleParserProfile implements ParserProfile {
    private final ParserProfile parserProfile;

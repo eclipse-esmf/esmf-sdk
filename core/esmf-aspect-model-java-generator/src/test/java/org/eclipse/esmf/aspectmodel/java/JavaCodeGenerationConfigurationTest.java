@@ -30,51 +30,47 @@ class JavaCodeGenerationConfigurationTest {
 
    @Test
    void testValidTemplateLibConfig() {
-      assertThatCode( () ->
-            JavaCodeGenerationConfigBuilder.builder()
-                  .enableJacksonAnnotations( true )
-                  .packageName( "" )
-                  .executeLibraryMacros( true )
-                  .templateLibFile( templateLibFile )
-                  .namePrefix( "" )
-                  .namePostfix( "" )
-                  .build()
+      assertThatCode( () -> JavaCodeGenerationConfigBuilder.builder()
+            .enableJacksonAnnotations( true )
+            .packageName( "" )
+            .executeLibraryMacros( true )
+            .templateLibFile( templateLibFile )
+            .namePrefix( "" )
+            .namePostfix( "" )
+            .build()
       ).doesNotThrowAnyException();
 
-      assertThatCode( () ->
-            JavaCodeGenerationConfigBuilder.builder()
-                  .enableJacksonAnnotations( true )
-                  .packageName( "" )
-                  .executeLibraryMacros( false )
-                  .templateLibFile( emptyTemplateLibFile )
-                  .namePrefix( "" )
-                  .namePostfix( "" )
-                  .build()
+      assertThatCode( () -> JavaCodeGenerationConfigBuilder.builder()
+            .enableJacksonAnnotations( true )
+            .packageName( "" )
+            .executeLibraryMacros( false )
+            .templateLibFile( emptyTemplateLibFile )
+            .namePrefix( "" )
+            .namePostfix( "" )
+            .build()
       ).doesNotThrowAnyException();
    }
 
    @Test
    void testTemplateLibConfigMissingFile() {
-      assertThatCode( () ->
-            JavaCodeGenerationConfigBuilder.builder()
-                  .enableJacksonAnnotations( true )
-                  .packageName( "" )
-                  .executeLibraryMacros( true )
-                  .templateLibFile( emptyTemplateLibFile )
-                  .build()
+      assertThatCode( () -> JavaCodeGenerationConfigBuilder.builder()
+            .enableJacksonAnnotations( true )
+            .packageName( "" )
+            .executeLibraryMacros( true )
+            .templateLibFile( emptyTemplateLibFile )
+            .build()
       ).isExactlyInstanceOf( CodeGenerationException.class )
             .hasMessage( "Missing configuration. Please provide path to velocity template library file." );
    }
 
    @Test
    void testTemplateLibConfigNonExistingFile() {
-      assertThatCode( () ->
-            JavaCodeGenerationConfigBuilder.builder()
-                  .enableJacksonAnnotations( true )
-                  .packageName( "" )
-                  .executeLibraryMacros( true )
-                  .templateLibFile( nonExistingTemplateLibPath )
-                  .build()
+      assertThatCode( () -> JavaCodeGenerationConfigBuilder.builder()
+            .enableJacksonAnnotations( true )
+            .packageName( "" )
+            .executeLibraryMacros( true )
+            .templateLibFile( nonExistingTemplateLibPath )
+            .build()
       ).isExactlyInstanceOf( CodeGenerationException.class )
             .hasMessage( "Incorrect configuration. Please provide a valid path to the velocity template library file." );
    }

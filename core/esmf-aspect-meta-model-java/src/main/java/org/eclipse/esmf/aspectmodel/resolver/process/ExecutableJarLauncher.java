@@ -33,7 +33,8 @@ public class ExecutableJarLauncher extends OsProcessLauncher {
       final List<String> commandWithArguments = new ArrayList<>();
       commandWithArguments.add( ProcessHandle.current().info().command().orElse( "java" ) );
       if ( disableWarning ) {
-         // Temporary disable warning messages from the output error stream until https://github.com/oracle/graal/issues/12623 is resolved
+         // Temporary disable warning messages from the output error stream until
+         // https://github.com/oracle/graal/issues/12623 is resolved
          // Delete these two arguments in github actions too
          commandWithArguments.add( "--enable-native-access=ALL-UNNAMED" );
          commandWithArguments.add( "--sun-misc-unsafe-memory-access=allow" );

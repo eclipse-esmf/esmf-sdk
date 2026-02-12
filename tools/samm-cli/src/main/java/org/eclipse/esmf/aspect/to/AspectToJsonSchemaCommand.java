@@ -32,31 +32,30 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import picocli.CommandLine;
 
 @CommandLine.Command(
-      name = AspectToJsonSchemaCommand.COMMAND_NAME,
-      description = "Generate JSON schema for an Aspect Model",
-      descriptionHeading = "%n@|bold Description|@:%n%n",
-      parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n"
-)
+   name = AspectToJsonSchemaCommand.COMMAND_NAME,
+   description = "Generate JSON schema for an Aspect Model",
+   descriptionHeading = "%n@|bold Description|@:%n%n",
+   parameterListHeading = "%n@|bold Parameters|@:%n",
+   optionListHeading = "%n@|bold Options|@:%n" )
 public class AspectToJsonSchemaCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "schema";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--output", "-o" },
-         description = "Output file path (default: stdout)" )
+      names = { "--output", "-o" },
+      description = "Output file path (default: stdout)" )
    private String outputFilePath = "-";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--language", "-l" },
-         description = "The language from the model for which the OpenAPI specification should be generated (default: en)" )
+      names = { "--language", "-l" },
+      description = "The language from the model for which the OpenAPI specification should be generated (default: en)" )
    private String language = "en";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--details" },
-         description = "Print detailed reports on errors" )
+      names = { "--details" },
+      description = "Print detailed reports on errors" )
    private boolean details = false;
 
    @CommandLine.ParentCommand

@@ -190,7 +190,8 @@ public class SammBuilder {
    }
 
    /**
-    * Base class for all model elements that are optionally name, e.g., Characteristics and Constraints.
+    * Base class for all model elements that are optionally name, e.g., Characteristics and
+    * Constraints.
     *
     * @param <SELF> the self type
     * @param <ACTUAL> the element type
@@ -228,8 +229,8 @@ public class SammBuilder {
     * @param <SELF> the self type
     * @param <ACTUAL> the element type
     */
-   public abstract static class NamedElementBuilder<SELF extends NamedElementBuilder<SELF, ACTUAL>,
-         ACTUAL extends ModelElement> extends Builder<SELF, ACTUAL> {
+   public abstract static class NamedElementBuilder<SELF extends NamedElementBuilder<SELF, ACTUAL>, ACTUAL extends ModelElement>
+         extends Builder<SELF, ACTUAL> {
       protected final AspectModelUrn urn;
 
       public NamedElementBuilder( final Class<?> selfType, final AspectModelUrn urn ) {
@@ -475,8 +476,8 @@ public class SammBuilder {
          if ( characteristic == null ) {
             throw new AspectModelBuildingException( "Property is missing a characteristic" );
          }
-         final Type type = characteristic.getDataType().orElseThrow( () ->
-               new AspectModelBuildingException( "Property's characteristic is missing a dataType" ) );
+         final Type type = characteristic.getDataType()
+               .orElseThrow( () -> new AspectModelBuildingException( "Property's characteristic is missing a dataType" ) );
          if ( !exampleValue.getType().isTypeOrSubtypeOf( type ) ) {
             throw new AspectModelBuildingException( "Property's example value's type is not and no subtype of " + type );
          }

@@ -26,8 +26,8 @@ public interface PropertyContainer<C> {
    List<StaticProperty<C, ?>> getProperties();
 
    /**
-    * @return a {@link List} of {@link StaticProperty}(ies) contained in this Meta Model element and the {@link StaticProperty}(ies) of the
-    * extended elements.
+    * @return a {@link List} of {@link StaticProperty}(ies) contained in this Meta Model element and
+    *         the {@link StaticProperty}(ies) of the extended elements.
     */
    @SuppressWarnings( "squid:S1452" )
    List<StaticProperty<C, ?>> getAllProperties();

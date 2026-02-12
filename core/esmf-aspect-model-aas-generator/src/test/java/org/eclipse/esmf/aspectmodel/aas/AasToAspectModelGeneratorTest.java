@@ -157,12 +157,11 @@ class AasToAspectModelGeneratorTest {
    @EnumSource( TestAspect.class )
    void testRoundtripConversion( final TestAspect testAspect ) throws DeserializationException {
       final Aspect aspect = TestResources.load( testAspect ).aspect();
-      final Consumer<AasToAspectModelGenerator> assertForValidator = aspectModelGenerator ->
-            assertThatCode( () -> {
-               final List<Aspect> aspects = aspectModelGenerator.generate().map( AspectArtifact::getContent ).toList();
-               assertThat( aspects ).singleElement().satisfies( generatedAspect ->
-                     assertThat( generatedAspect.urn() ).isEqualTo( aspect.urn() ) );
-            } ).doesNotThrowAnyException();
+      final Consumer<AasToAspectModelGenerator> assertForValidator = aspectModelGenerator -> assertThatCode( () -> {
+         final List<Aspect> aspects = aspectModelGenerator.generate().map( AspectArtifact::getContent ).toList();
+         assertThat( aspects ).singleElement()
+               .satisfies( generatedAspect -> assertThat( generatedAspect.urn() ).isEqualTo( aspect.urn() ) );
+      } ).doesNotThrowAnyException();
 
       final byte[] content = new AspectModelAasGenerator( aspect,
             AasGenerationConfigBuilder.builder().format( AasFileFormat.XML ).build() ).getContent();
@@ -183,8 +182,8 @@ class AasToAspectModelGeneratorTest {
       // Submodel has an Aspect Model URN as identifier
       final Environment aasEnvironment = loadEnvironment( "SMTWithAspectModelUrnId.aas.xml" );
       final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( aasEnvironment );
-      assertThat( aspectModelGenerator.generate() ).map( AspectArtifact::getContent ).singleElement().satisfies( aspect ->
-            assertThat( aspect.urn().toString() ).isEqualTo( "urn:samm:com.example:1.0.0#Submodel1" ) );
+      assertThat( aspectModelGenerator.generate() ).map( AspectArtifact::getContent ).singleElement()
+            .satisfies( aspect -> assertThat( aspect.urn().toString() ).isEqualTo( "urn:samm:com.example:1.0.0#Submodel1" ) );
    }
 
    @Test
@@ -192,8 +191,8 @@ class AasToAspectModelGeneratorTest {
       // Submodel has a Concept Description that points to an Aspect Model URN
       final Environment aasEnvironment = loadEnvironment( "SMTWithAspectModelUrnInConceptDescription.aas.xml" );
       final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( aasEnvironment );
-      assertThat( aspectModelGenerator.generate() ).map( AspectArtifact::getContent ).singleElement().satisfies( aspect ->
-            assertThat( aspect.urn().toString() ).isEqualTo( "urn:samm:com.example:1.0.0#Submodel1" ) );
+      assertThat( aspectModelGenerator.generate() ).map( AspectArtifact::getContent ).singleElement()
+            .satisfies( aspect -> assertThat( aspect.urn().toString() ).isEqualTo( "urn:samm:com.example:1.0.0#Submodel1" ) );
    }
 
    @Test
@@ -202,8 +201,8 @@ class AasToAspectModelGeneratorTest {
       // It has a version and an IRI identifier and an idShort
       final Environment aasEnvironment = loadEnvironment( "SMTAspectModelUrnInConstruction1.aas.xml" );
       final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( aasEnvironment );
-      assertThat( aspectModelGenerator.generate() ).map( AspectArtifact::getContent ).singleElement().satisfies( aspect ->
-            assertThat( aspect.urn().toString() ).isEqualTo( "urn:samm:com.example.www:1.2.3#Submodel1" ) );
+      assertThat( aspectModelGenerator.generate() ).map( AspectArtifact::getContent ).singleElement()
+            .satisfies( aspect -> assertThat( aspect.urn().toString() ).isEqualTo( "urn:samm:com.example.www:1.2.3#Submodel1" ) );
    }
 
    @Test
@@ -212,8 +211,8 @@ class AasToAspectModelGeneratorTest {
       // It has a version and an IRDI identifier and an idShort
       final Environment aasEnvironment = loadEnvironment( "SMTAspectModelUrnInConstruction2.aas.xml" );
       final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( aasEnvironment );
-      assertThat( aspectModelGenerator.generate() ).map( AspectArtifact::getContent ).singleElement().satisfies( aspect ->
-            assertThat( aspect.urn().toString() ).isEqualTo( "urn:samm:com.example:1.2.3#Submodel1" ) );
+      assertThat( aspectModelGenerator.generate() ).map( AspectArtifact::getContent ).singleElement()
+            .satisfies( aspect -> assertThat( aspect.urn().toString() ).isEqualTo( "urn:samm:com.example:1.2.3#Submodel1" ) );
    }
 
    @Test
@@ -222,8 +221,8 @@ class AasToAspectModelGeneratorTest {
       // It has an IRDI identifier and an idShort, but no version
       final Environment aasEnvironment = loadEnvironment( "SMTAspectModelUrnInConstruction3.aas.xml" );
       final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( aasEnvironment );
-      assertThat( aspectModelGenerator.generate() ).map( AspectArtifact::getContent ).singleElement().satisfies( aspect ->
-            assertThat( aspect.urn().toString() ).isEqualTo( "urn:samm:com.example:1.0.0#Submodel1" ) );
+      assertThat( aspectModelGenerator.generate() ).map( AspectArtifact::getContent ).singleElement()
+            .satisfies( aspect -> assertThat( aspect.urn().toString() ).isEqualTo( "urn:samm:com.example:1.0.0#Submodel1" ) );
    }
 
    @Test
@@ -232,8 +231,8 @@ class AasToAspectModelGeneratorTest {
       // It has an IRDI identifier, but no idShort and no version
       final Environment aasEnvironment = loadEnvironment( "SMTAspectModelUrnInConstruction4.aas.xml" );
       final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( aasEnvironment );
-      assertThat( aspectModelGenerator.generate() ).map( AspectArtifact::getContent ).singleElement().satisfies( aspect ->
-            assertThat( aspect.urn().toString() ).isEqualTo( "urn:samm:com.example:1.0.0#AAAAAA000abf2fd07" ) );
+      assertThat( aspectModelGenerator.generate() ).map( AspectArtifact::getContent ).singleElement()
+            .satisfies( aspect -> assertThat( aspect.urn().toString() ).isEqualTo( "urn:samm:com.example:1.0.0#AAAAAA000abf2fd07" ) );
    }
 
    private Environment loadEnvironment( final String name ) {

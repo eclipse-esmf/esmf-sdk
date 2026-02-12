@@ -40,9 +40,8 @@ public class ValidateTest extends AspectModelMojoTest {
 
    @Test
    @InjectMojo(
-         goal = Validate.MAVEN_GOAL,
-         pom = "src/test/resources/validate-pom-valid-aspect-model/pom.xml"
-   )
+      goal = Validate.MAVEN_GOAL,
+      pom = "src/test/resources/validate-pom-valid-aspect-model/pom.xml" )
    public void testValidateValidAspectModel( final Validate validate ) {
       assertThatCode( validate::execute )
             .doesNotThrowAnyException();
@@ -50,9 +49,8 @@ public class ValidateTest extends AspectModelMojoTest {
 
    @Test
    @InjectMojo(
-         goal = Validate.MAVEN_GOAL,
-         pom = "src/test/resources/validate-pom-invalid-aspect-model/pom.xml"
-   )
+      goal = Validate.MAVEN_GOAL,
+      pom = "src/test/resources/validate-pom-invalid-aspect-model/pom.xml" )
    public void testValidateInvalidAspectModel( final Validate validate ) {
       assertThatCode( validate::execute )
             .isInstanceOf( MojoExecutionException.class )
@@ -61,9 +59,8 @@ public class ValidateTest extends AspectModelMojoTest {
 
    @Test
    @InjectMojo(
-         goal = Validate.MAVEN_GOAL,
-         pom = "src/test/resources/validate-pom-multiple-aspect-models/pom.xml"
-   )
+      goal = Validate.MAVEN_GOAL,
+      pom = "src/test/resources/validate-pom-multiple-aspect-models/pom.xml" )
    public void testValidateMultipleAspectModels( final Validate validate ) {
       assertThatCode( validate::execute )
             .doesNotThrowAnyException();
@@ -71,19 +68,18 @@ public class ValidateTest extends AspectModelMojoTest {
 
    @Test
    @InjectMojo(
-         goal = Validate.MAVEN_GOAL,
-         pom = "src/test/resources/validate-pom-resolve-from-github/pom.xml"
-   )
+      goal = Validate.MAVEN_GOAL,
+      pom = "src/test/resources/validate-pom-resolve-from-github/pom.xml" )
    @Disabled( "Temporarily disabled due to an issue under investigation in CI" )
    public void testValidateWithResolutionFromGitHub( final Validate validate ) throws XmlPullParserException, IOException {
       // Inject <configuration> block into session's config
       final String serverConfigXml = """
-            <configuration>
-                <repository>eclipse-esmf/esmf-sdk</repository>
-                <directory>core/esmf-test-aspect-models/src/main/resources/valid</directory>
-                <branch>main</branch>
-            </configuration>
-            """;
+         <configuration>
+             <repository>eclipse-esmf/esmf-sdk</repository>
+             <directory>core/esmf-test-aspect-models/src/main/resources/valid</directory>
+             <branch>main</branch>
+         </configuration>
+         """;
       final Xpp3Dom serverConfig = Xpp3DomBuilder.build( new StringReader( serverConfigXml ) );
       final Server server = new Server();
       server.setId( GITHUB_SERVER_CONFIG_ID );

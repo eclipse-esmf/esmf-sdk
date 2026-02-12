@@ -53,12 +53,11 @@ import org.apache.commons.lang3.StringUtils;
 import picocli.CommandLine;
 
 @CommandLine.Command(
-      name = AspectToOpenapiCommand.COMMAND_NAME,
-      description = "Generate OpenAPI specification for an Aspect Model",
-      descriptionHeading = "%n@|bold Description|@:%n%n",
-      parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n"
-)
+   name = AspectToOpenapiCommand.COMMAND_NAME,
+   description = "Generate OpenAPI specification for an Aspect Model",
+   descriptionHeading = "%n@|bold Description|@:%n%n",
+   parameterListHeading = "%n@|bold Parameters|@:%n",
+   optionListHeading = "%n@|bold Options|@:%n" )
 public class AspectToOpenapiCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "openapi";
    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -66,129 +65,129 @@ public class AspectToOpenapiCommand extends AbstractCommand {
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--api-base-url", "-b" },
-         description = "The base url for the Aspect API used in the OpenAPI specification.",
-         required = true )
+      names = { "--api-base-url", "-b" },
+      description = "The base url for the Aspect API used in the OpenAPI specification.",
+      required = true )
    private String aspectApiBaseUrl = null;
 
    @CommandLine.Option(
-         names = { "--read-api-path", "-rap" },
-         description = "The path for the default endpoint, default '/api/vX', where X is the Aspect Model major version." )
+      names = { "--read-api-path", "-rap" },
+      description = "The path for the default endpoint, default '/api/vX', where X is the Aspect Model major version." )
    private String readApiPath = null;
 
    @CommandLine.Option(
-         names = { "--query-api-path", "-qap" },
-         description = "The path for the query endpoint, default '/query-api/vX', where X is the Aspect Model major version." )
+      names = { "--query-api-path", "-qap" },
+      description = "The path for the query endpoint, default '/query-api/vX', where X is the Aspect Model major version." )
    private String queryApiPath = "";
 
    @CommandLine.Option(
-         names = { "--json", "-j" },
-         description = "Generate OpenAPI JSON specification for an Aspect Model (when not given, YAML is generated as default format)" )
+      names = { "--json", "-j" },
+      description = "Generate OpenAPI JSON specification for an Aspect Model (when not given, YAML is generated as default format)" )
    boolean generateJsonOpenApiSpec = false;
 
    @CommandLine.Option(
-         names = { "--comment", "-c" },
-         description = "Generate $comment OpenAPI keyword for samm:see attributes in the model." )
+      names = { "--comment", "-c" },
+      description = "Generate $comment OpenAPI keyword for samm:see attributes in the model." )
    boolean generateCommentForSeeAttributes = false;
 
    @CommandLine.Option(
-         names = { "--parameter-file", "-p" },
-         description = "The path to a file including the parameter for the Aspect API endpoints. When --json is given, this file "
-               + "should contain the parameter definition in JSON, otherwise it should contain the definition in YAML." )
+      names = { "--parameter-file", "-p" },
+      description = "The path to a file including the parameter for the Aspect API endpoints. When --json is given, this file "
+            + "should contain the parameter definition in JSON, otherwise it should contain the definition in YAML." )
    private String aspectParameterFile;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--semantic-version", "-sv" },
-         description = "Use the full semantic version from the Aspect Model as the version for the Aspect API." )
+      names = { "--semantic-version", "-sv" },
+      description = "Use the full semantic version from the Aspect Model as the version for the Aspect API." )
    private boolean useSemanticApiVersion = false;
 
    @CommandLine.Option(
-         names = { "--resource-path", "-r" },
-         description = "The resource path for the Aspect API endpoints." )
+      names = { "--resource-path", "-r" },
+      description = "The resource path for the Aspect API endpoints." )
    private String aspectResourcePath;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--include-query-api", "-q" },
-         description = "Include the path for the Query Aspect API Endpoint in the OpenAPI specification." )
+      names = { "--include-query-api", "-q" },
+      description = "Include the path for the Query Aspect API Endpoint in the OpenAPI specification." )
    private boolean includeQueryApi = false;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--include-crud", "-cr" },
-         description = "Include all CRUD operations (POST/PUT/PATCH) in the OpenAPI specification." )
+      names = { "--include-crud", "-cr" },
+      description = "Include all CRUD operations (POST/PUT/PATCH) in the OpenAPI specification." )
    private boolean includeFullCrud = false;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--include-post", "-post" },
-         description = "Include POST operation in the OpenAPI specification." )
+      names = { "--include-post", "-post" },
+      description = "Include POST operation in the OpenAPI specification." )
    private boolean includePost = false;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--include-put", "-put" },
-         description = "Include PUT operation in the OpenAPI specification." )
+      names = { "--include-put", "-put" },
+      description = "Include PUT operation in the OpenAPI specification." )
    private boolean includePut = false;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--include-patch", "-patch" },
-         description = "Include PATCH operation in the OpenAPI specification." )
+      names = { "--include-patch", "-patch" },
+      description = "Include PATCH operation in the OpenAPI specification." )
    private boolean includePatch = false;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--paging-none", "-pn" },
-         description = "Exclude paging information for the Aspect API Endpoint in the OpenAPI specification." )
+      names = { "--paging-none", "-pn" },
+      description = "Exclude paging information for the Aspect API Endpoint in the OpenAPI specification." )
    private boolean excludePaging = false;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--paging-cursor-based", "-pc" },
-         description = "In case there is more than one paging possibility, it has to be cursor based paging." )
+      names = { "--paging-cursor-based", "-pc" },
+      description = "In case there is more than one paging possibility, it has to be cursor based paging." )
    private boolean aspectCursorBasedPaging = false;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--paging-offset-based", "-po" },
-         description = "In case there is more than one paging possibility, it has to be offset based paging." )
+      names = { "--paging-offset-based", "-po" },
+      description = "In case there is more than one paging possibility, it has to be offset based paging." )
    private boolean aspectOffsetBasedPaging = false;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--paging-time-based", "-pt" },
-         description = "In case there is more than one paging possibility, it has to be time based paging." )
+      names = { "--paging-time-based", "-pt" },
+      description = "In case there is more than one paging possibility, it has to be time based paging." )
    private boolean aspectTimeBasedPaging = false;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--separate-files", "-sf" },
-         description = "Write separate files for the root document and referenced schemas." )
+      names = { "--separate-files", "-sf" },
+      description = "Write separate files for the root document and referenced schemas." )
    private boolean writeSeparateFiles = false;
 
    @CommandLine.Option(
-         names = { "--output", "-o" },
-         description = "Output path; if --separate-files is given, this must be a directory." )
+      names = { "--output", "-o" },
+      description = "Output path; if --separate-files is given, this must be a directory." )
    private String outputFilePath = "-";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--language", "-l" },
-         description = "The language from the model for which the OpenAPI specification should be generated (default: en)." )
+      names = { "--language", "-l" },
+      description = "The language from the model for which the OpenAPI specification should be generated (default: en)." )
    private String language = "en";
 
    @CommandLine.Option( names = { "--template-file", "-t" },
-         description = "The path to the file with a template for the resulting specification, "
-               + "including values undefined by the aspect's OpenAPI specification. "
-               + "The template can be in JSON or YAML format." )
+      description = "The path to the file with a template for the resulting specification, "
+            + "including values undefined by the aspect's OpenAPI specification. "
+            + "The template can be in JSON or YAML format." )
    private String templateFilePath;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--details" },
-         description = "Print detailed reports on errors" )
+      names = { "--details" },
+      description = "Print detailed reports on errors" )
    private boolean details = false;
 
    @CommandLine.ParentCommand
@@ -294,8 +293,7 @@ public class AspectToOpenapiCommand extends AbstractCommand {
                .of( stream -> IOUtils.toString( stream, StandardCharsets.UTF_8 ) )
                .mapFailure( Case(
                      $( instanceOf( IOException.class ) ),
-                     e -> new CommandException( format( "Could not load file %s.", filePath ), e ) ) )
-               ;
+                     e -> new CommandException( format( "Could not load file %s.", filePath ), e ) ) );
       }
    }
 

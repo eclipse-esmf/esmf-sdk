@@ -24,7 +24,8 @@ import org.eclipse.esmf.aspectmodel.edit.ChangeReport;
 import org.apache.jena.rdf.model.Model;
 
 /**
- * Abstract base class for all Changes that change the content (i.e., the underlying RDF) of an Aspect Model file.
+ * Abstract base class for all Changes that change the content (i.e., the underlying RDF) of an
+ * Aspect Model file.
  */
 public abstract class EditAspectModel extends AbstractChange {
    /**
@@ -34,12 +35,15 @@ public abstract class EditAspectModel extends AbstractChange {
     * @param add the set of statements to add
     * @param remove the set of statements to remove
     */
-   protected record ModelChanges( String description, Model add, Model remove ) {
+   protected record ModelChanges(
+         String description, Model add, Model remove
+   ) {
       public static final ModelChanges NONE = new ModelChanges( "", null, null );
    }
 
    /**
-    * Each AspectModelFile is changed separately, so extending classes need to calculate changes for a given file.
+    * Each AspectModelFile is changed separately, so extending classes need to calculate changes for a
+    * given file.
     *
     * @param aspectModelFile the AspectModelFile to change
     * @return the set of changes
@@ -69,12 +73,12 @@ public abstract class EditAspectModel extends AbstractChange {
       } );
 
       return new ChangeReport.MultipleEntries(
-            changesPerFile.entrySet().stream().<ChangeReport> map( entry -> {
+            changesPerFile.entrySet().stream().<ChangeReport>map( entry -> {
                final AspectModelFile file = entry.getKey();
                final ModelChanges modelChanges = entry.getValue();
                return new ChangeReport.EntryWithDetails( modelChanges.description(), Map.of(
-                           "Add content in " + show( file ), modelChanges.add(),
-                           "Remove content from " + show( file ), modelChanges.remove() )
+                     "Add content in " + show( file ), modelChanges.add(),
+                     "Remove content from " + show( file ), modelChanges.remove() )
                      .entrySet().stream()
                      .filter( descriptionEntry -> {
                         final Model changeModel = descriptionEntry.getValue();

@@ -24,9 +24,8 @@ import org.junit.jupiter.api.Test;
 public class GenerateJsonPayloadTest extends AspectModelMojoTest {
    @Test
    @InjectMojo(
-         goal = GenerateJsonPayload.MAVEN_GOAL,
-         pom = "src/test/resources/test-pom-valid-aspect-model-output-directory/pom.xml"
-   )
+      goal = GenerateJsonPayload.MAVEN_GOAL,
+      pom = "src/test/resources/test-pom-valid-aspect-model-output-directory/pom.xml" )
    public void testGenerateJsonPayload( final GenerateJsonPayload generateJsonPayload ) {
       assertThatCode( generateJsonPayload::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "Aspect.json" ) ).exists();

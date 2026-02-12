@@ -30,7 +30,8 @@ import io.vavr.control.Either;
 import io.vavr.control.Try;
 
 /**
- * The AspectModelUrnInputHandler knows how to load Aspect Models if the given input is an Aspect Model URN
+ * The AspectModelUrnInputHandler knows how to load Aspect Models if the given input is an Aspect
+ * Model URN
  */
 public class AspectModelUrnInputHandler extends AbstractInputHandler {
    private final AspectModelUrn urn;
@@ -76,11 +77,10 @@ public class AspectModelUrnInputHandler extends AbstractInputHandler {
       final boolean urnDenotesNamespace = urn.getName().isEmpty();
       final Function<AspectModelLoader, AspectModel> loaderFunction;
       if ( validate ) {
-         loaderFunction = ( (Function<AspectModelLoader, Either<List<Violation>, AspectModel>>) loader ->
-               ( urnDenotesNamespace
-                     ? loader.withValidation( validator ).loadNamespace( urn )
-                     : loader.withValidation( validator ).load( urn ) ) )
-               .andThen( this::getAspectModelOrPrintValidationReport );
+         loaderFunction = ( (Function<AspectModelLoader, Either<List<Violation>, AspectModel>>) loader -> ( urnDenotesNamespace
+               ? loader.withValidation( validator ).loadNamespace( urn )
+               : loader.withValidation( validator ).load( urn ) ) )
+                     .andThen( this::getAspectModelOrPrintValidationReport );
       } else {
          loaderFunction = urnDenotesNamespace
                ? aspectModelLoader -> aspectModelLoader.loadNamespace( urn )

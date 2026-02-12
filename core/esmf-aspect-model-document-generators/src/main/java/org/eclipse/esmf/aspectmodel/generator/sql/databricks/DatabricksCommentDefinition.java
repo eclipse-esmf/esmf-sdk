@@ -13,12 +13,15 @@
 
 package org.eclipse.esmf.aspectmodel.generator.sql.databricks;
 
-public record DatabricksCommentDefinition( String comment ) {
+public record DatabricksCommentDefinition(
+      String comment
+) {
    @Override
    public String toString() {
       return "COMMENT '" + comment
+            .replace( "\r\n", "\n" )
             .replace( "'", "\\'" )
-            .replace( System.lineSeparator(), "\\n" )
+            .replace( "\n", "\\n" )
             + "'";
    }
 }

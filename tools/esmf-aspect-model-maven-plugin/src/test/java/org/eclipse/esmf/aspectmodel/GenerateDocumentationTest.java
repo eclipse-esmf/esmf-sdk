@@ -25,9 +25,8 @@ import org.junit.jupiter.api.Test;
 public class GenerateDocumentationTest extends AspectModelMojoTest {
    @Test
    @InjectMojo(
-         goal = GenerateDocumentation.MAVEN_GOAL,
-         pom = "src/test/resources/test-pom-valid-aspect-model-output-directory/pom.xml"
-   )
+      goal = GenerateDocumentation.MAVEN_GOAL,
+      pom = "src/test/resources/test-pom-valid-aspect-model-output-directory/pom.xml" )
    public void testGenerateDocumentation( final GenerateDocumentation generateDocumentation ) {
       assertThatCode( generateDocumentation::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "Aspect_en.html" ) ).exists();
@@ -35,9 +34,8 @@ public class GenerateDocumentationTest extends AspectModelMojoTest {
 
    @Test
    @InjectMojo(
-         goal = GenerateDocumentation.MAVEN_GOAL,
-         pom = "src/test/resources/generate-documentation-pom-invalid-aspect-model/pom.xml"
-   )
+      goal = GenerateDocumentation.MAVEN_GOAL,
+      pom = "src/test/resources/generate-documentation-pom-invalid-aspect-model/pom.xml" )
    public void testGenerateDocumentationInvalidAspectModel( final GenerateDocumentation generateDocumentation ) {
       assertThatCode( generateDocumentation::execute )
             .isInstanceOf( MojoExecutionException.class )

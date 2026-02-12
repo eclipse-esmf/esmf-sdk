@@ -24,9 +24,8 @@ import org.junit.jupiter.api.Test;
 public class GenerateAspectFromAasTest extends AspectModelMojoTest {
    @Test
    @InjectMojo(
-         goal = GenerateAspectFromAas.MAVEN_GOAL,
-         pom = "src/test/resources/generate-aspect-from-aas-valid/pom.xml"
-   )
+      goal = GenerateAspectFromAas.MAVEN_GOAL,
+      pom = "src/test/resources/generate-aspect-from-aas-valid/pom.xml" )
    public void testGenerateAspectFromAas( final GenerateAspectFromAas generateAspectFromAas ) {
       assertThatCode( generateAspectFromAas::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "com.example", "1.0.0", "Submodel1.ttl" ) ).exists();

@@ -42,7 +42,8 @@ public class AspectModelToJsonLdGenerator extends JsonGenerator<Aspect, JsonLdGe
    }
 
    /**
-    * Generates a JSON-LD representation of the aspect's source model and writes it to an output stream.
+    * Generates a JSON-LD representation of the aspect's source model and writes it to an output
+    * stream.
     */
    @Override
    public Stream<JsonLdArtifact> generate() {

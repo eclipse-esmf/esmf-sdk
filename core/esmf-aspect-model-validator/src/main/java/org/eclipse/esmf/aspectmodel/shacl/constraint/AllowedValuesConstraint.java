@@ -26,7 +26,9 @@ import org.apache.jena.rdf.model.RDFNode;
  *
  * @param allowedValues the list of allowed values
  */
-public record AllowedValuesConstraint( List<RDFNode> allowedValues ) implements Constraint {
+public record AllowedValuesConstraint(
+      List<RDFNode> allowedValues
+) implements Constraint {
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
       return allowedValues.contains( rdfNode )

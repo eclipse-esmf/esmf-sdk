@@ -22,15 +22,15 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.apache.jena.rdf.model.RDFNode;
 
 /**
- * Represents a SHACL constraint component as a function that takes the <a href="https://www.w3.org/TR/shacl/#value-nodes">value node</a> as
- * input and returns a (possibly empty) list of violations.
- * <br/>
+ * Represents a SHACL constraint component as a function that takes the
+ * <a href="https://www.w3.org/TR/shacl/#value-nodes">value node</a> as input and returns a
+ * (possibly empty) list of violations. <br/>
  * Not implemented: sh:qualifiedValueShape, sh:qualifiedMinCount, sh:qualifiedMaxCount
  */
 public interface Constraint extends BiFunction<RDFNode, EvaluationContext, List<Violation>> {
    /**
-    * Determines whether this constraint can be used on a node shape, as certain constraints (e.g., sh:minCount) can only be used on
-    * property shapes.
+    * Determines whether this constraint can be used on a node shape, as certain constraints (e.g.,
+    * sh:minCount) can only be used on property shapes.
     *
     * @return the allowed value
     */

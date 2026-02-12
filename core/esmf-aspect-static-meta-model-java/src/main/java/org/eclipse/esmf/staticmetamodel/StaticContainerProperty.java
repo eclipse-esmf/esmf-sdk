@@ -21,8 +21,8 @@ import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.ScalarValue;
 
 /**
- * Extends {@link StaticProperty} to represent container or wrapper types like {@code Collection} or {code @Optional}
- * and carries type information about the contained type.
+ * Extends {@link StaticProperty} to represent container or wrapper types like {@code Collection} or
+ * {code @Optional} and carries type information about the contained type.
  *
  * @param <E> the type containing the property
  * @param <C> the type of the contained property

@@ -32,10 +32,12 @@ import org.eclipse.esmf.staticmetamodel.StaticProperty;
 import org.eclipse.esmf.staticmetamodel.propertychain.spi.PropertyChainElementAccessor;
 
 /**
- * Defines a chain of properties to be able to access properties of nested entities as if they were properties of one of the containing
- * entities or aspects. To build instances of property chains it is recommended to use the type safe builders.
+ * Defines a chain of properties to be able to access properties of nested entities as if they were
+ * properties of one of the containing entities or aspects. To build instances of property chains it
+ * is recommended to use the type safe builders.
  *
- * @param <C> the type containing the property (this is the containing type of the first chain element)
+ * @param <C> the type containing the property (this is the containing type of the first chain
+ *        element)
  * @param <P> the type of the property (this is the property type of the last chain element)
  * @see ContainerPropertyChain
  * @see PropertyChainBuilder
@@ -62,11 +64,11 @@ public class PropertyChain<C, P> extends DefaultProperty implements PropertyType
    }
 
    /**
-    * Creates a property chain using the given list of properties.
-    * <b>Important:</b> This constructor does not ensure that the chain is valid and thus should only be used in situations where this is
-    * explicitly known.
-    * Prefer to use a builder using {@link #from(StaticProperty)}, {@link #fromOptional(StaticContainerProperty)} (StaticContainerProperty)}
-    * or {@link #fromCollection(StaticContainerProperty)}.
+    * Creates a property chain using the given list of properties. <b>Important:</b> This constructor
+    * does not ensure that the chain is valid and thus should only be used in situations where this is
+    * explicitly known. Prefer to use a builder using {@link #from(StaticProperty)},
+    * {@link #fromOptional(StaticContainerProperty)} (StaticContainerProperty)} or
+    * {@link #fromCollection(StaticContainerProperty)}.
     *
     * @param properties the properties of the chain
     */
@@ -101,7 +103,8 @@ public class PropertyChain<C, P> extends DefaultProperty implements PropertyType
    }
 
    /**
-    * Creates a typesafe builder for a property chain, starting from the given collection container property.
+    * Creates a typesafe builder for a property chain, starting from the given collection container
+    * property.
     *
     * @param firstProperty the first property of the chain
     * @param <F> the type containing the property

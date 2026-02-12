@@ -88,20 +88,20 @@ class DescriptionsUtilsTest {
    @Test
    void testToHtmlWithAllBlockTypes() {
       final String description = """
-            > NOTE: This is a note.
-            > With multiple lines.
-                
-            > EXAMPLE 1: First example.
-            > Additional example content.
-                
-            > EXAMPLE 2: Second example.
-                
-            > SOURCE: Source information here.
-                
-            Some **markdown** content here.
-            1. Ordered
-            2. List
-            """;
+         > NOTE: This is a note.
+         > With multiple lines.
+
+         > EXAMPLE 1: First example.
+         > Additional example content.
+
+         > EXAMPLE 2: Second example.
+
+         > SOURCE: Source information here.
+
+         Some **markdown** content here.
+         1. Ordered
+         2. List
+         """;
 
       final String html = DescriptionsUtils.toHtml( testDescription );
 

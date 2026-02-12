@@ -19,9 +19,7 @@ import java.util.stream.Stream;
  * The list of supported AAS file formats
  */
 public enum AasFileFormat {
-   AASX,
-   XML,
-   JSON;
+   AASX, XML, JSON;
 
    @Override
    public String toString() {

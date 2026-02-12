@@ -100,8 +100,8 @@ class AspectModelLoaderTest {
          Assertions.assertThat( type ).extracting( ComplexType::getExtends ).extracting( Optional::get )
                .isSameAs( abstractEntity );
       } );
-      assertThat( entities ).extracting( "testEntityTwo" ).isInstanceOfSatisfying( ComplexType.class, type ->
-            Assertions.assertThat( type ).extracting( ComplexType::getExtends ).extracting( Optional::get )
+      assertThat( entities ).extracting( "testEntityTwo" ).isInstanceOfSatisfying( ComplexType.class,
+            type -> Assertions.assertThat( type ).extracting( ComplexType::getExtends ).extracting( Optional::get )
                   .isSameAs( abstractEntity ) );
    }
 

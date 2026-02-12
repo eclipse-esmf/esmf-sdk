@@ -58,8 +58,7 @@ public abstract class AbstractLogicalConstraint implements Constraint {
          final EvaluationContext newContext = new EvaluationContext( context.element(), context.shape(),
                context.propertyShape(), context.property(), Optional.of( context ), context.offendingStatements(), context.validator(),
                context.resolvedModel() );
-         return shape.attributes().constraints().stream().flatMap( constraint ->
-                     constraint.apply( rdfNode, newContext ).stream() )
+         return shape.attributes().constraints().stream().flatMap( constraint -> constraint.apply( rdfNode, newContext ).stream() )
                .toList();
       }
 

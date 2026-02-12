@@ -27,7 +27,7 @@ import com.google.common.collect.ImmutableMap;
  * Parses Databricks column definitions
  */
 public class DatabricksColumnDefinitionParser implements Supplier<DatabricksColumnDefinition> {
-   private final Map<String, DatabricksType> standardTypes = ImmutableMap.<String, DatabricksType> builder()
+   private final Map<String, DatabricksType> standardTypes = ImmutableMap.<String, DatabricksType>builder()
          .put( "BIGINT", DatabricksType.BIGINT )
          .put( "BINARY", DatabricksType.BINARY )
          .put( "BOOLEAN", DatabricksType.BOOLEAN )

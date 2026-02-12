@@ -119,7 +119,8 @@ public class PropertyPredicateBuilder<P extends PropertyAccessor<?, T>, T> {
       }
 
       /**
-       * Builds a predicate checking whether the property value is greater than or equal to the given value.
+       * Builds a predicate checking whether the property value is greater than or equal to the given
+       * value.
        *
        * @param referenceValue the reference value
        * @return the predicate
@@ -129,7 +130,8 @@ public class PropertyPredicateBuilder<P extends PropertyAccessor<?, T>, T> {
       }
 
       /**
-       * Builds a predicate checking whether the property value is within the closed range {@code [lower, upper]}.
+       * Builds a predicate checking whether the property value is within the closed range
+       * {@code [lower, upper]}.
        *
        * @param lower the lower end of the range
        * @param upper the upper end of the range
@@ -144,7 +146,8 @@ public class PropertyPredicateBuilder<P extends PropertyAccessor<?, T>, T> {
       }
 
       /**
-       * Builds a predicate checking whether the property value is within the closed-open range {@code [lower, upper)}.
+       * Builds a predicate checking whether the property value is within the closed-open range
+       * {@code [lower, upper)}.
        *
        * @param lower the lower end of the range
        * @param upper the upper end of the range
@@ -159,7 +162,8 @@ public class PropertyPredicateBuilder<P extends PropertyAccessor<?, T>, T> {
       }
 
       /**
-       * Builds a predicate checking whether the property value is within the open range {@code (lower, upper)}.
+       * Builds a predicate checking whether the property value is within the open range
+       * {@code (lower, upper)}.
        *
        * @param lower the lower end of the range
        * @param upper the upper end of the range
@@ -174,7 +178,8 @@ public class PropertyPredicateBuilder<P extends PropertyAccessor<?, T>, T> {
       }
 
       /**
-       * Builds a predicate checking whether the property value is within the open-closed range {@code (lower, upper]}.
+       * Builds a predicate checking whether the property value is within the open-closed range
+       * {@code (lower, upper]}.
        *
        * @param lower the lower end of the range
        * @param upper the upper end of the range
@@ -206,7 +211,8 @@ public class PropertyPredicateBuilder<P extends PropertyAccessor<?, T>, T> {
       }
 
       /**
-       * Builds a predicate checking whether the collection property value contains any of the given elements.
+       * Builds a predicate checking whether the collection property value contains any of the given
+       * elements.
        *
        * @param elements the elements
        * @return the predicate
@@ -216,7 +222,8 @@ public class PropertyPredicateBuilder<P extends PropertyAccessor<?, T>, T> {
       }
 
       /**
-       * Builds a predicate checking whether the collection property value contains all of the given elements.
+       * Builds a predicate checking whether the collection property value contains all of the given
+       * elements.
        *
        * @param elements the elements
        * @return the predicate

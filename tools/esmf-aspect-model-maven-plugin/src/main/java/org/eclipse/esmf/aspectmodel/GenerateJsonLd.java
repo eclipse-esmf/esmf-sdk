@@ -25,7 +25,8 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Mojo( name = GenerateJsonLd.MAVEN_GOAL, defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
+@Mojo( name = GenerateJsonLd.MAVEN_GOAL,
+   defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateJsonLd extends AspectModelMojo {
    public static final String MAVEN_GOAL = "generateJsonLd";
    private static final Logger LOG = LoggerFactory.getLogger( GenerateJsonLd.class );

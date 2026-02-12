@@ -51,8 +51,8 @@ public sealed interface SammType<T> extends RDFDatatype, Scalar
     * Parses a lexical representation of a value of the type
     *
     * @param lexicalForm the lexical representation
-    * @return if the lexical representation is valid for the type, Optional.of(x) where x is an object of the corresponding Java type (@see
-    * {@link #getJavaClass()}), otherwise Optional.empty.
+    * @return if the lexical representation is valid for the type, Optional.of(x) where x is an object
+    *         of the corresponding Java type (@see {@link #getJavaClass()}), otherwise Optional.empty.
     */
    Optional<T> parseTyped( String lexicalForm );
 
@@ -73,7 +73,8 @@ public sealed interface SammType<T> extends RDFDatatype, Scalar
    }
 
    /**
-    * Type definitions are "built-in" into SAMM and are therefore not defined in specific Aspect Model Files
+    * Type definitions are "built-in" into SAMM and are therefore not defined in specific Aspect Model
+    * Files
     */
    @Override
    default AspectModelFile getSourceFile() {
@@ -151,8 +152,8 @@ public sealed interface SammType<T> extends RDFDatatype, Scalar
 
       @Override
       public Optional<LangString> parseTyped( final String lexicalForm ) {
-         // This method should never be called, because rdf:langString values must be parsed together with their
-         // language tag; this is done in the RDF/Turtle parser.
+         // This method should never be called, because rdf:langString values must be parsed together with
+         // their language tag; this is done in the RDF/Turtle parser.
          throw new UnsupportedOperationException();
       }
 
@@ -904,8 +905,8 @@ public sealed interface SammType<T> extends RDFDatatype, Scalar
          return Try.of( () -> new BigInteger( lexicalForm ) )
                .flatMap( unsignedLongValue -> unsignedLongValue.compareTo( BigInteger.ZERO ) < 0
                      || unsignedLongValue.compareTo( new BigInteger( "18446744073709551615" ) ) > 0
-                     ? Try.failure( new IllegalArgumentException() )
-                     : Try.success( unsignedLongValue ) )
+                           ? Try.failure( new IllegalArgumentException() )
+                           : Try.success( unsignedLongValue ) )
                .getOrElseThrow( cause -> new ValueParsingException( org.apache.jena.vocabulary.XSD.unsignedLong, lexicalForm, cause ) );
       }
 
@@ -976,8 +977,8 @@ public sealed interface SammType<T> extends RDFDatatype, Scalar
                .flatMap( nonNegativeIntegerValue -> nonNegativeIntegerValue.compareTo( BigInteger.ZERO ) < 0
                      ? Try.failure( new IllegalArgumentException() )
                      : Try.success( nonNegativeIntegerValue ) )
-               .getOrElseThrow( cause ->
-                     new ValueParsingException( org.apache.jena.vocabulary.XSD.nonNegativeInteger, lexicalForm, cause ) );
+               .getOrElseThrow(
+                     cause -> new ValueParsingException( org.apache.jena.vocabulary.XSD.nonNegativeInteger, lexicalForm, cause ) );
       }
 
       @Override

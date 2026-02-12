@@ -24,7 +24,9 @@ import org.apache.jena.rdf.model.RDFNode;
  * @param allowed the allowed number repetitions of a property
  * @param actual the encountered number
  */
-public record MaxCountViolation( EvaluationContext context, int allowed, int actual ) implements Violation {
+public record MaxCountViolation(
+      EvaluationContext context, int allowed, int actual
+) implements Violation {
    public static final String ERROR_CODE = "ERR_MAX_COUNT";
 
    @Override
@@ -37,7 +39,7 @@ public record MaxCountViolation( EvaluationContext context, int allowed, int act
       return allowed == 0
             ? String.format( "Property %s may not be used on %s.", context.propertyName(), context.elementName() )
             : String.format( "Property %s is used %d time%s on %s, but may only be used %d time%s.",
-            context.propertyName(), actual, actual > 1 ? "s" : "", context.elementName(), allowed, allowed > 1 ? "s" : "" );
+                  context.propertyName(), actual, actual > 1 ? "s" : "", context.elementName(), allowed, allowed > 1 ? "s" : "" );
    }
 
    @Override

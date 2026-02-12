@@ -20,17 +20,16 @@ import org.eclipse.esmf.exception.SubCommandException;
 import picocli.CommandLine;
 
 @CommandLine.Command(
-      name = AasToCommand.COMMAND_NAME,
-      description = "Transforms an Aspect Model into another format",
-      subcommands = {
-            CommandLine.HelpCommand.class,
-            AasToAspectCommand.class
-      },
-      descriptionHeading = "%n@|bold Description|@:%n%n",
-      parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n",
-      mixinStandardHelpOptions = true
-)
+   name = AasToCommand.COMMAND_NAME,
+   description = "Transforms an Aspect Model into another format",
+   subcommands = {
+         CommandLine.HelpCommand.class,
+         AasToAspectCommand.class
+   },
+   descriptionHeading = "%n@|bold Description|@:%n%n",
+   parameterListHeading = "%n@|bold Parameters|@:%n",
+   optionListHeading = "%n@|bold Options|@:%n",
+   mixinStandardHelpOptions = true )
 public class AasToCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "to";
 

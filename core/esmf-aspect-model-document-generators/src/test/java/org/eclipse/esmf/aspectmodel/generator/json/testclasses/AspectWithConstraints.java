@@ -45,52 +45,52 @@ public class AspectWithConstraints {
    @DecimalMax( value = "10.5" )
    private BigDecimal testPropertyWithDecimalMaxRangeConstraint;
 
-   @IntegerMin( value = 1, boundDefinition = BoundDefinition.AT_LEAST )
-   @IntegerMax( value = 10, boundDefinition = BoundDefinition.AT_MOST )
+   @IntegerMin( value = 1,
+      boundDefinition = BoundDefinition.AT_LEAST )
+   @IntegerMax( value = 10,
+      boundDefinition = BoundDefinition.AT_MOST )
    private Integer testPropertyWithMinMaxRangeConstraint;
 
-   @IntegerMin( value = 1, boundDefinition = BoundDefinition.AT_LEAST )
+   @IntegerMin( value = 1,
+      boundDefinition = BoundDefinition.AT_LEAST )
    private Integer testPropertyWithMinRangeConstraint;
 
-   @FloatMin( value = "1.0", boundDefinition = BoundDefinition.AT_LEAST )
-   @FloatMax( value = "10.0", boundDefinition = BoundDefinition.AT_MOST )
+   @FloatMin( value = "1.0",
+      boundDefinition = BoundDefinition.AT_LEAST )
+   @FloatMax( value = "10.0",
+      boundDefinition = BoundDefinition.AT_MOST )
    private Float testPropertyRangeConstraintWithFloatType;
 
-   @DoubleMin( value = "1.0", boundDefinition = BoundDefinition.AT_LEAST )
-   @DoubleMax( value = "10.0", boundDefinition = BoundDefinition.AT_MOST )
+   @DoubleMin( value = "1.0",
+      boundDefinition = BoundDefinition.AT_LEAST )
+   @DoubleMax( value = "10.0",
+      boundDefinition = BoundDefinition.AT_MOST )
    private Double testPropertyRangeConstraintWithDoubleType;
 
-   @Size( min = 1, max = 10 )
+   @Size( min = 1,
+      max = 10 )
    private String testPropertyWithMinMaxLengthConstraint;
 
    @Size( min = 1 )
    private BigInteger testPropertyWithMinLengthConstraint;
 
-   @Size( min = 1, max = 10 )
+   @Size( min = 1,
+      max = 10 )
    private List<BigInteger> testPropertyCollectionLengthConstraint;
 
    @JsonCreator
    public AspectWithConstraints(
-         @JsonProperty( value = "testPropertyWithRegularExpression" )
-         String testPropertyWithRegularExpression,
-         @JsonProperty( value = "testPropertyWithDecimalMinDecimalMaxRangeConstraint" )
-         BigDecimal testPropertyWithDecimalMinDecimalMaxRangeConstraint,
-         @JsonProperty( value = "testPropertyWithDecimalMaxRangeConstraint" )
-         BigDecimal testPropertyWithDecimalMaxRangeConstraint,
-         @JsonProperty( value = "testPropertyWithMinMaxRangeConstraint" )
-         Integer testPropertyWithMinMaxRangeConstraint,
-         @JsonProperty( value = "testPropertyWithMinRangeConstraint" )
-         Integer testPropertyWithMinRangeConstraint,
-         @JsonProperty( value = "testPropertyRangeConstraintWithFloatType" )
-         Float testPropertyRangeConstraintWithFloatType,
-         @JsonProperty( value = "testPropertyRangeConstraintWithDoubleType" )
-         Double testPropertyRangeConstraintWithDoubleType,
-         @JsonProperty( value = "testPropertyWithMinMaxLengthConstraint" )
-         String testPropertyWithMinMaxLengthConstraint,
-         @JsonProperty( value = "testPropertyWithMinLengthConstraint" )
-         BigInteger testPropertyWithMinLengthConstraint,
-         @JsonProperty( value = "testPropertyCollectionLengthConstraint" )
-         List<BigInteger> testPropertyCollectionLengthConstraint ) {
+         @JsonProperty( value = "testPropertyWithRegularExpression" ) String testPropertyWithRegularExpression,
+         @JsonProperty(
+            value = "testPropertyWithDecimalMinDecimalMaxRangeConstraint" ) BigDecimal testPropertyWithDecimalMinDecimalMaxRangeConstraint,
+         @JsonProperty( value = "testPropertyWithDecimalMaxRangeConstraint" ) BigDecimal testPropertyWithDecimalMaxRangeConstraint,
+         @JsonProperty( value = "testPropertyWithMinMaxRangeConstraint" ) Integer testPropertyWithMinMaxRangeConstraint,
+         @JsonProperty( value = "testPropertyWithMinRangeConstraint" ) Integer testPropertyWithMinRangeConstraint,
+         @JsonProperty( value = "testPropertyRangeConstraintWithFloatType" ) Float testPropertyRangeConstraintWithFloatType,
+         @JsonProperty( value = "testPropertyRangeConstraintWithDoubleType" ) Double testPropertyRangeConstraintWithDoubleType,
+         @JsonProperty( value = "testPropertyWithMinMaxLengthConstraint" ) String testPropertyWithMinMaxLengthConstraint,
+         @JsonProperty( value = "testPropertyWithMinLengthConstraint" ) BigInteger testPropertyWithMinLengthConstraint,
+         @JsonProperty( value = "testPropertyCollectionLengthConstraint" ) List<BigInteger> testPropertyCollectionLengthConstraint ) {
       this.testPropertyWithRegularExpression = testPropertyWithRegularExpression;
       this.testPropertyWithDecimalMinDecimalMaxRangeConstraint =
             testPropertyWithDecimalMinDecimalMaxRangeConstraint;
@@ -205,25 +205,25 @@ public class AspectWithConstraints {
       final AspectWithConstraints that = (AspectWithConstraints) o;
       return Objects.equals( testPropertyWithRegularExpression, that.testPropertyWithRegularExpression )
             && Objects.equals(
-            testPropertyWithDecimalMinDecimalMaxRangeConstraint,
-            that.testPropertyWithDecimalMinDecimalMaxRangeConstraint )
+                  testPropertyWithDecimalMinDecimalMaxRangeConstraint,
+                  that.testPropertyWithDecimalMinDecimalMaxRangeConstraint )
             && Objects.equals(
-            testPropertyWithDecimalMaxRangeConstraint,
-            that.testPropertyWithDecimalMaxRangeConstraint )
+                  testPropertyWithDecimalMaxRangeConstraint,
+                  that.testPropertyWithDecimalMaxRangeConstraint )
             && Objects.equals(
-            testPropertyWithMinMaxRangeConstraint, that.testPropertyWithMinMaxRangeConstraint )
+                  testPropertyWithMinMaxRangeConstraint, that.testPropertyWithMinMaxRangeConstraint )
             && Objects.equals(
-            testPropertyWithMinRangeConstraint, that.testPropertyWithMinRangeConstraint )
+                  testPropertyWithMinRangeConstraint, that.testPropertyWithMinRangeConstraint )
             && Objects.equals(
-            testPropertyRangeConstraintWithFloatType, that.testPropertyRangeConstraintWithFloatType )
+                  testPropertyRangeConstraintWithFloatType, that.testPropertyRangeConstraintWithFloatType )
             && Objects.equals(
-            testPropertyRangeConstraintWithDoubleType,
-            that.testPropertyRangeConstraintWithDoubleType )
+                  testPropertyRangeConstraintWithDoubleType,
+                  that.testPropertyRangeConstraintWithDoubleType )
             && Objects.equals(
-            testPropertyWithMinMaxLengthConstraint, that.testPropertyWithMinMaxLengthConstraint )
+                  testPropertyWithMinMaxLengthConstraint, that.testPropertyWithMinMaxLengthConstraint )
             && Objects.equals(
-            testPropertyWithMinLengthConstraint, that.testPropertyWithMinLengthConstraint )
+                  testPropertyWithMinLengthConstraint, that.testPropertyWithMinLengthConstraint )
             && Objects.equals(
-            testPropertyCollectionLengthConstraint, that.testPropertyCollectionLengthConstraint );
+                  testPropertyCollectionLengthConstraint, that.testPropertyCollectionLengthConstraint );
    }
 }

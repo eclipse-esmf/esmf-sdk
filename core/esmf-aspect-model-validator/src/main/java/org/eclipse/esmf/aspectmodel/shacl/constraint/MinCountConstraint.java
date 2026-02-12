@@ -27,7 +27,9 @@ import org.apache.jena.rdf.model.RDFNode;
  *
  * @param minCount the min count
  */
-public record MinCountConstraint( int minCount ) implements Constraint {
+public record MinCountConstraint(
+      int minCount
+) implements Constraint {
    @Override
    public boolean canBeUsedOnNodeShapes() {
       return false;

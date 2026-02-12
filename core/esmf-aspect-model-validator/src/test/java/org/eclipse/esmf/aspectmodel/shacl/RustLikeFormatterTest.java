@@ -48,12 +48,12 @@ public class RustLikeFormatterTest {
    @Test
    void testMiddleStatement() {
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            
-            :Foo a :TestClass ;
-              :firstProperty 1 ;
-              :secondProperty 2 .
-            """ );
+         @prefix : <http://example.com#> .
+
+         :Foo a :TestClass ;
+           :firstProperty 1 ;
+           :secondProperty 2 .
+         """ );
 
       final RDFNode firstProperty = dataModel.listStatements( null, ResourceFactory.createProperty( namespace, "firstProperty" ),
             (RDFNode) null ).nextStatement().getPredicate();
@@ -64,12 +64,12 @@ public class RustLikeFormatterTest {
    @Test
    void testLastStatement() {
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            
-            :Foo a :TestClass ;
-              :firstProperty 1 ;
-              :secondProperty 2 .
-            """ );
+         @prefix : <http://example.com#> .
+
+         :Foo a :TestClass ;
+           :firstProperty 1 ;
+           :secondProperty 2 .
+         """ );
 
       final RDFNode secondProperty = dataModel.listStatements( null, ResourceFactory.createProperty( namespace, "secondProperty" ),
             (RDFNode) null ).nextStatement().getPredicate();
@@ -80,11 +80,11 @@ public class RustLikeFormatterTest {
    @Test
    void testMultipleStatementsSameLine() {
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            
-            :Foo a :TestClass ;
-              :firstProperty 1 ; :secondProperty 2 .
-            """ );
+         @prefix : <http://example.com#> .
+
+         :Foo a :TestClass ;
+           :firstProperty 1 ; :secondProperty 2 .
+         """ );
 
       final RDFNode firstProperty = dataModel.listStatements( null, ResourceFactory.createProperty( namespace, "firstProperty" ),
             (RDFNode) null ).nextStatement().getPredicate();
@@ -95,10 +95,10 @@ public class RustLikeFormatterTest {
    @Test
    void testMultiSubjectSameLine() {
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            
-            :Foo a :TestClass ; :property 1 . :Bar a :TestClass ; :property 2 .
-            """ );
+         @prefix : <http://example.com#> .
+
+         :Foo a :TestClass ; :property 1 . :Bar a :TestClass ; :property 2 .
+         """ );
 
       final RDFNode property = dataModel.listStatements( ResourceFactory.createResource( namespace + "Foo" ),
             ResourceFactory.createProperty( namespace, "property" ), (RDFNode) null ).nextStatement().getPredicate();
@@ -109,11 +109,11 @@ public class RustLikeFormatterTest {
    @Test
    void testAnonymousNodes() {
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            
-            :Foo a :TestClass ;
-              :testProperty [ a :MyType ] .
-            """ );
+         @prefix : <http://example.com#> .
+
+         :Foo a :TestClass ;
+           :testProperty [ a :MyType ] .
+         """ );
 
       final RDFNode property = dataModel.listStatements( ResourceFactory.createResource( namespace + "Foo" ),
             ResourceFactory.createProperty( namespace, "testProperty" ), (RDFNode) null ).nextStatement().getPredicate();
@@ -124,13 +124,13 @@ public class RustLikeFormatterTest {
    @Test
    void testMultilineAnonymousNode() {
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            
-            :Foo a :TestClass ;
-              :prop1 [
-                :prop2 23 ;
-              ] .
-            """ );
+         @prefix : <http://example.com#> .
+
+         :Foo a :TestClass ;
+           :prop1 [
+             :prop2 23 ;
+           ] .
+         """ );
 
       final RDFNode property = dataModel.listStatements( ResourceFactory.createResource( namespace + "Foo" ),
             ResourceFactory.createProperty( namespace, "prop1" ), (RDFNode) null ).nextStatement().getPredicate();
@@ -141,13 +141,13 @@ public class RustLikeFormatterTest {
    @Test
    void testMultilineAnonymousNodeMiddlePart() {
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            
-            :Foo a :TestClass ;
-              :prop1 [
-                :prop2 23 ;
-              ] .
-            """ );
+         @prefix : <http://example.com#> .
+
+         :Foo a :TestClass ;
+           :prop1 [
+             :prop2 23 ;
+           ] .
+         """ );
 
       final RDFNode property = dataModel.listStatements( null,
             ResourceFactory.createProperty( namespace, "prop2" ), (RDFNode) null ).nextStatement().getPredicate();
@@ -158,11 +158,11 @@ public class RustLikeFormatterTest {
    @Test
    void testEmptyList() {
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            
-            :Foo a :TestClass ;
-              :listProperty () .
-            """ );
+         @prefix : <http://example.com#> .
+
+         :Foo a :TestClass ;
+           :listProperty () .
+         """ );
 
       final RDFNode listProperty = dataModel.listStatements( null, ResourceFactory.createProperty( namespace, "listProperty" ),
             (RDFNode) null ).nextStatement().getPredicate();
@@ -173,11 +173,11 @@ public class RustLikeFormatterTest {
    @Test
    void testList() {
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            
-            :Foo a :TestClass ;
-              :listProperty ( :firstValue :secondValue ) .
-            """ );
+         @prefix : <http://example.com#> .
+
+         :Foo a :TestClass ;
+           :listProperty ( :firstValue :secondValue ) .
+         """ );
 
       final RDFNode listProperty = dataModel.listStatements( null, ResourceFactory.createProperty( namespace, "listProperty" ),
             (RDFNode) null ).nextStatement().getPredicate();
@@ -188,12 +188,12 @@ public class RustLikeFormatterTest {
    @Test
    void testMultilineListStarted() {
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            
-            :Foo a :TestClass ;
-              :listProperty ( :firstValue
-              :secondValue ) .
-            """ );
+         @prefix : <http://example.com#> .
+
+         :Foo a :TestClass ;
+           :listProperty ( :firstValue
+           :secondValue ) .
+         """ );
 
       final RDFNode listProperty = dataModel.listStatements( null, ResourceFactory.createProperty( namespace, "listProperty" ),
             (RDFNode) null ).nextStatement().getPredicate();
@@ -204,12 +204,12 @@ public class RustLikeFormatterTest {
    @Test
    void testMultilineListFinished() {
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            
-            :Foo a :TestClass ;
-              :listProperty ( :firstValue
-              :secondValue :thirdValue ) .
-            """ );
+         @prefix : <http://example.com#> .
+
+         :Foo a :TestClass ;
+           :listProperty ( :firstValue
+           :secondValue :thirdValue ) .
+         """ );
 
       final RDFNode listElement = dataModel.listStatements( null, null,
             ResourceFactory.createResource( namespace + "secondValue" ) ).nextStatement().getObject();
@@ -220,11 +220,11 @@ public class RustLikeFormatterTest {
    @Test
    void testListWithAnonymousNodes() {
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            
-            :Foo a :TestClass ;
-              :listProperty ( :firstValue [ :property :prop2; :name "givenName"; ] ) .
-            """ );
+         @prefix : <http://example.com#> .
+
+         :Foo a :TestClass ;
+           :listProperty ( :firstValue [ :property :prop2; :name "givenName"; ] ) .
+         """ );
 
       final RDFNode listElement = dataModel.listStatements( null, null,
             ResourceFactory.createResource( namespace + "prop2" ) ).nextStatement().getObject();
@@ -235,10 +235,10 @@ public class RustLikeFormatterTest {
    @Test
    void testDenseFormatting() {
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            
-            :Foo a :TestClass;:property 1.:Bar a :TestClass;:property 2.
-            """ );
+         @prefix : <http://example.com#> .
+
+         :Foo a :TestClass;:property 1.:Bar a :TestClass;:property 2.
+         """ );
 
       final RDFNode property = dataModel.listStatements( ResourceFactory.createResource( namespace + "Foo" ),
             ResourceFactory.createProperty( namespace, "property" ), (RDFNode) null ).nextStatement().getPredicate();
@@ -247,21 +247,22 @@ public class RustLikeFormatterTest {
    }
 
    /**
-    * Verifies that the formatted test report actually contains the underlining ("^^^") under the expected tokens
+    * Verifies that the formatted test report actually contains the underlining ("^^^") under the
+    * expected tokens
     *
     * @param testModel the test model
     * @param highlightToken the element that should be highlighted by the formatter
     */
    @ParameterizedTest( name = "{index}: Check highlighting in {0} ({1})" )
    @CsvSource( textBlock = """
-         ASPECT_WITH_RECURSIVE_PROPERTY, :testProperty
-         INVALID_EXAMPLE_VALUE_DATATYPE, "1234"^^xsd:int
-         INVALID_PREFERRED_NAME_DATATYPE, "Invalid PreferredName Datatype"
-         INVALID_CHARACTERISTIC_DATATYPE, :Characteristic1
-         INVALID_URI, invalid with spaces
-         RANGE_CONSTRAINT_WITH_WRONG_TYPE, :RangeConstraintWithWrongType
-         MODEL_WITH_CYCLES, :a
-         """ )
+      ASPECT_WITH_RECURSIVE_PROPERTY, :testProperty
+      INVALID_EXAMPLE_VALUE_DATATYPE, "1234"^^xsd:int
+      INVALID_PREFERRED_NAME_DATATYPE, "Invalid PreferredName Datatype"
+      INVALID_CHARACTERISTIC_DATATYPE, :Characteristic1
+      INVALID_URI, invalid with spaces
+      RANGE_CONSTRAINT_WITH_WRONG_TYPE, :RangeConstraintWithWrongType
+      MODEL_WITH_CYCLES, :a
+      """ )
    void testSemanticValidationFormatting( final InvalidTestAspect testModel, final String highlightToken ) {
       final Either<List<Violation>, AspectModel> result = TestResources.loadWithValidation( testModel, new AspectModelValidator() );
       assertThat( result.isLeft() ).isTrue();
@@ -274,10 +275,12 @@ public class RustLikeFormatterTest {
    }
 
    @ParameterizedTest
-   @EnumSource( value = InvalidTestAspect.class, mode = EnumSource.Mode.INCLUDE, names = {
-         "ACTUALLY_JSON",
-         "INVALID_SYNTAX"
-   } )
+   @EnumSource( value = InvalidTestAspect.class,
+      mode = EnumSource.Mode.INCLUDE,
+      names = {
+            "ACTUALLY_JSON",
+            "INVALID_SYNTAX"
+      } )
    void testSyntaxErrorFormatting( final InvalidTestAspect testModel ) {
       final Either<List<Violation>, AspectModel> result = TestResources.loadWithValidation( testModel, new AspectModelValidator() );
       assertThat( result.isLeft() ).isTrue();

@@ -86,13 +86,13 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
    static final String JSON_SCHEMA_VERSION = "http://json-schema.org/draft-04/schema";
 
    /**
-    * Defines JSON Schema restrictions for Aspect/XSD types, e.g. formats and patterns
-    * according to OpenAPI Schema definition.
+    * Defines JSON Schema restrictions for Aspect/XSD types, e.g. formats and patterns according to
+    * OpenAPI Schema definition.
     *
     * @see AspectModelJsonSchemaVisitor#getSchemaTypeForAspectType(Resource)
     */
    public static final Map<Resource, Map<String, JsonNode>> OPEN_API_TYPE_DATA =
-         ImmutableMap.<Resource, Map<String, JsonNode>> builder()
+         ImmutableMap.<Resource, Map<String, JsonNode>>builder()
                .put( XSD.date, Map.of( "format", FACTORY.textNode( "date" ) ) )
                .put( XSD.time, Map.of( "format", FACTORY.textNode( "time" ) ) )
                // Time offset (time zone) is optional in XSD dateTime.
@@ -145,7 +145,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
     *
     * @see AspectModelJsonSchemaVisitor#getSchemaTypeForAspectType(Resource)
     */
-   private final Map<Resource, Map<String, JsonNode>> extendedTypeData = ImmutableMap.<Resource, Map<String, JsonNode>> builder()
+   private final Map<Resource, Map<String, JsonNode>> extendedTypeData = ImmutableMap.<Resource, Map<String, JsonNode>>builder()
          .putAll( OPEN_API_TYPE_DATA )
          .put( RDF.langString,
                Map.of( "patternProperties",
@@ -296,7 +296,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
    }
 
    private Map<String, JsonNode> getAdditionalFieldsForType( final Resource type ) {
-      final Map<Resource, Map<String, JsonNode>> typeDates = ImmutableMap.<Resource, Map<String, JsonNode>> builder()
+      final Map<Resource, Map<String, JsonNode>> typeDates = ImmutableMap.<Resource, Map<String, JsonNode>>builder()
             .putAll( typeData )
             .put( SammNs.SAMM.curie(), Map.of( "pattern", FACTORY.textNode( CurieType.CURIE_REGEX ) ) )
             .build();
@@ -349,7 +349,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       addDescription( characteristicNode, trait, config.locale() );
       addSammExtensionAttribute( characteristicNode, trait );
       return io.vavr.collection.Stream.ofAll( trait.getConstraints() )
-            .foldLeft( characteristicNode, ( node, constraint ) -> ((ObjectNode) (constraint.accept( this, node ))) );
+            .foldLeft( characteristicNode, ( node, constraint ) -> ( (ObjectNode) ( constraint.accept( this, node ) ) ) );
    }
 
    @Override
@@ -418,7 +418,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
 
       final ObjectNode result = addDescription( FACTORY.objectNode(), either, config.locale() )
             .put( "additionalProperties", false )
-            .<ObjectNode> set( "properties", properties )
+            .<ObjectNode>set( "properties", properties )
             .set( "oneOf",
                   FACTORY.arrayNode()
                         .add( FACTORY.objectNode().set( "required", FACTORY.arrayNode().add( "left" ) ) )
@@ -528,8 +528,8 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
 
    @Override
    public JsonNode visitEnumeration( final Enumeration enumeration, final ObjectNode context ) {
-      final Type type = enumeration.getDataType().orElseThrow( () ->
-            new DocumentGenerationException( "Characteristic " + enumeration + " is missing a dataType" ) );
+      final Type type = enumeration.getDataType()
+            .orElseThrow( () -> new DocumentGenerationException( "Characteristic " + enumeration + " is missing a dataType" ) );
       if ( type.is( Scalar.class ) ) {
          return createEnumNodeWithScalarValues( enumeration, type, context );
       }
@@ -558,9 +558,11 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       final ArrayNode enumValueReferences = FACTORY.arrayNode();
       enumeration.getValues().stream()
             .map( value -> value.as( EntityInstance.class ) )
-            //Should the enum value entity be declared with only optional properties, enum values may be declared
-            //without any properties. In such a case the value is ignored in the JSON schema since there is nothing
-            //to validate
+            // Should the enum value entity be declared with only optional properties, enum values may be
+            // declared
+            // without any properties. In such a case the value is ignored in the JSON schema since there is
+            // nothing
+            // to validate
             .filter( value -> !value.getAssertions().isEmpty() )
             .forEach( value -> {
                final String schemaName = getSchemaNameForModelElement( value );
@@ -596,12 +598,12 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
    }
 
    @SuppressWarnings( { "squid:S3655" } )
-   //squid S3655 - Properties with an Enumeration Characteristic always have a data type
+   // squid S3655 - Properties with an Enumeration Characteristic always have a data type
    private JsonNode createNodeForEnumEntityPropertyInstance( final Property property, final EntityInstance entityInstance ) {
-      final Characteristic characteristic = property.getCharacteristic().orElseThrow( () ->
-            new DocumentGenerationException( "Property " + property + " has no Characteristic" ) );
-      final Type type = property.getDataType().orElseThrow( () ->
-            new DocumentGenerationException( "Characteristic " + characteristic + " has no data type" ) );
+      final Characteristic characteristic = property.getCharacteristic()
+            .orElseThrow( () -> new DocumentGenerationException( "Property " + property + " has no Characteristic" ) );
+      final Type type = property.getDataType()
+            .orElseThrow( () -> new DocumentGenerationException( "Characteristic " + characteristic + " has no data type" ) );
       final Value valueForProperty = entityInstance.getAssertions().get( property );
       final XsdToJsonTypeMapping.JsonType schemaType = type.is( Scalar.class )
             ? getSchemaTypeForAspectType( ResourceFactory.createResource( type.getUrn() ) )

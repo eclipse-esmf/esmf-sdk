@@ -52,7 +52,8 @@ public class AspectWithEntityEnumerationAndNotInPayloadProperties {
    public enum SystemStates {
       OFF( new SystemState( Short.valueOf( "0" ), "Off" ) ),
       COOL_DOWN( new SystemState( Short.valueOf( "3" ), "CoolDown" ) ),
-      HEAT_UP( new SystemState( Short.valueOf( "4" ), "HeatUp" ) ),
+      HEAT_UP(
+            new SystemState( Short.valueOf( "4" ), "HeatUp" ) ),
       ON( new SystemState( Short.valueOf( "1" ), "On" ) );
 
       private final SystemState value;
@@ -74,8 +75,8 @@ public class AspectWithEntityEnumerationAndNotInPayloadProperties {
 
       public static Optional<SystemStates> fromValue( final SystemState value ) {
          return Arrays.stream( SystemStates.values() )
-                      .filter( enumValue -> compareEnumValues( enumValue, value ) )
-                      .findAny();
+               .filter( enumValue -> compareEnumValues( enumValue, value ) )
+               .findAny();
       }
 
       private static boolean compareEnumValues( final SystemStates enumValue, final SystemState value ) {

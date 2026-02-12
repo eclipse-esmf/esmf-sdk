@@ -45,8 +45,7 @@ public final class TurtleLoader {
 
    private static volatile boolean isTurtleRegistered = false;
 
-   private TurtleLoader() {
-   }
+   private TurtleLoader() {}
 
    public static void init() {
       SammXsdType.setupTypeMapping();
@@ -65,14 +64,14 @@ public final class TurtleLoader {
       }
       final String modelContent = new BufferedReader(
             new InputStreamReader( inputStream, StandardCharsets.UTF_8 ) )
-            .lines()
-            .collect( Collectors.joining( "\n" ) );
+                  .lines()
+                  .collect( Collectors.joining( "\n" ) );
       return loadTurtle( modelContent );
    }
 
    /**
-    * Loads a Turtle model from a given URL. Note that this does not honor proxies nor redirects and is intended for resolving resource://
-    * URLs.
+    * Loads a Turtle model from a given URL. Note that this does not honor proxies nor redirects and is
+    * intended for resolving resource:// URLs.
     *
     * @param url The input url
     * @return The model on success, a corresponding exception otherwise
@@ -86,7 +85,8 @@ public final class TurtleLoader {
    }
 
    /**
-    * Loads a Turtle model from a String containing RDF/Turtle and keeps track of the logical source location
+    * Loads a Turtle model from a String containing RDF/Turtle and keeps track of the logical source
+    * location
     *
     * @param modelContent the model content
     * @param location the location of the input source

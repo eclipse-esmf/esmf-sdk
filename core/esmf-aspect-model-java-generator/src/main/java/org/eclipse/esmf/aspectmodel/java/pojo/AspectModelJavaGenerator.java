@@ -40,10 +40,10 @@ public class AspectModelJavaGenerator extends JavaGenerator {
             .filter( element -> element.getExtends().isPresent() )
             .collect( Collectors.toSet() );
       return Stream.of(
-                  applyArtifactGenerator( Aspect.class, new StructureElementJavaArtifactGenerator<>(), config ),
-                  applyArtifactGenerator( ComplexType.class, new StructureElementJavaArtifactGenerator<>( structureElements ), config ),
-                  applyArtifactGenerator( Event.class, new StructureElementJavaArtifactGenerator<>(), config ),
-                  applyArtifactGenerator( Enumeration.class, new EnumerationJavaArtifactGenerator<>(), config ) )
+            applyArtifactGenerator( Aspect.class, new StructureElementJavaArtifactGenerator<>(), config ),
+            applyArtifactGenerator( ComplexType.class, new StructureElementJavaArtifactGenerator<>( structureElements ), config ),
+            applyArtifactGenerator( Event.class, new StructureElementJavaArtifactGenerator<>(), config ),
+            applyArtifactGenerator( Enumeration.class, new EnumerationJavaArtifactGenerator<>(), config ) )
             .flatMap( Function.identity() )
             .collect( Collectors.toSet() )
             .stream();

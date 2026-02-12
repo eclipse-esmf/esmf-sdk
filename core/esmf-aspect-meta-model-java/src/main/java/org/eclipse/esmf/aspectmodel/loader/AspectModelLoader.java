@@ -83,8 +83,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The core class to load an {@link AspectModel}. The AspectModelLoader is also a {@link ModelSource} and allows to list the
- * contents of its configured {@link ResolutionStrategy}s.
+ * The core class to load an {@link AspectModel}. The AspectModelLoader is also a
+ * {@link ModelSource} and allows to list the contents of its configured
+ * {@link ResolutionStrategy}s.
  */
 public class AspectModelLoader implements ModelSource, ResolutionStrategySupport {
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelLoader.class );
@@ -98,16 +99,17 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
    private Consumer<Model> mergedModelValidator = model -> {};
 
    /**
-    * Default constructor. When encountering model elements not defined in the current file, this will use the default strategy of looking
-    * for definitions of model elements in .ttl files in the current working directory.
+    * Default constructor. When encountering model elements not defined in the current file, this will
+    * use the default strategy of looking for definitions of model elements in .ttl files in the
+    * current working directory.
     */
    public AspectModelLoader() {
       this( List.of() );
    }
 
    /**
-    * Constructor that takes a single {@link ResolutionStrategy} to control where the loading process should look for definitions
-    * of model elements not defined in the current file.
+    * Constructor that takes a single {@link ResolutionStrategy} to control where the loading process
+    * should look for definitions of model elements not defined in the current file.
     *
     * @param resolutionStrategy the strategy
     */
@@ -116,8 +118,9 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
    }
 
    /**
-    * Constructor that takes multiple {@link ResolutionStrategy}s to control where the loading process should look for definitions
-    * of model elements not defined in the current file. The strategies are tried one after another until an element definition is found.
+    * Constructor that takes multiple {@link ResolutionStrategy}s to control where the loading process
+    * should look for definitions of model elements not defined in the current file. The strategies are
+    * tried one after another until an element definition is found.
     *
     * @param resolutionStrategies the strategies
     */
@@ -133,7 +136,8 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
    }
 
    /**
-    * An interface to the AspectModelValidator that validates RDF graphs of the single files before instantiating {@link ModelElement}s
+    * An interface to the AspectModelValidator that validates RDF graphs of the single files before
+    * instantiating {@link ModelElement}s
     *
     * @param <P> the "problem" type that describes loading or validation failures
     * @param <C> the "collection of problem" type that constitutes a validation report
@@ -151,7 +155,8 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
        * @param loader the real loading function
        * @param argument the argument for the delegation function
        * @param <T> the type of the delegation function argument
-       * @return the validation report on failure ({@link Try.Failure}) or the Aspect Model on success ({@link Try.Success})
+       * @return the validation report on failure ({@link Try.Failure}) or the Aspect Model on success
+       *         ({@link Try.Success})
        */
       private <T> Either<C, AspectModel> callInternalLoader( final Function<T, AspectModel> loader, final T argument ) {
          mergedModelValidator = model -> {
@@ -171,7 +176,8 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
        * @param argument2 the second argument for the delegation function
        * @param <T> the type of the first delegation function argument
        * @param <U> the type of the second delegation function argument
-       * @return the validation report on failure ({@link Try.Failure}) or the Aspect Model on success ({@link Try.Success})
+       * @return the validation report on failure ({@link Try.Failure}) or the Aspect Model on success
+       *         ({@link Try.Success})
        */
       private <T, U> Either<C, AspectModel> callInternalLoader( final BiFunction<T, U, AspectModel> loader, final T argument1,
             final U argument2 ) {
@@ -241,7 +247,8 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
       }
 
       /**
-       * Sets up validation, then delegates to {@link AspectModelLoader#loadNamespacePackage(InputStream, URI)}
+       * Sets up validation, then delegates to
+       * {@link AspectModelLoader#loadNamespacePackage(InputStream, URI)}
        */
       public Either<C, AspectModel> loadNamespacePackage( final InputStream inputStream, final URI location ) {
          return callInternalLoader( AspectModelLoader.this::loadNamespacePackage, inputStream, location );
@@ -256,7 +263,8 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
    }
 
    /**
-    * Returns a view to the AspectModelLoader that will not only perform loading operations but also validate loaded files
+    * Returns a view to the AspectModelLoader that will not only perform loading operations but also
+    * validate loaded files
     *
     * @param validator the validator to use
     * @param <P> the "problem" type that describes loading or validation failures
@@ -332,8 +340,9 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
    }
 
    /**
-    * Load an Aspect Model (.ttl) from an input stream and set the source location for this input. For loading
-    * an Aspect Model Namespace Package (.zip), use {@link #loadNamespacePackage(InputStream, URI)} instead.
+    * Load an Aspect Model (.ttl) from an input stream and set the source location for this input. For
+    * loading an Aspect Model Namespace Package (.zip), use
+    * {@link #loadNamespacePackage(InputStream, URI)} instead.
     *
     * @param inputStream the input stream
     * @param sourceLocation the source location for the model
@@ -367,8 +376,9 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
    }
 
    /**
-    * Load a namespace package from binary with a given location. The location is not resolved or loaded from, but is only attached
-    * to the files loaded from the input stream to indicate their original source, e.g., file system location or URL.
+    * Load a namespace package from binary with a given location. The location is not resolved or
+    * loaded from, but is only attached to the files loaded from the input stream to indicate their
+    * original source, e.g., file system location or URL.
     *
     * @param location the source location
     * @param binaryContent the ZIP content
@@ -382,13 +392,14 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
    }
 
    /**
-    * Load a namespace package from an input stream with a given location. The location is not resolved or loaded from, but is only attached
-    * to the files loaded from the input stream to indicate their original source, i.e., a file system location or URL of the
-    * namespace package. For example, if the namespace package is located at {@code file:/some/path/package.zip} or
-    * {@code https://example.com/package.zip}, the files in the package will have a location URI such as
-    * {@code jar:file:/some/path/package.zip!/com.example.namespace/1.0.0/AspectModel.ttl} or
-    * {@code jar:https://example.com/package.zip!/com.example.namespace/1.0.0/AspectModel.ttl}, respectively, as described in
-    * the JavaDoc for {@link JarURLConnection}.
+    * Load a namespace package from an input stream with a given location. The location is not resolved
+    * or loaded from, but is only attached to the files loaded from the input stream to indicate their
+    * original source, i.e., a file system location or URL of the namespace package. For example, if
+    * the namespace package is located at {@code file:/some/path/package.zip} or
+    * {@code https://example.com/package.zip}, the files in the package will have a location URI such
+    * as {@code jar:file:/some/path/package.zip!/com.example.namespace/1.0.0/AspectModel.ttl} or
+    * {@code jar:https://example.com/package.zip!/com.example.namespace/1.0.0/AspectModel.ttl},
+    * respectively, as described in the JavaDoc for {@link JarURLConnection}.
     *
     * @param location the source location
     * @param inputStream the input stream to load the ZIP content from
@@ -585,7 +596,7 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
                      throw new AspectLoadingException( file == fileWithPreviousDefinition
                            ? "Duplicate definition of %s in file %s".formatted( subject.getURI(), file.humanReadableLocation() )
                            : "Duplicate definition of %s in both %s and %s".formatted( subject.getURI(), file.humanReadableLocation(),
-                           fileWithPreviousDefinition.humanReadableLocation() ) );
+                                 fileWithPreviousDefinition.humanReadableLocation() ) );
                   } );
             definedElements.put( subject.getURI(), file );
          }
@@ -597,8 +608,9 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
    }
 
    /**
-    * Creates a new Aspect Model from a collection of {@link AspectModelFile}s. The AspectModelFiles can be {@link RawAspectModelFile}
-    * (i.e., not contain {@link ModelElement} instances yet); this method takes care of instantiating the model elements.
+    * Creates a new Aspect Model from a collection of {@link AspectModelFile}s. The AspectModelFiles
+    * can be {@link RawAspectModelFile} (i.e., not contain {@link ModelElement} instances yet); this
+    * method takes care of instantiating the model elements.
     *
     * @param inputFiles the list of input files
     * @return the Aspect Model
@@ -609,8 +621,8 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
             .toList();
 
       for ( final AspectModelFile file : migratedInputs ) {
-         file.sourceModel().getGraph().stream().flatMap( triple ->
-                     Stream.of( triple.getSubject(), triple.getPredicate(), triple.getObject() ) )
+         file.sourceModel().getGraph().stream()
+               .flatMap( triple -> Stream.of( triple.getSubject(), triple.getPredicate(), triple.getObject() ) )
                .forEach( node -> TokenRegistry.getToken( node ).ifPresent( token -> token.setOriginatingFile( file ) ) );
       }
       final Model mergedModel = buildMergedModel( migratedInputs );
@@ -727,7 +739,8 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
    }
 
    /**
-    * Lists the URIs of all Aspect Model files for a given namespace for all configured resolution strategies
+    * Lists the URIs of all Aspect Model files for a given namespace for all configured resolution
+    * strategies
     *
     * @param namespace the namespace
     * @return the URIs
@@ -748,7 +761,8 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
    }
 
    /**
-    * Returns all loadable Aspect Model files for a given namespace from all configured resolution strategies
+    * Returns all loadable Aspect Model files for a given namespace from all configured resolution
+    * strategies
     *
     * @param namespace the namespace
     * @return the Aspect Model files

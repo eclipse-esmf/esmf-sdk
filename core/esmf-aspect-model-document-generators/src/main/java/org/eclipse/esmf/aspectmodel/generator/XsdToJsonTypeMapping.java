@@ -23,10 +23,7 @@ import org.apache.jena.vocabulary.XSD;
 
 public class XsdToJsonTypeMapping {
    public enum JsonType {
-      NUMBER,
-      BOOLEAN,
-      STRING,
-      OBJECT;
+      NUMBER, BOOLEAN, STRING, OBJECT;
 
       public JsonNode toJsonNode() {
          return switch ( this ) {
@@ -41,7 +38,7 @@ public class XsdToJsonTypeMapping {
    /**
     * Maps Aspect types to JSON Schema types, with no explicit mapping defaulting to string
     */
-   public static final Map<Resource, JsonType> TYPE_MAP = ImmutableMap.<Resource, JsonType> builder()
+   public static final Map<Resource, JsonType> TYPE_MAP = ImmutableMap.<Resource, JsonType>builder()
          .put( XSD.xboolean, JsonType.BOOLEAN )
          .put( XSD.decimal, JsonType.NUMBER )
          .put( XSD.integer, JsonType.NUMBER )

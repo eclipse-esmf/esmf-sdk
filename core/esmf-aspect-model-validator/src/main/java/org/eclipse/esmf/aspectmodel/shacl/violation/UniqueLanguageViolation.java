@@ -25,7 +25,9 @@ import org.apache.jena.rdf.model.RDFNode;
  * @param context the evaluation context
  * @param duplicates the set of duplicate language tags
  */
-public record UniqueLanguageViolation( EvaluationContext context, Set<String> duplicates ) implements Violation {
+public record UniqueLanguageViolation(
+      EvaluationContext context, Set<String> duplicates
+) implements Violation {
    public static final String ERROR_CODE = "ERR_DUPLICATE_LANGUAGE";
 
    @Override

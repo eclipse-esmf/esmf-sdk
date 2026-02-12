@@ -27,7 +27,9 @@ import org.apache.jena.rdf.model.RDFNode;
  *
  * @param allowedNodeKind the allowed node kind
  */
-public record NodeKindConstraint( Shape.NodeKind allowedNodeKind ) implements Constraint {
+public record NodeKindConstraint(
+      Shape.NodeKind allowedNodeKind
+) implements Constraint {
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
       final Shape.NodeKind actualNodeKind = Shape.NodeKind.forNode( rdfNode );
@@ -36,12 +38,12 @@ public record NodeKindConstraint( Shape.NodeKind allowedNodeKind ) implements Co
          return List.of();
       }
       if ( actualNodeKind == Shape.NodeKind.Literal
-            && (allowedNodeKind == Shape.NodeKind.BlankNodeOrLiteral || allowedNodeKind == Shape.NodeKind.IRIOrLiteral) ) {
+            && ( allowedNodeKind == Shape.NodeKind.BlankNodeOrLiteral || allowedNodeKind == Shape.NodeKind.IRIOrLiteral ) ) {
          // No violation
          return List.of();
       }
       if ( actualNodeKind == Shape.NodeKind.IRI
-            && (allowedNodeKind == Shape.NodeKind.BlankNodeOrIRI || allowedNodeKind == Shape.NodeKind.IRIOrLiteral) ) {
+            && ( allowedNodeKind == Shape.NodeKind.BlankNodeOrIRI || allowedNodeKind == Shape.NodeKind.IRIOrLiteral ) ) {
          // No violation
          return List.of();
       }

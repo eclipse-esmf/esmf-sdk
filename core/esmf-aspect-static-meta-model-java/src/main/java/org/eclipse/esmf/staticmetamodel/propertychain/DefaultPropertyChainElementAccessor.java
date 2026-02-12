@@ -17,8 +17,8 @@ import org.eclipse.esmf.staticmetamodel.StaticProperty;
 import org.eclipse.esmf.staticmetamodel.propertychain.spi.PropertyChainElementAccessor;
 
 /**
- * The default {@link PropertyChainElementAccessor} that simply extracts the next value from the property as-is, assuming the current value
- * is an entity (i.e. not the end of the chain).
+ * The default {@link PropertyChainElementAccessor} that simply extracts the next value from the
+ * property as-is, assuming the current value is an entity (i.e. not the end of the chain).
  */
 public class DefaultPropertyChainElementAccessor implements PropertyChainElementAccessor<Object> {
    @Override

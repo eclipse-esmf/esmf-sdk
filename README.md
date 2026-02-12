@@ -37,7 +37,7 @@ code generators, validators etc.
 This document provides an overall overview of the SDK, and the concepts applied throughout it.
 Detailed documentation and concepts for each component can be found in the respective subfolders.
 
-This repository contains a detailed developer documentation written in AsciiDoc. 
+This repository contains a detailed developer documentation written in AsciiDoc.
 The source files (AsciiDoc) are located [here](documentation/developer-guide) and are built using
 [Antora](https://antora.org/) which generates the documentation as HTML files. A site generated using Antora is self-contained and can be viewed entirely offline via a web browser without setting up a web server.
 To build the documentation locally, please check out and follow the instructions in [ESMF documentation repository](https://github.com/eclipse-esmf/eclipse-esmf.github.io).
@@ -54,11 +54,11 @@ Are you having trouble with ESMF SDK? We want to help!
 ## Build and contribute
 
 The top level elements of the SDK structure are all carried out as Maven multimodule projects.
-Building the SDK requires a Java 25 version.
+Building the SDK requires Java 25.
 
 To build the SDK core components, run the following command:
 ```bash
-mvn -pl '!org.eclipse.esmf:samm-cli' clean install 
+mvn -pl '!org.eclipse.esmf:samm-cli' clean install
 ```
 
 To also build SDK core components and the CLI tool, run the above command, followed by:
@@ -69,6 +69,11 @@ mvn -pl org.eclipse.esmf:samm-cli clean verify
 We are always looking forward to your contributions. For more details on how to contribute just take
 a look at the [contribution guidelines](CONTRIBUTING.md). Please create an issue first before
 opening a pull request.
+
+To quickly check if your contribution adheres to the project conventions, you can run `mvn
+spotless:check` and `mvn checkstyle:check`; to automatically apply the project code style to your
+changes, you can also use `mvn spotless:apply`. For more details, please see our
+[conventions](CONVENTIONS.md.)
 
 ## SDK Structure
 

@@ -16,7 +16,8 @@ package org.eclipse.esmf.aspectmodel.edit;
 import java.util.List;
 
 /**
- * Represents the result of the operation of writing changes in the {@link AspectChangeManager} to the file system.
+ * Represents the result of the operation of writing changes in the {@link AspectChangeManager} to
+ * the file system.
  */
 public sealed interface WriteResult {
    interface Visitor<T> {

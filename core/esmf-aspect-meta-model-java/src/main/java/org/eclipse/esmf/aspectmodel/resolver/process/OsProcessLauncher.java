@@ -67,7 +67,8 @@ public class OsProcessLauncher extends ProcessLauncher<Process> {
          }
          process.getOutputStream().close();
 
-         // Reading process' stdout and stderr must take place in separate threads, since the length of their content could be larger
+         // Reading process' stdout and stderr must take place in separate threads, since the length of their
+         // content could be larger
          // than the size of the inputstreams's internal buffer
          final ExecutorService executor = Executors.newFixedThreadPool( 2 );
          final Future<ByteArrayOutputStream> stdoutFuture = executor.submit( new StreamAccumulator( process.getInputStream() ) );

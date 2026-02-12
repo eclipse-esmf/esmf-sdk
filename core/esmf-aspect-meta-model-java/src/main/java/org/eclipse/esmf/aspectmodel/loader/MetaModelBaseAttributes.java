@@ -44,8 +44,7 @@ public class MetaModelBaseAttributes implements HasDescription {
          final Set<LangString> descriptions,
          final List<String> see,
          final boolean isAnonymous,
-         final AspectModelFile sourceFile
-   ) {
+         final AspectModelFile sourceFile ) {
       this.urn = urn;
       this.preferredNames.addAll( preferredNames );
       this.descriptions.addAll( descriptions );
@@ -109,7 +108,8 @@ public class MetaModelBaseAttributes implements HasDescription {
    }
 
    /**
-    * Returns a new "empty" base attributes object, implying an anonymous model element with no base attributes.
+    * Returns a new "empty" base attributes object, implying an anonymous model element with no base
+    * attributes.
     *
     * @return a new empty base attributes object
     */

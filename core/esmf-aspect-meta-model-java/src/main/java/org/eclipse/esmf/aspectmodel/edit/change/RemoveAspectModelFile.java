@@ -34,8 +34,7 @@ public class RemoveAspectModelFile extends StructuralChange {
    }
 
    public RemoveAspectModelFile( final AspectModelFile fileToRemove ) {
-      this( fileToRemove.sourceLocation().orElseThrow( () ->
-            new ModelChangeException( "Can remove only a named file" ) ) );
+      this( fileToRemove.sourceLocation().orElseThrow( () -> new ModelChangeException( "Can remove only a named file" ) ) );
    }
 
    @Override

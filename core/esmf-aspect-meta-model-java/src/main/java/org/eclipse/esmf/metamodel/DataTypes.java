@@ -16,8 +16,9 @@ package org.eclipse.esmf.metamodel;
 import org.eclipse.esmf.metamodel.datatype.SammType;
 
 /**
- * Instances for the scalar data types built in the meta model.
- * This class is for naming convenience, so that you can static import DataTypes.* and refer to "xsd.time" like "xsd:time" in RDF.
+ * Instances for the scalar data types built in the meta model. This class is for naming
+ * convenience, so that you can static import DataTypes.* and refer to "xsd.time" like "xsd:time" in
+ * RDF.
  */
 @SuppressWarnings( { "NewClassNamingConvention", "checkstyle:TypeName", "checkstyle:ConstantName" } )
 public class DataTypes {
