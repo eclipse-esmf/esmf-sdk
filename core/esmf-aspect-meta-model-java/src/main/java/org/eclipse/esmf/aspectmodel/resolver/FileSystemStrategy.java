@@ -88,7 +88,9 @@ public class FileSystemStrategy implements ResolutionStrategy {
       final Optional<File> namedResourceFile;
       try {
          namedResourceFile = modelsRoot.resolveAspectModelFile( aspectModelUrn );
-         if ( namedResourceFile.orElseThrow().exists() ) {
+         if ( namedResourceFile.orElseThrow( () ->
+               new ModelResolutionException( "Resolving path failed for file " + modelsRoot.constructAspectModelFilePath( aspectModelUrn ) )
+         ).exists() ) {
             final Try<RawAspectModelFile> tryFile = Try.of( () -> AspectModelFileLoader.load( namedResourceFile.orElseThrow() ) );
             if ( tryFile.isFailure() ) {
                checkedLocations.add(
@@ -106,7 +108,7 @@ public class FileSystemStrategy implements ResolutionStrategy {
             checkedLocations.add( new ModelResolutionException.LoadingFailure( aspectModelUrn,
                   namedResourceFile.orElseThrow().getAbsolutePath(), "File does not exist" ) );
          }
-      } catch ( ModelResolutionException e ) {
+      } catch ( final ModelResolutionException exception ) {
          return findInNamespaceFolder( aspectModelUrn, resolutionStrategySupport, checkedLocations );
       }
 
