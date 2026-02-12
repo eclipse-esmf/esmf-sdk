@@ -54,7 +54,7 @@ Are you having trouble with ESMF SDK? We want to help!
 ## Build and contribute
 
 The top level elements of the SDK structure are all carried out as Maven multimodule projects.
-Building the SDK requires a Java 25 version.
+Building the SDK requires Java 25.
 
 To build the SDK core components, run the following command:
 ```bash
@@ -69,6 +69,11 @@ mvn -pl org.eclipse.esmf:samm-cli clean verify
 We are always looking forward to your contributions. For more details on how to contribute just take
 a look at the [contribution guidelines](CONTRIBUTING.md). Please create an issue first before
 opening a pull request.
+
+To quickly check if your contribution adheres to the project conventions, you can run `mvn
+spotless:check` and `mvn checkstyle:check`; to automatically apply the project code style to your
+changes, you can also use `mvn spotless:apply`. For more details, please see our
+[conventions](CONVENTIONS.md.)
 
 ## SDK Structure
 

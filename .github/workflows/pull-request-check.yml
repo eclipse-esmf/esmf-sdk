@@ -64,6 +64,7 @@ jobs:
       - name: Check code style
         run: |
           mvn spotless:check
+          mvn checkstyle:check
         shell: bash
 
       - name: Configure Pagefile (Windows)

@@ -3,7 +3,7 @@ The following document contains a compilation of conventions and guidelines to f
 write code for the ESMF SDK.
 
 ## General Conventions
-Our code conventions are based on the [Google Java Style
+Our code conventions are loosely based on the [Google Java Style
 Guide](https://google.github.io/styleguide/javaguide.html) but detailed and adjusted for the needs
 of the ESMF SDK. The code style is described using the Eclipse code style formatter XML and can be
 found in the file `.development/esmf-eclipse-codestyle.xml`.
@@ -14,6 +14,10 @@ found in the file `.development/esmf-eclipse-codestyle.xml`.
 * In any way, you can use `mvn spotless:check` to validate the code style of current state of your
   copy of the code base; and `mvn spotless:apply` to automatically apply the code style to the whole
   code base.
+
+Additional conventions are described using [Checkstyle](https://checkstyle.sourceforge.io/) which can
+be found in the file `.development/esmf-checkstyle.xml`. You can validate if your code adheres to the
+rules using `mvn checkstyle:check`.
 
 Furthermore, the files `.development/esmf-intellij-codestyle.xml` and
 `.development/esmf-intellij-inspections.xml` are provided that can be

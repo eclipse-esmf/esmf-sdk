@@ -75,6 +75,8 @@
       <skip.gpg.skip>true</skip.gpg.skip>
       <build-time-sources>${project.basedir}/src-buildtime</build-time-sources>
       <generated-sources>${project.basedir}/src-gen</generated-sources>
+      <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
+      <checkstyle.version>10.26.1</checkstyle.version>
    </properties>
 
    <dependencyManagement>
@@ -235,6 +237,25 @@
                <showWarnings>false</showWarnings>
                <showDeprecation>false</showDeprecation>
             </configuration>
+         </plugin>
+
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-checkstyle-plugin</artifactId>
+            <version>${maven-checkstyle-plugin.version}</version>
+            <configuration>
+               <configLocation>${maven.multiModuleProjectDirectory}/.development/esmf-checkstyle.xml</configLocation>
+               <consoleOutput>true</consoleOutput>
+               <failsOnError>true</failsOnError>
+               <failOnViolation>true</failOnViolation>
+            </configuration>
+            <dependencies>
+               <dependency>
+                  <groupId>com.puppycrawl.tools</groupId>
+                  <artifactId>checkstyle</artifactId>
+                  <version>${checkstyle.version}</version>
+               </dependency>
+            </dependencies>
          </plugin>
 
          <plugin>
