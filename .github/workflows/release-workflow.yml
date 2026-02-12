@@ -76,12 +76,6 @@ jobs:
           server-password: CENTRAL_SONATYPE_TOKEN_PASSWORD
           overwrite-settings: false
 
-      - name: Setup JDK
-        uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e
-        with:
-          java-version: '25.0.1'
-          distribution: 'temurin'
-
       - name: Cache Maven packages
         uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb #v5.0.1
         with:
