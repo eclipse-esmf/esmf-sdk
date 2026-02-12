@@ -102,7 +102,7 @@ jobs:
           mvn versions:commit
 
           # Actual build of core SDK
-          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean deploy -Dmaven.wagon.httpconnectionManager.ttlSeconds=60 -Psign
+          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean deploy -Dmaven.wagon.httpconnectionManager.ttlSeconds=60 -Prelease-build,sign
 
           # Create Maven Central upload bundle
           pushd target/central-staging
