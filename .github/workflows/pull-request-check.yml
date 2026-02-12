@@ -100,75 +100,74 @@ jobs:
       - name: Build native image (Linux)
         if: matrix.os == 'ubuntu-latest'
         run: |
-          bundle="samm-bundle-DEV-SNAPSHOT-$(date +%s)"
+          bundle="samm-cli-${RELEASE_VERSION}"
           mkdir ${bundle}
-          mkdir -p "${bundle}/jre"
           curl -Lo jre.tar.gz https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.1%2B8/OpenJDK25U-jre_x64_linux_hotspot_25.0.1_8.tar.gz
           tar -xvf jre.tar.gz
-          cp -r ./jdk-25.0.1+8-jre/* ./${bundle}/jre
-          cp tools/samm-cli/target/samm-cli-DEV-SNAPSHOT.jar ./${bundle}/
-          
+          mv ./jdk-25.0.1+8-jre ./${bundle}/jre
+          cp tools/samm-cli/target/samm-cli-${RELEASE_VERSION}.jar ./${bundle}/
+
           cat <<EOF > ./${bundle}/run.sh
           #!/usr/bin/env bash
-
-          HERE=\${BASH_SOURCE%/*}
-
-          "\$HERE/jre/bin/java" --enable-native-access=ALL-UNNAMED --sun-misc-unsafe-memory-access=allow -jar "\$HERE/samm-cli-DEV-SNAPSHOT.jar" "\$@"
+          HERE="\${BASH_SOURCE%/*}"
+          "\$HERE/jre/bin/java" --enable-native-access=ALL-UNNAMED --sun-misc-unsafe-memory-access=allow -jar "\$HERE/samm-cli-${RELEASE_VERSION}.jar" "\$@"
           EOF
           chmod +x ./${bundle}/run.sh
 
           curl -Lo warp-packer https://github.com/dgiagio/warp/releases/download/v0.3.0/linux-x64.warp-packer
           chmod +x warp-packer
-          
+
           ./warp-packer --arch linux-x64 --input_dir ${bundle} --exec run.sh --output samm
-          chmod +x samm
-          
-          cp samm tools/samm-cli/target/
+          chmod a+x samm
         shell: bash
 
       - name: Build native image (Windows)
         if: matrix.os == 'windows-latest'
         run: |
-          $bundle = "samm-bundle-DEV-SNAPSHOT-$([int][double]::Parse((Get-Date -UFormat %s)))"
-          mkdir $bundle
-          New-Item -ItemType Directory -Path "$bundle\jre" -Force
+          bundle="samm-cli-${RELEASE_VERSION}"
+          mkdir ${bundle}
           curl -Lo jre.zip https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.1%2B8/OpenJDK25U-jre_x64_windows_hotspot_25.0.1_8.zip
-          tar -xf jre.zip
-          Copy-Item .\jdk-25.0.1+8-jre\* .\$bundle\jre -Recurse
-          Copy-Item tools\samm-cli\target\samm-cli-DEV-SNAPSHOT.jar .\$bundle\
+          7z x jre.zip
+          mv ./jdk-25.0.1+8-jre ./${bundle}/jre
+          cp tools/samm-cli/target/samm-cli-${RELEASE_VERSION}.jar ./${bundle}/
 
-          Set-Content -Path .\$bundle\run.bat -Value "@echo off`n%~dp0jre\bin\java --enable-native-access=ALL-UNNAMED --sun-misc-unsafe-memory-access=allow -jar %~dp0samm-cli-DEV-SNAPSHOT.jar %*"
+          cat <<EOF > ./${bundle}/run.bat
+          @echo off
+          %~dp0jre\bin\java --enable-native-access=ALL-UNNAMED --sun-misc-unsafe-memory-access=allow -jar %~dp0samm-cli-${RELEASE_VERSION}.jar %*
+          EOF
 
           curl -Lo warp-packer.exe https://github.com/dgiagio/warp/releases/download/v0.3.0/windows-x64.warp-packer.exe
-          .\warp-packer.exe --arch windows-x64 --input_dir $bundle --exec run.bat --output samm.exe
-          Copy-Item samm.exe tools\samm-cli\target\samm.exe
-        shell: pwsh
+
+          ./warp-packer.exe --arch windows-x64 --input_dir ${bundle} --exec run.bat --output samm.exe
+          7z a samm-cli-${RELEASE_VERSION}-windows-x86_64.zip samm.exe
+        shell: bash
 
       - name: Build native image (Mac)
         if: matrix.os == 'macos-15-intel'
         run: |
-          bundle="samm-bundle-DEV-SNAPSHOT-$(date +%s)"
+          bundle="samm-cli-${RELEASE_VERSION}"
           mkdir ${bundle}
           curl -Lo jre.tar.gz https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.1%2B8/OpenJDK25U-jre_x64_mac_hotspot_25.0.1_8.tar.gz
           tar -xvf jre.tar.gz
-          cp -r ./jdk-25.0.1+8-jre ./${bundle}/jre
-          cp tools/samm-cli/target/samm-cli-DEV-SNAPSHOT.jar ./${bundle}/
+          mv ./jdk-25.0.1+8-jre ./${bundle}/jre
+          cp tools/samm-cli/target/samm-cli-${RELEASE_VERSION}.jar ./${bundle}/
 
           cat <<EOF > ./${bundle}/run.sh
           #!/usr/bin/env bash
 
-          HERE=\${BASH_SOURCE%/*}
-
-          "\$HERE/jre/Contents/Home/bin/java" --enable-native-access=ALL-UNNAMED --sun-misc-unsafe-memory-access=allow -jar "\$HERE/samm-cli-DEV-SNAPSHOT.jar" "\$@"
+          HERE="\${BASH_SOURCE%/*}"
+          "\$HERE/jre/Contents/Home/bin/java" --enable-native-access=ALL-UNNAMED --sun-misc-unsafe-memory-access=allow -jar "\$HERE/samm-cli-${RELEASE_VERSION}.jar" "\$@"
           EOF
           chmod +x ./${bundle}/run.sh
 
           curl -Lo warp-packer https://github.com/dgiagio/warp/releases/download/v0.3.0/macos-x64.warp-packer
           chmod +x warp-packer
           
+
           ./warp-packer --arch macos-x64 --input_dir ${bundle} --exec run.sh --output samm
-          chmod +x samm
-          cp samm tools/samm-cli/target/
+          chmod a+x samm
+          tar cfvz samm-cli-${RELEASE_VERSION}-macos-x86_64.tar.gz samm
+
         shell: bash
 
       - name: Create convenience batch file
