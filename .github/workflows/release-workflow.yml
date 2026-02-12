@@ -253,8 +253,16 @@ jobs:
     permissions:
       contents: read
     steps:
+      - name: Enable long paths for checkout (Windows)
+        shell: pwsh
+        env:
+          GIT_CONFIG_GLOBAL: ${{ runner.temp }}\.gitconfig
+        run: |
+          git config --global core.longpaths true
       - name: Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+        env:
+          GIT_CONFIG_GLOBAL: ${{ runner.temp }}\.gitconfig
         with:
           submodules: recursive
           persist-credentials: false
