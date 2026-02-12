@@ -339,5 +339,8 @@
 <setting id="org.eclipse.jdt.core.formatter.indent_body_declarations_compare_to_record_header" value="true"/>
 <setting id="org.eclipse.jdt.core.formatter.keep_enum_constant_declaration_on_one_line" value="one_line_if_empty"/>
 <setting id="org.eclipse.jdt.core.formatter.keep_enum_declaration_on_one_line" value="one_line_if_empty"/>
+<setting id="org.eclipse.jdt.core.formatter.alignment_for_parameterized_type_references" value="16"/>
+<setting id="org.eclipse.jdt.core.formatter.alignment_for_type_parameters" value="16"/>
+<setting id="org.eclipse.jdt.core.formatter.alignment_for_type_arguments" value="16"/>
 </profile>
 </profiles>

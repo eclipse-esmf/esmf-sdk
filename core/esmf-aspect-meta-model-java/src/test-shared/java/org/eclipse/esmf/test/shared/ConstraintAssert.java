@@ -19,6 +19,12 @@ import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.util.Locale;
 
+import org.assertj.core.api.AbstractBigIntegerAssert;
+import org.assertj.core.api.AbstractComparableAssert;
+import org.assertj.core.api.AbstractIntegerAssert;
+import org.assertj.core.api.AbstractStringAssert;
+import org.assertj.core.api.ObjectAssert;
+
 import org.eclipse.esmf.metamodel.BoundDefinition;
 import org.eclipse.esmf.metamodel.Constraint;
 import org.eclipse.esmf.metamodel.ScalarValue;
@@ -29,12 +35,6 @@ import org.eclipse.esmf.metamodel.constraint.LengthConstraint;
 import org.eclipse.esmf.metamodel.constraint.LocaleConstraint;
 import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
 import org.eclipse.esmf.metamodel.constraint.RegularExpressionConstraint;
-
-import org.assertj.core.api.AbstractBigIntegerAssert;
-import org.assertj.core.api.AbstractComparableAssert;
-import org.assertj.core.api.AbstractIntegerAssert;
-import org.assertj.core.api.AbstractStringAssert;
-import org.assertj.core.api.ObjectAssert;
 
 /**
  * Assert for {@link Constraint}.
@@ -307,8 +307,8 @@ public class ConstraintAssert<SELF extends ConstraintAssert<SELF, ACTUAL>, ACTUA
     * @param <SELF> the self type
     * @param <ACTUAL> the element type
     */
-   public static class RegularExpressionConstraintAssert<SELF extends RegularExpressionConstraintAssert<SELF, ACTUAL>, ACTUAL extends RegularExpressionConstraint>
-         extends ConstraintAssert<SELF, ACTUAL> {
+   public static class RegularExpressionConstraintAssert<SELF extends RegularExpressionConstraintAssert<SELF, ACTUAL>,
+         ACTUAL extends RegularExpressionConstraint> extends ConstraintAssert<SELF, ACTUAL> {
       public RegularExpressionConstraintAssert( final ACTUAL actual ) {
          super( actual, RegularExpressionConstraintAssert.class, "RegularExpressionConstraint" );
       }
@@ -349,7 +349,8 @@ public class ConstraintAssert<SELF extends ConstraintAssert<SELF, ACTUAL>, ACTUA
     * @param <SELF> the self type
     * @param <ACTUAL> the element type
     */
-   public static class FixedPointConstraintAssert<SELF extends FixedPointConstraintAssert<SELF, ACTUAL>, ACTUAL extends FixedPointConstraint>
+   public static class FixedPointConstraintAssert<SELF extends FixedPointConstraintAssert<SELF, ACTUAL>,
+         ACTUAL extends FixedPointConstraint>
          extends ConstraintAssert<SELF, ACTUAL> {
       public FixedPointConstraintAssert( final ACTUAL actual ) {
          super( actual, FixedPointConstraintAssert.class, "FixedPointConstraint" );

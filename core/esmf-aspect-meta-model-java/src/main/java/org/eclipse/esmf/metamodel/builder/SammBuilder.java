@@ -196,8 +196,8 @@ public class SammBuilder {
     * @param <SELF> the self type
     * @param <ACTUAL> the element type
     */
-   public abstract static class OptionallyNamedElementBuilder<SELF extends OptionallyNamedElementBuilder<SELF, ACTUAL>, ACTUAL extends ModelElement>
-         extends Builder<SELF, ACTUAL> {
+   public abstract static class OptionallyNamedElementBuilder<SELF extends OptionallyNamedElementBuilder<SELF, ACTUAL>,
+         ACTUAL extends ModelElement> extends Builder<SELF, ACTUAL> {
       protected final AspectModelUrn urn;
 
       public OptionallyNamedElementBuilder( final Class<?> selfType ) {

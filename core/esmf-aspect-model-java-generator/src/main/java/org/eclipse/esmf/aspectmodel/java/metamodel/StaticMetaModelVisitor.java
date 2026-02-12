@@ -24,6 +24,11 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.apache.commons.text.StringEscapeUtils;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.XSD;
+
 import org.eclipse.esmf.aspectmodel.java.AspectModelJavaUtil;
 import org.eclipse.esmf.aspectmodel.java.DeconstructionSet;
 import org.eclipse.esmf.aspectmodel.java.StructuredValuePropertiesDeconstructor;
@@ -92,11 +97,6 @@ import org.eclipse.esmf.metamodel.impl.DefaultQuantityKind;
 import org.eclipse.esmf.metamodel.impl.DefaultScalar;
 import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
 import org.eclipse.esmf.metamodel.impl.DefaultUnit;
-
-import org.apache.commons.text.StringEscapeUtils;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.vocabulary.XSD;
 
 public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeGenerationContext> {
    private final ValueExpressionVisitor valueExpressionVisitor = new ValueExpressionVisitor();
