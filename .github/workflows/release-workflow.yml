@@ -141,7 +141,6 @@ jobs:
           ./warp-packer --arch linux-x64 --input_dir ${bundle} --exec run.sh --output samm
           chmod a+x samm
           tar cfvz samm-cli-${RELEASE_VERSION}-linux-x86_64.tar.gz samm
-          mv tools/samm-cli/target/samm-cli-${RELEASE_VERSION}-linux-x86_64.tar.gz .
           cp tools/samm-cli/target/samm-cli-*.jar .
         env:
           PGP_KEY_PASSWORD: ${{ secrets.PGP_KEY_PASSWORD }}
