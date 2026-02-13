@@ -147,7 +147,6 @@ jobs:
           fi
 
           ./warp-packer.exe --arch windows-x64 --input_dir ${bundle} --exec run.bat --output samm.exe
-          7z a samm-cli-${RELEASE_VERSION}-windows-x86_64.zip samm.exe
         shell: bash
 
       - name: Build native image (Mac)
@@ -177,8 +176,6 @@ jobs:
 
           ./warp-packer --arch macos-x64 --input_dir ${bundle} --exec run.sh --output samm
           chmod a+x samm
-          tar cfvz samm-cli-${RELEASE_VERSION}-macos-x86_64.tar.gz samm
-
         shell: bash
 
       - name: Create convenience batch file
