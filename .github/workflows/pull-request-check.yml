@@ -5,6 +5,8 @@ on:
       - main
     paths-ignore:
       - 'documentation/decisions/**'
+env:
+  RELEASE_VERSION: ${{ github.event.inputs.release_version }}
 
 permissions: {}
 
