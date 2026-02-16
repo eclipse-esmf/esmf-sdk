@@ -5,8 +5,6 @@ on:
       - main
     paths-ignore:
       - 'documentation/decisions/**'
-env:
-  RELEASE_VERSION: ${{ github.event.inputs.release_version }}
 
 permissions: {}
 
@@ -54,6 +52,14 @@ jobs:
         with:
           java-version: '25.0.1'
           distribution: 'temurin'
+      - name: Set RELEASE_VERSION from Maven project.version
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version --non-recursive)"
+          echo "RELEASE_VERSION=$version" >> "$GITHUB_ENV"
+          echo "RELEASE_VERSION=$version"
+
 
       - name: Cache Maven packages
         uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb #v5.0.1
