@@ -355,10 +355,12 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
    }
 
    private Optional<AspectModelUrn> aspectModelUrnFromSemanticId( final HasSemantics element ) {
-      return Optional.ofNullable( element.getSemanticId() ).flatMap( semanticId -> semanticId.getKeys().stream()
+      return Optional.ofNullable( element.getSemanticId() )
+            .flatMap( semanticId -> semanticId.getKeys().stream()
             .filter( key -> key.getType() == KeyTypes.CONCEPT_DESCRIPTION || key.getType() == KeyTypes.GLOBAL_REFERENCE )
             .flatMap( key -> AspectModelUrn.from( key.getValue() ).toJavaOptional().stream() )
-            .findFirst() );
+                        .findFirst()
+            );
    }
 
    private Aspect submodelToAspect( final Submodel submodel ) {
@@ -429,9 +431,21 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
    }
 
    private List<String> seeReferences( final SubmodelElement element ) {
-      return Optional.ofNullable( element.getSemanticId() ).stream()
-            .flatMap( semanticId -> semanticId.getKeys().stream() )
-            .filter( key -> key.getType() == KeyTypes.CONCEPT_DESCRIPTION || key.getType() == KeyTypes.GLOBAL_REFERENCE )
+      return gerSeeReferences( element.getSupplementalSemanticIds(), element.getSemanticId() );
+   }
+
+   private List<String> seeReferences( final Submodel element ) {
+      return gerSeeReferences( element.getSupplementalSemanticIds(), element.getSemanticId() );
+   }
+
+   private List<String> gerSeeReferences( final List<Reference> supplementalSemanticIds, final Reference semanticId ) {
+      return Stream.concat(
+                  supplementalSemanticIds.stream(),
+                  Optional.ofNullable( semanticId ).stream()
+            )
+            .flatMap( id -> id.getKeys().stream() )
+            .filter( key -> key.getType() == KeyTypes.CONCEPT_DESCRIPTION || key.getType() == KeyTypes.GLOBAL_REFERENCE
+                  || key.getType() == KeyTypes.SUBMODEL )
             .map( Key::getValue )
             .flatMap( value -> validIrdiOrUri( value ).stream() )
             .map( this::sanitizeValue )
@@ -440,10 +454,6 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
 
    private String sanitizeValue( final String value ) {
       return value.replace( "/ ", "/" );
-   }
-
-   private List<String> seeReferences( final Submodel submodel ) {
-      return validIrdiOrUri( submodel.getId() ).stream().toList();
    }
 
    private sealed interface ElementNamingStrategy permits DetermineAutomatically, UseGivenUrn {
@@ -504,7 +514,7 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
             exampleValue,
             false,
             false,
-            Optional.empty(),
+            Optional.ofNullable( submodelElement.getIdShort() ),
             false,
             Optional.empty() );
       properties.put( submodelElement, result );
@@ -705,26 +715,41 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
    private Characteristic createCharacteristicFromSubmodelElementList( final SubmodelElementList submodelElementList,
          final AspectModelUrn propertyUrn ) {
       final AasSubmodelElements type = submodelElementList.getTypeValueListElement();
-      final Characteristic elementCharacteristic = createCharacteristic( type, submodelElementList, propertyUrn );
+      final Characteristic elementCharacteristic;
+         elementCharacteristic = createCharacteristic( type, submodelElementList.getValue().getFirst(), propertyUrn );
       final MetaModelBaseAttributes metaModelBaseAttributes = baseAttributes( submodelElementList,
             new DetermineAutomatically( propertyUrn.getName() + "List" ), true );
       return new DefaultList( metaModelBaseAttributes, Optional.empty(), Optional.of( elementCharacteristic ) );
    }
 
    private AasSubmodelElements submodelElementType( final SubmodelElement element ) {
+      Class<?> clazz = element.getClass();
+      while ( clazz != null ) {
+         for ( Class<?> iface : clazz.getInterfaces() ) {
+            AasSubmodelElements match = findEnumForClass( iface );
+            if ( match != null ) {
+               return match;
+            }
+         }
+         AasSubmodelElements match = findEnumForClass( clazz );
+         if ( match != null ) {
+            return match;
+         }
+         clazz = clazz.getSuperclass();
+      }
+      throw new AspectModelGenerationException(
+            "Encountered unsupported SubmodelElement type " + element.getClass().getSimpleName() );
+   }
+
+   private AasSubmodelElements findEnumForClass( Class<?> clazz ) {
+      String className = clazz.getSimpleName();
       return Arrays.stream( AasSubmodelElements.values() )
             .filter( entry -> {
-               try {
-                  final Class<?> correspondingClass = Class.forName( "org.eclipse.digitaltwin.aas4j.v3.model."
-                        + CaseFormat.UPPER_UNDERSCORE.to( CaseFormat.UPPER_CAMEL, entry.toString() ) );
-                  return correspondingClass.isAssignableFrom( element.getClass() );
-               } catch ( final ClassNotFoundException exception ) {
-                  return false;
-               }
+               String enumClassName = CaseFormat.UPPER_UNDERSCORE.to( CaseFormat.UPPER_CAMEL, entry.toString() );
+               return className.equals( enumClassName );
             } )
             .findFirst()
-            .orElseThrow( () -> new AspectModelGenerationException(
-                  "Encountered unsupported SubmodelElement type " + element.getClass().getSimpleName() ) );
+            .orElse( null );
    }
 
    private Characteristic createDefaultScalarCharacteristic( final SubmodelElement submodelElement, final String dataTypeUri,
