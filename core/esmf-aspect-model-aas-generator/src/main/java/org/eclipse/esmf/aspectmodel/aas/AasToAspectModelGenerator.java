@@ -357,9 +357,9 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
    private Optional<AspectModelUrn> aspectModelUrnFromSemanticId( final HasSemantics element ) {
       return Optional.ofNullable( element.getSemanticId() )
             .flatMap( semanticId -> semanticId.getKeys().stream()
-            .filter( key -> key.getType() == KeyTypes.CONCEPT_DESCRIPTION || key.getType() == KeyTypes.GLOBAL_REFERENCE )
-            .flatMap( key -> AspectModelUrn.from( key.getValue() ).toJavaOptional().stream() )
-                        .findFirst()
+                  .filter( key -> key.getType() == KeyTypes.CONCEPT_DESCRIPTION || key.getType() == KeyTypes.GLOBAL_REFERENCE )
+                  .flatMap( key -> AspectModelUrn.from( key.getValue() ).toJavaOptional().stream() )
+                  .findFirst()
             );
    }
 
@@ -440,9 +440,9 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
 
    private List<String> gerSeeReferences( final List<Reference> supplementalSemanticIds, final Reference semanticId ) {
       return Stream.concat(
-                  supplementalSemanticIds.stream(),
-                  Optional.ofNullable( semanticId ).stream()
-            )
+            supplementalSemanticIds.stream(),
+            Optional.ofNullable( semanticId ).stream()
+      )
             .flatMap( id -> id.getKeys().stream() )
             .filter( key -> key.getType() == KeyTypes.CONCEPT_DESCRIPTION || key.getType() == KeyTypes.GLOBAL_REFERENCE
                   || key.getType() == KeyTypes.SUBMODEL )
@@ -491,7 +491,7 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
             .withPreferredNames( langStringSet( element.getDisplayName() ) )
             .withDescriptions( langStringSet( element.getDescription() ) )
             .withSee( seeReferences( element ) )
-            .isAnonymous( elementName.isSynthetic() )
+//            .isAnonymous( elementName.isSynthetic() )
             .build();
    }
 
@@ -508,17 +508,23 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
                   ? Optional.ofNullable( property.getValue() )
                         .flatMap( lexicalRepresentation -> exampleValueForProperty( lexicalRepresentation, characteristic.getDataType() ) )
                   : Optional.empty();
+      boolean isOptional = isOptionalProperty( submodelElement );
       final Property result = new DefaultProperty(
             metaModelBaseAttributes,
             Optional.of( characteristic ),
             exampleValue,
-            false,
+            isOptional,
             false,
             Optional.ofNullable( submodelElement.getIdShort() ),
             false,
             Optional.empty() );
       properties.put( submodelElement, result );
       return result;
+   }
+
+   private boolean isOptionalProperty( final SubmodelElement submodelElement ) {
+      return submodelElement.getQualifiers().stream()
+            .anyMatch( a -> a.getType().equals( "SMT/Cardinality" ) && a.getValue().equals( "ZeroToOne" ) );
    }
 
    private Operation createOperation( final org.eclipse.digitaltwin.aas4j.v3.model.Operation operation ) {
@@ -715,8 +721,7 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
    private Characteristic createCharacteristicFromSubmodelElementList( final SubmodelElementList submodelElementList,
          final AspectModelUrn propertyUrn ) {
       final AasSubmodelElements type = submodelElementList.getTypeValueListElement();
-      final Characteristic elementCharacteristic;
-         elementCharacteristic = createCharacteristic( type, submodelElementList.getValue().getFirst(), propertyUrn );
+      final Characteristic elementCharacteristic = createCharacteristic( type, submodelElementList.getValue().getFirst(), propertyUrn );
       final MetaModelBaseAttributes metaModelBaseAttributes = baseAttributes( submodelElementList,
             new DetermineAutomatically( propertyUrn.getName() + "List" ), true );
       return new DefaultList( metaModelBaseAttributes, Optional.empty(), Optional.of( elementCharacteristic ) );

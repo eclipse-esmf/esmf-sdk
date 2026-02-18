@@ -152,6 +152,55 @@ class AasToAspectModelGeneratorTest {
             .forEach( see -> assertThat( see ).doesNotContain( "/ " ) );
    }
 
+   @Test
+   void testGenerateSeeReferencesBasedOnSematicIdAndSupplementalSemanticIds() {
+      final InputStream inputStream = AasToAspectModelGeneratorTest.class.getClassLoader().getResourceAsStream(
+            "submodel-templates/published/Handover Documentation/2/0/IDTA 02004-2-0_Template_HandoverDocumentation.aasx" );
+      final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromAasx( inputStream );
+      final List<Aspect> aspects = aspectModelGenerator.generate().map( AspectArtifact::getContent ).toList();
+
+      assertThatCode( aspectModelGenerator::generate ).doesNotThrowAnyException();
+
+      // Check for 'entities' property
+      aspects.stream()
+            .flatMap( aspect -> aspect.getProperties().stream() )
+            .filter( property -> property.getName().equals( "entities" ) )
+            .findFirst()
+            .ifPresentOrElse( property -> assertThat( property.getSee() )
+                  .containsExactly( "https://admin-shell.io/vdi/2770/1/0/EntitiesForDocumentation" ),
+                  () -> fail( "Property 'entities' not found" ) );
+
+      // Check for 'documents' property
+      aspects.stream()
+            .flatMap( aspect -> aspect.getProperties().stream() )
+            .filter( property -> property.getName().equals( "documents" ) )
+            .findFirst()
+            .ifPresentOrElse( property -> assertThat( property.getSee() )
+                  .containsExactly(
+                        "https://api.eclass-cdp.com/0173-1-02-ABI500-003",
+                        "urn:irdi:0173-1#02-ABI500#003"
+                  ),
+                  () -> fail( "Property 'documents' not found" ) );
+   }
+
+   @Test
+   void testGenerateAspectWithOptionalProperty() {
+      final InputStream inputStream = AasToAspectModelGeneratorTest.class.getClassLoader().getResourceAsStream(
+            "submodel-templates/published/Handover Documentation/2/0/IDTA 02004-2-0_Template_HandoverDocumentation.aasx" );
+      final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromAasx( inputStream );
+      final List<Aspect> aspects = aspectModelGenerator.generate().map( AspectArtifact::getContent ).toList();
+
+      assertThatCode( aspectModelGenerator::generate ).doesNotThrowAnyException();
+
+      // Check for 'entities' property
+      aspects.stream()
+            .flatMap( aspect -> aspect.getProperties().stream() )
+            .filter( property -> property.getName().equals( "entities" ) )
+            .findFirst()
+            .ifPresentOrElse( property -> assertThat( property.isOptional() ).isTrue(),
+                  () -> fail( "Property 'entities' not found" ) );
+   }
+
    @ParameterizedTest
    @Execution( ExecutionMode.CONCURRENT )
    @EnumSource( TestAspect.class )
