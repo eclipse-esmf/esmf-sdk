@@ -36,19 +36,19 @@ public class AspectToParquetCommand extends AbstractCommand {
    @CommandLine.Option(
          names = { "--output", "-o" },
          description = "Output file path" )
-   private final String outputFilePath = "-";
+   private String outputFilePath = "-";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
          names = { "--add-type-attribute", "-ta" },
          description = "Add @type attribute for inherited Entities" )
-   private final boolean addTypeAttribute = false;
+   private boolean addTypeAttribute = false;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
          names = { "--details" },
          description = "Print detailed reports on errors" )
-   private final boolean details = false;
+   private boolean details = false;
 
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
