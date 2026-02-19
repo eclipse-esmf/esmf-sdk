@@ -491,7 +491,7 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
             .withPreferredNames( langStringSet( element.getDisplayName() ) )
             .withDescriptions( langStringSet( element.getDescription() ) )
             .withSee( seeReferences( element ) )
-//            .isAnonymous( elementName.isSynthetic() )
+            .isAnonymous( elementName.isSynthetic() )
             .build();
    }
 
