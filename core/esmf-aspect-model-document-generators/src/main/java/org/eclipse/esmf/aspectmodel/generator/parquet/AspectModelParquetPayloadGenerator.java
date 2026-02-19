@@ -171,10 +171,13 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
          try {
             // Generate Parquet file in memory
             final String tempFilePath = System.getProperty( "java.io.tmpdir" ) + java.io.File.separator + aspect.getName() + "_temp.parquet";
+            final java.nio.file.Path parquetPath = Paths.get( tempFilePath );
+            // Clean up temporary file
+            java.nio.file.Files.deleteIfExists( parquetPath );
+
             generateParquetFile( tempFilePath, aspect );
 
             // Read the generated file into byte array
-            final java.nio.file.Path parquetPath = Paths.get( tempFilePath );
             final byte[] parquetData = java.nio.file.Files.readAllBytes( parquetPath );
 
             // Clean up temporary file
@@ -1526,7 +1529,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
                   final LocalDate date = LocalDate.parse( value.toString() );
                   final long daysSinceEpoch = date.toEpochDay();
                   group.add( fieldName, (int) daysSinceEpoch );
-               } catch ( final Exception e ) {
+               } catch ( final Exception exception ) {
                   // Fallback to 0 (epoch) if parsing fails
                   group.add( fieldName, 0 );
                }
@@ -1566,8 +1569,8 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
          } else if ( value instanceof final String stringValue ) {
             try {
                group.add( fieldName, Integer.parseInt( stringValue ) );
-            } catch ( final NumberFormatException e ) {
-               group.add( fieldName, value.toString() );
+            } catch ( final NumberFormatException numberFormatException ) {
+               group.add( fieldName, 0 );
             }
          }
          break;
@@ -1577,8 +1580,8 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
          } else if ( value instanceof final String stringValue ) {
             try {
                group.add( fieldName, Long.parseLong( stringValue ) );
-            } catch ( final NumberFormatException e ) {
-               group.add( fieldName, value.toString() );
+            } catch ( final NumberFormatException numberFormatException ) {
+               group.add( fieldName, 0L );
             }
          }
          break;
@@ -1588,8 +1591,8 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
          } else if ( value instanceof final String stringValue ) {
             try {
                group.add( fieldName, Float.parseFloat( stringValue ) );
-            } catch ( final NumberFormatException e ) {
-               group.add( fieldName, value.toString() );
+            } catch ( final NumberFormatException numberFormatException ) {
+               group.add( fieldName, 0.0f ); // Use default instead of writing string to float column
             }
          }
          break;
@@ -1599,8 +1602,8 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
          } else if ( value instanceof final String stringValue ) {
             try {
                group.add( fieldName, Double.parseDouble( stringValue ) );
-            } catch ( final NumberFormatException e ) {
-               group.add( fieldName, value.toString() );
+            } catch ( final NumberFormatException numberFormatException ) {
+               group.add( fieldName, 0.0d );
             }
          }
          break;
