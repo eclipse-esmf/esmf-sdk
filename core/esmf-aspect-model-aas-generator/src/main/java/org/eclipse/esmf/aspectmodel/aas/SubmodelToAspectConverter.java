@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -87,6 +87,9 @@ class SubmodelToAspectConverter {
    private static final Logger LOG = LoggerFactory.getLogger( SubmodelToAspectConverter.class );
 
    private final Map<SubmodelElement, Property> properties = new HashMap<>();
+   /**
+    * Needed to avoid duplicate names when attributes with the same name appear at different nesting levels.
+    */
    private final Map<String, Integer> nameCounters = new HashMap<>();
    private final ValueInstantiator valueInstantiator = new ValueInstantiator();
 
@@ -206,9 +209,12 @@ class SubmodelToAspectConverter {
                upperCase ), true );
       }
 
-      final String idPart = appendElementIdShort
-            ? (namePrefix.isEmpty() ? submodelElement.getIdShort() : StringUtils.capitalize( submodelElement.getIdShort() ))
-            : "";
+      final String idPart;
+      if ( appendElementIdShort ) {
+         idPart = namePrefix.isEmpty() ? submodelElement.getIdShort() : StringUtils.capitalize( submodelElement.getIdShort() );
+      } else {
+         idPart = "";
+      }
       return new ElementName( sanitizeAspectModelElementName( namePrefix + idPart, upperCase ), false );
    }
 
@@ -634,7 +640,7 @@ class SubmodelToAspectConverter {
 
    private Characteristic createCharacteristicFromSubmodelElementList( final SubmodelElementList submodelElementList,
          final AspectModelUrn propertyUrn ) {
-      final boolean orderRelevant = Boolean.TRUE.equals( submodelElementList.getOrderRelevant() );
+      final boolean orderRelevant = submodelElementList.getOrderRelevant();
       final String collectionTypeSuffix = orderRelevant ? "List" : "Set";
       final List<SubmodelElement> values = Optional.ofNullable( submodelElementList.getValue() ).orElseGet( List::of );
       final AasSubmodelElements declaredType = Optional.ofNullable( submodelElementList.getTypeValueListElement() )
@@ -647,12 +653,6 @@ class SubmodelToAspectConverter {
                orderRelevant );
       } else {
          final AasSubmodelElements effectiveType = SubmodelToAspectUtils.submodelElementType( values.getFirst() );
-         if ( effectiveType != declaredType
-               && declaredType != AasSubmodelElements.SUBMODEL_ELEMENT
-               && declaredType != AasSubmodelElements.DATA_ELEMENT ) {
-            LOG.warn( "SubmodelElementList {} declares type {} but first value is {}. Using value type for characteristic derivation.",
-                  submodelElementList.getIdShort(), declaredType, effectiveType );
-         }
          elementCharacteristic = createCharacteristic( effectiveType, values.getFirst(), propertyUrn );
       }
       final MetaModelBaseAttributes metaModelBaseAttributes = baseAttributes( submodelElementList,
