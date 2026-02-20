@@ -820,17 +820,47 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
 
    private Object generateDefaultScalarValue( final Scalar scalar ) {
       final String scalarUri = scalar.getUrn();
+      final Resource dataTypeResource = ResourceFactory.createResource( scalarUri );
 
-      if ( scalarUri.equals( XSD.xstring.getURI() ) || scalarUri.equals( XSD.anyURI.getURI() ) ) {
+      if ( scalarUri.equals( XSD.xstring.getURI() ) || scalarUri.equals( XSD.anyURI.getURI() )
+            || scalarUri.equals( XSD.normalizedString.getURI() ) || scalarUri.equals( XSD.token.getURI() ) ) {
          return new EasyRandom().nextObject( String.class );
-      } else if ( scalarUri.equals( XSD.xint.getURI() ) || scalarUri.equals( XSD.integer.getURI() ) ) {
-         return new Random().nextInt( 101 );
-      } else if ( scalarUri.equals( XSD.xdouble.getURI() ) || scalarUri.equals( XSD.decimal.getURI() ) ) {
-         return BigDecimal.valueOf( new Random().nextDouble() * 100.0 ).setScale( 2, RoundingMode.HALF_UP );
       } else if ( scalarUri.equals( XSD.xboolean.getURI() ) ) {
          return true;
-      } else if ( scalarUri.equals( XSD.dateTime.getURI() ) || scalarUri.equals( XSD.date.getURI() ) || scalarUri.equals( XSD.dateTimeStamp.getURI() ) ) {
-         return "2023-01-01T00:00:00Z";
+      } else if ( scalarUri.equals( XSD.duration.getURI() ) || scalarUri.equals( XSD.yearMonthDuration.getURI() )
+            || scalarUri.equals( XSD.dayTimeDuration.getURI() ) ) {
+         return DatatypeFactory.newDefaultInstance().newDuration( new Random().nextLong( 86400000L ) ).toString();
+      } else if ( scalarUri.equals( XSD.dateTime.getURI() ) || scalarUri.equals( XSD.dateTimeStamp.getURI() ) ) {
+         return DatatypeFactory.newDefaultInstance().newXMLGregorianCalendar( new GregorianCalendar() );
+      } else if ( scalarUri.equals( XSD.date.getURI() ) ) {
+         return LocalDate.now().toString();
+      } else if ( scalarUri.equals( XSD.hexBinary.getURI() ) ) {
+         return HexFormat.of().formatHex( new EasyRandom().nextObject( String.class ).getBytes( StandardCharsets.UTF_8 ) );
+      } else if ( scalarUri.equals( XSD.base64Binary.getURI() ) ) {
+         return Base64.getEncoder().encodeToString( new EasyRandom().nextObject( String.class ).getBytes( StandardCharsets.UTF_8 ) );
+      } else if ( scalarUri.equals( RDF.langString.getURI() ) ) {
+         return new EasyRandom().nextObject( String.class );
+      }
+
+      // Handle numeric types using SammXsdType
+      final Class<?> javaType = SammXsdType.getJavaTypeForMetaModelType( dataTypeResource );
+      if ( javaType != null && Number.class.isAssignableFrom( javaType ) ) {
+         final Number min = NumericTypeTraits.getModelMinValue( dataTypeResource, javaType );
+         final Number max = NumericTypeTraits.getModelMaxValue( dataTypeResource, javaType );
+         // Generate a value in the valid range using the overflow-safe method
+         return generateNumericValueInRange( javaType, min, max );
+      }
+
+      // Handle time/date related types as string
+      if ( scalarUri.equals( XSD.time.getURI() ) || scalarUri.equals( XSD.gDay.getURI() )
+            || scalarUri.equals( XSD.gMonth.getURI() ) || scalarUri.equals( XSD.gYear.getURI() )
+            || scalarUri.equals( XSD.gYearMonth.getURI() ) || scalarUri.equals( XSD.gMonthDay.getURI() ) ) {
+         return DatatypeFactory.newDefaultInstance().newXMLGregorianCalendar( new GregorianCalendar() ).toString();
+      }
+
+      // Handle curie type
+      if ( Curie.class.equals( javaType ) ) {
+         return "unit:hectopascal";
       }
 
       return new EasyRandom().nextObject( String.class );
@@ -1097,6 +1127,35 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
          }
       }
 
+      // Handle Trait with constraints (e.g., RangeConstraint)
+      if ( characteristic instanceof final Trait trait ) {
+         final Characteristic baseCharacteristic = trait.getBaseCharacteristic();
+         final Type dataType = baseCharacteristic.getDataType().orElse( null );
+         if ( dataType instanceof final Scalar scalar ) {
+            final Resource dataTypeResource = ResourceFactory.createResource( scalar.getUrn() );
+            final Class<?> javaType = SammXsdType.getJavaTypeForMetaModelType( dataTypeResource );
+
+            for ( final Constraint constraint : trait.getConstraints() ) {
+               if ( constraint instanceof final RangeConstraint rangeConstraint && javaType != null
+                     && Number.class.isAssignableFrom( javaType ) ) {
+                  final Number min = rangeConstraint.getMinValue()
+                        .map( ScalarValue::getValue )
+                        .map( Number.class::cast )
+                        .orElse( NumericTypeTraits.getModelMinValue( dataTypeResource, javaType ) );
+                  final Number max = rangeConstraint.getMaxValue()
+                        .map( ScalarValue::getValue )
+                        .map( Number.class::cast )
+                        .orElse( NumericTypeTraits.getModelMaxValue( dataTypeResource, javaType ) );
+
+                  // Generate a random value within the constrained range
+                  return generateNumericValueInRange( javaType, min, max );
+               }
+            }
+         }
+         // Fall through to generate based on base characteristic's data type
+         return extractExampleValueFromProperty( property, baseCharacteristic );
+      }
+
       // Generate default value based on data type
       final Type dataType = characteristic.getDataType().orElse( null );
       if ( dataType instanceof final Scalar scalarDataType ) {
@@ -1104,6 +1163,107 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
       }
 
       return new EasyRandom().nextObject( String.class );
+   }
+
+   private Number generateNumericValueInRange( final Class<?> javaType, final Number min, final Number max ) {
+      final Random rand = new Random();
+      if ( Integer.class.isAssignableFrom( javaType ) || Short.class.isAssignableFrom( javaType )
+            || Byte.class.isAssignableFrom( javaType ) ) {
+         final int lo = min.intValue();
+         final int hi = max.intValue();
+         if ( lo >= hi ) {
+            return lo;
+         }
+         // Use long arithmetic to avoid overflow in (hi - lo)
+         final long range = (long) hi - (long) lo;
+         return (int) (lo + (long) (rand.nextDouble() * range));
+      } else if ( Long.class.isAssignableFrom( javaType ) ) {
+         // Clamp to Long range to handle unsignedLong whose model max exceeds Long.MAX_VALUE
+         long lo = min.longValue();
+         long hi = max.longValue();
+         // If the original Number values suggest overflow (e.g., unsignedLong max), clamp
+         final BigDecimal bdMin = NumericTypeTraits.convertToBigDecimal( min );
+         final BigDecimal bdMax = NumericTypeTraits.convertToBigDecimal( max );
+         if ( bdMin.compareTo( BigDecimal.valueOf( Long.MIN_VALUE ) ) < 0 ) {
+            lo = Long.MIN_VALUE;
+         }
+         if ( bdMax.compareTo( BigDecimal.valueOf( Long.MAX_VALUE ) ) > 0 ) {
+            hi = Long.MAX_VALUE;
+         }
+         if ( lo >= hi ) {
+            return lo;
+         }
+         // Use BigDecimal to avoid overflow
+         final BigDecimal bdLo = BigDecimal.valueOf( lo );
+         final BigDecimal bdHi = BigDecimal.valueOf( hi );
+         final BigDecimal range = bdHi.subtract( bdLo );
+         return bdLo.add( range.multiply( BigDecimal.valueOf( rand.nextDouble() ) ) ).longValue();
+      } else if ( Float.class.isAssignableFrom( javaType ) ) {
+         final float lo = min.floatValue();
+         final float hi = max.floatValue();
+         if ( Float.isInfinite( lo ) || Float.isInfinite( hi ) || Float.isNaN( lo ) || Float.isNaN( hi ) || lo >= hi ) {
+            return lo >= hi && !Float.isInfinite( lo ) && !Float.isNaN( lo ) ? lo : 1.0f;
+         }
+         final float range = hi - lo;
+         if ( Float.isInfinite( range ) ) {
+            // Range overflows, use half range
+            final float halfHi = hi / 2.0f;
+            final float halfLo = lo / 2.0f;
+            return halfLo + rand.nextFloat() * (halfHi - halfLo);
+         }
+         return lo + rand.nextFloat() * range;
+      } else if ( Double.class.isAssignableFrom( javaType ) ) {
+         final double lo = min.doubleValue();
+         final double hi = max.doubleValue();
+         if ( Double.isInfinite( lo ) || Double.isInfinite( hi ) || Double.isNaN( lo ) || Double.isNaN( hi ) || lo >= hi ) {
+            return lo >= hi && !Double.isInfinite( lo ) && !Double.isNaN( lo ) ? lo : 1.0;
+         }
+         final double range = hi - lo;
+         if ( Double.isInfinite( range ) ) {
+            // Range overflows (e.g., -Double.MAX_VALUE to Double.MAX_VALUE), use half range
+            final double halfHi = hi / 2.0;
+            final double halfLo = lo / 2.0;
+            return halfLo + rand.nextDouble() * (halfHi - halfLo);
+         }
+         return lo + rand.nextDouble() * range;
+      } else if ( BigInteger.class.isAssignableFrom( javaType ) ) {
+         // BigInteger XSD types (nonNegativeInteger, positiveInteger, etc.) are mapped to INT32 in Parquet,
+         // so clamp the range to INT32 to avoid overflow when writing.
+         BigDecimal bdMin = NumericTypeTraits.convertToBigDecimal( min );
+         BigDecimal bdMax = NumericTypeTraits.convertToBigDecimal( max );
+         final BigDecimal int32Min = BigDecimal.valueOf( Integer.MIN_VALUE );
+         final BigDecimal int32Max = BigDecimal.valueOf( Integer.MAX_VALUE );
+         if ( bdMin.compareTo( int32Min ) < 0 ) {
+            bdMin = int32Min;
+         }
+         if ( bdMax.compareTo( int32Max ) > 0 ) {
+            bdMax = int32Max;
+         }
+         if ( bdMin.compareTo( bdMax ) >= 0 ) {
+            return bdMin.toBigInteger();
+         }
+         final BigDecimal range = bdMax.subtract( bdMin );
+         return bdMin.add( range.multiply( BigDecimal.valueOf( rand.nextDouble() ) ) ).toBigInteger();
+      } else if ( BigDecimal.class.isAssignableFrom( javaType ) ) {
+         // BigDecimal / xsd:decimal is mapped to DOUBLE in Parquet, so clamp to a range
+         // where double arithmetic won't overflow (half of Double.MAX_VALUE on each side).
+         BigDecimal bdMin = NumericTypeTraits.convertToBigDecimal( min );
+         BigDecimal bdMax = NumericTypeTraits.convertToBigDecimal( max );
+         final BigDecimal dblHalfMin = BigDecimal.valueOf( -Double.MAX_VALUE / 2 );
+         final BigDecimal dblHalfMax = BigDecimal.valueOf( Double.MAX_VALUE / 2 );
+         if ( bdMin.compareTo( dblHalfMin ) < 0 ) {
+            bdMin = dblHalfMin;
+         }
+         if ( bdMax.compareTo( dblHalfMax ) > 0 ) {
+            bdMax = dblHalfMax;
+         }
+         if ( bdMin.compareTo( bdMax ) >= 0 ) {
+            return bdMin;
+         }
+         final BigDecimal range = bdMax.subtract( bdMin );
+         return bdMin.add( range.multiply( BigDecimal.valueOf( rand.nextDouble() ) ) );
+      }
+      return min;
    }
 
    private Object extractActualValue( final Value value ) {
@@ -1163,7 +1323,13 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
       extractAspectProperties( aspect, "", flattenedExampleData, visitedTypes );
 
       if ( flattenedExampleData.isEmpty() ) {
-         throw new IllegalArgumentException( "No example data found in aspect model" );
+         // Create a minimal placeholder entry for aspects with no extractable data
+         // (e.g., aspects with only recursive properties or only operations)
+         final PrimitiveType placeholderType = Types.primitive( PrimitiveType.PrimitiveTypeName.BINARY,
+                     org.apache.parquet.schema.Type.Repetition.OPTIONAL )
+               .as( LogicalTypeAnnotation.stringType() )
+               .named( "_placeholder" );
+         flattenedExampleData.put( "_placeholder", new Tuple2<>( aspect.getName(), placeholderType ) );
       }
 
       // Create MessageType from flattened data
@@ -1296,14 +1462,22 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
          Object exampleValue = extractExampleValueFromProperty( property, collection );
          String language = null;
          if ( RDF.langString.getURI().equals( scalar.getUrn() ) ) {
-            language = Optional.ofNullable( exampleValue ).map( LangString.class::cast ).map( LangString::getLanguageTag ).map( Locale::getLanguage )
-                  .orElse( null );
-            exampleValue = Optional.ofNullable( exampleValue ).map( LangString.class::cast ).map( LangString::getValue ).orElse( null );
+            if ( exampleValue instanceof final LangString langString ) {
+               language = Optional.ofNullable( langString.getLanguageTag() ).map( Locale::getLanguage ).orElse( null );
+               exampleValue = langString.getValue();
+            } else if ( exampleValue instanceof final Map<?, ?> map && !map.isEmpty() ) {
+               final Map.Entry<?, ?> firstEntry = map.entrySet().iterator().next();
+               language = firstEntry.getKey().toString();
+               exampleValue = firstEntry.getValue();
+            } else {
+               language = Locale.ENGLISH.getLanguage();
+               // exampleValue remains as-is (String)
+            }
          }
 
          final Resource xsdResource = ResourceFactory.createResource( scalar.getUrn() );
          boolean isTimezoneAvailable = false;
-         if ( XSD.dateTime.equals( xsdResource ) || XSD.dateTimeStamp.equals( xsdResource )
+         if ( (XSD.dateTime.equals( xsdResource ) || XSD.dateTimeStamp.equals( xsdResource ))
                && exampleValue instanceof XMLGregorianCalendar ) {
             final XMLGregorianCalendar xmlCal = (XMLGregorianCalendar) exampleValue;
             // Check if timezone is present
@@ -1360,12 +1534,22 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
       } else if ( dataType instanceof final Scalar scalar ) {
          columnNames.add( columnName );
 
-         Object exampleValue = extractExampleValueFromProperty( property, characteristic );
+         // Use the property's original characteristic (which may include Trait/constraints) for value generation
+         final Characteristic originalCharacteristic = property.getCharacteristic().orElse( characteristic );
+         Object exampleValue = extractExampleValueFromProperty( property, originalCharacteristic );
          String language = null;
          if ( RDF.langString.getURI().equals( scalar.getUrn() ) ) {
-            language = Optional.ofNullable( exampleValue ).map( LangString.class::cast ).map( LangString::getLanguageTag ).map( Locale::getLanguage )
-                  .orElse( null );
-            exampleValue = Optional.ofNullable( exampleValue ).map( LangString.class::cast ).map( LangString::getValue ).orElse( null );
+            if ( exampleValue instanceof final LangString langString ) {
+               language = Optional.ofNullable( langString.getLanguageTag() ).map( Locale::getLanguage ).orElse( null );
+               exampleValue = langString.getValue();
+            } else if ( exampleValue instanceof final Map<?, ?> map && !map.isEmpty() ) {
+               final Map.Entry<?, ?> firstEntry = map.entrySet().iterator().next();
+               language = firstEntry.getKey().toString();
+               exampleValue = firstEntry.getValue();
+            } else {
+               language = Locale.ENGLISH.getLanguage();
+               // exampleValue remains as-is (String)
+            }
          }
          final Resource xsdResource = ResourceFactory.createResource( scalar.getUrn() );
          boolean isTimezoneAvailable = false;
@@ -1412,6 +1596,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
          final Characteristic characteristic = property.getCharacteristic().orElse( null );
 
          if ( characteristic instanceof java.util.Collection ) {
+            //|| (characteristic instanceof final Trait trait && trait.getBaseCharacteristic() instanceof Collection) ) {
             collectionsMap.computeIfAbsent( propertyPath, k -> new ArrayList<>() ).add( property );
          } else if ( characteristic != null && characteristic.getDataType().isPresent() &&
                characteristic.getDataType().orElse( null ) instanceof final ComplexType complexType ) {
@@ -1460,6 +1645,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
          fillRowForCollection( collection, property, prefix, row, flattenedData );
       } else if ( characteristic != null && characteristic.getDataType().isPresent() &&
             characteristic.getDataType().orElse( null ) instanceof final ComplexType complexType ) {
+         //} else if ( characteristic instanceof final Trait trait && trait.getBaseCharacteristic() instanceof final Collection collection ) {
          fillRowForComplexType( complexType, prefix, row, flattenedData );
       } else if ( characteristic != null ) {
          // Simple property
