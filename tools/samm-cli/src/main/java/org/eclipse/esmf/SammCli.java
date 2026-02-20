@@ -266,7 +266,8 @@ public class SammCli extends AbstractCommand {
          System.exit( 0 );
       }
       System.out.println( commandLine.getHelp().fullSynopsis() );
-      System.out.println( format( "Run @|bold " + commandLine.getCommandName() + " help|@ for help, e.g.:" ) );
+      System.out.println( format( "Run @|bold " + commandLine.getCommandName() + " help|@ for help. You can also get help for "
+            + "specific subcommands, e.g.:" ) );
       System.out.println( format( "    @|bold " + commandLine.getCommandName() + " help "
             + AspectCommand.COMMAND_NAME + " " + AspectToCommand.COMMAND_NAME + " " + AspectToSvgCommand.COMMAND_NAME
             + "|@" ) );
