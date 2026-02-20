@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -47,6 +48,7 @@ import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.characteristic.impl.DefaultList;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultSet;
 import org.eclipse.esmf.metamodel.characteristic.impl.DefaultSingleEntity;
 import org.eclipse.esmf.metamodel.characteristic.impl.DefaultTrait;
 import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
@@ -104,6 +106,7 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
    private static final String EXAMPLE_NAMESPACE = "com.example";
    private static final Logger LOG = LoggerFactory.getLogger( AasToAspectModelGenerator.class );
    private final Map<SubmodelElement, Property> properties = new HashMap<>();
+   private final Map<String, Integer> nameCounters = new HashMap<>();
    private final ValueInstantiator valueInstantiator = new ValueInstantiator();
    private AspectModelUrn aspectUrn;
 
@@ -248,11 +251,17 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
    }
 
    private ElementName determineSubmodelElementName( final SubmodelElement submodelElement, final String namePrefix,
-         final boolean upperCase ) {
+         final boolean upperCase, final boolean appendElementIdShort ) {
       if ( submodelElement.getIdShort() == null ) {
-         return new ElementName( namePrefix + StringUtils.capitalize( randomElementName( submodelElement ) ), true );
+         if ( !appendElementIdShort && !namePrefix.isEmpty() ) {
+            return new ElementName( sanitizeAspectModelElementName( namePrefix, upperCase ), true );
+         }
+         return new ElementName( sanitizeAspectModelElementName( namePrefix + StringUtils.capitalize( randomElementName( submodelElement ) ),
+               upperCase ), true );
       }
-      final String idPart = namePrefix.isEmpty() ? submodelElement.getIdShort() : StringUtils.capitalize( submodelElement.getIdShort() );
+      final String idPart = appendElementIdShort
+            ? (namePrefix.isEmpty() ? submodelElement.getIdShort() : StringUtils.capitalize( submodelElement.getIdShort() ))
+            : "";
       return new ElementName( sanitizeAspectModelElementName( namePrefix + idPart, upperCase ), false );
    }
 
@@ -365,6 +374,8 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
 
    private Aspect submodelToAspect( final Submodel submodel ) {
       final ElementName aspectName = determineSubmodelName( submodel, true );
+      properties.clear();
+      nameCounters.clear();
       aspectUrn = aspectModelUrnFromId( submodel )
             .or( () -> aspectModelUrnFromSemanticId( submodel ) )
             .orElseGet( () -> AspectModelUrn.fromUrn( String.format( "%s:%s:%s:%s#%s",
@@ -417,8 +428,14 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
                   // can never provide a language tag, therefore we'll never create a ScalarValue with rdf:langString
                   // type.
                   // https://aas-core-works.github.io/aas-core-meta/v3/DataTypeDefXsd.html
-                  final Optional<ScalarValue> exampleValue =
-                        valueInstantiator.buildScalarValue( lexicalRepresentation, null, scalarType.getUrn() );
+                  final Optional<ScalarValue> exampleValue;
+                  try {
+                     exampleValue =
+                           valueInstantiator.buildScalarValue( lexicalRepresentation, null, scalarType.getUrn() );
+                  }catch ( Exception   e){
+                     throw new AspectModelGenerationException(e);
+                  }
+
                   if ( exampleValue.isEmpty() ) {
                      LOG.warn( "Example value {} can not be parsed as {}", lexicalRepresentation, type );
                   }
@@ -460,10 +477,15 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
    }
 
    private record DetermineAutomatically(
-         String namePrefix
+         String namePrefix,
+         boolean appendElementIdShort
    ) implements ElementNamingStrategy {
       private DetermineAutomatically() {
-         this( "" );
+         this( "", true );
+      }
+
+      private DetermineAutomatically( final String namePrefix ) {
+         this( namePrefix, true );
       }
    }
 
@@ -476,11 +498,12 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
       final ElementName elementName;
       final AspectModelUrn urn;
       if ( elementNamingStrategy instanceof final DetermineAutomatically automatically ) {
-         elementName = determineSubmodelElementName( element, automatically.namePrefix(), upperCase );
+         elementName = determineSubmodelElementName( element, automatically.namePrefix(), upperCase, automatically.appendElementIdShort() );
+         final String uniqueName = nextUniqueName( elementName.name() );
          urn = aspectModelUrnFromSemanticId( element )
-               .orElseGet( () -> aspectUrn.withName( elementName.name() ) );
+               .orElseGet( () -> aspectUrn.withName( uniqueName ) );
       } else if ( elementNamingStrategy instanceof final UseGivenUrn givenUrn ) {
-         elementName = determineSubmodelElementName( element, "", upperCase );
+         elementName = determineSubmodelElementName( element, "", upperCase, true );
          urn = givenUrn.aspectModelUrn();
       } else {
          throw new AspectModelGenerationException( "Unknown ElementNamingStrategy" );
@@ -493,6 +516,28 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
             .withSee( seeReferences( element ) )
             .isAnonymous( elementName.isSynthetic() )
             .build();
+   }
+
+   private MetaModelBaseAttributes namedBaseAttributes( final SubmodelElement element, final String baseName, final boolean upperCase ) {
+      final String uniqueName = nextUniqueName( sanitizeAspectModelElementName( baseName, upperCase ) );
+      final AspectModelUrn urn = aspectModelUrnFromSemanticId( element )
+            .orElseGet( () -> aspectUrn.withName( uniqueName ) );
+      return MetaModelBaseAttributes.builder()
+            .withUrn( urn )
+            .withPreferredNames( langStringSet( element.getDisplayName() ) )
+            .withDescriptions( langStringSet( element.getDescription() ) )
+            .withSee( seeReferences( element ) )
+            .isAnonymous( false )
+            .build();
+   }
+
+   private String nextUniqueName( final String baseName ) {
+      if ( !nameCounters.containsKey( baseName ) ) {
+         nameCounters.put( baseName, 0 );
+         return baseName;
+      }
+      final int counter = nameCounters.compute( baseName, ( key, value ) -> value + 1 );
+      return baseName + counter;
    }
 
    private Property createProperty( final org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement submodelElement ) {
@@ -567,9 +612,17 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
    }
 
    private static Set<LangString> langStringSet( final List<? extends AbstractLangString> stringList ) {
-      return stringList.stream()
-            .map( abstractLangString -> new LangString( abstractLangString.getText(),
-                  Locale.forLanguageTag( abstractLangString.getLanguage() ) ) )
+      final Map<Locale, String> stringsByLanguage = new LinkedHashMap<>();
+      stringList.forEach( abstractLangString -> {
+         final Locale locale = Locale.forLanguageTag( abstractLangString.getLanguage() );
+         final String existing = stringsByLanguage.putIfAbsent( locale, abstractLangString.getText() );
+         if ( existing != null ) {
+            LOG.warn( "Duplicate language tag '{}' detected. Keeping first value '{}' and ignoring duplicate '{}'.",
+                  abstractLangString.getLanguage(), existing, abstractLangString.getText() );
+         }
+      } );
+      return stringsByLanguage.entrySet().stream()
+            .map( entry -> new LangString( entry.getValue(), entry.getKey() ) )
             .collect( Collectors.toSet() );
    }
 
@@ -615,7 +668,7 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
             describeReference.apply( relationshipElement.getFirst() ), describeReference.apply( relationshipElement.getSecond() ) );
 
       final ElementName elementName = determineSubmodelElementName( relationshipElement, propertyUrn.getName() + "RelationshipElement",
-            true );
+            true, true );
       final AspectModelUrn urn = aspectModelUrnFromSemanticId( relationshipElement )
             .orElseGet( () -> aspectUrn.withName( elementName.name() ) );
 
@@ -661,7 +714,7 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
       } else if ( dataTypeUri.equals( XSD.dateTime.getURI() ) ) {
          elementNamingStrategy = new UseGivenUrn( AspectModelUrn.fromUrn( SammNs.SAMMC.Timestamp().getURI() ) );
       } else {
-         elementNamingStrategy = new DetermineAutomatically( propertyUrn.getName() + "Property" );
+         elementNamingStrategy = new DetermineAutomatically( propertyUrn.getName() + "Characteristic", false );
       }
       return createDefaultScalarCharacteristic( property, dataTypeUri, elementNamingStrategy );
    }
@@ -699,32 +752,94 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
 
    private Characteristic createCharacteristicFromEntity( final org.eclipse.digitaltwin.aas4j.v3.model.Entity entity,
          final AspectModelUrn propertyUrn ) {
-      final MetaModelBaseAttributes metaModelBaseAttributes = baseAttributes( entity,
-            new DetermineAutomatically( propertyUrn.getName() + "Entity" ), true );
+      final boolean appendEntityIdShort = entity.getIdShort() != null;
+      final String entityNamePrefix = determineSubmodelElementName( entity, propertyUrn.getName() + "Entity", true,
+            appendEntityIdShort ).name();
+      final MetaModelBaseAttributes entityMetaModelBaseAttributes = namedBaseAttributes( entity, entityNamePrefix, true );
+      final MetaModelBaseAttributes characteristicMetaModelBaseAttributes = baseAttributes( entity,
+            new DetermineAutomatically( entityMetaModelBaseAttributes.urn().getName() + "Characteristic", false ), true );
       final List<Property> properties = entity.getStatements().stream()
             .map( this::createProperty )
             .toList();
-      final Entity entityType = new DefaultEntity( metaModelBaseAttributes, properties );
-      return new DefaultSingleEntity( metaModelBaseAttributes, entityType );
+      final Entity entityType = new DefaultEntity( entityMetaModelBaseAttributes, properties );
+      return new DefaultSingleEntity( characteristicMetaModelBaseAttributes, entityType );
    }
 
-   private Characteristic createCharacteristicFromSubmodelElementCollection( final SubmodelElementCollection submodelElementCollection ) {
-      final MetaModelBaseAttributes metaModelBaseAttributes = baseAttributes( submodelElementCollection,
-            new DetermineAutomatically( "ElementCollection" + randomElementName( submodelElementCollection ) ), true );
+   private Characteristic createCharacteristicFromSubmodelElementCollection( final SubmodelElementCollection submodelElementCollection,
+         final AspectModelUrn propertyUrn ) {
+      final String collectionEntityBaseName = "ElementCollection" + sanitizeAspectModelElementName( propertyUrn.getName(), true );
+      final MetaModelBaseAttributes entityMetaModelBaseAttributes = namedBaseAttributes( submodelElementCollection,
+            collectionEntityBaseName, true );
+      final MetaModelBaseAttributes characteristicMetaModelBaseAttributes = baseAttributes( submodelElementCollection,
+            new DetermineAutomatically( entityMetaModelBaseAttributes.urn().getName() + "Characteristic", false ), true );
       final List<Property> properties = submodelElementCollection.getValue().stream()
             .map( this::createProperty )
             .toList();
-      final Entity entityType = new DefaultEntity( metaModelBaseAttributes, properties );
-      return new DefaultSingleEntity( metaModelBaseAttributes, entityType );
+      final Entity entityType = new DefaultEntity( entityMetaModelBaseAttributes, properties );
+      return new DefaultSingleEntity( characteristicMetaModelBaseAttributes, entityType );
    }
 
    private Characteristic createCharacteristicFromSubmodelElementList( final SubmodelElementList submodelElementList,
          final AspectModelUrn propertyUrn ) {
-      final AasSubmodelElements type = submodelElementList.getTypeValueListElement();
-      final Characteristic elementCharacteristic = createCharacteristic( type, submodelElementList.getValue().getFirst(), propertyUrn );
+      final boolean orderRelevant = Boolean.TRUE.equals( submodelElementList.getOrderRelevant() );
+      final String collectionTypeSuffix = orderRelevant ? "List" : "Set";
+      final List<SubmodelElement> values = Optional.ofNullable( submodelElementList.getValue() ).orElseGet( List::of );
+      final AasSubmodelElements declaredType = Optional.ofNullable( submodelElementList.getTypeValueListElement() )
+            .orElseGet( () -> values.isEmpty() ? AasSubmodelElements.SUBMODEL_ELEMENT : submodelElementType( values.getFirst() ) );
+      final Characteristic elementCharacteristic;
+      if ( values.isEmpty() ) {
+         LOG.warn( "SubmodelElementList {} has no values. Using declared type {} for characteristic derivation.",
+               submodelElementList.getIdShort(), declaredType );
+         elementCharacteristic = createCharacteristicFromEmptySubmodelElementList( submodelElementList, declaredType, propertyUrn,
+               orderRelevant );
+      } else {
+         final AasSubmodelElements effectiveType = submodelElementType( values.getFirst() );
+         if ( effectiveType != declaredType
+               && declaredType != AasSubmodelElements.SUBMODEL_ELEMENT
+               && declaredType != AasSubmodelElements.DATA_ELEMENT ) {
+            LOG.warn( "SubmodelElementList {} declares type {} but first value is {}. Using value type for characteristic derivation.",
+                  submodelElementList.getIdShort(), declaredType, effectiveType );
+         }
+         elementCharacteristic = createCharacteristic( effectiveType, values.getFirst(), propertyUrn );
+      }
       final MetaModelBaseAttributes metaModelBaseAttributes = baseAttributes( submodelElementList,
-            new DetermineAutomatically( propertyUrn.getName() + "List" ), true );
-      return new DefaultList( metaModelBaseAttributes, Optional.empty(), Optional.of( elementCharacteristic ) );
+            new DetermineAutomatically( propertyUrn.getName() + collectionTypeSuffix, false ), true );
+      if ( orderRelevant ) {
+         return new DefaultList( metaModelBaseAttributes, Optional.empty(), Optional.of( elementCharacteristic ) );
+      }
+      return new DefaultSet( metaModelBaseAttributes, Optional.empty(), Optional.of( elementCharacteristic ) );
+   }
+
+   private Characteristic createCharacteristicFromEmptySubmodelElementList( final SubmodelElementList submodelElementList,
+         final AasSubmodelElements declaredType, final AspectModelUrn propertyUrn, final boolean orderRelevant ) {
+      final String collectionTypeSuffix = orderRelevant ? "List" : "Set";
+      final String collectionElementSuffix = orderRelevant ? "ListElement" : "SetElement";
+      return switch ( declaredType ) {
+         case SUBMODEL_ELEMENT_COLLECTION -> createEmptyEntityCharacteristic( submodelElementList, "ElementCollection", propertyUrn );
+         case ENTITY -> createEmptyEntityCharacteristic( submodelElementList, "ElementEntity", propertyUrn );
+         case SUBMODEL_ELEMENT_LIST -> {
+            final Characteristic nestedElementCharacteristic = createDefaultScalarCharacteristic( submodelElementList, XSD.xstring.getURI(),
+                  new DetermineAutomatically( propertyUrn.getName() + collectionElementSuffix, false ) );
+            final MetaModelBaseAttributes metaModelBaseAttributes = baseAttributes( submodelElementList,
+                  new DetermineAutomatically( propertyUrn.getName() + "Nested" + collectionTypeSuffix, false ), true );
+            if ( orderRelevant ) {
+               yield new DefaultList( metaModelBaseAttributes, Optional.empty(), Optional.of( nestedElementCharacteristic ) );
+            }
+            yield new DefaultSet( metaModelBaseAttributes, Optional.empty(), Optional.of( nestedElementCharacteristic ) );
+         }
+         default -> createDefaultScalarCharacteristic( submodelElementList, XSD.xstring.getURI(),
+               new DetermineAutomatically( propertyUrn.getName() + collectionElementSuffix, false ) );
+      };
+   }
+
+   private Characteristic createEmptyEntityCharacteristic( final SubmodelElement sourceElement, final String entityNamePrefix,
+         final AspectModelUrn propertyUrn ) {
+      final String entityBaseName = entityNamePrefix + sanitizeAspectModelElementName( propertyUrn.getName(), true );
+      final MetaModelBaseAttributes entityMetaModelBaseAttributes = namedBaseAttributes( sourceElement, entityBaseName, true );
+      final MetaModelBaseAttributes characteristicMetaModelBaseAttributes = baseAttributes( sourceElement,
+            new DetermineAutomatically( entityMetaModelBaseAttributes.urn().getName() + "Characteristic", false ), true );
+      final Entity entityType = new DefaultEntity( entityMetaModelBaseAttributes, List.of() );
+      return new DefaultSingleEntity( characteristicMetaModelBaseAttributes, entityType );
    }
 
    private AasSubmodelElements submodelElementType( final SubmodelElement element ) {
@@ -779,7 +894,7 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
          case REFERENCE_ELEMENT -> createCharacteristicFromReferenceElement( (ReferenceElement) element, propertyUrn );
          case CAPABILITY -> createCharacteristicFromCapability( (Capability) element, propertyUrn );
          case ENTITY -> createCharacteristicFromEntity( (org.eclipse.digitaltwin.aas4j.v3.model.Entity) element, propertyUrn );
-         case SUBMODEL_ELEMENT_COLLECTION -> createCharacteristicFromSubmodelElementCollection( (SubmodelElementCollection) element );
+         case SUBMODEL_ELEMENT_COLLECTION -> createCharacteristicFromSubmodelElementCollection( (SubmodelElementCollection) element, propertyUrn );
          case SUBMODEL_ELEMENT_LIST -> createCharacteristicFromSubmodelElementList( (SubmodelElementList) element, propertyUrn );
          default -> {
             LOG.warn( "Encountered unsupported SubmodelElement type {}", element.getClass().getSimpleName() );

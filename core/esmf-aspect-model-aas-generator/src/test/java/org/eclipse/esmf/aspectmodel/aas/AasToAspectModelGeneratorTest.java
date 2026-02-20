@@ -42,13 +42,24 @@ import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.Operation;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.Unit;
+import org.eclipse.esmf.metamodel.characteristic.Set;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.DeserializationException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.json.JsonDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.xml.XmlDeserializer;
+import org.eclipse.digitaltwin.aas4j.v3.model.AasSubmodelElements;
+import org.eclipse.digitaltwin.aas4j.v3.model.DataTypeDefXsd;
 import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
+import org.eclipse.digitaltwin.aas4j.v3.model.ModellingKind;
+import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
+import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
+import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElementList;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultEnvironment;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultProperty;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodel;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodelElementList;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
@@ -106,13 +117,10 @@ class AasToAspectModelGeneratorTest {
          "IDTA 02004-2-0_Example_HandoverDocumentation.aasx",
          "IDTA 02011-1-0_Template_HierarchicalStructuresEnablingBoM.aasx",
          "IDTA 02011-1-1_Template_HSEBoM.aasx",
-         "IDTA 02011-1-1-1_Template_HSEBoM.aasx",
-         "IDTA 02011-1-1-1_Template_HSEBoM_forAASMetamodelV3.1.aasx",
-         "IDTA 02011-1-1-1 _Template_BoM_ExtensionbasedonIEC81346.aasx",
-         "IDTA 02011-1-1-1 _Template_BoM_ExtensionbasedonIEC81346_forAASMetamodelV3.1.aasx",
-         "IDTA 02011-1_Template_BoM_ExtensionbasedonIEC81346.aasx",
          "IDTA 02003_Sample_TechnicalData_forAASMetamodelV3.1.aasx",
-         "IDTA 02003_Sample_TechnicalData.aasx"
+         "IDTA 02003_Sample_TechnicalData.aasx",
+         "IDTA 02007-1-0_Template_Software Nameplate.aasx", // "value": "C:\\Windows\\Program Files\\Demo\\Firmware" for type URI. Illegal character in opaque part at index 2: C:\Windows\Program Files\Demo\Firmware
+         "IDTA 02019-1-0_Template_PlantAssetManagement.aasx" // Range property with type double. java.lang.NumberFormatException: For input string: "[0;100]"
    );
 
    protected static Stream<Arguments> idtaSubmodelFiles() throws URISyntaxException, IOException {
@@ -138,6 +146,53 @@ class AasToAspectModelGeneratorTest {
    }
 
    @Test
+   void testGenerateAspectFromEmptySubmodelElementListDoesNotThrow() {
+      final SubmodelElementList submodelElementList = new DefaultSubmodelElementList.Builder()
+            .idShort( "emptyCollectionList" )
+            .typeValueListElement( AasSubmodelElements.SUBMODEL_ELEMENT_COLLECTION )
+            .value( List.of() )
+            .build();
+      final Submodel submodel = new DefaultSubmodel.Builder()
+            .id( "https://example.com/submodel/empty-list/1.0.0" )
+            .idShort( "EmptyListSubmodel" )
+            .kind( ModellingKind.TEMPLATE )
+            .submodelElements( List.of( submodelElementList ) )
+            .build();
+      final Environment environment = new DefaultEnvironment.Builder()
+            .submodels( List.of( submodel ) )
+            .build();
+      final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( environment );
+
+      assertThatCode( () -> aspectModelGenerator.generate().toList() ).doesNotThrowAnyException();
+   }
+
+   @Test
+   void testOrderRelevantSubmodelElementListIsMappedToSammList() {
+      final SubmodelElementList submodelElementList = buildSubmodelElementList( true );
+      final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( buildTemplateEnvironment( submodelElementList ) );
+
+      final Property property = aspectModelGenerator.generate().map( AspectArtifact::getContent ).toList()
+            .getFirst().getProperties().getFirst();
+
+      assertThat( property.getCharacteristic() ).isPresent();
+      assertThat( property.getCharacteristic().get() ).isInstanceOf( org.eclipse.esmf.metamodel.characteristic.List.class );
+      assertThat( property.getCharacteristic().get().urn().getName() ).endsWith( "List" );
+   }
+
+   @Test
+   void testNonOrderRelevantSubmodelElementListIsMappedToSammSet() {
+      final SubmodelElementList submodelElementList = buildSubmodelElementList( false );
+      final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( buildTemplateEnvironment( submodelElementList ) );
+
+      final Property property = aspectModelGenerator.generate().map( AspectArtifact::getContent ).toList()
+            .getFirst().getProperties().getFirst();
+
+      assertThat( property.getCharacteristic() ).isPresent();
+      assertThat( property.getCharacteristic().get() ).isInstanceOf( Set.class );
+      assertThat( property.getCharacteristic().get().urn().getName() ).endsWith( "Set" );
+   }
+
+   @Test
    void testSeeReferences() {
       final InputStream inputStream = AasToAspectModelGeneratorTest.class.getClassLoader().getResourceAsStream(
             "submodel-templates/published/Wireless Communication/1/0/IDTA 02022-1-0_Template_Wireless Communication.aasx" );
@@ -150,6 +205,31 @@ class AasToAspectModelGeneratorTest {
             .flatMap( aspect -> aspect.getProperties().stream() )
             .flatMap( property -> property.getSee().stream() )
             .forEach( see -> assertThat( see ).doesNotContain( "/ " ) );
+   }
+
+   private static Environment buildTemplateEnvironment( final SubmodelElement submodelElement ) {
+      final Submodel submodel = new DefaultSubmodel.Builder()
+            .id( "https://example.com/submodel/list-or-set/1.0.0" )
+            .idShort( "ListOrSetSubmodel" )
+            .kind( ModellingKind.TEMPLATE )
+            .submodelElements( List.of( submodelElement ) )
+            .build();
+      return new DefaultEnvironment.Builder()
+            .submodels( List.of( submodel ) )
+            .build();
+   }
+
+   private static SubmodelElementList buildSubmodelElementList( final boolean orderRelevant ) {
+      final org.eclipse.digitaltwin.aas4j.v3.model.Property valueElement = new DefaultProperty.Builder()
+            .idShort( "sampleValue" )
+            .valueType( DataTypeDefXsd.STRING )
+            .build();
+      return new DefaultSubmodelElementList.Builder()
+            .idShort( "testCollection" )
+            .orderRelevant( orderRelevant )
+            .typeValueListElement( AasSubmodelElements.PROPERTY )
+            .value( List.of( valueElement ) )
+            .build();
    }
 
    @Test
