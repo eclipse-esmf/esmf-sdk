@@ -171,12 +171,6 @@ jobs:
           chmod a+x samm
         shell: bash
 
-      - name: Create convenience batch file
-        if: matrix.os == 'windows-latest'
-        run: |
-          echo "start cmd /k samm.exe help" > tools/samm-cli/target/start-samm-cli.bat
-        shell: bash
-
       - name: Upload executable jar
         # We only need one OS job to upload the jar
         if: matrix.os == 'ubuntu-latest'
