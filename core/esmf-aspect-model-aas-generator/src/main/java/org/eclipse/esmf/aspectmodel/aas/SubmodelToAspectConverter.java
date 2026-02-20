@@ -375,13 +375,8 @@ class SubmodelToAspectConverter {
       return targetType
             .flatMap( type -> {
                if ( type instanceof final Scalar scalarType ) {
-                  final Optional<ScalarValue> exampleValue;
-                  try {
-                     exampleValue =
-                           valueInstantiator.buildScalarValue( lexicalRepresentation, null, scalarType.getUrn() );
-                  } catch ( final Exception exception ) {
-                     throw new AspectModelGenerationException( exception );
-                  }
+                  final Optional<ScalarValue> exampleValue =
+                        valueInstantiator.buildScalarValue( lexicalRepresentation, null, scalarType.getUrn() );
 
                   if ( exampleValue.isEmpty() ) {
                      LOG.warn( "Example value {} can not be parsed as {}", lexicalRepresentation, type );
