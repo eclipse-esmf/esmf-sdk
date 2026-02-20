@@ -36,8 +36,7 @@ import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
 import org.slf4j.Logger;
 
 final class SubmodelToAspectUtils {
-   private SubmodelToAspectUtils() {
-   }
+   private SubmodelToAspectUtils() {}
 
    static Set<LangString> langStringSet( final List<? extends AbstractLangString> stringList, final Logger logger ) {
       final Map<Locale, String> stringsByLanguage = new LinkedHashMap<>();

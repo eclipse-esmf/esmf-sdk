@@ -88,7 +88,8 @@ class SubmodelToAspectConverter {
 
    private final Map<SubmodelElement, Property> properties = new HashMap<>();
    /**
-    * Needed to avoid duplicate names when attributes with the same name appear at different nesting levels.
+    * Needed to avoid duplicate names when attributes with the same name appear at different nesting
+    * levels.
     */
    private final Map<String, Integer> nameCounters = new HashMap<>();
    private final ValueInstantiator valueInstantiator = new ValueInstantiator();
@@ -205,8 +206,10 @@ class SubmodelToAspectConverter {
          if ( !appendElementIdShort && !namePrefix.isEmpty() ) {
             return new ElementName( sanitizeAspectModelElementName( namePrefix, upperCase ), true );
          }
-         return new ElementName( sanitizeAspectModelElementName( namePrefix + StringUtils.capitalize( randomElementName( submodelElement ) ),
-               upperCase ), true );
+         return new ElementName(
+               sanitizeAspectModelElementName( namePrefix + StringUtils.capitalize( randomElementName( submodelElement ) ),
+                     upperCase ),
+               true );
       }
 
       final String idPart;
@@ -644,7 +647,8 @@ class SubmodelToAspectConverter {
       final String collectionTypeSuffix = orderRelevant ? "List" : "Set";
       final List<SubmodelElement> values = Optional.ofNullable( submodelElementList.getValue() ).orElseGet( List::of );
       final AasSubmodelElements declaredType = Optional.ofNullable( submodelElementList.getTypeValueListElement() )
-            .orElseGet( () -> values.isEmpty() ? AasSubmodelElements.SUBMODEL_ELEMENT : SubmodelToAspectUtils.submodelElementType( values.getFirst() ) );
+            .orElseGet( () -> values.isEmpty() ? AasSubmodelElements.SUBMODEL_ELEMENT
+                  : SubmodelToAspectUtils.submodelElementType( values.getFirst() ) );
       final Characteristic elementCharacteristic;
       if ( values.isEmpty() ) {
          LOG.warn( "SubmodelElementList {} has no values. Using declared type {} for characteristic derivation.",
@@ -717,7 +721,8 @@ class SubmodelToAspectConverter {
          case REFERENCE_ELEMENT -> createCharacteristicFromReferenceElement( (ReferenceElement) element, propertyUrn );
          case CAPABILITY -> createCharacteristicFromCapability( (Capability) element, propertyUrn );
          case ENTITY -> createCharacteristicFromEntity( (org.eclipse.digitaltwin.aas4j.v3.model.Entity) element, propertyUrn );
-         case SUBMODEL_ELEMENT_COLLECTION -> createCharacteristicFromSubmodelElementCollection( (SubmodelElementCollection) element, propertyUrn );
+         case SUBMODEL_ELEMENT_COLLECTION ->
+            createCharacteristicFromSubmodelElementCollection( (SubmodelElementCollection) element, propertyUrn );
          case SUBMODEL_ELEMENT_LIST -> createCharacteristicFromSubmodelElementList( (SubmodelElementList) element, propertyUrn );
          default -> {
             LOG.warn( "Encountered unsupported SubmodelElement type {}", element.getClass().getSimpleName() );

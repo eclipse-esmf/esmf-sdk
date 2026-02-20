@@ -119,8 +119,10 @@ class AasToAspectModelGeneratorTest {
          "IDTA 02011-1-1_Template_HSEBoM.aasx",
          "IDTA 02003_Sample_TechnicalData_forAASMetamodelV3.1.aasx",
          "IDTA 02003_Sample_TechnicalData.aasx",
-         "IDTA 02007-1-0_Template_Software Nameplate.aasx", // "value": "C:\\Windows\\Program Files\\Demo\\Firmware" for type URI. Illegal character in opaque part at index 2: C:\Windows\Program Files\Demo\Firmware
-         "IDTA 02019-1-0_Template_PlantAssetManagement.aasx" // Range property with type double. java.lang.NumberFormatException: For input string: "[0;100]"
+         "IDTA 02007-1-0_Template_Software Nameplate.aasx", // "value": "C:\\Windows\\Program Files\\Demo\\Firmware" for type URI. Illegal
+                                                            // character in opaque part at index 2: C:\Windows\Program Files\Demo\Firmware
+         "IDTA 02019-1-0_Template_PlantAssetManagement.aasx" // Range property with type double. java.lang.NumberFormatException: For input
+                                                             // string: "[0;100]"
    );
 
    protected static Stream<Arguments> idtaSubmodelFiles() throws URISyntaxException, IOException {
@@ -169,7 +171,8 @@ class AasToAspectModelGeneratorTest {
    @Test
    void testOrderRelevantSubmodelElementListIsMappedToSammList() {
       final SubmodelElementList submodelElementList = buildSubmodelElementList( true );
-      final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( buildTemplateEnvironment( submodelElementList ) );
+      final AasToAspectModelGenerator aspectModelGenerator =
+            AasToAspectModelGenerator.fromEnvironment( buildTemplateEnvironment( submodelElementList ) );
 
       final Property property = aspectModelGenerator.generate().map( AspectArtifact::getContent ).toList()
             .getFirst().getProperties().getFirst();
@@ -182,7 +185,8 @@ class AasToAspectModelGeneratorTest {
    @Test
    void testNonOrderRelevantSubmodelElementListIsMappedToSammSet() {
       final SubmodelElementList submodelElementList = buildSubmodelElementList( false );
-      final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( buildTemplateEnvironment( submodelElementList ) );
+      final AasToAspectModelGenerator aspectModelGenerator =
+            AasToAspectModelGenerator.fromEnvironment( buildTemplateEnvironment( submodelElementList ) );
 
       final Property property = aspectModelGenerator.generate().map( AspectArtifact::getContent ).toList()
             .getFirst().getProperties().getFirst();
