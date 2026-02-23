@@ -473,7 +473,7 @@ public class JsonPayloadGenerator<S extends StructureElement>
    public JsonNode visitXsdInteger( final SammType.XsdInteger integerType, final Context context ) {
       final Range range = Range.fromRangeConstraints( context.constraints(), false )
             .clamp( integerType.lowerBound(), integerType.upperBound() );
-      final BigDecimal value = randomNumber( range.min(), range.max() );
+      final BigInteger value = randomNumber( range.min(), range.max() ).toBigInteger();
       return JsonNodeFactory.instance.numberNode( value );
    }
 

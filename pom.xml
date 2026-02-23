@@ -77,6 +77,7 @@
       <generated-sources>${project.basedir}/src-gen</generated-sources>
       <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
       <checkstyle.version>10.26.1</checkstyle.version>
+      <central-publishing-maven-plugin.version>0.8.0</central-publishing-maven-plugin.version>
    </properties>
 
    <dependencyManagement>
