@@ -14,7 +14,6 @@ package org.eclipse.esmf;
 
 import static picocli.CommandLine.Model.UsageMessageSpec.SECTION_KEY_COMMAND_LIST;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,6 +37,7 @@ import org.eclipse.esmf.namespacepackage.PackageExportCommand;
 import org.eclipse.esmf.namespacepackage.PackageImportCommand;
 
 import org.fusesource.jansi.AnsiConsole;
+
 import picocli.CommandLine;
 
 @CommandLine.Command( name = SammCli.COMMAND_NAME,
@@ -149,28 +149,7 @@ public class SammCli extends AbstractCommand {
       return commandLine.execute( argv );
    }
 
-   public static void main( final String[] argv ) {
-      // Check if the .exe was started on Windows without arguments: Most likely opened from Explorer or
-      // Desktop.
-      // If yes, open a command prompt to continue working instead.
-      if ( System.getProperty( "os.name", "" ).startsWith( "Windows" ) && argv.length == 0 ) {
-         ProcessHandle.current().info().command().ifPresent( executable -> {
-            // Only spawn terminals for native executable
-            if ( !executable.endsWith( "java.exe" ) ) {
-               try {
-                  final File exeFile = new File( executable );
-                  final String directory = exeFile.getParent();
-                  final String exeFileName = exeFile.getName();
-                  Runtime.getRuntime()
-                        .exec( new String[] { "cmd", "/k", "cd", "/d", directory, "&", "start", "cmd", "/k", exeFileName, "help" } );
-                  System.exit( 0 );
-               } catch ( final Exception e ) {
-                  // Ignore, continue as usual
-               }
-            }
-         } );
-      }
-
+   static void main( final String[] argv ) {
       // The disabling color switch needs to be checked before PicoCLI initialization
       boolean disableColor = false;
       for ( final String arg : argv ) {
@@ -266,7 +245,8 @@ public class SammCli extends AbstractCommand {
          System.exit( 0 );
       }
       System.out.println( commandLine.getHelp().fullSynopsis() );
-      System.out.println( format( "Run @|bold " + commandLine.getCommandName() + " help|@ for help, e.g.:" ) );
+      System.out.println( format( "Run @|bold " + commandLine.getCommandName() + " help|@ for help. You can also get help for "
+            + "specific subcommands, e.g.:" ) );
       System.out.println( format( "    @|bold " + commandLine.getCommandName() + " help "
             + AspectCommand.COMMAND_NAME + " " + AspectToCommand.COMMAND_NAME + " " + AspectToSvgCommand.COMMAND_NAME
             + "|@" ) );
