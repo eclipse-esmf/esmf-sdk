@@ -1,10 +1,10 @@
 h1 {
-  color: #0028cd;
+  color: #070d1a;
   font-size: 2rem;
 }
 
 h2 {
-  color: #0028cd;
+  color: #070d1a;
   font-size: 1.5rem;
 }
 
@@ -51,11 +51,11 @@ a.toc-link {
 }
 
 .text-gray {
-  color: #0028CD;
+  color: #070d1a;
 }
 
 .page-top {
-  background-color: #0028cd;
+  background-color: #070d1a;
   height: 14px;
 }
 
@@ -67,7 +67,6 @@ a.toc-link {
   right: 1px;
 }
 
-/* Markdown rendering inside property descriptions */
 .md-content ul,
 .md-content ol {
   list-style-position: outside;
@@ -84,24 +83,21 @@ a.toc-link {
 }
 
 .md-content li {
-  display: list-item; /* critical if global CSS sets li { display:block } */
-  list-style: inherit; /* override list-style: none */
+  display: list-item;
+  list-style: inherit;
   margin: 0.25rem 0;
   padding: 0;
 }
 
-/* Nested lists */
 .md-content li > ul,
 .md-content li > ol {
   margin-top: 0.25rem;
 }
 
-/* Optional: paragraphs spacing */
 .md-content p {
   margin: 0.5rem 0;
 }
 
-/* Optional: callouts */
 .md-content .note,
 .md-content .source {
   padding: 0.75rem 1rem;
@@ -115,7 +111,6 @@ a.toc-link {
   list-style-type: disc;
 }
 
-/* Events */
 .event-card {
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 12px;
@@ -128,7 +123,6 @@ a.toc-link {
   opacity: 0.85;
 }
 
-/* --- Professional overrides (must come last) --- */
 :root {
   --bg: #ffffff;
   --text: #0f172a;
@@ -172,7 +166,6 @@ a:hover {
   color: var(--accent);
 }
 
-/* Restore semantic typography (Tailwind resets h1-h6 to inherit) */
 #documentation h1, #documentation h2, #documentation h3, #documentation h4, #documentation h5, #documentation h6 {
   color: var(--text) !important;
   font-weight: 700 !important;
@@ -219,7 +212,6 @@ a:hover {
   color: var(--text) !important;
 }
 
-/* Restore lists (Tailwind sets ol, ul list-style:none) */
 #documentation ul, #documentation ol {
   list-style-position: outside !important;
   margin: 10px 0 10px 20px !important;
@@ -245,7 +237,6 @@ a:hover {
   margin-top: 6px !important;
 }
 
-/* Professional shell */
 .dt-shell {
   min-height: 100vh;
 }
@@ -335,12 +326,11 @@ a:hover {
 
 .dt-layout {
   display: grid;
-  grid-template-columns:minmax(0, 1fr) var(--tocw);
+  grid-template-columns: minmax(0, 1fr) var(--tocw);
   gap: 24px;
   align-items: start;
 }
 
-/* Make the original main/aside fit */
 .dt-content {
   min-width: 0;
 }
@@ -353,7 +343,6 @@ a:hover {
   padding: 20px 20px;
 }
 
-/* TOC polishing (works with tocbot markup) */
 #documentation-toc, .toc {
   background: var(--surface) !important;
 }
@@ -411,7 +400,6 @@ a.toc-link:hover {
   background: var(--accent) !important;
 }
 
-/* Notes / callouts */
 #documentation .note, #documentation .source, #documentation .example, #documentation .warning {
   border: 1px solid var(--border) !important;
   border-radius: var(--radius) !important;
@@ -429,7 +417,6 @@ a.toc-link:hover {
   border-left: 4px solid rgba(15, 23, 42, .35) !important;
 }
 
-/* Tables */
 #documentation table {
   width: 100% !important;
   border-collapse: separate !important;
@@ -480,7 +467,6 @@ a.toc-link:hover {
   color: var(--text) !important;
 }
 
-/* Code blocks */
 #documentation pre {
   background: var(--surface-3) !important;
   border: 1px solid var(--border) !important;
@@ -501,7 +487,6 @@ a.toc-link:hover {
   display: block !important;
 }
 
-/* Defensive fixes for legacy theme rules that break layout */
 .is-position-fixed {
   position: sticky !important;
   top: calc(var(--topbar-h) + 18px) !important;
@@ -515,14 +500,13 @@ a.toc-link:hover {
   display: none !important;
 }
 
-/* Responsive */
 @media (max-width: 980px) {
   :root {
     --tocw: 1fr;
   }
 
   .dt-layout {
-    grid-template-columns:1fr;
+    grid-template-columns: 1fr;
   }
 
   .dt-toc {
@@ -550,8 +534,6 @@ a.toc-link:hover {
   }
 }
 
-
-/* --- contrast + full-screen adjustments --- */
 :root {
   --text: #0b1220;
   --muted: #334155;
@@ -564,7 +546,6 @@ a.toc-link:hover {
   --tocw: 360px;
 }
 
-/* Make the layout truly full-width */
 .dt-topbar__inner {
   max-width: 100% !important;
 }
@@ -578,7 +559,6 @@ a.toc-link:hover {
   gap: 28px !important;
 }
 
-/* Reduce "card" look — make content feel like a full-page doc */
 .dt-card {
   border: none !important;
   border-radius: 0 !important;
@@ -587,7 +567,6 @@ a.toc-link:hover {
   background: transparent !important;
 }
 
-/* Increase content readability and contrast */
 #documentation p {
   color: var(--muted) !important;
 }
@@ -604,7 +583,6 @@ a.toc-link:hover {
   color: var(--text) !important;
 }
 
-/* Stronger table contrast */
 #documentation table {
   border-color: var(--border-strong) !important;
 }
@@ -621,7 +599,6 @@ a.toc-link:hover {
   background: rgba(238, 242, 247, .75) !important;
 }
 
-/* TOC: a bit more contrast */
 #documentation-toc, .toc {
   border-color: var(--border-strong) !important;
 }
@@ -634,7 +611,6 @@ a.toc-link {
   color: var(--text) !important;
 }
 
-/* Make the page feel like "app fullscreen" */
 .dt-shell {
   min-height: 100vh;
 }
@@ -643,7 +619,6 @@ body {
   min-height: 100vh;
 }
 
-/* Responsive: keep comfortable padding on small screens */
 @media (max-width: 560px) {
   .dt-wrap {
     padding: 18px 16px 44px !important;
@@ -651,7 +626,6 @@ body {
 }
 
 :root {
-  /* a bit more contrast, still calm */
   --text: #070d1a;
   --muted: #243244;
   --muted-2: #3b4a5f;
@@ -661,7 +635,6 @@ body {
   --surface-3: #eaf0f7;
 }
 
-/* Tighter vertical rhythm (less empty space) */
 #documentation p {
   margin: 8px 0 !important;
 }
@@ -682,7 +655,6 @@ body {
   margin: 8px 0 10px 18px !important;
 }
 
-/* Stronger, clearer headings without huge spacing */
 #documentation h2 {
   font-weight: 850 !important;
   letter-spacing: -.02em !important;
@@ -703,7 +675,6 @@ body {
   color: var(--text) !important;
 }
 
-/* Section divider for long spec pages (subtle) */
 #documentation h2 {
   position: relative;
 }
@@ -716,7 +687,6 @@ body {
   background: linear-gradient(to right, rgba(185, 199, 218, .85), rgba(185, 199, 218, 0));
 }
 
-/* Engineering/spec feel: inline tokens and definition-like styling */
 #documentation code {
   font-family: var(--mono) !important;
   font-size: 0.92em !important;
@@ -733,7 +703,6 @@ body {
   background: transparent !important;
 }
 
-/* Compact tables (more spec-dense) */
 #documentation thead th {
   padding: 10px 10px !important;
 }
@@ -746,7 +715,6 @@ body {
   font-size: 14px !important;
 }
 
-/* Callouts: more "spec" labels */
 #documentation .note::before,
 #documentation .source::before,
 #documentation .example::before,
@@ -776,7 +744,6 @@ body {
   content: "Warning";
 }
 
-/* Product polish: links, hover states, selection */
 ::selection {
   background: rgba(223, 120, 97, .22);
 }
@@ -792,7 +759,6 @@ body {
   color: var(--accent) !important;
 }
 
-/* Heading anchor links */
 #documentation .dt-anchor {
   text-decoration: none !important;
   margin-left: 8px;
@@ -812,7 +778,6 @@ body {
   color: var(--accent) !important;
 }
 
-/* Slightly stronger TOC title & spacing */
 .dt-toc__title {
   color: var(--muted-2) !important;
 }
@@ -825,7 +790,6 @@ a.toc-link {
   gap: 4px !important;
 }
 
-/* Keep full-screen feel but add comfortable max reading width for text */
 .dt-content {
   max-width: 920px;
 }
@@ -836,30 +800,24 @@ a.toc-link {
   }
 }
 
-
-/* --- property headings (h5) preserve original casing & stronger spec hierarchy --- */
-/* Tailwind/theme may treat h5 as a label; here we render it as a real property title */
 #documentation h5 {
   font-size: 15px !important;
   font-weight: 800 !important;
   letter-spacing: -.01em !important;
-  text-transform: none !important; /* keep lowercase as authored */
+  text-transform: none !important;
   color: var(--text) !important;
   margin: 14px 0 6px 0 !important;
 }
 
-/* In constraint cards, keep property titles aligned and readable */
 #documentation .property-constraints h5 {
   margin: 0 0 8px 0 !important;
 }
 
-/* Optional: avoid accidental casing transforms on any "property/name"-like elements */
 #documentation [class*="property"],
 #documentation [class*="Property"] {
   text-transform: none;
 }
 
-/* 1) Global rhythm + readable line length */
 :root {
   --section-bg: rgba(243, 246, 250, .9);
   --section-border: rgba(185, 199, 218, .95);
@@ -877,7 +835,6 @@ a.toc-link {
   max-width: 980px;
 }
 
-/* 2) SECTION LEVEL (h2) — looks like a distinct block header */
 #documentation h2 {
   border-top: none !important;
   padding: 14px 14px 12px !important;
@@ -895,7 +852,6 @@ a.toc-link {
   display: none !important;
 }
 
-/* optional compact "section id" feel */
 #documentation h2 {
   position: relative;
 }
@@ -917,7 +873,6 @@ a.toc-link {
   opacity: 1;
 }
 
-/* 3) SUBSECTION LEVEL (h3) — left rule + tighter spacing */
 #documentation h3 {
   margin: 16px 0 8px !important;
   padding: 6px 0 6px 12px !important;
@@ -934,7 +889,6 @@ a.toc-link {
   opacity: 1;
 }
 
-/* 4) MINOR HEADINGS (h4) — simple but clearly different */
 #documentation h4 {
   margin: 12px 0 6px !important;
   font-size: 15px !important;
@@ -942,7 +896,6 @@ a.toc-link {
   color: var(--text) !important;
 }
 
-/* 5) PROPERTY TITLES (h5) — spec-like tokens, preserve casing */
 #documentation h5 {
   font-size: 15px !important;
   font-weight: 900 !important;
@@ -950,7 +903,6 @@ a.toc-link {
   letter-spacing: -0.01em !important;
   color: var(--text) !important;
   margin: 12px 0 6px !important;
-
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -970,7 +922,6 @@ a.toc-link {
   flex: 0 0 auto;
 }
 
-/* 6) Make "property blocks" look like blocks, not plain text */
 #documentation .property-constraints {
   border: 1px solid var(--section-border) !important;
   background: rgba(255, 255, 255, .9) !important;
@@ -986,7 +937,6 @@ a.toc-link {
   margin: 0 0 10px 0 !important;
 }
 
-/* If there are repeated constraint rows, make them readable */
 #documentation .property-constraints p {
   margin: 6px 0 !important;
 }
@@ -996,7 +946,6 @@ a.toc-link {
   border-color: var(--subsection-border) !important;
 }
 
-/* 7) Callouts: visually distinct by type (engineering style) */
 #documentation .note,
 #documentation .source,
 #documentation .example,
@@ -1053,7 +1002,6 @@ a.toc-link {
   content: "Warning";
 }
 
-/* 8) Lists and paragraphs: compact but readable */
 #documentation p {
   margin: 8px 0 !important;
 }
@@ -1067,7 +1015,6 @@ a.toc-link {
   margin: 5px 0 !important;
 }
 
-/* 9) Tables: stronger header separation */
 #documentation table {
   border-color: var(--section-border) !important;
 }
@@ -1082,7 +1029,6 @@ a.toc-link {
   border-bottom: 1px solid rgba(207, 217, 230, .85) !important;
 }
 
-/* 10) Improve TOC clarity: levels look different */
 .toc-list-item > a.toc-link {
   font-weight: 650 !important;
   color: var(--muted) !important;
@@ -1098,13 +1044,10 @@ a.toc-link {
   color: var(--muted-2) !important;
 }
 
-/* 11) Tighten overall shell a bit (less "air") */
 .dt-wrap {
   padding-top: 18px !important;
 }
 
-
-/* --- Aspect Model Preview + lightweight Viewer (pan/zoom) --- */
 .am-preview {
   margin: 0 0 18px 0;
   padding: 14px 14px 12px;
@@ -1282,13 +1225,11 @@ a.toc-link {
   max-height: none;
 }
 
-/* Ensure SVG elements can receive pointer events */
 #documentation svg,
 #documentation svg * {
   pointer-events: auto !important;
 }
 
-/* Visual affordance */
 #documentation svg .am-hit,
 #documentation svg [data-am-clickable="1"],
 #documentation svg [id],
@@ -1302,7 +1243,6 @@ a.toc-link {
   cursor: pointer;
 }
 
-/* Hover and active selection styling (non-destructive via filter/outline) */
 #documentation svg [data-am-hover="1"] {
   filter: drop-shadow(0 2px 0 rgba(223, 120, 97, .25)) drop-shadow(0 10px 18px rgba(15, 23, 42, .10));
 }
@@ -1311,7 +1251,6 @@ a.toc-link {
   filter: drop-shadow(0 2px 0 rgba(223, 120, 97, .45)) drop-shadow(0 14px 28px rgba(15, 23, 42, .18));
 }
 
-/* Details panel */
 .am-details {
   margin: 0 0 18px 0;
   border: 1px solid var(--border-strong);
@@ -1377,8 +1316,6 @@ a.toc-link {
   color: var(--muted);
 }
 
-
-/*--- hotkeys: fullscreen + keyboard zoom for existing panzoom --- */
 .am-diag-shell {
   position: relative;
 }
@@ -1420,11 +1357,10 @@ a.toc-link {
 }
 
 .am-diag-shell.am-diag-fullscreen .am-diag-stage {
-  height: calc(100vh - 12px - 12px - 28px) !important; /* shell padding */
+  height: calc(100vh - 12px - 12px - 28px) !important;
   min-height: 0;
 }
 
-/* Let the panzoom stage fill the available space */
 .am-diag-stage {
   height: 520px;
 }
@@ -1435,8 +1371,6 @@ a.toc-link {
   }
 }
 
-
-/* --- legend: inline control legend for R/F/etc --- */
 .am-diag-legend {
   position: absolute;
   top: 56px;
@@ -1448,7 +1382,7 @@ a.toc-link {
   border: 1px solid rgba(207, 217, 230, .95);
   box-shadow: 0 14px 34px rgba(15, 23, 42, .12);
   color: var(--text);
-  display: none; /* shown on hover/focus within tools */
+  display: none;
 }
 
 .am-diag-tools:hover .am-diag-legend,
@@ -1491,222 +1425,12 @@ a.toc-link {
   color: var(--text);
 }
 
-/* Ensure SVG elements can receive pointer events */
-#documentation svg,
-#documentation svg * {
-  pointer-events: auto !important;
+.dt-toc {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
-/* Visual affordance */
-#documentation svg .am-hit,
-#documentation svg [data-am-clickable="1"],
-#documentation svg [id],
-#documentation svg g,
-#documentation svg rect,
-#documentation svg path,
-#documentation svg polygon,
-#documentation svg circle,
-#documentation svg ellipse,
-#documentation svg text {
-  cursor: pointer;
-}
-
-/* Hover and active selection styling (non-destructive via filter/outline) */
-#documentation svg [data-am-hover="1"] {
-  filter: drop-shadow(0 2px 0 rgba(223, 120, 97, .25)) drop-shadow(0 10px 18px rgba(15, 23, 42, .10));
-}
-
-#documentation svg [data-am-selected="1"] {
-  filter: drop-shadow(0 2px 0 rgba(223, 120, 97, .45)) drop-shadow(0 14px 28px rgba(15, 23, 42, .18));
-}
-
-/* Details panel */
-.am-details {
-  margin: 0 0 18px 0;
-  border: 1px solid var(--border-strong);
-  border-radius: 14px;
-  background: #fff;
-  overflow: hidden;
-  box-shadow: 0 1px 0 rgba(15, 23, 42, .04);
-}
-
-.am-details__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 10px 12px;
-  background: rgba(243, 246, 250, .9);
-  border-bottom: 1px solid rgba(207, 217, 230, .85);
-}
-
-.am-details__title {
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: var(--muted-2);
-  font-weight: 900;
-}
-
-.am-details__meta {
-  font-size: 12px;
-  color: var(--muted-2);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 70%;
-}
-
-.am-details__body {
-  padding: 10px 12px 12px;
-}
-
-.am-details__grid {
-  display: grid;
-  grid-template-columns: 160px 1fr;
-  gap: 8px 12px;
-  align-items: start;
-}
-
-.am-k {
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--muted-2);
-}
-
-.am-v {
-  font-size: 13px;
-  color: var(--text);
-  word-break: break-word;
-}
-
-.am-details__empty {
-  font-size: 13px;
-  color: var(--muted);
-}
-
-
-/* --- hotkeys: fullscreen + keyboard zoom for existing panzoom --- */
-.am-diag-shell {
-  position: relative;
-}
-
-.am-diag-tools {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  display: inline-flex;
-  gap: 6px;
-  padding: 6px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, .88);
-  border: 1px solid rgba(207, 217, 230, .95);
-  box-shadow: 0 10px 26px rgba(15, 23, 42, .10);
-  z-index: 5;
-  backdrop-filter: blur(6px);
-}
-
-.am-diag-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-}
-
-.am-diag-shell.am-diag-fullscreen {
-  position: fixed !important;
-  inset: 12px !important;
-  z-index: 10000 !important;
-  background: #fff !important;
-  border-radius: 16px !important;
-  box-shadow: 0 18px 60px rgba(15, 23, 42, .22) !important;
-  padding: 14px !important;
-}
-
-.am-diag-shell.am-diag-fullscreen .am-diag-tools {
-  top: 14px;
-  right: 14px;
-}
-
-.am-diag-shell.am-diag-fullscreen .am-diag-stage {
-  height: calc(100vh - 12px - 12px - 28px) !important; /* shell padding */
-  min-height: 0;
-}
-
-/* Let the panzoom stage fill the available space */
-.am-diag-stage {
-  height: 520px;
-}
-
-@media (min-width: 1024px) {
-  .am-diag-stage {
-    height: 560px;
-  }
-}
-
-
-/* --- legend: inline control legend for R/F/etc --- */
-.am-diag-legend {
-  position: absolute;
-  top: 56px;
-  right: 0;
-  width: 240px;
-  padding: 10px 10px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, .92);
-  border: 1px solid rgba(207, 217, 230, .95);
-  box-shadow: 0 14px 34px rgba(15, 23, 42, .12);
-  color: var(--text);
-  display: none; /* shown on hover/focus within tools */
-}
-
-.am-diag-tools:hover .am-diag-legend,
-.am-diag-tools:focus-within .am-diag-legend {
-  display: block;
-}
-
-.am-diag-legend__title {
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: var(--muted-2);
-  font-weight: 900;
-  margin-bottom: 8px;
-}
-
-.am-diag-legend__list {
-  margin: 0;
-  padding-left: 18px;
-  color: var(--muted);
-  font-size: 12px;
-}
-
-.am-diag-legend__list li {
-  margin: 6px 0;
-}
-
-.am-key {
-  display: inline-flex;
-  min-width: 22px;
-  justify-content: center;
-  align-items: center;
-  padding: 1px 6px;
-  border-radius: 8px;
-  border: 1px solid rgba(207, 217, 230, .95);
-  background: rgba(243, 246, 250, .92);
-  font-family: var(--mono);
-  font-weight: 900;
-  color: var(--text);
-}
-
-
-/* --- Patch: hide TOC scrollbar while keeping scroll --- */
-.dt-toc{
-  scrollbar-width: none;          /* Firefox */
-  -ms-overflow-style: none;       /* IE/Edge legacy */
-}
-.dt-toc::-webkit-scrollbar{
+.dt-toc::-webkit-scrollbar {
   width: 0;
   height: 0;
 }

@@ -262,7 +262,7 @@
     <header class="dt-topbar">
         <div class="dt-topbar__inner">
             <div class="dt-brand">
-                <div class="dt-title">$i18n.getText("docu.label.documentation") $aspectModel.getPreferredName($i18n.getLocale())</div>
+                <h1 class="dt-title" id="$aspectModel.getName()">Aspect Model $aspectModel.getPreferredName($i18n.getLocale())</h1>
                 <div class="dt-meta">$aspectModel.urn()</div>
             </div>
             <div class="dt-pill" title="Theme: professional documentation UI">
