@@ -708,7 +708,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
             final Resource dataTypeResource ) {
          return rangeConstraint.getMinValue()
                .map( ScalarValue::getValue )
-               .map( value -> (Number) value )
+               .map( Number.class::cast )
                // exclusive lower bound?
                .map( value -> BoundDefinition.GREATER_THAN
                      .equals( rangeConstraint.getLowerBoundDefinition() )
@@ -1596,7 +1596,6 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
          final Characteristic characteristic = property.getCharacteristic().orElse( null );
 
          if ( characteristic instanceof java.util.Collection ) {
-            //|| (characteristic instanceof final Trait trait && trait.getBaseCharacteristic() instanceof Collection) ) {
             collectionsMap.computeIfAbsent( propertyPath, k -> new ArrayList<>() ).add( property );
          } else if ( characteristic != null && characteristic.getDataType().isPresent() &&
                characteristic.getDataType().orElse( null ) instanceof final ComplexType complexType ) {
@@ -1715,7 +1714,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
                   final LocalDate date = LocalDate.parse( value.toString() );
                   final long daysSinceEpoch = date.toEpochDay();
                   group.add( fieldName, (int) daysSinceEpoch );
-               } catch ( final Exception exception ) {
+               } catch ( final Exception _ ) {
                   // Fallback to 0 (epoch) if parsing fails
                   group.add( fieldName, 0 );
                }
@@ -1755,7 +1754,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
          } else if ( value instanceof final String stringValue ) {
             try {
                group.add( fieldName, Integer.parseInt( stringValue ) );
-            } catch ( final NumberFormatException numberFormatException ) {
+            } catch ( final NumberFormatException _ ) {
                group.add( fieldName, 0 );
             }
          }
@@ -1766,7 +1765,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
          } else if ( value instanceof final String stringValue ) {
             try {
                group.add( fieldName, Long.parseLong( stringValue ) );
-            } catch ( final NumberFormatException numberFormatException ) {
+            } catch ( final NumberFormatException _ ) {
                group.add( fieldName, 0L );
             }
          }
@@ -1777,7 +1776,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
          } else if ( value instanceof final String stringValue ) {
             try {
                group.add( fieldName, Float.parseFloat( stringValue ) );
-            } catch ( final NumberFormatException numberFormatException ) {
+            } catch ( final NumberFormatException _ ) {
                group.add( fieldName, 0.0f ); // Use default instead of writing string to float column
             }
          }
@@ -1788,7 +1787,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
          } else if ( value instanceof final String stringValue ) {
             try {
                group.add( fieldName, Double.parseDouble( stringValue ) );
-            } catch ( final NumberFormatException numberFormatException ) {
+            } catch ( final NumberFormatException _ ) {
                group.add( fieldName, 0.0d );
             }
          }
