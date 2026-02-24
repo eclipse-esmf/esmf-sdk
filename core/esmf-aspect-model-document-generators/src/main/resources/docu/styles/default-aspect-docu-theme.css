@@ -551,7 +551,7 @@ a.toc-link:hover {
 }
 
 
-/* --- v3 contrast + full-screen adjustments --- */
+/* --- contrast + full-screen adjustments --- */
 :root {
   --text: #0b1220;
   --muted: #334155;
@@ -650,8 +650,6 @@ body {
   }
 }
 
-
-/* --- v4 balanced: engineering/spec + product polish --- */
 :root {
   /* a bit more contrast, still calm */
   --text: #070d1a;
@@ -839,7 +837,7 @@ a.toc-link {
 }
 
 
-/* --- v5: property headings (h5) preserve original casing & stronger spec hierarchy --- */
+/* --- property headings (h5) preserve original casing & stronger spec hierarchy --- */
 /* Tailwind/theme may treat h5 as a label; here we render it as a real property title */
 #documentation h5 {
   font-size: 15px !important;
@@ -860,9 +858,6 @@ a.toc-link {
 #documentation [class*="Property"] {
   text-transform: none;
 }
-
-
-/* --- v6: radical hierarchy (sections vs subsections vs properties) --- */
 
 /* 1) Global rhythm + readable line length */
 :root {
@@ -1109,7 +1104,7 @@ a.toc-link {
 }
 
 
-/* --- v7: Aspect Model Preview + lightweight Viewer (pan/zoom) --- */
+/* --- Aspect Model Preview + lightweight Viewer (pan/zoom) --- */
 .am-preview {
   margin: 0 0 18px 0;
   padding: 14px 14px 12px;
@@ -1287,9 +1282,6 @@ a.toc-link {
   max-height: none;
 }
 
-
-/* --- v8: Make diagram elements clickable + selection details --- */
-
 /* Ensure SVG elements can receive pointer events */
 #documentation svg,
 #documentation svg * {
@@ -1386,7 +1378,7 @@ a.toc-link {
 }
 
 
-/* --- v8+hotkeys: fullscreen + keyboard zoom for existing panzoom --- */
+/*--- hotkeys: fullscreen + keyboard zoom for existing panzoom --- */
 .am-diag-shell {
   position: relative;
 }
@@ -1444,7 +1436,7 @@ a.toc-link {
 }
 
 
-/* --- v8+legend: inline control legend for R/F/etc --- */
+/* --- legend: inline control legend for R/F/etc --- */
 .am-diag-legend {
   position: absolute;
   top: 56px;
@@ -1499,9 +1491,6 @@ a.toc-link {
   color: var(--text);
 }
 
-
-/* --- v8: Make diagram elements clickable + selection details --- */
-
 /* Ensure SVG elements can receive pointer events */
 #documentation svg,
 #documentation svg * {
@@ -1598,7 +1587,7 @@ a.toc-link {
 }
 
 
-/* --- v8+hotkeys: fullscreen + keyboard zoom for existing panzoom --- */
+/* --- hotkeys: fullscreen + keyboard zoom for existing panzoom --- */
 .am-diag-shell {
   position: relative;
 }
@@ -1656,7 +1645,7 @@ a.toc-link {
 }
 
 
-/* --- v8+legend: inline control legend for R/F/etc --- */
+/* --- legend: inline control legend for R/F/etc --- */
 .am-diag-legend {
   position: absolute;
   top: 56px;
