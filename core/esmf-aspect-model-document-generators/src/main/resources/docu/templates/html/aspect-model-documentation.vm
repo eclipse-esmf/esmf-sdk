@@ -25,9 +25,9 @@
     tocbot_css_placeholder</style>
     <style>custom_css_placeholder</style>
     <script>/* MIT License | https://github.com/anvaka/panzoom/blob/master/LICENSE */
-    panzoom_js_placeholder;</script>
+    panzoom_js_placeholder</script>
     <script>/* MIT License | https://github.com/tscanlin/tocbot/blob/master/LICENSE */
-    tocbot_js_placeholder;</script>
+    tocbot_js_placeholder</script>
     <script>
         window.onload = function () {
             const diagram = document.getElementById('aspect-model-diagram');
