@@ -1,121 +1,1723 @@
 h1 {
-    color: #0028cd;
-    font-size: 2rem;
+  color: #0028cd;
+  font-size: 2rem;
 }
 
 h2 {
-    color: #0028cd;
-    font-size: 1.5rem;
+  color: #0028cd;
+  font-size: 1.5rem;
 }
 
 h3 {
-    font-size: 1.5rem;
-    padding-top: 15px;
-    padding-bottom: 15px;
+  font-size: 1.5rem;
+  padding-top: 15px;
+  padding-bottom: 15px;
 }
 
 h4 {
-    font-size: 1.2rem;
-    font-weight: bold;
-    padding-top: 5px;
-    padding-bottom: 5px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
 
 h5 {
-    font-size: 1.2rem;
+  font-size: 1.2rem;
 }
 
 .heading {
-    padding-top: 45px;
+  padding-top: 45px;
 }
 
 #content-title {
-    margin-top: 15px;
+  margin-top: 15px;
 }
 
 a.toc-link {
-    padding-left: 15px;
+  padding-left: 15px;
 }
 
 .is-position-fixed {
-    top: 9rem;
-    position: unset;
+  top: 9rem;
+  position: unset;
 }
 
 #documentation-toc {
-    padding-top: 15px;
+  padding-top: 15px;
 }
 
 #documentation-toc > ol {
-    margin-top: 15px;
+  margin-top: 15px;
 }
 
 .text-gray {
-    color: #0028CD;
+  color: #0028CD;
 }
 
 .page-top {
-    background-color: #0028cd;
-    height: 14px;
+  background-color: #0028cd;
+  height: 14px;
 }
 
 .logo-header {
-    background: left no-repeat url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0xLjAgZW5jb2Rpbmc9VVRGLTg/PjxzdmcgeG1sbnM9aHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcgd2lkdGg9MSBoZWlnaHQ9MS8+Cg==');
-    background-size: contain;
-    height: 1px;
-    width: 1px;
-    right: 1px;
+  background: left no-repeat url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0xLjAgZW5jb2Rpbmc9VVRGLTg/PjxzdmcgeG1sbnM9aHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcgd2lkdGg9MSBoZWlnaHQ9MS8+Cg==');
+  background-size: contain;
+  height: 1px;
+  width: 1px;
+  right: 1px;
 }
 
 /* Markdown rendering inside property descriptions */
 .md-content ul,
 .md-content ol {
-    list-style-position: outside;
-    margin: 0.5rem 0 0.5rem 1.25rem;
-    padding-left: 1.25rem;
+  list-style-position: outside;
+  margin: 0.5rem 0 0.5rem 1.25rem;
+  padding-left: 1.25rem;
 }
 
-.md-content ul { list-style-type: disc; }
-.md-content ol { list-style-type: decimal; }
+.md-content ul {
+  list-style-type: disc;
+}
+
+.md-content ol {
+  list-style-type: decimal;
+}
 
 .md-content li {
-    display: list-item;         /* critical if global CSS sets li { display:block } */
-    list-style: inherit;        /* override list-style: none */
-    margin: 0.25rem 0;
-    padding: 0;
+  display: list-item; /* critical if global CSS sets li { display:block } */
+  list-style: inherit; /* override list-style: none */
+  margin: 0.25rem 0;
+  padding: 0;
 }
 
 /* Nested lists */
 .md-content li > ul,
 .md-content li > ol {
-    margin-top: 0.25rem;
+  margin-top: 0.25rem;
 }
 
 /* Optional: paragraphs spacing */
-.md-content p { margin: 0.5rem 0; }
+.md-content p {
+  margin: 0.5rem 0;
+}
 
 /* Optional: callouts */
 .md-content .note,
 .md-content .source {
-    padding: 0.75rem 1rem;
-    border-left: 4px solid currentColor;
-    margin: 0.75rem 0;
+  padding: 0.75rem 1rem;
+  border-left: 4px solid currentColor;
+  margin: 0.75rem 0;
 }
 
 .md-content .example-list {
-    margin: 0.5rem 0 0.5rem 1.25rem;
-    padding-left: 1.25rem;
-    list-style-type: disc;
+  margin: 0.5rem 0 0.5rem 1.25rem;
+  padding-left: 1.25rem;
+  list-style-type: disc;
 }
 
 /* Events */
 .event-card {
-    border: 1px solid rgba(0,0,0,0.1);
-    border-radius: 12px;
-    padding: 16px;
-    margin-top: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 20px;
 }
+
 .event-meta {
-    font-size: 0.875rem;
-    opacity: 0.85;
+  font-size: 0.875rem;
+  opacity: 0.85;
+}
+
+/* --- Professional overrides (must come last) --- */
+:root {
+  --bg: #ffffff;
+  --text: #0f172a;
+  --muted: #475569;
+  --muted-2: #64748b;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --surface: #ffffff;
+  --surface-2: #f8fafc;
+  --surface-3: #f1f5f9;
+  --accent: #DF7861;
+  --accent-2: #c85f48;
+  --shadow: 0 1px 2px rgba(15, 23, 42, .06), 0 10px 26px rgba(15, 23, 42, .08);
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, .06);
+  --radius: 14px;
+  --radius-sm: 10px;
+  --maxw: 1180px;
+  --tocw: 340px;
+  --topbar-h: 72px;
+  --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+html, body {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+  font-family: var(--font) !important;
+}
+
+body {
+  line-height: 1.6 !important;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+a {
+  color: inherit;
+}
+
+a:hover {
+  color: var(--accent);
+}
+
+/* Restore semantic typography (Tailwind resets h1-h6 to inherit) */
+#documentation h1, #documentation h2, #documentation h3, #documentation h4, #documentation h5, #documentation h6 {
+  color: var(--text) !important;
+  font-weight: 700 !important;
+  letter-spacing: -.015em;
+  line-height: 1.25;
+}
+
+#documentation h1 {
+  font-size: 28px !important;
+  margin: 0 0 10px 0 !important;
+}
+
+#documentation h2 {
+  font-size: 22px !important;
+  margin: 34px 0 10px 0 !important;
+  scroll-margin-top: calc(var(--topbar-h) + 18px);
+}
+
+#documentation h3 {
+  font-size: 18px !important;
+  margin: 26px 0 8px 0 !important;
+  scroll-margin-top: calc(var(--topbar-h) + 18px);
+}
+
+#documentation h4 {
+  font-size: 15px !important;
+  margin: 18px 0 6px 0 !important;
+}
+
+#documentation h5 {
+  font-size: 12px !important;
+  letter-spacing: .12em !important;
+  text-transform: uppercase !important;
+  color: var(--muted-2) !important;
+  margin: 16px 0 6px 0 !important;
+}
+
+#documentation p {
+  color: var(--muted) !important;
+  margin: 10px 0 !important;
+}
+
+#documentation strong {
+  color: var(--text) !important;
+}
+
+/* Restore lists (Tailwind sets ol, ul list-style:none) */
+#documentation ul, #documentation ol {
+  list-style-position: outside !important;
+  margin: 10px 0 10px 20px !important;
+  padding-left: 16px !important;
+  color: var(--muted) !important;
+}
+
+#documentation ul {
+  list-style: disc !important;
+}
+
+#documentation ol {
+  list-style: decimal !important;
+}
+
+#documentation li {
+  display: list-item !important;
+  margin: 6px 0 !important;
+  padding: 0 !important;
+}
+
+#documentation li > ul, #documentation li > ol {
+  margin-top: 6px !important;
+}
+
+/* Professional shell */
+.dt-shell {
+  min-height: 100vh;
+}
+
+.dt-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, .92);
+  backdrop-filter: saturate(140%) blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+
+.dt-topbar__inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 14px 18px;
+  min-height: var(--topbar-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.dt-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 260px;
+}
+
+.dt-kicker {
+  font-size: 12px;
+  color: var(--muted-2);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.dt-title {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  line-height: 1.2;
+}
+
+.dt-meta {
+  font-size: 13px;
+  color: var(--muted);
+  font-family: var(--mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 720px;
+}
+
+.dt-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.dt-pill strong {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.dt-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px rgba(223, 120, 97, .16);
+}
+
+.dt-wrap {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 22px 18px 56px;
+}
+
+.dt-layout {
+  display: grid;
+  grid-template-columns:minmax(0, 1fr) var(--tocw);
+  gap: 24px;
+  align-items: start;
+}
+
+/* Make the original main/aside fit */
+.dt-content {
+  min-width: 0;
+}
+
+.dt-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  padding: 20px 20px;
+}
+
+/* TOC polishing (works with tocbot markup) */
+#documentation-toc, .toc {
+  background: var(--surface) !important;
+}
+
+.dt-toc {
+  position: sticky;
+  top: calc(var(--topbar-h) + 18px);
+}
+
+.dt-toc__header {
+  padding: 14px 14px 10px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.dt-toc__title {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+}
+
+.toc-list {
+  padding-left: 12px !important;
+}
+
+a.toc-link {
+  display: block !important;
+  padding: 6px 8px !important;
+  border-radius: 10px !important;
+  color: var(--muted) !important;
+  text-decoration: none !important;
+}
+
+a.toc-link:hover {
+  background: rgba(223, 120, 97, .08) !important;
+  color: var(--text) !important;
+}
+
+.is-active-link {
+  color: var(--text) !important;
+  font-weight: 800 !important;
+}
+
+.toc-link::before {
+  background: rgba(226, 232, 240, .9) !important;
+}
+
+.is-active-link::before {
+  background: var(--accent) !important;
+}
+
+/* Notes / callouts */
+#documentation .note, #documentation .source, #documentation .example, #documentation .warning {
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  background: var(--surface-2) !important;
+  box-shadow: var(--shadow-sm) !important;
+  padding: 14px 14px 12px !important;
+  margin: 14px 0 !important;
+}
+
+#documentation .note {
+  border-left: 4px solid rgba(223, 120, 97, .65) !important;
+}
+
+#documentation .source {
+  border-left: 4px solid rgba(15, 23, 42, .35) !important;
+}
+
+/* Tables */
+#documentation table {
+  width: 100% !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  overflow: hidden;
+  background: var(--surface) !important;
+  box-shadow: var(--shadow-sm) !important;
+  margin: 14px 0 18px !important;
+}
+
+#documentation thead th {
+  background: var(--surface-2) !important;
+  color: var(--muted-2) !important;
+  font-size: 12px !important;
+  letter-spacing: .12em !important;
+  text-transform: uppercase !important;
+  font-weight: 800 !important;
+  padding: 12px 12px !important;
+  border-bottom: 1px solid var(--border) !important;
+  text-align: left !important;
+}
+
+#documentation tbody td {
+  padding: 11px 12px !important;
+  border-bottom: 1px solid var(--border) !important;
+  color: var(--muted) !important;
+  vertical-align: top !important;
+  font-size: 14px !important;
+}
+
+#documentation tbody tr:last-child td {
+  border-bottom: none !important;
+}
+
+#documentation tbody tr:nth-child(2n) td {
+  background: rgba(241, 245, 249, .55) !important;
+}
+
+#documentation td code, #documentation th code {
+  font-family: var(--mono) !important;
+  font-size: .92em !important;
+  padding: 2px 6px !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+  background: var(--surface-3) !important;
+  color: var(--text) !important;
+}
+
+/* Code blocks */
+#documentation pre {
+  background: var(--surface-3) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  padding: 14px 14px !important;
+  overflow: auto !important;
+  box-shadow: var(--shadow-sm) !important;
+  margin: 14px 0 18px !important;
+}
+
+#documentation pre code {
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+  color: var(--text) !important;
+  font-size: 13px !important;
+  line-height: 1.6 !important;
+  display: block !important;
+}
+
+/* Defensive fixes for legacy theme rules that break layout */
+.is-position-fixed {
+  position: sticky !important;
+  top: calc(var(--topbar-h) + 18px) !important;
+}
+
+.page-top {
+  display: none !important;
+}
+
+.logo-header {
+  display: none !important;
+}
+
+/* Responsive */
+@media (max-width: 980px) {
+  :root {
+    --tocw: 1fr;
+  }
+
+  .dt-layout {
+    grid-template-columns:1fr;
+  }
+
+  .dt-toc {
+    position: relative;
+    top: auto;
+    max-height: none;
+  }
+
+  .dt-meta {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .dt-pill {
+    display: none;
+  }
+
+  .dt-topbar__inner {
+    padding: 12px 14px;
+  }
+
+  .dt-wrap {
+    padding: 18px 14px 44px;
+  }
+}
+
+
+/* --- v3 contrast + full-screen adjustments --- */
+:root {
+  --text: #0b1220;
+  --muted: #334155;
+  --muted-2: #475569;
+  --border: #d6dee9;
+  --border-strong: #c3cfdd;
+  --surface-2: #f5f7fb;
+  --surface-3: #eef2f7;
+  --maxw: 100%;
+  --tocw: 360px;
+}
+
+/* Make the layout truly full-width */
+.dt-topbar__inner {
+  max-width: 100% !important;
+}
+
+.dt-wrap {
+  max-width: 100% !important;
+  padding: 22px 28px 56px !important;
+}
+
+.dt-layout {
+  gap: 28px !important;
+}
+
+/* Reduce "card" look — make content feel like a full-page doc */
+.dt-card {
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 6px 0 0 !important;
+  background: transparent !important;
+}
+
+/* Increase content readability and contrast */
+#documentation p {
+  color: var(--muted) !important;
+}
+
+#documentation a {
+  color: var(--accent-2) !important;
+}
+
+#documentation a:hover {
+  color: var(--accent) !important;
+}
+
+#documentation h1, #documentation h2, #documentation h3, #documentation h4 {
+  color: var(--text) !important;
+}
+
+/* Stronger table contrast */
+#documentation table {
+  border-color: var(--border-strong) !important;
+}
+
+#documentation thead th {
+  color: var(--text) !important;
+}
+
+#documentation tbody td {
+  color: var(--muted) !important;
+}
+
+#documentation tbody tr:nth-child(2n) td {
+  background: rgba(238, 242, 247, .75) !important;
+}
+
+/* TOC: a bit more contrast */
+#documentation-toc, .toc {
+  border-color: var(--border-strong) !important;
+}
+
+a.toc-link {
+  color: var(--muted) !important;
+}
+
+.is-active-link {
+  color: var(--text) !important;
+}
+
+/* Make the page feel like "app fullscreen" */
+.dt-shell {
+  min-height: 100vh;
+}
+
+body {
+  min-height: 100vh;
+}
+
+/* Responsive: keep comfortable padding on small screens */
+@media (max-width: 560px) {
+  .dt-wrap {
+    padding: 18px 16px 44px !important;
+  }
+}
+
+
+/* --- v4 balanced: engineering/spec + product polish --- */
+:root {
+  /* a bit more contrast, still calm */
+  --text: #070d1a;
+  --muted: #243244;
+  --muted-2: #3b4a5f;
+  --border: #cfd9e6;
+  --border-strong: #b9c7da;
+  --surface-2: #f3f6fa;
+  --surface-3: #eaf0f7;
+}
+
+/* Tighter vertical rhythm (less empty space) */
+#documentation p {
+  margin: 8px 0 !important;
+}
+
+#documentation h2 {
+  margin: 26px 0 8px 0 !important;
+}
+
+#documentation h3 {
+  margin: 18px 0 6px 0 !important;
+}
+
+#documentation h4 {
+  margin: 14px 0 6px 0 !important;
+}
+
+#documentation ul, #documentation ol {
+  margin: 8px 0 10px 18px !important;
+}
+
+/* Stronger, clearer headings without huge spacing */
+#documentation h2 {
+  font-weight: 850 !important;
+  letter-spacing: -.02em !important;
+  padding-top: 8px !important;
+  border-top: 1px solid rgba(207, 217, 230, .75);
+}
+
+#documentation h2:first-child {
+  border-top: none !important;
+}
+
+#documentation h3 {
+  font-weight: 800 !important;
+  color: var(--text) !important;
+}
+
+#documentation h4 {
+  color: var(--text) !important;
+}
+
+/* Section divider for long spec pages (subtle) */
+#documentation h2 {
+  position: relative;
+}
+
+#documentation h2::after {
+  content: "";
+  display: block;
+  margin-top: 10px;
+  height: 1px;
+  background: linear-gradient(to right, rgba(185, 199, 218, .85), rgba(185, 199, 218, 0));
+}
+
+/* Engineering/spec feel: inline tokens and definition-like styling */
+#documentation code {
+  font-family: var(--mono) !important;
+  font-size: 0.92em !important;
+  padding: 2px 6px !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+  background: var(--surface-3) !important;
+  color: var(--text) !important;
+}
+
+#documentation pre code {
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+/* Compact tables (more spec-dense) */
+#documentation thead th {
+  padding: 10px 10px !important;
+}
+
+#documentation tbody td {
+  padding: 9px 10px !important;
+}
+
+#documentation table {
+  font-size: 14px !important;
+}
+
+/* Callouts: more "spec" labels */
+#documentation .note::before,
+#documentation .source::before,
+#documentation .example::before,
+#documentation .warning::before {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+  margin-bottom: 8px;
+}
+
+#documentation .note::before {
+  content: "Note";
+}
+
+#documentation .source::before {
+  content: "Source";
+}
+
+#documentation .example::before {
+  content: "Example";
+}
+
+#documentation .warning::before {
+  content: "Warning";
+}
+
+/* Product polish: links, hover states, selection */
+::selection {
+  background: rgba(223, 120, 97, .22);
+}
+
+#documentation a {
+  color: var(--accent-2) !important;
+  text-decoration: underline !important;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+#documentation a:hover {
+  color: var(--accent) !important;
+}
+
+/* Heading anchor links */
+#documentation .dt-anchor {
+  text-decoration: none !important;
+  margin-left: 8px;
+  opacity: 0;
+  color: var(--muted-2) !important;
+  font-family: var(--mono);
+  font-size: 14px;
+}
+
+#documentation h2:hover .dt-anchor,
+#documentation h3:hover .dt-anchor,
+#documentation h4:hover .dt-anchor {
+  opacity: 1;
+}
+
+#documentation .dt-anchor:hover {
+  color: var(--accent) !important;
+}
+
+/* Slightly stronger TOC title & spacing */
+.dt-toc__title {
+  color: var(--muted-2) !important;
+}
+
+a.toc-link {
+  padding: 6px 8px !important;
+}
+
+.toc-list {
+  gap: 4px !important;
+}
+
+/* Keep full-screen feel but add comfortable max reading width for text */
+.dt-content {
+  max-width: 920px;
+}
+
+@media (max-width: 980px) {
+  .dt-content {
+    max-width: none;
+  }
+}
+
+
+/* --- v5: property headings (h5) preserve original casing & stronger spec hierarchy --- */
+/* Tailwind/theme may treat h5 as a label; here we render it as a real property title */
+#documentation h5 {
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  letter-spacing: -.01em !important;
+  text-transform: none !important; /* keep lowercase as authored */
+  color: var(--text) !important;
+  margin: 14px 0 6px 0 !important;
+}
+
+/* In constraint cards, keep property titles aligned and readable */
+#documentation .property-constraints h5 {
+  margin: 0 0 8px 0 !important;
+}
+
+/* Optional: avoid accidental casing transforms on any "property/name"-like elements */
+#documentation [class*="property"],
+#documentation [class*="Property"] {
+  text-transform: none;
+}
+
+
+/* --- v6: radical hierarchy (sections vs subsections vs properties) --- */
+
+/* 1) Global rhythm + readable line length */
+:root {
+  --section-bg: rgba(243, 246, 250, .9);
+  --section-border: rgba(185, 199, 218, .95);
+  --subsection-border: rgba(207, 217, 230, .95);
+  --property-accent: rgba(223, 120, 97, .85);
+  --property-bg: rgba(243, 246, 250, .65);
+}
+
+#documentation {
+  font-size: 15px !important;
+  max-width: 980px;
+}
+
+.dt-content {
+  max-width: 980px;
+}
+
+/* 2) SECTION LEVEL (h2) — looks like a distinct block header */
+#documentation h2 {
+  border-top: none !important;
+  padding: 14px 14px 12px !important;
+  margin: 26px 0 12px !important;
+  background: var(--section-bg) !important;
+  border: 1px solid var(--section-border) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 1px 0 rgba(15, 23, 42, .04);
+  font-size: 22px !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.02em !important;
+}
+
+#documentation h2::after {
+  display: none !important;
+}
+
+/* optional compact "section id" feel */
+#documentation h2 {
+  position: relative;
+}
+
+#documentation h2 .dt-anchor {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 0;
+  opacity: 0;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--subsection-border);
+  background: rgba(255, 255, 255, .8);
+}
+
+#documentation h2:hover .dt-anchor {
+  opacity: 1;
+}
+
+/* 3) SUBSECTION LEVEL (h3) — left rule + tighter spacing */
+#documentation h3 {
+  margin: 16px 0 8px !important;
+  padding: 6px 0 6px 12px !important;
+  border-left: 3px solid var(--subsection-border) !important;
+  font-size: 18px !important;
+  font-weight: 850 !important;
+}
+
+#documentation h3 .dt-anchor {
+  opacity: 0;
+}
+
+#documentation h3:hover .dt-anchor {
+  opacity: 1;
+}
+
+/* 4) MINOR HEADINGS (h4) — simple but clearly different */
+#documentation h4 {
+  margin: 12px 0 6px !important;
+  font-size: 15px !important;
+  font-weight: 850 !important;
+  color: var(--text) !important;
+}
+
+/* 5) PROPERTY TITLES (h5) — spec-like tokens, preserve casing */
+#documentation h5 {
+  font-size: 15px !important;
+  font-weight: 900 !important;
+  text-transform: none !important;
+  letter-spacing: -0.01em !important;
+  color: var(--text) !important;
+  margin: 12px 0 6px !important;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px !important;
+  border-radius: 12px !important;
+  background: var(--property-bg) !important;
+  border: 1px solid var(--subsection-border) !important;
+}
+
+#documentation h5::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--property-accent);
+  box-shadow: 0 0 0 3px rgba(223, 120, 97, .15);
+  flex: 0 0 auto;
+}
+
+/* 6) Make "property blocks" look like blocks, not plain text */
+#documentation .property-constraints {
+  border: 1px solid var(--section-border) !important;
+  background: rgba(255, 255, 255, .9) !important;
+  border-radius: 14px !important;
+  padding: 12px 12px !important;
+  margin: 12px 0 16px !important;
+}
+
+#documentation .property-constraints h5 {
+  display: flex !important;
+  width: 100%;
+  justify-content: flex-start;
+  margin: 0 0 10px 0 !important;
+}
+
+/* If there are repeated constraint rows, make them readable */
+#documentation .property-constraints p {
+  margin: 6px 0 !important;
+}
+
+#documentation .property-constraints code {
+  background: rgba(234, 240, 247, .9) !important;
+  border-color: var(--subsection-border) !important;
+}
+
+/* 7) Callouts: visually distinct by type (engineering style) */
+#documentation .note,
+#documentation .source,
+#documentation .example,
+#documentation .warning {
+  position: relative;
+  padding: 14px 14px 12px 14px !important;
+  border-radius: 14px !important;
+  border: 1px solid var(--subsection-border) !important;
+  background: rgba(243, 246, 250, .75) !important;
+}
+
+#documentation .note {
+  border-left: 5px solid rgba(223, 120, 97, .75) !important;
+}
+
+#documentation .example {
+  border-left: 5px solid rgba(7, 13, 26, .35) !important;
+}
+
+#documentation .source {
+  border-left: 5px solid rgba(59, 74, 95, .55) !important;
+}
+
+#documentation .warning {
+  border-left: 5px solid rgba(185, 199, 218, .95) !important;
+}
+
+#documentation .note::before,
+#documentation .source::before,
+#documentation .example::before,
+#documentation .warning::before {
+  display: block !important;
+  margin: 0 0 8px 0 !important;
+  font-family: var(--mono) !important;
+  font-size: 11px !important;
+  letter-spacing: .14em !important;
+  text-transform: uppercase !important;
+  color: var(--muted-2) !important;
+}
+
+#documentation .note::before {
+  content: "Note";
+}
+
+#documentation .example::before {
+  content: "Example";
+}
+
+#documentation .source::before {
+  content: "Source";
+}
+
+#documentation .warning::before {
+  content: "Warning";
+}
+
+/* 8) Lists and paragraphs: compact but readable */
+#documentation p {
+  margin: 8px 0 !important;
+}
+
+#documentation ul, #documentation ol {
+  margin: 8px 0 10px 22px !important;
+  padding-left: 12px !important;
+}
+
+#documentation li {
+  margin: 5px 0 !important;
+}
+
+/* 9) Tables: stronger header separation */
+#documentation table {
+  border-color: var(--section-border) !important;
+}
+
+#documentation thead th {
+  background: rgba(243, 246, 250, .95) !important;
+  border-bottom: 1px solid var(--section-border) !important;
+  color: var(--text) !important;
+}
+
+#documentation tbody td {
+  border-bottom: 1px solid rgba(207, 217, 230, .85) !important;
+}
+
+/* 10) Improve TOC clarity: levels look different */
+.toc-list-item > a.toc-link {
+  font-weight: 650 !important;
+  color: var(--muted) !important;
+}
+
+.toc-list-item.is-active-li > a.toc-link {
+  color: var(--text) !important;
+  font-weight: 900 !important;
+}
+
+.toc-list-item > ul .toc-link {
+  font-weight: 550 !important;
+  color: var(--muted-2) !important;
+}
+
+/* 11) Tighten overall shell a bit (less "air") */
+.dt-wrap {
+  padding-top: 18px !important;
+}
+
+
+/* --- v7: Aspect Model Preview + lightweight Viewer (pan/zoom) --- */
+.am-preview {
+  margin: 0 0 18px 0;
+  padding: 14px 14px 12px;
+  border: 1px solid var(--section-border, rgba(185, 199, 218, .95));
+  border-radius: 14px;
+  background: rgba(243, 246, 250, .85);
+}
+
+.am-preview__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.am-preview__title {
+  font-size: 14px;
+  font-weight: 950;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+  line-height: 1.2;
+}
+
+.am-preview__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.am-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid var(--border-strong);
+  background: rgba(255, 255, 255, .9);
+  color: var(--text);
+  text-decoration: none !important;
+  font-weight: 800;
+  font-size: 13px;
+  box-shadow: 0 1px 0 rgba(15, 23, 42, .04);
+}
+
+.am-btn:hover {
+  border-color: rgba(223, 120, 97, .55);
+}
+
+.am-btn--primary {
+  border-color: rgba(223, 120, 97, .55);
+  background: rgba(223, 120, 97, .10);
+}
+
+.am-preview__text {
+  margin: 8px 0 10px !important;
+  color: var(--muted) !important;
+}
+
+.am-preview__hint {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted-2);
+  border-top: 1px solid rgba(185, 199, 218, .65);
+  padding-top: 8px;
+}
+
+.am-viewer {
+  margin: 10px 0 16px;
+  border: 1px solid var(--border-strong);
+  border-radius: 14px;
+  background: #fff;
+  overflow: hidden;
+  box-shadow: 0 1px 0 rgba(15, 23, 42, .04);
+}
+
+.am-viewer__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 10px;
+  background: rgba(243, 246, 250, .9);
+  border-bottom: 1px solid rgba(207, 217, 230, .85);
+}
+
+.am-viewer__label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.am-badge {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(207, 217, 230, .95);
+  background: rgba(255, 255, 255, .9);
+}
+
+.am-viewer__meta {
+  font-size: 12px;
+  color: var(--muted-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.am-viewer__tools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.am-iconbtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid rgba(207, 217, 230, .95);
+  background: rgba(255, 255, 255, .95);
+  cursor: pointer;
+  font-weight: 900;
+  color: var(--text);
+}
+
+.am-iconbtn:hover {
+  border-color: rgba(223, 120, 97, .55);
+}
+
+.am-viewer__stage {
+  height: 520px;
+  max-height: 70vh;
+  position: relative;
+  background: radial-gradient(circle at 30% 20%, rgba(243, 246, 250, .8), rgba(255, 255, 255, 1));
+  touch-action: none;
+}
+
+.am-viewer__stage[data-size="xl"] {
+  height: 620px;
+}
+
+.am-viewer__stage > .am-zoomable {
+  position: absolute;
+  inset: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+.am-viewer__stage svg,
+.am-viewer__stage img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.am-viewer.is-fullscreen {
+  position: fixed;
+  inset: 12px;
+  z-index: 9999;
+  border-radius: 16px;
+  box-shadow: 0 18px 60px rgba(15, 23, 42, .22);
+}
+
+.am-viewer.is-fullscreen .am-viewer__stage {
+  height: calc(100vh - 12px - 12px - 54px);
+  max-height: none;
+}
+
+
+/* --- v8: Make diagram elements clickable + selection details --- */
+
+/* Ensure SVG elements can receive pointer events */
+#documentation svg,
+#documentation svg * {
+  pointer-events: auto !important;
+}
+
+/* Visual affordance */
+#documentation svg .am-hit,
+#documentation svg [data-am-clickable="1"],
+#documentation svg [id],
+#documentation svg g,
+#documentation svg rect,
+#documentation svg path,
+#documentation svg polygon,
+#documentation svg circle,
+#documentation svg ellipse,
+#documentation svg text {
+  cursor: pointer;
+}
+
+/* Hover and active selection styling (non-destructive via filter/outline) */
+#documentation svg [data-am-hover="1"] {
+  filter: drop-shadow(0 2px 0 rgba(223, 120, 97, .25)) drop-shadow(0 10px 18px rgba(15, 23, 42, .10));
+}
+
+#documentation svg [data-am-selected="1"] {
+  filter: drop-shadow(0 2px 0 rgba(223, 120, 97, .45)) drop-shadow(0 14px 28px rgba(15, 23, 42, .18));
+}
+
+/* Details panel */
+.am-details {
+  margin: 0 0 18px 0;
+  border: 1px solid var(--border-strong);
+  border-radius: 14px;
+  background: #fff;
+  overflow: hidden;
+  box-shadow: 0 1px 0 rgba(15, 23, 42, .04);
+}
+
+.am-details__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  background: rgba(243, 246, 250, .9);
+  border-bottom: 1px solid rgba(207, 217, 230, .85);
+}
+
+.am-details__title {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+  font-weight: 900;
+}
+
+.am-details__meta {
+  font-size: 12px;
+  color: var(--muted-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 70%;
+}
+
+.am-details__body {
+  padding: 10px 12px 12px;
+}
+
+.am-details__grid {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 8px 12px;
+  align-items: start;
+}
+
+.am-k {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted-2);
+}
+
+.am-v {
+  font-size: 13px;
+  color: var(--text);
+  word-break: break-word;
+}
+
+.am-details__empty {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+
+/* --- v8+hotkeys: fullscreen + keyboard zoom for existing panzoom --- */
+.am-diag-shell {
+  position: relative;
+}
+
+.am-diag-tools {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: inline-flex;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .88);
+  border: 1px solid rgba(207, 217, 230, .95);
+  box-shadow: 0 10px 26px rgba(15, 23, 42, .10);
+  z-index: 5;
+  backdrop-filter: blur(6px);
+}
+
+.am-diag-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+}
+
+.am-diag-shell.am-diag-fullscreen {
+  position: fixed !important;
+  inset: 12px !important;
+  z-index: 10000 !important;
+  background: #fff !important;
+  border-radius: 16px !important;
+  box-shadow: 0 18px 60px rgba(15, 23, 42, .22) !important;
+  padding: 14px !important;
+}
+
+.am-diag-shell.am-diag-fullscreen .am-diag-tools {
+  top: 14px;
+  right: 14px;
+}
+
+.am-diag-shell.am-diag-fullscreen .am-diag-stage {
+  height: calc(100vh - 12px - 12px - 28px) !important; /* shell padding */
+  min-height: 0;
+}
+
+/* Let the panzoom stage fill the available space */
+.am-diag-stage {
+  height: 520px;
+}
+
+@media (min-width: 1024px) {
+  .am-diag-stage {
+    height: 560px;
+  }
+}
+
+
+/* --- v8+legend: inline control legend for R/F/etc --- */
+.am-diag-legend {
+  position: absolute;
+  top: 56px;
+  right: 0;
+  width: 240px;
+  padding: 10px 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .92);
+  border: 1px solid rgba(207, 217, 230, .95);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, .12);
+  color: var(--text);
+  display: none; /* shown on hover/focus within tools */
+}
+
+.am-diag-tools:hover .am-diag-legend,
+.am-diag-tools:focus-within .am-diag-legend {
+  display: block;
+}
+
+.am-diag-legend__title {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+.am-diag-legend__list {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.am-diag-legend__list li {
+  margin: 6px 0;
+}
+
+.am-key {
+  display: inline-flex;
+  min-width: 22px;
+  justify-content: center;
+  align-items: center;
+  padding: 1px 6px;
+  border-radius: 8px;
+  border: 1px solid rgba(207, 217, 230, .95);
+  background: rgba(243, 246, 250, .92);
+  font-family: var(--mono);
+  font-weight: 900;
+  color: var(--text);
+}
+
+
+/* --- v8: Make diagram elements clickable + selection details --- */
+
+/* Ensure SVG elements can receive pointer events */
+#documentation svg,
+#documentation svg * {
+  pointer-events: auto !important;
+}
+
+/* Visual affordance */
+#documentation svg .am-hit,
+#documentation svg [data-am-clickable="1"],
+#documentation svg [id],
+#documentation svg g,
+#documentation svg rect,
+#documentation svg path,
+#documentation svg polygon,
+#documentation svg circle,
+#documentation svg ellipse,
+#documentation svg text {
+  cursor: pointer;
+}
+
+/* Hover and active selection styling (non-destructive via filter/outline) */
+#documentation svg [data-am-hover="1"] {
+  filter: drop-shadow(0 2px 0 rgba(223, 120, 97, .25)) drop-shadow(0 10px 18px rgba(15, 23, 42, .10));
+}
+
+#documentation svg [data-am-selected="1"] {
+  filter: drop-shadow(0 2px 0 rgba(223, 120, 97, .45)) drop-shadow(0 14px 28px rgba(15, 23, 42, .18));
+}
+
+/* Details panel */
+.am-details {
+  margin: 0 0 18px 0;
+  border: 1px solid var(--border-strong);
+  border-radius: 14px;
+  background: #fff;
+  overflow: hidden;
+  box-shadow: 0 1px 0 rgba(15, 23, 42, .04);
+}
+
+.am-details__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  background: rgba(243, 246, 250, .9);
+  border-bottom: 1px solid rgba(207, 217, 230, .85);
+}
+
+.am-details__title {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+  font-weight: 900;
+}
+
+.am-details__meta {
+  font-size: 12px;
+  color: var(--muted-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 70%;
+}
+
+.am-details__body {
+  padding: 10px 12px 12px;
+}
+
+.am-details__grid {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 8px 12px;
+  align-items: start;
+}
+
+.am-k {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted-2);
+}
+
+.am-v {
+  font-size: 13px;
+  color: var(--text);
+  word-break: break-word;
+}
+
+.am-details__empty {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+
+/* --- v8+hotkeys: fullscreen + keyboard zoom for existing panzoom --- */
+.am-diag-shell {
+  position: relative;
+}
+
+.am-diag-tools {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: inline-flex;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .88);
+  border: 1px solid rgba(207, 217, 230, .95);
+  box-shadow: 0 10px 26px rgba(15, 23, 42, .10);
+  z-index: 5;
+  backdrop-filter: blur(6px);
+}
+
+.am-diag-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+}
+
+.am-diag-shell.am-diag-fullscreen {
+  position: fixed !important;
+  inset: 12px !important;
+  z-index: 10000 !important;
+  background: #fff !important;
+  border-radius: 16px !important;
+  box-shadow: 0 18px 60px rgba(15, 23, 42, .22) !important;
+  padding: 14px !important;
+}
+
+.am-diag-shell.am-diag-fullscreen .am-diag-tools {
+  top: 14px;
+  right: 14px;
+}
+
+.am-diag-shell.am-diag-fullscreen .am-diag-stage {
+  height: calc(100vh - 12px - 12px - 28px) !important; /* shell padding */
+  min-height: 0;
+}
+
+/* Let the panzoom stage fill the available space */
+.am-diag-stage {
+  height: 520px;
+}
+
+@media (min-width: 1024px) {
+  .am-diag-stage {
+    height: 560px;
+  }
+}
+
+
+/* --- v8+legend: inline control legend for R/F/etc --- */
+.am-diag-legend {
+  position: absolute;
+  top: 56px;
+  right: 0;
+  width: 240px;
+  padding: 10px 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .92);
+  border: 1px solid rgba(207, 217, 230, .95);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, .12);
+  color: var(--text);
+  display: none; /* shown on hover/focus within tools */
+}
+
+.am-diag-tools:hover .am-diag-legend,
+.am-diag-tools:focus-within .am-diag-legend {
+  display: block;
+}
+
+.am-diag-legend__title {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+.am-diag-legend__list {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.am-diag-legend__list li {
+  margin: 6px 0;
+}
+
+.am-key {
+  display: inline-flex;
+  min-width: 22px;
+  justify-content: center;
+  align-items: center;
+  padding: 1px 6px;
+  border-radius: 8px;
+  border: 1px solid rgba(207, 217, 230, .95);
+  background: rgba(243, 246, 250, .92);
+  font-family: var(--mono);
+  font-weight: 900;
+  color: var(--text);
+}
+
+
+/* --- Patch: hide TOC scrollbar while keeping scroll --- */
+.dt-toc{
+  scrollbar-width: none;          /* Firefox */
+  -ms-overflow-style: none;       /* IE/Edge legacy */
+}
+.dt-toc::-webkit-scrollbar{
+  width: 0;
+  height: 0;
 }
