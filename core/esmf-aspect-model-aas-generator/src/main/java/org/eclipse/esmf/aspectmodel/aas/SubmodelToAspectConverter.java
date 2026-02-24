@@ -404,8 +404,10 @@ class SubmodelToAspectConverter {
       if ( elementNamingStrategy instanceof final DetermineAutomatically automatically ) {
          elementName = determineSubmodelElementName( element, automatically.namePrefix(), upperCase, automatically.appendElementIdShort() );
          final String uniqueName = nextUniqueName( elementName.name() );
-         urn = aspectModelUrnFromSemanticId( element )
-               .orElseGet( () -> aspectUrn.withName( uniqueName ) );
+         final boolean useSemanticIdUrn = automatically.namePrefix().isEmpty() && automatically.appendElementIdShort();
+         urn = useSemanticIdUrn
+               ? aspectModelUrnFromSemanticId( element ).orElseGet( () -> aspectUrn.withName( uniqueName ) )
+               : aspectUrn.withName( uniqueName );
       } else if ( elementNamingStrategy instanceof final UseGivenUrn givenUrn ) {
          elementName = determineSubmodelElementName( element, "", upperCase, true );
          urn = givenUrn.aspectModelUrn();
