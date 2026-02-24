@@ -1462,16 +1462,20 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
          Object exampleValue = extractExampleValueFromProperty( property, collection );
          String language = null;
          if ( RDF.langString.getURI().equals( scalar.getUrn() ) ) {
-            if ( exampleValue instanceof final LangString langString ) {
+            switch ( exampleValue ) {
+            case final LangString langString -> {
                language = Optional.ofNullable( langString.getLanguageTag() ).map( Locale::getLanguage ).orElse( null );
                exampleValue = langString.getValue();
-            } else if ( exampleValue instanceof final Map<?, ?> map && !map.isEmpty() ) {
+            }
+            case final Map<?, ?> map when !map.isEmpty() -> {
                final Map.Entry<?, ?> firstEntry = map.entrySet().iterator().next();
                language = firstEntry.getKey().toString();
                exampleValue = firstEntry.getValue();
-            } else {
+            }
+            default -> {
                language = Locale.ENGLISH.getLanguage();
                // exampleValue remains as-is (String)
+            }
             }
          }
 
