@@ -349,7 +349,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
 
          return property.getExampleValue()
                .map( exampleValue -> exampleValue.as( ScalarValue.class ).getValue() )
-               .map( value -> value instanceof final Curie curie ? curie.value() : value )
+               .map( value -> value instanceof Curie(final String curieValue) ? curieValue : value )
                .orElseGet( () -> generateExampleValue( effectiveCharacteristics ) );
       }
 
@@ -1046,7 +1046,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
       }
       case final Either either -> extractEitherData( either, property, columnName, flattenedData, maxLength );
 
-      default -> extractScalarOrEntityData( characteristic, property, columnName, flattenedData, maxLength );
+      default -> extractScalarOrEntityData( characteristic, property, columnName, flattenedData );
       }
 
    }
@@ -1096,7 +1096,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
    }
 
    private void extractScalarOrEntityData( final Characteristic characteristic, final Property property,
-         final String columnName, final Map<String, Tuple2<Object, PrimitiveType.PrimitiveTypeName>> flattenedData, final BigInteger maxLength ) {
+         final String columnName, final Map<String, Tuple2<Object, PrimitiveType.PrimitiveTypeName>> flattenedData ) {
 
       final Type dataType = characteristic.getDataType().orElse( null );
       if ( dataType == null ) {
@@ -1156,7 +1156,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
       }
 
       // Generate default value based on data type
-      final Type dataType = characteristic.getDataType().orElse( null );
+      final Type dataType = characteristic != null ? characteristic.getDataType().orElse( null ) : null;
       if ( dataType instanceof final Scalar scalarDataType ) {
          return generateDefaultScalarValue( scalarDataType );
       }
