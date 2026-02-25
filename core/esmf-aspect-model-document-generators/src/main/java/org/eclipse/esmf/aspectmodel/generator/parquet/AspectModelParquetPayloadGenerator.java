@@ -866,7 +866,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
       return new EasyRandom().nextObject( String.class );
    }
 
-   private PrimitiveType.PrimitiveTypeName mapXsdTypeToParquetType( final String xsdTypeUri, final BigInteger maxLength ) {
+   private PrimitiveType.PrimitiveTypeName mapXsdTypeToParquetType( final String xsdTypeUri ) {
       final Resource xsdResource = ResourceFactory.createResource( xsdTypeUri );
 
       // Direct mapping
@@ -1073,7 +1073,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
          for ( int i = 0; i < collectionSize; i++ ) {
             final String indexedColumnName = columnName + "_" + i;
             final Object exampleValue = extractExampleValueFromProperty( property, collection );
-            flattenedData.put( indexedColumnName, new Tuple2<>( exampleValue, mapXsdTypeToParquetType( dataType.getUrn(), maxLength ) ) );
+            flattenedData.put( indexedColumnName, new Tuple2<>( exampleValue, mapXsdTypeToParquetType( dataType.getUrn() ) ) );
          }
       }
    }
@@ -1107,7 +1107,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
          extractComplexTypeProperties( complexType, columnName, flattenedData );
       } else {
          final Object exampleValue = extractExampleValueFromProperty( property, characteristic );
-         flattenedData.put( columnName, new Tuple2<>( exampleValue, mapXsdTypeToParquetType( dataType.getUrn(), maxLength ) ) );
+         flattenedData.put( columnName, new Tuple2<>( exampleValue, mapXsdTypeToParquetType( dataType.getUrn() ) ) );
 
       }
    }
@@ -1120,11 +1120,10 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
       }
 
       // Then check characteristic for example values
-      if ( characteristic instanceof final Enumeration enumeration ) {
-         if ( !enumeration.getValues().isEmpty() ) {
-            final Value firstValue = enumeration.getValues().getFirst();
-            return extractActualValue( firstValue );
-         }
+      if ( characteristic instanceof final Enumeration enumeration
+            && !enumeration.getValues().isEmpty() ) {
+         final Value firstValue = enumeration.getValues().getFirst();
+         return extractActualValue( firstValue );
       }
 
       // Handle Trait with constraints (e.g., RangeConstraint)
@@ -1543,16 +1542,20 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
          Object exampleValue = extractExampleValueFromProperty( property, originalCharacteristic );
          String language = null;
          if ( RDF.langString.getURI().equals( scalar.getUrn() ) ) {
-            if ( exampleValue instanceof final LangString langString ) {
+            switch ( exampleValue ) {
+            case final LangString langString -> {
                language = Optional.ofNullable( langString.getLanguageTag() ).map( Locale::getLanguage ).orElse( null );
                exampleValue = langString.getValue();
-            } else if ( exampleValue instanceof final Map<?, ?> map && !map.isEmpty() ) {
+            }
+            case final Map<?, ?> map when !map.isEmpty() -> {
                final Map.Entry<?, ?> firstEntry = map.entrySet().iterator().next();
                language = firstEntry.getKey().toString();
                exampleValue = firstEntry.getValue();
-            } else {
+            }
+            default -> {
                language = Locale.ENGLISH.getLanguage();
                // exampleValue remains as-is (String)
+            }
             }
          }
          final Resource xsdResource = ResourceFactory.createResource( scalar.getUrn() );
@@ -1583,7 +1586,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
          rows.add( singleRow );
       } else {
          // Create denormalized rows based on collections
-         createRowsForCollections( aspect, collectionsMap, flattenedData, rows );
+         createRowsForCollections( aspect, flattenedData, rows );
       }
 
       return rows;
@@ -1602,15 +1605,15 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
          if ( characteristic instanceof java.util.Collection ) {
             collectionsMap.computeIfAbsent( propertyPath, k -> new ArrayList<>() ).add( property );
          } else if ( characteristic != null && characteristic.getDataType().isPresent() &&
-               characteristic.getDataType().orElse( null ) instanceof final ComplexType complexType ) {
-            if ( columnNames.contains( propertyPath ) ) {
-               identifyCollections( complexType.getAllProperties(), propertyPath, collectionsMap );
-            }
+               characteristic.getDataType().orElse( null ) instanceof final ComplexType complexType
+               && columnNames.contains( propertyPath ) ) {
+            identifyCollections( complexType.getAllProperties(), propertyPath, collectionsMap );
          }
+
       }
    }
 
-   private void createRowsForCollections( final Aspect aspect, final Map<String, List<Property>> collectionsMap,
+   private void createRowsForCollections( final Aspect aspect,
          final Map<String, Tuple2<Object, PrimitiveType>> flattenedData,
          final List<Map<String, Object>> rows ) {
 
@@ -1645,10 +1648,9 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
       final Characteristic characteristic = property.getCharacteristic().orElse( null );
 
       if ( characteristic instanceof final Collection collection ) {
-         fillRowForCollection( collection, property, prefix, row, flattenedData );
+         fillRowForCollection( collection, property, prefix, row );
       } else if ( characteristic != null && characteristic.getDataType().isPresent() &&
             characteristic.getDataType().orElse( null ) instanceof final ComplexType complexType ) {
-         //} else if ( characteristic instanceof final Trait trait && trait.getBaseCharacteristic() instanceof final Collection collection ) {
          fillRowForComplexType( complexType, prefix, row, flattenedData );
       } else if ( characteristic != null ) {
          // Simple property
@@ -1658,7 +1660,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
    }
 
    private void fillRowForCollection( final Collection collection, final Property property, final String prefix,
-         final Map<String, Object> row, final Map<String, Tuple2<Object, PrimitiveType>> flattenedData ) {
+         final Map<String, Object> row ) {
 
       final Type dataType = collection.getDataType().orElse( null );
       if ( dataType instanceof final ComplexType complexType ) {
