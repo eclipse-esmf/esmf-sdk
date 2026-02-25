@@ -111,6 +111,8 @@ import io.vavr.Tuple2;
  */
 public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, byte[], ParquetGenerationConfig, ParquetArtifact> {
 
+   public static final String TYPE = "@type";
+   
    MessageType messageTypeSchema = null;
 
    Group group = null;
@@ -161,6 +163,252 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
          transformers = Arrays.asList( this::transformCollectionProperty, this::transformEnumeration, this::transformEntityProperty,
                this::transformAbstractEntityProperty, this::transformEitherProperty, this::transformSimpleProperty );
          recursiveProperty = new LinkedList<>();
+      }
+
+      private void addValueByPrimitiveType( final Object value, final PrimitiveType.PrimitiveTypeName primitiveTypeName,
+            final String fieldName, final Group group, final int typeLength ) {
+         switch ( primitiveTypeName ) {
+         case INT32:
+            if ( value instanceof final Number number ) {
+               group.add( fieldName, number.intValue() );
+            } else if ( value instanceof final String stringValue ) {
+               try {
+                  group.add( fieldName, Integer.parseInt( stringValue ) );
+               } catch ( final NumberFormatException _ ) {
+                  group.add( fieldName, 0 );
+               }
+            }
+            break;
+         case INT64:
+            if ( value instanceof final Number number ) {
+               group.add( fieldName, number.longValue() );
+            } else if ( value instanceof final String stringValue ) {
+               try {
+                  group.add( fieldName, Long.parseLong( stringValue ) );
+               } catch ( final NumberFormatException _ ) {
+                  group.add( fieldName, 0L );
+               }
+            }
+            break;
+         case FLOAT:
+            if ( value instanceof final Number number ) {
+               group.add( fieldName, number.floatValue() );
+            } else if ( value instanceof final String stringValue ) {
+               try {
+                  group.add( fieldName, Float.parseFloat( stringValue ) );
+               } catch ( final NumberFormatException _ ) {
+                  group.add( fieldName, 0.0f ); // Use default instead of writing string to float column
+               }
+            }
+            break;
+         case DOUBLE:
+            if ( value instanceof final Number number ) {
+               group.add( fieldName, number.doubleValue() );
+            } else if ( value instanceof final String stringValue ) {
+               try {
+                  group.add( fieldName, Double.parseDouble( stringValue ) );
+               } catch ( final NumberFormatException _ ) {
+                  group.add( fieldName, 0.0d );
+               }
+            }
+            break;
+         case BOOLEAN:
+            if ( value instanceof final Boolean booleanValue ) {
+               group.add( fieldName, booleanValue );
+            } else if ( value instanceof final String stringValue ) {
+               group.add( fieldName, Boolean.parseBoolean( stringValue ) );
+            }
+            break;
+         case FIXED_LEN_BYTE_ARRAY:
+            final String stringValue = value.toString();
+            final byte[] bytes = stringValue.getBytes( StandardCharsets.UTF_8 );
+            final byte[] paddedBytes = new byte[typeLength];
+            System.arraycopy( bytes, 0, paddedBytes, 0, Math.min( bytes.length, typeLength ) );
+            group.add( fieldName, Binary.fromConstantByteArray( paddedBytes ) );
+            break;
+         case BINARY:
+         default:
+            group.add( fieldName, value.toString() );
+            break;
+         }
+      }
+
+      private List<Map<String, Object>> createDenormalizedRows( final Aspect aspect,
+            final Map<String, Tuple2<Object, PrimitiveType>> flattenedData ) {
+         final List<Map<String, Object>> rows = new ArrayList<>();
+         final Map<String, List<Property>> collectionsMap = new HashMap<>();
+
+         // Identify collection properties
+         identifyCollections( aspect.getProperties(), "", collectionsMap );
+
+         if ( collectionsMap.isEmpty() ) {
+            // No collections, create single row with all data
+            final Map<String, Object> singleRow = new HashMap<>();
+            flattenedData.forEach( ( key, value ) -> singleRow.put( key, value._1 ) );
+            rows.add( singleRow );
+         } else {
+            // Create denormalized rows based on collections
+            createRowsForCollections( aspect, flattenedData, rows );
+         }
+
+         return rows;
+      }
+
+      private void extractAspectProperties( final Aspect aspect, final String prefix,
+            final Map<String, Tuple2<Object, PrimitiveType>> flattenedData,
+            final Set<String> visitedTypes ) {
+         for ( final Property property : aspect.getProperties() ) {
+            if ( property.isNotInPayload() ) {
+               continue;
+            }
+            extractPropertyData( property, prefix, flattenedData, visitedTypes );
+         }
+      }
+
+      private void createMessageTypeSchemaFromFlattenedData( final Map<String, Tuple2<Object, PrimitiveType>> data ) {
+
+         final Types.MessageTypeBuilder messageTypeBuilder = Types.buildMessage();
+
+         for ( final Map.Entry<String, Tuple2<Object, PrimitiveType>> entry : data.entrySet() ) {
+            final PrimitiveType parquetType = entry.getValue()._2;
+            messageTypeBuilder.addField( parquetType );
+
+         }
+
+         messageTypeSchema = messageTypeBuilder.named( "AspectModel" );
+
+      }
+
+      private void addGroup( final Object value, final PrimitiveType primitiveType, final String fieldName, final Group group ) {
+         if ( value == null ) {
+            return;
+         }
+
+         final LogicalTypeAnnotation logicalType = primitiveType.getLogicalTypeAnnotation();
+         final int typeLength = primitiveType.getTypeLength();
+
+         if ( logicalType != null ) {
+            // Handle logical types
+            if ( logicalType instanceof LogicalTypeAnnotation.StringLogicalTypeAnnotation ) {
+               group.add( fieldName, value.toString() );
+            } else if ( logicalType instanceof LogicalTypeAnnotation.DateLogicalTypeAnnotation ) {
+               // Handle date values - convert to days since epoch (1970-01-01)
+               if ( value instanceof final XMLGregorianCalendar xmlCal ) {
+                  // Convert XMLGregorianCalendar to LocalDate then to days since epoch (1970-01-01)
+                  final LocalDate localDate = LocalDate.of( xmlCal.getYear(), xmlCal.getMonth(), xmlCal.getDay() );
+                  final long daysSinceEpoch = localDate.toEpochDay();
+                  group.add( fieldName, (int) daysSinceEpoch );
+               } else if ( value instanceof final Number number ) {
+                  group.add( fieldName, number.intValue() );
+               } else if ( value instanceof String ) {
+                  try {
+                     // Parse ISO date string (YYYY-MM-DD) and convert to days since epoch
+                     final LocalDate date = LocalDate.parse( value.toString() );
+                     final long daysSinceEpoch = date.toEpochDay();
+                     group.add( fieldName, (int) daysSinceEpoch );
+                  } catch ( final Exception _ ) {
+                     // Fallback to 0 (epoch) if parsing fails
+                     group.add( fieldName, 0 );
+                  }
+               } else {
+                  group.add( fieldName, 0 );
+               }
+            } else if ( logicalType instanceof LogicalTypeAnnotation.TimestampLogicalTypeAnnotation ) {
+               if ( value instanceof XMLGregorianCalendar ) {
+                  XMLGregorianCalendar xmlCal = (XMLGregorianCalendar) value;
+                  // Check if timezone is present
+                  if ( xmlCal.getTimezone() != DatatypeConstants.FIELD_UNDEFINED ) {
+                     // Normalize this instance to UTC.
+                     xmlCal = xmlCal.normalize();
+                  }
+                  final long timestampMicros = xmlCal.toGregorianCalendar().getTimeInMillis() * 1000; // Convert to microseconds
+                  group.add( fieldName, timestampMicros );
+               } else if ( value instanceof final Number number ) {
+                  group.add( fieldName, number.longValue() );
+               }
+            } else {
+               // Default handling for other logical types
+               addValueByPrimitiveType( value, primitiveType.getPrimitiveTypeName(), fieldName, group, typeLength );
+            }
+         } else {
+            // No logical type annotation, use primitive type
+            addValueByPrimitiveType( value, primitiveType.getPrimitiveTypeName(), fieldName, group, typeLength );
+         }
+
+      }
+
+      private void generateParquetFile( final String outputPath, final Aspect aspect ) throws IOException {
+
+         final Map<String, Tuple2<Object, PrimitiveType>> flattenedExampleData = new LinkedHashMap<>();
+
+         final Set<String> visitedTypes = new HashSet<>();
+
+         // Extract all properties and create flattened structure
+         extractAspectProperties( aspect, "", flattenedExampleData, visitedTypes );
+
+         if ( flattenedExampleData.isEmpty() ) {
+            // Create a minimal placeholder entry for aspects with no extractable data
+            // (e.g., aspects with only recursive properties or only operations)
+            final PrimitiveType placeholderType = Types.primitive( PrimitiveType.PrimitiveTypeName.BINARY,
+                        org.apache.parquet.schema.Type.Repetition.OPTIONAL )
+                  .as( LogicalTypeAnnotation.stringType() )
+                  .named( "_placeholder" );
+            flattenedExampleData.put( "_placeholder", new Tuple2<>( aspect.getName(), placeholderType ) );
+         }
+
+         // Create MessageType from flattened data
+         createMessageTypeSchemaFromFlattenedData( flattenedExampleData );
+
+         // Generate denormalized rows based on collections
+         final List<Map<String, Object>> denormalizedRows = createDenormalizedRows( aspect, flattenedExampleData );
+         final Map<String, List<Map.Entry<String, Object>>> propertyNameKeyValueMap = new HashMap<>();
+
+         denormalizedRows.stream().flatMap( map -> map.entrySet().stream() )
+               .forEach( entrySet -> {
+                  final String mapKey = getFirstPartBeforeDoubleUnderscore( entrySet.getKey() );
+
+                  if ( propertyNameKeyValueMap.containsKey( mapKey ) ) {
+                     propertyNameKeyValueMap.get( mapKey ).add( entrySet );
+                  } else {
+                     final List<Map.Entry<String, Object>> entrySetList = new ArrayList<>();
+                     entrySetList.add( entrySet );
+                     propertyNameKeyValueMap.put( mapKey, entrySetList );
+                  }
+
+               } );
+
+         try ( final ParquetWriter<Group> writer = ExampleParquetWriter.builder( new LocalOutputFile( Paths.get( outputPath ) ) )
+               .withType( messageTypeSchema )
+               .build() ) {
+
+            final SimpleGroupFactory simpleGroupFactory = new SimpleGroupFactory( messageTypeSchema );
+
+            propertyNameKeyValueMap.entrySet().forEach( stringListEntry -> {
+
+               final List<Map.Entry<String, Object>> entryList = stringListEntry.getValue();
+
+               final Group groupNew = simpleGroupFactory.newGroup();
+
+               entryList.forEach( entry -> {
+                  final String fieldName = entry.getKey();
+                  final Object value = entry.getValue();
+
+                  if ( value != null && flattenedExampleData.containsKey( fieldName ) ) {
+                     final PrimitiveType parquetType = flattenedExampleData.get( fieldName )._2;
+                     addGroup( value, parquetType, fieldName, groupNew );
+                  }
+
+               } );
+
+               try {
+                  writer.write( groupNew );
+               } catch ( final IOException ioException ) {
+                  throw new RuntimeException( ioException );
+               }
+
+            } );
+
+         }
       }
 
       @Override
@@ -1033,13 +1281,13 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
          final String columnName, final Map<String, Tuple2<Object, PrimitiveType.PrimitiveTypeName>> flattenedData, final BigInteger maxLength ) {
 
       switch ( characteristic ) {
-      case final Collection collection -> extractCollectionData( collection, property, columnName, flattenedData, maxLength );
+      case final Collection collection -> extractCollectionData( collection, property, columnName, flattenedData );
       case final Trait trait -> {
          final Characteristic baseCharacteristic = trait.getBaseCharacteristic();
 
          // Check if the base characteristic is a Collection
          if ( baseCharacteristic instanceof final Collection collection ) {
-            extractCollectionData( collection, property, columnName, flattenedData, maxLength );
+            extractCollectionData( collection, property, columnName, flattenedData );
          } else {
             extractCharacteristicData( baseCharacteristic, property, columnName, flattenedData, maxLength );
          }
@@ -1052,7 +1300,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
    }
 
    private void extractCollectionData( final Collection collection, final Property property,
-         final String columnName, final Map<String, Tuple2<Object, PrimitiveType.PrimitiveTypeName>> flattenedData, final BigInteger maxLength ) {
+         final String columnName, final Map<String, Tuple2<Object, PrimitiveType.PrimitiveTypeName>> flattenedData ) {
       final Type dataType = collection.getDataType().orElse( null );
       if ( dataType == null ) {
          return;
@@ -1298,110 +1546,11 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
       return 1;
    }
 
-   private void createMessageTypeSchemaFromFlattenedData( final Map<String, Tuple2<Object, PrimitiveType>> data ) {
-
-      final Types.MessageTypeBuilder messageTypeBuilder = Types.buildMessage();
-
-      for ( final Map.Entry<String, Tuple2<Object, PrimitiveType>> entry : data.entrySet() ) {
-         final PrimitiveType parquetType = entry.getValue()._2;
-         messageTypeBuilder.addField( parquetType );
-
-      }
-
-      messageTypeSchema = messageTypeBuilder.named( "AspectModel" );
-
-   }
-
-   private void generateParquetFile( final String outputPath, final Aspect aspect ) throws IOException {
-
-      final Map<String, Tuple2<Object, PrimitiveType>> flattenedExampleData = new LinkedHashMap<>();
-
-      final Set<String> visitedTypes = new HashSet<>();
-
-      // Extract all properties and create flattened structure
-      extractAspectProperties( aspect, "", flattenedExampleData, visitedTypes );
-
-      if ( flattenedExampleData.isEmpty() ) {
-         // Create a minimal placeholder entry for aspects with no extractable data
-         // (e.g., aspects with only recursive properties or only operations)
-         final PrimitiveType placeholderType = Types.primitive( PrimitiveType.PrimitiveTypeName.BINARY,
-                     org.apache.parquet.schema.Type.Repetition.OPTIONAL )
-               .as( LogicalTypeAnnotation.stringType() )
-               .named( "_placeholder" );
-         flattenedExampleData.put( "_placeholder", new Tuple2<>( aspect.getName(), placeholderType ) );
-      }
-
-      // Create MessageType from flattened data
-      createMessageTypeSchemaFromFlattenedData( flattenedExampleData );
-
-      // Generate denormalized rows based on collections
-      final List<Map<String, Object>> denormalizedRows = createDenormalizedRows( aspect, flattenedExampleData );
-      final Map<String, List<Map.Entry<String, Object>>> propertyNameKeyValueMap = new HashMap<>();
-
-      denormalizedRows.stream().flatMap( map -> map.entrySet().stream() )
-            .forEach( entrySet -> {
-               final String mapKey = getFirstPartBeforeDoubleUnderscore( entrySet.getKey() );
-
-               if ( propertyNameKeyValueMap.containsKey( mapKey ) ) {
-                  propertyNameKeyValueMap.get( mapKey ).add( entrySet );
-               } else {
-                  final List<Map.Entry<String, Object>> entrySetList = new ArrayList<>();
-                  entrySetList.add( entrySet );
-                  propertyNameKeyValueMap.put( mapKey, entrySetList );
-               }
-
-            } );
-
-      try ( final ParquetWriter<Group> writer = ExampleParquetWriter.builder( new LocalOutputFile( Paths.get( outputPath ) ) )
-            .withType( messageTypeSchema )
-            .build() ) {
-
-         final SimpleGroupFactory simpleGroupFactory = new SimpleGroupFactory( messageTypeSchema );
-
-         propertyNameKeyValueMap.entrySet().forEach( stringListEntry -> {
-
-            final List<Map.Entry<String, Object>> entryList = stringListEntry.getValue();
-
-            final Group groupNew = simpleGroupFactory.newGroup();
-
-            entryList.forEach( entry -> {
-               final String fieldName = entry.getKey();
-               final Object value = entry.getValue();
-
-               if ( value != null && flattenedExampleData.containsKey( fieldName ) ) {
-                  final PrimitiveType parquetType = flattenedExampleData.get( fieldName )._2;
-                  addGroup( value, parquetType, fieldName, groupNew );
-               }
-
-            } );
-
-            try {
-               writer.write( groupNew );
-            } catch ( final IOException ioException ) {
-               throw new RuntimeException( ioException );
-            }
-
-         } );
-
-      }
-   }
-
    public String getFirstPartBeforeDoubleUnderscore( final String input ) {
       if ( input != null && input.contains( "__" ) ) {
          return input.split( "__" )[0];
       }
       return input; // Return original string if no double underscore found
-   }
-
-   private void extractAspectProperties( final Aspect aspect, final String prefix,
-         final Map<String, Tuple2<Object, PrimitiveType>> flattenedData,
-         final Set<String> visitedTypes ) {
-      for ( final Property property : aspect.getProperties() ) {
-         if ( property.isNotInPayload() ) {
-            continue;
-         }
-         extractPropertyData( property, prefix, flattenedData, visitedTypes );
-      }
    }
 
    private void extractPropertyData( final Property property, final String prefix,
@@ -1471,10 +1620,8 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
                language = firstEntry.getKey().toString();
                exampleValue = firstEntry.getValue();
             }
-            default -> {
-               language = Locale.ENGLISH.getLanguage();
-               // exampleValue remains as-is (String)
-            }
+            default -> language = Locale.ENGLISH.getLanguage();
+            // exampleValue remains as-is (String)
             }
          }
 
@@ -1552,10 +1699,9 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
                language = firstEntry.getKey().toString();
                exampleValue = firstEntry.getValue();
             }
-            default -> {
-               language = Locale.ENGLISH.getLanguage();
-               // exampleValue remains as-is (String)
-            }
+            default -> language = Locale.ENGLISH.getLanguage();
+            // exampleValue remains as-is (String)
+
             }
          }
          final Resource xsdResource = ResourceFactory.createResource( scalar.getUrn() );
@@ -1569,27 +1715,6 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
          final PrimitiveType parquetType = mapXsdTypeToParquetType( scalar.getUrn(), columnName, language, isTimezoneAvailable, maxLength );
          flattenedData.put( language == null ? columnName : columnName + "-" + language, new Tuple2<>( exampleValue, parquetType ) );
       }
-   }
-
-   private List<Map<String, Object>> createDenormalizedRows( final Aspect aspect,
-         final Map<String, Tuple2<Object, PrimitiveType>> flattenedData ) {
-      final List<Map<String, Object>> rows = new ArrayList<>();
-      final Map<String, List<Property>> collectionsMap = new HashMap<>();
-
-      // Identify collection properties
-      identifyCollections( aspect.getProperties(), "", collectionsMap );
-
-      if ( collectionsMap.isEmpty() ) {
-         // No collections, create single row with all data
-         final Map<String, Object> singleRow = new HashMap<>();
-         flattenedData.forEach( ( key, value ) -> singleRow.put( key, value._1 ) );
-         rows.add( singleRow );
-      } else {
-         // Create denormalized rows based on collections
-         createRowsForCollections( aspect, flattenedData, rows );
-      }
-
-      return rows;
    }
 
    private void identifyCollections( final List<Property> properties, final String prefix,
@@ -1693,131 +1818,4 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
       }
    }
 
-   private void addGroup( final Object value, final PrimitiveType primitiveType, final String fieldName, final Group group ) {
-      if ( value == null ) {
-         return;
-      }
-
-      final LogicalTypeAnnotation logicalType = primitiveType.getLogicalTypeAnnotation();
-      final int typeLength = primitiveType.getTypeLength();
-
-      if ( logicalType != null ) {
-         // Handle logical types
-         if ( logicalType instanceof LogicalTypeAnnotation.StringLogicalTypeAnnotation ) {
-            group.add( fieldName, value.toString() );
-         } else if ( logicalType instanceof LogicalTypeAnnotation.DateLogicalTypeAnnotation ) {
-            // Handle date values - convert to days since epoch (1970-01-01)
-            if ( value instanceof final XMLGregorianCalendar xmlCal ) {
-               // Convert XMLGregorianCalendar to LocalDate then to days since epoch (1970-01-01)
-               final LocalDate localDate = LocalDate.of( xmlCal.getYear(), xmlCal.getMonth(), xmlCal.getDay() );
-               final long daysSinceEpoch = localDate.toEpochDay();
-               group.add( fieldName, (int) daysSinceEpoch );
-            } else if ( value instanceof final Number number ) {
-               group.add( fieldName, number.intValue() );
-            } else if ( value instanceof String ) {
-               try {
-                  // Parse ISO date string (YYYY-MM-DD) and convert to days since epoch
-                  final LocalDate date = LocalDate.parse( value.toString() );
-                  final long daysSinceEpoch = date.toEpochDay();
-                  group.add( fieldName, (int) daysSinceEpoch );
-               } catch ( final Exception _ ) {
-                  // Fallback to 0 (epoch) if parsing fails
-                  group.add( fieldName, 0 );
-               }
-            } else {
-               group.add( fieldName, 0 );
-            }
-         } else if ( logicalType instanceof LogicalTypeAnnotation.TimestampLogicalTypeAnnotation ) {
-            if ( value instanceof XMLGregorianCalendar ) {
-               XMLGregorianCalendar xmlCal = (XMLGregorianCalendar) value;
-               // Check if timezone is present
-               if ( xmlCal.getTimezone() != DatatypeConstants.FIELD_UNDEFINED ) {
-                  // Normalize this instance to UTC.
-                  xmlCal = xmlCal.normalize();
-               }
-               final long timestampMicros = xmlCal.toGregorianCalendar().getTimeInMillis() * 1000; // Convert to microseconds
-               group.add( fieldName, timestampMicros );
-            } else if ( value instanceof final Number number ) {
-               group.add( fieldName, number.longValue() );
-            }
-         } else {
-            // Default handling for other logical types
-            addValueByPrimitiveType( value, primitiveType.getPrimitiveTypeName(), fieldName, group, typeLength );
-         }
-      } else {
-         // No logical type annotation, use primitive type
-         addValueByPrimitiveType( value, primitiveType.getPrimitiveTypeName(), fieldName, group, typeLength );
-      }
-
-   }
-
-   private void addValueByPrimitiveType( final Object value, final PrimitiveType.PrimitiveTypeName primitiveTypeName,
-         final String fieldName, final Group group, final int typeLength ) {
-      switch ( primitiveTypeName ) {
-      case INT32:
-         if ( value instanceof final Number number ) {
-            group.add( fieldName, number.intValue() );
-         } else if ( value instanceof final String stringValue ) {
-            try {
-               group.add( fieldName, Integer.parseInt( stringValue ) );
-            } catch ( final NumberFormatException _ ) {
-               group.add( fieldName, 0 );
-            }
-         }
-         break;
-      case INT64:
-         if ( value instanceof final Number number ) {
-            group.add( fieldName, number.longValue() );
-         } else if ( value instanceof final String stringValue ) {
-            try {
-               group.add( fieldName, Long.parseLong( stringValue ) );
-            } catch ( final NumberFormatException _ ) {
-               group.add( fieldName, 0L );
-            }
-         }
-         break;
-      case FLOAT:
-         if ( value instanceof final Number number ) {
-            group.add( fieldName, number.floatValue() );
-         } else if ( value instanceof final String stringValue ) {
-            try {
-               group.add( fieldName, Float.parseFloat( stringValue ) );
-            } catch ( final NumberFormatException _ ) {
-               group.add( fieldName, 0.0f ); // Use default instead of writing string to float column
-            }
-         }
-         break;
-      case DOUBLE:
-         if ( value instanceof final Number number ) {
-            group.add( fieldName, number.doubleValue() );
-         } else if ( value instanceof final String stringValue ) {
-            try {
-               group.add( fieldName, Double.parseDouble( stringValue ) );
-            } catch ( final NumberFormatException _ ) {
-               group.add( fieldName, 0.0d );
-            }
-         }
-         break;
-      case BOOLEAN:
-         if ( value instanceof final Boolean booleanValue ) {
-            group.add( fieldName, booleanValue );
-         } else if ( value instanceof final String stringValue ) {
-            group.add( fieldName, Boolean.parseBoolean( stringValue ) );
-         }
-         break;
-      case FIXED_LEN_BYTE_ARRAY:
-         final String stringValue = value.toString();
-         final byte[] bytes = stringValue.getBytes( StandardCharsets.UTF_8 );
-         final byte[] paddedBytes = new byte[typeLength];
-         System.arraycopy( bytes, 0, paddedBytes, 0, Math.min( bytes.length, typeLength ) );
-         group.add( fieldName, Binary.fromConstantByteArray( paddedBytes ) );
-         break;
-      case BINARY:
-      default:
-         group.add( fieldName, value.toString() );
-         break;
-      }
-   }
-
-   public static final String TYPE = "@type";
 }
