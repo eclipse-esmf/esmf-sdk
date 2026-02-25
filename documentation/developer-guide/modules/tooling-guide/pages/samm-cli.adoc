@@ -3,15 +3,17 @@
 [[samm-cli]]
 = SAMM CLI
 
-The SAMM CLI is a command line tool for the validation of Aspect Models and the generation of artifacts, such as documentation or code, from Aspect Models.
-It is available as a native executable for multiple platforms (Windows, Linux and macOS) and as an executable JAR file.
-You can find the latest release [on GitHub](https://github.com/eclipse-esmf/esmf-sdk/releases/latest).
+The SAMM CLI is a command line tool for the validation of Aspect Models and the generation of
+artifacts, such as documentation or code, from Aspect Models. It is available as a native executable
+for multiple platforms (Windows, Linux and macOS) and as an executable JAR file. You can find the
+latest release [on GitHub](https://github.com/eclipse-esmf/esmf-sdk/releases/latest).
 
 [[samm-cli-getting-started]]
 == Running the SAMM CLI
 
-For the executable jar, call `java -jar samm-cli-{esmf-sdk-version}.jar` followed by one of the following subcommands (e.g., `java -jar samm-cli-{esmf-sdk-version}.jar help`).
-In the following sections, `samm` will be used as the command name.
+For the executable jar, call `java -jar samm-cli-{esmf-sdk-version}.jar` followed by one of the
+following subcommands (e.g., `java -jar samm-cli-{esmf-sdk-version}.jar help`). In the following
+sections, `samm` will be used as the command name.
 
 [TIP]
 ====
@@ -25,28 +27,33 @@ alias samm='java -jar /location/to/samm-cli-{esmf-sdk-version}.jar'
 ====
 
 . *For the Windows native executable:*
-* *Download*: Download via above link or visit the repository of the Java SDK which contains the SAMM CLI at the Github https://github.com/eclipse-esmf/esmf-sdk/releases[releases page] and download executable file for Windows.
+* *Download*: Download via above link or visit the repository of the Java SDK which contains the
+   SAMM CLI at the Github https://github.com/eclipse-esmf/esmf-sdk/releases[releases page] and
+   download executable file for Windows.
 * *Extract*: extract it to a location of your choice.
 * *Open* `samm.exe`: This will open a command prompt in this directory, where you can enter further `samm` commands.
 * *Input*: Make sure to read the below documentation and provide model files in the correct xref:models-directory-structure[directory structure].
 
 . *For the Linux native executable:*
-* *Download*: Download via above link or visit the repository of the Java SDK which contains the SAMM CLI at the Github https://github.com/eclipse-esmf/esmf-sdk/releases[releases page] and download executable file for Linux.
+* *Download*: Download via above link or visit the repository of the Java SDK which contains the
+   SAMM CLI at the Github https://github.com/eclipse-esmf/esmf-sdk/releases[releases page] and
+   download executable file for Linux.
 * *Extract*: Unpack the archive to your preferred directory.
 * *Open Terminal*: Open the Terminal and navigate to the directory with the application.
 * *Input*: Make sure to read the below documentation and provide model files in the correct
-xref:models-directory-structure[directory structure].
+   xref:models-directory-structure[directory structure].
 
 * *Execute*: Run the application using the command `./samm`.
 
-Successful execution of a command is signaled by returning 0. In case of a logical or other internal error the error code 1 is being returned.
-Missing or wrong command parameters result in error code 2 being returned.
+Successful execution of a command is signaled by returning 0. In case of a logical or other internal
+error the error code 1 is being returned. Missing or wrong command parameters result in error code 2
+being returned.
 
-To get an overview of all commands and subcommands, use `samm help`.
-To get help for a certain subcommand, use `help` before the subcommand name, e.g., `samm help aspect`, `samm help aspect
-validate` or `samm help aas to aspect`.
-Each subcommand can have its own set of options which allow the user to further fine-tune the execution of the command.
-The available options and their meaning can also be seen in the help text of the individual subcommands.
+To get an overview of all commands and subcommands, use `samm help`. To get help for a certain
+subcommand, use `help` before the subcommand name, e.g., `samm help aspect`, `samm help aspect
+validate` or `samm help aas to aspect`. Each subcommand can have its own set of options which allow
+the user to further fine-tune the execution of the command. The available options and their meaning
+can also be seen in the help text of the individual subcommands.
 
 === List of commands
 
@@ -56,14 +63,16 @@ The available options and their meaning can also be seen in the help text of the
 ====
 In place of `<model>` in the command descriptions below, you can provide either one of:
 
-* a relative file name, such as `AspectModel.ttl` or `./somewhere/AspectModel.ttl` (on Linux and MacOS) or `.\somewhere\AspectModel.ttl` (on Windows),
+* a relative file name, such as `AspectModel.ttl` or `./somewhere/AspectModel.ttl` (on Linux and
+MacOS) or `.\somewhere\AspectModel.ttl` (on Windows),
 * an absolut file name (put it in quotes ("") if the path or file name contains blank spaces), such as
 `/home/me/aspect-models/org.eclipse.esmf.example/1.0.0/AspectModel.ttl` (on Linux and MacOS) or
 `C:\Users\me\aspect-models\org.eclipse.esmf.example\1.0.0\AspectModel.ttl` (on Windows),
 * a URL pointing to a .ttl file in a publically accessible GitHub repository, such as
 `\https://github.com/eclipse-tractusx/sldt-semantic-models/blob/main/io.catenax.battery.battery_pass/6.0.0/BatteryPass.ttl`
 or `\https://github.com/eclipse-esmf/esmf-aspect-model-editor/blob/main/core/apps/ame/src/assets/aspect-models/org.eclipse.examples/1.0.0/Movement.ttl`,
-* an Aspect Model URN, such as `urn:samm:org.eclipse.esmf.example:1.0.0#Aspect`, however note that this also requires setting a models source, see xref:configuration-of-model-resolution[configuration
+* an Aspect Model URN, such as `urn:samm:org.eclipse.esmf.example:1.0.0#Aspect`, however note that
+this also requires setting a models source, see xref:configuration-of-model-resolution[configuration
 of model resolution] for more information.
 ====
 
@@ -72,24 +81,24 @@ of model resolution] for more information.
 | Command | Description/Options | Examples
 | help                             | Get overview of all commands                                                            | `samm help`
 .3+| [[help]] help <commands...>   | Get help for a list of subcommands                                                      | `samm help aspect`
-|                                                                                         | `samm help aspect to svg`
-|                                                                                         | `samm help aspect validate`
+                                   |                                                                                         | `samm help aspect to svg`
+                                   |                                                                                         | `samm help aspect validate`
 .2+| [[aspect-validate]] aspect <model> validate | Validate Aspect Model                                                     | `samm aspect AspectModel.ttl validate`
-| _--custom-resolver_ : use an external resolver for the resolution of the model elements | `samm aspect AspectModel.ttl validate --custom-resolver myresolver.sh`
+                                   | _--custom-resolver_ : use an external resolver for the resolution of the model elements | `samm aspect AspectModel.ttl validate --custom-resolver myresolver.sh`
 .3+| [[aspect-prettyprint]] aspect <model> prettyprint | Pretty-print Aspect Model                                           | `samm aspect AspectModel.ttl prettyprint`
-| _--output, -o_ : the output will be saved to the given file                             | `samm aspect AspectModel.ttl prettyprint -o c:\Results\PrettyPrinted.ttl`
-| _--overwrite, -w_ : Overwrite the input file                                            | `samm aspect AspectModel.ttl prettyprint -w`
+                                   | _--output, -o_ : the output will be saved to the given file                             | `samm aspect AspectModel.ttl prettyprint -o c:\Results\PrettyPrinted.ttl`
+                                   | _--overwrite, -w_ : Overwrite the input file                                            | `samm aspect AspectModel.ttl prettyprint -w`
 .5+| [[aspect-to-html]] aspect <model> to html | Generate HTML documentation for an Aspect Model                             | `samm aspect AspectModel.ttl to html`
-| _--output, -o_ : the output will be saved to the given file                             | `samm aspect AspectModel.ttl to html -o c:\Model.html`
-| _--css, -c_ : CSS file with custom styles to be included in the generated HTML
-documentation                                                                         | `samm aspect AspectModel.ttl to html -c c:\styles.css`
-| _--language, -l_ : The language from the model for which the HTML should be generated
-(default: en)                                                                         | `samm aspect AspectModel.ttl to html -l de`
-| _--custom-resolver_ : use an external resolver for the resolution of the model elements | `samm aspect AspectModel.ttl to html --custom-resolver myresolver.bat`
+                                   | _--output, -o_ : the output will be saved to the given file                             | `samm aspect AspectModel.ttl to html -o c:\Model.html`
+                                   | _--css, -c_ : CSS file with custom styles to be included in the generated HTML
+                                       documentation                                                                         | `samm aspect AspectModel.ttl to html -c c:\styles.css`
+                                   | _--language, -l_ : The language from the model for which the HTML should be generated
+                                       (default: en)                                                                         | `samm aspect AspectModel.ttl to html -l de`
+                                   | _--custom-resolver_ : use an external resolver for the resolution of the model elements | `samm aspect AspectModel.ttl to html --custom-resolver myresolver.bat`
 .4+| [[aspect-to-png]] aspect <model> to png | Generate PNG diagram for Aspect Model                                         | `samm aspect AspectModel.ttl to png`
-| _--output, -o_ : output file path (default: stdout); as PNG is a binary format, it is
-strongly recommended to output the result to a file by using the -o option or the
-console redirection operator '>')|
+                                   | _--output, -o_ : output file path (default: stdout); as PNG is a binary format, it is
+                                       strongly recommended to output the result to a file by using the -o option or the
+                                       console redirection operator '>')|
                                    | _--language, -l_ : the language from the model for which the diagram should be
                                        generated (default: en)                                                               |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements | `samm aspect AspectModel.ttl to png --custom-resolver resolver.jar`
@@ -168,6 +177,10 @@ console redirection operator '>')|
                                    | _--separate-files, -sf_ : Create separate files for each schema                         |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
 .4+| [[aspect-to-json]] aspect <model> to json | Generate example JSON payload data for an Aspect Model                      | `samm aspect AspectModel.ttl to json`
+                                   | _--output, -o_ : output file path (default: stdout)                                     |
+                                   | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
+                                   | _--add-type-attribute_, _-ta_ : Add `@type` attribute for inherited Entities            |
+.4+| [[aspect-to-json]] aspect <model> to parquet | Generate example Apache Parquet payload data for an Aspect Model         | `samm aspect AspectModel.ttl to parquet`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
                                    | _--add-type-attribute_, _-ta_ : Add `@type` attribute for inherited Entities            |
@@ -272,45 +285,51 @@ console redirection operator '>')|
 [[configuration-of-model-resolution]]
 === Configuration of model resolution
 
-When a loaded file refers to model elements defined elsewhere, the model resolver looks up the files to load.
-You can configure where such lookup should be done:
+When a loaded file refers to model elements defined elsewhere, the model resolver looks up the files
+to load. You can configure where such lookup should be done:
 
 * Using the `--models-root` switch, you can provide a directory that follows the models
-xref:models-directory-structure[directory structure].
-This switch can be repeated to provide multiple models root directories.
+  xref:models-directory-structure[directory structure]. This switch can be repeated to provide
+  multiple models root directories.
 
-* Using the `--custom-resolver` switch, you can provide a custom resolver implementation.
-The value of the switch can be any command which is directly executable by the underlying operating system (such as a batch script on Windows or a shell script on Linux/Unix).
-When a model element needs to be resolved, this command is executed with the URN of the element to resolve passed as the last parameter.
-The command can provide other parameters as well, the element URN will be added automatically as the last one by samm-cli.
-The resolved model definition is expected to be output to the stdout in Turtle format.
-In this way the extension can be flexibly done in any programming language/script language, including complex logic if necessary.
+* Using the `--custom-resolver` switch, you can provide a custom resolver implementation. The value
+  of the switch can be any command which is directly executable by the underlying operating system
+  (such as a batch script on Windows or a shell script on Linux/Unix). When a model element needs to
+  be resolved, this command is executed with the URN of the element to resolve passed as the last
+  parameter. The command can provide other parameters as well, the element URN will be added
+  automatically as the last one by samm-cli. The resolved model definition is expected to be output
+  to the stdout in Turtle format. In this way the extension can be flexibly done in any programming
+  language/script language, including complex logic if necessary.
 
-* Using the `--github` switch, you can configure a location in a remote GitHub repository as models root, e.g., `eclipse-esmf/esmf-sdk`.
-Optionally, you can also provide `--github-directory` to set the remote directory and `--github-branch` or `--github-tag` to set the branch name or tag, respectively.
-If the repository is private, you can also pass `--token` to set the repository-specific GitHub token or `--github-token` for a token for repository/repositories.
-To generate a token, refer to the https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token[fine-grained
- access token] documentation; the token must have at least "Contents" repository read permissions.
+* Using the `--github` switch, you can configure a location in a remote GitHub repository as models
+  root, e.g., `eclipse-esmf/esmf-sdk`. Optionally, you can also provide `--github-directory` to set
+  the remote directory and `--github-branch` or `--github-tag` to set the branch name or tag,
+  respectively. If the repository is private, you can also pass `--token` to set the repository-specific GitHub token
+  or `--github-token` for a token for repository/repositories.
+  To generate a token, refer to the https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token[fine-grained
+  access token] documentation; the token must have at least "Contents" repository read permissions.
+
 
 NOTE: When using an Aspect Model URN as input to a command (such as
-`urn:samm:org.eclipse.esmf.example:1.0.0#Aspect`), you must also provide at least one of the switches mentioned above (`--models-root`, `--custom-resolver` or `--github`), otherwise samm-cli will not know where to find the corresonding file(s).
+`urn:samm:org.eclipse.esmf.example:1.0.0#Aspect`), you must also provide at least one of the
+switches mentioned above (`--models-root`, `--custom-resolver` or `--github`), otherwise samm-cli
+will not know where to find the corresonding file(s).
 
 [[using-the-cli-to-create-a-json-openapi-specification]]
 == Using the CLI to create a JSON OpenAPI Specification
 
 Every specification is based on one Aspect, which needs a separately defined server URL where the given aspect will be.
-The URL will be defined as string with the `-b` option, i.e.: https://www.example.org.
-The default URL, using the above defined `--api-base-url`, would result in https://www.example.org/api/v1/\{tenant-id}/<aspectName>.
-By default,
-`\{tenant-id}` followed by the Aspect's name is used as path, with the aspect name converted from CamelCase to kebab-case.
-The default path can be changed with the `--resource-path` switch.
-If the path is defined further, for example using `--resource-path "/resources/\{resourceId}"`, the resulting URL would be:
+The URL will be defined as string with the `-b` option, i.e.: https://www.example.org. The default URL, using the above
+defined `--api-base-url`, would result in https://www.example.org/api/v1/\{tenant-id}/<aspectName>. By default,
+`\{tenant-id}` followed by the Aspect's name is used as path, with the aspect name converted from CamelCase to
+kebab-case. The default path can be changed with the `--resource-path` switch. If the path is defined further, for
+example using `--resource-path "/resources/\{resourceId}"`, the resulting URL would be:
 https://www.example.org/resources/\{resourceId}.
 
-It will be required to specify the parameter, in case there is an additional parameter defined.
-This has to be done in JSON or in YAML, depending on the kind of specification chosen.
-For example: With the option `--resource-path
-"/resources/\{resourceId}"` the generator constructs the URL https://www.example.org/resources/\{resourceId} and then the `--parameter-file` defines the parameter resourceId in YAML:
+It will be required to specify the parameter, in case there is an additional parameter defined. This has to be done in
+JSON or in YAML, depending on the kind of specification chosen. For example: With the option `--resource-path
+"/resources/\{resourceId}"` the generator constructs the URL https://www.example.org/resources/\{resourceId} and then
+the `--parameter-file` defines the parameter resourceId in YAML:
 
 [source,yaml]
 ----
@@ -322,7 +341,6 @@ resourceId:
   schema:
     type: string
 ----
-
 Definitions of the parameters must correspond to the specification of the OpenAPI _Parameter Object_.
 
 A template can be used for more specific customization - parameter `--template-file`.
@@ -395,7 +413,6 @@ paths:
 ----
 
 The full command for the native executable samm-cli would be:
-
 [source,shell,subs="attributes+,+quotes"]
 ----
 samm aspect _AspectModel.ttl_ to openapi -b "https://www.example.org" -r "/resources/\{resourceId}" -p _fileLocation_
@@ -648,8 +665,9 @@ As these entries are rather of static character without direct references to any
 * a general Collection - cursor and/or offset based paging
 * TimeSeries - cursor, offset and/or time based paging
 
-For all these paging mechanisms, an additional entry with the name `PagingSchema` is generated in the `components/schemas` part of the specification, which is then used as the main response schema for the Aspect.
-Basically, instead of a single Aspect, a collection of Aspects is returned, together with optional total number of Aspects available in the collection:
+For all these paging mechanisms, an additional entry with the name `PagingSchema` is generated in the `components/schemas` part of the specification,
+which is then used as the main response schema for the Aspect. Basically, instead of a single Aspect, a collection of Aspects is returned,
+together with optional total number of Aspects available in the collection:
 
 [source,JSON]
 ----
@@ -670,7 +688,8 @@ Basically, instead of a single Aspect, a collection of Aspects is returned, toge
 ----
 
 Depending on the concrete paging model selected, there can be additional properties in the `PagingSchema` object.
-For cursor based paging, the `cursor` object denotes the position of the returned Aspects in relation to some other uniquely identifiable Aspect (`before` or `after` it):
+For cursor based paging, the `cursor` object denotes the position of the returned Aspects in relation to some other
+uniquely identifiable Aspect (`before` or `after` it):
 
 [source,JSON]
 ----
@@ -704,7 +723,8 @@ For offset and time based paging, the data is returned in batches of requested s
 }
 ----
 
-In addition to the `PagingSchema` object, also several new parameters are added to the request parameters section of the generated document, with the help of which the size and/or the relative position of the returned data can be controlled.
+In addition to the `PagingSchema` object, also several new parameters are added to the request parameters section of the generated document,
+with the help of which the size and/or the relative position of the returned data can be controlled.
 All paging mechanisms have the following parameters in common, the meaning of which can be discerned from their descriptions:
 
 [source,JSON]
@@ -731,7 +751,6 @@ All paging mechanisms have the following parameters in common, the meaning of wh
 
 Depending on the exact paging model selected, additional paging specific parameters are available.
 For offset based paging:
-
 [source,JSON]
 ----
 "name" : "start",
@@ -744,7 +763,6 @@ For offset based paging:
 ----
 
 For cursor based paging:
-
 [source,JSON]
 ----
 {
@@ -787,7 +805,6 @@ For cursor based paging:
 ----
 
 And finally for the time based paging:
-
 [source,JSON]
 ----
 {
@@ -823,11 +840,11 @@ And finally for the time based paging:
 
 As with xref:using-the-cli-to-create-a-json-openapi-specification[OpenAPI], every AsyncAPI specification is based on one Aspect.
 Each Aspect is associated with one https://www.asyncapi.com/docs/reference/specification/v3.0.0#channelObject[channel address].
-The channel address is set as string using with`--channel-address` or `-ca` option, e.g.: `-ca 123-456/789-012/test/1.0.0/Aspect`.
-The default channel address is derived from the Aspect's URN and is constructed using the pattern `{namespace}/\{version}/{aspectName}`.
+The channel address is set as string using with`--channel-address` or `-ca` option, e.g.: `-ca 123-456/789-012/test/1.0.0/Aspect`. The default channel address
+is derived from the Aspect's URN and is constructed using the pattern `{namespace}/\{version}/{aspectName}`.
+
 
 The full command for the native executable samm-cli would be:
-
 [source,shell,subs="attributes+,+quotes"]
 ----
 samm aspect _AspectModel.ttl_ to asyncapi -ca "123-456/789-012/test/1.0.0/Aspect"
@@ -950,7 +967,8 @@ If the Aspect also has a non-empty list of Operations defined, such as the one i
 ----
 
 operations will be generated in some places of AsyncAPI specification:
-https://www.asyncapi.com/docs/reference/specification/v3.0.0#operationObject[operations] section, channel
+https://www.asyncapi.com/docs/reference/specification/v3.0.0#operationObject[operations] section,
+channel
 https://www.asyncapi.com/docs/reference/specification/v3.0.0#messagesObject[messages] section and
 https://www.asyncapi.com/docs/reference/specification/v3.0.0#schemaObject[schemas] section:
 
@@ -1068,7 +1086,8 @@ If the Aspect also has a non-empty list of events defined, like the one in the f
 ----
 
 events will be generated in some places of AsyncAPI specification:
-https://www.asyncapi.com/docs/reference/specification/v3.0.0#operationObject[operations] section, channel
+https://www.asyncapi.com/docs/reference/specification/v3.0.0#operationObject[operations] section,
+channel
 https://www.asyncapi.com/docs/reference/specification/v3.0.0#messagesObject[messages] section and
 https://www.asyncapi.com/docs/reference/specification/v3.0.0#schemaObject[schemas] section:
 
@@ -1087,7 +1106,7 @@ https://www.asyncapi.com/docs/reference/specification/v3.0.0#schemaObject[schema
       "massages" : {
         "SpeedUpdateEvent" : {
           "$ref" : "#/components/messages/SpeedUpdateEvent" // <1>
-        }
+        },
       }
     }
   },
@@ -1100,7 +1119,7 @@ https://www.asyncapi.com/docs/reference/specification/v3.0.0#schemaObject[schema
       "messages" : [ {
         "$ref" : "#/channels/Movement/messages/SpeedUpdateEvent" // <1>
       } ]
-    }
+    },
   },
   "components" : {
     "messages" : {
@@ -1140,6 +1159,7 @@ https://www.asyncapi.com/docs/reference/specification/v3.0.0#schemaObject[schema
 <3> property of event
 <4> the characteristics are generated
 <5> for events available only 'receive' action: map to a subscribe operation
+
 
 [[models-directory-structure]]
 == Understanding the models directory structure
