@@ -112,7 +112,7 @@ import io.vavr.Tuple2;
 public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, byte[], ParquetGenerationConfig, ParquetArtifact> {
 
    public static final String TYPE = "@type";
-   
+
    MessageType messageTypeSchema = null;
 
    Group group = null;
@@ -120,6 +120,10 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
    Map<String, String> typeKeyColumnNameMap = new HashMap<>();
 
    List<String> columnNames = new ArrayList<>();
+
+   final EasyRandom easyRandom = new EasyRandom();
+
+   final Random rand = new Random();
 
    public static final ParquetGenerationConfig DEFAULT_CONFIG = ParquetGenerationConfigBuilder.builder().build();
 
@@ -163,6 +167,31 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
          transformers = Arrays.asList( this::transformCollectionProperty, this::transformEnumeration, this::transformEntityProperty,
                this::transformAbstractEntityProperty, this::transformEitherProperty, this::transformSimpleProperty );
          recursiveProperty = new LinkedList<>();
+      }
+
+      private void createRowsForCollections( final Aspect aspect,
+            final Map<String, Tuple2<Object, PrimitiveType>> flattenedData,
+            final List<Map<String, Object>> rows ) {
+
+         // Create separate rows for each top-level property group
+         for ( final Property property : aspect.getProperties() ) {
+            if ( property.isNotInPayload() ) {
+               continue;
+            }
+
+            final String propertyName = property.getPayloadName();
+            final Map<String, Object> row = new HashMap<>();
+
+            // Initialize all columns as null
+            flattenedData.keySet().forEach( key -> row.put( key, null ) );
+
+            // Fill only the columns related to this property
+            fillRowForProperty( property, propertyName, row, flattenedData );
+
+            if ( row.values().stream().anyMatch( java.util.Objects::nonNull ) ) {
+               rows.add( row );
+            }
+         }
       }
 
       private void addValueByPrimitiveType( final Object value, final PrimitiveType.PrimitiveTypeName primitiveTypeName,
@@ -1072,22 +1101,22 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
 
       if ( scalarUri.equals( XSD.xstring.getURI() ) || scalarUri.equals( XSD.anyURI.getURI() )
             || scalarUri.equals( XSD.normalizedString.getURI() ) || scalarUri.equals( XSD.token.getURI() ) ) {
-         return new EasyRandom().nextObject( String.class );
+         return easyRandom.nextObject( String.class );
       } else if ( scalarUri.equals( XSD.xboolean.getURI() ) ) {
          return true;
       } else if ( scalarUri.equals( XSD.duration.getURI() ) || scalarUri.equals( XSD.yearMonthDuration.getURI() )
             || scalarUri.equals( XSD.dayTimeDuration.getURI() ) ) {
-         return DatatypeFactory.newDefaultInstance().newDuration( new Random().nextLong( 86400000L ) ).toString();
+         return DatatypeFactory.newDefaultInstance().newDuration( rand.nextLong( 86400000L ) ).toString();
       } else if ( scalarUri.equals( XSD.dateTime.getURI() ) || scalarUri.equals( XSD.dateTimeStamp.getURI() ) ) {
          return DatatypeFactory.newDefaultInstance().newXMLGregorianCalendar( new GregorianCalendar() );
       } else if ( scalarUri.equals( XSD.date.getURI() ) ) {
          return LocalDate.now().toString();
       } else if ( scalarUri.equals( XSD.hexBinary.getURI() ) ) {
-         return HexFormat.of().formatHex( new EasyRandom().nextObject( String.class ).getBytes( StandardCharsets.UTF_8 ) );
+         return HexFormat.of().formatHex( easyRandom.nextObject( String.class ).getBytes( StandardCharsets.UTF_8 ) );
       } else if ( scalarUri.equals( XSD.base64Binary.getURI() ) ) {
-         return Base64.getEncoder().encodeToString( new EasyRandom().nextObject( String.class ).getBytes( StandardCharsets.UTF_8 ) );
+         return Base64.getEncoder().encodeToString( easyRandom.nextObject( String.class ).getBytes( StandardCharsets.UTF_8 ) );
       } else if ( scalarUri.equals( RDF.langString.getURI() ) ) {
-         return new EasyRandom().nextObject( String.class );
+         return easyRandom.nextObject( String.class );
       }
 
       // Handle numeric types using SammXsdType
@@ -1111,7 +1140,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
          return "unit:hectopascal";
       }
 
-      return new EasyRandom().nextObject( String.class );
+      return easyRandom.nextObject( String.class );
    }
 
    private PrimitiveType.PrimitiveTypeName mapXsdTypeToParquetType( final String xsdTypeUri ) {
@@ -1409,11 +1438,10 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
          return generateDefaultScalarValue( scalarDataType );
       }
 
-      return new EasyRandom().nextObject( String.class );
+      return easyRandom.nextObject( String.class );
    }
 
    private Number generateNumericValueInRange( final Class<?> javaType, final Number min, final Number max ) {
-      final Random rand = new Random();
       if ( Integer.class.isAssignableFrom( javaType ) || Short.class.isAssignableFrom( javaType )
             || Byte.class.isAssignableFrom( javaType ) ) {
          final int lo = min.intValue();
@@ -1735,31 +1763,6 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
             identifyCollections( complexType.getAllProperties(), propertyPath, collectionsMap );
          }
 
-      }
-   }
-
-   private void createRowsForCollections( final Aspect aspect,
-         final Map<String, Tuple2<Object, PrimitiveType>> flattenedData,
-         final List<Map<String, Object>> rows ) {
-
-      // Create separate rows for each top-level property group
-      for ( final Property property : aspect.getProperties() ) {
-         if ( property.isNotInPayload() ) {
-            continue;
-         }
-
-         final String propertyName = property.getPayloadName();
-         final Map<String, Object> row = new HashMap<>();
-
-         // Initialize all columns as null
-         flattenedData.keySet().forEach( key -> row.put( key, null ) );
-
-         // Fill only the columns related to this property
-         fillRowForProperty( property, propertyName, row, flattenedData );
-
-         if ( row.values().stream().anyMatch( java.util.Objects::nonNull ) ) {
-            rows.add( row );
-         }
       }
    }
 
