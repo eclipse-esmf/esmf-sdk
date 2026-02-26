@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,7 +36,10 @@ import org.eclipse.digitaltwin.aas4j.v3.dataformat.aasx.AASXDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.DeserializationException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.json.JsonDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.xml.XmlDeserializer;
+import org.eclipse.digitaltwin.aas4j.v3.model.AbstractLangString;
 import org.eclipse.digitaltwin.aas4j.v3.model.ConceptDescription;
+import org.eclipse.digitaltwin.aas4j.v3.model.DataSpecificationIec61360;
+import org.eclipse.digitaltwin.aas4j.v3.model.EmbeddedDataSpecification;
 import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
 import org.eclipse.digitaltwin.aas4j.v3.model.ModellingKind;
 
@@ -120,10 +124,32 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
    }
 
    private static Set<LangString> descriptions( final ConceptDescription conceptDescription ) {
-      return SubmodelToAspectUtils.langStringSet( conceptDescription.getDescription() );
+      final Set<LangString> referableDescriptions = SubmodelToAspectUtils.langStringSet( conceptDescription.getDescription() );
+      if ( !referableDescriptions.isEmpty() ) {
+         return referableDescriptions;
+      }
+      return firstIec61360LangStrings( conceptDescription, DataSpecificationIec61360::getDefinition );
    }
 
    private static Set<LangString> displayNames( final ConceptDescription conceptDescription ) {
-      return SubmodelToAspectUtils.langStringSet( conceptDescription.getDisplayName() );
+      final Set<LangString> referableDisplayNames = SubmodelToAspectUtils.langStringSet( conceptDescription.getDisplayName() );
+      if ( !referableDisplayNames.isEmpty() ) {
+         return referableDisplayNames;
+      }
+      return firstIec61360LangStrings( conceptDescription, DataSpecificationIec61360::getPreferredName );
+   }
+
+   private static Set<LangString> firstIec61360LangStrings(
+         final ConceptDescription conceptDescription,
+         final Function<DataSpecificationIec61360, List<? extends AbstractLangString>> languageGetter ) {
+      return Optional.ofNullable( conceptDescription.getEmbeddedDataSpecifications() ).orElseGet( List::of ).stream()
+            .map( EmbeddedDataSpecification::getDataSpecificationContent )
+            .filter( DataSpecificationIec61360.class::isInstance )
+            .map( DataSpecificationIec61360.class::cast )
+            .map( languageGetter )
+            .filter( values -> values != null && !values.isEmpty() )
+            .findFirst()
+            .map( SubmodelToAspectUtils::langStringSet )
+            .orElseGet( Set::of );
    }
 }
