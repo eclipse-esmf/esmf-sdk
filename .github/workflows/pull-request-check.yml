@@ -52,6 +52,14 @@ jobs:
         with:
           java-version: '25.0.1'
           distribution: 'temurin'
+      - name: Set RELEASE_VERSION from Maven project.version
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version --non-recursive)"
+          echo "RELEASE_VERSION=$version" >> "$GITHUB_ENV"
+          echo "RELEASE_VERSION=$version"
+
 
       - name: Cache Maven packages
         uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb #v5.0.1
@@ -106,12 +114,7 @@ jobs:
           tar -xvf jre.tar.gz
           mv ./jdk-25.0.1+8-jre ./${bundle}/jre
           cp tools/samm-cli/target/samm-cli-${RELEASE_VERSION}.jar ./${bundle}/
-
-          cat <<EOF > ./${bundle}/run.sh
-          #!/usr/bin/env bash
-          HERE="\${BASH_SOURCE%/*}"
-          "\$HERE/jre/bin/java" --enable-native-access=ALL-UNNAMED --sun-misc-unsafe-memory-access=allow -jar "\$HERE/samm-cli-${RELEASE_VERSION}.jar" "\$@"
-          EOF
+          cp tools/samm-cli/scripts/linux/run.sh ./${bundle}/
           chmod +x ./${bundle}/run.sh
 
           curl -Lo warp-packer https://github.com/dgiagio/warp/releases/download/v0.3.0/linux-x64.warp-packer
@@ -134,11 +137,7 @@ jobs:
           7z x jre.zip
           mv ./jdk-25.0.1+8-jre ./${bundle}/jre
           cp tools/samm-cli/target/samm-cli-${RELEASE_VERSION}.jar ./${bundle}/
-
-          cat <<EOF > ./${bundle}/run.bat
-          @echo off
-          %~dp0jre\bin\java --enable-native-access=ALL-UNNAMED --sun-misc-unsafe-memory-access=allow -jar %~dp0samm-cli-${RELEASE_VERSION}.jar %*
-          EOF
+          cp tools/samm-cli/scripts/windows/run.bat ./${bundle}/
 
           curl -Lo warp-packer.exe https://github.com/dgiagio/warp/releases/download/v0.3.0/windows-x64.warp-packer.exe
           if [ "$(sha256sum warp-packer | cut -d' ' -f1)" != "4f9a0f223f0e9f689fc718fdf86a147a357921ffa69c236deadc3274091070c1" ]; then
@@ -158,13 +157,7 @@ jobs:
           tar -xvf jre.tar.gz
           mv ./jdk-25.0.1+8-jre ./${bundle}/jre
           cp tools/samm-cli/target/samm-cli-${RELEASE_VERSION}.jar ./${bundle}/
-
-          cat <<EOF > ./${bundle}/run.sh
-          #!/usr/bin/env bash
-
-          HERE="\${BASH_SOURCE%/*}"
-          "\$HERE/jre/Contents/Home/bin/java" --enable-native-access=ALL-UNNAMED --sun-misc-unsafe-memory-access=allow -jar "\$HERE/samm-cli-${RELEASE_VERSION}.jar" "\$@"
-          EOF
+          cp tools/samm-cli/scripts/macos/run.sh ./${bundle}/
           chmod +x ./${bundle}/run.sh
 
           curl -Lo warp-packer https://github.com/dgiagio/warp/releases/download/v0.3.0/macos-x64.warp-packer
@@ -176,12 +169,6 @@ jobs:
 
           ./warp-packer --arch macos-x64 --input_dir ${bundle} --exec run.sh --output samm
           chmod a+x samm
-        shell: bash
-
-      - name: Create convenience batch file
-        if: matrix.os == 'windows-latest'
-        run: |
-          echo "start cmd /k samm.exe help" > tools/samm-cli/target/start-samm-cli.bat
         shell: bash
 
       - name: Upload executable jar
