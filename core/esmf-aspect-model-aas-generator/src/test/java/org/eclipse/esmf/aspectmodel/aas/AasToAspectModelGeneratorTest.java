@@ -138,7 +138,8 @@ class AasToAspectModelGeneratorTest {
          // [Reason]: "value": "C:\\Windows\\Program Files\\Demo\\Firmware" for type URI.
          // Illegal character in opaque part at index 2: C:\Windows\Program Files\Demo\Firmware
          "IDTA 02007-1-0_Template_Software Nameplate.aasx",
-         // [Reason]: Range property with type double. java.lang.NumberFormatException: For input string: "[0;100]"
+         // [Reason]: Range property with type double. java.lang.NumberFormatException: For input string:
+         // "[0;100]"
          "IDTA 02019-1-0_Template_PlantAssetManagement.aasx"
    );
 
