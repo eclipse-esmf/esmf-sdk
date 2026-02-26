@@ -487,8 +487,8 @@ class SammCliTest extends SammCliAbstractTest {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "to", "html" );
       assertThat( result.stderr() ).isEmpty();
       assertThat( result.stdout() )
-            .contains( "<div class='pb-4'>urn:samm:org.eclipse.esmf.test.ordering:1.0.0#Aspect</div>" )
-            .doesNotContain( "<div class='pb-4'>urn:samm:org.eclipse.esmf.test.ordering.dependency:1.0.0#Aspect</div>" );
+            .contains( "urn:samm:org.eclipse.esmf.test.ordering:1.0.0#Aspect" )
+            .doesNotContain( "urn:samm:org.eclipse.esmf.test.ordering.dependency:1.0.0#Aspect" );
    }
 
    @Test
