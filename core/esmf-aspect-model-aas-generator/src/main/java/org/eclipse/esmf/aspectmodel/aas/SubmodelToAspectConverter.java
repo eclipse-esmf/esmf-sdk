@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -45,6 +46,7 @@ import org.eclipse.esmf.metamodel.characteristic.impl.DefaultSingleEntity;
 import org.eclipse.esmf.metamodel.characteristic.impl.DefaultTrait;
 import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
 import org.eclipse.esmf.metamodel.constraint.impl.DefaultRangeConstraint;
+import org.eclipse.esmf.metamodel.datatype.LangString;
 import org.eclipse.esmf.metamodel.impl.DefaultAspect;
 import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;
 import org.eclipse.esmf.metamodel.impl.DefaultEntity;
@@ -87,6 +89,7 @@ class SubmodelToAspectConverter {
    private static final Logger LOG = LoggerFactory.getLogger( SubmodelToAspectConverter.class );
 
    private final Map<SubmodelElement, Property> properties = new HashMap<>();
+   private final Map<String, ConceptDescriptionInfo> conceptDescriptionInfoById;
    /**
     * Needed to avoid duplicate names when attributes with the same name appear at different nesting
     * levels.
@@ -95,6 +98,14 @@ class SubmodelToAspectConverter {
    private final ValueInstantiator valueInstantiator = new ValueInstantiator();
 
    private AspectModelUrn aspectUrn;
+
+   SubmodelToAspectConverter() {
+      this( Map.of() );
+   }
+
+   SubmodelToAspectConverter( final Map<String, ConceptDescriptionInfo> conceptDescriptionInfoById ) {
+      this.conceptDescriptionInfoById = Map.copyOf( conceptDescriptionInfoById );
+   }
 
    private record ElementName(
          String name, boolean isSynthetic
@@ -337,8 +348,8 @@ class SubmodelToAspectConverter {
 
       final MetaModelBaseAttributes aspectMetaModelBaseAttributes = MetaModelBaseAttributes.builder()
             .withUrn( aspectUrn )
-            .withPreferredNames( SubmodelToAspectUtils.langStringSet( submodel.getDisplayName(), LOG ) )
-            .withDescriptions( SubmodelToAspectUtils.langStringSet( submodel.getDescription(), LOG ) )
+            .withPreferredNames( SubmodelToAspectUtils.langStringSet( submodel.getDisplayName() ) )
+            .withDescriptions( SubmodelToAspectUtils.langStringSet( submodel.getDescription() ) )
             .withSee( seeReferences( submodel ) )
             .isAnonymous( aspectName.isSynthetic() )
             .build();
@@ -374,6 +385,9 @@ class SubmodelToAspectConverter {
    private Optional<ScalarValue> exampleValueForProperty( final String lexicalRepresentation, final Optional<Type> targetType ) {
       return targetType
             .flatMap( type -> {
+               if ( lexicalRepresentation.isEmpty() ) {
+                  return Optional.empty();
+               }
                if ( type instanceof final Scalar scalarType ) {
                   final Optional<ScalarValue> exampleValue =
                         valueInstantiator.buildScalarValue( lexicalRepresentation, null, scalarType.getUrn() );
@@ -398,7 +412,7 @@ class SubmodelToAspectConverter {
    }
 
    private MetaModelBaseAttributes baseAttributes( final SubmodelElement element, final ElementNamingStrategy elementNamingStrategy,
-         final boolean upperCase ) {
+         final boolean upperCase, final boolean includeSee ) {
       final ElementName elementName;
       final AspectModelUrn urn;
       if ( elementNamingStrategy instanceof final DetermineAutomatically automatically ) {
@@ -417,24 +431,56 @@ class SubmodelToAspectConverter {
 
       return MetaModelBaseAttributes.builder()
             .withUrn( urn )
-            .withPreferredNames( SubmodelToAspectUtils.langStringSet( element.getDisplayName(), LOG ) )
-            .withDescriptions( SubmodelToAspectUtils.langStringSet( element.getDescription(), LOG ) )
-            .withSee( seeReferences( element ) )
+            .withPreferredNames( SubmodelToAspectUtils.langStringSet( element.getDisplayName() ) )
+            .withDescriptions( SubmodelToAspectUtils.langStringSet( element.getDescription() ) )
+            .withSee( includeSee ? seeReferences( element ) : List.of() )
             .isAnonymous( elementName.isSynthetic() )
             .build();
    }
 
-   private MetaModelBaseAttributes namedBaseAttributes( final SubmodelElement element, final String baseName, final boolean upperCase ) {
-      final String uniqueName = nextUniqueName( sanitizeAspectModelElementName( baseName, upperCase ) );
+   private MetaModelBaseAttributes namedBaseAttributes( final SubmodelElement element, final String baseName ) {
+      final String uniqueName = nextUniqueName( sanitizeAspectModelElementName( baseName, true ) );
       final AspectModelUrn urn = aspectModelUrnFromSemanticId( element )
             .orElseGet( () -> aspectUrn.withName( uniqueName ) );
+      final Set<LangString> preferredNames = preferredNamesForEntity( element );
+      final Set<LangString> descriptions = descriptionsForEntity( element );
       return MetaModelBaseAttributes.builder()
             .withUrn( urn )
-            .withPreferredNames( SubmodelToAspectUtils.langStringSet( element.getDisplayName(), LOG ) )
-            .withDescriptions( SubmodelToAspectUtils.langStringSet( element.getDescription(), LOG ) )
+            .withPreferredNames( preferredNames )
+            .withDescriptions( descriptions )
             .withSee( seeReferences( element ) )
             .isAnonymous( false )
             .build();
+   }
+
+   private Set<LangString> preferredNamesForEntity( final SubmodelElement element ) {
+      final Set<LangString> elementDisplayNames = SubmodelToAspectUtils.langStringSet( element.getDisplayName() );
+      if ( !elementDisplayNames.isEmpty() ) {
+         return elementDisplayNames;
+      }
+      return conceptDescriptionInfoFor( element )
+            .map( ConceptDescriptionInfo::displayNames )
+            .orElseGet( Set::of );
+   }
+
+   private Set<LangString> descriptionsForEntity( final SubmodelElement element ) {
+      final Set<LangString> elementDescriptions = SubmodelToAspectUtils.langStringSet( element.getDescription() );
+      if ( !elementDescriptions.isEmpty() ) {
+         return elementDescriptions;
+      }
+      return conceptDescriptionInfoFor( element )
+            .map( ConceptDescriptionInfo::descriptions )
+            .orElseGet( Set::of );
+   }
+
+   private Optional<ConceptDescriptionInfo> conceptDescriptionInfoFor( final SubmodelElement element ) {
+      return Optional.ofNullable( element.getSemanticId() )
+            .stream()
+            .flatMap( semanticId -> semanticId.getKeys().stream() )
+            .map( Key::getValue )
+            .map( conceptDescriptionInfoById::get )
+            .filter( java.util.Objects::nonNull )
+            .findFirst();
    }
 
    private String nextUniqueName( final String baseName ) {
@@ -452,7 +498,7 @@ class SubmodelToAspectConverter {
          return existingProperty;
       }
 
-      final MetaModelBaseAttributes metaModelBaseAttributes = baseAttributes( submodelElement, new DetermineAutomatically(), false );
+      final MetaModelBaseAttributes metaModelBaseAttributes = baseAttributes( submodelElement, new DetermineAutomatically(), false, true );
       final Characteristic characteristic = createCharacteristic( submodelElement, metaModelBaseAttributes.urn() );
       final Optional<ScalarValue> exampleValue =
             submodelElement instanceof final org.eclipse.digitaltwin.aas4j.v3.model.Property property
@@ -479,7 +525,7 @@ class SubmodelToAspectConverter {
    }
 
    private Operation createOperation( final org.eclipse.digitaltwin.aas4j.v3.model.Operation operation ) {
-      final MetaModelBaseAttributes metaModelBaseAttributes = baseAttributes( operation, new DetermineAutomatically(), false );
+      final MetaModelBaseAttributes metaModelBaseAttributes = baseAttributes( operation, new DetermineAutomatically(), false, true );
       final List<OperationVariable> potentialOutputs = Stream.concat( operation.getOutputVariables().stream(),
             operation.getInoutputVariables().stream() ).toList();
       if ( potentialOutputs.size() > 1 ) {
@@ -509,7 +555,7 @@ class SubmodelToAspectConverter {
    }
 
    private Event createEvent( final EventElement event ) {
-      final MetaModelBaseAttributes metaModelBaseAttributes = baseAttributes( event, new DetermineAutomatically(), true );
+      final MetaModelBaseAttributes metaModelBaseAttributes = baseAttributes( event, new DetermineAutomatically(), true, true );
       LOG.warn( "Creating event {} with empty list of properties", metaModelBaseAttributes.urn().getName() );
       return new DefaultEvent( metaModelBaseAttributes, List.of() );
    }
@@ -521,10 +567,6 @@ class SubmodelToAspectConverter {
          case EXTERNAL_REFERENCE -> "External reference ";
       } + ref.getKeys().stream().map( Key::getValue ).collect( Collectors.joining( "/" ) );
 
-      final Function<Reference, Optional<String>> referenceToUri = ref -> ref.getKeys().isEmpty()
-            ? Optional.empty()
-            : SubmodelToAspectUtils.validIrdiOrUri( ref.getKeys().get( ref.getKeys().size() - 1 ).getValue(), LOG );
-
       final String characteristicDescription = "First reference: %s, second reference: %s".formatted(
             describeReference.apply( relationshipElement.getFirst() ), describeReference.apply( relationshipElement.getSecond() ) );
 
@@ -533,16 +575,11 @@ class SubmodelToAspectConverter {
       final AspectModelUrn urn = aspectModelUrnFromSemanticId( relationshipElement )
             .orElseGet( () -> aspectUrn.withName( elementName.name() ) );
 
-      final Stream<String> relationShipSeeReferences = Stream.of( relationshipElement.getFirst(), relationshipElement.getSecond() )
-            .map( referenceToUri )
-            .flatMap( Optional::stream );
-      final List<String> seeReferences = Stream.concat( seeReferences( relationshipElement ).stream(), relationShipSeeReferences ).toList();
-
       final MetaModelBaseAttributes metaModelBaseAttributes = MetaModelBaseAttributes.builder()
             .withUrn( urn )
-            .withPreferredNames( SubmodelToAspectUtils.langStringSet( relationshipElement.getDisplayName(), LOG ) )
+            .withPreferredNames( SubmodelToAspectUtils.langStringSet( relationshipElement.getDisplayName() ) )
             .withDescription( java.util.Locale.ENGLISH, characteristicDescription )
-            .withSee( seeReferences )
+            .withSee( List.of() )
             .isAnonymous( elementName.isSynthetic() )
             .build();
 
@@ -594,7 +631,7 @@ class SubmodelToAspectConverter {
             Optional.of( new DefaultScalar( dataTypeUri ) ) );
 
       final MetaModelBaseAttributes traitMetaModelBaseAttributes = baseAttributes( range, new DetermineAutomatically(
-            propertyUrn.getName() + "Trait" ), true );
+            propertyUrn.getName() + "Trait" ), true, false );
       return new DefaultTrait( traitMetaModelBaseAttributes, baseCharacteristic, List.of( constraint ) );
    }
 
@@ -614,9 +651,9 @@ class SubmodelToAspectConverter {
       final boolean appendEntityIdShort = entity.getIdShort() != null;
       final String entityNamePrefix = determineSubmodelElementName( entity, propertyUrn.getName() + "Entity", true,
             appendEntityIdShort ).name();
-      final MetaModelBaseAttributes entityMetaModelBaseAttributes = namedBaseAttributes( entity, entityNamePrefix, true );
+      final MetaModelBaseAttributes entityMetaModelBaseAttributes = namedBaseAttributes( entity, entityNamePrefix );
       final MetaModelBaseAttributes characteristicMetaModelBaseAttributes = baseAttributes( entity,
-            new DetermineAutomatically( entityMetaModelBaseAttributes.urn().getName() + "Characteristic", false ), true );
+            new DetermineAutomatically( entityMetaModelBaseAttributes.urn().getName() + "Characteristic", false ), true, false );
       final List<Property> entityProperties = entity.getStatements().stream()
             .map( this::createProperty )
             .toList();
@@ -628,9 +665,9 @@ class SubmodelToAspectConverter {
          final AspectModelUrn propertyUrn ) {
       final String collectionEntityBaseName = "ElementCollection" + sanitizeAspectModelElementName( propertyUrn.getName(), true );
       final MetaModelBaseAttributes entityMetaModelBaseAttributes = namedBaseAttributes( submodelElementCollection,
-            collectionEntityBaseName, true );
+            collectionEntityBaseName );
       final MetaModelBaseAttributes characteristicMetaModelBaseAttributes = baseAttributes( submodelElementCollection,
-            new DetermineAutomatically( entityMetaModelBaseAttributes.urn().getName() + "Characteristic", false ), true );
+            new DetermineAutomatically( entityMetaModelBaseAttributes.urn().getName() + "Characteristic", false ), true, false );
       final List<Property> collectionProperties = submodelElementCollection.getValue().stream()
             .map( this::createProperty )
             .toList();
@@ -657,7 +694,7 @@ class SubmodelToAspectConverter {
          elementCharacteristic = createCharacteristic( effectiveType, values.getFirst(), propertyUrn );
       }
       final MetaModelBaseAttributes metaModelBaseAttributes = baseAttributes( submodelElementList,
-            new DetermineAutomatically( propertyUrn.getName() + collectionTypeSuffix, false ), true );
+            new DetermineAutomatically( propertyUrn.getName() + collectionTypeSuffix, false ), true, false );
       if ( orderRelevant ) {
          return new DefaultList( metaModelBaseAttributes, Optional.empty(), Optional.of( elementCharacteristic ) );
       }
@@ -675,7 +712,7 @@ class SubmodelToAspectConverter {
             final Characteristic nestedElementCharacteristic = createDefaultScalarCharacteristic( submodelElementList, XSD.xstring.getURI(),
                   new DetermineAutomatically( propertyUrn.getName() + collectionElementSuffix, false ) );
             final MetaModelBaseAttributes metaModelBaseAttributes = baseAttributes( submodelElementList,
-                  new DetermineAutomatically( propertyUrn.getName() + "Nested" + collectionTypeSuffix, false ), true );
+                  new DetermineAutomatically( propertyUrn.getName() + "Nested" + collectionTypeSuffix, false ), true, false );
             if ( orderRelevant ) {
                yield new DefaultList( metaModelBaseAttributes, Optional.empty(), Optional.of( nestedElementCharacteristic ) );
             }
@@ -689,16 +726,16 @@ class SubmodelToAspectConverter {
    private Characteristic createEmptyEntityCharacteristic( final SubmodelElement sourceElement, final String entityNamePrefix,
          final AspectModelUrn propertyUrn ) {
       final String entityBaseName = entityNamePrefix + sanitizeAspectModelElementName( propertyUrn.getName(), true );
-      final MetaModelBaseAttributes entityMetaModelBaseAttributes = namedBaseAttributes( sourceElement, entityBaseName, true );
+      final MetaModelBaseAttributes entityMetaModelBaseAttributes = namedBaseAttributes( sourceElement, entityBaseName );
       final MetaModelBaseAttributes characteristicMetaModelBaseAttributes = baseAttributes( sourceElement,
-            new DetermineAutomatically( entityMetaModelBaseAttributes.urn().getName() + "Characteristic", false ), true );
+            new DetermineAutomatically( entityMetaModelBaseAttributes.urn().getName() + "Characteristic", false ), true, false );
       final Entity entityType = new DefaultEntity( entityMetaModelBaseAttributes, List.of() );
       return new DefaultSingleEntity( characteristicMetaModelBaseAttributes, entityType );
    }
 
    private Characteristic createDefaultScalarCharacteristic( final SubmodelElement submodelElement, final String dataTypeUri,
          final ElementNamingStrategy elementNamingStrategy ) {
-      final MetaModelBaseAttributes metaModelBaseAttributes = baseAttributes( submodelElement, elementNamingStrategy, true );
+      final MetaModelBaseAttributes metaModelBaseAttributes = baseAttributes( submodelElement, elementNamingStrategy, true, false );
       return new DefaultCharacteristic( metaModelBaseAttributes, Optional.of( new DefaultScalar( dataTypeUri ) ) );
    }
 

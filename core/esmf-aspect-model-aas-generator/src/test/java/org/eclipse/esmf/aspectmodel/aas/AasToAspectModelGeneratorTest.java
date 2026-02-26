@@ -28,6 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -39,10 +40,15 @@ import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
 import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectModel;
+import org.eclipse.esmf.metamodel.Characteristic;
+import org.eclipse.esmf.metamodel.Entity;
 import org.eclipse.esmf.metamodel.Operation;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.Unit;
+import org.eclipse.esmf.metamodel.characteristic.Collection;
 import org.eclipse.esmf.metamodel.characteristic.Set;
+import org.eclipse.esmf.metamodel.characteristic.Trait;
+import org.eclipse.esmf.metamodel.datatype.LangString;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
@@ -52,13 +58,22 @@ import org.eclipse.digitaltwin.aas4j.v3.dataformat.xml.XmlDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.model.AasSubmodelElements;
 import org.eclipse.digitaltwin.aas4j.v3.model.DataTypeDefXsd;
 import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
+import org.eclipse.digitaltwin.aas4j.v3.model.KeyTypes;
 import org.eclipse.digitaltwin.aas4j.v3.model.ModellingKind;
+import org.eclipse.digitaltwin.aas4j.v3.model.ReferenceTypes;
 import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
+import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElementCollection;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElementList;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultConceptDescription;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultEnvironment;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultKey;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultLangStringNameType;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultLangStringTextType;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultProperty;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultReference;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodel;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodelElementCollection;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodelElementList;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Test;
@@ -114,15 +129,17 @@ class AasToAspectModelGeneratorTest {
    }
 
    private static final List<String> IGNORED_AASX_FILES = List.of(
+         // [Reason]: "kind": "Instance" not "Template"
          "IDTA 02004-2-0_Example_HandoverDocumentation.aasx",
-         "IDTA 02011-1-0_Template_HierarchicalStructuresEnablingBoM.aasx",
-         "IDTA 02011-1-1_Template_HSEBoM.aasx",
+         // [Reason]: "kind": "Instance" not "Template"
          "IDTA 02003_Sample_TechnicalData_forAASMetamodelV3.1.aasx",
+         // [Reason]: "kind": "Instance" not "Template"
          "IDTA 02003_Sample_TechnicalData.aasx",
-         "IDTA 02007-1-0_Template_Software Nameplate.aasx", // "value": "C:\\Windows\\Program Files\\Demo\\Firmware" for type URI. Illegal
-                                                            // character in opaque part at index 2: C:\Windows\Program Files\Demo\Firmware
-         "IDTA 02019-1-0_Template_PlantAssetManagement.aasx" // Range property with type double. java.lang.NumberFormatException: For input
-                                                             // string: "[0;100]"
+         // [Reason]: "value": "C:\\Windows\\Program Files\\Demo\\Firmware" for type URI.
+         // Illegal character in opaque part at index 2: C:\Windows\Program Files\Demo\Firmware
+         "IDTA 02007-1-0_Template_Software Nameplate.aasx",
+         // [Reason]: Range property with type double. java.lang.NumberFormatException: For input string: "[0;100]"
+         "IDTA 02019-1-0_Template_PlantAssetManagement.aasx"
    );
 
    protected static Stream<Arguments> idtaSubmodelFiles() throws URISyntaxException, IOException {
@@ -211,6 +228,123 @@ class AasToAspectModelGeneratorTest {
             .forEach( see -> assertThat( see ).doesNotContain( "/ " ) );
    }
 
+   @Test
+   void testDoNotGenerateSeeReferencesForCharacteristics() {
+      final InputStream inputStream = AasToAspectModelGeneratorTest.class.getClassLoader().getResourceAsStream(
+            "submodel-templates/published/Handover Documentation/2/0/IDTA 02004-2-0_Template_HandoverDocumentation.aasx" );
+      final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromAasx( inputStream );
+      final List<Aspect> aspects = aspectModelGenerator.generate().map( AspectArtifact::getContent ).toList();
+
+      assertThatCode( aspectModelGenerator::generate ).doesNotThrowAnyException();
+
+      aspects.stream()
+            .flatMap( AasToAspectModelGeneratorTest::allCharacteristics )
+            .forEach( characteristic -> assertThat( characteristic.getSee() ).isEmpty() );
+   }
+
+   @Test
+   void testEntityDescriptionFallsBackToConceptDescriptionDefinition() {
+      final String conceptDescriptionId = "https://example.com/concept-description/document-versions";
+      final SubmodelElementCollection collection = new DefaultSubmodelElementCollection.Builder()
+            .idShort( "DocumentVersions" )
+            .semanticId( new DefaultReference.Builder()
+                  .type( ReferenceTypes.EXTERNAL_REFERENCE )
+                  .keys( List.of( new DefaultKey.Builder()
+                        .type( KeyTypes.CONCEPT_DESCRIPTION )
+                        .value( conceptDescriptionId )
+                        .build() ) )
+                  .build() )
+            .build();
+      final Submodel submodel = new DefaultSubmodel.Builder()
+            .id( "https://example.com/submodel/document-versions/1.0.0" )
+            .idShort( "DocumentVersionsSubmodel" )
+            .kind( ModellingKind.TEMPLATE )
+            .submodelElements( List.of( collection ) )
+            .build();
+      final DefaultConceptDescription conceptDescription = new DefaultConceptDescription.Builder()
+            .id( conceptDescriptionId )
+            .idShort( "DocumentVersions" )
+            .description( new DefaultLangStringTextType.Builder()
+                  .language( "en" )
+                  .text( "Information elements of individual Document Version entities" )
+                  .build()
+            )
+            .build();
+      final Environment environment = new DefaultEnvironment.Builder()
+            .submodels( List.of( submodel ) )
+            .conceptDescriptions( List.of( conceptDescription ) )
+            .build();
+
+      final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( environment );
+      final List<Aspect> aspects = aspectModelGenerator.generate().map( AspectArtifact::getContent ).toList();
+
+      assertThatCode( aspectModelGenerator::generate ).doesNotThrowAnyException();
+
+      final List<String> entityDescriptions = aspects.stream()
+            .flatMap( AasToAspectModelGeneratorTest::allCharacteristics )
+            .map( Characteristic::getDataType )
+            .flatMap( Optional::stream )
+            .filter( Entity.class::isInstance )
+            .map( Entity.class::cast )
+            .flatMap( entity -> entity.getDescriptions().stream() )
+            .map( LangString::getValue )
+            .toList();
+
+      assertThat( entityDescriptions )
+            .contains( "Information elements of individual Document Version entities" );
+   }
+
+   @Test
+   void testEntityPreferredNamesFallBackToConceptDescriptionDisplayName() {
+      final String conceptDescriptionId = "https://example.com/concept-description/document-versions-display-name";
+      final SubmodelElementCollection collection = new DefaultSubmodelElementCollection.Builder()
+            .idShort( "DocumentVersions" )
+            .semanticId( new DefaultReference.Builder()
+                  .type( ReferenceTypes.EXTERNAL_REFERENCE )
+                  .keys( List.of( new DefaultKey.Builder()
+                        .type( KeyTypes.CONCEPT_DESCRIPTION )
+                        .value( conceptDescriptionId )
+                        .build() ) )
+                  .build() )
+            .build();
+      final Submodel submodel = new DefaultSubmodel.Builder()
+            .id( "https://example.com/submodel/document-versions-display-name/1.0.0" )
+            .idShort( "DocumentVersionsSubmodelDisplayName" )
+            .kind( ModellingKind.TEMPLATE )
+            .submodelElements( List.of( collection ) )
+            .build();
+      final DefaultConceptDescription conceptDescription = new DefaultConceptDescription.Builder()
+            .id( conceptDescriptionId )
+            .idShort( "DocumentVersions" )
+            .displayName( List.of( new DefaultLangStringNameType.Builder()
+                  .language( "en" )
+                  .text( "Document versions from concept description" )
+                  .build() ) )
+            .build();
+      final Environment environment = new DefaultEnvironment.Builder()
+            .submodels( List.of( submodel ) )
+            .conceptDescriptions( List.of( conceptDescription ) )
+            .build();
+
+      final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( environment );
+      final List<Aspect> aspects = aspectModelGenerator.generate().map( AspectArtifact::getContent ).toList();
+
+      assertThatCode( aspectModelGenerator::generate ).doesNotThrowAnyException();
+
+      final List<String> entityPreferredNames = aspects.stream()
+            .flatMap( AasToAspectModelGeneratorTest::allCharacteristics )
+            .map( Characteristic::getDataType )
+            .flatMap( Optional::stream )
+            .filter( Entity.class::isInstance )
+            .map( Entity.class::cast )
+            .flatMap( entity -> entity.getPreferredNames().stream() )
+            .map( LangString::getValue )
+            .toList();
+
+      assertThat( entityPreferredNames )
+            .contains( "Document versions from concept description" );
+   }
+
    private static Environment buildTemplateEnvironment( final SubmodelElement submodelElement ) {
       final Submodel submodel = new DefaultSubmodel.Builder()
             .id( "https://example.com/submodel/list-or-set/1.0.0" )
@@ -234,6 +368,22 @@ class AasToAspectModelGeneratorTest {
             .typeValueListElement( AasSubmodelElements.PROPERTY )
             .value( List.of( valueElement ) )
             .build();
+   }
+
+   private static Stream<Characteristic> allCharacteristics( final Aspect aspect ) {
+      return aspect.getProperties().stream()
+            .flatMap( property -> property.getCharacteristic().stream() )
+            .flatMap( AasToAspectModelGeneratorTest::allCharacteristics );
+   }
+
+   private static Stream<Characteristic> allCharacteristics( final Characteristic characteristic ) {
+      final Stream<Characteristic> collectionCharacteristics = characteristic instanceof Collection collection
+            ? collection.getElementCharacteristic().stream().flatMap( AasToAspectModelGeneratorTest::allCharacteristics )
+            : Stream.empty();
+      final Stream<Characteristic> traitCharacteristics = characteristic instanceof Trait trait
+            ? allCharacteristics( trait.getBaseCharacteristic() )
+            : Stream.empty();
+      return Stream.concat( Stream.of( characteristic ), Stream.concat( collectionCharacteristics, traitCharacteristics ) );
    }
 
    @Test

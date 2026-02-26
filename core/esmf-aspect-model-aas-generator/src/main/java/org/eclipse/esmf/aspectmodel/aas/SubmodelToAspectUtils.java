@@ -34,17 +34,20 @@ import org.eclipse.digitaltwin.aas4j.v3.model.KeyTypes;
 import org.eclipse.digitaltwin.aas4j.v3.model.Reference;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 final class SubmodelToAspectUtils {
+   private static final Logger LOG = LoggerFactory.getLogger( SubmodelToAspectUtils.class );
+
    private SubmodelToAspectUtils() {}
 
-   static Set<LangString> langStringSet( final List<? extends AbstractLangString> stringList, final Logger logger ) {
+   static Set<LangString> langStringSet( final List<? extends AbstractLangString> stringList ) {
       final Map<Locale, String> stringsByLanguage = new LinkedHashMap<>();
       stringList.forEach( abstractLangString -> {
          final Locale locale = Locale.forLanguageTag( abstractLangString.getLanguage() );
          final String existing = stringsByLanguage.putIfAbsent( locale, abstractLangString.getText() );
          if ( existing != null ) {
-            logger.warn( "Duplicate language tag '{}' detected. Keeping first value '{}' and ignoring duplicate '{}'.",
+            LOG.warn( "Duplicate language tag '{}' detected. Keeping first value '{}' and ignoring duplicate '{}'.",
                   abstractLangString.getLanguage(), existing, abstractLangString.getText() );
          }
       } );
