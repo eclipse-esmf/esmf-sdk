@@ -67,11 +67,6 @@ import com.google.common.collect.Lists;
 
 /**
  * Test suite for AspectModelParquetPayloadGenerator.
- * <p>
- * Tests are modeled after the corresponding JSON payload generator tests in
- * {@code org.eclipse.esmf.aspectmodel.generator.json.testclasses} and
- * {@code AspectModelJsonPayloadGeneratorTest} to ensure equivalent coverage
- * of the Parquet generator for every aspect model variant.
  */
 class AspectModelParquetPayloadGeneratorTest {
    private final List<Path> tempFiles = new ArrayList<>();
@@ -81,7 +76,7 @@ class AspectModelParquetPayloadGeneratorTest {
       for ( final Path tempFile : tempFiles ) {
          try {
             Files.deleteIfExists( tempFile );
-         } catch ( final IOException e ) {
+         } catch ( final IOException _ ) {
             // Ignore cleanup errors
          }
       }
@@ -113,10 +108,6 @@ class AspectModelParquetPayloadGeneratorTest {
       } ).doesNotThrowAnyException();
    }
 
-   // ---------------------------------------------------------------------------
-   // Simple properties  (mirrors testGenerateJsonForAspectWithSimpleProperties)
-   // ---------------------------------------------------------------------------
-
    @Test
    void testGenerateParquetForAspectWithSimpleProperties() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES );
@@ -145,22 +136,14 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( intRecord.getInteger( "testInt", 0 ) ).isEqualTo( 3 );
    }
 
-   // ---------------------------------------------------------------------------
-   // State type  (mirrors testGenerateJsonForAspectWithStateType)
-   // ---------------------------------------------------------------------------
-
    @Test
    void testGenerateParquetForAspectWithStateType() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES_AND_STATE );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
-
-   // ---------------------------------------------------------------------------
-   // Entity  (mirrors testGenerateJsonForAspectWithEntity)
-   // ---------------------------------------------------------------------------
 
    @Test
    void testGenerateParquetForAspectWithEntity() throws IOException {
@@ -173,26 +156,18 @@ class AspectModelParquetPayloadGeneratorTest {
          assertThat( schema.getFields() ).isNotEmpty();
       }
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
-
-   // ---------------------------------------------------------------------------
-   // Recursive property  (mirrors testGenerateJsonForAspectWithRecursivePropertyWithOptional)
-   // ---------------------------------------------------------------------------
 
    @Test
    void testGenerateParquetForAspectWithRecursivePropertyWithOptional() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_RECURSIVE_PROPERTY_WITH_OPTIONAL );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
-
-   // ---------------------------------------------------------------------------
-   // Collection of entities  (mirrors testGenerateJsonForAspectWithCollectionOfEntities)
-   // ---------------------------------------------------------------------------
 
    @Test
    void testGenerateParquetForAspectWithCollectionOfEntities() throws IOException {
@@ -204,26 +179,18 @@ class AspectModelParquetPayloadGeneratorTest {
          assertThat( schema.getFields() ).isNotEmpty();
       }
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
-
-   // ---------------------------------------------------------------------------
-   // Multiple entities  (mirrors testGenerateJsonForAspectWithMultipleEntities)
-   // ---------------------------------------------------------------------------
 
    @Test
    void testGenerateParquetForAspectWithMultipleEntities() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_MULTIPLE_ENTITIES );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
-
-   // ---------------------------------------------------------------------------
-   // Nested entity  (mirrors testGenerateJsonForAspectWithNestedEntity)
-   // ---------------------------------------------------------------------------
 
    @Test
    void testGenerateParquetForAspectWithNestedEntity() throws IOException {
@@ -235,13 +202,9 @@ class AspectModelParquetPayloadGeneratorTest {
          assertThat( schema ).isNotNull();
       }
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
-
-   // ---------------------------------------------------------------------------
-   // Collection of simple type  (mirrors testGenerateJsonForAspectWithCollectionOfSimpleType)
-   // ---------------------------------------------------------------------------
 
    @Test
    void testGenerateParquetForAspectWithCollectionOfSimpleType() throws IOException {
@@ -253,26 +216,18 @@ class AspectModelParquetPayloadGeneratorTest {
          assertThat( schema ).isNotNull();
       }
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
-
-   // ---------------------------------------------------------------------------
-   // Multiple collections of simple type  (mirrors testGenerateJsonForAspectWithMultipleCollectionsOfSimpleType)
-   // ---------------------------------------------------------------------------
 
    @Test
    void testGenerateParquetForAspectWithMultipleCollectionsOfSimpleType() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_MULTIPLE_COLLECTIONS_OF_SIMPLE_TYPE );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
-
-   // ---------------------------------------------------------------------------
-   // Either type  (mirrors testGenerateJsonForAspectWithEitherType)
-   // ---------------------------------------------------------------------------
 
    @Test
    void testGenerateParquetForAspectWithEitherType() throws IOException {
@@ -284,86 +239,62 @@ class AspectModelParquetPayloadGeneratorTest {
          assertThat( schema.getFields() ).isNotEmpty();
       }
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
-
-   // ---------------------------------------------------------------------------
-   // Multiple entities and either  (mirrors testGenerateJsonForAspectWithMultipleEntitiesComplexEitherType)
-   // ---------------------------------------------------------------------------
 
    @Test
    void testGenerateParquetForAspectWithMultipleEntitiesAndEither() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_MULTIPLE_ENTITIES_AND_EITHER );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
-
-   // ---------------------------------------------------------------------------
-   // Multiple entity collections  (mirrors testGenerateJsonForAspectWithMultipleCollectionsOfEntities)
-   // ---------------------------------------------------------------------------
 
    @Test
    void testGenerateParquetForAspectWithMultipleEntityCollections() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_MULTIPLE_ENTITY_COLLECTIONS );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
-
-   // ---------------------------------------------------------------------------
-   // Enumeration  (mirrors testGenerateJsonForAspectWithComplexEnum)
-   // ---------------------------------------------------------------------------
 
    @Test
    void testGenerateParquetForAspectWithComplexEnum() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_COMPLEX_ENUM );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
-
-   // ---------------------------------------------------------------------------
-   // Enum with nested entities  (mirrors testGenerateJsonForAspectWithEnumHavingNestedEntities)
-   // ---------------------------------------------------------------------------
 
    @Test
    void testGenerateParquetForAspectWithEnumHavingNestedEntities() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_ENUM_HAVING_NESTED_ENTITIES );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
-
-   // ---------------------------------------------------------------------------
-   // Entity enumeration with LangString  (mirrors testGenerateJsonForAspectWithEntityEnumerationAndLangString)
-   // ---------------------------------------------------------------------------
 
    @Test
    void testGenerateParquetForAspectWithEntityEnumerationAndLangString() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_AND_LANG_STRING );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
-
-   // ---------------------------------------------------------------------------
-   // Complex entity collection enum  (mirrors testGenerateJsonForAspectWithComplextEntityCollectionEnum)
-   // ---------------------------------------------------------------------------
 
    @Test
    void testGenerateParquetForAspectWithComplexEntityCollectionEnum() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_COMPLEX_ENTITY_COLLECTION_ENUM );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
 
    // ---------------------------------------------------------------------------
@@ -375,11 +306,11 @@ class AspectModelParquetPayloadGeneratorTest {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_CURIE );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
 
-      if ( record.getType().containsField( "testCurie" ) ) {
-         final String curieValue = record.getString( "testCurie", 0 );
+      if ( group.getType().containsField( "testCurie" ) ) {
+         final String curieValue = group.getString( "testCurie", 0 );
          assertThat( curieValue ).contains( ":" );
       }
    }
@@ -393,8 +324,8 @@ class AspectModelParquetPayloadGeneratorTest {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_MULTI_LANGUAGE_TEXT );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
 
    // ---------------------------------------------------------------------------
@@ -406,8 +337,8 @@ class AspectModelParquetPayloadGeneratorTest {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_MULTILANGUAGE_EXAMPLE_VALUE );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
 
    // ---------------------------------------------------------------------------
@@ -424,8 +355,8 @@ class AspectModelParquetPayloadGeneratorTest {
          assertThat( schema ).isNotNull();
       }
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
 
    // ---------------------------------------------------------------------------
@@ -437,36 +368,26 @@ class AspectModelParquetPayloadGeneratorTest {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_CONSTRAINT );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
-
-   // ---------------------------------------------------------------------------
-   // Range constraint without min/max integer value
-   // (mirrors testGenerateJsonForAspectWithoutMinMaxIntegerValueOnRangeConstraint)
-   // ---------------------------------------------------------------------------
 
    @Test
    void testGenerateParquetForAspectWithRangeConstraintWithoutMinMaxIntegerValue() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITHOUT_MIN_MAX_INTEGER_VALUE );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
-
-   // ---------------------------------------------------------------------------
-   // Range constraint without min/max double value
-   // (mirrors testGenerateJsonForAspectWithoutMinMaxDoubleValueOnRangeConstraint)
-   // ---------------------------------------------------------------------------
 
    @Test
    void testGenerateParquetForAspectWithRangeConstraintWithoutMinMaxDoubleValue() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITHOUT_MIN_MAX_DOUBLE_VALUE );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
 
    // ---------------------------------------------------------------------------
@@ -478,8 +399,8 @@ class AspectModelParquetPayloadGeneratorTest {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_G_TYPE_FOR_RANGE_CONSTRAINTS );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
 
    // ---------------------------------------------------------------------------
@@ -491,65 +412,48 @@ class AspectModelParquetPayloadGeneratorTest {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_STRUCTURED_VALUE );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
-
-   // ---------------------------------------------------------------------------
-   // Fixed point constraint  (mirrors testGenerateJsonForAspectWithFixedPointConstraint)
-   // ---------------------------------------------------------------------------
 
    @Test
    void testGenerateParquetForAspectWithFixedPointConstraint() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_FIXED_POINT_CONSTRAINT );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
-
-   // ---------------------------------------------------------------------------
-   // Abstract entity  (mirrors testGenerateJsonForAspectWithAbstractEntity)
-   // ---------------------------------------------------------------------------
 
    @Test
    void testGenerateParquetForAspectWithAbstractEntity() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_ABSTRACT_ENTITY );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
-
-   // ---------------------------------------------------------------------------
-   // Abstract single entity  (mirrors testGenerateJsonForAspectWithAbstractSingleEntity)
-   // ---------------------------------------------------------------------------
 
    @Test
    void testGenerateParquetForAspectWithAbstractSingleEntity() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_ABSTRACT_SINGLE_ENTITY );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
-
-   // ---------------------------------------------------------------------------
-   // Collection with abstract entity  (mirrors testGenerateJsonForAspectWithCollectionWithAbstractEntity)
-   // ---------------------------------------------------------------------------
 
    @Test
    void testGenerateParquetForAspectWithCollectionWithAbstractEntity() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
 
    // ---------------------------------------------------------------------------
    // Entity enumeration with not-in-payload properties
-   // (mirrors testGenerateJsonForAspectWithEntityEnumerationAndNotInPayloadProperties)
    // ---------------------------------------------------------------------------
 
    @Test
@@ -557,13 +461,12 @@ class AspectModelParquetPayloadGeneratorTest {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_AND_NOT_IN_PAYLOAD_PROPERTIES );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
 
    // ---------------------------------------------------------------------------
    // Extended enums with not-in-payload property
-   // (mirrors testGenerateJsonForAspectWithExtendedEnumsWithNotInPayloadProperty)
    // ---------------------------------------------------------------------------
 
    @Test
@@ -571,47 +474,35 @@ class AspectModelParquetPayloadGeneratorTest {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_EXTENDED_ENUMS_WITH_NOT_IN_PAYLOAD_PROPERTY );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
-
-   // ---------------------------------------------------------------------------
-   // Property with payload name  (mirrors testGenerateJsonForAspectWithPropertyWithPayloadName)
-   // ---------------------------------------------------------------------------
 
    @Test
    void testGenerateParquetForAspectWithPropertyWithPayloadName() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_PROPERTY_WITH_PAYLOAD_NAME );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
-
-   // ---------------------------------------------------------------------------
-   // Constrained set  (mirrors testGenerateJsonForAspectWithConstrainedSetProperty)
-   // ---------------------------------------------------------------------------
 
    @Test
    void testGenerateParquetForAspectWithConstrainedSet() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_CONSTRAINED_SET );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
-
-   // ---------------------------------------------------------------------------
-   // Complex set  (mirrors testGenerateJsonForAspectWithComplexSet)
-   // ---------------------------------------------------------------------------
 
    @Test
    void testGenerateParquetForAspectWithComplexSet() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_COMPLEX_SET );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
 
    // ---------------------------------------------------------------------------
@@ -623,8 +514,8 @@ class AspectModelParquetPayloadGeneratorTest {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_EITHER_WITH_COMPLEX_TYPES );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
 
    // ---------------------------------------------------------------------------
@@ -642,8 +533,8 @@ class AspectModelParquetPayloadGeneratorTest {
       final Path parquetFile = generateParquetForModel( aspect, config );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
 
    // ---------------------------------------------------------------------------
@@ -655,8 +546,8 @@ class AspectModelParquetPayloadGeneratorTest {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_OPTIONAL_PROPERTIES );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
 
    // ---------------------------------------------------------------------------
@@ -668,8 +559,8 @@ class AspectModelParquetPayloadGeneratorTest {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_OPTIONAL_PROPERTIES_WITH_ENTITY );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
 
    // ---------------------------------------------------------------------------
@@ -686,8 +577,8 @@ class AspectModelParquetPayloadGeneratorTest {
          assertThat( schema.getFields() ).isNotEmpty();
       }
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
 
    // ---------------------------------------------------------------------------
@@ -699,8 +590,8 @@ class AspectModelParquetPayloadGeneratorTest {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_BINARY );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
 
    // ---------------------------------------------------------------------------
@@ -712,8 +603,8 @@ class AspectModelParquetPayloadGeneratorTest {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_DURATION );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
 
    // ---------------------------------------------------------------------------
@@ -730,8 +621,8 @@ class AspectModelParquetPayloadGeneratorTest {
       final Path parquetFile = generateParquetForModel( aspect, config );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
 
    // ---------------------------------------------------------------------------
@@ -776,8 +667,8 @@ class AspectModelParquetPayloadGeneratorTest {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_EXTENDED_ENTITY );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
 
    // ---------------------------------------------------------------------------
@@ -789,8 +680,8 @@ class AspectModelParquetPayloadGeneratorTest {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_ENTITY_COLLECTION );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
 
    // ---------------------------------------------------------------------------
@@ -802,8 +693,8 @@ class AspectModelParquetPayloadGeneratorTest {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_STRING_ENUMERATION );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
 
    // ---------------------------------------------------------------------------
@@ -815,8 +706,8 @@ class AspectModelParquetPayloadGeneratorTest {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_REGULAR_EXPRESSION_CONSTRAINT );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
 
    // ---------------------------------------------------------------------------
@@ -828,8 +719,8 @@ class AspectModelParquetPayloadGeneratorTest {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_ENCODING_CONSTRAINT );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
 
    // ---------------------------------------------------------------------------
@@ -841,8 +732,8 @@ class AspectModelParquetPayloadGeneratorTest {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_LENGTH_CONSTRAINT );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
 
    // ---------------------------------------------------------------------------
@@ -854,8 +745,8 @@ class AspectModelParquetPayloadGeneratorTest {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_MEASUREMENT_WITH_UNIT );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
 
    // ---------------------------------------------------------------------------
@@ -867,8 +758,8 @@ class AspectModelParquetPayloadGeneratorTest {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_QUANTIFIABLE_WITH_UNIT );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
 
    // ---------------------------------------------------------------------------
@@ -880,8 +771,8 @@ class AspectModelParquetPayloadGeneratorTest {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_TIME_SERIES );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
 
    // ---------------------------------------------------------------------------
@@ -893,8 +784,8 @@ class AspectModelParquetPayloadGeneratorTest {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_SORTED_SET );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
 
    // ---------------------------------------------------------------------------
@@ -906,8 +797,8 @@ class AspectModelParquetPayloadGeneratorTest {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_LIST );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
 
    // ---------------------------------------------------------------------------
@@ -919,8 +810,8 @@ class AspectModelParquetPayloadGeneratorTest {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_SET );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
 
    // ---------------------------------------------------------------------------
@@ -932,8 +823,8 @@ class AspectModelParquetPayloadGeneratorTest {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_CODE );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
 
    // ---------------------------------------------------------------------------
@@ -945,8 +836,8 @@ class AspectModelParquetPayloadGeneratorTest {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_NUMERIC_STRUCTURED_VALUE );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
 
    // ---------------------------------------------------------------------------
@@ -958,8 +849,8 @@ class AspectModelParquetPayloadGeneratorTest {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_LIST_WITH_LENGTH_CONSTRAINT );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
 
    // ---------------------------------------------------------------------------
@@ -971,12 +862,12 @@ class AspectModelParquetPayloadGeneratorTest {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_EXCLUSIVE_RANGE_CONSTRAINT );
       assertThat( parquetFile ).exists();
 
-      final Group record = readFirstRecord( parquetFile );
-      assertThat( record ).isNotNull();
+      final Group group = readFirstRecord( parquetFile );
+      assertThat( group ).isNotNull();
    }
 
    // ---------------------------------------------------------------------------
-   // Parameterized numeric-range tests  (matches the pattern of JSON numeric range tests)
+   // Parameterized numeric-range tests
    // ---------------------------------------------------------------------------
 
    @ParameterizedTest
@@ -1057,13 +948,13 @@ class AspectModelParquetPayloadGeneratorTest {
     * Find the first record that contains a non-null value for the given field.
     */
    private Group findRecordWithField( final List<Group> records, final String fieldName ) {
-      for ( final Group record : records ) {
+      for ( final Group group : records ) {
          try {
-            if ( record.getType().containsField( fieldName ) && record.getFieldRepetitionCount( fieldName ) > 0 ) {
-               return record;
+            if ( group.getType().containsField( fieldName ) && group.getFieldRepetitionCount( fieldName ) > 0 ) {
+               return group;
             }
-         } catch ( final RuntimeException ignored ) {
-            // Field not found in this record, continue
+         } catch ( final RuntimeException _ ) {
+            // Field not found in this group, continue
          }
       }
       return null;
@@ -1082,20 +973,20 @@ class AspectModelParquetPayloadGeneratorTest {
       } else if ( BigInteger.class.isAssignableFrom( nativeType ) ) {
          try {
             return BigInteger.valueOf( parquetRecord.getInteger( fieldName, 0 ) );
-         } catch ( final ClassCastException e ) {
+         } catch ( final ClassCastException _ ) {
             try {
                return BigInteger.valueOf( parquetRecord.getLong( fieldName, 0 ) );
-            } catch ( final ClassCastException e2 ) {
+            } catch ( final ClassCastException _ ) {
                return new BigInteger( parquetRecord.getString( fieldName, 0 ) );
             }
          }
       } else if ( BigDecimal.class.isAssignableFrom( nativeType ) ) {
          try {
             return BigDecimal.valueOf( parquetRecord.getDouble( fieldName, 0 ) );
-         } catch ( final ClassCastException e ) {
+         } catch ( final ClassCastException _ ) {
             try {
                return new BigDecimal( parquetRecord.getString( fieldName, 0 ) );
-            } catch ( final ClassCastException e2 ) {
+            } catch ( final ClassCastException _ ) {
                return BigDecimal.valueOf( parquetRecord.getFloat( fieldName, 0 ) );
             }
          }
@@ -1118,7 +1009,7 @@ class AspectModelParquetPayloadGeneratorTest {
       try {
          lowerBound = NumericTypeTraits.convertToBigDecimal( range.getLeft() );
          upperBound = NumericTypeTraits.convertToBigDecimal( range.getRight() );
-      } catch ( final NumberFormatException e ) {
+      } catch ( final NumberFormatException _ ) {
          // Skip assertion when bounds cannot be converted (Infinity/NaN)
          return;
       }
