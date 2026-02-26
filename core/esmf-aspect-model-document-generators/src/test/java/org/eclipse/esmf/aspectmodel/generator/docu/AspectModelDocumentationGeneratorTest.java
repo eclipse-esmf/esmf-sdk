@@ -49,7 +49,7 @@ class AspectModelDocumentationGeneratorTest {
 
       assertThat( htmlResult )
             .isNotEmpty()
-            .contains( "<h1 id=\"AspectWithEntityCollection\">Aspect Model Test Aspect</h1>" )
+            .contains( "<h1 class=\"dt-title\" id=\"AspectWithEntityCollection\">Aspect Model Test Aspect</h1>" )
             .contains(
                   "<h3 id=\"org-eclipse-esmf-test-AspectWithEntityCollection-org-eclipse-esmf-test-testProperty-property\">Test "
                         + "Property</h3>" )
@@ -63,7 +63,7 @@ class AspectModelDocumentationGeneratorTest {
 
       assertThat( htmlResult )
             .isNotEmpty()
-            .contains( "<h1 id=\"AspectWithCollectionOfSimpleType\">Aspect Model AspectWithCollectionOfSimpleType</h1>" )
+            .contains( "<h1 class=\"dt-title\" id=\"AspectWithCollectionOfSimpleType\">Aspect Model AspectWithCollectionOfSimpleType</h1>" )
             .contains(
                   "<h3 id=\"org-eclipse-esmf-test-AspectWithCollectionOfSimpleType-org-eclipse-esmf-test-testList-property\">testList</h3"
                         + ">" )
