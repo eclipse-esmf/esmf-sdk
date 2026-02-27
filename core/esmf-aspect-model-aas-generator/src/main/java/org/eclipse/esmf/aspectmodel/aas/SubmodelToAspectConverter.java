@@ -429,10 +429,12 @@ class SubmodelToAspectConverter {
          throw new AspectModelGenerationException( "Unknown ElementNamingStrategy" );
       }
 
+      final Set<LangString> preferredNames = preferredNamesForEntity( element );
+      final Set<LangString> descriptions = descriptionsForEntity( element );
       return MetaModelBaseAttributes.builder()
             .withUrn( urn )
-            .withPreferredNames( SubmodelToAspectUtils.langStringSet( element.getDisplayName() ) )
-            .withDescriptions( SubmodelToAspectUtils.langStringSet( element.getDescription() ) )
+            .withPreferredNames( preferredNames )
+            .withDescriptions( descriptions )
             .withSee( includeSee ? seeReferences( element ) : List.of() )
             .isAnonymous( elementName.isSynthetic() )
             .build();
