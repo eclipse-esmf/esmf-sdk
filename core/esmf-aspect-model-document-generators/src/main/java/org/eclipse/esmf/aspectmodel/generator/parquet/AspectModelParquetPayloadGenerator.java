@@ -115,10 +115,6 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
 
    MessageType messageTypeSchema = null;
 
-   Group group = null;
-
-   Map<String, String> typeKeyColumnNameMap = new HashMap<>();
-
    List<String> columnNames = new ArrayList<>();
 
    final EasyRandom easyRandom = new EasyRandom();

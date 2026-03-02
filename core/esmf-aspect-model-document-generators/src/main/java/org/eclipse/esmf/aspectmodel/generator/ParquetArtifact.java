@@ -13,27 +13,9 @@
 
 package org.eclipse.esmf.aspectmodel.generator;
 
-public class ParquetArtifact implements Artifact<String, byte[]> {
-   private final String id;
-   private final byte[] content;
+public class ParquetArtifact extends BinaryArtifact {
 
    public ParquetArtifact( final String id, final byte[] content ) {
-      this.id = id;
-      this.content = content;
-   }
-
-   @Override
-   public String getId() {
-      return id;
-   }
-
-   @Override
-   public byte[] getContent() {
-      return content;
-   }
-
-   @Override
-   public byte[] serialize() {
-      return content;
+      super( id, content );
    }
 }
