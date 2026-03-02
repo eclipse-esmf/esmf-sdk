@@ -70,7 +70,6 @@ import org.eclipse.esmf.aspectmodel.generator.AspectGenerator;
 import org.eclipse.esmf.aspectmodel.generator.DocumentGenerationException;
 import org.eclipse.esmf.aspectmodel.generator.NumericTypeTraits;
 import org.eclipse.esmf.aspectmodel.generator.ParquetArtifact;
-import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.BoundDefinition;
@@ -95,8 +94,6 @@ import org.eclipse.esmf.metamodel.constraint.RegularExpressionConstraint;
 import org.eclipse.esmf.metamodel.datatype.Curie;
 import org.eclipse.esmf.metamodel.datatype.LangString;
 import org.eclipse.esmf.metamodel.datatype.SammXsdType;
-import org.eclipse.esmf.metamodel.impl.DefaultScalar;
-import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
 
@@ -701,7 +698,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
                   property.getCharacteristic().orElseThrow( () ->
                         new IllegalArgumentException( "Could not process Property " + property )
                   ),
-                  processExampleValue( property.getExampleValue() )
+                  property.getExampleValue()
             );
          }
 
@@ -723,35 +720,6 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
             return exampleValue;
          }
 
-         private static Optional<ScalarValue> processExampleValue( final Optional<ScalarValue> exampleValue ) {
-            return exampleValue.map( value -> {
-               if ( value instanceof final ScalarValue scalarValue ) {
-                  return scalarValue;
-               } else if ( value instanceof final Value valueInstance ) {
-                  return convertToScalarValue( valueInstance );
-               } else {
-                  throw new IllegalArgumentException( "Unexpected exampleValue type: " + value.getClass() );
-               }
-            } );
-         }
-
-         private static ScalarValue convertToScalarValue( final Value value ) {
-            if ( value instanceof final ScalarValue scalarValue ) {
-               return scalarValue;
-            }
-
-            return new DefaultScalarValue(
-                  MetaModelBaseAttributes.builder()
-                        .withUrn( value.urn() )
-                        .withPreferredNames( value.getPreferredNames() )
-                        .withDescriptions( value.getDescriptions() )
-                        .withSee( value.getSee() )
-                        .isAnonymous( value.isAnonymous() )
-                        .withSourceFile( value.getSourceFile() ).build(),
-                  ((ScalarValue) value).getValue(),
-                  new DefaultScalar( value.getType().toString() )
-            );
-         }
       }
    }
 
