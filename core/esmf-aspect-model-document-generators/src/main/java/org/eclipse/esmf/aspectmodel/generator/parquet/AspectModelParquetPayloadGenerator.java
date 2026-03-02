@@ -14,7 +14,6 @@
 package org.eclipse.esmf.aspectmodel.generator.parquet;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
@@ -41,7 +40,6 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -64,7 +62,6 @@ import org.apache.parquet.schema.LogicalTypeAnnotation;
 import org.apache.parquet.schema.MessageType;
 import org.apache.parquet.schema.PrimitiveType;
 import org.apache.parquet.schema.Types;
-import org.eclipse.esmf.aspectmodel.generator.Artifact;
 import org.eclipse.esmf.aspectmodel.generator.ArtifactGenerator;
 import org.eclipse.esmf.aspectmodel.generator.AspectGenerator;
 import org.eclipse.esmf.aspectmodel.generator.DocumentGenerationException;
@@ -131,16 +128,6 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
    @Override
    public Stream<ParquetArtifact> generate() {
       return Stream.of( new PayloadGenerator().apply( aspect(), config ) );
-   }
-
-   @Override
-   protected void write( final Artifact<String, byte[]> artifact, final Function<String, OutputStream> nameMapper ) {
-      try ( final OutputStream output = nameMapper.apply( aspect().getName() ) ) {
-         output.write( artifact.serialize() );
-         output.flush();
-      } catch ( final IOException exception ) {
-         throw new DocumentGenerationException( exception );
-      }
    }
 
    private class PayloadGenerator implements ArtifactGenerator<String, byte[], Aspect, ParquetGenerationConfig, ParquetArtifact> {
