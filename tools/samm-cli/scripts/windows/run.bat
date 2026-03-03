@@ -11,8 +11,8 @@ for /f "usebackq tokens=*" %%a in (`powershell -NoProfile -Command "(Get-CimInst
 
 if /i "%HostProcessName%"=="explorer.exe" (
   cd /d "%ExeWorkingDir%"
-  for %%i in (%~dp0samm-cli-*.jar) do %~dp0jre\bin\java --enable-native-access=ALL-UNNAMED --sun-misc-unsafe-memory-access=allow -jar "%%i"
+  for %%i in (%~dp0samm-cli-*.jar) do %~dp0jre\bin\java --enable-native-access=ALL-UNNAMED --sun-misc-unsafe-memory-access=allow -Dpolyglotimpl.DisableMultiReleaseCheck=true -jar "%%i"
   cmd /k
 ) else (
-  for %%i in (%~dp0samm-cli-*.jar) do %~dp0jre\bin\java --enable-native-access=ALL-UNNAMED --sun-misc-unsafe-memory-access=allow -jar "%%i" %*
+  for %%i in (%~dp0samm-cli-*.jar) do %~dp0jre\bin\java --enable-native-access=ALL-UNNAMED --sun-misc-unsafe-memory-access=allow -Dpolyglotimpl.DisableMultiReleaseCheck=true -jar "%%i" %*
 )
