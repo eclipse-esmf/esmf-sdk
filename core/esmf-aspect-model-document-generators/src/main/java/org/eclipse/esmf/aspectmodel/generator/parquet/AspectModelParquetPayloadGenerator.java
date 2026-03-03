@@ -67,6 +67,7 @@ import org.eclipse.esmf.aspectmodel.generator.AspectGenerator;
 import org.eclipse.esmf.aspectmodel.generator.DocumentGenerationException;
 import org.eclipse.esmf.aspectmodel.generator.NumericTypeTraits;
 import org.eclipse.esmf.aspectmodel.generator.ParquetArtifact;
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.BoundDefinition;
@@ -91,6 +92,7 @@ import org.eclipse.esmf.metamodel.constraint.RegularExpressionConstraint;
 import org.eclipse.esmf.metamodel.datatype.Curie;
 import org.eclipse.esmf.metamodel.datatype.LangString;
 import org.eclipse.esmf.metamodel.datatype.SammXsdType;
+import org.eclipse.esmf.metamodel.impl.DefaultProperty;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
 
@@ -461,7 +463,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
                      .filter( property -> !property.isAbstract() )
                      .map( property -> {
                         recursiveProperty.add( property );
-                        final Map<String, Object> result = transformProperty( new BasicProperty( property ), useModelExampleValue );
+                        final Map<String, Object> result = transformProperty( property, useModelExampleValue );
                         recursiveProperty.remove( property );
                         return result;
                      } )
@@ -487,19 +489,20 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
        * @param property the property to transform
        * @return a map representing the property names as key and the property values as value
        */
-      private Map<String, Object> transformProperty( final BasicProperty property, final boolean useModelExampleValue ) {
+      private Map<String, Object> transformProperty( final Property property, final boolean useModelExampleValue ) {
          return transformers.stream()
                .map( transformer -> transformer.apply( property, useModelExampleValue ) )
                .filter( propertiesMap -> !propertiesMap.isEmpty() )
                .findFirst()
-               .orElseThrow( () -> new IllegalArgumentException( "No transformer for " + property.getName() + " available." ) );
+               .orElseThrow( () -> new IllegalArgumentException( "No transformer for " + property.getPayloadName() + " available." ) );
       }
 
-      private Map<String, Object> transformCollectionProperty( final BasicProperty property, final boolean useModelExampleValue ) {
-         final Characteristic characteristic = property.getCharacteristic();
+      private Map<String, Object> transformCollectionProperty( final Property property, final boolean useModelExampleValue ) {
+         final Characteristic characteristic = property.getCharacteristic().orElseThrow( () ->
+               new IllegalArgumentException( "Could not process Property " + property ) );
          if ( characteristic.is( Collection.class ) ) {
             final List<Object> collectionValues = getCollectionValues( property, (Collection) characteristic );
-            return toMap( property.getName(), collectionValues );
+            return toMap( property.getPayloadName(), collectionValues );
          } else if ( isConstrainedCollection( characteristic ) ) {
 
             final Collection collection = characteristic.as( Trait.class ).getBaseCharacteristic().as( Collection.class );
@@ -509,9 +512,9 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
                   .toList();
 
             return !constraints.isEmpty()
-                  ? toMap( property.getName(), getCollectionValues( property, collection,
+                  ? toMap( property.getPayloadName(), getCollectionValues( property, collection,
                   (LengthConstraint) characteristic.as( Trait.class ).getConstraints().get( 0 ) ) )
-                  : toMap( property.getName(), getCollectionValues( property, collection ) );
+                  : toMap( property.getPayloadName(), getCollectionValues( property, collection ) );
          }
          return ImmutableMap.of();
       }
@@ -524,8 +527,9 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
          return trait.getBaseCharacteristic().is( Collection.class ) && (!trait.getConstraints().isEmpty());
       }
 
-      private Map<String, Object> transformAbstractEntityProperty( final BasicProperty property, final boolean useModelExampleValue ) {
-         final Optional<AbstractEntity> dataType = getForCharacteristic( property.getCharacteristic(), AbstractEntity.class );
+      private Map<String, Object> transformAbstractEntityProperty( final Property property, final boolean useModelExampleValue ) {
+         final Optional<AbstractEntity> dataType = getForCharacteristic( property.getCharacteristic().orElseThrow( () ->
+               new IllegalArgumentException( "Could not process Property " + property ) ), AbstractEntity.class );
          if ( dataType.isPresent() ) {
             final AbstractEntity abstractEntity = dataType.get();
             final ComplexType extendingComplexType = abstractEntity.getExtendingElements().get( 0 );
@@ -534,59 +538,65 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
             if ( config.addTypeAttributeForEntityInheritance() ) {
                generatedProperties.put( TYPE, extendingComplexType.getName() );
             }
-            return toMap( property.getName(), generatedProperties );
+            return toMap( property.getPayloadName(), generatedProperties );
          }
          return ImmutableMap.of();
       }
 
-      private Map<String, Object> transformEntityProperty( final BasicProperty property, final boolean useModelExmplevalue ) {
-         final Optional<Entity> dataType = getForCharacteristic( property.getCharacteristic(), Entity.class );
+      private Map<String, Object> transformEntityProperty( final Property property, final boolean useModelExmplevalue ) {
+         final Optional<Entity> dataType = getForCharacteristic( property.getCharacteristic().orElseThrow( () ->
+               new IllegalArgumentException( "Could not process Property " + property ) ), Entity.class );
          if ( dataType.isPresent() ) {
             final Entity entity = dataType.get();
             final Map<String, Object> generatedProperties = transformProperties( entity.getAllProperties(), useModelExmplevalue );
             if ( entity.getExtends().isPresent() && config.addTypeAttributeForEntityInheritance() ) {
                generatedProperties.put( TYPE, entity.getName() );
             }
-            return toMap( property.getName(), generatedProperties );
+            return toMap( property.getPayloadName(), generatedProperties );
          }
          return ImmutableMap.of();
       }
 
-      private Map<String, Object> transformEnumeration( final BasicProperty property, final boolean useModelExampleValue ) {
-         return getForCharacteristic( property.getCharacteristic(), Enumeration.class )
+      private Map<String, Object> transformEnumeration( final Property property, final boolean useModelExampleValue ) {
+         return getForCharacteristic( property.getCharacteristic().orElseThrow( () ->
+               new IllegalArgumentException( "Could not process Property " + property ) ), Enumeration.class )
                .map( enumeration -> extractEnumerationValues( property, enumeration ) )
                .orElseGet( ImmutableMap::of );
       }
 
-      private Map<String, Object> extractEnumerationValues( final BasicProperty property, final Enumeration enumeration ) {
+      private Map<String, Object> extractEnumerationValues( final Property property, final Enumeration enumeration ) {
          final Value firstValue = enumeration.getValues().getFirst();
          // Extract the value directly - for ScalarValue get the underlying value, otherwise use toString
          final Object value = firstValue instanceof final ScalarValue scalarValue
                ? scalarValue.getValue()
                : firstValue.toString();
-         return toMap( property.getName(), value );
+         return toMap( property.getPayloadName(), value );
       }
 
-      private Map<String, Object> transformEitherProperty( final BasicProperty property, final boolean useModelExampleValue ) {
-         final Characteristic characteristic = property.getCharacteristic();
+      private Map<String, Object> transformEitherProperty( final Property property, final boolean useModelExampleValue ) {
+         final Characteristic characteristic = property.getCharacteristic().orElseThrow( () ->
+               new IllegalArgumentException( "Could not process Property " + property ) );
          return getForCharacteristic( characteristic, Either.class )
                .map( value -> transformProperty(
-                     new BasicProperty( PayloadGenerator.EITHER_LEFT, value.getLeft(), Optional.empty() ),
+                     new DefaultProperty( MetaModelBaseAttributes.builder().build(),
+                           Optional.of( value.getLeft() ), Optional.empty(), false, false,
+                           Optional.of( PayloadGenerator.EITHER_LEFT ), false, Optional.empty() ),
                      useModelExampleValue ) )
-               .map( value -> toMap( property.getName(), value ) )
+               .map( value -> toMap( property.getPayloadName(), value ) )
                .orElseGet( ImmutableMap::of );
       }
 
-      private Map<String, Object> transformSimpleProperty( final BasicProperty basicProperty, final boolean useModelExampleValue ) {
-         return toMap( basicProperty.getName(), getExampleValueOrElseRandom( basicProperty, useModelExampleValue ) );
+      private Map<String, Object> transformSimpleProperty( final Property property, final boolean useModelExampleValue ) {
+         return toMap( property.getPayloadName(), getExampleValueOrElseRandom( property, useModelExampleValue ) );
       }
 
       /**
        * @param property the property to transform
        * @return the {@link Property#getExampleValue()} or if absent a random value.
        */
-      private Object getExampleValueOrElseRandom( final BasicProperty property, final boolean useModelExampleValue ) {
-         final Characteristic characteristic = property.getCharacteristic();
+      private Object getExampleValueOrElseRandom( final Property property, final boolean useModelExampleValue ) {
+         final Characteristic characteristic = property.getCharacteristic().orElseThrow( () ->
+               new IllegalArgumentException( "Could not process Property " + property ) );
          if ( characteristic.is( State.class ) ) {
             return characteristic.as( State.class ).getDefaultValue();
          }
@@ -614,11 +624,11 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
          return ImmutableMap.of( key, value );
       }
 
-      private List<Object> getCollectionValues( final BasicProperty property, final Collection collection ) {
+      private List<Object> getCollectionValues( final Property property, final Collection collection ) {
          return getCollectionValues( property, collection, null );
       }
 
-      private List<Object> getCollectionValues( final BasicProperty property, final Collection collection,
+      private List<Object> getCollectionValues( final Property property, final Collection collection,
             final LengthConstraint lengthConstraint ) {
          final Type dataType = collection.getDataType()
                .orElseThrow( () -> new IllegalArgumentException( "DataType for collection is required." ) );
@@ -668,45 +678,10 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
       }
 
       /**
-       * Transforms an {@link BasicProperty} to a map.
+       * Transforms a {@link Property} to a map.
        * If no transformation can be applied, an empty map will returned.
        */
-      private interface Transformer extends BiFunction<BasicProperty, Boolean, Map<String, Object>> {
-      }
-
-      private static class BasicProperty {
-         private final String name;
-         private final Characteristic characteristic;
-         private final Optional<ScalarValue> exampleValue;
-
-         BasicProperty( final Property property ) {
-            this(
-                  property.getPayloadName(),
-                  property.getCharacteristic().orElseThrow( () ->
-                        new IllegalArgumentException( "Could not process Property " + property )
-                  ),
-                  property.getExampleValue()
-            );
-         }
-
-         BasicProperty( final String name, final Characteristic characteristic, final Optional<ScalarValue> exampleValue ) {
-            this.name = name;
-            this.characteristic = characteristic;
-            this.exampleValue = exampleValue;
-         }
-
-         public String getName() {
-            return name;
-         }
-
-         public Characteristic getCharacteristic() {
-            return characteristic;
-         }
-
-         public Optional<ScalarValue> getExampleValue() {
-            return exampleValue;
-         }
-
+      private interface Transformer extends BiFunction<Property, Boolean, Map<String, Object>> {
       }
    }
 
