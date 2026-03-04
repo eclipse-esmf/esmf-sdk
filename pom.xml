@@ -78,6 +78,10 @@
       <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
       <checkstyle.version>10.26.1</checkstyle.version>
       <central-publishing-maven-plugin.version>0.8.0</central-publishing-maven-plugin.version>
+      <apache.parquet.hadoop.version>1.15.2</apache.parquet.hadoop.version>
+      <apache.parquet.avro.version>1.15.2</apache.parquet.avro.version>
+      <apache.parquet.hadoop.client>3.4.1</apache.parquet.hadoop.client>
+      <apache.parquet.avro>1.12.0</apache.parquet.avro>
    </properties>
 
    <dependencyManagement>
@@ -183,6 +187,54 @@
             <type>pom</type>
             <scope>import</scope>
          </dependency>
+
+         <!-- Apache Parquet dependencies start -->
+         <dependency>
+            <groupId>org.apache.parquet</groupId>
+            <artifactId>parquet-hadoop</artifactId>
+            <version>${apache.parquet.hadoop.version}</version>
+            <exclusions>
+               <exclusion>
+                  <groupId>org.slf4j</groupId>
+                  <artifactId>slf4j-reload4j</artifactId>
+               </exclusion>
+            </exclusions>
+         </dependency>
+         <dependency>
+            <groupId>org.apache.parquet</groupId>
+            <artifactId>parquet-avro</artifactId>
+            <version>${apache.parquet.avro.version}</version>
+            <exclusions>
+               <exclusion>
+                  <groupId>org.slf4j</groupId>
+                  <artifactId>slf4j-reload4j</artifactId>
+               </exclusion>
+            </exclusions>
+         </dependency>
+         <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-client</artifactId>
+            <version>${apache.parquet.hadoop.client}</version>
+            <exclusions>
+               <exclusion>
+                  <groupId>org.slf4j</groupId>
+                  <artifactId>slf4j-reload4j</artifactId>
+               </exclusion>
+            </exclusions>
+         </dependency>
+         <dependency>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro</artifactId>
+            <version>${apache.parquet.avro}</version>
+            <exclusions>
+               <exclusion>
+                  <groupId>org.slf4j</groupId>
+                  <artifactId>slf4j-reload4j</artifactId>
+               </exclusion>
+            </exclusions>
+         </dependency>
+         <!-- Apache Parquet dependencies end -->
+
       </dependencies>
    </dependencyManagement>
 
