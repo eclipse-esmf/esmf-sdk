@@ -13,6 +13,7 @@
 package org.eclipse.esmf.aspectmodel.generator.parquet;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.eclipse.esmf.metamodel.builder.SammBuilder.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -35,24 +36,15 @@ import org.apache.parquet.io.LocalInputFile;
 import org.apache.parquet.schema.MessageType;
 import org.eclipse.esmf.aspectmodel.generator.NumericTypeTraits;
 import org.eclipse.esmf.aspectmodel.generator.ParquetArtifact;
-import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.BoundDefinition;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.Property;
-import org.eclipse.esmf.metamodel.ScalarValue;
+import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.characteristic.Trait;
-import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
-import org.eclipse.esmf.metamodel.constraint.impl.DefaultRangeConstraint;
 import org.eclipse.esmf.metamodel.datatype.SammXsdType;
-import org.eclipse.esmf.metamodel.impl.DefaultAspect;
-import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;
-import org.eclipse.esmf.metamodel.impl.DefaultProperty;
 import org.eclipse.esmf.metamodel.impl.DefaultScalar;
-import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
-import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
 import org.eclipse.esmf.test.TestResources;
@@ -1138,46 +1130,37 @@ class AspectModelParquetPayloadGeneratorTest {
          final Pair<Number, Number> randomRange ) {
       final Characteristic constraint = boundKind == null ? createBasicCharacteristic( dataType )
             : createTraitWithRangeConstraint( dataType, boundKind, randomRange );
-      final List<Property> properties = List.of( createProperty( "testNumber", constraint ) );
-      final MetaModelBaseAttributes aspectAttributes = MetaModelBaseAttributes.builder()
-            .withUrn( TestModel.TEST_NAMESPACE + "AspectWithNumericProperty" ).build();
-      return new DefaultAspect( aspectAttributes, properties, List.of(), List.of() );
+      return aspect( TestModel.TEST_NAMESPACE + "AspectWithNumericProperty" )
+            .property( createProperty( "testNumber", constraint ) )
+            .build();
    }
 
    private Property createProperty( final String propertyName, final Characteristic characteristic ) {
-      final MetaModelBaseAttributes propertyAttributes = MetaModelBaseAttributes.builder()
-            .withUrn( TestModel.TEST_NAMESPACE + propertyName ).build();
-      return new DefaultProperty( propertyAttributes, Optional.of( characteristic ), Optional.empty(), false, false, Optional.empty(),
-            false, Optional.empty() );
+      return property( TestModel.TEST_NAMESPACE + propertyName )
+            .characteristic( characteristic )
+            .build();
    }
 
    private Characteristic createBasicCharacteristic( final Type dataType ) {
-      return new DefaultCharacteristic( MetaModelBaseAttributes.builder().withUrn( TestModel.TEST_NAMESPACE + "NumberCharacteristic" )
-            .withUrn( AspectModelUrn.fromUrn( SammNs.SAMMC.baseCharacteristic().getURI() ) )
-            .withPreferredName( Locale.forLanguageTag( "en" ), "NumberCharacteristic" )
-            .withDescription( Locale.forLanguageTag( "en" ), "A simple numeric property." )
-            .build(),
-            Optional.of( dataType ) );
+      return characteristic( TestModel.TEST_NAMESPACE + "NumberCharacteristic" )
+            .preferredName( "NumberCharacteristic", Locale.forLanguageTag( "en" ) )
+            .description( "A simple numeric property.", Locale.forLanguageTag( "en" ) )
+            .dataType( dataType )
+            .build();
    }
 
    private Trait createTraitWithRangeConstraint( final Type dataType, final BoundDefinition boundKind,
          final Pair<Number, Number> randomRange ) {
-      final MetaModelBaseAttributes constraintAttributes = MetaModelBaseAttributes.builder()
-            .withUrn( TestModel.TEST_NAMESPACE + "TestConstraint" ).build();
-      final Optional<ScalarValue> minValue = BoundDefinition.OPEN.equals( boundKind )
-            ? Optional.empty()
-            : Optional.of( new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), randomRange.getLeft(),
-            new DefaultScalar( dataType.getUrn() ) ) );
-      final Optional<ScalarValue> maxValue = BoundDefinition.OPEN.equals( boundKind )
-            ? Optional.empty()
-            : Optional.of( new DefaultScalarValue( MetaModelBaseAttributes.builder().build(), randomRange.getRight(),
-            new DefaultScalar( dataType.getUrn() ) ) );
-      final RangeConstraint rangeConstraint = new DefaultRangeConstraint( constraintAttributes, minValue, maxValue, boundKind,
-            getMatchingUpperBound( boundKind ) );
-      final MetaModelBaseAttributes traitAttributes = MetaModelBaseAttributes.builder().withUrn( TestModel.TEST_NAMESPACE + "TestTrait" )
+      final Scalar scalar = new DefaultScalar( dataType.getUrn() );
+      return trait( TestModel.TEST_NAMESPACE + "TestTrait" )
+            .baseCharacteristic( createBasicCharacteristic( dataType ) )
+            .constraint( rangeConstraint()
+                  .minValue( value( randomRange.getLeft(), scalar ) )
+                  .maxValue( value( randomRange.getRight(), scalar ) )
+                  .lowerBound( boundKind )
+                  .upperBound( getMatchingUpperBound( boundKind ) )
+                  .build() )
             .build();
-      return new org.eclipse.esmf.metamodel.characteristic.impl.DefaultTrait( traitAttributes, createBasicCharacteristic( dataType ),
-            List.of( rangeConstraint ) );
    }
 
    private BoundDefinition getMatchingUpperBound( final BoundDefinition boundKind ) {
