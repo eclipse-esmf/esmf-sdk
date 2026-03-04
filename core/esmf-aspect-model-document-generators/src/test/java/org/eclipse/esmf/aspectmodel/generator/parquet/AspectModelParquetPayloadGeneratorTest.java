@@ -75,10 +75,10 @@ class AspectModelParquetPayloadGeneratorTest {
       tempFiles.clear();
    }
 
-   // ---------------------------------------------------------------------------
-   // Parameterized smoke test – every TestAspect that is expected to succeed
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Parameterized smoke test — verifies that Parquet file generation succeeds for every
+    * {@link TestAspect} that is expected to produce valid output.
+    */
    @ParameterizedTest
    @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
          "MODEL_WITH_BROKEN_CYCLES",
@@ -289,10 +289,10 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   // ---------------------------------------------------------------------------
-   // Curie  (mirrors testGenerateAspectForCurie)
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies Parquet generation for an aspect with a CURIE property
+    * (mirrors {@code testGenerateAspectForCurie}).
+    */
    @Test
    void testGenerateParquetForAspectWithCurie() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_CURIE );
@@ -307,10 +307,10 @@ class AspectModelParquetPayloadGeneratorTest {
       }
    }
 
-   // ---------------------------------------------------------------------------
-   // Multi-language text  (mirrors testGenerateAspectWithMultiLanguageText)
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies Parquet generation for an aspect with multi-language text
+    * (mirrors {@code testGenerateAspectWithMultiLanguageText}).
+    */
    @Test
    void testGenerateParquetForAspectWithMultiLanguageText() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_MULTI_LANGUAGE_TEXT );
@@ -320,10 +320,10 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   // ---------------------------------------------------------------------------
-   // Multi-language example value  (mirrors testGenerateAspectWithMultiLanguageExampleValue)
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies Parquet generation for an aspect with a multi-language example value
+    * (mirrors {@code testGenerateAspectWithMultiLanguageExampleValue}).
+    */
    @Test
    void testGenerateParquetForAspectWithMultilanguageExampleValue() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_MULTILANGUAGE_EXAMPLE_VALUE );
@@ -333,10 +333,10 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   // ---------------------------------------------------------------------------
-   // Constraints  (mirrors testGenerateAspectWithConstraints)
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies Parquet generation for an aspect with constraints
+    * (mirrors {@code testGenerateAspectWithConstraints}).
+    */
    @Test
    void testGenerateParquetForAspectWithConstraints() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_CONSTRAINTS );
@@ -351,10 +351,10 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   // ---------------------------------------------------------------------------
-   // Single constraint  (mirrors testGenerateAspectWithConstraint)
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies Parquet generation for an aspect with a single constraint
+    * (mirrors {@code testGenerateAspectWithConstraint}).
+    */
    @Test
    void testGenerateParquetForAspectWithConstraint() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_CONSTRAINT );
@@ -382,10 +382,10 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   // ---------------------------------------------------------------------------
-   // Date/time range constraints  (mirrors testGenerateAspectWithDateTimeTypeForRangeConstraints)
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies Parquet generation for an aspect with date/time range constraints
+    * (mirrors {@code testGenerateAspectWithDateTimeTypeForRangeConstraints}).
+    */
    @Test
    void testGenerateParquetForAspectWithGTypeForRangeConstraints() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_G_TYPE_FOR_RANGE_CONSTRAINTS );
@@ -395,10 +395,10 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   // ---------------------------------------------------------------------------
-   // Structured value  (mirrors testGenerateAspectWithStructuredValue)
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies Parquet generation for an aspect with a structured value
+    * (mirrors {@code testGenerateAspectWithStructuredValue}).
+    */
    @Test
    void testGenerateParquetForAspectWithStructuredValue() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_STRUCTURED_VALUE );
@@ -444,10 +444,9 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   // ---------------------------------------------------------------------------
-   // Entity enumeration with not-in-payload properties
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies Parquet generation for an aspect with entity enumeration and not-in-payload properties.
+    */
    @Test
    void testGenerateParquetForAspectWithEntityEnumerationAndNotInPayloadProperties() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_AND_NOT_IN_PAYLOAD_PROPERTIES );
@@ -457,10 +456,9 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   // ---------------------------------------------------------------------------
-   // Extended enums with not-in-payload property
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies Parquet generation for an aspect with extended enums with a not-in-payload property.
+    */
    @Test
    void testGenerateParquetForAspectWithExtendedEnumsWithNotInPayloadProperty() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_EXTENDED_ENUMS_WITH_NOT_IN_PAYLOAD_PROPERTY );
@@ -497,10 +495,9 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   // ---------------------------------------------------------------------------
-   // Either with complex types
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies Parquet generation for an aspect with an Either characteristic containing complex types.
+    */
    @Test
    void testGenerateParquetForAspectWithEitherWithComplexTypes() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_EITHER_WITH_COMPLEX_TYPES );
@@ -510,11 +507,10 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   // ---------------------------------------------------------------------------
-   // Type attribute for entity inheritance
-   // (mirrors testGenerationOfTypeAttributeForEntityInheritance)
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies Parquet generation with a type attribute for entity inheritance
+    * (mirrors {@code testGenerationOfTypeAttributeForEntityInheritance}).
+    */
    @Test
    void testGenerateParquetWithTypeAttributeForEntityInheritance() throws IOException {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_ABSTRACT_SINGLE_ENTITY ).aspect();
@@ -529,10 +525,9 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   // ---------------------------------------------------------------------------
-   // Optional properties
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies Parquet generation for an aspect with optional properties.
+    */
    @Test
    void testGenerateParquetForAspectWithOptionalProperties() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_OPTIONAL_PROPERTIES );
@@ -542,10 +537,9 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   // ---------------------------------------------------------------------------
-   // Optional properties with entity
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies Parquet generation for an aspect with optional properties containing an entity.
+    */
    @Test
    void testGenerateParquetForAspectWithOptionalPropertiesWithEntity() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_OPTIONAL_PROPERTIES_WITH_ENTITY );
@@ -555,10 +549,9 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   // ---------------------------------------------------------------------------
-   // Boolean type
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies Parquet generation for an aspect with a boolean property.
+    */
    @Test
    void testGenerateParquetForAspectWithBoolean() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_BOOLEAN );
@@ -573,10 +566,9 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   // ---------------------------------------------------------------------------
-   // Binary type
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies Parquet generation for an aspect with a binary property.
+    */
    @Test
    void testGenerateParquetForAspectWithBinary() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_BINARY );
@@ -586,10 +578,9 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   // ---------------------------------------------------------------------------
-   // Duration type
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies Parquet generation for an aspect with a duration property.
+    */
    @Test
    void testGenerateParquetForAspectWithDuration() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_DURATION );
@@ -599,10 +590,9 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   // ---------------------------------------------------------------------------
-   // Custom config with fixed random seed for reproducibility
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies Parquet generation with a custom configuration using a fixed random seed for reproducibility.
+    */
    @Test
    void testGenerateParquetWithCustomConfig() throws IOException {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
@@ -617,10 +607,9 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   // ---------------------------------------------------------------------------
-   // Parquet schema structure verification
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies the structure of the generated Parquet schema for an aspect with simple properties.
+    */
    @Test
    void testParquetSchemaStructure() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES );
@@ -636,10 +625,9 @@ class AspectModelParquetPayloadGeneratorTest {
       }
    }
 
-   // ---------------------------------------------------------------------------
-   // Parquet file metadata verification
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies the metadata of the generated Parquet file (row groups and record count).
+    */
    @Test
    void testParquetFileMetadata() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES );
@@ -650,10 +638,9 @@ class AspectModelParquetPayloadGeneratorTest {
       }
    }
 
-   // ---------------------------------------------------------------------------
-   // Extended entity
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies Parquet generation for an aspect with an extended entity.
+    */
    @Test
    void testGenerateParquetForAspectWithExtendedEntity() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_EXTENDED_ENTITY );
@@ -663,10 +650,9 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   // ---------------------------------------------------------------------------
-   // Entity collection
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies Parquet generation for an aspect with an entity collection.
+    */
    @Test
    void testGenerateParquetForAspectWithEntityCollection() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_ENTITY_COLLECTION );
@@ -676,10 +662,9 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   // ---------------------------------------------------------------------------
-   // String enumeration
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies Parquet generation for an aspect with a string enumeration.
+    */
    @Test
    void testGenerateParquetForAspectWithStringEnumeration() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_STRING_ENUMERATION );
@@ -689,10 +674,9 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   // ---------------------------------------------------------------------------
-   // Regular expression constraint
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies Parquet generation for an aspect with a regular expression constraint.
+    */
    @Test
    void testGenerateParquetForAspectWithRegularExpressionConstraint() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_REGULAR_EXPRESSION_CONSTRAINT );
@@ -702,10 +686,9 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   // ---------------------------------------------------------------------------
-   // Encoding constraint
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies Parquet generation for an aspect with an encoding constraint.
+    */
    @Test
    void testGenerateParquetForAspectWithEncodingConstraint() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_ENCODING_CONSTRAINT );
@@ -715,10 +698,9 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   // ---------------------------------------------------------------------------
-   // Length constraint
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies Parquet generation for an aspect with a length constraint.
+    */
    @Test
    void testGenerateParquetForAspectWithLengthConstraint() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_LENGTH_CONSTRAINT );
@@ -728,10 +710,9 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   // ---------------------------------------------------------------------------
-   // Measurement with unit
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies Parquet generation for an aspect with a measurement that has a unit.
+    */
    @Test
    void testGenerateParquetForAspectWithMeasurementWithUnit() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_MEASUREMENT_WITH_UNIT );
@@ -741,10 +722,9 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   // ---------------------------------------------------------------------------
-   // Quantifiable with unit
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies Parquet generation for an aspect with a quantifiable property that has a unit.
+    */
    @Test
    void testGenerateParquetForAspectWithQuantifiableWithUnit() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_QUANTIFIABLE_WITH_UNIT );
@@ -754,10 +734,9 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   // ---------------------------------------------------------------------------
-   // Time series
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies Parquet generation for an aspect with a time series property.
+    */
    @Test
    void testGenerateParquetForAspectWithTimeSeries() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_TIME_SERIES );
@@ -767,10 +746,9 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   // ---------------------------------------------------------------------------
-   // Sorted set
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies Parquet generation for an aspect with a sorted set property.
+    */
    @Test
    void testGenerateParquetForAspectWithSortedSet() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_SORTED_SET );
@@ -780,10 +758,9 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   // ---------------------------------------------------------------------------
-   // List
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies Parquet generation for an aspect with a list property.
+    */
    @Test
    void testGenerateParquetForAspectWithList() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_LIST );
@@ -793,10 +770,9 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   // ---------------------------------------------------------------------------
-   // Set
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies Parquet generation for an aspect with a set property.
+    */
    @Test
    void testGenerateParquetForAspectWithSet() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_SET );
@@ -806,10 +782,9 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   // ---------------------------------------------------------------------------
-   // Code characteristic
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies Parquet generation for an aspect with a code characteristic.
+    */
    @Test
    void testGenerateParquetForAspectWithCode() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_CODE );
@@ -819,10 +794,9 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   // ---------------------------------------------------------------------------
-   // Numeric structured value
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies Parquet generation for an aspect with a numeric structured value.
+    */
    @Test
    void testGenerateParquetForAspectWithNumericStructuredValue() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_NUMERIC_STRUCTURED_VALUE );
@@ -832,10 +806,9 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   // ---------------------------------------------------------------------------
-   // List with length constraint
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies Parquet generation for an aspect with a list that has a length constraint.
+    */
    @Test
    void testGenerateParquetForAspectWithListWithLengthConstraint() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_LIST_WITH_LENGTH_CONSTRAINT );
@@ -845,10 +818,9 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   // ---------------------------------------------------------------------------
-   // Exclusive range constraint
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Verifies Parquet generation for an aspect with an exclusive range constraint.
+    */
    @Test
    void testGenerateParquetForAspectWithExclusiveRangeConstraint() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_EXCLUSIVE_RANGE_CONSTRAINT );
@@ -858,10 +830,10 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   // ---------------------------------------------------------------------------
-   // Parameterized numeric-range tests
-   // ---------------------------------------------------------------------------
-
+   /**
+    * Parameterized test that verifies generated numeric values in Parquet files
+    * fall within the expected range for each numeric meta-model type and bound definition.
+    */
    @ParameterizedTest
    @MethodSource( "rangeTestSource" )
    void testGeneratedNumericValuesAreWithinRange( final RDFDatatype numericModelType, final Optional<BoundDefinition> boundKind )
