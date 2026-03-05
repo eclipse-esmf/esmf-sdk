@@ -36,7 +36,6 @@ import org.apache.parquet.example.data.Group;
 import org.apache.parquet.hadoop.ParquetFileReader;
 import org.apache.parquet.io.LocalInputFile;
 import org.apache.parquet.schema.MessageType;
-import org.eclipse.esmf.aspectmodel.generator.NumericTypeTraits;
 import org.eclipse.esmf.aspectmodel.generator.ParquetArtifact;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.BoundDefinition;
@@ -45,6 +44,7 @@ import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.characteristic.Trait;
+import org.eclipse.esmf.metamodel.datatype.SammType;
 import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 import org.eclipse.esmf.metamodel.impl.DefaultScalar;
 import org.eclipse.esmf.test.TestAspect;
@@ -969,12 +969,12 @@ class AspectModelParquetPayloadGeneratorTest {
       if ( value instanceof final Float f && (Float.isInfinite( f ) || Float.isNaN( f )) ) {
          return;
       }
-      final BigDecimal numberValue = NumericTypeTraits.convertToBigDecimal( value );
+      final BigDecimal numberValue = toBigDecimal( value );
       final BigDecimal lowerBound;
       final BigDecimal upperBound;
       try {
-         lowerBound = NumericTypeTraits.convertToBigDecimal( range.getLeft() );
-         upperBound = NumericTypeTraits.convertToBigDecimal( range.getRight() );
+         lowerBound = toBigDecimal( range.getLeft() );
+         upperBound = toBigDecimal( range.getRight() );
       } catch ( final NumberFormatException _ ) {
          // Skip assertion when bounds cannot be converted (Infinity/NaN)
          return;
@@ -989,8 +989,8 @@ class AspectModelParquetPayloadGeneratorTest {
    private Pair<Number, Number> generateRandomRangeForType( final Type dataType, final Class<?> nativeType,
          final BoundDefinition boundKind ) {
       final Resource dataTypeResource = ResourceFactory.createResource( dataType.getUrn() );
-      Number min = NumericTypeTraits.getModelMinValue( dataTypeResource, nativeType );
-      Number max = NumericTypeTraits.getModelMaxValue( dataTypeResource, nativeType );
+      Number min = getModelMinValue( dataTypeResource, nativeType );
+      Number max = getModelMaxValue( dataTypeResource, nativeType );
 
       // Cap the range to values representable by the Parquet storage type.
       // Most BigInteger types (integer, positiveInteger, etc.) are stored as INT32 in Parquet, so cap to int range.
@@ -999,8 +999,8 @@ class AspectModelParquetPayloadGeneratorTest {
       final Set<Resource> int64BigIntegerTypes = Set.of( XSD.unsignedLong, XSD.unsignedInt );
       if ( BigInteger.class.isAssignableFrom( nativeType ) && int64BigIntegerTypes.contains( dataTypeResource ) ) {
          // These BigInteger types are stored as INT64 in Parquet
-         final BigDecimal bdMin = NumericTypeTraits.convertToBigDecimal( min );
-         final BigDecimal bdMax = NumericTypeTraits.convertToBigDecimal( max );
+         final BigDecimal bdMin = toBigDecimal( min );
+         final BigDecimal bdMax = toBigDecimal( max );
          final BigDecimal longMin = BigDecimal.valueOf( Long.MIN_VALUE );
          final BigDecimal longMax = BigDecimal.valueOf( Long.MAX_VALUE );
          if ( bdMin.compareTo( longMin ) < 0 ) {
@@ -1011,8 +1011,8 @@ class AspectModelParquetPayloadGeneratorTest {
          }
       } else if ( BigInteger.class.isAssignableFrom( nativeType ) ) {
          // Other BigInteger types are stored as INT32 in Parquet
-         final BigDecimal bdMin = NumericTypeTraits.convertToBigDecimal( min );
-         final BigDecimal bdMax = NumericTypeTraits.convertToBigDecimal( max );
+         final BigDecimal bdMin = toBigDecimal( min );
+         final BigDecimal bdMax = toBigDecimal( max );
          final BigDecimal int32Min = BigDecimal.valueOf( Integer.MIN_VALUE );
          final BigDecimal int32Max = BigDecimal.valueOf( Integer.MAX_VALUE );
          if ( bdMin.compareTo( int32Min ) < 0 ) {
@@ -1022,8 +1022,8 @@ class AspectModelParquetPayloadGeneratorTest {
             max = int32Max.toBigInteger();
          }
       } else if ( Long.class.isAssignableFrom( nativeType ) ) {
-         final BigDecimal bdMin = NumericTypeTraits.convertToBigDecimal( min );
-         final BigDecimal bdMax = NumericTypeTraits.convertToBigDecimal( max );
+         final BigDecimal bdMin = toBigDecimal( min );
+         final BigDecimal bdMax = toBigDecimal( max );
          final BigDecimal longMin = BigDecimal.valueOf( Long.MIN_VALUE );
          final BigDecimal longMax = BigDecimal.valueOf( Long.MAX_VALUE );
          if ( bdMin.compareTo( longMin ) < 0 ) {
@@ -1049,8 +1049,8 @@ class AspectModelParquetPayloadGeneratorTest {
             max = dMax / 2.0;
          }
       } else if ( BigDecimal.class.isAssignableFrom( nativeType ) ) {
-         final BigDecimal bdMin = NumericTypeTraits.convertToBigDecimal( min );
-         final BigDecimal bdMax = NumericTypeTraits.convertToBigDecimal( max );
+         final BigDecimal bdMin = toBigDecimal( min );
+         final BigDecimal bdMax = toBigDecimal( max );
          final BigDecimal dblMin = BigDecimal.valueOf( -Double.MAX_VALUE / 2 );
          final BigDecimal dblMax = BigDecimal.valueOf( Double.MAX_VALUE / 2 );
          if ( bdMin.compareTo( dblMin ) < 0 ) {
@@ -1067,13 +1067,13 @@ class AspectModelParquetPayloadGeneratorTest {
 
       Pair<Number, Number> range = TEST_RANGES.get( nativeType );
 
-      final BigDecimal helperMin = NumericTypeTraits.convertToBigDecimal( min );
-      final BigDecimal helperMax = NumericTypeTraits.convertToBigDecimal( max );
+      final BigDecimal helperMin = toBigDecimal( min );
+      final BigDecimal helperMax = toBigDecimal( max );
       if ( helperMax.compareTo( BigDecimal.ZERO ) == 0 || helperMax.compareTo( BigDecimal.valueOf( -1 ) ) == 0 ) {
          range = Pair.of( range.getLeft(), max );
       }
       if ( helperMin.compareTo( BigDecimal.ZERO ) == 0 || helperMin.compareTo( BigDecimal.ONE ) == 0 ) {
-         range = Pair.of( min, helperMax.compareTo( NumericTypeTraits.convertToBigDecimal( range.getRight() ) ) < 0
+         range = Pair.of( min, helperMax.compareTo( toBigDecimal( range.getRight() ) ) < 0
                ? max
                : range.getRight() );
       }
@@ -1155,6 +1155,118 @@ class AspectModelParquetPayloadGeneratorTest {
       return boundKind == BoundDefinition.AT_LEAST ? BoundDefinition.AT_MOST :
             boundKind == BoundDefinition.GREATER_THAN ? BoundDefinition.LESS_THAN :
                   BoundDefinition.OPEN;
+   }
+
+   /**
+    * Converts any {@link Number} to {@link BigDecimal}, replacing the removed {@code NumericTypeTraits.convertToBigDecimal}.
+    */
+   private static BigDecimal toBigDecimal( final Number number ) {
+      if ( number instanceof final BigDecimal bd ) {
+         return bd;
+      }
+      if ( number instanceof final BigInteger bi ) {
+         return new BigDecimal( bi );
+      }
+      if ( number instanceof Long || number instanceof Integer || number instanceof Short || number instanceof Byte ) {
+         return BigDecimal.valueOf( number.longValue() );
+      }
+      return BigDecimal.valueOf( number.doubleValue() );
+   }
+
+   /**
+    * Returns the minimum value for the given SAMM data type, using {@link SammType.IntegerType#lowerBound()}
+    * for integer types and native Java type bounds for floating-point types.
+    */
+   private static Number getModelMinValue( final Resource dataTypeResource, final Class<?> nativeType ) {
+      final Optional<BigInteger> sammLowerBound = SammXsdType.ALL_TYPES.stream()
+            .filter( type -> type.getUrn().equals( dataTypeResource.getURI() ) )
+            .filter( SammType.IntegerType.class::isInstance )
+            .map( type -> ((SammType.IntegerType<?>) type).lowerBound() )
+            .findFirst()
+            .flatMap( opt -> opt );
+      if ( sammLowerBound.isPresent() ) {
+         return sammLowerBound.get();
+      }
+      // Floating-point and decimal types: return negative max value
+      if ( Float.class.isAssignableFrom( nativeType ) ) {
+         return -Float.MAX_VALUE;
+      }
+      if ( Double.class.isAssignableFrom( nativeType ) ) {
+         return -Double.MAX_VALUE;
+      }
+      if ( BigDecimal.class.isAssignableFrom( nativeType ) ) {
+         return BigDecimal.valueOf( -Double.MAX_VALUE );
+      }
+      if ( BigInteger.class.isAssignableFrom( nativeType ) ) {
+         // Unbounded integer — use Double range as fallback
+         return BigDecimal.valueOf( -Double.MAX_VALUE ).toBigInteger();
+      }
+      // Fallback for other integral types
+      return toBigDecimal( getJavaNativeMinValue( nativeType ) );
+   }
+
+   /**
+    * Returns the maximum value for the given SAMM data type, using {@link SammType.IntegerType#upperBound()}
+    * for integer types and native Java type bounds for floating-point types.
+    */
+   private static Number getModelMaxValue( final Resource dataTypeResource, final Class<?> nativeType ) {
+      final Optional<BigInteger> sammUpperBound = SammXsdType.ALL_TYPES.stream()
+            .filter( type -> type.getUrn().equals( dataTypeResource.getURI() ) )
+            .filter( SammType.IntegerType.class::isInstance )
+            .map( type -> ((SammType.IntegerType<?>) type).upperBound() )
+            .findFirst()
+            .flatMap( opt -> opt );
+      if ( sammUpperBound.isPresent() ) {
+         return sammUpperBound.get();
+      }
+      // Floating-point and decimal types: return max value
+      if ( Float.class.isAssignableFrom( nativeType ) ) {
+         return Float.MAX_VALUE;
+      }
+      if ( Double.class.isAssignableFrom( nativeType ) ) {
+         return Double.MAX_VALUE;
+      }
+      if ( BigDecimal.class.isAssignableFrom( nativeType ) ) {
+         return BigDecimal.valueOf( Double.MAX_VALUE );
+      }
+      if ( BigInteger.class.isAssignableFrom( nativeType ) ) {
+         // Unbounded integer — use Double range as fallback
+         return BigDecimal.valueOf( Double.MAX_VALUE ).toBigInteger();
+      }
+      // Fallback for other integral types
+      return toBigDecimal( getJavaNativeMaxValue( nativeType ) );
+   }
+
+   private static Number getJavaNativeMinValue( final Class<?> nativeType ) {
+      if ( Byte.class.isAssignableFrom( nativeType ) ) {
+         return Byte.MIN_VALUE;
+      }
+      if ( Short.class.isAssignableFrom( nativeType ) ) {
+         return Short.MIN_VALUE;
+      }
+      if ( Integer.class.isAssignableFrom( nativeType ) ) {
+         return Integer.MIN_VALUE;
+      }
+      if ( Long.class.isAssignableFrom( nativeType ) ) {
+         return Long.MIN_VALUE;
+      }
+      return -Double.MAX_VALUE;
+   }
+
+   private static Number getJavaNativeMaxValue( final Class<?> nativeType ) {
+      if ( Byte.class.isAssignableFrom( nativeType ) ) {
+         return Byte.MAX_VALUE;
+      }
+      if ( Short.class.isAssignableFrom( nativeType ) ) {
+         return Short.MAX_VALUE;
+      }
+      if ( Integer.class.isAssignableFrom( nativeType ) ) {
+         return Integer.MAX_VALUE;
+      }
+      if ( Long.class.isAssignableFrom( nativeType ) ) {
+         return Long.MAX_VALUE;
+      }
+      return Double.MAX_VALUE;
    }
 }
 
