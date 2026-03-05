@@ -29,6 +29,7 @@
 
    <properties>
       <main-class>org.eclipse.esmf.SammCli</main-class>
+      <skip.maven.failsafe>false</skip.maven.failsafe>
    </properties>
 
    <dependencies>
