@@ -78,7 +78,7 @@ public class AspectToOpenapiCommand extends AbstractCommand {
    @CommandLine.Option(
       names = { "--query-api-path", "-qap" },
       description = "The path for the query endpoint, default '/query-api/vX', where X is the Aspect Model major version." )
-   private String queryApiPath = "";
+   private String queryApiPath = null;
 
    @CommandLine.Option(
       names = { "--json", "-j" },
