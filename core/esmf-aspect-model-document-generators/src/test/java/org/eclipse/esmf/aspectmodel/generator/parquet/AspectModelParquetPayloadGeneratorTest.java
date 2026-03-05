@@ -82,11 +82,7 @@ class AspectModelParquetPayloadGeneratorTest {
     * {@link TestAspect} that is expected to produce valid output.
     */
    @ParameterizedTest
-   @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
-         "MODEL_WITH_BROKEN_CYCLES",
-         "ASPECT_WITH_MULTIPLE_ENTITIES_SAME_EXTEND",
-         "ASPECT_WITH_OPTIONAL_PROPERTIES_AND_ENTITY_WITH_SEPARATE_FILES"
-   } )
+   @EnumSource( value = TestAspect.class )
    void testParquetFileGenerationForAllAspects( final TestAspect testAspect ) {
       final Aspect aspect = TestResources.load( testAspect ).aspect();
       assertThatCode( () -> {
@@ -887,7 +883,7 @@ class AspectModelParquetPayloadGeneratorTest {
 
    private Group readFirstRecord( final Path parquetFile ) throws IOException {
       final List<Group> records = readAllRecords( parquetFile );
-      return records.isEmpty() ? null : records.get( 0 );
+      return records.isEmpty() ? null : records.getFirst();
    }
 
    private List<Group> readAllRecords( final Path parquetFile ) throws IOException {
@@ -1096,7 +1092,7 @@ class AspectModelParquetPayloadGeneratorTest {
    private static List<Arguments> rangeTestSource() {
       final List<Arguments> result = new ArrayList<>();
       Lists.cartesianProduct( getMetaModelNumericTypes(), RANGE_CONSTRAINTS_TO_TEST )
-            .forEach( list -> result.add( Arguments.of( list.get( 0 ), list.get( 1 ) ) ) );
+            .forEach( list -> result.add( Arguments.of( list.getFirst(), list.get( 1 ) ) ) );
       return result;
    }
 
