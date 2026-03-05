@@ -29,6 +29,9 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
+
 import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.loader.ValueInstantiator;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
@@ -95,16 +98,12 @@ import org.eclipse.esmf.metamodel.constraint.impl.DefaultLocaleConstraint;
 import org.eclipse.esmf.metamodel.constraint.impl.DefaultRangeConstraint;
 import org.eclipse.esmf.metamodel.constraint.impl.DefaultRegularExpressionConstraint;
 import org.eclipse.esmf.metamodel.datatype.LangString;
-import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 import org.eclipse.esmf.metamodel.impl.DefaultAspect;
 import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;
 import org.eclipse.esmf.metamodel.impl.DefaultEntity;
 import org.eclipse.esmf.metamodel.impl.DefaultEntityInstance;
 import org.eclipse.esmf.metamodel.impl.DefaultProperty;
 import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
-
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.vocabulary.RDF;
 
 /**
  * Builder for SAMM elements.

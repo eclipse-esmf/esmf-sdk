@@ -251,6 +251,7 @@
                <consoleOutput>true</consoleOutput>
                <failsOnError>true</failsOnError>
                <failOnViolation>true</failOnViolation>
+               <includeTestSourceDirectory>true</includeTestSourceDirectory>
             </configuration>
             <dependencies>
                <dependency>
