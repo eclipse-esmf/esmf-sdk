@@ -14,8 +14,15 @@
 #macro( diagram $i18n)
     #title( $i18n.getText("docu.label.overview") "overview" "2" )
     <div class="flex py-10">
-        <div class="w-full h-full shadow-lg overflow-hidden p-4">
-            <div id="aspect-model-diagram">
+        <div class="w-full h-full shadow-lg overflow-hidden p-4 am-diag-shell">
+            <div class="am-diag-tools" aria-label="Diagram controls">
+                <button type="button" class="am-iconbtn am-diag-btn" aria-label="Zoom in" data-am-diag="zin">+</button>
+                <button type="button" class="am-iconbtn am-diag-btn" aria-label="Zoom out" data-am-diag="zout">-</button>
+                <button type="button" class="am-iconbtn am-diag-btn" aria-label="Reset view" data-am-diag="reset">R</button>
+                <button type="button" class="am-iconbtn am-diag-btn" aria-label="Fullscreen" data-am-diag="fs">F</button>
+            </div>
+
+            <div class="am-diag-stage" id="aspect-model-diagram">
                 <img src="diagram_svg_placeholder" alt="Aspect Model Diagram">
             </div>
         </div>

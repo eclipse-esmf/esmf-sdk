@@ -97,6 +97,10 @@ public class SammCli extends AbstractCommand {
    }
 
    public SammCli() {
+      // Workaround for the exectuable jar for https://github.com/eclipse-esmf/esmf-sdk/issues/906
+      // which happens due to how the shaded jar is built
+      System.setProperty( "polyglotimpl.DisableMultiReleaseCheck", "true" );
+
       final CommandLine initialCommandLine = new CommandLine( this )
             .addSubcommand( new AspectCommand() )
             .addSubcommand( new AasCommand() )

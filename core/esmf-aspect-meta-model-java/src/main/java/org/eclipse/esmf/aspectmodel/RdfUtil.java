@@ -24,22 +24,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.esmf.aspectmodel.resolver.modelfile.MetaModelFile;
-import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
-import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.aspectmodel.urn.ElementType;
-import org.eclipse.esmf.metamodel.vocabulary.SammNs;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Streams;
 import org.apache.jena.graph.Node;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.DatasetFactory;
 import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -54,6 +44,16 @@ import org.apache.jena.riot.RDFWriter;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.apache.jena.vocabulary.XSD;
+
+import org.eclipse.esmf.aspectmodel.resolver.modelfile.MetaModelFile;
+import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
+import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.aspectmodel.urn.ElementType;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Streams;
 
 public class RdfUtil {
    private RdfUtil() {}

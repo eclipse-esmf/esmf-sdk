@@ -487,8 +487,8 @@ class SammCliTest extends SammCliAbstractTest {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "to", "html" );
       assertThat( result.stderr() ).isEmpty();
       assertThat( result.stdout() )
-            .contains( "<div class='pb-4'>urn:samm:org.eclipse.esmf.test.ordering:1.0.0#Aspect</div>" )
-            .doesNotContain( "<div class='pb-4'>urn:samm:org.eclipse.esmf.test.ordering.dependency:1.0.0#Aspect</div>" );
+            .contains( "urn:samm:org.eclipse.esmf.test.ordering:1.0.0#Aspect" )
+            .doesNotContain( "urn:samm:org.eclipse.esmf.test.ordering.dependency:1.0.0#Aspect" );
    }
 
    @Test
@@ -1000,6 +1000,26 @@ class SammCliTest extends SammCliAbstractTest {
                      operationId: putAspectWithEntity
                """
       );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectToOpenApiWithQueryApi() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "openapi", "--json",
+            "--api-base-url", "https://test.example.com", "--include-query-api" );
+      assertThat( result.stdout() ).contains( "\"openapi\" : \"3.0.3\"" );
+      assertThat( result.stdout() ).contains( "\"url\" : \"https://test.example.com/api/v1\"" );
+      assertThat( result.stdout() ).contains( "\"url\" : \"https://test.example.com/query-api/v1\"" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectToOpenApiWithQueryApiPath() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "openapi", "--json",
+            "--api-base-url", "https://test.example.com", "--include-query-api", "--query-api-path", "/query-api/v2" );
+      assertThat( result.stdout() ).contains( "\"openapi\" : \"3.0.3\"" );
+      assertThat( result.stdout() ).contains( "\"url\" : \"https://test.example.com/api/v1\"" );
+      assertThat( result.stdout() ).contains( "\"url\" : \"https://test.example.com/query-api/v2\"" );
       assertThat( result.stderr() ).isEmpty();
    }
 
