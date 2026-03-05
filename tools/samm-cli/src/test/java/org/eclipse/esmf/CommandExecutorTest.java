@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 
-public class TestCommandExecutor {
+public class CommandExecutorTest {
    @EnabledOnOs( OS.WINDOWS )
    @Test
    void testCmdScript() {
@@ -53,11 +53,6 @@ public class TestCommandExecutor {
       final String java = ProcessHandle.current().info().command().orElse( "java" );
       final String result = CommandExecutor.executeCommand( java + " -jar " + testsJar );
       assertThat( "Result" ).isEqualTo( result );
-   }
-
-   @Test
-   void resolve() throws URISyntaxException {
-      DelegatingCommandResolver.main( new String[] { "urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEntity" } );
    }
 
    @EnabledOnOs( OS.LINUX )

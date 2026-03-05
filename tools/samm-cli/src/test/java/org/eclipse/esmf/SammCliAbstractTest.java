@@ -53,7 +53,6 @@ abstract class SammCliAbstractTest {
 
    @BeforeAll
    static void beforeAll() {
-
       final LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
       Stream.of( LockMRSW.class, PMapQuadTable.class ).forEach( loggerClass -> {
          final Logger logger = loggerContext.getLogger( loggerClass );
@@ -125,7 +124,7 @@ abstract class SammCliAbstractTest {
    }
 
    protected static MediaType contentType( final File file ) {
-      try ( BufferedInputStream bis = new BufferedInputStream( new FileInputStream( file ) ) ) {
+      try ( final BufferedInputStream bis = new BufferedInputStream( new FileInputStream( file ) ) ) {
          return new TikaConfig().getDetector().detect( bis, new Metadata() );
       } catch ( final IOException | TikaException exception ) {
          throw new RuntimeException( exception );

@@ -72,7 +72,9 @@
 
    <properties>
       <!-- General settings -->
-      <skip.gpg.skip>true</skip.gpg.skip>
+      <skip.maven.surefire>false</skip.maven.surefire>
+      <skip.maven.shade>false</skip.maven.shade>
+      <skip.maven.failsafe>false</skip.maven.failsafe>
       <build-time-sources>${project.basedir}/src-buildtime</build-time-sources>
       <generated-sources>${project.basedir}/src-gen</generated-sources>
       <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
@@ -301,6 +303,7 @@
                <consoleOutput>true</consoleOutput>
                <failsOnError>true</failsOnError>
                <failOnViolation>true</failOnViolation>
+               <includeTestSourceDirectory>true</includeTestSourceDirectory>
             </configuration>
             <dependencies>
                <dependency>
@@ -321,6 +324,7 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
+               <skip>${skip.maven.surefire}</skip>
                <properties>
                   <configurationParameters>
                      junit.jupiter.execution.parallel.enabled = true
