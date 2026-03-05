@@ -1004,6 +1004,26 @@ class SammCliTest extends SammCliAbstractTest {
    }
 
    @Test
+   void testAspectToOpenApiWithQueryApi() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "openapi", "--json",
+              "--api-base-url", "https://test.example.com", "--include-query-api" );
+      assertThat( result.stdout() ).contains( "\"openapi\" : \"3.0.3\"" );
+      assertThat( result.stdout() ).contains( "\"url\" : \"https://test.example.com/api/v1\"" );
+      assertThat( result.stdout() ).contains( "\"url\" : \"https://test.example.com/query-api/v1\"" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectToOpenApiWithQueryApiPath() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "openapi", "--json",
+              "--api-base-url", "https://test.example.com", "--include-query-api", "--query-api-path", "/query-api/v2" );
+      assertThat( result.stdout() ).contains( "\"openapi\" : \"3.0.3\"" );
+      assertThat( result.stdout() ).contains( "\"url\" : \"https://test.example.com/api/v1\"" );
+      assertThat( result.stdout() ).contains( "\"url\" : \"https://test.example.com/query-api/v2\"" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
    void testAspectToAsyncapiWithoutApplicationId() {
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "asyncapi" );
       assertThat( result.exitStatus() ).isZero();
