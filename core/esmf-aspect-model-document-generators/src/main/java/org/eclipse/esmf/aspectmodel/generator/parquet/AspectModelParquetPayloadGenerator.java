@@ -14,23 +14,14 @@
 package org.eclipse.esmf.aspectmodel.generator.parquet;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.MathContext;
-import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Base64;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.HexFormat;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,12 +31,9 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.BiFunction;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import javax.xml.datatype.DatatypeConstants;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.jena.rdf.model.Resource;
@@ -65,12 +53,10 @@ import org.apache.parquet.schema.Types;
 import org.eclipse.esmf.aspectmodel.generator.ArtifactGenerator;
 import org.eclipse.esmf.aspectmodel.generator.AspectGenerator;
 import org.eclipse.esmf.aspectmodel.generator.DocumentGenerationException;
-import org.eclipse.esmf.aspectmodel.generator.NumericTypeTraits;
 import org.eclipse.esmf.aspectmodel.generator.ParquetArtifact;
 import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.BoundDefinition;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Constraint;
@@ -85,18 +71,11 @@ import org.eclipse.esmf.metamodel.characteristic.Either;
 import org.eclipse.esmf.metamodel.characteristic.Enumeration;
 import org.eclipse.esmf.metamodel.characteristic.State;
 import org.eclipse.esmf.metamodel.characteristic.Trait;
-import org.eclipse.esmf.metamodel.constraint.FixedPointConstraint;
 import org.eclipse.esmf.metamodel.constraint.LengthConstraint;
-import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
-import org.eclipse.esmf.metamodel.constraint.RegularExpressionConstraint;
 import org.eclipse.esmf.metamodel.datatype.Curie;
 import org.eclipse.esmf.metamodel.datatype.LangString;
-import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 import org.eclipse.esmf.metamodel.impl.DefaultProperty;
-import org.jeasy.random.EasyRandom;
-import org.jeasy.random.EasyRandomParameters;
 
-import com.github.curiousoddman.rgxgen.RgxGen;
 import com.google.common.collect.ImmutableMap;
 
 import io.vavr.Tuple2;
@@ -109,13 +88,15 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
 
    public static final String TYPE = "@type";
 
+   public static final String COULD_NOT_PROCESS_PROPERTY = "Could not process Property ";
+
    MessageType messageTypeSchema = null;
 
    List<String> columnNames = new ArrayList<>();
 
-   final EasyRandom easyRandom = new EasyRandom();
-
    final Random rand = new Random();
+
+   private final ParquetExampleValueGenerator parquetValueGenerator = new ParquetExampleValueGenerator( rand );
 
    public static final ParquetGenerationConfig DEFAULT_CONFIG = ParquetGenerationConfigBuilder.builder().build();
 
@@ -142,7 +123,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
 
       private final List<Transformer> transformers;
       private final List<Property> recursiveProperty;
-      private ExampleValueGenerator exampleValueGenerator = null;
+      private ParquetExampleValueGenerator exampleValueGenerator = null;
       private Aspect aspect;
 
       private PayloadGenerator() {
@@ -425,7 +406,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
       @Override
       public ParquetArtifact apply( final Aspect aspect, final ParquetGenerationConfig config ) {
          this.aspect = aspect;
-         exampleValueGenerator = new ExampleValueGenerator( config.randomStrategy() );
+         exampleValueGenerator = new ParquetExampleValueGenerator( config.randomStrategy() );
 
          try {
             // Generate Parquet file in memory
@@ -499,7 +480,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
 
       private Map<String, Object> transformCollectionProperty( final Property property, final boolean useModelExampleValue ) {
          final Characteristic characteristic = property.getCharacteristic().orElseThrow( () ->
-               new IllegalArgumentException( "Could not process Property " + property ) );
+               new IllegalArgumentException( COULD_NOT_PROCESS_PROPERTY + property ) );
          if ( characteristic.is( Collection.class ) ) {
             final List<Object> collectionValues = getCollectionValues( property, (Collection) characteristic );
             return toMap( property.getPayloadName(), collectionValues );
@@ -529,7 +510,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
 
       private Map<String, Object> transformAbstractEntityProperty( final Property property, final boolean useModelExampleValue ) {
          final Optional<AbstractEntity> dataType = getForCharacteristic( property.getCharacteristic().orElseThrow( () ->
-               new IllegalArgumentException( "Could not process Property " + property ) ), AbstractEntity.class );
+               new IllegalArgumentException( COULD_NOT_PROCESS_PROPERTY + property ) ), AbstractEntity.class );
          if ( dataType.isPresent() ) {
             final AbstractEntity abstractEntity = dataType.get();
             final ComplexType extendingComplexType = abstractEntity.getExtendingElements().get( 0 );
@@ -545,7 +526,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
 
       private Map<String, Object> transformEntityProperty( final Property property, final boolean useModelExmplevalue ) {
          final Optional<Entity> dataType = getForCharacteristic( property.getCharacteristic().orElseThrow( () ->
-               new IllegalArgumentException( "Could not process Property " + property ) ), Entity.class );
+               new IllegalArgumentException( COULD_NOT_PROCESS_PROPERTY + property ) ), Entity.class );
          if ( dataType.isPresent() ) {
             final Entity entity = dataType.get();
             final Map<String, Object> generatedProperties = transformProperties( entity.getAllProperties(), useModelExmplevalue );
@@ -559,7 +540,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
 
       private Map<String, Object> transformEnumeration( final Property property, final boolean useModelExampleValue ) {
          return getForCharacteristic( property.getCharacteristic().orElseThrow( () ->
-               new IllegalArgumentException( "Could not process Property " + property ) ), Enumeration.class )
+               new IllegalArgumentException( COULD_NOT_PROCESS_PROPERTY + property ) ), Enumeration.class )
                .map( enumeration -> extractEnumerationValues( property, enumeration ) )
                .orElseGet( ImmutableMap::of );
       }
@@ -575,7 +556,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
 
       private Map<String, Object> transformEitherProperty( final Property property, final boolean useModelExampleValue ) {
          final Characteristic characteristic = property.getCharacteristic().orElseThrow( () ->
-               new IllegalArgumentException( "Could not process Property " + property ) );
+               new IllegalArgumentException( COULD_NOT_PROCESS_PROPERTY + property ) );
          return getForCharacteristic( characteristic, Either.class )
                .map( value -> transformProperty(
                      new DefaultProperty( MetaModelBaseAttributes.builder().build(),
@@ -596,7 +577,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
        */
       private Object getExampleValueOrElseRandom( final Property property, final boolean useModelExampleValue ) {
          final Characteristic characteristic = property.getCharacteristic().orElseThrow( () ->
-               new IllegalArgumentException( "Could not process Property " + property ) );
+               new IllegalArgumentException( COULD_NOT_PROCESS_PROPERTY + property ) );
          if ( characteristic.is( State.class ) ) {
             return characteristic.as( State.class ).getDefaultValue();
          }
@@ -674,7 +655,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
       }
 
       private Object generateExampleValue( final Characteristic characteristic ) {
-         return exampleValueGenerator.generateExampleValue( characteristic );
+         return characteristic.accept( exampleValueGenerator, new ParquetExampleValueGenerator.Context() );
       }
 
       /**
@@ -685,318 +666,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
       }
    }
 
-   private static class ExampleValueGenerator {
-      private static final double THRESHOLD = .0001;
-      private final EasyRandom defaultEasyRandom = new EasyRandom();
-      private final Random random;
-
-      private static final List<String> CURIE_VALUES = List.of( "unit:hectopascal" );
-
-      private final Map<Class<?>, BiFunction<Number, Number, Number>> generators = Map.of(
-            Byte.class, ( min, max ) -> getRandomInteger( min.intValue(), max.intValue() ),
-            Short.class, ( min, max ) -> getRandomInteger( min.intValue(), max.intValue() ),
-            Integer.class, ( min, max ) -> getRandomInteger( min.intValue(), max.intValue() ),
-            Long.class, ( min, max ) -> getRandomLong( min.longValue(), max.longValue() ),
-            Float.class, ( min, max ) -> getRandomDouble( min.floatValue(), max.floatValue() ).floatValue(),
-            BigInteger.class,
-            ( min, max ) -> BigDecimal.valueOf( getRandomDouble( safelyNarrowDown( min ), safelyNarrowDown( max ) ) ).toBigInteger(),
-            BigDecimal.class, ( min, max ) -> BigDecimal.valueOf( getRandomDouble( safelyNarrowDown( min ), safelyNarrowDown( max ) ) )
-      );
-
-      private ExampleValueGenerator( final Random random ) {
-         this.random = random;
-      }
-
-      private Type getDataType( final Characteristic characteristic ) {
-         return characteristic.getDataType()
-               .orElseThrow( () -> new IllegalArgumentException(
-                     "DataType for characteristic " + characteristic.getName() + " is required." ) );
-      }
-
-      private Object generateExampleValue( final Characteristic characteristic ) {
-         final Type dataType = getDataType( characteristic );
-
-         if ( !(dataType.is( Scalar.class )) ) {
-            throw new IllegalArgumentException( "Example values can only be generated for scalar types." );
-         }
-
-         if ( RDF.langString.getURI().equals( dataType.getUrn() ) ) {
-            return ImmutableMap.of( Locale.ENGLISH.toLanguageTag(), "Example multi language string" );
-         }
-
-         final Scalar scalar = dataType.as( Scalar.class );
-         final Resource dataTypeResource = ResourceFactory.createResource( scalar.getUrn() );
-         final Class<?> exampleValueType = SammXsdType.getJavaTypeForMetaModelType( dataTypeResource );
-         if ( Curie.class.equals( exampleValueType ) ) {
-            return getRandomEntry( ExampleValueGenerator.CURIE_VALUES );
-         }
-         if ( XMLGregorianCalendar.class.equals( exampleValueType ) ) {
-            return getGregorianRandomValue( dataType );
-         }
-         if ( Duration.class.equals( exampleValueType ) ) {
-            return DatatypeFactory.newDefaultInstance().newDuration( defaultEasyRandom.nextLong() );
-         }
-         if ( byte[].class.equals( exampleValueType ) ) {
-            return getBinaryRandomValue( dataType );
-         }
-
-         if ( characteristic.is( Trait.class ) ) {
-            final Optional<Object> traitExampleValue = generateExampleValueForTrait( characteristic.as( Trait.class ), exampleValueType,
-                  dataTypeResource );
-            if ( traitExampleValue.isPresent() ) {
-               return traitExampleValue.get();
-            }
-         }
-
-         if ( Number.class.isAssignableFrom( exampleValueType ) ) {
-            final Number min = NumericTypeTraits.getModelMinValue( dataTypeResource, exampleValueType );
-            final Number max = NumericTypeTraits.getModelMaxValue( dataTypeResource, exampleValueType );
-            return generateForNumericTypeInRange( exampleValueType, min, max );
-         }
-
-         return defaultEasyRandom.nextObject( exampleValueType );
-      }
-
-      private Optional<Object> generateExampleValueForTrait( final Trait trait, final Class<?> exampleValueType,
-            final Resource dataTypeResource ) {
-         for ( final Constraint constraint : trait.getConstraints() ) {
-            if ( constraint.is( LengthConstraint.class ) ) {
-               return Optional.of(
-                     getRandomValue( constraint.as( LengthConstraint.class ), exampleValueType, trait.getBaseCharacteristic() ) );
-            }
-            if ( constraint.is( RangeConstraint.class ) ) {
-               return Optional.of( getRandomValue( constraint.as( RangeConstraint.class ), exampleValueType, dataTypeResource ) );
-            }
-            if ( constraint.is( RegularExpressionConstraint.class ) ) {
-               return Optional.of( getRandomValue( constraint.as( RegularExpressionConstraint.class ) ) );
-            }
-            if ( constraint.is( FixedPointConstraint.class ) ) {
-               return Optional.of( getRandomValue( constraint.as( FixedPointConstraint.class ) ) );
-            }
-         }
-         return Optional.empty();
-      }
-
-      private Object getBinaryRandomValue( final Type dataType ) {
-         final byte[] value = defaultEasyRandom.nextObject( String.class ).getBytes( StandardCharsets.UTF_8 );
-         return dataType.getUrn().equals( XSD.base64Binary.getURI() )
-               ? Base64.getEncoder().encodeToString( value )
-               : HexFormat.of().formatHex( value );
-      }
-
-      private Object getGregorianRandomValue( final Type dataType ) {
-         final XMLGregorianCalendar randomCalendar = DatatypeFactory.newDefaultInstance()
-               .newXMLGregorianCalendar( new GregorianCalendar() );
-         final Optional<DateFormat> dateFormat = getDateFormat( dataType.getUrn() );
-         if ( dateFormat.isPresent() ) {
-            final Date date = randomCalendar.toGregorianCalendar().getTime();
-            return dateFormat.get().format( date );
-         }
-         return randomCalendar;
-      }
-
-      private Optional<DateFormat> getDateFormat( final String urn ) {
-         if ( XSD.gDay.getURI().equals( urn ) ) {
-            return Optional.of( new SimpleDateFormat( "---dd" ) );
-         }
-         if ( XSD.gMonth.getURI().equals( urn ) ) {
-            return Optional.of( new SimpleDateFormat( "--MM" ) );
-         }
-         if ( XSD.gYear.getURI().equals( urn ) ) {
-            return Optional.of( new SimpleDateFormat( "yyyy" ) );
-         }
-         if ( XSD.gYearMonth.getURI().equals( urn ) ) {
-            return Optional.of( new SimpleDateFormat( "yyyy-MM" ) );
-         }
-         if ( XSD.gMonthDay.getURI().equals( urn ) ) {
-            return Optional.of( new SimpleDateFormat( "--MM-dd" ) );
-         }
-         if ( XSD.duration.getURI().equals( urn ) ) {
-            return Optional.of( new SimpleDateFormat( "PddD" ) );
-         }
-         if ( XSD.date.getURI().equals( urn ) ) {
-            return Optional.of( new SimpleDateFormat( "yyyy-MM-dd" ) );
-         }
-         return Optional.empty();
-      }
-
-      @SuppressWarnings( "unchecked" )
-      private Object getRandomValue( final LengthConstraint lengthConstraint, final java.lang.reflect.Type exampleValueType,
-            final Characteristic traitBaseCharacteristic ) {
-         if ( traitBaseCharacteristic.is( Collection.class ) ) {
-            return getRandomValues( lengthConstraint, () -> defaultEasyRandom.nextObject( (Class<?>) exampleValueType ) );
-         }
-
-         final BigInteger maxLength = lengthConstraint.getMaxValue().orElse( BigInteger.valueOf( 30 ) );
-         final BigInteger minLength = lengthConstraint.getMinValue().orElse( BigInteger.ZERO );
-         final EasyRandomParameters easyRandomParameters = new EasyRandomParameters().stringLengthRange( minLength.intValue(),
-               maxLength.intValue() );
-         final EasyRandom easyRandom = new EasyRandom( easyRandomParameters );
-         return easyRandom.nextObject( (Class<?>) exampleValueType );
-      }
-
-      public List<Object> getRandomValues( final LengthConstraint lengthConstraint, final Supplier<Object> valueGenerator ) {
-         final BigInteger maxLength =
-               lengthConstraint == null
-                     ? BigInteger.ONE
-                     : lengthConstraint.getMaxValue().orElse( BigInteger.valueOf( Integer.MAX_VALUE ) );
-         final BigInteger minLength =
-               lengthConstraint == null ? BigInteger.ONE : lengthConstraint.getMinValue().orElse( BigInteger.ZERO );
-
-         final List<Object> returnValues = new ArrayList<>();
-         // Fill in minLength elements
-         for ( int i = 0; i < minLength.intValue(); i++ ) {
-            returnValues.add( valueGenerator.get() );
-         }
-         if ( minLength.intValue() == maxLength.intValue() ) {
-            return returnValues;
-         }
-         // Add between minLength and maxLength-minLength elements, but not more than 5
-         final int amount = getRandomInteger( minLength.intValue(), Math.min( maxLength.intValue() - minLength.intValue(), 5 ) );
-         for ( int i = 0; i < amount; i++ ) {
-            returnValues.add( valueGenerator.get() );
-         }
-         return returnValues;
-      }
-
-      private Number getRandomValue( final RangeConstraint rangeConstraint, final java.lang.reflect.Type valueType,
-            final Resource dataTypeResource ) {
-         final Number min = calculateLowerBound( rangeConstraint, valueType, dataTypeResource );
-         final Number max = calculateUpperBound( rangeConstraint, valueType, dataTypeResource );
-         return generateForNumericTypeInRange( valueType, min, max );
-      }
-
-      public Number getRandomValue( final FixedPointConstraint fixedPointConstraint ) {
-
-         final int integerDigits = fixedPointConstraint.getInteger();
-         final int scale = fixedPointConstraint.getScale();
-
-         final int integerPart = getRandomInteger( integerDigits );
-
-         if ( scale > 0 ) {
-            final double fractionalPart = getRandomDouble( scale );
-
-            final double result = integerPart + fractionalPart;
-
-            final BigDecimal roundedResult = BigDecimal.valueOf( result )
-                  .setScale( scale, RoundingMode.DOWN );
-            return roundedResult.doubleValue();
-         } else {
-            return integerPart;
-         }
-      }
-
-      private Number generateForNumericTypeInRange( final java.lang.reflect.Type valueType, final Number min, final Number max ) {
-         return generators
-               .getOrDefault( valueType, ( low, high ) -> getRandomDouble( low.doubleValue(), high.doubleValue() ) )
-               .apply( min, max );
-      }
-
-      // narrowing conversion from BigDecimal to double
-      private double safelyNarrowDown( final Number bound ) {
-         if ( !(BigDecimal.class.equals( bound.getClass() )) ) {
-            return bound.doubleValue();
-         }
-
-         // We have to be extremely cautious with BigDecimal bounds. Because of the limited precision
-         // of the "double" type (15-17 significant digits) we might jump over the bound while rounding.
-         // Example: xsd:unsignedLong has a max. value of 18446744073709551615; when converting it to double
-         // it will get represented as 1.8446744073709552E16, thereby exceeding the upper bound.
-         // Therefore we need to take care of always rounding down when narrowing to double.
-         final BigDecimal narrowed = ((BigDecimal) bound).round( new MathContext( 15, RoundingMode.DOWN ) );
-         return narrowed.doubleValue();
-      }
-
-      private Number calculateLowerBound( final RangeConstraint rangeConstraint, final java.lang.reflect.Type valueType,
-            final Resource dataTypeResource ) {
-         return rangeConstraint.getMinValue()
-               .map( ScalarValue::getValue )
-               .map( Number.class::cast )
-               // exclusive lower bound?
-               .map( value -> BoundDefinition.GREATER_THAN
-                     .equals( rangeConstraint.getLowerBoundDefinition() )
-                     ? NumericTypeTraits.polymorphicAdd( value, exclusiveBoundDelta( valueType ) )
-                     : value )
-               .orElse( NumericTypeTraits.getModelMinValue( dataTypeResource, valueType ) );
-      }
-
-      private Number calculateUpperBound( final RangeConstraint rangeConstraint, final java.lang.reflect.Type valueType,
-            final Resource dataTypeResource ) {
-         return rangeConstraint.getMaxValue()
-               .map( ScalarValue::getValue )
-               .map( Number.class::cast )
-               // exclusive upper bound?
-               .map( value -> BoundDefinition.LESS_THAN
-                     .equals( rangeConstraint.getUpperBoundDefinition() )
-                     ? NumericTypeTraits.polymorphicAdd( value, -exclusiveBoundDelta( valueType ) )
-                     : value )
-               .orElse( NumericTypeTraits.getModelMaxValue( dataTypeResource, valueType ) );
-      }
-
-      // with floating point values we cannot simply use 1 (the range could be defined as 2.4 - 2.9, both exclusive)
-      private float exclusiveBoundDelta( final java.lang.reflect.Type valueType ) {
-         return NumericTypeTraits.isFloatingPointNumberType( valueType ) ? (float) THRESHOLD : 1.0f;
-      }
-
-      private Object getRandomValue( final RegularExpressionConstraint rangeConstraint ) {
-         final RgxGen rgxGen = RgxGen.parse( rangeConstraint.getValue() );
-         return rgxGen.generate();
-      }
-
-      private Double getRandomDouble( final double min, final double max ) {
-         if ( Math.abs( min - max ) < THRESHOLD || Math.abs( min - max ) == Double.POSITIVE_INFINITY ) {
-            return min;
-         }
-         //noinspection OptionalGetWithoutIsPresent
-         return random.doubles( 1, min, max ).findFirst().getAsDouble();
-      }
-
-      private Double getRandomDouble( final int scale ) {
-         final int min = (int) Math.pow( 10, scale - 1 );
-         final int max = (int) Math.pow( 10, scale ) - 1;
-
-         final int fractionalValue = getRandomInteger( min, max );
-
-         return fractionalValue / Math.pow( 10, scale );
-      }
-
-      private Integer getRandomInteger( final int min, final int max ) {
-         if ( min == max ) {
-            return min;
-         }
-         //noinspection OptionalGetWithoutIsPresent
-         return random.ints( 1, min, max ).findFirst().getAsInt();
-      }
-
-      /**
-       * Generates a random integer with the exact specified number of digits.
-       *
-       * @param countOfDigits The number of digits the generated integer should have. Must be greater than 0.
-       * @return A random integer with exactly {@code countOfDigits} digits.
-       * For example, if {@code countOfDigits} is 3, the result will be
-       * a number between 100 and 999 inclusive.
-       * @throws IllegalArgumentException If {@code countOfDigits} is less than 1.
-       */
-      private int getRandomInteger( final int countOfDigits ) {
-         final int min = (int) Math.pow( 10, countOfDigits - 1 );
-         final int max = (int) Math.pow( 10, countOfDigits ) - 1;
-         return getRandomInteger( min, max );
-      }
-
-      // We need a Long generator too, because with a RangeConstraint set to Long bounds
-      // we might not be able to generate legal values with just the Integer generator.
-      private Long getRandomLong( final long min, final long max ) {
-         if ( min == max ) {
-            return min;
-         }
-         //noinspection OptionalGetWithoutIsPresent
-         return random.longs( 1, min, max ).findFirst().getAsLong();
-      }
-
-      private <T> T getRandomEntry( final List<T> entries ) {
-         return entries.get( random.nextInt( entries.size() ) );
-      }
-   }
+   // ExampleValueGenerator removed — replaced by ParquetExampleValueGenerator
 
    private static final Map<Resource, PrimitiveType.PrimitiveTypeName> XSD_TO_PARQUET_TYPE_MAP =
          Map.of(
@@ -1022,51 +692,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
    );
 
    private Object generateDefaultScalarValue( final Scalar scalar ) {
-      final String scalarUri = scalar.getUrn();
-      final Resource dataTypeResource = ResourceFactory.createResource( scalarUri );
-
-      if ( scalarUri.equals( XSD.xstring.getURI() ) || scalarUri.equals( XSD.anyURI.getURI() )
-            || scalarUri.equals( XSD.normalizedString.getURI() ) || scalarUri.equals( XSD.token.getURI() ) ) {
-         return easyRandom.nextObject( String.class );
-      } else if ( scalarUri.equals( XSD.xboolean.getURI() ) ) {
-         return true;
-      } else if ( scalarUri.equals( XSD.duration.getURI() ) || scalarUri.equals( XSD.yearMonthDuration.getURI() )
-            || scalarUri.equals( XSD.dayTimeDuration.getURI() ) ) {
-         return DatatypeFactory.newDefaultInstance().newDuration( rand.nextLong( 86400000L ) ).toString();
-      } else if ( scalarUri.equals( XSD.dateTime.getURI() ) || scalarUri.equals( XSD.dateTimeStamp.getURI() ) ) {
-         return DatatypeFactory.newDefaultInstance().newXMLGregorianCalendar( new GregorianCalendar() );
-      } else if ( scalarUri.equals( XSD.date.getURI() ) ) {
-         return LocalDate.now().toString();
-      } else if ( scalarUri.equals( XSD.hexBinary.getURI() ) ) {
-         return HexFormat.of().formatHex( easyRandom.nextObject( String.class ).getBytes( StandardCharsets.UTF_8 ) );
-      } else if ( scalarUri.equals( XSD.base64Binary.getURI() ) ) {
-         return Base64.getEncoder().encodeToString( easyRandom.nextObject( String.class ).getBytes( StandardCharsets.UTF_8 ) );
-      } else if ( scalarUri.equals( RDF.langString.getURI() ) ) {
-         return easyRandom.nextObject( String.class );
-      }
-
-      // Handle numeric types using SammXsdType
-      final Class<?> javaType = SammXsdType.getJavaTypeForMetaModelType( dataTypeResource );
-      if ( javaType != null && Number.class.isAssignableFrom( javaType ) ) {
-         final Number min = NumericTypeTraits.getModelMinValue( dataTypeResource, javaType );
-         final Number max = NumericTypeTraits.getModelMaxValue( dataTypeResource, javaType );
-         // Generate a value in the valid range using the overflow-safe method
-         return generateNumericValueInRange( javaType, min, max );
-      }
-
-      // Handle time/date related types as string
-      if ( scalarUri.equals( XSD.time.getURI() ) || scalarUri.equals( XSD.gDay.getURI() )
-            || scalarUri.equals( XSD.gMonth.getURI() ) || scalarUri.equals( XSD.gYear.getURI() )
-            || scalarUri.equals( XSD.gYearMonth.getURI() ) || scalarUri.equals( XSD.gMonthDay.getURI() ) ) {
-         return DatatypeFactory.newDefaultInstance().newXMLGregorianCalendar( new GregorianCalendar() ).toString();
-      }
-
-      // Handle curie type
-      if ( Curie.class.equals( javaType ) ) {
-         return "unit:hectopascal";
-      }
-
-      return easyRandom.nextObject( String.class );
+      return scalar.accept( parquetValueGenerator, new ParquetExampleValueGenerator.Context() );
    }
 
    private PrimitiveType.PrimitiveTypeName mapXsdTypeToParquetType( final String xsdTypeUri ) {
@@ -1329,142 +955,10 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
          return extractActualValue( firstValue );
       }
 
-      // Handle Trait with constraints (e.g., RangeConstraint)
-      if ( characteristic instanceof final Trait trait ) {
-         final Characteristic baseCharacteristic = trait.getBaseCharacteristic();
-         final Type dataType = baseCharacteristic.getDataType().orElse( null );
-         if ( dataType instanceof final Scalar scalar ) {
-            final Resource dataTypeResource = ResourceFactory.createResource( scalar.getUrn() );
-            final Class<?> javaType = SammXsdType.getJavaTypeForMetaModelType( dataTypeResource );
-
-            for ( final Constraint constraint : trait.getConstraints() ) {
-               if ( constraint instanceof final RangeConstraint rangeConstraint && javaType != null
-                     && Number.class.isAssignableFrom( javaType ) ) {
-                  final Number min = rangeConstraint.getMinValue()
-                        .map( ScalarValue::getValue )
-                        .map( Number.class::cast )
-                        .orElse( NumericTypeTraits.getModelMinValue( dataTypeResource, javaType ) );
-                  final Number max = rangeConstraint.getMaxValue()
-                        .map( ScalarValue::getValue )
-                        .map( Number.class::cast )
-                        .orElse( NumericTypeTraits.getModelMaxValue( dataTypeResource, javaType ) );
-
-                  // Generate a random value within the constrained range
-                  return generateNumericValueInRange( javaType, min, max );
-               }
-            }
-         }
-         // Fall through to generate based on base characteristic's data type
-         return extractExampleValueFromProperty( property, baseCharacteristic );
-      }
-
-      // Generate default value based on data type
-      final Type dataType = characteristic != null ? characteristic.getDataType().orElse( null ) : null;
-      if ( dataType instanceof final Scalar scalarDataType ) {
-         return generateDefaultScalarValue( scalarDataType );
-      }
-
-      return easyRandom.nextObject( String.class );
-   }
-
-   private Number generateNumericValueInRange( final Class<?> javaType, final Number min, final Number max ) {
-      if ( Integer.class.isAssignableFrom( javaType ) || Short.class.isAssignableFrom( javaType )
-            || Byte.class.isAssignableFrom( javaType ) ) {
-         final int lo = min.intValue();
-         final int hi = max.intValue();
-         if ( lo >= hi ) {
-            return lo;
-         }
-         // Use long arithmetic to avoid overflow in (hi - lo)
-         final long range = (long) hi - (long) lo;
-         return (int) (lo + (long) (rand.nextDouble() * range));
-      } else if ( Long.class.isAssignableFrom( javaType ) ) {
-         // Clamp to Long range to handle unsignedLong whose model max exceeds Long.MAX_VALUE
-         long lo = min.longValue();
-         long hi = max.longValue();
-         // If the original Number values suggest overflow (e.g., unsignedLong max), clamp
-         final BigDecimal bdMin = NumericTypeTraits.convertToBigDecimal( min );
-         final BigDecimal bdMax = NumericTypeTraits.convertToBigDecimal( max );
-         if ( bdMin.compareTo( BigDecimal.valueOf( Long.MIN_VALUE ) ) < 0 ) {
-            lo = Long.MIN_VALUE;
-         }
-         if ( bdMax.compareTo( BigDecimal.valueOf( Long.MAX_VALUE ) ) > 0 ) {
-            hi = Long.MAX_VALUE;
-         }
-         if ( lo >= hi ) {
-            return lo;
-         }
-         // Use BigDecimal to avoid overflow
-         final BigDecimal bdLo = BigDecimal.valueOf( lo );
-         final BigDecimal bdHi = BigDecimal.valueOf( hi );
-         final BigDecimal range = bdHi.subtract( bdLo );
-         return bdLo.add( range.multiply( BigDecimal.valueOf( rand.nextDouble() ) ) ).longValue();
-      } else if ( Float.class.isAssignableFrom( javaType ) ) {
-         final float lo = min.floatValue();
-         final float hi = max.floatValue();
-         if ( Float.isInfinite( lo ) || Float.isInfinite( hi ) || Float.isNaN( lo ) || Float.isNaN( hi ) || lo >= hi ) {
-            return lo >= hi && !Float.isInfinite( lo ) && !Float.isNaN( lo ) ? lo : 1.0f;
-         }
-         final float range = hi - lo;
-         if ( Float.isInfinite( range ) ) {
-            // Range overflows, use half range
-            final float halfHi = hi / 2.0f;
-            final float halfLo = lo / 2.0f;
-            return halfLo + rand.nextFloat() * (halfHi - halfLo);
-         }
-         return lo + rand.nextFloat() * range;
-      } else if ( Double.class.isAssignableFrom( javaType ) ) {
-         final double lo = min.doubleValue();
-         final double hi = max.doubleValue();
-         if ( Double.isInfinite( lo ) || Double.isInfinite( hi ) || Double.isNaN( lo ) || Double.isNaN( hi ) || lo >= hi ) {
-            return lo >= hi && !Double.isInfinite( lo ) && !Double.isNaN( lo ) ? lo : 1.0;
-         }
-         final double range = hi - lo;
-         if ( Double.isInfinite( range ) ) {
-            // Range overflows (e.g., -Double.MAX_VALUE to Double.MAX_VALUE), use half range
-            final double halfHi = hi / 2.0;
-            final double halfLo = lo / 2.0;
-            return halfLo + rand.nextDouble() * (halfHi - halfLo);
-         }
-         return lo + rand.nextDouble() * range;
-      } else if ( BigInteger.class.isAssignableFrom( javaType ) ) {
-         // BigInteger XSD types (nonNegativeInteger, positiveInteger, etc.) are mapped to INT32 in Parquet,
-         // so clamp the range to INT32 to avoid overflow when writing.
-         BigDecimal bdMin = NumericTypeTraits.convertToBigDecimal( min );
-         BigDecimal bdMax = NumericTypeTraits.convertToBigDecimal( max );
-         final BigDecimal int32Min = BigDecimal.valueOf( Integer.MIN_VALUE );
-         final BigDecimal int32Max = BigDecimal.valueOf( Integer.MAX_VALUE );
-         if ( bdMin.compareTo( int32Min ) < 0 ) {
-            bdMin = int32Min;
-         }
-         if ( bdMax.compareTo( int32Max ) > 0 ) {
-            bdMax = int32Max;
-         }
-         if ( bdMin.compareTo( bdMax ) >= 0 ) {
-            return bdMin.toBigInteger();
-         }
-         final BigDecimal range = bdMax.subtract( bdMin );
-         return bdMin.add( range.multiply( BigDecimal.valueOf( rand.nextDouble() ) ) ).toBigInteger();
-      } else if ( BigDecimal.class.isAssignableFrom( javaType ) ) {
-         // BigDecimal / xsd:decimal is mapped to DOUBLE in Parquet, so clamp to a range
-         // where double arithmetic won't overflow (half of Double.MAX_VALUE on each side).
-         BigDecimal bdMin = NumericTypeTraits.convertToBigDecimal( min );
-         BigDecimal bdMax = NumericTypeTraits.convertToBigDecimal( max );
-         final BigDecimal dblHalfMin = BigDecimal.valueOf( -Double.MAX_VALUE / 2 );
-         final BigDecimal dblHalfMax = BigDecimal.valueOf( Double.MAX_VALUE / 2 );
-         if ( bdMin.compareTo( dblHalfMin ) < 0 ) {
-            bdMin = dblHalfMin;
-         }
-         if ( bdMax.compareTo( dblHalfMax ) > 0 ) {
-            bdMax = dblHalfMax;
-         }
-         if ( bdMin.compareTo( bdMax ) >= 0 ) {
-            return bdMin;
-         }
-         final BigDecimal range = bdMax.subtract( bdMin );
-         return bdMin.add( range.multiply( BigDecimal.valueOf( rand.nextDouble() ) ) );
-      }
-      return min;
+      // Use the property's original characteristic (which may include Trait/constraints) for value generation,
+      // so that the visitor can extract RangeConstraint, LengthConstraint, etc. from the Trait.
+      final Characteristic effectiveCharacteristic = property.getCharacteristic().orElse( characteristic );
+      return effectiveCharacteristic.accept( parquetValueGenerator, new ParquetExampleValueGenerator.Context() );
    }
 
    private Object extractActualValue( final Value value ) {
@@ -1638,9 +1132,7 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
       } else if ( dataType instanceof final Scalar scalar ) {
          columnNames.add( columnName );
 
-         // Use the property's original characteristic (which may include Trait/constraints) for value generation
-         final Characteristic originalCharacteristic = property.getCharacteristic().orElse( characteristic );
-         Object exampleValue = extractExampleValueFromProperty( property, originalCharacteristic );
+         Object exampleValue = extractExampleValueFromProperty( property, characteristic );
          String language = null;
          if ( RDF.langString.getURI().equals( scalar.getUrn() ) ) {
             switch ( exampleValue ) {

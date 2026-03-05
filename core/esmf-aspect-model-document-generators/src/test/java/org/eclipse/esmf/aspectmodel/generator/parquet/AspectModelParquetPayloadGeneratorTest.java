@@ -25,11 +25,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.XSD;
 import org.apache.parquet.example.data.Group;
 import org.apache.parquet.hadoop.ParquetFileReader;
 import org.apache.parquet.io.LocalInputFile;
@@ -991,10 +993,24 @@ class AspectModelParquetPayloadGeneratorTest {
       Number max = NumericTypeTraits.getModelMaxValue( dataTypeResource, nativeType );
 
       // Cap the range to values representable by the Parquet storage type.
-      // BigInteger types are stored as INT32 in Parquet, so cap to int range.
-      // Long/unsignedLong are stored as INT64, so cap to long range.
+      // Most BigInteger types (integer, positiveInteger, etc.) are stored as INT32 in Parquet, so cap to int range.
+      // However, unsignedLong and unsignedInt are stored as INT64, so cap those to long range.
       // Float/Double/BigDecimal must avoid range overflow in arithmetic.
-      if ( BigInteger.class.isAssignableFrom( nativeType ) ) {
+      final Set<Resource> int64BigIntegerTypes = Set.of( XSD.unsignedLong, XSD.unsignedInt );
+      if ( BigInteger.class.isAssignableFrom( nativeType ) && int64BigIntegerTypes.contains( dataTypeResource ) ) {
+         // These BigInteger types are stored as INT64 in Parquet
+         final BigDecimal bdMin = NumericTypeTraits.convertToBigDecimal( min );
+         final BigDecimal bdMax = NumericTypeTraits.convertToBigDecimal( max );
+         final BigDecimal longMin = BigDecimal.valueOf( Long.MIN_VALUE );
+         final BigDecimal longMax = BigDecimal.valueOf( Long.MAX_VALUE );
+         if ( bdMin.compareTo( longMin ) < 0 ) {
+            min = longMin.toBigInteger();
+         }
+         if ( bdMax.compareTo( longMax ) > 0 ) {
+            max = longMax.toBigInteger();
+         }
+      } else if ( BigInteger.class.isAssignableFrom( nativeType ) ) {
+         // Other BigInteger types are stored as INT32 in Parquet
          final BigDecimal bdMin = NumericTypeTraits.convertToBigDecimal( min );
          final BigDecimal bdMax = NumericTypeTraits.convertToBigDecimal( max );
          final BigDecimal int32Min = BigDecimal.valueOf( Integer.MIN_VALUE );
