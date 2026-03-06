@@ -855,10 +855,6 @@ class AspectModelParquetPayloadGeneratorTest {
       }
    }
 
-   // =========================================================================
-   //  Helper methods
-   // =========================================================================
-
    private Path generateParquetForModel( final TestAspect testAspect ) throws IOException {
       final Aspect aspect = TestResources.load( testAspect ).aspect();
       return generateParquetForModel( aspect );
