@@ -103,6 +103,32 @@ include::example$GenerateJsonPayload.java[tags=imports]
 include::example$GenerateJsonPayload.java[tags=generate]
 ----
 
+== Generating Sample Apache Parquet Payload
+
+The sample Parquet payload generator is used to create a valid Apache Parquet payload for an Aspect model as it could be returned by
+an Aspect that implements that Aspect model. This follows the
+xref:samm-specification:ROOT:payloads.adoc#mapping-to-parquet[mapping rules] as defined in the Meta Model specification.
+The generator uses `samm:exampleValue`s of Properties if present, otherwise random values corresponding to the
+respective data types are generated.
+
+++++
+<details>
+<summary>Show used imports</summary>
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateParquetPayload.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateParquetPayload.java[tags=generate]
+----
+
+
 == Generating JSON Schema
 
 The JSON schema generator creates a https://json-schema.org/[JSON Schema] that describes the payload for an Aspect model
