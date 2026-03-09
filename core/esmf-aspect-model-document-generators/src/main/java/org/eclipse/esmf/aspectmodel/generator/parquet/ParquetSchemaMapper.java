@@ -14,8 +14,6 @@
 package org.eclipse.esmf.aspectmodel.generator.parquet;
 
 import java.math.BigInteger;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
@@ -34,54 +32,8 @@ import org.apache.parquet.schema.Types;
  */
 final class ParquetSchemaMapper {
 
-   private static final Map<Resource, PrimitiveType.PrimitiveTypeName> XSD_TO_PARQUET_TYPE_MAP =
-         Map.of(
-               XSD.xboolean, PrimitiveType.PrimitiveTypeName.BOOLEAN,
-               XSD.xfloat, PrimitiveType.PrimitiveTypeName.FLOAT,
-               XSD.xdouble, PrimitiveType.PrimitiveTypeName.DOUBLE,
-               XSD.decimal, PrimitiveType.PrimitiveTypeName.DOUBLE,
-               XSD.xint, PrimitiveType.PrimitiveTypeName.INT32,
-               XSD.integer, PrimitiveType.PrimitiveTypeName.INT32,
-               XSD.xshort, PrimitiveType.PrimitiveTypeName.INT32,
-               XSD.xbyte, PrimitiveType.PrimitiveTypeName.INT32,
-               XSD.xlong, PrimitiveType.PrimitiveTypeName.INT64
-         );
-
-   private static final Set<Resource> INT32_TYPES = Set.of(
-         XSD.xbyte, XSD.unsignedShort, XSD.unsignedByte, XSD.nonNegativeInteger,
-         XSD.positiveInteger, XSD.nonPositiveInteger, XSD.negativeInteger
-   );
-
-   private static final Set<Resource> INT64_TYPES = Set.of(
-         XSD.unsignedInt, XSD.unsignedLong
-   );
-
    private ParquetSchemaMapper() {
       // Utility class — no instantiation
-   }
-
-   /**
-    * Maps an XSD type URI to a simple Parquet primitive type name.
-    *
-    * @param xsdTypeUri the XSD type URI
-    * @return the corresponding Parquet primitive type name
-    */
-   static PrimitiveType.PrimitiveTypeName mapToPrimitiveTypeName( final String xsdTypeUri ) {
-      final Resource xsdResource = ResourceFactory.createResource( xsdTypeUri );
-
-      if ( XSD_TO_PARQUET_TYPE_MAP.containsKey( xsdResource ) ) {
-         return XSD_TO_PARQUET_TYPE_MAP.get( xsdResource );
-      }
-
-      if ( INT32_TYPES.contains( xsdResource ) ) {
-         return PrimitiveType.PrimitiveTypeName.INT32;
-      }
-
-      if ( INT64_TYPES.contains( xsdResource ) ) {
-         return PrimitiveType.PrimitiveTypeName.INT64;
-      }
-
-      return PrimitiveType.PrimitiveTypeName.BINARY;
    }
 
    /**

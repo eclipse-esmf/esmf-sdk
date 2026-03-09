@@ -108,16 +108,6 @@ class ParquetPayloadGenerator implements AspectVisitor<Map<String, Object>, Parq
       this.addTypeAttributeForEntityInheritance = addTypeAttributeForEntityInheritance;
    }
 
-   /**
-    * Generates payload data for the given aspect.
-    *
-    * @param aspect the aspect to generate payload for
-    * @return a map containing property names and their generated values
-    */
-   Map<String, Object> generatePayload( final Aspect aspect ) {
-      return visitAspect( aspect, new Context() );
-   }
-
    @Override
    public Map<String, Object> visitBase( final ModelElement modelElement, final Context context ) {
       throw new UnsupportedOperationException( "Cannot generate payload for " + modelElement );
