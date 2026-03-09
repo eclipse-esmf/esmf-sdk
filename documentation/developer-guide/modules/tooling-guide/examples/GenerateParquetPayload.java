@@ -27,17 +27,16 @@ public class GenerateParquetPayload extends AbstractGenerator {
    @Test
    public void generate() throws IOException {
 
+      // tag::generate[]
       // AspectModel as returned by the AspectModelLoader
       final AspectModel aspectModel = // ...
-
+            // end::generate[]
             new AspectModelLoader().load(
                   new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) );
-
+      // tag::generate[]
       final AspectModelParquetPayloadGenerator generator = new AspectModelParquetPayloadGenerator( aspectModel.aspect() );
-
       // Direct generation of Apache Parquet payload
       generator.generate().findFirst().orElseThrow( () -> new IOException( "Failed to generate parquet artifact" ) );
-
-      // end
+      // end::generate[]
    }
 }
