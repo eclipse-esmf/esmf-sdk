@@ -32,26 +32,26 @@ import org.eclipse.esmf.exception.SubCommandException;
 import picocli.CommandLine;
 
 @CommandLine.Command(
-      name = AspectToCommand.COMMAND_NAME,
-      description = "Transforms an Aspect Model into another format",
-      subcommands = {
-            CommandLine.HelpCommand.class,
-            AspectToHtmlCommand.class,
-            AspectToJavaCommand.class,
-            AspectToJsonCommand.class,
-            AspectToJsonLdCommand.class,
-            AspectToOpenapiCommand.class,
-            AspectToAsyncapiCommand.class,
-            AspectToPngCommand.class,
-            AspectToJsonSchemaCommand.class,
-            AspectToSvgCommand.class,
-            AspectToAasCommand.class,
-            AspectToSqlCommand.class,
-            AspectToParquetCommand.class
-      },
-      descriptionHeading = "%n@|bold Description|@:%n%n",
-      parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n" )
+   name = AspectToCommand.COMMAND_NAME,
+   description = "Transforms an Aspect Model into another format",
+   subcommands = {
+         CommandLine.HelpCommand.class,
+         AspectToHtmlCommand.class,
+         AspectToJavaCommand.class,
+         AspectToJsonCommand.class,
+         AspectToJsonLdCommand.class,
+         AspectToOpenapiCommand.class,
+         AspectToAsyncapiCommand.class,
+         AspectToPngCommand.class,
+         AspectToJsonSchemaCommand.class,
+         AspectToSvgCommand.class,
+         AspectToAasCommand.class,
+         AspectToSqlCommand.class,
+         AspectToParquetCommand.class
+   },
+   descriptionHeading = "%n@|bold Description|@:%n%n",
+   parameterListHeading = "%n@|bold Parameters|@:%n",
+   optionListHeading = "%n@|bold Options|@:%n" )
 public class AspectToCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "to";
 
