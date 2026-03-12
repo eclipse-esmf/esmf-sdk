@@ -467,7 +467,7 @@ class AspectModelOpenApiGeneratorTest {
       assertThat( pagingSchema ).isNotNull();
 
       final Map<String, ?> props = pagingSchema.getProperties();
-      assertThat( props ).containsKeys( "items", "cursor", "_links" );
+      assertThat( props ).containsKeys( "testProperty", "cursor", "_links" );
    }
 
    @Test
