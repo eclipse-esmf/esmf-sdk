@@ -66,12 +66,14 @@ import io.vavr.Tuple2;
 /**
  * Handles the generation of Parquet files from flattened Aspect Model data.
  *
- * <p>This class is responsible for:</p>
+ * <p>
+ * This class is responsible for:
+ * </p>
  * <ul>
- *   <li>Extracting and flattening Aspect Model properties into columnar data</li>
- *   <li>Building the Parquet {@link MessageType} schema from the flattened data</li>
- *   <li>Writing denormalized rows to a Parquet file</li>
- *   <li>Mapping Parquet group values by their primitive types</li>
+ * <li>Extracting and flattening Aspect Model properties into columnar data</li>
+ * <li>Building the Parquet {@link MessageType} schema from the flattened data</li>
+ * <li>Writing denormalized rows to a Parquet file</li>
+ * <li>Mapping Parquet group values by their primitive types</li>
  * </ul>
  *
  * @see ParquetSchemaMapper
@@ -90,7 +92,7 @@ class ParquetFileWriter {
     * Generates a Parquet file at the specified output path for the given aspect.
     *
     * @param outputPath the file path to write the Parquet file to
-    * @param aspect     the aspect to generate data for
+    * @param aspect the aspect to generate data for
     * @throws IOException if an I/O error occurs during file writing
     */
    void generateParquetFile( final String outputPath, final Aspect aspect ) throws IOException {
@@ -103,7 +105,7 @@ class ParquetFileWriter {
       if ( flattenedExampleData.isEmpty() ) {
          // Create a minimal placeholder entry for aspects with no extractable data
          final PrimitiveType placeholderType = Types.primitive( PrimitiveType.PrimitiveTypeName.BINARY,
-                     org.apache.parquet.schema.Type.Repetition.OPTIONAL )
+               org.apache.parquet.schema.Type.Repetition.OPTIONAL )
                .as( LogicalTypeAnnotation.stringType() )
                .named( "_placeholder" );
          flattenedExampleData.put( "_placeholder", new Tuple2<>( aspect.getName(), placeholderType ) );
@@ -217,68 +219,68 @@ class ParquetFileWriter {
    private void addValueByPrimitiveType( final Object value, final PrimitiveType.PrimitiveTypeName primitiveTypeName,
          final String fieldName, final Group group, final int typeLength ) {
       switch ( primitiveTypeName ) {
-      case INT32:
-         if ( value instanceof final Number number ) {
-            group.add( fieldName, number.intValue() );
-         } else if ( value instanceof final String stringValue ) {
-            try {
-               group.add( fieldName, Integer.parseInt( stringValue ) );
-            } catch ( final NumberFormatException _ ) {
-               group.add( fieldName, 0 );
+         case INT32:
+            if ( value instanceof final Number number ) {
+               group.add( fieldName, number.intValue() );
+            } else if ( value instanceof final String stringValue ) {
+               try {
+                  group.add( fieldName, Integer.parseInt( stringValue ) );
+               } catch ( final NumberFormatException _ ) {
+                  group.add( fieldName, 0 );
+               }
             }
-         }
-         break;
-      case INT64:
-         if ( value instanceof final Number number ) {
-            group.add( fieldName, number.longValue() );
-         } else if ( value instanceof final String stringValue ) {
-            try {
-               group.add( fieldName, Long.parseLong( stringValue ) );
-            } catch ( final NumberFormatException _ ) {
-               group.add( fieldName, 0L );
+            break;
+         case INT64:
+            if ( value instanceof final Number number ) {
+               group.add( fieldName, number.longValue() );
+            } else if ( value instanceof final String stringValue ) {
+               try {
+                  group.add( fieldName, Long.parseLong( stringValue ) );
+               } catch ( final NumberFormatException _ ) {
+                  group.add( fieldName, 0L );
+               }
             }
-         }
-         break;
-      case FLOAT:
-         if ( value instanceof final Number number ) {
-            group.add( fieldName, number.floatValue() );
-         } else if ( value instanceof final String stringValue ) {
-            try {
-               group.add( fieldName, Float.parseFloat( stringValue ) );
-            } catch ( final NumberFormatException _ ) {
-               group.add( fieldName, 0.0f );
+            break;
+         case FLOAT:
+            if ( value instanceof final Number number ) {
+               group.add( fieldName, number.floatValue() );
+            } else if ( value instanceof final String stringValue ) {
+               try {
+                  group.add( fieldName, Float.parseFloat( stringValue ) );
+               } catch ( final NumberFormatException _ ) {
+                  group.add( fieldName, 0.0f );
+               }
             }
-         }
-         break;
-      case DOUBLE:
-         if ( value instanceof final Number number ) {
-            group.add( fieldName, number.doubleValue() );
-         } else if ( value instanceof final String stringValue ) {
-            try {
-               group.add( fieldName, Double.parseDouble( stringValue ) );
-            } catch ( final NumberFormatException _ ) {
-               group.add( fieldName, 0.0d );
+            break;
+         case DOUBLE:
+            if ( value instanceof final Number number ) {
+               group.add( fieldName, number.doubleValue() );
+            } else if ( value instanceof final String stringValue ) {
+               try {
+                  group.add( fieldName, Double.parseDouble( stringValue ) );
+               } catch ( final NumberFormatException _ ) {
+                  group.add( fieldName, 0.0d );
+               }
             }
-         }
-         break;
-      case BOOLEAN:
-         if ( value instanceof final Boolean booleanValue ) {
-            group.add( fieldName, booleanValue );
-         } else if ( value instanceof final String stringValue ) {
-            group.add( fieldName, Boolean.parseBoolean( stringValue ) );
-         }
-         break;
-      case FIXED_LEN_BYTE_ARRAY:
-         final String stringValue = value.toString();
-         final byte[] bytes = stringValue.getBytes( StandardCharsets.UTF_8 );
-         final byte[] paddedBytes = new byte[typeLength];
-         System.arraycopy( bytes, 0, paddedBytes, 0, Math.min( bytes.length, typeLength ) );
-         group.add( fieldName, Binary.fromConstantByteArray( paddedBytes ) );
-         break;
-      case BINARY:
-      default:
-         group.add( fieldName, value.toString() );
-         break;
+            break;
+         case BOOLEAN:
+            if ( value instanceof final Boolean booleanValue ) {
+               group.add( fieldName, booleanValue );
+            } else if ( value instanceof final String stringValue ) {
+               group.add( fieldName, Boolean.parseBoolean( stringValue ) );
+            }
+            break;
+         case FIXED_LEN_BYTE_ARRAY:
+            final String stringValue = value.toString();
+            final byte[] bytes = stringValue.getBytes( StandardCharsets.UTF_8 );
+            final byte[] paddedBytes = new byte[typeLength];
+            System.arraycopy( bytes, 0, paddedBytes, 0, Math.min( bytes.length, typeLength ) );
+            group.add( fieldName, Binary.fromConstantByteArray( paddedBytes ) );
+            break;
+         case BINARY:
+         default:
+            group.add( fieldName, value.toString() );
+            break;
       }
    }
 
@@ -323,10 +325,12 @@ class ParquetFileWriter {
          final Set<String> visitedTypes, final BigInteger maxLength ) {
 
       switch ( characteristic ) {
-      case final Collection collection -> extractCollectionData( collection, property, columnName, flattenedData, visitedTypes, maxLength );
-      case final Trait trait -> extractCharacteristicData( trait.getBaseCharacteristic(), property, columnName, flattenedData, visitedTypes, maxLength );
-      case final Either either -> extractEitherData( either, property, columnName, flattenedData, visitedTypes, maxLength );
-      default -> extractScalarOrEntityData( characteristic, property, columnName, flattenedData, visitedTypes, maxLength );
+         case final Collection collection ->
+            extractCollectionData( collection, property, columnName, flattenedData, visitedTypes, maxLength );
+         case final Trait trait ->
+            extractCharacteristicData( trait.getBaseCharacteristic(), property, columnName, flattenedData, visitedTypes, maxLength );
+         case final Either either -> extractEitherData( either, property, columnName, flattenedData, visitedTypes, maxLength );
+         default -> extractScalarOrEntityData( characteristic, property, columnName, flattenedData, visitedTypes, maxLength );
       }
    }
 
@@ -345,22 +349,22 @@ class ParquetFileWriter {
          String language = null;
          if ( RDF.langString.getURI().equals( scalar.getUrn() ) ) {
             switch ( exampleValue ) {
-            case final LangString langString -> {
-               language = Optional.ofNullable( langString.getLanguageTag() ).map( Locale::getLanguage ).orElse( null );
-               exampleValue = langString.getValue();
-            }
-            case final Map<?, ?> map when !map.isEmpty() -> {
-               final Map.Entry<?, ?> firstEntry = map.entrySet().iterator().next();
-               language = firstEntry.getKey().toString();
-               exampleValue = firstEntry.getValue();
-            }
-            default -> language = Locale.ENGLISH.getLanguage();
+               case final LangString langString -> {
+                  language = Optional.ofNullable( langString.getLanguageTag() ).map( Locale::getLanguage ).orElse( null );
+                  exampleValue = langString.getValue();
+               }
+               case final Map<?, ?> map when !map.isEmpty() -> {
+                  final Map.Entry<?, ?> firstEntry = map.entrySet().iterator().next();
+                  language = firstEntry.getKey().toString();
+                  exampleValue = firstEntry.getValue();
+               }
+               default -> language = Locale.ENGLISH.getLanguage();
             }
          }
 
          final Resource xsdResource = ResourceFactory.createResource( scalar.getUrn() );
          boolean isTimezoneAvailable = false;
-         if ( (XSD.dateTime.equals( xsdResource ) || XSD.dateTimeStamp.equals( xsdResource ))
+         if ( ( XSD.dateTime.equals( xsdResource ) || XSD.dateTimeStamp.equals( xsdResource ) )
                && exampleValue instanceof XMLGregorianCalendar ) {
             final XMLGregorianCalendar xmlCal = (XMLGregorianCalendar) exampleValue;
             if ( xmlCal.getTimezone() != DatatypeConstants.FIELD_UNDEFINED ) {
@@ -420,21 +424,21 @@ class ParquetFileWriter {
          String language = null;
          if ( RDF.langString.getURI().equals( scalar.getUrn() ) ) {
             switch ( exampleValue ) {
-            case final LangString langString -> {
-               language = Optional.ofNullable( langString.getLanguageTag() ).map( Locale::getLanguage ).orElse( null );
-               exampleValue = langString.getValue();
-            }
-            case final Map<?, ?> map when !map.isEmpty() -> {
-               final Map.Entry<?, ?> firstEntry = map.entrySet().iterator().next();
-               language = firstEntry.getKey().toString();
-               exampleValue = firstEntry.getValue();
-            }
-            default -> language = Locale.ENGLISH.getLanguage();
+               case final LangString langString -> {
+                  language = Optional.ofNullable( langString.getLanguageTag() ).map( Locale::getLanguage ).orElse( null );
+                  exampleValue = langString.getValue();
+               }
+               case final Map<?, ?> map when !map.isEmpty() -> {
+                  final Map.Entry<?, ?> firstEntry = map.entrySet().iterator().next();
+                  language = firstEntry.getKey().toString();
+                  exampleValue = firstEntry.getValue();
+               }
+               default -> language = Locale.ENGLISH.getLanguage();
             }
          }
          final Resource xsdResource = ResourceFactory.createResource( scalar.getUrn() );
          boolean isTimezoneAvailable = false;
-         if ( (XSD.dateTime.equals( xsdResource ) || XSD.dateTimeStamp.equals( xsdResource ))
+         if ( ( XSD.dateTime.equals( xsdResource ) || XSD.dateTimeStamp.equals( xsdResource ) )
                && exampleValue instanceof final XMLGregorianCalendar xmlCal
                && xmlCal.getTimezone() != DatatypeConstants.FIELD_UNDEFINED ) {
             isTimezoneAvailable = true;

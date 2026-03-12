@@ -25,13 +25,16 @@ import org.eclipse.esmf.metamodel.Aspect;
 /**
  * Generator for Apache Parquet payload files from Aspect Models.
  *
- * <p>This generator creates sample Parquet files with data that conforms to the Aspect Model structure.
- * It delegates to the following components:</p>
+ * <p>
+ * This generator creates sample Parquet files with data that conforms to the Aspect Model
+ * structure.
+ * It delegates to the following components:
+ * </p>
  * <ul>
- *   <li>{@link ParquetPayloadGenerator} — visitor-based payload generation (analogous to
- *       {@link org.eclipse.esmf.aspectmodel.generator.json.JsonPayloadGenerator})</li>
- *   <li>{@link ParquetFileWriter} — data extraction, flattening, and Parquet file writing</li>
- *   <li>{@link ParquetSchemaMapper} — XSD-to-Parquet type mapping</li>
+ * <li>{@link ParquetPayloadGenerator} — visitor-based payload generation (analogous to
+ * {@link org.eclipse.esmf.aspectmodel.generator.json.JsonPayloadGenerator})</li>
+ * <li>{@link ParquetFileWriter} — data extraction, flattening, and Parquet file writing</li>
+ * <li>{@link ParquetSchemaMapper} — XSD-to-Parquet type mapping</li>
  * </ul>
  *
  * @see org.eclipse.esmf.aspectmodel.generator.json.AspectModelJsonPayloadGenerator

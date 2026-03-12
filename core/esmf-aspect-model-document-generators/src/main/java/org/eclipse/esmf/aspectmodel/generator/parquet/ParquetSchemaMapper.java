@@ -26,9 +26,11 @@ import org.apache.parquet.schema.Types;
 /**
  * Maps XSD types from the Aspect Model to Apache Parquet schema types.
  *
- * <p>This class encapsulates all XSD-to-Parquet type mapping logic, providing
+ * <p>
+ * This class encapsulates all XSD-to-Parquet type mapping logic, providing
  * methods to convert XSD type URIs to Parquet {@link PrimitiveType} definitions
- * including logical type annotations for dates, timestamps, and strings.</p>
+ * including logical type annotations for dates, timestamps, and strings.
+ * </p>
  */
 final class ParquetSchemaMapper {
 
@@ -40,11 +42,11 @@ final class ParquetSchemaMapper {
     * Maps an XSD type URI to a fully annotated Parquet {@link PrimitiveType} with logical type
     * annotations, field name, language tag, timezone information, and max length.
     *
-    * @param xsdTypeUri          the XSD type URI
-    * @param fieldName           the Parquet field name
-    * @param language            the language tag (for langString types), or {@code null}
+    * @param xsdTypeUri the XSD type URI
+    * @param fieldName the Parquet field name
+    * @param language the language tag (for langString types), or {@code null}
     * @param isTimezoneAvailable whether timezone information is present (for dateTime types)
-    * @param maxLength           the maximum length constraint, or {@code null}
+    * @param maxLength the maximum length constraint, or {@code null}
     * @return the fully annotated Parquet {@link PrimitiveType}
     */
    static PrimitiveType mapToAnnotatedPrimitiveType( final String xsdTypeUri, final String fieldName,
@@ -55,7 +57,7 @@ final class ParquetSchemaMapper {
       if ( XSD.xboolean.equals( xsdResource ) ) {
          return Types.primitive( PrimitiveType.PrimitiveTypeName.BOOLEAN, org.apache.parquet.schema.Type.Repetition.OPTIONAL )
                .named( fieldName );
-      } else if ( (XSD.xstring.equals( xsdResource ) ||
+      } else if ( ( XSD.xstring.equals( xsdResource ) ||
             XSD.time.equals( xsdResource ) ||
             XSD.gYear.equals( xsdResource ) ||
             XSD.gMonth.equals( xsdResource ) ||
@@ -68,7 +70,7 @@ final class ParquetSchemaMapper {
             XSD.hexBinary.equals( xsdResource ) ||
             XSD.base64Binary.equals( xsdResource ) ||
             XSD.anyURI.equals( xsdResource ) ||
-            RDF.langString.getURI().equals( xsdTypeUri )) && (maxLength != null && maxLength.intValue() > 0) ) {
+            RDF.langString.getURI().equals( xsdTypeUri ) ) && ( maxLength != null && maxLength.intValue() > 0 ) ) {
          return Types.primitive( PrimitiveType.PrimitiveTypeName.FIXED_LEN_BYTE_ARRAY, org.apache.parquet.schema.Type.Repetition.OPTIONAL )
                .length( maxLength.intValue() )
                .named( fieldName );

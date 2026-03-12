@@ -55,9 +55,11 @@ import com.github.curiousoddman.rgxgen.RgxGen;
 /**
  * Generates random example values suitable for Parquet payload generation.
  *
- * <p>This class follows the visitor pattern (like {@code JsonPayloadGenerator}) and dispatches
+ * <p>
+ * This class follows the visitor pattern (like {@code JsonPayloadGenerator}) and dispatches
  * on the Aspect Model element type to produce raw Java objects (Number, String,
- * XMLGregorianCalendar, etc.) that can be written directly into Parquet groups.</p>
+ * XMLGregorianCalendar, etc.) that can be written directly into Parquet groups.
+ * </p>
  *
  * @see org.eclipse.esmf.aspectmodel.generator.json.JsonPayloadGenerator
  */
@@ -71,7 +73,9 @@ public class ParquetExampleValueGenerator implements AspectVisitor<Object, Parqu
     *
     * @param constraints the constraints that apply at the current position in the model
     */
-   public record Context(List<Constraint> constraints) {
+   public record Context(
+         List<Constraint> constraints
+   ) {
       public Context() {
          this( List.of() );
       }
@@ -403,7 +407,9 @@ public class ParquetExampleValueGenerator implements AspectVisitor<Object, Parqu
     * Represents a numeric range with optional min/max bounds.
     * Directly mirrors the Range record in JsonPayloadGenerator.
     */
-   record Range(BigDecimal min, BigDecimal max) {
+   record Range(
+         BigDecimal min, BigDecimal max
+   ) {
       static final Range OPEN = new Range( (BigDecimal) null, (BigDecimal) null );
 
       Range( final Double min, final Double max ) {
@@ -478,7 +484,7 @@ public class ParquetExampleValueGenerator implements AspectVisitor<Object, Parqu
 
       static Range fromRangeConstraints( final List<Constraint> constraints, final boolean floatingPoint ) {
          return constraints.stream()
-               .<Optional<Range>> map( constraint -> {
+               .<Optional<Range>>map( constraint -> {
                   if ( constraint instanceof final RangeConstraint rc ) {
                      if ( floatingPoint ) {
                         final Optional<Double> rcMin = rc.getMinValue()
@@ -539,7 +545,7 @@ public class ParquetExampleValueGenerator implements AspectVisitor<Object, Parqu
          return min;
       }
       final int numDigits = Math.max( min.precision(), max.precision() );
-      final int numBits = (int) (numDigits / Math.log10( 2.0 ));
+      final int numBits = (int) ( numDigits / Math.log10( 2.0 ) );
       final BigDecimal factor = new BigDecimal( new BigInteger( numBits, random ) ).movePointLeft( numDigits );
       return min.add( max.subtract( min ).multiply( factor, new MathContext( numDigits ) ) );
    }

@@ -589,7 +589,8 @@ class AspectModelParquetPayloadGeneratorTest {
    }
 
    /**
-    * Verifies Parquet generation with a custom configuration using a fixed random seed for reproducibility.
+    * Verifies Parquet generation with a custom configuration using a fixed random seed for
+    * reproducibility.
     */
    @Test
    void testGenerateParquetWithCustomConfig() throws IOException {
@@ -890,7 +891,7 @@ class AspectModelParquetPayloadGeneratorTest {
          final org.apache.parquet.io.ColumnIOFactory columnIOFactory = new org.apache.parquet.io.ColumnIOFactory();
          final org.apache.parquet.io.MessageColumnIO columnIO = columnIOFactory.getColumnIO( schema );
          org.apache.parquet.column.page.PageReadStore pages;
-         while ( (pages = fileReader.readNextRowGroup()) != null ) {
+         while ( ( pages = fileReader.readNextRowGroup() ) != null ) {
             final long rowCount = pages.getRowCount();
             final org.apache.parquet.io.RecordReader<Group> recordReader =
                   columnIO.getRecordReader( pages, new org.apache.parquet.example.data.simple.convert.GroupRecordConverter( schema ) );
@@ -955,10 +956,10 @@ class AspectModelParquetPayloadGeneratorTest {
    private void assertNumberInRange( final Number value, final Pair<Number, Number> range, final BoundDefinition boundKind ) {
       assertThat( value ).isNotNull();
       // Skip assertion for Infinity/NaN values that cannot be converted to BigDecimal
-      if ( value instanceof final Double d && (Double.isInfinite( d ) || Double.isNaN( d )) ) {
+      if ( value instanceof final Double d && ( Double.isInfinite( d ) || Double.isNaN( d ) ) ) {
          return;
       }
-      if ( value instanceof final Float f && (Float.isInfinite( f ) || Float.isNaN( f )) ) {
+      if ( value instanceof final Float f && ( Float.isInfinite( f ) || Float.isNaN( f ) ) ) {
          return;
       }
       final BigDecimal numberValue = toBigDecimal( value );
@@ -985,7 +986,8 @@ class AspectModelParquetPayloadGeneratorTest {
       Number max = getModelMaxValue( dataTypeResource, nativeType );
 
       // Cap the range to values representable by the Parquet storage type.
-      // Most BigInteger types (integer, positiveInteger, etc.) are stored as INT32 in Parquet, so cap to int range.
+      // Most BigInteger types (integer, positiveInteger, etc.) are stored as INT32 in Parquet, so cap to
+      // int range.
       // However, unsignedLong and unsignedInt are stored as INT64, so cap those to long range.
       // Float/Double/BigDecimal must avoid range overflow in arithmetic.
       final Set<Resource> int64BigIntegerTypes = Set.of( XSD.unsignedLong, XSD.unsignedInt );
@@ -1144,13 +1146,13 @@ class AspectModelParquetPayloadGeneratorTest {
    }
 
    private BoundDefinition getMatchingUpperBound( final BoundDefinition boundKind ) {
-      return boundKind == BoundDefinition.AT_LEAST ? BoundDefinition.AT_MOST :
-            boundKind == BoundDefinition.GREATER_THAN ? BoundDefinition.LESS_THAN :
-                  BoundDefinition.OPEN;
+      return boundKind == BoundDefinition.AT_LEAST ? BoundDefinition.AT_MOST
+            : boundKind == BoundDefinition.GREATER_THAN ? BoundDefinition.LESS_THAN : BoundDefinition.OPEN;
    }
 
    /**
-    * Converts any {@link Number} to {@link BigDecimal}, replacing the removed {@code NumericTypeTraits.convertToBigDecimal}.
+    * Converts any {@link Number} to {@link BigDecimal}, replacing the removed
+    * {@code NumericTypeTraits.convertToBigDecimal}.
     */
    private static BigDecimal toBigDecimal( final Number number ) {
       if ( number instanceof final BigDecimal bd ) {
@@ -1166,14 +1168,15 @@ class AspectModelParquetPayloadGeneratorTest {
    }
 
    /**
-    * Returns the minimum value for the given SAMM data type, using {@link SammType.IntegerType#lowerBound()}
+    * Returns the minimum value for the given SAMM data type, using
+    * {@link SammType.IntegerType#lowerBound()}
     * for integer types and native Java type bounds for floating-point types.
     */
    private static Number getModelMinValue( final Resource dataTypeResource, final Class<?> nativeType ) {
       final Optional<BigInteger> sammLowerBound = SammXsdType.ALL_TYPES.stream()
             .filter( type -> type.getUrn().equals( dataTypeResource.getURI() ) )
             .filter( SammType.IntegerType.class::isInstance )
-            .map( type -> ((SammType.IntegerType<?>) type).lowerBound() )
+            .map( type -> ( (SammType.IntegerType<?>) type ).lowerBound() )
             .findFirst()
             .flatMap( opt -> opt );
       if ( sammLowerBound.isPresent() ) {
@@ -1198,14 +1201,15 @@ class AspectModelParquetPayloadGeneratorTest {
    }
 
    /**
-    * Returns the maximum value for the given SAMM data type, using {@link SammType.IntegerType#upperBound()}
+    * Returns the maximum value for the given SAMM data type, using
+    * {@link SammType.IntegerType#upperBound()}
     * for integer types and native Java type bounds for floating-point types.
     */
    private static Number getModelMaxValue( final Resource dataTypeResource, final Class<?> nativeType ) {
       final Optional<BigInteger> sammUpperBound = SammXsdType.ALL_TYPES.stream()
             .filter( type -> type.getUrn().equals( dataTypeResource.getURI() ) )
             .filter( SammType.IntegerType.class::isInstance )
-            .map( type -> ((SammType.IntegerType<?>) type).upperBound() )
+            .map( type -> ( (SammType.IntegerType<?>) type ).upperBound() )
             .findFirst()
             .flatMap( opt -> opt );
       if ( sammUpperBound.isPresent() ) {
