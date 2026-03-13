@@ -33,6 +33,7 @@ import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher;
 import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher.ExecutionResult;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
+import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.test.InvalidTestAspect;
 import org.eclipse.esmf.test.OrderingTestAspect;
@@ -1189,6 +1190,15 @@ class SammCliTest extends SammCliAbstractTest {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "svg",
             "--custom-resolver", resolverCommand() );
       assertThat( result.stdout() ).contains( "<svg" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectToSvgWithDetails() {
+      final File invalidModel = inputFile( InvalidTestAspect.INVALID_ENCODING );
+      final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", invalidModel.getAbsolutePath(), "to", "svg", "--details" );
+      assertThat( result.exitStatus() ).isEqualTo( 1 );
+      assertThat( result.stdout() ).contains( ProcessingViolation.ERROR_CODE );
       assertThat( result.stderr() ).isEmpty();
    }
 
