@@ -535,10 +535,7 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
       objectNode.put( FIELD_OPERATION_ID, ( isPut ? FIELD_PUT : FIELD_PATCH ) + aspect.getName() );
       objectNode.set( FIELD_PARAMETERS, getRequiredParameters( parameterNode, isEmpty( resourcePath ) ) );
       final ObjectNode requestBody = FACTORY.objectNode();
-      requestBody.put( FIELD_REQUIRED, true );
-
-      generateAllOfObjectForRef( requestBody, aspect.getName() );
-
+      requestBody.put( REF, COMPONENTS_REQUESTS + aspect.getName() );
       objectNode.set( FIELD_REQUEST_BODY, requestBody );
       objectNode.set( FIELD_RESPONSES, getResponsesForGet( aspect ) );
       return objectNode;
@@ -621,20 +618,6 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
             rootSchemaNode.set( nodeName, node );
          }
       }
-   }
-
-   private void generateAllOfObjectForRef( final ObjectNode requestBody, final String ref ) {
-      final ObjectNode contentNode = FACTORY.objectNode();
-      final ObjectNode appJsonNode = FACTORY.objectNode();
-      final ObjectNode schemaNode = FACTORY.objectNode();
-      final ArrayNode allOfArray = FACTORY.arrayNode();
-      final ObjectNode refNode = FACTORY.objectNode();
-      refNode.put( REF, COMPONENTS_REQUESTS + ref );
-      allOfArray.add( refNode );
-      schemaNode.set( FIELD_ALL_OF, allOfArray );
-      appJsonNode.set( FIELD_SCHEMA, schemaNode );
-      contentNode.set( APPLICATION_JSON, appJsonNode );
-      requestBody.set( FIELD_CONTENT, contentNode );
    }
 
    static final class ObjectNodeExtension {
