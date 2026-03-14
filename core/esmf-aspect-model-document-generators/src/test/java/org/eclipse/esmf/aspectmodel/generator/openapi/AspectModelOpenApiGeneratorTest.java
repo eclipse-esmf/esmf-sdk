@@ -571,11 +571,14 @@ class AspectModelOpenApiGeneratorTest {
 
       assertThat( openApi.getPaths().get( apiEndpoint ).getGet() ).isNotNull();
       assertThat( openApi.getPaths().get( apiEndpoint ).getPost() ).isNotNull();
-      assertThat( openApi.getPaths().get( apiEndpoint ).getPost().getRequestBody().get$ref() ).isEqualTo( "#/components/requestBodies/" + aspect.getName() );
+      assertThat( openApi.getPaths().get( apiEndpoint ).getPost().getRequestBody().get$ref() )
+            .isEqualTo( "#/components/requestBodies/" + aspect.getName() );
       assertThat( openApi.getPaths().get( apiEndpoint ).getPut() ).isNotNull();
-      assertThat( openApi.getPaths().get( apiEndpoint ).getPut().getRequestBody().get$ref() ).isEqualTo( "#/components/requestBodies/" + aspect.getName() );
+      assertThat( openApi.getPaths().get( apiEndpoint ).getPut().getRequestBody().get$ref() )
+            .isEqualTo( "#/components/requestBodies/" + aspect.getName() );
       assertThat( openApi.getPaths().get( apiEndpoint ).getPatch() ).isNotNull();
-      assertThat( openApi.getPaths().get( apiEndpoint ).getPatch().getRequestBody().get$ref() ).isEqualTo( "#/components/requestBodies/" + aspect.getName() );
+      assertThat( openApi.getPaths().get( apiEndpoint ).getPatch().getRequestBody().get$ref() )
+            .isEqualTo( "#/components/requestBodies/" + aspect.getName() );
       assertThat( openApi.getPaths().keySet() ).anyMatch(
             path -> path.equals( "/query-api/v1.0.0" + apiEndpoint ) );
    }
@@ -597,7 +600,8 @@ class AspectModelOpenApiGeneratorTest {
 
       assertThat( openApi.getPaths().get( apiEndpoint ).getGet() ).isNotNull();
       assertThat( openApi.getPaths().get( apiEndpoint ).getPost() ).isNotNull();
-      assertThat( openApi.getPaths().get( apiEndpoint ).getPost().getRequestBody().get$ref() ).isEqualTo( "#/components/requestBodies/" + aspect.getName() );
+      assertThat( openApi.getPaths().get( apiEndpoint ).getPost().getRequestBody().get$ref() )
+            .isEqualTo( "#/components/requestBodies/" + aspect.getName() );
       assertThat( openApi.getPaths().get( apiEndpoint ).getPut() ).isNull();
       assertThat( openApi.getPaths().get( apiEndpoint ).getPatch() ).isNull();
       assertThat( openApi.getPaths().keySet() ).anyMatch(
@@ -624,7 +628,8 @@ class AspectModelOpenApiGeneratorTest {
       assertThat( openApi.getPaths().get( apiEndpoint ).getGet() ).isNotNull();
       assertThat( openApi.getPaths().get( apiEndpoint ).getPost() ).isNull();
       assertThat( openApi.getPaths().get( apiEndpoint ).getPut() ).isNotNull();
-      assertThat( openApi.getPaths().get( apiEndpoint ).getPut().getRequestBody().get$ref() ).isEqualTo( "#/components/requestBodies/" + aspect.getName() );
+      assertThat( openApi.getPaths().get( apiEndpoint ).getPut().getRequestBody().get$ref() )
+            .isEqualTo( "#/components/requestBodies/" + aspect.getName() );
       assertThat( openApi.getPaths().get( apiEndpoint ).getPatch() ).isNull();
       assertThat( openApi.getPaths().keySet() ).anyMatch(
             path -> path.equals( "/query-api/v1.0.0" + apiEndpoint ) );
@@ -649,7 +654,8 @@ class AspectModelOpenApiGeneratorTest {
       assertThat( openApi.getPaths().get( apiEndpoint ).getPost() ).isNull();
       assertThat( openApi.getPaths().get( apiEndpoint ).getPut() ).isNull();
       assertThat( openApi.getPaths().get( apiEndpoint ).getPatch() ).isNotNull();
-      assertThat( openApi.getPaths().get( apiEndpoint ).getPatch().getRequestBody().get$ref() ).isEqualTo( "#/components/requestBodies/" + aspect.getName() );
+      assertThat( openApi.getPaths().get( apiEndpoint ).getPatch().getRequestBody().get$ref() )
+            .isEqualTo( "#/components/requestBodies/" + aspect.getName() );
       assertThat( openApi.getPaths().keySet() ).anyMatch(
             path -> path.equals( "/query-api/v1.0.0" + apiEndpoint ) );
    }
@@ -672,10 +678,12 @@ class AspectModelOpenApiGeneratorTest {
 
       assertThat( openApi.getPaths().get( apiEndpoint ).getGet() ).isNotNull();
       assertThat( openApi.getPaths().get( apiEndpoint ).getPost() ).isNotNull();
-      assertThat( openApi.getPaths().get( apiEndpoint ).getPost().getRequestBody().get$ref() ).isEqualTo( "#/components/requestBodies/" + aspect.getName() );
+      assertThat( openApi.getPaths().get( apiEndpoint ).getPost().getRequestBody().get$ref() )
+            .isEqualTo( "#/components/requestBodies/" + aspect.getName() );
       assertThat( openApi.getPaths().get( apiEndpoint ).getPut() ).isNull();
       assertThat( openApi.getPaths().get( apiEndpoint ).getPatch() ).isNotNull();
-      assertThat( openApi.getPaths().get( apiEndpoint ).getPatch().getRequestBody().get$ref() ).isEqualTo( "#/components/requestBodies/" + aspect.getName() );
+      assertThat( openApi.getPaths().get( apiEndpoint ).getPatch().getRequestBody().get$ref() )
+            .isEqualTo( "#/components/requestBodies/" + aspect.getName() );
       assertThat( openApi.getPaths().keySet() ).anyMatch(
             path -> path.equals( "/query-api/v1.0.0" + apiEndpoint ) );
    }
