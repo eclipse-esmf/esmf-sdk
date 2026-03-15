@@ -53,6 +53,9 @@ public class GenerateSql extends AspectModelMojo {
    @Parameter( defaultValue = "" + DatabricksSqlGenerationConfig.DECIMAL_DEFAULT_PRECISION )
    private int decimalPrecision = DatabricksSqlGenerationConfig.DECIMAL_DEFAULT_PRECISION;
 
+   @Parameter( defaultValue = "" + DatabricksSqlGenerationConfig.DECIMAL_DEFAULT_SCALE )
+   private int decimalScale = DatabricksSqlGenerationConfig.DECIMAL_DEFAULT_SCALE;
+
    @Parameter( defaultValue = "en" )
    private String language = DatabricksSqlGenerationConfig.DEFAULT_COMMENT_LANGUAGE.getLanguage();
 
@@ -82,6 +85,7 @@ public class GenerateSql extends AspectModelMojo {
                      .includeColumnComments( includeColumnComments )
                      .createTableCommandPrefix( tableCommandPrefix )
                      .decimalPrecision( decimalPrecision )
+                     .decimalScale( decimalScale )
                      .customColumns( customColumnDefinitions )
                      .build();
          final SqlGenerationConfig sqlConfig = new SqlGenerationConfig( SqlGenerationConfig.Dialect.valueOf( dialect.toUpperCase() ),
