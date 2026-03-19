@@ -25,6 +25,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.riot.RiotException;
+
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.resolver.fs.ModelsRoot;
@@ -33,8 +36,6 @@ import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFile;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 import io.vavr.control.Try;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.riot.RiotException;
 
 /**
  * Resolution strategy for Aspect model URNs that finds Aspect model files in the local file system.
@@ -92,14 +93,12 @@ public class FileSystemStrategy implements ResolutionStrategy {
       final Optional<File> namedResourceFile;
       try {
          namedResourceFile = modelsRoot.resolveAspectModelFile( aspectModelUrn );
-         if ( namedResourceFile.orElseThrow(
-               () -> new ModelResolutionException(
-                     "Resolving path failed for file " + modelsRoot.constructAspectModelFilePath( aspectModelUrn ) )
-         ).exists() ) {
-            final Try<RawAspectModelFile> tryFile = Try.of( () -> AspectModelFileLoader.load( namedResourceFile.orElseThrow() ) );
+         if ( namedResourceFile.isPresent() && namedResourceFile.get().exists() ) {
+            final File inputFile = namedResourceFile.get();
+            final Try<RawAspectModelFile> tryFile = Try.of( () -> AspectModelFileLoader.load( inputFile ) );
             if ( tryFile.isFailure() ) {
                checkedLocations.add(
-                     new ModelResolutionException.LoadingFailure( aspectModelUrn, namedResourceFile.orElseThrow().getAbsolutePath(),
+                     new ModelResolutionException.LoadingFailure( aspectModelUrn, inputFile.getAbsolutePath(),
                            tryFile.getCause().getMessage(), tryFile.getCause() ) );
             }
             final RawAspectModelFile loadedFile = tryFile.get();
@@ -107,11 +106,13 @@ public class FileSystemStrategy implements ResolutionStrategy {
                return loadedFile;
             } else {
                checkedLocations.add( new ModelResolutionException.LoadingFailure( aspectModelUrn,
-                     namedResourceFile.orElseThrow().getAbsolutePath(), "File does not contain the element definition" ) );
+                     inputFile.getAbsolutePath(), "File does not contain the element definition" ) );
             }
          } else {
             checkedLocations.add( new ModelResolutionException.LoadingFailure( aspectModelUrn,
-                  namedResourceFile.orElseThrow().getAbsolutePath(), "File does not exist" ) );
+                  namedResourceFile.map( File::getAbsolutePath )
+                        .orElseGet( () -> modelsRoot.constructAspectModelFilePath( aspectModelUrn ).toString() ),
+                  "File does not exist" ) );
          }
       } catch ( final ModelResolutionException exception ) {
          return findInNamespaceFolder( aspectModelUrn, resolutionStrategySupport, checkedLocations );
