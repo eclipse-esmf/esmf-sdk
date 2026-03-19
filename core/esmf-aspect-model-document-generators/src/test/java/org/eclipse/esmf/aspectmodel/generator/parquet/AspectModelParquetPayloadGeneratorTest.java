@@ -12,8 +12,14 @@
  */
 package org.eclipse.esmf.aspectmodel.generator.parquet;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.eclipse.esmf.metamodel.builder.SammBuilder.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.eclipse.esmf.metamodel.builder.SammBuilder.aspect;
+import static org.eclipse.esmf.metamodel.builder.SammBuilder.characteristic;
+import static org.eclipse.esmf.metamodel.builder.SammBuilder.property;
+import static org.eclipse.esmf.metamodel.builder.SammBuilder.rangeConstraint;
+import static org.eclipse.esmf.metamodel.builder.SammBuilder.trait;
+import static org.eclipse.esmf.metamodel.builder.SammBuilder.value;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -27,15 +33,6 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.jena.datatypes.RDFDatatype;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.vocabulary.XSD;
-import org.apache.parquet.example.data.Group;
-import org.apache.parquet.hadoop.ParquetFileReader;
-import org.apache.parquet.io.LocalInputFile;
-import org.apache.parquet.schema.MessageType;
 import org.eclipse.esmf.aspectmodel.generator.ParquetArtifact;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.BoundDefinition;
@@ -50,14 +47,23 @@ import org.eclipse.esmf.metamodel.impl.DefaultScalar;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
 import org.eclipse.esmf.test.TestResources;
+
+import com.google.common.collect.Lists;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.jena.datatypes.RDFDatatype;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.XSD;
+import org.apache.parquet.example.data.Group;
+import org.apache.parquet.hadoop.ParquetFileReader;
+import org.apache.parquet.io.LocalInputFile;
+import org.apache.parquet.schema.MessageType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
-
-import com.google.common.collect.Lists;
 
 /**
  * Test suite for AspectModelParquetPayloadGenerator.
@@ -70,7 +76,7 @@ class AspectModelParquetPayloadGeneratorTest {
       for ( final Path tempFile : tempFiles ) {
          try {
             Files.deleteIfExists( tempFile );
-         } catch ( final IOException _ ) {
+         } catch ( final IOException ignored ) {
             // Ignore cleanup errors
          }
       }
@@ -385,7 +391,7 @@ class AspectModelParquetPayloadGeneratorTest {
     * (mirrors {@code testGenerateAspectWithDateTimeTypeForRangeConstraints}).
     */
    @Test
-   void testGenerateParquetForAspectWithGTypeForRangeConstraints() throws IOException {
+   void testGenerateParquetForAspectWithTypeForRangeConstraints() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_G_TYPE_FOR_RANGE_CONSTRAINTS );
       assertThat( parquetFile ).exists();
 
@@ -888,13 +894,13 @@ class AspectModelParquetPayloadGeneratorTest {
       final LocalInputFile inputFile = new LocalInputFile( parquetFile );
       try ( final ParquetFileReader fileReader = ParquetFileReader.open( inputFile ) ) {
          final MessageType schema = fileReader.getFooter().getFileMetaData().getSchema();
-         final org.apache.parquet.io.ColumnIOFactory columnIOFactory = new org.apache.parquet.io.ColumnIOFactory();
-         final org.apache.parquet.io.MessageColumnIO columnIO = columnIOFactory.getColumnIO( schema );
+         final org.apache.parquet.io.ColumnIOFactory columnIoFactory = new org.apache.parquet.io.ColumnIOFactory();
+         final org.apache.parquet.io.MessageColumnIO columnIo = columnIoFactory.getColumnIO( schema );
          org.apache.parquet.column.page.PageReadStore pages;
          while ( ( pages = fileReader.readNextRowGroup() ) != null ) {
             final long rowCount = pages.getRowCount();
             final org.apache.parquet.io.RecordReader<Group> recordReader =
-                  columnIO.getRecordReader( pages, new org.apache.parquet.example.data.simple.convert.GroupRecordConverter( schema ) );
+                  columnIo.getRecordReader( pages, new org.apache.parquet.example.data.simple.convert.GroupRecordConverter( schema ) );
             for ( long i = 0; i < rowCount; i++ ) {
                records.add( recordReader.read() );
             }
@@ -912,7 +918,7 @@ class AspectModelParquetPayloadGeneratorTest {
             if ( group.getType().containsField( fieldName ) && group.getFieldRepetitionCount( fieldName ) > 0 ) {
                return group;
             }
-         } catch ( final RuntimeException _ ) {
+         } catch ( final RuntimeException ignored ) {
             // Field not found in this group, continue
          }
       }
@@ -932,20 +938,20 @@ class AspectModelParquetPayloadGeneratorTest {
       } else if ( BigInteger.class.isAssignableFrom( nativeType ) ) {
          try {
             return BigInteger.valueOf( parquetRecord.getInteger( fieldName, 0 ) );
-         } catch ( final ClassCastException _ ) {
+         } catch ( final ClassCastException ignored ) {
             try {
                return BigInteger.valueOf( parquetRecord.getLong( fieldName, 0 ) );
-            } catch ( final ClassCastException _ ) {
+            } catch ( final ClassCastException classCastException ) {
                return new BigInteger( parquetRecord.getString( fieldName, 0 ) );
             }
          }
       } else if ( BigDecimal.class.isAssignableFrom( nativeType ) ) {
          try {
             return BigDecimal.valueOf( parquetRecord.getDouble( fieldName, 0 ) );
-         } catch ( final ClassCastException _ ) {
+         } catch ( final ClassCastException ignored ) {
             try {
                return new BigDecimal( parquetRecord.getString( fieldName, 0 ) );
-            } catch ( final ClassCastException _ ) {
+            } catch ( final ClassCastException classCastException ) {
                return BigDecimal.valueOf( parquetRecord.getFloat( fieldName, 0 ) );
             }
          }
@@ -968,7 +974,7 @@ class AspectModelParquetPayloadGeneratorTest {
       try {
          lowerBound = toBigDecimal( range.getLeft() );
          upperBound = toBigDecimal( range.getRight() );
-      } catch ( final NumberFormatException _ ) {
+      } catch ( final NumberFormatException ignored ) {
          // Skip assertion when bounds cannot be converted (Infinity/NaN)
          return;
       }

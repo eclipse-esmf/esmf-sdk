@@ -57,109 +57,77 @@ final class ParquetSchemaMapper {
       if ( XSD.xboolean.equals( xsdResource ) ) {
          return Types.primitive( PrimitiveType.PrimitiveTypeName.BOOLEAN, org.apache.parquet.schema.Type.Repetition.OPTIONAL )
                .named( fieldName );
-      } else if ( ( XSD.xstring.equals( xsdResource ) ||
-            XSD.time.equals( xsdResource ) ||
-            XSD.gYear.equals( xsdResource ) ||
-            XSD.gMonth.equals( xsdResource ) ||
-            XSD.gDay.equals( xsdResource ) ||
-            XSD.gYearMonth.equals( xsdResource ) ||
-            XSD.gMonthDay.equals( xsdResource ) ||
-            XSD.duration.equals( xsdResource ) ||
-            XSD.yearMonthDuration.equals( xsdResource ) ||
-            XSD.dayTimeDuration.equals( xsdResource ) ||
-            XSD.hexBinary.equals( xsdResource ) ||
-            XSD.base64Binary.equals( xsdResource ) ||
-            XSD.anyURI.equals( xsdResource ) ||
-            RDF.langString.getURI().equals( xsdTypeUri ) ) && ( maxLength != null && maxLength.intValue() > 0 ) ) {
+      } else if ( ( XSD.xstring.equals( xsdResource )
+            || XSD.time.equals( xsdResource )
+            || XSD.gYear.equals( xsdResource )
+            || XSD.gMonth.equals( xsdResource )
+            || XSD.gDay.equals( xsdResource )
+            || XSD.gYearMonth.equals( xsdResource )
+            || XSD.gMonthDay.equals( xsdResource )
+            || XSD.duration.equals( xsdResource )
+            || XSD.yearMonthDuration.equals( xsdResource )
+            || XSD.dayTimeDuration.equals( xsdResource )
+            || XSD.hexBinary.equals( xsdResource )
+            || XSD.base64Binary.equals( xsdResource )
+            || XSD.anyURI.equals( xsdResource )
+            || RDF.langString.getURI().equals( xsdTypeUri ) ) && ( maxLength != null && maxLength.intValue() > 0 ) ) {
          return Types.primitive( PrimitiveType.PrimitiveTypeName.FIXED_LEN_BYTE_ARRAY, org.apache.parquet.schema.Type.Repetition.OPTIONAL )
                .length( maxLength.intValue() )
                .named( fieldName );
       } else if ( RDF.langString.getURI().equals( xsdTypeUri ) ) {
          return Types.primitive( PrimitiveType.PrimitiveTypeName.BINARY, org.apache.parquet.schema.Type.Repetition.OPTIONAL )
-               .as( LogicalTypeAnnotation.stringType() )
-               .named( fieldName + "-" + language );
-      }
-
-      // Float type
-      else if ( XSD.xfloat.equals( xsdResource ) ) {
+               .as( LogicalTypeAnnotation.stringType() ).named( fieldName + "-" + language );
+      } else if ( XSD.xfloat.equals( xsdResource ) ) { // Float type
          return Types.primitive( PrimitiveType.PrimitiveTypeName.FLOAT, org.apache.parquet.schema.Type.Repetition.OPTIONAL )
                .named( fieldName );
-      }
-
-      // Double and decimal types
-      else if ( XSD.xdouble.equals( xsdResource ) || XSD.decimal.equals( xsdResource ) ) {
+      } else if ( XSD.xdouble.equals( xsdResource ) || XSD.decimal.equals( xsdResource ) ) { // Double and decimal types
          return Types.primitive( PrimitiveType.PrimitiveTypeName.DOUBLE, org.apache.parquet.schema.Type.Repetition.OPTIONAL )
                .named( fieldName );
-      }
-
-      // Integer types that map to INT32
-      else if ( XSD.xint.equals( xsdResource ) || XSD.integer.equals( xsdResource ) ||
-            XSD.xshort.equals( xsdResource ) || XSD.xbyte.equals( xsdResource ) ||
-            XSD.unsignedShort.equals( xsdResource ) || XSD.unsignedByte.equals( xsdResource ) ||
-            XSD.nonNegativeInteger.equals( xsdResource ) || XSD.positiveInteger.equals( xsdResource ) ||
-            XSD.nonPositiveInteger.equals( xsdResource ) || XSD.negativeInteger.equals( xsdResource ) ) {
+      } else if ( XSD.xint.equals( xsdResource ) || XSD.integer.equals( xsdResource )
+            || XSD.xshort.equals( xsdResource ) || XSD.xbyte.equals( xsdResource )
+            || XSD.unsignedShort.equals( xsdResource ) || XSD.unsignedByte.equals( xsdResource )
+            || XSD.nonNegativeInteger.equals( xsdResource ) || XSD.positiveInteger.equals( xsdResource )
+            || XSD.nonPositiveInteger.equals( xsdResource ) || XSD.negativeInteger.equals(
+                  xsdResource ) ) { // Integer types that map to INT32
          return Types.primitive( PrimitiveType.PrimitiveTypeName.INT32, org.apache.parquet.schema.Type.Repetition.OPTIONAL )
                .named( fieldName );
-      }
-
-      // Long types that map to INT64
-      else if ( XSD.xlong.equals( xsdResource ) || XSD.unsignedInt.equals( xsdResource ) ||
-            XSD.unsignedLong.equals( xsdResource ) ) {
+      } else if ( XSD.xlong.equals( xsdResource ) || XSD.unsignedInt.equals( xsdResource )
+            || XSD.unsignedLong.equals( xsdResource ) ) { // Long types that map to INT64
          return Types.primitive( PrimitiveType.PrimitiveTypeName.INT64, org.apache.parquet.schema.Type.Repetition.OPTIONAL )
                .named( fieldName );
-      }
-
-      // Date type with logical annotation
-      else if ( XSD.date.equals( xsdResource ) ) {
+      } else if ( XSD.date.equals( xsdResource ) ) { // Date type with logical annotation
          return Types.primitive( PrimitiveType.PrimitiveTypeName.INT32, org.apache.parquet.schema.Type.Repetition.OPTIONAL )
                .as( LogicalTypeAnnotation.dateType() )
                .named( fieldName );
-      }
-
-      // Time types as string
-      else if ( XSD.time.equals( xsdResource ) || XSD.gDay.equals( xsdResource ) ||
-            XSD.gMonth.equals( xsdResource ) || XSD.gYear.equals( xsdResource ) ||
-            XSD.gYearMonth.equals( xsdResource ) || XSD.gMonthDay.equals( xsdResource ) ) {
+      } else if ( XSD.time.equals( xsdResource ) || XSD.gDay.equals( xsdResource )
+            || XSD.gMonth.equals( xsdResource ) || XSD.gYear.equals( xsdResource )
+            || XSD.gYearMonth.equals( xsdResource ) || XSD.gMonthDay.equals( xsdResource ) ) { // Time types as string
          return Types.primitive( PrimitiveType.PrimitiveTypeName.BINARY, org.apache.parquet.schema.Type.Repetition.OPTIONAL )
                .as( LogicalTypeAnnotation.stringType() )
                .named( fieldName );
-      }
-
-      // DateTime types with timestamp annotation
-      else if ( XSD.dateTime.equals( xsdResource ) || XSD.dateTimeStamp.equals( xsdResource ) ) {
+      } else if ( XSD.dateTime.equals( xsdResource ) || XSD.dateTimeStamp.equals(
+            xsdResource ) ) { // DateTime types with timestamp annotation
          return Types.primitive( PrimitiveType.PrimitiveTypeName.INT64, org.apache.parquet.schema.Type.Repetition.OPTIONAL )
                .as( LogicalTypeAnnotation.timestampType( isTimezoneAvailable, LogicalTypeAnnotation.TimeUnit.MICROS ) )
                .named( fieldName );
-      }
-
-      // Duration types as string
-      else if ( XSD.duration.equals( xsdResource ) || XSD.yearMonthDuration.equals( xsdResource ) ||
-            XSD.dayTimeDuration.equals( xsdResource ) ) {
+      } else if ( XSD.duration.equals( xsdResource ) || XSD.yearMonthDuration.equals( xsdResource )
+            || XSD.dayTimeDuration.equals( xsdResource ) ) { // Duration types as string
          return Types.primitive( PrimitiveType.PrimitiveTypeName.BINARY, org.apache.parquet.schema.Type.Repetition.OPTIONAL )
                .as( LogicalTypeAnnotation.stringType() )
                .named( fieldName );
-      }
-
-      // Binary types
-      else if ( XSD.hexBinary.equals( xsdResource ) || XSD.base64Binary.equals( xsdResource ) ) {
+      } else if ( XSD.hexBinary.equals( xsdResource ) || XSD.base64Binary.equals( xsdResource ) ) { // Binary types
          return Types.primitive( PrimitiveType.PrimitiveTypeName.BINARY, org.apache.parquet.schema.Type.Repetition.OPTIONAL )
                .named( fieldName );
-      }
-
-      // String types (including all string-derived types)
-      else if ( XSD.xstring.equals( xsdResource ) || XSD.anyURI.equals( xsdResource ) ||
-            XSD.normalizedString.equals( xsdResource ) || XSD.token.equals( xsdResource ) ||
-            XSD.Name.equals( xsdResource ) || XSD.QName.equals( xsdResource ) ||
-            XSD.language.equals( xsdResource ) || XSD.NMTOKEN.equals( xsdResource ) ||
-            XSD.NCName.equals( xsdResource ) || XSD.ID.equals( xsdResource ) ||
-            XSD.IDREF.equals( xsdResource ) ) {
+      } else if ( XSD.xstring.equals( xsdResource ) || XSD.anyURI.equals( xsdResource )
+            || XSD.normalizedString.equals( xsdResource ) || XSD.token.equals( xsdResource )
+            || XSD.Name.equals( xsdResource ) || XSD.QName.equals( xsdResource )
+            || XSD.language.equals( xsdResource ) || XSD.NMTOKEN.equals( xsdResource )
+            || XSD.NCName.equals( xsdResource ) || XSD.ID.equals( xsdResource )
+            || XSD.IDREF.equals( xsdResource ) ) { // String types (including all string-derived types)
          return Types.primitive( PrimitiveType.PrimitiveTypeName.BINARY, org.apache.parquet.schema.Type.Repetition.OPTIONAL )
                .as( LogicalTypeAnnotation.stringType() )
                .named( fieldName );
-      }
-
-      // Default fallback for unknown types
-      else {
+      } else { // Default fallback for unknown types
          return Types.primitive( PrimitiveType.PrimitiveTypeName.BINARY, org.apache.parquet.schema.Type.Repetition.OPTIONAL )
                .as( LogicalTypeAnnotation.stringType() )
                .named( fieldName );

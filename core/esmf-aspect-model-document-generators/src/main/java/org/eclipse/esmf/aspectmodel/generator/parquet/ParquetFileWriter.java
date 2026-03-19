@@ -28,24 +28,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.XSD;
-import org.apache.parquet.example.data.Group;
-import org.apache.parquet.example.data.simple.SimpleGroupFactory;
-import org.apache.parquet.hadoop.ParquetWriter;
-import org.apache.parquet.hadoop.example.ExampleParquetWriter;
-import org.apache.parquet.io.LocalOutputFile;
-import org.apache.parquet.io.api.Binary;
-import org.apache.parquet.schema.LogicalTypeAnnotation;
-import org.apache.parquet.schema.MessageType;
-import org.apache.parquet.schema.PrimitiveType;
-import org.apache.parquet.schema.Types;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.ComplexType;
@@ -62,6 +47,20 @@ import org.eclipse.esmf.metamodel.constraint.LengthConstraint;
 import org.eclipse.esmf.metamodel.datatype.LangString;
 
 import io.vavr.Tuple2;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.XSD;
+import org.apache.parquet.example.data.Group;
+import org.apache.parquet.example.data.simple.SimpleGroupFactory;
+import org.apache.parquet.hadoop.ParquetWriter;
+import org.apache.parquet.hadoop.example.ExampleParquetWriter;
+import org.apache.parquet.io.LocalOutputFile;
+import org.apache.parquet.io.api.Binary;
+import org.apache.parquet.schema.LogicalTypeAnnotation;
+import org.apache.parquet.schema.MessageType;
+import org.apache.parquet.schema.PrimitiveType;
+import org.apache.parquet.schema.Types;
 
 /**
  * Handles the generation of Parquet files from flattened Aspect Model data.
@@ -195,7 +194,7 @@ class ParquetFileWriter {
             final LocalDate date = LocalDate.parse( value.toString() );
             final long daysSinceEpoch = date.toEpochDay();
             group.add( fieldName, (int) daysSinceEpoch );
-         } catch ( final Exception _ ) {
+         } catch ( final Exception ignored ) {
             group.add( fieldName, 0 );
          }
       } else {
@@ -225,7 +224,7 @@ class ParquetFileWriter {
             } else if ( value instanceof final String stringValue ) {
                try {
                   group.add( fieldName, Integer.parseInt( stringValue ) );
-               } catch ( final NumberFormatException _ ) {
+               } catch ( final NumberFormatException ignored ) {
                   group.add( fieldName, 0 );
                }
             }
@@ -236,7 +235,7 @@ class ParquetFileWriter {
             } else if ( value instanceof final String stringValue ) {
                try {
                   group.add( fieldName, Long.parseLong( stringValue ) );
-               } catch ( final NumberFormatException _ ) {
+               } catch ( final NumberFormatException ignored ) {
                   group.add( fieldName, 0L );
                }
             }
@@ -247,7 +246,7 @@ class ParquetFileWriter {
             } else if ( value instanceof final String stringValue ) {
                try {
                   group.add( fieldName, Float.parseFloat( stringValue ) );
-               } catch ( final NumberFormatException _ ) {
+               } catch ( final NumberFormatException ignored ) {
                   group.add( fieldName, 0.0f );
                }
             }
@@ -258,7 +257,7 @@ class ParquetFileWriter {
             } else if ( value instanceof final String stringValue ) {
                try {
                   group.add( fieldName, Double.parseDouble( stringValue ) );
-               } catch ( final NumberFormatException _ ) {
+               } catch ( final NumberFormatException ignored ) {
                   group.add( fieldName, 0.0d );
                }
             }
@@ -527,8 +526,8 @@ class ParquetFileWriter {
 
          if ( characteristic instanceof java.util.Collection ) {
             collectionsMap.computeIfAbsent( propertyPath, k -> new ArrayList<>() ).add( property );
-         } else if ( characteristic != null && characteristic.getDataType().isPresent() &&
-               characteristic.getDataType().orElse( null ) instanceof final ComplexType complexType
+         } else if ( characteristic != null && characteristic.getDataType().isPresent()
+               && characteristic.getDataType().orElse( null ) instanceof final ComplexType complexType
                && columnNames.contains( propertyPath ) ) {
             identifyCollections( complexType.getAllProperties(), propertyPath, collectionsMap );
          }
@@ -546,8 +545,8 @@ class ParquetFileWriter {
 
       if ( characteristic instanceof final Collection collection ) {
          fillRowForCollection( collection, property, prefix, row );
-      } else if ( characteristic != null && characteristic.getDataType().isPresent() &&
-            characteristic.getDataType().orElse( null ) instanceof final ComplexType complexType ) {
+      } else if ( characteristic != null && characteristic.getDataType().isPresent()
+            && characteristic.getDataType().orElse( null ) instanceof final ComplexType complexType ) {
          fillRowForComplexType( complexType, prefix, row, flattenedData );
       } else if ( characteristic != null ) {
          final Object value = extractExampleValueFromProperty( property, characteristic );
