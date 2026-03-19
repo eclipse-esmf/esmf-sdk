@@ -14,13 +14,13 @@
 package examples;
 
 // tag::imports[]
-
 import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.esmf.aspectmodel.generator.parquet.AspectModelParquetPayloadGenerator;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.metamodel.AspectModel;
+// end::imports[]
 import org.junit.jupiter.api.Test;
 
 public class GenerateParquetPayload extends AbstractGenerator {
