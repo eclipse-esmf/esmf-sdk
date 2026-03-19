@@ -51,10 +51,12 @@ import org.eclipse.esmf.metamodel.impl.DefaultProperty;
 /**
  * Generates Parquet payload data using the visitor pattern.
  *
- * <p>Each {@code visit*} method handles a specific model element type and returns a
+ * <p>
+ * Each {@code visit*} method handles a specific model element type and returns a
  * {@code Map<String, Object>} representing the property names as keys and their corresponding
  * values. This follows the same structural approach as
- * {@link org.eclipse.esmf.aspectmodel.generator.json.JsonPayloadGenerator}.</p>
+ * {@link org.eclipse.esmf.aspectmodel.generator.json.JsonPayloadGenerator}.
+ * </p>
  *
  * @see org.eclipse.esmf.aspectmodel.generator.json.JsonPayloadGenerator
  */
@@ -80,8 +82,8 @@ class ParquetPayloadGenerator implements AspectVisitor<Map<String, Object>, Parq
    /**
     * Traversal context carrying state needed during visitor traversal.
     *
-    * @param constraints        the constraints that apply at the current position
-    * @param visitedProperties  the properties visited during traversal to detect cycles
+    * @param constraints the constraints that apply at the current position
+    * @param visitedProperties the properties visited during traversal to detect cycles
     * @param ignoreExampleValue whether to ignore the exampleValue for subsequent levels
     */
    record Context(
@@ -206,12 +208,13 @@ class ParquetPayloadGenerator implements AspectVisitor<Map<String, Object>, Parq
    /**
     * Transforms a list of properties into a combined key-value map.
     *
-    * @param properties           the meta model properties to transform
+    * @param properties the meta model properties to transform
     * @param useModelExampleValue whether to use the model's example value if present
     * @return a map representing the given properties
     */
    @SuppressWarnings( "squid:S2250" )
-   // Amount of elements in list is in regard to amount of properties in Aspect Model. Even in bigger aspects this
+   // Amount of elements in list is in regard to amount of properties in Aspect Model. Even in bigger
+   // aspects this
    // should not lead to performance issues
    Map<String, Object> transformProperties( final List<Property> properties, final boolean useModelExampleValue ) {
       return Stream.concat(
@@ -241,16 +244,18 @@ class ParquetPayloadGenerator implements AspectVisitor<Map<String, Object>, Parq
     * Transforms a single property into a key-value map entry by dispatching to the appropriate
     * handler based on the property's characteristic type.
     *
-    * <p>A {@link Collection} will be represented as a {@link java.util.List}.
-    * {@link Entity} and {@link Either} will be represented as {@link Map}.</p>
+    * <p>
+    * A {@link Collection} will be represented as a {@link java.util.List}.
+    * {@link Entity} and {@link Either} will be represented as {@link Map}.
+    * </p>
     *
-    * @param property             the property to transform
+    * @param property the property to transform
     * @param useModelExampleValue whether to use the model's example value if present
     * @return a map representing the property name as key and the property value as value
     */
    private Map<String, Object> transformPropertyValue( final Property property, final boolean useModelExampleValue ) {
-      final Characteristic characteristic = property.getCharacteristic().orElseThrow( () ->
-            new IllegalArgumentException( COULD_NOT_PROCESS_PROPERTY + property ) );
+      final Characteristic characteristic =
+            property.getCharacteristic().orElseThrow( () -> new IllegalArgumentException( COULD_NOT_PROCESS_PROPERTY + property ) );
 
       // Collection handling (with or without Trait wrapper)
       if ( characteristic.is( Collection.class ) ) {
@@ -264,7 +269,7 @@ class ParquetPayloadGenerator implements AspectVisitor<Map<String, Object>, Parq
                .toList();
          return !constraints.isEmpty()
                ? toMap( property.getPayloadName(), getCollectionValues( property, collection,
-               (LengthConstraint) characteristic.as( Trait.class ).getConstraints().get( 0 ) ) )
+                     (LengthConstraint) characteristic.as( Trait.class ).getConstraints().get( 0 ) ) )
                : toMap( property.getPayloadName(), getCollectionValues( property, collection ) );
       }
 
@@ -322,19 +327,19 @@ class ParquetPayloadGenerator implements AspectVisitor<Map<String, Object>, Parq
          return false;
       }
       final Trait trait = characteristic.as( Trait.class );
-      return trait.getBaseCharacteristic().is( Collection.class ) && (!trait.getConstraints().isEmpty());
+      return trait.getBaseCharacteristic().is( Collection.class ) && ( !trait.getConstraints().isEmpty() );
    }
 
    /**
     * Returns the example value from the property or generates a random one.
     *
-    * @param property             the property to get the value for
+    * @param property the property to get the value for
     * @param useModelExampleValue whether to use the model's example value if present
     * @return the example value or a random value
     */
    Object getExampleValueOrElseRandom( final Property property, final boolean useModelExampleValue ) {
-      final Characteristic characteristic = property.getCharacteristic().orElseThrow( () ->
-            new IllegalArgumentException( COULD_NOT_PROCESS_PROPERTY + property ) );
+      final Characteristic characteristic =
+            property.getCharacteristic().orElseThrow( () -> new IllegalArgumentException( COULD_NOT_PROCESS_PROPERTY + property ) );
       if ( characteristic.is( State.class ) ) {
          return characteristic.as( State.class ).getDefaultValue();
       }
@@ -344,7 +349,7 @@ class ParquetPayloadGenerator implements AspectVisitor<Map<String, Object>, Parq
 
       Optional<Characteristic> elementCharacteristics = Optional.empty();
       if ( characteristic.is( Collection.class ) ) {
-         elementCharacteristics = ((Collection) characteristic).getElementCharacteristic();
+         elementCharacteristics = ( (Collection) characteristic ).getElementCharacteristic();
       }
       final Characteristic effectiveCharacteristics = elementCharacteristics.orElse( characteristic );
 
@@ -354,7 +359,7 @@ class ParquetPayloadGenerator implements AspectVisitor<Map<String, Object>, Parq
 
       return property.getExampleValue()
             .map( exampleValue -> exampleValue.as( ScalarValue.class ).getValue() )
-            .map( value -> value instanceof Curie(final String curieValue) ? curieValue : value )
+            .map( value -> value instanceof Curie( final String curieValue ) ? curieValue : value )
             .orElseGet( () -> generateExampleValue( effectiveCharacteristics ) );
    }
 
