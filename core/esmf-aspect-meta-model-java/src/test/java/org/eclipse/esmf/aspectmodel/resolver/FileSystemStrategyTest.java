@@ -161,11 +161,11 @@ class FileSystemStrategyTest {
 
          // Verify that sharedProperty from aspectelements_shared.ttl is present
          final Resource sharedProperty = createResource( TestModel.TEST_NAMESPACE + "sharedProperty" );
-         assertThat( result.mergedModel().contains( sharedProperty, RDF.type, (org.apache.jena.rdf.model.RDFNode) null ) ).isTrue();
+         assertThat( result.mergedModel().contains( sharedProperty, RDF.type, (RDFNode) null ) ).isTrue();
 
          // Verify that legacyProperty from its dedicated file legacyProperty.ttl is present
          final Resource legacyProperty = createResource( TestModel.TEST_NAMESPACE + "legacyProperty" );
-         assertThat( result.mergedModel().contains( legacyProperty, RDF.type, (org.apache.jena.rdf.model.RDFNode) null ) ).isTrue();
+         assertThat( result.mergedModel().contains( legacyProperty, RDF.type, (RDFNode) null ) ).isTrue();
       } ).doesNotThrowAnyException();
    }
 
@@ -178,7 +178,7 @@ class FileSystemStrategyTest {
             .isInstanceOfSatisfying( ModelResolutionException.class, exception -> {
                assertThat( exception.getCheckedLocations() ).isNotEmpty();
             } )
-            .hasMessageContaining( "File does not contain the element definition" );
+            .hasMessageContaining( "File does not exist" );
    }
 
 
