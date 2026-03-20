@@ -1,0 +1,7 @@
+src/main/c/parser.c
+src/main/c/grammar.json
+src/main/c/node-types.json
+src/main/c/tree_sitter/*
+src/main/js/bindings
+src/main/js/js
+.zig-cache

@@ -36,10 +36,19 @@ import org.slf4j.LoggerFactory;
  */
 public class Download {
    private static final Logger LOG = LoggerFactory.getLogger( Download.class );
-   private final ProxyConfig proxyConfig;
+   private final Config config;
+
+   public record Config(
+         ProxyConfig proxyConfig,
+         Duration timeout
+   ) {}
 
    public Download( final ProxyConfig proxyConfig ) {
-      this.proxyConfig = proxyConfig;
+      this( new Config( proxyConfig, Duration.ofSeconds( 10 ) ) );
+   }
+
+   public Download( final Config config ) {
+      this.config = config;
    }
 
    public Download() {
@@ -69,18 +78,20 @@ public class Download {
          final HttpClient.Builder clientBuilder = HttpClient.newBuilder()
                .version( HttpClient.Version.HTTP_1_1 )
                .followRedirects( HttpClient.Redirect.ALWAYS )
-               .connectTimeout( Duration.ofSeconds( 10 ) );
-         proxyConfig.proxy().ifPresent( clientBuilder::proxy );
-         proxyConfig.authenticator().ifPresent( clientBuilder::authenticator );
+               .connectTimeout( config.timeout() );
+         config.proxyConfig().proxy().ifPresent( clientBuilder::proxy );
+         config.proxyConfig().authenticator().ifPresent( clientBuilder::authenticator );
          final HttpClient client = clientBuilder.build();
          final String[] headersArray = headers.entrySet().stream()
                .flatMap( entry -> Stream.of( entry.getKey(), entry.getValue() ) )
                .toList()
                .toArray( new String[0] );
-         final HttpRequest request = HttpRequest.newBuilder()
-               .uri( fileUrl.toURI() )
-               .headers( headersArray )
-               .build();
+         final HttpRequest.Builder builder = HttpRequest.newBuilder()
+               .uri( fileUrl.toURI() );
+         if ( headersArray.length > 0 ) {
+            builder.headers( headersArray );
+         }
+         final HttpRequest request = builder.build();
          return client.send( request, HttpResponse.BodyHandlers.ofByteArray() );
       } catch ( final InterruptedException | URISyntaxException | IOException exception ) {
          throw new ModelResolutionException( "Could not retrieve " + fileUrl, exception );

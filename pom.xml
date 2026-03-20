@@ -63,6 +63,7 @@
       <module>core/esmf-aspect-model-urn</module>
       <module>core/esmf-aspect-model-validator</module>
       <module>core/esmf-aspect-static-meta-model-java</module>
+      <module>core/esmf-tree-sitter-turtle</module>
       <module>core/esmf-test-aspect-models</module>
       <module>core/esmf-test-resources</module>
       <module>tools/esmf-aspect-model-maven-plugin</module>

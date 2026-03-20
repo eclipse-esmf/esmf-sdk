@@ -1,0 +1,37 @@
+{
+  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/config.schema.json",
+  "grammars": [
+    {
+      "name": "turtle",
+      "camelcase": "Turtle",
+      "title": "RDF/Turtle Parser",
+      "scope": "source.turtle",
+      "file-types": [
+        "ttl"
+      ],
+      "injection-regex": "^turtle$",
+      "class-name": "TreeSitterTurtle"
+    }
+  ],
+  "metadata": {
+    "version": "0.0.0",
+    "license": "EPL-2.0",
+    "description": "Turtle grammar for tree-sitter",
+    "authors": [
+      {
+        "name": "Eclipse Semantic Modeling Framework Team",
+        "email": "esmf-dev@eclipse.org",
+        "url": "https://eclipse-esmf.github.io/"
+      }
+    ]
+  },
+  "bindings": {
+    "c": false,
+    "go": false,
+    "node": false,
+    "python": false,
+    "rust": false,
+    "swift": false,
+    "zig": false
+  }
+}
