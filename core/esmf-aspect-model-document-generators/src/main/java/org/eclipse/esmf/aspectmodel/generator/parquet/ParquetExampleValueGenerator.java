@@ -25,11 +25,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Stream;
-
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.eclipse.esmf.aspectmodel.generator.Range;
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.Constraint;
@@ -43,8 +43,6 @@ import org.eclipse.esmf.metamodel.characteristic.Enumeration;
 import org.eclipse.esmf.metamodel.characteristic.State;
 import org.eclipse.esmf.metamodel.characteristic.Trait;
 import org.eclipse.esmf.metamodel.constraint.FixedPointConstraint;
-import org.eclipse.esmf.metamodel.constraint.LengthConstraint;
-import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
 import org.eclipse.esmf.metamodel.constraint.RegularExpressionConstraint;
 import org.eclipse.esmf.metamodel.datatype.CurieType;
 import org.eclipse.esmf.metamodel.datatype.SammType;
@@ -65,7 +63,6 @@ import com.github.curiousoddman.rgxgen.RgxGen;
  */
 public class ParquetExampleValueGenerator implements AspectVisitor<Object, ParquetExampleValueGenerator.Context> {
 
-   private static final float EPSILON = .0001f;
    private final Random random;
 
    /**
@@ -401,117 +398,6 @@ public class ParquetExampleValueGenerator implements AspectVisitor<Object, Parqu
    public Object visitRdfLangString( final SammType.RdfLangString langString, final Context context ) {
       final String languageTag = randomValueOf( "en", "de" );
       return java.util.Map.of( languageTag, randomString( 5, 20 ) );
-   }
-
-   /**
-    * Represents a numeric range with optional min/max bounds.
-    * Directly mirrors the Range record in JsonPayloadGenerator.
-    */
-   record Range(
-         BigDecimal min, BigDecimal max
-   ) {
-      static final Range OPEN = new Range( (BigDecimal) null, (BigDecimal) null );
-
-      Range( final Double min, final Double max ) {
-         this( min == null ? null : BigDecimal.valueOf( min ), max == null ? null : BigDecimal.valueOf( max ) );
-      }
-
-      Range( final Long min, final Long max ) {
-         this( min == null ? null : BigDecimal.valueOf( min ), max == null ? null : BigDecimal.valueOf( max ) );
-      }
-
-      Range( final Integer min, final Integer max ) {
-         this( min == null ? null : BigDecimal.valueOf( min ), max == null ? null : BigDecimal.valueOf( max ) );
-      }
-
-      Range( final BigInteger min, final BigInteger max ) {
-         this( min == null ? null : new BigDecimal( min ), max == null ? null : new BigDecimal( max ) );
-      }
-
-      Range merge( final Range other ) {
-         final BigDecimal newMin;
-         if ( min == null && other.min == null ) {
-            newMin = null;
-         } else if ( min == null ) {
-            newMin = other.min;
-         } else if ( other.min == null ) {
-            newMin = min;
-         } else {
-            newMin = min.max( other.min );
-         }
-
-         final BigDecimal newMax;
-         if ( max == null && other.max == null ) {
-            newMax = null;
-         } else if ( max == null ) {
-            newMax = other.max;
-         } else if ( other.max == null ) {
-            newMax = max;
-         } else {
-            newMax = max.min( other.max );
-         }
-         if ( newMin != null && newMax != null && newMin.compareTo( newMax ) > 0 ) {
-            return this;
-         }
-         return new Range( newMin, newMax );
-      }
-
-      Range clamp( final Long min, final Long max ) {
-         return merge( new Range( min, max ) );
-      }
-
-      Range clamp( final Integer min, final Integer max ) {
-         return merge( new Range( min, max ) );
-      }
-
-      Range clamp( final Optional<BigInteger> min, final Optional<BigInteger> max ) {
-         return merge( new Range( min.orElse( null ), max.orElse( null ) ) );
-      }
-
-      private static BigDecimal getScalarValue( final ScalarValue value ) {
-         return value.getValue() instanceof final BigDecimal bigDecimal
-               ? bigDecimal
-               : new BigDecimal( value.getValue().toString() );
-      }
-
-      static Range fromLengthConstraints( final List<Constraint> constraints ) {
-         return constraints.stream()
-               .filter( constraint -> constraint.is( LengthConstraint.class ) )
-               .map( constraint -> constraint.as( LengthConstraint.class ) )
-               .map( lc -> new Range( lc.getMinValue().orElse( null ), lc.getMaxValue().orElse( null ) ) )
-               .reduce( OPEN, Range::merge );
-      }
-
-      static Range fromRangeConstraints( final List<Constraint> constraints, final boolean floatingPoint ) {
-         return constraints.stream()
-               .<Optional<Range>>map( constraint -> {
-                  if ( constraint instanceof final RangeConstraint rc ) {
-                     if ( floatingPoint ) {
-                        final Optional<Double> rcMin = rc.getMinValue()
-                              .map( v -> getScalarValue( v ).doubleValue() )
-                              .map( v -> org.eclipse.esmf.metamodel.BoundDefinition.GREATER_THAN
-                                    .equals( rc.getLowerBoundDefinition() ) ? v + EPSILON : v );
-                        final Optional<Double> rcMax = rc.getMaxValue()
-                              .map( v -> getScalarValue( v ).doubleValue() )
-                              .map( v -> org.eclipse.esmf.metamodel.BoundDefinition.LESS_THAN
-                                    .equals( rc.getUpperBoundDefinition() ) ? v - EPSILON : v );
-                        return Optional.of( new Range( rcMin.orElse( null ), rcMax.orElse( null ) ) );
-                     }
-                     final Optional<BigDecimal> rcMin = rc.getMinValue()
-                           .map( Range::getScalarValue )
-                           .map( v -> org.eclipse.esmf.metamodel.BoundDefinition.GREATER_THAN
-                                 .equals( rc.getLowerBoundDefinition() ) ? v.add( BigDecimal.ONE ) : v );
-                     final Optional<BigDecimal> rcMax = rc.getMaxValue()
-                           .map( Range::getScalarValue )
-                           .map( v -> org.eclipse.esmf.metamodel.BoundDefinition.LESS_THAN
-                                 .equals( rc.getUpperBoundDefinition() ) ? v.subtract( BigDecimal.ONE ) : v );
-                     return Optional.of( new Range( rcMin.orElse( null ), rcMax.orElse( null ) ) );
-                  }
-                  return Optional.empty();
-               } )
-               .flatMap( Optional::stream )
-               .reduce( OPEN, Range::merge );
-      }
    }
 
    BigDecimal randomFloatingPointNumber( final BigDecimal start, final BigDecimal end,
