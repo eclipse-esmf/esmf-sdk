@@ -14,10 +14,13 @@
 package org.eclipse.esmf.buildtime;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.resolver.process.BinaryLauncher;
 import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher;
@@ -89,8 +92,13 @@ public class NativeCompile extends ZigContext {
          args.add( nativeSourcesDirectory.resolve( "include" ).resolve( currentOs.toString() ).toString() );
          args.add( "-o" );
          args.add( libFilename.getAbsolutePath() );
-         args.add( nativeSourcesDirectory.resolve( "parser.c" ).toString() );
-         args.add( nativeSourcesDirectory.resolve( "org_eclipse_esmf_treesitterturtle_TreeSitterTurtle.c" ).toString() );
+         try ( final Stream<Path> subpaths = Files.list( nativeSourcesDirectory ) ) {
+            subpaths.filter( sourceFile -> sourceFile.toFile().isFile() )
+                  .filter( sourceFile -> sourceFile.getFileName().toString().endsWith( ".c" ) )
+                  .forEach( sourceFile -> args.add( sourceFile.toString() ) );
+         } catch ( final IOException exception ) {
+            throw new BuildTimeException( exception );
+         }
 
          System.out.println( zigExe().getAbsolutePath() + " " + String.join( " ", args ) );
          mkdir( libOutputDirectory );
