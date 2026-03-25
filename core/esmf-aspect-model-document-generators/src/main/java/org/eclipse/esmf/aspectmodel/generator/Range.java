@@ -29,7 +29,7 @@ import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
 public record Range(
       BigDecimal min, BigDecimal max
 ) {
-   static final Range OPEN = new Range( (BigDecimal) null, (BigDecimal) null );
+   static final Range OPEN = new Range( null, (BigDecimal) null );
    static final float EPSILON = .0001f;
 
    public Range( final Double min, final Double max ) {
