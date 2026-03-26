@@ -37,8 +37,8 @@ public class PropertyChainElementAccessors {
     * @return all available {@link PropertyChainElementAccessor} implementations
     */
    public static List<PropertyChainElementAccessor<Object>> getAllPropertyAccessors() {
-      List<PropertyChainElementAccessor<Object>> accessors = new ArrayList<>();
-      ServiceLoader<PropertyChainElementAccessor<Object>> loader = ServiceLoader.load( (Class) PropertyChainElementAccessor.class );
+      final List<PropertyChainElementAccessor<Object>> accessors = new ArrayList<>();
+      final ServiceLoader<PropertyChainElementAccessor<Object>> loader = ServiceLoader.load( (Class) PropertyChainElementAccessor.class );
       loader.forEach( accessors::add );
 
       accessors.removeIf( accessor -> DEFAULT_ACCESSOR.getClass().equals( accessor.getClass() ) );
@@ -60,8 +60,9 @@ public class PropertyChainElementAccessors {
     * @return the acccessor
     * @throws IllegalArgumentException if no accessor with the given name could be found
     */
-   public static PropertyChainElementAccessor<Object> getAccessorByName( String accessorName ) {
-      ServiceLoader<PropertyChainElementAccessor<Object>> serviceLoader = ServiceLoader.load( (Class) PropertyChainElementAccessor.class );
+   public static PropertyChainElementAccessor<Object> getAccessorByName( final String accessorName ) {
+      final ServiceLoader<PropertyChainElementAccessor<Object>> serviceLoader =
+            ServiceLoader.load( (Class) PropertyChainElementAccessor.class );
 
       return serviceLoader.stream()
             .filter( accessor -> accessorName.equals( accessor.type().getName() ) )

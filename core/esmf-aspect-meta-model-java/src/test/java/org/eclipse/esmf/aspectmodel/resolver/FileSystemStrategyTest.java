@@ -62,7 +62,7 @@ class FileSystemStrategyTest {
 
    @BeforeEach
    void setUp() throws URISyntaxException {
-      File aspectModelsRootDirectory = new File(
+      final File aspectModelsRootDirectory = new File(
             FileSystemStrategyTest.class.getClassLoader()
                   .getResource( KnownVersion.getLatest().toString().toLowerCase() )
                   .toURI().getPath() );

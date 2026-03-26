@@ -225,6 +225,10 @@
              value="Interface type name ''{0}'' must match pattern ''{1}''."/>
     </module>
     <module name="NoFinalizer"/>
+    <module name="FinalParameters"/>
+    <module name="FinalLocalVariable">
+      <property name="tokens" value="VARIABLE_DEF,PARAMETER_DEF"/>
+    </module>
     <module name="AbbreviationAsWordInName">
       <property name="ignoreFinal" value="false"/>
       <property name="allowedAbbreviationLength" value="0"/>
