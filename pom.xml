@@ -246,6 +246,7 @@
                <formats>
                   <format combine.children="append">
                      <excludes>
+                        <exclude>**/target/**</exclude>
                         <exclude>.idea/**</exclude>
                         <exclude>**/InvalidEncoding.ttl</exclude>
                         <exclude>**/src/test/resources/submodel-templates/**</exclude>
