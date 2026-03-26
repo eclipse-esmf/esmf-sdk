@@ -39,4 +39,3 @@ from (e.g., in unit tests) impossible.
 
 * Good, because Velocity is a robust library with good IDE support.
 * Bad, because there seems to be not much syntax support for FTL in other editors.
-

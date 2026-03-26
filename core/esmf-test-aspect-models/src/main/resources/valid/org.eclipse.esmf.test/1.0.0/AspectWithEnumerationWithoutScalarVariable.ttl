@@ -34,4 +34,3 @@
    samm:preferredName "Evaluation Result"@en ;
    samm:description "Possible values for the evaluation of a process"@en ;
    samm:properties ( ) .
-

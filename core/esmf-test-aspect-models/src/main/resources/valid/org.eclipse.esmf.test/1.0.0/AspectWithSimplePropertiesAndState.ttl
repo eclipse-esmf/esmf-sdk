@@ -56,4 +56,3 @@
    samm:dataType xsd:string ;
    samm-c:defaultValue "Automation Default Prop" ;
    samm-c:values ( "Automation Default Prop" "Automation2" "Automation3" ) .
-

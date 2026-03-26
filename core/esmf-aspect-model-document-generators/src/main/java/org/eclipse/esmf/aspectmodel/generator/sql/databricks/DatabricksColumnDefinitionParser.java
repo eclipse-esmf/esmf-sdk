@@ -206,4 +206,3 @@ public class DatabricksColumnDefinitionParser implements Supplier<DatabricksColu
       }
    }
 }
-

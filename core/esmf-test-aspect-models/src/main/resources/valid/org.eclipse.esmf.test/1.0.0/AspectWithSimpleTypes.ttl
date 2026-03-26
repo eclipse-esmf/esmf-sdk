@@ -218,4 +218,3 @@
 
 :langStringProperty a samm:Property ;
    samm:characteristic samm-c:MultiLanguageText .
-

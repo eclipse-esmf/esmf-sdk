@@ -47,4 +47,3 @@
 
 :parentOfParentString a samm:Property ;
     samm:characteristic :StringCode .
-

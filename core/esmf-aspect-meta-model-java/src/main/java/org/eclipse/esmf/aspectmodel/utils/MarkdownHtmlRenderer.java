@@ -31,8 +31,8 @@ import org.commonmark.renderer.html.HtmlRenderer;
  * This renderer supports a limited subset of Markdown syntax and introduces custom processing for
  * specific annotated blocks commonly used in SAMM descriptions, such as {@code > NOTE: ...},
  * {@code > EXAMPLE: ...}, and {@code > SOURCE: ...}. These blocks are extracted and rendered into
- * semantically meaningful HTML structures (e.g., {@code <div class="note">}, {@code 
- * 
+ * semantically meaningful HTML structures (e.g., {@code <div class="note">}, {@code
+ *
 <ul class="example-list">
  * }, etc.). Remaining content is rendered using the CommonMark parser.
  */
@@ -160,8 +160,8 @@ public class MarkdownHtmlRenderer {
     * - For {@code NOTE} and {@code SOURCE}, each entry is rendered in a {@code <div>} with a matching
     * class.<br>
     * - For {@code EXAMPLE}, a single example is rendered as a {@code <div>}; multiple examples as a
-    * {@code 
-    * 
+    * {@code
+    *
    <ul>
     * }.
     *
@@ -273,5 +273,3 @@ public class MarkdownHtmlRenderer {
       return RENDERER.render( node ).trim();
    }
 }
-
-

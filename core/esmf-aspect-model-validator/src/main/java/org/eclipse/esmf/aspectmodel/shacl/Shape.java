@@ -120,4 +120,3 @@ public interface Shape {
       T visitPropertyShape( Shape.Property propertyShape );
    }
 }
-

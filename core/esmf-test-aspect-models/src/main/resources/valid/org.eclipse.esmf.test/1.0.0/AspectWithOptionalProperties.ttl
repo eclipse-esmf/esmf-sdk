@@ -30,4 +30,3 @@
      samm:dataType xsd:unsignedLong ;
      samm-c:unit unit:metre
    ] .
-

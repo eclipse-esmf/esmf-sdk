@@ -359,7 +359,7 @@ public class JsonPayloadGenerator<S extends StructureElement>
     * first example element's value may be based on the exampleValue, otherwise the generated structure
     * violates the corresponding JSON Schema's "uniqueItems" constraint. In other words, the following
     * would not be valid, because both values are identical:
-    * 
+    *
     * <pre>
     *  {
     *   "someProperty" : [ {

@@ -158,4 +158,3 @@ public class DescriptionsUtils {
             .collect( Collectors.joining( "\n" ) );
    }
 }
-

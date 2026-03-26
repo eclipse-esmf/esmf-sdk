@@ -1,6 +1,6 @@
 ---
 name: Task
-about: Suggest a task for this project. This can be any type of work item like for example a feature request. 
+about: Suggest a task for this project. This can be any type of work item like for example a feature request.
 title: '[Task]'
 labels: task
 assignees: ''
