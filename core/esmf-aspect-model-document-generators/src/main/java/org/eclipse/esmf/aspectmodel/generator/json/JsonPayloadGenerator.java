@@ -104,7 +104,7 @@ public class JsonPayloadGenerator<S extends StructureElement>
     * @param constraints the constraints that apply to the current position
     * @param visitedProperties the Properties that were visited during the traversal
     * @param ignoreExampleValue whether or not the exampleValue for the next level of Properties should
-    * be ignored
+    *        be ignored
     */
    public record Context(
          List<Constraint> constraints,

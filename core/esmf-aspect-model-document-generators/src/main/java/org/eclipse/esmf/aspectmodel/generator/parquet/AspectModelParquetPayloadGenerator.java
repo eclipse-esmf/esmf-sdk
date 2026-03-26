@@ -14,7 +14,6 @@
 package org.eclipse.esmf.aspectmodel.generator.parquet;
 
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.generator.AspectGenerator;
@@ -58,22 +57,8 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
       final ParquetFileWriter fileWriter = new ParquetFileWriter( exampleValueGenerator );
 
       try {
-         final String tempFilePath = System.getProperty( "java.io.tmpdir" )
-               + java.io.File.separator + aspect.getName() + "_temp.parquet";
-         final java.nio.file.Path parquetPath = Paths.get( tempFilePath );
-
-         // Clean up any existing temporary file
-         java.nio.file.Files.deleteIfExists( parquetPath );
-
          // Generate the Parquet file
-         fileWriter.generateParquetFile( tempFilePath, aspect );
-
-         // Read the generated file into byte array
-         final byte[] parquetData = java.nio.file.Files.readAllBytes( parquetPath );
-
-         // Clean up temporary file
-         java.nio.file.Files.deleteIfExists( parquetPath );
-
+         final byte[] parquetData = fileWriter.generateParquetFile( aspect );
          return Stream.of( new ParquetArtifact( aspect.getName() + ".parquet", parquetData ) );
       } catch ( final IOException e ) {
          throw new DocumentGenerationException( e );

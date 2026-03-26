@@ -16,7 +16,6 @@ package org.eclipse.esmf.aspectmodel.generator.parquet;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,7 +54,6 @@ import org.apache.parquet.example.data.Group;
 import org.apache.parquet.example.data.simple.SimpleGroupFactory;
 import org.apache.parquet.hadoop.ParquetWriter;
 import org.apache.parquet.hadoop.example.ExampleParquetWriter;
-import org.apache.parquet.io.LocalOutputFile;
 import org.apache.parquet.io.api.Binary;
 import org.apache.parquet.schema.LogicalTypeAnnotation;
 import org.apache.parquet.schema.MessageType;
@@ -90,11 +88,12 @@ class ParquetFileWriter {
    /**
     * Generates a Parquet file at the specified output path for the given aspect.
     *
-    * @param outputPath the file path to write the Parquet file to
     * @param aspect the aspect to generate data for
-    * @throws IOException if an I/O error occurs during file writing
+    * @return Apache Parquet byte[]
+    * @throws IOException if an I/O error occurs during apache parquet file writing
     */
-   void generateParquetFile( final String outputPath, final Aspect aspect ) throws IOException {
+   byte[] generateParquetFile( final Aspect aspect ) throws IOException {
+      final ByteArrayOutputFile outputFile = new ByteArrayOutputFile();
       final Map<String, Tuple2<Object, PrimitiveType>> flattenedExampleData = new LinkedHashMap<>();
       final Set<String> visitedTypes = new HashSet<>();
 
@@ -123,7 +122,7 @@ class ParquetFileWriter {
                propertyNameKeyValueMap.computeIfAbsent( mapKey, k -> new ArrayList<>() ).add( entrySet );
             } );
 
-      try ( final ParquetWriter<Group> writer = ExampleParquetWriter.builder( new LocalOutputFile( Paths.get( outputPath ) ) )
+      try ( final ParquetWriter<Group> writer = ExampleParquetWriter.builder( outputFile )
             .withType( messageTypeSchema )
             .build() ) {
 
@@ -148,6 +147,7 @@ class ParquetFileWriter {
             }
          } );
       }
+      return outputFile.toByteArray();
    }
 
    private void createMessageTypeSchemaFromFlattenedData( final Map<String, Tuple2<Object, PrimitiveType>> data ) {

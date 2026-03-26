@@ -104,7 +104,7 @@ public record Range(
 
    public static Range fromRangeConstraints( final List<Constraint> constraints, final boolean floatingPoint ) {
       return constraints.stream()
-            .<Optional<Range>> map( constraint -> {
+            .<Optional<Range>>map( constraint -> {
                if ( constraint instanceof final RangeConstraint rc ) {
                   if ( floatingPoint ) {
                      final Optional<Double> rcMin = rc.getMinValue()
