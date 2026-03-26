@@ -93,7 +93,9 @@ public class ViolationFormatter implements Function<List<Violation>, String>, Vi
             // Include error code in the violation message
             final String errorCode = violation.errorCode();
             final String enhancedMessage = String.format( "[%s] %s", errorCode, violation.message() );
-            builder.append( indent( violation.accept( this ), 2 ) ).append( System.lineSeparator() );
+            builder.append( String.format( "> %s: %n", enhancedMessage ) );
+            builder.append( indent( violation.accept( this ), 2 ) );
+            builder.append( System.lineSeparator() );
             for ( final Fix possibleFix : violation.fixes() ) {
                builder.append( "  > Possible fix: " )
                      .append( possibleFix.description() );
