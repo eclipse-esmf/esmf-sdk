@@ -263,6 +263,29 @@
          </plugin>
 
          <plugin>
+            <groupId>com.diffplug.spotless</groupId>
+            <artifactId>spotless-maven-plugin</artifactId>
+            <configuration>
+               <formats>
+                  <format combine.children="append">
+                     <includes combine.children="override">
+                        <include>**/*.java</include>
+                        <include>**/*.md</include>
+                        <include>**/*.adoc</include>
+                        <include>**/*.ttl</include>
+                        <include>**/*.xml</include>
+                     </includes>
+                     <excludes>
+                        <exclude>.idea/**</exclude>
+                        <exclude>**/InvalidEncoding.ttl</exclude>
+                        <exclude>**/src/test/resources/submodel-templates/**</exclude>
+                     </excludes>
+                  </format>
+               </formats>
+            </configuration>
+         </plugin>
+
+         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-clean-plugin</artifactId>
             <inherited>false</inherited>
