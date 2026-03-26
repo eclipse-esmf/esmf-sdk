@@ -18,7 +18,7 @@
    <parent>
       <groupId>org.eclipse.esmf</groupId>
       <artifactId>esmf-parent</artifactId>
-      <version>23</version>
+      <version>24</version>
    </parent>
 
    <artifactId>esmf-sdk-parent</artifactId>
@@ -77,9 +77,6 @@
       <skip.maven.failsafe>false</skip.maven.failsafe>
       <build-time-sources>${project.basedir}/src-buildtime</build-time-sources>
       <generated-sources>${project.basedir}/src-gen</generated-sources>
-      <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
-      <checkstyle.version>10.26.1</checkstyle.version>
-      <central-publishing-maven-plugin.version>0.8.0</central-publishing-maven-plugin.version>
    </properties>
 
    <dependencyManagement>
@@ -243,38 +240,11 @@
          </plugin>
 
          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-checkstyle-plugin</artifactId>
-            <version>${maven-checkstyle-plugin.version}</version>
-            <configuration>
-               <configLocation>${maven.multiModuleProjectDirectory}/.development/esmf-checkstyle.xml</configLocation>
-               <consoleOutput>true</consoleOutput>
-               <failsOnError>true</failsOnError>
-               <failOnViolation>true</failOnViolation>
-               <includeTestSourceDirectory>true</includeTestSourceDirectory>
-            </configuration>
-            <dependencies>
-               <dependency>
-                  <groupId>com.puppycrawl.tools</groupId>
-                  <artifactId>checkstyle</artifactId>
-                  <version>${checkstyle.version}</version>
-               </dependency>
-            </dependencies>
-         </plugin>
-
-         <plugin>
             <groupId>com.diffplug.spotless</groupId>
             <artifactId>spotless-maven-plugin</artifactId>
             <configuration>
                <formats>
                   <format combine.children="append">
-                     <includes combine.children="override">
-                        <include>**/*.java</include>
-                        <include>**/*.md</include>
-                        <include>**/*.adoc</include>
-                        <include>**/*.ttl</include>
-                        <include>**/*.xml</include>
-                     </includes>
                      <excludes>
                         <exclude>.idea/**</exclude>
                         <exclude>**/InvalidEncoding.ttl</exclude>
