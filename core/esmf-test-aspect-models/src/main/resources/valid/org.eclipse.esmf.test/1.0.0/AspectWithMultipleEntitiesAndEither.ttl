@@ -80,4 +80,3 @@
    samm:description "Left type Characteristic"@en ;
    samm:see <http://example.com/> ;
    samm:dataType :TestEntity .
-

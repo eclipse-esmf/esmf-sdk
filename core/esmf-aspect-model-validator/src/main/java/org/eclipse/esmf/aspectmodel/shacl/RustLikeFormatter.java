@@ -43,7 +43,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * Rust-like message formatter. Formatted messages look something like the following example: <br/>
  * <br/>
- * 
+ *
  * <pre>
  * ---> Error at line 11 column 20
  *    |

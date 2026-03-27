@@ -51,7 +51,7 @@ public class GenerateJavaClasses extends JavaCodeGenerationMojo {
 
    public GenerateJavaClasses(
          final boolean disableJacksonAnnotations,
-         boolean disableJacksonAnnotationJsonFormatShapeObject,
+         final boolean disableJacksonAnnotationJsonFormatShapeObject,
          final String jsonTypeInfo,
          final String packageName,
          final String templateFile,

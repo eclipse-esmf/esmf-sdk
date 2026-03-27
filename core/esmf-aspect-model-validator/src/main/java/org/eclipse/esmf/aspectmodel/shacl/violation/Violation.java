@@ -235,4 +235,3 @@ public interface Violation {
       return List.of();
    }
 }
-

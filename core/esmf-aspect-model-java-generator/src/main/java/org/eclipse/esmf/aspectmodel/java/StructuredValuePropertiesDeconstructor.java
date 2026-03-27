@@ -72,7 +72,6 @@ public class StructuredValuePropertiesDeconstructor {
             } )
             .toList();
 
-      final List<DeconstructionSet> result;
       if ( associations.stream()
             .anyMatch( association -> associations.stream()
                   .filter( a -> a.referredProperty().equals( association.referredProperty() ) )

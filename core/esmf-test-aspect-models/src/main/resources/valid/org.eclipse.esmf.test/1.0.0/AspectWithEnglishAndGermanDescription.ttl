@@ -29,4 +29,3 @@
    samm:description "Es ist ein Test-String"@de ;
    samm:exampleValue "Example Value Test" ;
    samm:characteristic samm-c:Text .
-

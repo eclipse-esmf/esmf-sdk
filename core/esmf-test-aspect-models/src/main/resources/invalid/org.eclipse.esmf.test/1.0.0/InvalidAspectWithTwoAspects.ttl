@@ -26,4 +26,3 @@
     samm:properties ();
     samm:operations ();
     samm:events ().
-

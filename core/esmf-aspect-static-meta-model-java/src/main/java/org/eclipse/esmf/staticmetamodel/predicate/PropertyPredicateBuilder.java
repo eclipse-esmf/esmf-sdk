@@ -43,7 +43,7 @@ public class PropertyPredicateBuilder<P extends PropertyAccessor<?, T>, T> {
        * @param referenceValue the reference value
        * @return the predicate
        */
-      public Predicate<C> isEqualTo( T referenceValue ) {
+      public Predicate<C> isEqualTo( final T referenceValue ) {
          return object -> referenceValue.equals( property.getValue( object ) );
       }
 
@@ -68,7 +68,7 @@ public class PropertyPredicateBuilder<P extends PropertyAccessor<?, T>, T> {
        * @param regex the regex to check against
        * @return the predicate
        */
-      public Predicate<C> matches( String regex ) {
+      public Predicate<C> matches( final String regex ) {
          return object -> Pattern.matches( regex, property.getValue( object ) );
       }
 
@@ -78,7 +78,7 @@ public class PropertyPredicateBuilder<P extends PropertyAccessor<?, T>, T> {
        * @param substring the substring to check for
        * @return the predicate
        */
-      public Predicate<C> contains( String substring ) {
+      public Predicate<C> contains( final String substring ) {
          return object -> property.getValue( object ).toString().contains( substring );
       }
    }

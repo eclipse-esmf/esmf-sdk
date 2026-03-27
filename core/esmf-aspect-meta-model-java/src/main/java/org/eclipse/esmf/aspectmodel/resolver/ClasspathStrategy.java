@@ -57,7 +57,7 @@ public class ClasspathStrategy implements ResolutionStrategy {
     * contain a file system hierarchy as follows: {@code N/V/X.ttl} where N is the namespace, V is the
     * version of the namespace and X is the name of the model element (Aspect, Characteristic, ...).
     * Example:
-    * 
+    *
     * <pre>
     * {@code
     * models   <-- should be configured as modelsRoot
@@ -80,7 +80,7 @@ public class ClasspathStrategy implements ResolutionStrategy {
     * contain a file system hierarchy as follows: {@code N/V/X.ttl} where N is the namespace, V is the
     * version of the namespace and X is the name of the model element (Aspect, Characteristic, ...).
     * Example:
-    * 
+    *
     * <pre>
     * {@code
     * models   <-- should be configured as modelsRoot

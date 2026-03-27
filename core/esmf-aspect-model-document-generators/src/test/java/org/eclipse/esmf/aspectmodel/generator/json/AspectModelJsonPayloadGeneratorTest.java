@@ -38,8 +38,11 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
+
+import org.assertj.core.api.Condition;
 
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AbstractTestEntity;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithAbstractEntity;
@@ -92,18 +95,18 @@ import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 import org.eclipse.esmf.test.shared.compiler.JavaCompiler;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 class AspectModelJsonPayloadGeneratorTest {
    private static final String PACKAGE = "org.eclipse.esmf.test.generatedtestclasses";
@@ -302,10 +305,7 @@ class AspectModelJsonPayloadGeneratorTest {
    @Test
    void testGenerateJsonForAspectWithMultipleCollectionsOfSimpleType() throws IOException {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_MULTIPLE_COLLECTIONS_OF_SIMPLE_TYPE );
-
-      final AspectWithMultipleCollectionsOfSimpleType aspectWithCollectionOfSimpleType = parseJson( generatedJson,
-            AspectWithMultipleCollectionsOfSimpleType.class );
-
+      parseJson( generatedJson, AspectWithMultipleCollectionsOfSimpleType.class );
       assertThat( generatedJson ).contains( "[" ).contains( "]" );
    }
 

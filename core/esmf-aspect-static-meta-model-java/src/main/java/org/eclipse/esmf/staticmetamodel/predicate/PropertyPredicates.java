@@ -92,4 +92,3 @@ public final class PropertyPredicates {
       return new PropertyPredicateBuilder.CollectionBuilder<>( property );
    }
 }
-
