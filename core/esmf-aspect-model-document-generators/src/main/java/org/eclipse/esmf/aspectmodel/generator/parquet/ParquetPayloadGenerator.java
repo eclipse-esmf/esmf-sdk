@@ -415,4 +415,3 @@ class ParquetPayloadGenerator implements AspectVisitor<Map<String, Object>, Parq
       return characteristic.accept( exampleValueGenerator, new ParquetExampleValueGenerator.Context() );
    }
 }
-

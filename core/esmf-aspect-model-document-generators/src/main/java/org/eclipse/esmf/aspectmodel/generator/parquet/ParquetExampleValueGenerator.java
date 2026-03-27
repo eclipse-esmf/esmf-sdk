@@ -472,4 +472,3 @@ public class ParquetExampleValueGenerator implements AspectVisitor<Object, Parqu
       return values[randomInt( 0, values.length - 1 )];
    }
 }
-

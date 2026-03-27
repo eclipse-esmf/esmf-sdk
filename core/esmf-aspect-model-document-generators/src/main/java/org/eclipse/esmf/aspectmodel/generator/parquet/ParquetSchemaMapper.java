@@ -134,4 +134,3 @@ final class ParquetSchemaMapper {
       }
    }
 }
-
