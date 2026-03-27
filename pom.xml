@@ -234,17 +234,14 @@
          </dependency>
          <!-- Apache Parquet dependencies end -->
 
+         <!-- Overrides due to CVEs -->
+         <dependency>
+            <groupId>org.apache.maven.shared</groupId>
+            <artifactId>maven-shared-utils</artifactId>
+            <version>[3.3.3,)</version>
+         </dependency>
       </dependencies>
    </dependencyManagement>
-
-   <dependencies>
-      <!-- Overrides due to CVEs -->
-      <dependency>
-         <groupId>org.apache.maven.shared</groupId>
-         <artifactId>maven-shared-utils</artifactId>
-         <version>[3.3.3,)</version>
-      </dependency>
-   </dependencies>
 
    <build>
       <plugins>
