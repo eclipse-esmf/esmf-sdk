@@ -384,7 +384,7 @@ class AspectChangeManagerTest {
       final Namespace targetNamespace = new DefaultNamespace( targetUrn, List.of(), Optional.empty() );
       final Change move = new MoveElementToOtherNamespaceExistingFile( aspectModel.aspect(), file2, targetNamespace );
 
-      final ChangeReport changeReport = changeManager.applyChange( move );
+       changeManager.applyChange( move );
       assertThat( changeManager.modifiedFiles() ).hasSize( 2 );
       assertThat( changeManager.createdFiles() ).isEmpty();
 
@@ -442,9 +442,6 @@ class AspectChangeManagerTest {
       final Change copyNamespaceWithIncreasedVersion = new CopyNamespaceWithIncreasedVersion( namespace,
             IncreaseVersion.MAJOR );
 
-      final AspectChangeManagerConfig config = AspectChangeManagerConfigBuilder.builder()
-            .detailedChangeReport( true )
-            .build();
       final AspectChangeManager changeManager = new AspectChangeManager( aspectModel );
 
       assertThat( aspectModel.namespaces() ).hasSize( 1 );
@@ -454,7 +451,7 @@ class AspectChangeManagerTest {
       assertThat( aspectModel ).files().hasSize( 1 );
       assertThat( aspectModel.files().get( 0 ).sourceLocation().get().toString() ).contains( "1.0.0" );
 
-      final ChangeReport changeReport = changeManager.applyChange( copyNamespaceWithIncreasedVersion );
+      changeManager.applyChange( copyNamespaceWithIncreasedVersion );
       assertThat( aspectModel.namespaces() ).hasSize( 2 );
       assertThat( aspectModel.namespaces() ).map( ns -> ns.version().getMajor() ).containsExactlyInAnyOrder( 1, 2 );
       assertThat( aspectModel.aspects() ).hasSize( 2 );
@@ -471,9 +468,6 @@ class AspectChangeManagerTest {
       final Change copyFileWithIncreasedNamespaceVersion = new CopyFileWithIncreasedNamespaceVersion( aspectModel.files().get( 0 ),
             IncreaseVersion.MAJOR );
 
-      final AspectChangeManagerConfig config = AspectChangeManagerConfigBuilder.builder()
-            .detailedChangeReport( true )
-            .build();
       final AspectChangeManager changeManager = new AspectChangeManager( aspectModel );
 
       assertThat( aspectModel.namespaces() ).hasSize( 1 );
@@ -483,7 +477,7 @@ class AspectChangeManagerTest {
       assertThat( aspectModel ).files().hasSize( 1 );
       assertThat( aspectModel.files().get( 0 ).sourceLocation().get().toString() ).contains( "1.0.0" );
 
-      final ChangeReport changeReport = changeManager.applyChange( copyFileWithIncreasedNamespaceVersion );
+      changeManager.applyChange( copyFileWithIncreasedNamespaceVersion );
       assertThat( aspectModel.namespaces() ).hasSize( 2 );
       assertThat( aspectModel.namespaces() ).map( ns -> ns.version().getMajor() ).containsExactlyInAnyOrder( 1, 2 );
       assertThat( aspectModel.aspects() ).hasSize( 2 );

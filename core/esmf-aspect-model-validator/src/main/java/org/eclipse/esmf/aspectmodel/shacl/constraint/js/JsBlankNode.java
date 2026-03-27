@@ -26,4 +26,3 @@ public class JsBlankNode extends JsTerm {
       id = node.getBlankNodeLabel();
    }
 }
-

@@ -593,4 +593,3 @@ class ParquetFileWriter {
       return input;
    }
 }
-

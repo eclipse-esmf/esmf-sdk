@@ -24,4 +24,3 @@ public interface ConstraintProperty<C extends Characteristic> {
 
    C getBaseCharacteristic();
 }
-

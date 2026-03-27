@@ -40,4 +40,3 @@
 
 :entityInstance a :TheEntity ;
    :entityProperty "Test" .
-

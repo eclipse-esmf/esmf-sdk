@@ -18,4 +18,3 @@
    samm:preferredName "Another Test"@en ;
    samm:properties ( :foo ) ;
    samm:operations ( ) .
-

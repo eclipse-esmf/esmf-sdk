@@ -113,13 +113,9 @@ public class VersionNumber implements Comparable<VersionNumber> {
       }
       final VersionNumberParser parser = new VersionNumberParser( versionString );
 
-      int major;
-      int minor;
-      int micro;
-
-      major = parser.parseNextDigit();
-      minor = parser.parseNextDigit();
-      micro = parser.parseNextDigit();
+      final int major = parser.parseNextDigit();
+      final int minor = parser.parseNextDigit();
+      final int micro = parser.parseNextDigit();
 
       if ( parser.isEnd() ) {
          return Try.success( new VersionNumber( major, minor, micro ) );
@@ -181,4 +177,3 @@ public class VersionNumber implements Comparable<VersionNumber> {
       }
    }
 }
-

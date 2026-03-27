@@ -32,4 +32,3 @@ public interface StructuredValue extends Characteristic {
     */
    List<Object> getElements();
 }
-

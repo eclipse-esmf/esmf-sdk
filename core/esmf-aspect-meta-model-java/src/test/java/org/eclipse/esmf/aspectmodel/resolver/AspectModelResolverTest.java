@@ -219,7 +219,7 @@ class AspectModelResolverTest {
 
       final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
       assertThatThrownBy( () -> {
-         final AspectModel result = new AspectModelLoader( urnStrategy ).load( testUrn );
+         new AspectModelLoader( urnStrategy ).load( testUrn );
       } ).isInstanceOf( ModelResolutionException.class );
    }
 
@@ -233,7 +233,7 @@ class AspectModelResolverTest {
 
       final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
       assertThatThrownBy( () -> {
-         final AspectModel result = new AspectModelLoader( urnStrategy ).load( testUrn );
+         new AspectModelLoader( urnStrategy ).load( testUrn );
       } ).isInstanceOf( ModelResolutionException.class );
    }
 

@@ -1271,4 +1271,3 @@ class AspectModelParquetPayloadGeneratorTest {
       return Double.MAX_VALUE;
    }
 }
-

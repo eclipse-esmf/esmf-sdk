@@ -34,7 +34,7 @@ public interface PropertyAccessor<C, T> extends Function<C, T> {
    T getValue( C object );
 
    @Override
-   default T apply( C object ) {
+   default T apply( final C object ) {
       return getValue( object );
    }
 }

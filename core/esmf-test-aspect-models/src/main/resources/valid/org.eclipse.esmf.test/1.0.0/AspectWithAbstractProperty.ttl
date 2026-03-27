@@ -50,6 +50,3 @@
    samm:properties (
      [ samm:extends :abstractTestProperty ; samm:characteristic samm-c:Text ]
    ) .
-
-
-

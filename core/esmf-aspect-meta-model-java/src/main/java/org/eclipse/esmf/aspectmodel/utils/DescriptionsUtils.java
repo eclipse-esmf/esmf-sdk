@@ -97,17 +97,17 @@ public class DescriptionsUtils {
     * @return A list of extracted block contents for the specified type.
     */
    private static List<String> extractBlock( final String description, final String type ) {
-      List<String> result = new ArrayList<>();
+      final List<String> result = new ArrayList<>();
       extractFromDescription( stripIndent( description ), type, result );
       return result;
    }
 
    private static void extractFromDescription( final String desc, final String type, final List<String> result ) {
-      String[] lines = desc.split( "\\R" );
-      boolean[] insideBlock = { false };
-      StringBuilder blockContent = new StringBuilder();
+      final String[] lines = desc.split( "\\R" );
+      final boolean[] insideBlock = { false };
+      final StringBuilder blockContent = new StringBuilder();
 
-      for ( String line : lines ) {
+      for ( final String line : lines ) {
          handleLine( line, type, insideBlock, blockContent, result );
       }
 
@@ -116,12 +116,12 @@ public class DescriptionsUtils {
       }
    }
 
-   private static void handleLine( final String line, final String type, boolean[] insideBlock,
-         StringBuilder blockContent, List<String> result ) {
-      Matcher matcher = BLOCK_PATTERN.matcher( line );
+   private static void handleLine( final String line, final String type, final boolean[] insideBlock,
+         final StringBuilder blockContent, final List<String> result ) {
+      final Matcher matcher = BLOCK_PATTERN.matcher( line );
       if ( matcher.find() ) {
-         String currentType = matcher.group( 1 ).toUpperCase();
-         String content = matcher.group( 3 ); // Corrected: group(3) is the actual content
+         final String currentType = matcher.group( 1 ).toUpperCase();
+         final String content = matcher.group( 3 ); // Corrected: group(3) is the actual content
 
          flushBlock( insideBlock, blockContent, result );
 
@@ -138,7 +138,7 @@ public class DescriptionsUtils {
       }
    }
 
-   private static void flushBlock( boolean[] insideBlock, StringBuilder blockContent, List<String> result ) {
+   private static void flushBlock( final boolean[] insideBlock, final StringBuilder blockContent, final List<String> result ) {
       if ( insideBlock[0] && !blockContent.isEmpty() ) {
          result.add( blockContent.toString().strip() );
          blockContent.setLength( 0 );
@@ -158,4 +158,3 @@ public class DescriptionsUtils {
             .collect( Collectors.joining( "\n" ) );
    }
 }
-

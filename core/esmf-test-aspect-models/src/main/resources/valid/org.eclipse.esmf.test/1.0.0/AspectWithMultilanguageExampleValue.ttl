@@ -24,4 +24,3 @@
 :prop a samm:Property ;
    samm:characteristic samm-c:MultiLanguageText ;
    samm:exampleValue "Multilanguage example value."@de .
-

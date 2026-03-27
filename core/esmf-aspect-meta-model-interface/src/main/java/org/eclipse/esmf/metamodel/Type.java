@@ -32,5 +32,3 @@ public interface Type extends ModelElement {
 
    boolean isTypeOrSubtypeOf( Type other );
 }
-
-

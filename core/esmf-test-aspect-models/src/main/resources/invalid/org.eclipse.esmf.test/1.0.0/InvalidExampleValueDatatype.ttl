@@ -23,4 +23,3 @@
 :stringProperty a samm:Property ;
    samm:exampleValue "1234"^^xsd:int ;
    samm:characteristic samm-c:Text .
-

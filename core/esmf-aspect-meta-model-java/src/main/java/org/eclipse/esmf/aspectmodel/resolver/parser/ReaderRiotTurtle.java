@@ -51,4 +51,3 @@ public class ReaderRiotTurtle implements ReaderRIOT {
       parser.parse();
    }
 }
-

@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 /**
  * Encodes an International Registration Data Identifier (IRDI) as defined by ISO 29002-5. The IRDI
  * has the following format:
- * 
+ *
  * <pre>
  *           ┌─ registration authority identifier (RAI)
  *           │          ┌─ data identifier (DI)
@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
  *  │    └─ organization identifier (OI)
  *  └─ international code designator (ICD)
  * </pre>
- * 
+ *
  * where {@code n} are digits, {@code a} is alphanumeric, {@code x} is a safe character and
  * {@code # -} are separator characters. RAI, DI and VI are specified in ISO/IEC 11179-6; OPIS, OPI,
  * OI and ICD are specified in ISO/IEC 6523. The term "safe character" refers to an upper case

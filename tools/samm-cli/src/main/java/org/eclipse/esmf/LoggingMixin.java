@@ -102,4 +102,3 @@ public class LoggingMixin {
       root.addAppender( appender );
    }
 }
-

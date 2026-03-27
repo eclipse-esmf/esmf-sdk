@@ -25,4 +25,3 @@
    samm:description "testString"@en ;
    samm:exampleValue "Example Value Test" ;
    samm:characteristic samm-c:Text .
-

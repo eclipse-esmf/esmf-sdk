@@ -233,7 +233,7 @@ class AspectModelPagingGenerator {
    }
 
    private ObjectNode getPathRootNode( final PagingOption pagingOption ) throws IOException {
-      String fileName = switch ( pagingOption ) {
+      final String fileName = switch ( pagingOption ) {
          case TIME_BASED_PAGING -> "TimeBasedPaging.json";
          case CURSOR_BASED_PAGING -> "CursorBasedPaging.json";
          case OFFSET_BASED_PAGING -> "OffsetBasedPaging.json";

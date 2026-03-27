@@ -50,7 +50,7 @@ public class FileSystemStrategy implements ResolutionStrategy {
     * V is the version of the namespace and X is the name of the model element (Aspect, Characteristic,
     * ...).
     * Example:
-    * 
+    *
     * <pre>
     * models   <-- must be configured as modelsRoot
     * └── com.example
