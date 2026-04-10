@@ -365,7 +365,7 @@ jobs:
           mvn -B versions:set -DnewVersion=${RELEASE_VERSION}
           mvn -B versions:commit
           # Set version in Antora module
-          yq eval -i '.version = "${RELEASE_VERSION}"' documentation/developer-guide/antora.yml
+          yq eval -i ".version = \"${RELEASE_VERSION}\"" documentation/developer-guide/antora.yml
 
       - name: Commit version changes and push to upstream repository
         uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7.1.0
