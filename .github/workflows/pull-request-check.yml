@@ -77,24 +77,6 @@ jobs:
           mvn checkstyle:check
         shell: bash
 
-      - name: Configure Pagefile (Windows)
-        if: matrix.os == 'windows-latest'
-        # Fix for "LINK : fatal error LNK1171: unable to load mspdbcore.dll (error code: 1455)":
-        # This seems to be caused by running out of memory; increasing page file
-        # size suggested here:
-        # https://github.com/actions/virtual-environments/issues/3420#issuecomment-861342418
-        uses: al-cheb/configure-pagefile-action@86589fd789a4de3e62ba628dda2cb10027b66d67 # v1.3
-        with:
-          minimum-size: 32GB
-          maximum-size: 32GB
-          disk-root: "C:"
-
-      - name: Set Swap Space (Linux)
-        if: matrix.os == 'ubuntu-latest'
-        uses: pierotofy/set-swap-space@49819abfb41bd9b44fb781159c033dba90353a7c # master
-        with:
-          swap-size-gb: 12
-
       - name: Build and run tests
         run: |
           java --version
