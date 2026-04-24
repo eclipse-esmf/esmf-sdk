@@ -17,18 +17,14 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DocumentStore {
-   private final Map<String, String> documents = new ConcurrentHashMap<>();
+   private final Map<String, Document> documents = new ConcurrentHashMap<>();
 
-   public void put( final String uri, final String content ) {
-      documents.put( uri, content );
+   public void put( final Document document ) {
+      documents.put( document.getUri(), document );
    }
 
-   public String get( final String uri ) {
+   public Document get( final String uri ) {
       return documents.get( uri );
-   }
-
-   public String getOrDefault( final String uri, final String fallback ) {
-      return documents.getOrDefault( uri, fallback );
    }
 
    public void remove( final String uri ) {

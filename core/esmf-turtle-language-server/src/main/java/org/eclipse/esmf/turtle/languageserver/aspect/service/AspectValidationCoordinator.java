@@ -13,7 +13,7 @@
 
 package org.eclipse.esmf.turtle.languageserver.aspect.service;
 
-import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
@@ -23,12 +23,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiConsumer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.eclipse.esmf.turtle.languageserver.aspect.model.AspectValidationError;
 import org.eclipse.esmf.turtle.languageserver.aspect.model.AspectValidationErrorType;
 import org.eclipse.esmf.turtle.languageserver.aspect.model.AspectValidationResult;
+import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AspectValidationCoordinator implements AutoCloseable {
    private static final Logger LOG = LoggerFactory.getLogger( AspectValidationCoordinator.class );
@@ -63,10 +64,11 @@ public class AspectValidationCoordinator implements AutoCloseable {
       }
    }
 
-   public void submit( final String uri, final Path path, final long generation, final BiConsumer<Long, AspectValidationResult> callback ) {
+   public void submit( final Document document, final long generation, final BiConsumer<Long, AspectValidationResult> callback ) {
+      final String uri = document.getUri();
       cancel( uri );
       final CompletableFuture<AspectValidationResult> future = CompletableFuture.supplyAsync(
-            () -> validationService.validate( path ),
+            () -> validationService.validate( document ),
             executorService
       );
       inFlight.put( uri, future );
@@ -78,20 +80,16 @@ public class AspectValidationCoordinator implements AutoCloseable {
          }
          if ( throwable != null ) {
             LOG.error( "[publish diagnostics] aspect validation failed for {}", uri, throwable );
-            callback.accept( generation, new AspectValidationResult(
-                  false,
-                  throwable.getMessage(),
-                  java.util.List.of(),
-                  new AspectValidationError( AspectValidationErrorType.PROCESSING, throwable.getMessage() )
-            ) );
+            callback.accept( generation, new AspectValidationResult( false, throwable.getMessage(), List.of(),
+                  new AspectValidationError( AspectValidationErrorType.PROCESSING, throwable.getMessage() ) ) );
             return;
          }
          callback.accept( generation, result );
       } );
    }
 
-   public AspectValidationResult validateSync( final Path path ) {
-      return validationService.validate( path );
+   public AspectValidationResult validateSync( final Document document ) {
+      return validationService.validate( document );
    }
 
    @Override

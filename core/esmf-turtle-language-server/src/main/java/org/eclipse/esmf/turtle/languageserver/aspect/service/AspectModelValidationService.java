@@ -13,15 +13,9 @@
 
 package org.eclipse.esmf.turtle.languageserver.aspect.service;
 
-import java.io.File;
-import java.nio.file.Path;
-
 import org.eclipse.esmf.turtle.languageserver.aspect.model.AspectValidationResult;
+import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 
 public interface AspectModelValidationService {
-   AspectValidationResult validate( Path path );
-
-   default AspectValidationResult validate( final File file ) {
-      return validate( file.toPath() );
-   }
+   AspectValidationResult validate( Document document );
 }

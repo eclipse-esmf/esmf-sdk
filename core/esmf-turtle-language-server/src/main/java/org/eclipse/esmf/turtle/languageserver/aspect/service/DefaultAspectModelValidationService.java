@@ -13,8 +13,8 @@
 
 package org.eclipse.esmf.turtle.languageserver.aspect.service;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.InputStream;
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,20 +25,18 @@ import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
 import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
 import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
 import org.eclipse.esmf.aspectmodel.validation.services.DetailedViolationFormatter;
-import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.turtle.languageserver.aspect.model.AspectValidationError;
 import org.eclipse.esmf.turtle.languageserver.aspect.model.AspectValidationErrorType;
 import org.eclipse.esmf.turtle.languageserver.aspect.model.AspectValidationResult;
 import org.eclipse.esmf.turtle.languageserver.aspect.model.AspectViolationInfo;
+import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DefaultAspectModelValidationService implements AspectModelValidationService {
-   private static final Logger LOAD_LOG = LoggerFactory.getLogger( "org.eclipse.esmf.turtle.languageserver.validation.aspect.load" );
-   private static final Logger RESOLVE_LOG = LoggerFactory.getLogger( "org.eclipse.esmf.turtle.languageserver.validation.aspect.resolve" );
-   private static final Logger VALIDATE_LOG =
-         LoggerFactory.getLogger( "org.eclipse.esmf.turtle.languageserver.validation.aspect.validate" );
+   private static final Logger LOG = LoggerFactory.getLogger( DefaultAspectModelValidationService.class );
 
    private final AspectModelLoader loader;
    private final AspectModelValidator validator;
@@ -53,43 +51,27 @@ public class DefaultAspectModelValidationService implements AspectModelValidatio
    }
 
    @Override
-   public AspectValidationResult validate( final Path path ) {
-      if ( path == null ) {
-         return failedResult( AspectValidationErrorType.LOAD, "Path must not be null" );
-      }
-
-      if ( !Files.exists( path ) ) {
-         return failedResult( AspectValidationErrorType.LOAD, "Aspect model file does not exist: " + path );
-      }
-
-      if ( !Files.isRegularFile( path ) || !Files.isReadable( path ) ) {
-         return failedResult( AspectValidationErrorType.LOAD, "Aspect model file is not readable: " + path );
-      }
-
-      try {
-         LOAD_LOG.debug( "[load] loading aspect model from {}", path );
-         final List<Violation> violations = validator.validateModel( () -> loadAspectModel( path ) );
-         VALIDATE_LOG.debug( "[validate] validation finished for {} with {} violation(s)", path, violations.size() );
+   public AspectValidationResult validate( final Document document ) {
+      try ( final InputStream inputStream = document.getInputStream() ) {
+         LOG.debug( "[load] loading aspect model from {}", document.getUri() );
+         final List<Violation> violations =
+               validator.validateModel( () -> loader.load( inputStream, URI.create( document.getUri() ) ) );
+         LOG.debug( "[validate] validation finished for {} with {} violation(s)", document.getUri(), violations.size() );
          final String report = new DetailedViolationFormatter().apply( violations );
          final AspectValidationError error = classifyError( violations );
          return new AspectValidationResult( violations.isEmpty(), report, violations.stream().map( this::toViolationInfo ).toList(),
                error );
       } catch ( final Exception exception ) {
-         VALIDATE_LOG.error( "[validate] unexpected runtime failure for {}", path, exception );
+         LOG.error( "[validate] unexpected runtime failure for {}", document.getUri(), exception );
          return failedResult( AspectValidationErrorType.PROCESSING, exception.getMessage() );
       }
-   }
-
-   private AspectModel loadAspectModel( final Path path ) {
-      RESOLVE_LOG.debug( "[resolve imports] resolving imports for {}", path );
-      return loader.load( path.toFile() );
    }
 
    private AspectValidationResult failedResult( final AspectValidationErrorType type, final String message ) {
       return new AspectValidationResult( false, message, List.of(), new AspectValidationError( type, message ) );
    }
 
-   private AspectValidationError classifyError( final List<Violation> violations ) {
+   private @Nullable AspectValidationError classifyError( final List<Violation> violations ) {
       final Optional<Violation> firstFailure = violations.stream()
             .filter( violation -> violation instanceof InvalidSyntaxViolation || violation instanceof InvalidLexicalValueViolation
                   || violation instanceof ProcessingViolation )
@@ -115,31 +97,28 @@ public class DefaultAspectModelValidationService implements AspectModelValidatio
    }
 
    private AspectViolationInfo toViolationInfo( final Violation violation ) {
-      if ( violation instanceof final InvalidSyntaxViolation syntaxViolation ) {
-         return new AspectViolationInfo(
-               syntaxViolation.errorCode(),
-               syntaxViolation.message(),
-               syntaxViolation.sourceLocation().orElse( null ),
-               syntaxViolation.line(),
-               syntaxViolation.column()
+      return switch ( violation ) {
+         case final InvalidSyntaxViolation syntaxViolation ->
+            new AspectViolationInfo(
+                  syntaxViolation.errorCode(),
+                  syntaxViolation.message(),
+                  syntaxViolation.sourceLocation().orElse( null ),
+                  syntaxViolation.line(),
+                  syntaxViolation.column() );
+         case final InvalidLexicalValueViolation lexicalValueViolation ->
+            new AspectViolationInfo(
+                  lexicalValueViolation.errorCode(),
+                  lexicalValueViolation.message(),
+                  lexicalValueViolation.sourceLocation().orElse( null ),
+                  (long) lexicalValueViolation.line(),
+                  (long) lexicalValueViolation.column() );
+         default -> new AspectViolationInfo(
+               violation.errorCode(),
+               violation.message(),
+               violation.sourceLocation().orElse( null ),
+               null,
+               null
          );
-      }
-      if ( violation instanceof final InvalidLexicalValueViolation lexicalValueViolation ) {
-         return new AspectViolationInfo(
-               lexicalValueViolation.errorCode(),
-               lexicalValueViolation.message(),
-               lexicalValueViolation.sourceLocation().orElse( null ),
-               (long) lexicalValueViolation.line(),
-               (long) lexicalValueViolation.column()
-         );
-      }
-
-      return new AspectViolationInfo(
-            violation.errorCode(),
-            violation.message(),
-            violation.sourceLocation().orElse( null ),
-            null,
-            null
-      );
+      };
    }
 }

@@ -13,6 +13,8 @@
 
 package org.eclipse.esmf.turtle.languageserver.lsp.text;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,12 +35,12 @@ public class TurtleSyntaxValidationService {
    private static final Logger LOG = LoggerFactory.getLogger( TurtleSyntaxValidationService.class );
    private static final String SYNTAX_SOURCE = "lsp-server.syntax";
 
-   public List<Diagnostic> validate( final String content ) {
+   public List<Diagnostic> validate( final Document document ) {
       final List<Diagnostic> diagnostics = new ArrayList<>();
 
       try {
          RDFParser.create()
-               .fromString( content )
+               .source( new StringReader( document.getContent() ) )
                .lang( Lang.TTL )
                .errorHandler( ErrorHandlerFactory.errorHandlerStrictNoLogging )
                .parse( StreamRDFLib.sinkNull() );

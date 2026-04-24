@@ -13,27 +13,26 @@
 
 package org.eclipse.esmf.turtle.languageserver.lsp.text;
 
-import java.nio.file.Path;
+import org.eclipse.esmf.turtle.languageserver.aspect.service.AspectValidationCoordinator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.eclipse.esmf.turtle.languageserver.aspect.service.AspectValidationCoordinator;
-import org.eclipse.esmf.turtle.languageserver.common.uri.DocumentUriResolver;
 
 public class AspectDiagnosticsWorkflow {
    private static final Logger LOG = LoggerFactory.getLogger( AspectDiagnosticsWorkflow.class );
    private final AspectValidationCoordinator aspectValidationCoordinator;
    private final DocumentDiagnosticsService diagnosticsService;
    private final TextDocumentClientNotifier clientNotifier;
+   private final DocumentStore documentStore;
 
    public AspectDiagnosticsWorkflow(
          final AspectValidationCoordinator aspectValidationCoordinator,
          final DocumentDiagnosticsService diagnosticsService,
-         final TextDocumentClientNotifier clientNotifier ) {
+         final TextDocumentClientNotifier clientNotifier, final DocumentStore documentStore ) {
       this.aspectValidationCoordinator = aspectValidationCoordinator;
       this.diagnosticsService = diagnosticsService;
       this.clientNotifier = clientNotifier;
+      this.documentStore = documentStore;
    }
 
    public void onDocumentChanged( final String uri ) {
@@ -47,16 +46,16 @@ public class AspectDiagnosticsWorkflow {
    }
 
    public void onDocumentSaved( final String uri ) {
-      final Path path = DocumentUriResolver.toPath( uri );
-      if ( path == null ) {
-         LOG.info( "[scheduleAspectValidation] unsupported non-file uri={}, skipping aspect validation", uri );
+      final Document document = documentStore.get( uri );
+      if ( document == null ) {
+         LOG.info( "[scheduleAspectValidation] unsupported uri={}, skipping aspect validation", uri );
          diagnosticsService.clearAspect( uri );
          clientNotifier.publishCombinedDiagnostics( uri );
          return;
       }
 
       final long generation = aspectValidationCoordinator.nextGeneration( uri );
-      aspectValidationCoordinator.submit( uri, path, generation, ( completedGeneration, result ) -> {
+      aspectValidationCoordinator.submit( document, generation, ( completedGeneration, result ) -> {
          final long currentGeneration = aspectValidationCoordinator.currentGeneration( uri );
          if ( completedGeneration != currentGeneration ) {
             LOG.debug( "[publish diagnostics] ignoring stale aspect diagnostics for uri={}, generation={}, current={}", uri,

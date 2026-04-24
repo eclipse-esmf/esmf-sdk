@@ -16,6 +16,8 @@ package org.eclipse.esmf.turtle.languageserver.turtle.navigation;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
+
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
@@ -26,7 +28,8 @@ public class TurtlePrefixDefinitionService {
          Pattern.CASE_INSENSITIVE
    );
 
-   public Location findPrefixDeclaration( final String uri, final String content, final Position position ) {
+   public Location findPrefixDeclaration( final Document document, final Position position ) {
+      final String content = document.getContent();
       final String prefix = findPrefixAtPosition( content, position );
       if ( prefix == null ) {
          return null;
@@ -45,7 +48,7 @@ public class TurtlePrefixDefinitionService {
             continue;
          }
 
-         return new Location( uri, new Range( new Position( line, 0 ), new Position( line, lines[line].length() ) ) );
+         return new Location( document.getUri(), new Range( new Position( line, 0 ), new Position( line, lines[line].length() ) ) );
       }
 
       return null;

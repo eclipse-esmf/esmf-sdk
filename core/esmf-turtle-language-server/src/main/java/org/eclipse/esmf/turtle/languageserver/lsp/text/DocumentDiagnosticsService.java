@@ -38,8 +38,8 @@ public class DocumentDiagnosticsService {
       this.diagnosticsStore = diagnosticsStore;
    }
 
-   public void updateSyntax( final String uri, final String content ) {
-      diagnosticsStore.putSyntax( uri, syntaxValidationService.validate( content ) );
+   public void updateSyntax( final Document document ) {
+      diagnosticsStore.putSyntax( document.getUri(), syntaxValidationService.validate( document ) );
    }
 
    public void updateAspect( final String uri, final AspectValidationResult result ) {
