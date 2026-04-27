@@ -84,11 +84,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Set Swap Space (Linux)
-        uses: pierotofy/set-swap-space@49819abfb41bd9b44fb781159c033dba90353a7c # master
-        with:
-          swap-size-gb: 12
-
       # The Linux build will prepare a Maven Central upload "bundle"
       # that includes all .jars except the CLI jar
       - name: Build and run tests
@@ -258,17 +253,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Configure Pagefile
-        # Fix for "LINK : fatal error LNK1171: unable to load mspdbcore.dll (error code: 1455)":
-        # This seems to be caused by running out of memory; increasing page file
-        # size suggested here:
-        # https://github.com/actions/virtual-environments/issues/3420#issuecomment-861342418
-        uses: al-cheb/configure-pagefile-action@86589fd789a4de3e62ba628dda2cb10027b66d67 # v1.3
-        with:
-          minimum-size: 32GB
-          maximum-size: 32GB
-          disk-root: "C:"
-
       - name: Build and run tests
         run: |
           export MAVEN_OPTS="-Xmx4096m"
@@ -365,7 +349,7 @@ jobs:
           mvn -B versions:set -DnewVersion=${RELEASE_VERSION}
           mvn -B versions:commit
           # Set version in Antora module
-          yq eval -i '.version = "${RELEASE_VERSION}"' documentation/developer-guide/antora.yml
+          yq eval -i ".version = \"${RELEASE_VERSION}\"" documentation/developer-guide/antora.yml
 
       - name: Commit version changes and push to upstream repository
         uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7.1.0
