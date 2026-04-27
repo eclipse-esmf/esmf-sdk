@@ -166,14 +166,12 @@ class TurtleParserServiceTest {
    void testMultipleSequentialEdits() {
       final Document document = new Document( "test.ttl", "" );
 
-      // Edit 1: Add prefix
       final String text1 = "@prefix ex: <http://example.org/> .";
       applyChange( document, pos( 0, 0 ), pos( 0, 0 ), text1 );
 
       TSTree tree = parserService.getAbstractSyntaxTree( document );
       assertThat( tree.getRootNode().hasError() ).isFalse();
 
-      // Edit 2: Add first triple
       final String text2 = "\n\nex:subject1 ex:predicate1 ex:object1 .";
       applyChange( document, pos( 0, 35 ), pos( 0, 35 ), text2 );
 
@@ -181,7 +179,6 @@ class TurtleParserServiceTest {
       assertThat( tree.getRootNode().hasError() ).isFalse();
       assertThat( document.getContent() ).contains( "ex:subject1" );
 
-      // Edit 3: Add second triple
       final String text3 = "\nex:subject2 ex:predicate2 ex:object2 .";
       applyChange( document, pos( 2, 38 ), pos( 2, 38 ), text3 );
 
@@ -190,7 +187,6 @@ class TurtleParserServiceTest {
       assertThat( document.getContent() ).contains( "ex:subject1" )
             .contains( "ex:subject2" );
 
-      // Edit 4: Delete the first triple
       applyChange( document, pos( 2, 0 ), pos( 2, 38 ), "" );
 
       tree = parserService.getAbstractSyntaxTree( document );
@@ -241,25 +237,21 @@ class TurtleParserServiceTest {
       final Document document = new Document( "test.ttl", "" );
       TSTree tree;
 
-      // 1. Add base and prefix
       applyChange( document, pos( 0, 0 ), pos( 0, 0 ),
             "@base <http://example.org/> .\n@prefix ex: <http://example.org/> .\n\n" );
       tree = parserService.getAbstractSyntaxTree( document );
       assertThat( tree.getRootNode().hasError() ).isFalse();
 
-      // 2. Add a triple
       applyChange( document, pos( 3, 0 ), pos( 3, 0 ),
             "ex:subject ex:predicate ex:object ." );
       tree = parserService.getAbstractSyntaxTree( document );
       assertThat( tree.getRootNode().hasError() ).isFalse();
 
-      // 3. Add more predicates using semicolon syntax
       applyChange( document, pos( 3, 33 ), pos( 3, 34 ),
             " ;\n  ex:predicate2 ex:object2 ;\n  ex:predicate3 ex:object3 ." );
       tree = parserService.getAbstractSyntaxTree( document );
       assertThat( tree.getRootNode().hasError() ).isFalse();
 
-      // 4. Modify one of the predicates
       final String content = document.getContent();
       final int predicateStart = content.indexOf( "ex:predicate2" );
       final int line = content.substring( 0, predicateStart ).split( "\n" ).length - 1;
@@ -271,7 +263,6 @@ class TurtleParserServiceTest {
       assertThat( document.getContent() ).contains( "ex:modified" );
       assertThat( document.getContent() ).doesNotContain( "ex:predicate2" );
 
-      // 5. Verify final structure
       assertThat( document.getContent() )
             .contains( "@base" )
             .contains( "@prefix" )
@@ -304,8 +295,6 @@ class TurtleParserServiceTest {
       final Document document = new Document( "test.ttl", initialContent );
 
       parserService.getAbstractSyntaxTree( document );
-
-      // Simulate full document replacement (no range provided)
       final String newContent = """
          @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
          @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -315,9 +304,6 @@ class TurtleParserServiceTest {
 
       final TextDocumentContentChangeEvent change = new TextDocumentContentChangeEvent();
       change.setText( newContent );
-      // Note: Full document change means we need to recreate the document
-      // This tests the null range handling in treeChangeFromLspChange
-
       final Document newDocument = new Document( "test.ttl", newContent );
       parserService.onChange( newDocument, change );
 

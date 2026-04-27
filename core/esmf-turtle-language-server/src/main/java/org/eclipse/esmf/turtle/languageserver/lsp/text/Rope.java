@@ -379,61 +379,6 @@ public class Rope implements CharSequence {
       }
    }
 
-   /**
-    * Reads bytes from a specific position (row, column) in the rope into the buffer.
-    *
-    * @param buffer the buffer to read into
-    * @param offset offset in the buffer to write to
-    * @param row row/line to read from
-    * @param column column or nth byte in the line to read from
-    * @return the number of bytes read
-    */
-   public int read( final byte[] buffer, final int offset, final int row, final int column ) {
-      if ( buffer == null || offset < 0 || offset >= buffer.length ) {
-         return 0;
-      }
-
-      try ( final InputStream stream = inputStream( StandardCharsets.UTF_8 ) ) {
-         final byte[] allBytes = stream.readAllBytes();
-
-         // Find the byte position of the start of the row
-         int bytePosition = 0;
-         int currentLine = 0;
-
-         for ( int i = 0; i < allBytes.length && currentLine < row; i++ ) {
-            if ( allBytes[i] == '\n' ) {
-               currentLine++;
-               bytePosition = i + 1; // Start of next line
-            }
-         }
-
-         // Add the column offset
-         bytePosition += column;
-
-         if ( bytePosition >= allBytes.length ) {
-            return 0; // Beyond end of content
-         }
-
-         // Calculate how many bytes to read
-         final int availableInBuffer = buffer.length - offset;
-         final int availableInSource = allBytes.length - bytePosition;
-         final int bytesToRead = Math.min( availableInBuffer, availableInSource );
-
-         if ( bytesToRead <= 0 ) {
-            return 0;
-         }
-
-         // Copy bytes into the buffer
-         System.arraycopy( allBytes, bytePosition, buffer, offset, bytesToRead );
-
-         return bytesToRead;
-
-      } catch ( final Exception exception ) {
-         LOG.debug( "Exception while reading document content at position ({}, {})", row, column, exception );
-         return 0;
-      }
-   }
-
    public class RopeInputStream extends InputStream {
       private final Deque<Rope> stack;
       private byte @Nullable [] currentBytes;

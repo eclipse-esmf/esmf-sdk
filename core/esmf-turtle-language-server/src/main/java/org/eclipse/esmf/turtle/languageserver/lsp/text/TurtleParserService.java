@@ -16,12 +16,14 @@ package org.eclipse.esmf.turtle.languageserver.lsp.text;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 import org.eclipse.esmf.treesitterturtle.TreeSitterTurtle;
 
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentContentChangeEvent;
+import org.jspecify.annotations.Nullable;
 import org.treesitter.TSInputEdit;
 import org.treesitter.TSLanguage;
 import org.treesitter.TSParser;
@@ -35,6 +37,7 @@ import org.treesitter.TSTree;
 public class TurtleParserService {
    private final TSParser parser;
    private final Map<Document, TSTree> syntaxTrees = new HashMap<>();
+   private final Map<Document, Rope> previousDocumentStates = new WeakHashMap<>();
 
    public TurtleParserService() {
       parser = new TSParser();
@@ -47,20 +50,20 @@ public class TurtleParserService {
    }
 
    private TSTree parseDocument( final Document document ) {
+      previousDocumentStates.put( document, document.getRope() );
       return parser.parseString( null, document.getContent() );
    }
 
    /**
     * Converts an LSP text change event into a Tree-sitter input edit.
     *
-    * @param document the document (used to calculate byte offsets)
+    * @param oldRope the rope before the change was applied
     * @param changeEvent the LSP change event
     * @return a TSInputEdit, or null if this is a full document change
     */
-   private TSInputEdit treeChangeFromLspChange( final Document document, final TextDocumentContentChangeEvent changeEvent ) {
+   private @Nullable TSInputEdit treeChangeFromLspChange( final Rope oldRope, final TextDocumentContentChangeEvent changeEvent ) {
       final Range range = changeEvent.getRange();
       if ( range == null ) {
-         // Full document change - return null to indicate full reparse needed
          return null;
       }
 
@@ -70,8 +73,8 @@ public class TurtleParserService {
 
       final TSPoint startPoint = new TSPoint( startPos.getLine(), startPos.getCharacter() );
       final TSPoint oldEndPoint = new TSPoint( endPos.getLine(), endPos.getCharacter() );
-      final int startByte = document.getIndex( startPos.getLine(), startPos.getCharacter() );
-      final int oldEndByte = document.getIndex( endPos.getLine(), endPos.getCharacter() );
+      final int startByte = oldRope.getIndex( startPos.getLine(), startPos.getCharacter() );
+      final int oldEndByte = oldRope.getIndex( endPos.getLine(), endPos.getCharacter() );
       final TSPoint newEndPoint = calculateNewEndPoint( startPoint, newText );
       final int newEndByte = startByte + newText.getBytes( StandardCharsets.UTF_8 ).length;
       return new TSInputEdit( startByte, oldEndByte, newEndByte, startPoint, oldEndPoint, newEndPoint );
@@ -107,15 +110,19 @@ public class TurtleParserService {
 
    public void onChange( final Document document, final TextDocumentContentChangeEvent changeEvent ) {
       final TSTree oldTree = syntaxTrees.get( document );
-
       if ( oldTree == null ) {
          syntaxTrees.put( document, parseDocument( document ) );
          return;
       }
 
-      final TSInputEdit edit = treeChangeFromLspChange( document, changeEvent );
+      final Rope oldRope = previousDocumentStates.get( document );
+      if ( oldRope == null ) {
+         syntaxTrees.put( document, parseDocument( document ) );
+         return;
+      }
+
+      final TSInputEdit edit = treeChangeFromLspChange( oldRope, changeEvent );
       if ( edit == null ) {
-         // Full document change - reparse from scratch
          syntaxTrees.put( document, parseDocument( document ) );
          return;
       }
@@ -123,7 +130,6 @@ public class TurtleParserService {
       oldTree.edit( edit );
       final TSTree newTree = parser.parseString( oldTree, document.getContent() );
       syntaxTrees.put( document, newTree );
+      previousDocumentStates.put( document, document.getRope() );
    }
 }
-
-

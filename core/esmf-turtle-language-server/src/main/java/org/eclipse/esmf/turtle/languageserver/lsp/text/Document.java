@@ -35,39 +35,16 @@ public class Document {
       return content.toString();
    }
 
+   public Rope getRope() {
+      return content;
+   }
+
    public InputStream getInputStream() {
       return content.inputStream();
    }
 
    public int getIndex( final int targetLine, final int targetColumn ) {
       return content.getIndex( targetLine, targetColumn );
-   }
-
-   /**
-    * Reads at most many bytes from the given offset into the buffer array, as the array provides, or
-    * fewer, if
-    * not as many are left at the offset. Returns 0 if the end of the source code was reached,
-    * otherwise the number of bytes read.
-    *
-    * @param buffer the buffer to write to
-    * @param offset offset to read from
-    * @return the number of bytes read
-    */
-   public int read( final byte[] buffer, final int offset ) {
-      return content.read( buffer, offset );
-   }
-
-   /**
-    * Reads bytes from a specific position (row, column) in the document into the buffer.
-    *
-    * @param buffer the buffer to write to
-    * @param offset offset in the buffer to write to
-    * @param row the row/line to read from
-    * @param column the column in the row to read from
-    * @return the number of bytes read
-    */
-   public int read( final byte[] buffer, final int offset, final int row, final int column ) {
-      return content.read( buffer, offset, row, column );
    }
 
    public void update( final Range range, final String newContent ) {

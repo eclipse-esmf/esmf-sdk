@@ -30,7 +30,7 @@ public class TreeSitterUtil {
    }
 
    private static void print( final TSNode node, final StringBuilder builder, final int indentLevel ) {
-      builder.append( "  ".repeat( indentLevel ) );
+      builder.repeat( "  ", indentLevel );
       builder.append( "- '" );
       builder.append( node.getType() );
       builder.append( "'" );
