@@ -58,7 +58,7 @@ class AspectModelAsyncApiGeneratorTest {
                      "channels": {
                         "Aspect": {
                            "address": "123/456/test/1.0.0/TestAspect",
-                           "description": "This channel for updating Aspect Aspect.",
+                           "description": "Channel for updating Aspect Aspect.",
                            "parameters": {
                               "namespace": "org.eclipse.esmf.test",
                               "version": "1.0.0",
@@ -112,7 +112,7 @@ class AspectModelAsyncApiGeneratorTest {
                   {
                      "AspectWithEvent": {
                         "address": "123/456/test/1.0.0/TestAspect",
-                        "description": "This channel for updating AspectWithEvent Aspect.",
+                        "description": "Channel for updating AspectWithEvent Aspect.",
                         "parameters": {
                            "namespace": "org.eclipse.esmf.test",
                            "version": "1.0.0",
@@ -143,14 +143,25 @@ class AspectModelAsyncApiGeneratorTest {
       final JsonNode expectedComponentsSchemas = OBJECT_MAPPER.readTree(
             """
                   {
-                     "type": "object",
-                     "properties": {
-                        "testProperty": {
-                           "title": "testProperty",
-                           "type": "string",
-                           "description": "This is a test property."
-                        }
-                     }
+                       "SomeEvent" : {
+                         "type" : "object",
+                         "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#SomeEvent",
+                         "properties" : {
+                           "testProperty" : {
+                             "description" : "This is a test property.",
+                             "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty",
+                             "allOf" : [ {
+                               "$ref" : "#/components/schemas/Text"
+                             } ]
+                           }
+                         },
+                         "required" : [ "testProperty" ]
+                       },
+                       "Text" : {
+                         "type" : "string",
+                         "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#Text",
+                         "description" : "Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc."
+                       }
                   }
                """ );
 
@@ -158,7 +169,7 @@ class AspectModelAsyncApiGeneratorTest {
       assertThat( json.get( "info" ).get( "description" ).asText() ).isEqualTo( "This is a test description" );
       assertThat( json.get( "channels" ) ).isEqualTo( expectedChannels );
       assertThat( json.get( "components" ).get( "messages" ) ).isEqualTo( expectedComponentsMessages );
-      assertThat( json.get( "components" ).get( "schemas" ).get( aspect.getEvents().get( 0 ).getName() ) ).isEqualTo(
+      assertThat( json.get( "components" ).get( "schemas" ) ).isEqualTo(
             expectedComponentsSchemas );
    }
 
@@ -179,7 +190,7 @@ class AspectModelAsyncApiGeneratorTest {
                   {
                      "AspectWithOperation": {
                         "address": "123/456/test/1.0.0/TestAspect",
-                        "description": "This channel for updating AspectWithOperation Aspect.",
+                        "description": "Channel for updating AspectWithOperation Aspect.",
                         "parameters": {
                            "namespace": "org.eclipse.esmf.test",
                            "version": "1.0.0",
@@ -196,55 +207,167 @@ class AspectModelAsyncApiGeneratorTest {
                      }
                   }
                """ );
-      final JsonNode expectedComponentsMessageInput = OBJECT_MAPPER.readTree(
-            """
-               {
-                  "name": "input",
-                  "title": "input",
-                  "summary": null,
-                  "contentType": "application/json",
-                  "payload": {
-                     "$ref": "#/components/schemas/input"
-                  }
-               }
-               """
-      );
-      final JsonNode expectedComponentsMessageOutput = OBJECT_MAPPER.readTree(
+
+      final JsonNode expectedComponentsMessages = OBJECT_MAPPER.readTree(
             """
                   {
-                     "name": "output",
-                     "title": "output",
-                     "summary": null,
-                     "contentType": "application/json",
-                     "payload": {
-                        "$ref": "#/components/schemas/output"
-                     }
+                       "input" : {
+                         "name" : "input",
+                         "title" : "input",
+                         "contentType" : "application/json",
+                         "payload" : {
+                           "$ref" : "#/components/schemas/input"
+                         }
+                       },
+                       "output" : {
+                         "name" : "output",
+                         "title" : "output",
+                         "contentType" : "application/json",
+                         "payload" : {
+                           "$ref" : "#/components/schemas/output"
+                         }
+                       }
                   }
                """
       );
-      final JsonNode expectedComponentsSchemaInput = OBJECT_MAPPER.readTree(
+      final JsonNode expectedComponentsSchemas = OBJECT_MAPPER.readTree(
             """
                   {
-                     "type": "string",
-                     "description": ""
+                       "input" : {
+                         "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#input",
+                         "allOf" : [ {
+                           "$ref" : "#/components/schemas/Text"
+                         } ]
+                       },
+                       "output" : {
+                         "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#output",
+                         "allOf" : [ {
+                           "$ref" : "#/components/schemas/Text"
+                         } ]
+                       },
+                       "Text" : {
+                         "type" : "string",
+                         "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#Text",
+                         "description" : "Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc."
+                       }
                   }
-               """
-      );
-      final JsonNode expectedComponentsSchemaOutput = OBJECT_MAPPER.readTree(
-            """
-               {
-                  "type": "string",
-                  "description": ""
-               }
                """
       );
 
       assertThat( json.get( "info" ).get( "title" ).asText() ).isEqualTo( "AspectWithOperation MQTT API" );
       assertThat( json.get( "info" ).get( "description" ).asText() ).isEmpty();
       assertThat( json.get( "channels" ) ).isEqualTo( expectedChannels );
-      assertThat( json.get( "components" ).get( "messages" ).get( "input" ) ).isEqualTo( expectedComponentsMessageInput );
-      assertThat( json.get( "components" ).get( "messages" ).get( "output" ) ).isEqualTo( expectedComponentsMessageOutput );
-      assertThat( json.get( "components" ).get( "schemas" ).get( "input" ) ).isEqualTo( expectedComponentsSchemaInput );
-      assertThat( json.get( "components" ).get( "schemas" ).get( "output" ) ).isEqualTo( expectedComponentsSchemaOutput );
+      assertThat( json.get( "components" ).get( "messages" ) ).isEqualTo( expectedComponentsMessages );
+      assertThat( json.get( "components" ).get( "schemas" ) ).isEqualTo( expectedComponentsSchemas );
+   }
+
+   @Test
+   void testAsyncApiGeneratorAspectWithEventAndEntityProperty() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_EVENT_AND_ENTITY_PROPERTY ).aspect();
+      final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( false )
+            .applicationId( APPLICATION_ID )
+            .channelAddress( CHANNEL_ADDRESS )
+            .locale( Locale.ENGLISH )
+            .build();
+      final AsyncApiSchemaArtifact asyncSpec = new AspectModelAsyncApiGenerator( aspect, config ).singleResult();
+      final JsonNode json = asyncSpec.getContent();
+
+      final JsonNode expectedChannels = OBJECT_MAPPER.readTree(
+            """
+                  {
+                    "AspectWithEventAndEntityProperty" : {
+                      "address" : "123/456/test/1.0.0/TestAspect",
+                      "description" : "Channel for updating AspectWithEventAndEntityProperty Aspect.",
+                      "parameters" : {
+                        "namespace" : "org.eclipse.esmf.test",
+                        "version" : "1.0.0",
+                        "aspect-name" : "AspectWithEventAndEntityProperty"
+                      },
+                      "messages" : {
+                        "EntityEvent" : {
+                          "$ref" : "#/components/messages/EntityEvent"
+                        }
+                      }
+                    }
+                  }
+               """ );
+
+      final JsonNode expectedComponentsMessages = OBJECT_MAPPER.readTree(
+            """
+                  {
+                    "EntityEvent" : {
+                      "name" : "EntityEvent",
+                      "title" : "Entity Event",
+                      "summary" : "This is an event with entity properties",
+                      "contentType" : "application/json",
+                      "payload" : {
+                        "$ref" : "#/components/schemas/EntityEvent"
+                      }
+                    }
+                  }
+               """
+      );
+      final JsonNode expectedComponentsSchemas = OBJECT_MAPPER.readTree(
+            """
+                  {
+                    "EntityEvent" : {
+                      "type" : "object",
+                      "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#EntityEvent",
+                      "properties" : {
+                        "entityProperty" : {
+                          "description" : "This is a property with an entity type.",
+                          "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#entityProperty",
+                          "allOf" : [ {
+                            "$ref" : "#/components/schemas/EntityCharacteristic"
+                          } ]
+                        },
+                        "testString" : {
+                          "description" : "A scalar test property.",
+                          "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#testString",
+                          "allOf" : [ {
+                            "$ref" : "#/components/schemas/Text"
+                          } ]
+                        }
+                      },
+                      "required" : [ "entityProperty", "testString" ]
+                    },
+                    "Text" : {
+                      "type" : "string",
+                      "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#Text",
+                      "description" : "Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc."
+                    },
+                    "TestEntity" : {
+                      "description" : "This is a test entity",
+                      "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#TestEntity",
+                      "type" : "object",
+                      "properties" : {
+                        "innerProperty" : {
+                          "description" : "An inner property of the entity.",
+                          "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#innerProperty",
+                          "allOf" : [ {
+                            "$ref" : "#/components/schemas/Text"
+                          } ]
+                        }
+                      },
+                      "required" : [ "innerProperty" ]
+                    },
+                    "EntityCharacteristic" : {
+                      "description" : "A characteristic with entity data type",
+                      "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#EntityCharacteristic",
+                      "type" : "object",
+                      "allOf" : [ {
+                        "$ref" : "#/components/schemas/TestEntity"
+                      } ]
+                    }
+                  }
+               """
+      );
+
+      assertThat( json.get( "info" ).get( "title" ).asText() ).isEqualTo( "Test Aspect MQTT API" );
+      assertThat( json.get( "info" ).get( "description" ).asText() ).isEqualTo( "This is a test description" );
+      assertThat( json.get( "channels" ) ).isEqualTo( expectedChannels );
+      assertThat( json.get( "components" ).get( "messages" ) ).isEqualTo( expectedComponentsMessages );
+      assertThat( json.get( "components" ).get( "schemas" ) ).isEqualTo( expectedComponentsSchemas );
    }
 }
