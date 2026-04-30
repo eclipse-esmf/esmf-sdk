@@ -28,7 +28,7 @@ import org.eclipse.lsp4j.services.LanguageServer;
 import org.eclipse.lsp4j.services.TextDocumentService;
 import org.eclipse.lsp4j.services.WorkspaceService;
 
-import org.eclipse.esmf.turtle.languageserver.aspect.model.AspectValidationResult;
+import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
 import org.eclipse.esmf.turtle.languageserver.aspect.request.ValidateDocumentParams;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TurtleTextDocumentService;
 import org.eclipse.esmf.turtle.languageserver.lsp.workspace.TurtleWorkspaceService;
@@ -86,7 +86,7 @@ public class TurtleLanguageServer implements LanguageServer, LanguageClientAware
    }
 
    @JsonRequest( "turtle/aspectValidation/validateDocument" )
-   public CompletableFuture<AspectValidationResult> validateDocument( final ValidateDocumentParams params ) {
+   public CompletableFuture<DiagnosticReport> validateDocument( final ValidateDocumentParams params ) {
       final String uri = params != null ? params.uri() : null;
       return CompletableFuture.completedFuture( textDocumentService.validateDocument( uri ) );
    }

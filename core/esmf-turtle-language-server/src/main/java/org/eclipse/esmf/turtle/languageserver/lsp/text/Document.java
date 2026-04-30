@@ -47,6 +47,12 @@ public class Document {
       return content.getIndex( targetLine, targetColumn );
    }
 
+   public String subSequence( final int fromLine, final int fromColumn, final int toLine, final int toColumn ) {
+      final int fromIndex = getIndex( fromLine, fromColumn );
+      final int toIndex = getIndex( toLine, toColumn );
+      return content.subSequence( fromIndex, toIndex ).toString();
+   }
+
    public void update( final Range range, final String newContent ) {
       final Position start = range.getStart();
       final Position end = range.getEnd();

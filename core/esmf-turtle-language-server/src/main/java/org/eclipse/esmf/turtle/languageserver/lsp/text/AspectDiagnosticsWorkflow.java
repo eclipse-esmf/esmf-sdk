@@ -13,7 +13,11 @@
 
 package org.eclipse.esmf.turtle.languageserver.lsp.text;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.eclipse.esmf.turtle.languageserver.aspect.service.AspectValidationCoordinator;
+import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,50 +25,37 @@ import org.slf4j.LoggerFactory;
 public class AspectDiagnosticsWorkflow {
    private static final Logger LOG = LoggerFactory.getLogger( AspectDiagnosticsWorkflow.class );
    private final AspectValidationCoordinator aspectValidationCoordinator;
-   private final DocumentDiagnosticsService diagnosticsService;
    private final TextDocumentClientNotifier clientNotifier;
-   private final DocumentStore documentStore;
+   private final Map<Document, DiagnosticReport> diagnostics = new ConcurrentHashMap<>();
 
    public AspectDiagnosticsWorkflow(
          final AspectValidationCoordinator aspectValidationCoordinator,
-         final DocumentDiagnosticsService diagnosticsService,
-         final TextDocumentClientNotifier clientNotifier, final DocumentStore documentStore ) {
+         final TextDocumentClientNotifier clientNotifier ) {
       this.aspectValidationCoordinator = aspectValidationCoordinator;
-      this.diagnosticsService = diagnosticsService;
       this.clientNotifier = clientNotifier;
-      this.documentStore = documentStore;
    }
 
-   public void onDocumentChanged( final String uri ) {
-      aspectValidationCoordinator.cancel( uri );
-      diagnosticsService.clearAspect( uri );
+   public void onDocumentChanged( final Document document ) {
+      aspectValidationCoordinator.cancel( document );
+      diagnostics.remove( document );
    }
 
-   public void onDocumentClosed( final String uri ) {
-      aspectValidationCoordinator.cancel( uri );
-      diagnosticsService.clearAll( uri );
+   public void onDocumentClosed( final Document document ) {
+      aspectValidationCoordinator.cancel( document );
+      diagnostics.clear();
    }
 
-   public void onDocumentSaved( final String uri ) {
-      final Document document = documentStore.get( uri );
-      if ( document == null ) {
-         LOG.info( "[scheduleAspectValidation] unsupported uri={}, skipping aspect validation", uri );
-         diagnosticsService.clearAspect( uri );
-         clientNotifier.publishCombinedDiagnostics( uri );
-         return;
-      }
-
-      final long generation = aspectValidationCoordinator.nextGeneration( uri );
+   public void onDocumentSaved( final Document document ) {
+      final long generation = aspectValidationCoordinator.nextGeneration( document );
       aspectValidationCoordinator.submit( document, generation, ( completedGeneration, result ) -> {
-         final long currentGeneration = aspectValidationCoordinator.currentGeneration( uri );
+         final long currentGeneration = aspectValidationCoordinator.currentGeneration( document );
          if ( completedGeneration != currentGeneration ) {
-            LOG.debug( "[publish diagnostics] ignoring stale aspect diagnostics for uri={}, generation={}, current={}", uri,
+            LOG.debug( "[publish diagnostics] ignoring stale aspect diagnostics for uri={}, generation={}, current={}", document.getUri(),
                   completedGeneration, currentGeneration );
             return;
          }
-
-         diagnosticsService.updateAspect( uri, result );
-         clientNotifier.publishCombinedDiagnostics( uri );
+         diagnostics.put( document, result );
+         clientNotifier.publishDiagnostics( document, result );
       } );
    }
 }

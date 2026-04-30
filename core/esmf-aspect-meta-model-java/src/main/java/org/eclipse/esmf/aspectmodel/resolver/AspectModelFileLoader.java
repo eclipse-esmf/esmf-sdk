@@ -104,7 +104,7 @@ public class AspectModelFileLoader {
     * Loads the content of an AspectModelFile from an RDF model
     *
     * @param model the input model
-    * @param sourceLocation the logical location of the file file source
+    * @param sourceLocation the logical location of the file source
     * @return the loaded file content
     */
    public static RawAspectModelFile load( final Model model, final URI sourceLocation ) {

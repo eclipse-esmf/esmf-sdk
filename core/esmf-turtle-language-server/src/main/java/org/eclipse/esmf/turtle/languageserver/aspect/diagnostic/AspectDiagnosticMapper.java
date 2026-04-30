@@ -13,51 +13,49 @@
 
 package org.eclipse.esmf.turtle.languageserver.aspect.diagnostic;
 
-import java.net.URI;
 import java.util.List;
 
-import org.eclipse.esmf.turtle.languageserver.aspect.model.AspectValidationResult;
-import org.eclipse.esmf.turtle.languageserver.aspect.model.AspectViolationInfo;
+import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
+import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDiagnostic;
+import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDocumentDiagnostic;
+import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
-import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
 public final class AspectDiagnosticMapper {
    public static final String SOURCE = "lsp-server.aspect";
 
-   public List<Diagnostic> toDiagnostics( final String documentUri, final AspectValidationResult result ) {
-      return result.violations().stream()
-            .filter( violation -> appliesToDocument( documentUri, violation ) )
+   public List<Diagnostic> toDiagnostics( final Document document, final DiagnosticReport result ) {
+      return result.diagnostics().stream()
+            .filter( violation -> appliesToDocument( document, violation ) )
             .map( this::toDiagnostic )
             .toList();
    }
 
-   private boolean appliesToDocument( final String documentUri, final AspectViolationInfo violation ) {
-      if ( violation.sourceLocation() == null ) {
-         return true;
+   private boolean appliesToDocument( final Document document, final TurtleDiagnostic turtleDiagnostic ) {
+      if ( turtleDiagnostic instanceof final TurtleDocumentDiagnostic turtleDocumentDiagnostic ) {
+         return document.getUri().equals( turtleDocumentDiagnostic.sourceLocation() );
       }
-
-      return URI.create( documentUri ).equals( violation.sourceLocation() );
+      return true;
    }
 
-   private Diagnostic toDiagnostic( final AspectViolationInfo violation ) {
+   private Diagnostic toDiagnostic( final TurtleDiagnostic turtleDiagnostic ) {
       final Diagnostic diagnostic = new Diagnostic();
       diagnostic.setSource( SOURCE );
       diagnostic.setSeverity( DiagnosticSeverity.Error );
-      diagnostic.setMessage( violation.message() );
-      diagnostic.setCode( Either.forLeft( violation.code() ) );
-      diagnostic.setRange( toRange( violation ) );
+      diagnostic.setMessage( turtleDiagnostic.message() );
+      diagnostic.setCode( turtleDiagnostic.code().code() );
+      if ( turtleDiagnostic instanceof final TurtleDocumentDiagnostic turtleDocumentDiagnostic ) {
+         diagnostic.setRange( toRange( turtleDocumentDiagnostic ) );
+      }
       return diagnostic;
    }
 
-   private Range toRange( final AspectViolationInfo violation ) {
-      final long line = violation.line() != null ? violation.line() : 1L;
-      final long column = violation.column() != null ? violation.column() : 1L;
-      final int safeLine = (int) Math.max( 0, line - 1 );
-      final int safeColumn = (int) Math.max( 0, column - 1 );
-      return new Range( new Position( safeLine, safeColumn ), new Position( safeLine, safeColumn + 1 ) );
+   private Range toRange( final TurtleDocumentDiagnostic violation ) {
+      return new Range( new Position( violation.fromLine(), violation.fromColumn() ),
+            new Position( violation.toLine(), violation.toColumn() ) );
    }
 }

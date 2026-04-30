@@ -11,14 +11,10 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.turtle.languageserver.aspect.model;
+package org.eclipse.esmf.turtle.languageserver.diagnostic;
 
-import java.net.URI;
+import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 
-public record AspectViolationInfo(
-      String code,
-      String message,
-      URI sourceLocation,
-      Long line,
-      Long column
-) {}
+public interface TurtleDiagnosticsService {
+   DiagnosticReport check( Document document );
+}

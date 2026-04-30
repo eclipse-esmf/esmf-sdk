@@ -15,8 +15,6 @@ package org.eclipse.esmf.turtle.languageserver.lsp.text;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.eclipse.esmf.treesitterturtle.TreeSitterUtil;
-
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentContentChangeEvent;
@@ -27,11 +25,11 @@ import org.treesitter.TSTree;
 
 @SuppressWarnings( "HttpUrlsUsage" )
 class TurtleParserServiceTest {
-   private TurtleParserService parserService;
+   private TreeSitterTurtleSyntaxValidationService parserService;
 
    @BeforeEach
    void setUp() {
-      parserService = new TurtleParserService();
+      parserService = new TreeSitterTurtleSyntaxValidationService();
    }
 
    @Test
@@ -212,9 +210,36 @@ class TurtleParserServiceTest {
       applyChange( document, pos( 3, 2 ), pos( 4, 14 ), replacement );
 
       final TSTree tree = parserService.getAbstractSyntaxTree( document );
+      System.out.println( TreeSitterUtil.print( tree, document ) );
       assertThat( tree.getRootNode().hasError() ).isFalse();
       assertThat( document.getContent() ).contains( "ex:newPredicate" );
       assertThat( document.getContent() ).doesNotContain( "ex:predicate1" );
+   }
+
+   @Test
+   void testParseValidSyntax() {
+      final String initialContent = """
+         # Document top comment
+         @prefix ex: <http://example.org/> .
+
+         # Comment on subject
+         ex:subject
+           ex:predicate1 ex:object1 ;
+           ex:predicate2 123 ;
+           ex:predicate3 true ;
+           # comment on string
+           ex:predicate4 "some string" ;
+           ex:predicate5 "some langString"@en ;
+           ex:predicate6 "123"^^xsd:decimal ;
+           ex:predicate7 <http://example.org/fulluri> .
+         
+         <http://example.com/anotherSubject> a rdf:type .
+         """;
+
+      final Document document = new Document( "test.ttl", initialContent );
+      final TSTree tree = parserService.getAbstractSyntaxTree( document );
+      System.out.println( TreeSitterUtil.print( tree, document ) );
+      assertThat( tree.getRootNode().hasError() ).isFalse();
    }
 
    @Test

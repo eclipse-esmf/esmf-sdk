@@ -14,11 +14,17 @@
 package org.eclipse.esmf.turtle.languageserver.lsp.text;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
 import org.eclipse.esmf.treesitterturtle.TreeSitterTurtle;
+import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
+import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDiagnostic;
+import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDiagnosticsService;
+import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDocumentDiagnostic;
 
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
@@ -26,6 +32,7 @@ import org.eclipse.lsp4j.TextDocumentContentChangeEvent;
 import org.jspecify.annotations.Nullable;
 import org.treesitter.TSInputEdit;
 import org.treesitter.TSLanguage;
+import org.treesitter.TSNode;
 import org.treesitter.TSParser;
 import org.treesitter.TSPoint;
 import org.treesitter.TSTree;
@@ -34,12 +41,12 @@ import org.treesitter.TSTree;
  * Service for parsing Turtle documents using Tree-sitter and maintaining their syntax trees.
  * Supports incremental parsing for efficient updates when documents change.
  */
-public class TurtleParserService {
+public class TreeSitterTurtleSyntaxValidationService implements TurtleDiagnosticsService {
    private final TSParser parser;
    private final Map<Document, TSTree> syntaxTrees = new HashMap<>();
    private final Map<Document, Rope> previousDocumentStates = new WeakHashMap<>();
 
-   public TurtleParserService() {
+   public TreeSitterTurtleSyntaxValidationService() {
       parser = new TSParser();
       final TSLanguage turtle = new TreeSitterTurtle();
       parser.setLanguage( turtle );
@@ -108,6 +115,10 @@ public class TurtleParserService {
       }
    }
 
+   public void onOpen( final Document document ) {
+      syntaxTrees.put( document, parseDocument( document ) );
+   }
+
    public void onChange( final Document document, final TextDocumentContentChangeEvent changeEvent ) {
       final TSTree oldTree = syntaxTrees.get( document );
       if ( oldTree == null ) {
@@ -131,5 +142,26 @@ public class TurtleParserService {
       final TSTree newTree = parser.parseString( oldTree, document.getContent() );
       syntaxTrees.put( document, newTree );
       previousDocumentStates.put( document, document.getRope() );
+   }
+
+   @Override
+   public DiagnosticReport check( final Document document ) {
+      final TSTree abstractSyntaxTree = getAbstractSyntaxTree( document );
+      return new DiagnosticReport( checkNode( abstractSyntaxTree.getRootNode(), document.getUri() ) );
+   }
+
+   private List<TurtleDiagnostic> checkNode( final TSNode node, final String sourceLocation ) {
+      final List<TurtleDiagnostic> result = new ArrayList<>();
+      if ( node.hasError() ) {
+         final TurtleDiagnostic diagnostic = new TurtleDocumentDiagnostic( "Syntax error: unexpected token '" + node.getType() + "'",
+               TurtleDiagnostic.TurtleCode.E0003, sourceLocation,
+               node.getStartPoint().getRow(), node.getStartPoint().getColumn(),
+               node.getEndPoint().getRow(), node.getEndPoint().getColumn() );
+         result.add( diagnostic );
+      }
+      for ( int i = 0; i < node.getChildCount(); i++ ) {
+         result.addAll( checkNode( node.getChild( i ), sourceLocation ) );
+      }
+      return result;
    }
 }

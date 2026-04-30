@@ -13,7 +13,6 @@
 
 package org.eclipse.esmf.turtle.languageserver.lsp.text;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,19 +23,21 @@ import org.apache.jena.riot.RiotException;
 import org.apache.jena.riot.RiotParseException;
 import org.apache.jena.riot.system.ErrorHandlerFactory;
 import org.apache.jena.riot.system.StreamRDFLib;
-import org.eclipse.lsp4j.Diagnostic;
-import org.eclipse.lsp4j.DiagnosticSeverity;
-import org.eclipse.lsp4j.Position;
-import org.eclipse.lsp4j.Range;
+
+import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
+import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDiagnostic;
+import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDiagnosticsService;
+import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDocumentDiagnostic;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TurtleSyntaxValidationService {
-   private static final Logger LOG = LoggerFactory.getLogger( TurtleSyntaxValidationService.class );
-   private static final String SYNTAX_SOURCE = "lsp-server.syntax";
+public class JenaTurtleSyntaxValidationService implements TurtleDiagnosticsService {
+   private static final Logger LOG = LoggerFactory.getLogger( JenaTurtleSyntaxValidationService.class );
 
-   public List<Diagnostic> validate( final Document document ) {
-      final List<Diagnostic> diagnostics = new ArrayList<>();
+   @Override
+   public DiagnosticReport check( final Document document ) {
+      final List<TurtleDiagnostic> diagnostics = new ArrayList<>();
 
       try {
          RDFParser.create()
@@ -47,25 +48,15 @@ public class TurtleSyntaxValidationService {
          LOG.debug( "[validate] turtle parsing successful" );
       } catch ( final RiotParseException exception ) {
          LOG.warn( "[validate] parse error at line={}, col={}: {}", exception.getLine(), exception.getCol(), exception.getMessage() );
-         diagnostics.add( toDiagnostic( exception.getMessage(), exception.getLine(), exception.getCol() ) );
+         diagnostics.add( new TurtleDocumentDiagnostic( exception.getMessage(), TurtleDiagnostic.TurtleCode.E0003, document.getUri(),
+               (int) exception.getLine(), (int) exception.getCol(), (int) exception.getLine(), (int) exception.getCol() ) );
       } catch ( final RiotException exception ) {
-         LOG.warn( "[validate] rdf error: {}", exception.getMessage() );
-         diagnostics.add( toDiagnostic( exception.getMessage(), 1, 1 ) );
+         LOG.warn( "[validate] RDF error: {}", exception.getMessage() );
+         diagnostics.add( new TurtleDocumentDiagnostic( exception.getMessage(), TurtleDiagnostic.TurtleCode.E0003, document.getUri(),
+               1, 1, 1, 1 ) );
       }
 
       LOG.debug( "[validate] found {} diagnostic(s)", diagnostics.size() );
-      return diagnostics;
-   }
-
-   private Diagnostic toDiagnostic( final String message, final long line, final long column ) {
-      final int safeLine = (int) Math.max( 0, line - 1 );
-      final int safeColumn = (int) Math.max( 0, column - 1 );
-
-      final Diagnostic diagnostic = new Diagnostic();
-      diagnostic.setSource( SYNTAX_SOURCE );
-      diagnostic.setSeverity( DiagnosticSeverity.Error );
-      diagnostic.setMessage( message != null ? message : "Invalid Turtle syntax" );
-      diagnostic.setRange( new Range( new Position( safeLine, safeColumn ), new Position( safeLine, safeColumn + 1 ) ) );
-      return diagnostic;
+      return new DiagnosticReport( diagnostics );
    }
 }

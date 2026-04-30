@@ -13,7 +13,6 @@
 
 package org.eclipse.esmf.turtle.languageserver.aspect.service;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
@@ -23,9 +22,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiConsumer;
 
-import org.eclipse.esmf.turtle.languageserver.aspect.model.AspectValidationError;
-import org.eclipse.esmf.turtle.languageserver.aspect.model.AspectValidationErrorType;
-import org.eclipse.esmf.turtle.languageserver.aspect.model.AspectValidationResult;
+import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
+import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDiagnostic;
+import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDiagnosticsService;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 
 import org.slf4j.Logger;
@@ -33,63 +32,61 @@ import org.slf4j.LoggerFactory;
 
 public class AspectValidationCoordinator implements AutoCloseable {
    private static final Logger LOG = LoggerFactory.getLogger( AspectValidationCoordinator.class );
-   private final AspectModelValidationService validationService;
+   private final TurtleDiagnosticsService validationService;
    private final ExecutorService executorService;
-   private final Map<String, CompletableFuture<?>> inFlight = new ConcurrentHashMap<>();
-   private final Map<String, AtomicLong> generations = new ConcurrentHashMap<>();
+   private final Map<Document, CompletableFuture<?>> inFlight = new ConcurrentHashMap<>();
+   private final Map<Document, AtomicLong> generations = new ConcurrentHashMap<>();
 
-   public AspectValidationCoordinator( final AspectModelValidationService validationService ) {
+   public AspectValidationCoordinator( final TurtleDiagnosticsService validationService ) {
       this( validationService, Executors.newSingleThreadExecutor( Thread.ofPlatform().name( "aspect-validation-", 0 ).factory() ) );
    }
 
-   AspectValidationCoordinator( final AspectModelValidationService validationService, final ExecutorService executorService ) {
+   AspectValidationCoordinator( final TurtleDiagnosticsService validationService, final ExecutorService executorService ) {
       this.validationService = validationService;
       this.executorService = executorService;
    }
 
-   public long nextGeneration( final String uri ) {
-      return generations.computeIfAbsent( uri, ignored -> new AtomicLong() ).incrementAndGet();
+   public long nextGeneration( final Document document ) {
+      return generations.computeIfAbsent( document, ignored -> new AtomicLong() ).incrementAndGet();
    }
 
-   public long currentGeneration( final String uri ) {
-      final AtomicLong generation = generations.get( uri );
+   public long currentGeneration( final Document document ) {
+      final AtomicLong generation = generations.get( document );
       return generation != null ? generation.get() : 0L;
    }
 
-   public void cancel( final String uri ) {
-      final CompletableFuture<?> previous = inFlight.remove( uri );
+   public void cancel( final Document document ) {
+      final CompletableFuture<?> previous = inFlight.remove( document );
       if ( previous != null ) {
-         LOG.debug( "[cancel] cancelling previous aspect validation for {}", uri );
+         LOG.debug( "[cancel] cancelling previous aspect validation for {}", document.getUri() );
          previous.cancel( true );
       }
    }
 
-   public void submit( final Document document, final long generation, final BiConsumer<Long, AspectValidationResult> callback ) {
-      final String uri = document.getUri();
-      cancel( uri );
-      final CompletableFuture<AspectValidationResult> future = CompletableFuture.supplyAsync(
-            () -> validationService.validate( document ),
+   public void submit( final Document document, final long generation, final BiConsumer<Long, DiagnosticReport> callback ) {
+      cancel( document );
+      final CompletableFuture<DiagnosticReport> future = CompletableFuture.supplyAsync(
+            () -> validationService.check( document ),
             executorService
       );
-      inFlight.put( uri, future );
+      inFlight.put( document, future );
       future.whenComplete( ( result, throwable ) -> {
-         inFlight.remove( uri, future );
+         inFlight.remove( document, future );
          if ( throwable instanceof CancellationException || future.isCancelled() ) {
-            LOG.debug( "[cancel] aspect validation cancelled for {}", uri );
+            LOG.debug( "[cancel] aspect validation cancelled for {}", document.getUri() );
             return;
          }
          if ( throwable != null ) {
-            LOG.error( "[publish diagnostics] aspect validation failed for {}", uri, throwable );
-            callback.accept( generation, new AspectValidationResult( false, throwable.getMessage(), List.of(),
-                  new AspectValidationError( AspectValidationErrorType.PROCESSING, throwable.getMessage() ) ) );
+            LOG.error( "[publish diagnostics] aspect validation failed for {}", document.getUri(), throwable );
+            callback.accept( generation, new DiagnosticReport( throwable.getMessage(), TurtleDiagnostic.TurtleCode.E0002 ) );
             return;
          }
          callback.accept( generation, result );
       } );
    }
 
-   public AspectValidationResult validateSync( final Document document ) {
-      return validationService.validate( document );
+   public DiagnosticReport validateSync( final Document document ) {
+      return validationService.check( document );
    }
 
    @Override
