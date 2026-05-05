@@ -160,7 +160,8 @@ class AspectModelAsyncApiGeneratorTest {
                        "Text" : {
                          "type" : "string",
                          "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#Text",
-                         "description" : "Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc."
+                         "description" : "Describes a Property which contains plain text. \
+This is intended exclusively for human readable strings, not for identifiers, measurement values, etc."
                        }
                   }
                """ );
@@ -302,7 +303,8 @@ class AspectModelAsyncApiGeneratorTest {
                        "Text" : {
                          "type" : "string",
                          "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#Text",
-                         "description" : "Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc."
+                         "description" : "Describes a Property which contains plain text. \
+This is intended exclusively for human readable strings, not for identifiers, measurement values, etc."
                        }
                   }
                """
@@ -389,7 +391,8 @@ class AspectModelAsyncApiGeneratorTest {
                     "Text" : {
                       "type" : "string",
                       "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#Text",
-                      "description" : "Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc."
+                      "description" : "Describes a Property which contains plain text. \
+This is intended exclusively for human readable strings, not for identifiers, measurement values, etc."
                     },
                     "TestEntity" : {
                       "description" : "This is a test entity",
