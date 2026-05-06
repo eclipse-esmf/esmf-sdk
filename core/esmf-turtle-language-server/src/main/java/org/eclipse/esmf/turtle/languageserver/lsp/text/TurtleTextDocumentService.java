@@ -45,7 +45,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
    private final TextDocumentClientNotifier clientNotifier;
    private final TurtlePrefixDefinitionService prefixDefinitionService;
    private final AspectValidationCoordinator aspectValidationCoordinator;
-   private final TreeSitterTurtleSyntaxValidationService turtleParserService;
+   private final TreeSitterTurtleParserService turtleParserService;
    private final AspectDiagnosticsWorkflow aspectDiagnosticsWorkflow;
    private final DocumentAspectValidationService documentValidationService;
    private final TurtleDiagnosticsService syntaxValidationService;
@@ -57,7 +57,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
       clientNotifier = new TextDocumentClientNotifier( new AspectDiagnosticMapper() );
       prefixDefinitionService = new TurtlePrefixDefinitionService();
       aspectValidationCoordinator = new AspectValidationCoordinator( new AspectModelValidationService() );
-      turtleParserService = new TreeSitterTurtleSyntaxValidationService();
+      turtleParserService = new TreeSitterTurtleParserService();
       aspectDiagnosticsWorkflow = new AspectDiagnosticsWorkflow( aspectValidationCoordinator, clientNotifier );
       documentValidationService = new DocumentAspectValidationService( aspectValidationCoordinator );
       // syntaxValidationService = new JenaTurtleSyntaxValidationService();

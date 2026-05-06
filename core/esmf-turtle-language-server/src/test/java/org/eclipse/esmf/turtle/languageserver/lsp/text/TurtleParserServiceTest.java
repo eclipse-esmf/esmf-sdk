@@ -25,11 +25,11 @@ import org.treesitter.TSTree;
 
 @SuppressWarnings( "HttpUrlsUsage" )
 class TurtleParserServiceTest {
-   private TreeSitterTurtleSyntaxValidationService parserService;
+   private TreeSitterTurtleParserService parserService;
 
    @BeforeEach
    void setUp() {
-      parserService = new TreeSitterTurtleSyntaxValidationService();
+      parserService = new TreeSitterTurtleParserService();
    }
 
    @Test

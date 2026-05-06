@@ -14,11 +14,11 @@
 package org.eclipse.esmf.turtle.languageserver.lsp.text;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.stream.IntStream;
 
 import org.eclipse.esmf.treesitterturtle.TreeSitterTurtle;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
@@ -41,12 +41,12 @@ import org.treesitter.TSTree;
  * Service for parsing Turtle documents using Tree-sitter and maintaining their syntax trees.
  * Supports incremental parsing for efficient updates when documents change.
  */
-public class TreeSitterTurtleSyntaxValidationService implements TurtleDiagnosticsService {
+public class TreeSitterTurtleParserService implements TurtleDiagnosticsService {
    private final TSParser parser;
    private final Map<Document, TSTree> syntaxTrees = new HashMap<>();
    private final Map<Document, Rope> previousDocumentStates = new WeakHashMap<>();
 
-   public TreeSitterTurtleSyntaxValidationService() {
+   public TreeSitterTurtleParserService() {
       parser = new TSParser();
       final TSLanguage turtle = new TreeSitterTurtle();
       parser.setLanguage( turtle );
@@ -151,17 +151,26 @@ public class TreeSitterTurtleSyntaxValidationService implements TurtleDiagnostic
    }
 
    private List<TurtleDiagnostic> checkNode( final TSNode node, final String sourceLocation ) {
-      final List<TurtleDiagnostic> result = new ArrayList<>();
-      if ( node.hasError() ) {
-         final TurtleDiagnostic diagnostic = new TurtleDocumentDiagnostic( "Syntax error: unexpected token '" + node.getType() + "'",
+      final List<TurtleDiagnostic> childDiagnostics = IntStream.range( 0, node.getChildCount() )
+            .mapToObj( node::getChild )
+            .flatMap( child -> checkNode( child, sourceLocation ).stream() )
+            .toList();
+      if ( node.hasError() && childDiagnostics.isEmpty() ) {
+         final String message;
+         if ( node.isMissing() ) {
+            message = "Syntax error: Missing '" + node.getGrammarType() + "'";
+         } else if ( node.isExtra() ) {
+            message = node.getGrammarType().equals( "ERROR" )
+                  ? "Syntax error: Unexpected token"
+                  : "Syntax error: Unexpected token '" + node.getGrammarType() + "'";
+         } else {
+            message = "Syntax error";
+         }
+         return List.of( new TurtleDocumentDiagnostic( message,
                TurtleDiagnostic.TurtleCode.E0003, sourceLocation,
                node.getStartPoint().getRow(), node.getStartPoint().getColumn(),
-               node.getEndPoint().getRow(), node.getEndPoint().getColumn() );
-         result.add( diagnostic );
+               node.getEndPoint().getRow(), node.getEndPoint().getColumn() ) );
       }
-      for ( int i = 0; i < node.getChildCount(); i++ ) {
-         result.addAll( checkNode( node.getChild( i ), sourceLocation ) );
-      }
-      return result;
+      return childDiagnostics;
    }
 }
