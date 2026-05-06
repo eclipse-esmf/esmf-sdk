@@ -52,7 +52,7 @@ public class TreeSitterTurtleParserService implements TurtleDiagnosticsService {
       parser.setLanguage( turtle );
    }
 
-   public TSTree getAbstractSyntaxTree( final Document document ) {
+   public TSTree getConcreteSyntaxTree( final Document document ) {
       return syntaxTrees.computeIfAbsent( document, this::parseDocument );
    }
 
@@ -146,7 +146,7 @@ public class TreeSitterTurtleParserService implements TurtleDiagnosticsService {
 
    @Override
    public DiagnosticReport check( final Document document ) {
-      final TSTree abstractSyntaxTree = getAbstractSyntaxTree( document );
+      final TSTree abstractSyntaxTree = getConcreteSyntaxTree( document );
       return new DiagnosticReport( checkNode( abstractSyntaxTree.getRootNode(), document.getUri() ) );
    }
 

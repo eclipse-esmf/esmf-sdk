@@ -34,6 +34,7 @@ public class ParserTokenType {
    public static final String SYMBOL_OPENING_POINTY_BRACKET = "<";
    public static final String SYMBOL_CLOSING_POINTY_BRACKET = ">";
 
+   public static final String A = "a"; // the syntactic shortcut for rdf:type
    public static final String AT_PREFIX = "@prefix";
    public static final String AT_BASE = "@base";
    public static final String DOCUMENT = "document";

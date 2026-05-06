@@ -41,7 +41,7 @@ class TurtleParserServiceTest {
          """;
 
       final Document document = new Document( "test.ttl", content );
-      final TSTree tree = parserService.getAbstractSyntaxTree( document );
+      final TSTree tree = parserService.getConcreteSyntaxTree( document );
 
       assertThat( tree ).isNotNull();
       final TSNode rootNode = tree.getRootNode();
@@ -68,7 +68,7 @@ class TurtleParserServiceTest {
    @Test
    void testEmptyDocument() {
       final Document document = new Document( "empty.ttl", "" );
-      final TSTree tree = parserService.getAbstractSyntaxTree( document );
+      final TSTree tree = parserService.getConcreteSyntaxTree( document );
 
       assertThat( tree ).isNotNull();
       final TSNode rootNode = tree.getRootNode();
@@ -83,13 +83,13 @@ class TurtleParserServiceTest {
          """;
 
       final Document document = new Document( "test.ttl", initialContent );
-      final TSTree initialTree = parserService.getAbstractSyntaxTree( document );
+      final TSTree initialTree = parserService.getConcreteSyntaxTree( document );
       assertThat( initialTree.getRootNode().hasError() ).isFalse();
 
       final String newText = "\nex:subject ex:predicate ex:object .";
       applyChange( document, pos( 1, 0 ), pos( 1, 0 ), newText );
 
-      final TSTree updatedTree = parserService.getAbstractSyntaxTree( document );
+      final TSTree updatedTree = parserService.getConcreteSyntaxTree( document );
       assertThat( updatedTree ).isNotNull();
       assertThat( updatedTree.getRootNode().hasError() ).isFalse();
 
@@ -109,7 +109,7 @@ class TurtleParserServiceTest {
 
       applyChange( document, pos( 0, initialContent.length() ), pos( 0, initialContent.length() ), newText );
 
-      final TSTree tree = parserService.getAbstractSyntaxTree( document );
+      final TSTree tree = parserService.getConcreteSyntaxTree( document );
       assertThat( tree.getRootNode().hasError() ).isFalse();
       assertThat( document.getContent() )
             .contains( "ex:subject1" )
@@ -127,11 +127,11 @@ class TurtleParserServiceTest {
          """;
 
       final Document document = new Document( "test.ttl", initialContent );
-      parserService.getAbstractSyntaxTree( document );
+      parserService.getConcreteSyntaxTree( document );
 
       applyChange( document, pos( 3, 0 ), pos( 3, 38 ), "" );
 
-      final TSTree tree = parserService.getAbstractSyntaxTree( document );
+      final TSTree tree = parserService.getConcreteSyntaxTree( document );
       assertThat( tree.getRootNode().hasError() ).isFalse();
       assertThat( document.getContent() ).doesNotContain( "ex:ToDelete" );
       assertThat( document.getContent() ).contains( "ex:subject ex:predicate ex:object" );
@@ -146,12 +146,12 @@ class TurtleParserServiceTest {
          """;
 
       final Document document = new Document( "test.ttl", initialContent );
-      parserService.getAbstractSyntaxTree( document );
+      parserService.getConcreteSyntaxTree( document );
 
       final String replacement = "NewObject";
       applyChange( document, pos( 2, 27 ), pos( 2, 35 ), replacement );
 
-      final TSTree tree = parserService.getAbstractSyntaxTree( document );
+      final TSTree tree = parserService.getConcreteSyntaxTree( document );
       if ( tree.getRootNode().hasError() ) {
          printDocumentAndTree( document, tree );
       }
@@ -167,27 +167,27 @@ class TurtleParserServiceTest {
       final String text1 = "@prefix ex: <http://example.org/> .";
       applyChange( document, pos( 0, 0 ), pos( 0, 0 ), text1 );
 
-      TSTree tree = parserService.getAbstractSyntaxTree( document );
+      TSTree tree = parserService.getConcreteSyntaxTree( document );
       assertThat( tree.getRootNode().hasError() ).isFalse();
 
       final String text2 = "\n\nex:subject1 ex:predicate1 ex:object1 .";
       applyChange( document, pos( 0, 35 ), pos( 0, 35 ), text2 );
 
-      tree = parserService.getAbstractSyntaxTree( document );
+      tree = parserService.getConcreteSyntaxTree( document );
       assertThat( tree.getRootNode().hasError() ).isFalse();
       assertThat( document.getContent() ).contains( "ex:subject1" );
 
       final String text3 = "\nex:subject2 ex:predicate2 ex:object2 .";
       applyChange( document, pos( 2, 38 ), pos( 2, 38 ), text3 );
 
-      tree = parserService.getAbstractSyntaxTree( document );
+      tree = parserService.getConcreteSyntaxTree( document );
       assertThat( tree.getRootNode().hasError() ).isFalse();
       assertThat( document.getContent() ).contains( "ex:subject1" )
             .contains( "ex:subject2" );
 
       applyChange( document, pos( 2, 0 ), pos( 2, 38 ), "" );
 
-      tree = parserService.getAbstractSyntaxTree( document );
+      tree = parserService.getConcreteSyntaxTree( document );
       assertThat( tree.getRootNode().hasError() ).isFalse();
       assertThat( document.getContent() ).doesNotContain( "ex:subject1" );
       assertThat( document.getContent() ).contains( "ex:subject2" );
@@ -204,12 +204,12 @@ class TurtleParserServiceTest {
          """;
 
       final Document document = new Document( "test.ttl", initialContent );
-      parserService.getAbstractSyntaxTree( document );
+      parserService.getConcreteSyntaxTree( document );
 
       final String replacement = "ex:newPredicate";
       applyChange( document, pos( 3, 2 ), pos( 4, 14 ), replacement );
 
-      final TSTree tree = parserService.getAbstractSyntaxTree( document );
+      final TSTree tree = parserService.getConcreteSyntaxTree( document );
       System.out.println( TreeSitterUtil.print( tree, document ) );
       assertThat( tree.getRootNode().hasError() ).isFalse();
       assertThat( document.getContent() ).contains( "ex:newPredicate" );
@@ -247,7 +247,7 @@ class TurtleParserServiceTest {
          """;
 
       final Document document = new Document( "test.ttl", initialContent );
-      final TSTree tree = parserService.getAbstractSyntaxTree( document );
+      final TSTree tree = parserService.getConcreteSyntaxTree( document );
       System.out.println( TreeSitterUtil.print( tree, document ) );
       assertThat( tree.getRootNode().hasError() ).isFalse();
    }
@@ -257,12 +257,12 @@ class TurtleParserServiceTest {
       final String initialContent = "ex:subject ex:predicate ex:object .";
 
       final Document document = new Document( "test.ttl", initialContent );
-      parserService.getAbstractSyntaxTree( document );
+      parserService.getConcreteSyntaxTree( document );
 
       final String prefix = "@prefix ex: <http://example.org/> .\n\n";
       applyChange( document, pos( 0, 0 ), pos( 0, 0 ), prefix );
 
-      final TSTree tree = parserService.getAbstractSyntaxTree( document );
+      final TSTree tree = parserService.getConcreteSyntaxTree( document );
       assertThat( tree.getRootNode().hasError() ).isFalse();
       assertThat( document.getContent() ).startsWith( "@prefix ex:" );
    }
@@ -274,17 +274,17 @@ class TurtleParserServiceTest {
 
       applyChange( document, pos( 0, 0 ), pos( 0, 0 ),
             "@base <http://example.org/> .\n@prefix ex: <http://example.org/> .\n\n" );
-      tree = parserService.getAbstractSyntaxTree( document );
+      tree = parserService.getConcreteSyntaxTree( document );
       assertThat( tree.getRootNode().hasError() ).isFalse();
 
       applyChange( document, pos( 3, 0 ), pos( 3, 0 ),
             "ex:subject ex:predicate ex:object ." );
-      tree = parserService.getAbstractSyntaxTree( document );
+      tree = parserService.getConcreteSyntaxTree( document );
       assertThat( tree.getRootNode().hasError() ).isFalse();
 
       applyChange( document, pos( 3, 33 ), pos( 3, 34 ),
             " ;\n  ex:predicate2 ex:object2 ;\n  ex:predicate3 ex:object3 ." );
-      tree = parserService.getAbstractSyntaxTree( document );
+      tree = parserService.getConcreteSyntaxTree( document );
       assertThat( tree.getRootNode().hasError() ).isFalse();
 
       final String content = document.getContent();
@@ -293,7 +293,7 @@ class TurtleParserServiceTest {
       final int col = predicateStart - content.lastIndexOf( '\n', predicateStart ) - 1;
 
       applyChange( document, pos( line, col ), pos( line, col + 12 ), "ex:modified" );
-      tree = parserService.getAbstractSyntaxTree( document );
+      tree = parserService.getConcreteSyntaxTree( document );
       assertThat( tree.getRootNode().hasError() ).isFalse();
       assertThat( document.getContent() ).contains( "ex:modified" );
       assertThat( document.getContent() ).doesNotContain( "ex:predicate2" );
@@ -312,13 +312,13 @@ class TurtleParserServiceTest {
       final String initialContent = "@prefix ex: <http://example.org/> .";
       final Document document = new Document( "test.ttl", initialContent );
 
-      TSTree tree = parserService.getAbstractSyntaxTree( document );
+      TSTree tree = parserService.getConcreteSyntaxTree( document );
       assertThat( tree.getRootNode().hasError() ).isFalse();
 
       final String invalidText = "\n\nthis is not valid turtle syntax @#$%";
       applyChange( document, pos( 0, 35 ), pos( 0, 35 ), invalidText );
 
-      tree = parserService.getAbstractSyntaxTree( document );
+      tree = parserService.getConcreteSyntaxTree( document );
       assertThat( tree.getRootNode() ).isNotNull();
       // Tree-sitter should still parse it, but with errors
       assertThat( tree.getRootNode().hasError() ).isTrue();
@@ -329,7 +329,7 @@ class TurtleParserServiceTest {
       final String initialContent = "@prefix ex: <http://example.org/> .";
       final Document document = new Document( "test.ttl", initialContent );
 
-      parserService.getAbstractSyntaxTree( document );
+      parserService.getConcreteSyntaxTree( document );
       final String newContent = """
          @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
          @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -342,7 +342,7 @@ class TurtleParserServiceTest {
       final Document newDocument = new Document( "test.ttl", newContent );
       parserService.onChange( newDocument, change );
 
-      final TSTree tree = parserService.getAbstractSyntaxTree( newDocument );
+      final TSTree tree = parserService.getConcreteSyntaxTree( newDocument );
       assertThat( tree.getRootNode().hasError() ).isFalse();
       assertThat( newDocument.getContent() ).contains( "rdfs:" );
    }
@@ -351,13 +351,13 @@ class TurtleParserServiceTest {
    void testWhitespaceOnlyChanges() {
       final String initialContent = "ex:subject ex:predicate ex:object.";
       final Document document = new Document( "test.ttl", initialContent );
-      final TSTree oldTree = parserService.getAbstractSyntaxTree( document );
+      final TSTree oldTree = parserService.getConcreteSyntaxTree( document );
       final Range range = new Range( pos( 0, 33 ), pos( 0, 33 ) );
       final TextDocumentContentChangeEvent change = new TextDocumentContentChangeEvent( range, " " );
       document.update( range, " " );
       parserService.onChange( document, change );
 
-      final TSTree tree = parserService.getAbstractSyntaxTree( document );
+      final TSTree tree = parserService.getConcreteSyntaxTree( document );
       assertThat( tree.getRootNode().hasError() ).isFalse();
       assertThat( document.getContent() ).endsWith( "object ." );
       assertThat( oldTree.getRootNode().toString() ).isEqualTo( tree.getRootNode().toString() );
