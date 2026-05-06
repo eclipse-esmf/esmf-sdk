@@ -18,6 +18,8 @@ public interface TurtleDiagnostic {
 
    String message();
 
+   Severity severity();
+
    default boolean hasLocation() {
       return false;
    }
@@ -49,5 +51,12 @@ public interface TurtleDiagnostic {
       public String description() {
          return description;
       }
+   }
+
+   enum Severity {
+      ERROR,
+      WARNING,
+      INFO,
+      HINT
    }
 }

@@ -17,6 +17,7 @@ import java.io.InputStream;
 
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
+import org.jspecify.annotations.Nullable;
 
 public class Document {
    private final String uri;
@@ -53,7 +54,11 @@ public class Document {
       return content.subSequence( fromIndex, toIndex ).toString();
    }
 
-   public void update( final Range range, final String newContent ) {
+   public void update( final @Nullable Range range, final String newContent ) {
+      if ( range == null ) {
+         content = new Rope( newContent );
+         return;
+      }
       final Position start = range.getStart();
       final Position end = range.getEnd();
       content = content.update( start.getLine(), start.getCharacter(),

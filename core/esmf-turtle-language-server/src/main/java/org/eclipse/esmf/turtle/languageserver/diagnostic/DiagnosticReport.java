@@ -18,6 +18,8 @@ import java.util.List;
 public record DiagnosticReport(
       List<TurtleDiagnostic> diagnostics
 ) {
+   public static final DiagnosticReport EMPTY = new DiagnosticReport( List.of() );
+
    public DiagnosticReport( final TurtleDiagnostic diagnostic ) {
       this( List.of( diagnostic ) );
    }

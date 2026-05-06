@@ -234,6 +234,16 @@ class TurtleParserServiceTest {
            ex:predicate7 <http://example.org/fulluri> .
          
          <http://example.com/anotherSubject> a rdf:type .
+         
+         ex:subject2 ex:bla [
+            ex:blub true ;
+         ] .
+         
+         ex:subject3 ex:bla ( 1 2 3 ) .
+         
+         ex:subject4 ex:bla \"""hello\""" .
+         
+         ex:subject5 ex:bla '''hello''' .
          """;
 
       final Document document = new Document( "test.ttl", initialContent );

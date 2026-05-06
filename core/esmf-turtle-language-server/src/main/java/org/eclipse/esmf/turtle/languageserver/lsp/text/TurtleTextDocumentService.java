@@ -23,6 +23,7 @@ import org.eclipse.esmf.turtle.languageserver.aspect.service.AspectModelValidati
 import org.eclipse.esmf.turtle.languageserver.aspect.service.AspectValidationCoordinator;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDiagnosticsService;
+import org.eclipse.esmf.turtle.languageserver.structure.TurtleTokenService;
 import org.eclipse.esmf.turtle.languageserver.turtle.navigation.TurtlePrefixDefinitionService;
 
 import org.eclipse.lsp4j.DefinitionParams;
@@ -32,6 +33,8 @@ import org.eclipse.lsp4j.DidOpenTextDocumentParams;
 import org.eclipse.lsp4j.DidSaveTextDocumentParams;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.LocationLink;
+import org.eclipse.lsp4j.SemanticTokens;
+import org.eclipse.lsp4j.SemanticTokensParams;
 import org.eclipse.lsp4j.TextDocumentContentChangeEvent;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.LanguageClient;
@@ -49,6 +52,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
    private final AspectDiagnosticsWorkflow aspectDiagnosticsWorkflow;
    private final DocumentAspectValidationService documentValidationService;
    private final TurtleDiagnosticsService syntaxValidationService;
+   private final TurtleTokenService tokenService;
    private final Map<String, Document> documents = new HashMap<>();
 
    // TODO determine and harmonize when to send which diagnostics
@@ -60,6 +64,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
       turtleParserService = new TreeSitterTurtleParserService();
       aspectDiagnosticsWorkflow = new AspectDiagnosticsWorkflow( aspectValidationCoordinator, clientNotifier );
       documentValidationService = new DocumentAspectValidationService( aspectValidationCoordinator );
+      tokenService = new TurtleTokenService( turtleParserService );
       // syntaxValidationService = new JenaTurtleSyntaxValidationService();
       syntaxValidationService = turtleParserService;
    }
@@ -118,7 +123,17 @@ public class TurtleTextDocumentService implements TextDocumentService {
       final Document document = documents.get( uri );
       LOG.info( "[didSave] uri={}", uri );
       document.getRope().rebalance();
+      turtleParserService.onOpen( document );
       aspectDiagnosticsWorkflow.onDocumentSaved( document );
+   }
+
+   @Override
+   public CompletableFuture<SemanticTokens> semanticTokensFull( final SemanticTokensParams params ) {
+      final String uri = params.getTextDocument().getUri();
+      final Document document = documents.get( uri );
+      LOG.info( "[semanticTokensFull] uri={}", uri );
+      final SemanticTokens semanticTokens = tokenService.buildSemanticTokens( document );
+      return CompletableFuture.completedFuture( semanticTokens );
    }
 
    @Override

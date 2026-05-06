@@ -26,8 +26,6 @@ import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 
 public final class AspectDiagnosticMapper {
-   public static final String SOURCE = "lsp-server.aspect";
-
    public List<Diagnostic> toDiagnostics( final Document document, final DiagnosticReport result ) {
       return result.diagnostics().stream()
             .filter( violation -> appliesToDocument( document, violation ) )
@@ -44,7 +42,6 @@ public final class AspectDiagnosticMapper {
 
    private Diagnostic toDiagnostic( final TurtleDiagnostic turtleDiagnostic ) {
       final Diagnostic diagnostic = new Diagnostic();
-      diagnostic.setSource( SOURCE );
       diagnostic.setSeverity( DiagnosticSeverity.Error );
       diagnostic.setMessage( turtleDiagnostic.message() );
       diagnostic.setCode( turtleDiagnostic.code().code() );
