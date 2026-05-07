@@ -45,17 +45,17 @@ public class AspectDiagnosticsWorkflow {
       diagnostics.clear();
    }
 
-   public void onDocumentSaved( final Document document ) {
-      final long generation = aspectValidationCoordinator.nextGeneration( document );
+   public void onDocumentSaved( final ParsedDocument document ) {
+      final long generation = aspectValidationCoordinator.nextGeneration( document.sourceDocument() );
       aspectValidationCoordinator.submit( document, generation, ( completedGeneration, result ) -> {
-         final long currentGeneration = aspectValidationCoordinator.currentGeneration( document );
+         final long currentGeneration = aspectValidationCoordinator.currentGeneration( document.sourceDocument() );
          if ( completedGeneration != currentGeneration ) {
             LOG.debug( "[publish diagnostics] ignoring stale aspect diagnostics for uri={}, generation={}, current={}", document.getUri(),
                   completedGeneration, currentGeneration );
             return;
          }
-         diagnostics.put( document, result );
-         clientNotifier.publishDiagnostics( document, result );
+         diagnostics.put( document.sourceDocument(), result );
+         clientNotifier.publishDiagnostics( document.sourceDocument(), result );
       } );
    }
 }

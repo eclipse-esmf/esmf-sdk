@@ -26,6 +26,7 @@ import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDiagnostic;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDiagnosticsService;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
+import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,15 +64,15 @@ public class AspectValidationCoordinator implements AutoCloseable {
       }
    }
 
-   public void submit( final Document document, final long generation, final BiConsumer<Long, DiagnosticReport> callback ) {
-      cancel( document );
+   public void submit( final ParsedDocument document, final long generation, final BiConsumer<Long, DiagnosticReport> callback ) {
+      cancel( document.sourceDocument() );
       final CompletableFuture<DiagnosticReport> future = CompletableFuture.supplyAsync(
-            () -> validationService.check( document ),
+            () -> validationService.defaultValidate( document ),
             executorService
       );
-      inFlight.put( document, future );
+      inFlight.put( document.sourceDocument(), future );
       future.whenComplete( ( result, throwable ) -> {
-         inFlight.remove( document, future );
+         inFlight.remove( document.sourceDocument(), future );
          if ( throwable instanceof CancellationException || future.isCancelled() ) {
             LOG.debug( "[cancel] aspect validation cancelled for {}", document.getUri() );
             return;
@@ -85,8 +86,8 @@ public class AspectValidationCoordinator implements AutoCloseable {
       } );
    }
 
-   public DiagnosticReport validateSync( final Document document ) {
-      return validationService.check( document );
+   public DiagnosticReport validateSync( final ParsedDocument document ) {
+      return validationService.defaultValidate( document );
    }
 
    @Override

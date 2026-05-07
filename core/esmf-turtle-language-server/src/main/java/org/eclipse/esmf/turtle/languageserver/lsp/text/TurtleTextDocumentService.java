@@ -24,6 +24,7 @@ import org.eclipse.esmf.turtle.languageserver.aspect.service.AspectValidationCoo
 import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDiagnosticsService;
 import org.eclipse.esmf.turtle.languageserver.structure.TurtleTokenService;
+import org.eclipse.esmf.turtle.languageserver.turtle.TurtleSyntaxDiagnosticsService;
 import org.eclipse.esmf.turtle.languageserver.turtle.navigation.TurtlePrefixDefinitionService;
 
 import org.eclipse.lsp4j.DefinitionParams;
@@ -50,12 +51,12 @@ public class TurtleTextDocumentService implements TextDocumentService {
    private final AspectValidationCoordinator aspectValidationCoordinator;
    private final TreeSitterTurtleParserService turtleParserService;
    private final AspectDiagnosticsWorkflow aspectDiagnosticsWorkflow;
-   private final DocumentAspectValidationService documentValidationService;
-   private final TurtleDiagnosticsService syntaxValidationService;
    private final TurtleTokenService tokenService;
+   private final List<TurtleDiagnosticsService> diagnosticsServices = List.of(
+         new TurtleSyntaxDiagnosticsService(),
+         new AspectModelValidationService()
+   );
    private final Map<String, Document> documents = new HashMap<>();
-
-   // TODO determine and harmonize when to send which diagnostics
 
    public TurtleTextDocumentService() {
       clientNotifier = new TextDocumentClientNotifier( new AspectDiagnosticMapper() );
@@ -63,10 +64,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
       aspectValidationCoordinator = new AspectValidationCoordinator( new AspectModelValidationService() );
       turtleParserService = new TreeSitterTurtleParserService();
       aspectDiagnosticsWorkflow = new AspectDiagnosticsWorkflow( aspectValidationCoordinator, clientNotifier );
-      documentValidationService = new DocumentAspectValidationService( aspectValidationCoordinator );
       tokenService = new TurtleTokenService( turtleParserService );
-      // syntaxValidationService = new JenaTurtleSyntaxValidationService();
-      syntaxValidationService = turtleParserService;
    }
 
    public void connect( final LanguageClient client ) {
@@ -78,7 +76,14 @@ public class TurtleTextDocumentService implements TextDocumentService {
    }
 
    public DiagnosticReport validateDocument( final String uri ) {
-      return documentValidationService.validateDocument( uri, documents.get( uri ) );
+      final Document document = documents.get( uri );
+      if ( document == null ) {
+         return DiagnosticReport.EMPTY;
+      }
+      final ParsedDocument parsedDocument = turtleParserService.apply( document );
+      return diagnosticsServices.stream()
+            .map( service -> service.defaultValidate( parsedDocument ) )
+            .reduce( DiagnosticReport.EMPTY, DiagnosticReport::merge );
    }
 
    @Override
@@ -89,7 +94,10 @@ public class TurtleTextDocumentService implements TextDocumentService {
       final Document document = new Document( uri, content );
       documents.put( uri, document );
       turtleParserService.onOpen( document );
-      final DiagnosticReport report = syntaxValidationService.check( document );
+      final ParsedDocument parsedDocument = turtleParserService.apply( document );
+      final DiagnosticReport report = diagnosticsServices.stream()
+            .map( service -> service.onOpen( parsedDocument ) )
+            .reduce( DiagnosticReport.EMPTY, DiagnosticReport::merge );
       clientNotifier.publishDiagnostics( document, report );
    }
 
@@ -102,7 +110,10 @@ public class TurtleTextDocumentService implements TextDocumentService {
          turtleParserService.onChange( document, change );
       }
       LOG.debug( "[didChange] uri={}, changes={}", uri, params.getContentChanges().size() );
-      final DiagnosticReport report = syntaxValidationService.check( document );
+      final ParsedDocument parsedDocument = turtleParserService.apply( document );
+      final DiagnosticReport report = diagnosticsServices.stream()
+            .map( service -> service.onChange( parsedDocument ) )
+            .reduce( DiagnosticReport.EMPTY, DiagnosticReport::merge );
       clientNotifier.publishDiagnostics( document, report );
       aspectDiagnosticsWorkflow.onDocumentChanged( document );
    }
@@ -124,7 +135,12 @@ public class TurtleTextDocumentService implements TextDocumentService {
       LOG.info( "[didSave] uri={}", uri );
       document.getRope().rebalance();
       turtleParserService.onOpen( document );
-      aspectDiagnosticsWorkflow.onDocumentSaved( document );
+      final ParsedDocument parsedDocument = turtleParserService.apply( document );
+      final DiagnosticReport report = diagnosticsServices.stream()
+            .map( service -> service.onSave( parsedDocument ) )
+            .reduce( DiagnosticReport.EMPTY, DiagnosticReport::merge );
+      clientNotifier.publishDiagnostics( document, report );
+      aspectDiagnosticsWorkflow.onDocumentSaved( parsedDocument );
    }
 
    @Override

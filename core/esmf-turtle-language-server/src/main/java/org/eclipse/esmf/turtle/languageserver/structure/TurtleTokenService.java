@@ -118,7 +118,7 @@ public class TurtleTokenService {
     */
    public SemanticTokens buildSemanticTokens( final Document document ) {
       final List<TokenRange> tokenRanges = new ArrayList<>();
-      final TSTree concreteSyntaxTree = parserService.getConcreteSyntaxTree( document );
+      final TSTree concreteSyntaxTree = parserService.apply( document ).concreteSyntaxTree();
       final Deque<TSNode> nodes = new ArrayDeque<>();
       TSNode node;
       nodes.push( concreteSyntaxTree.getRootNode() );

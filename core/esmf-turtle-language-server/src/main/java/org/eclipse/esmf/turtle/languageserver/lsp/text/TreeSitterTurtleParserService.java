@@ -15,16 +15,11 @@ package org.eclipse.esmf.turtle.languageserver.lsp.text;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
-import java.util.stream.IntStream;
+import java.util.function.Function;
 
 import org.eclipse.esmf.treesitterturtle.TreeSitterTurtle;
-import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
-import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDiagnostic;
-import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDiagnosticsService;
-import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDocumentDiagnostic;
 
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
@@ -32,7 +27,6 @@ import org.eclipse.lsp4j.TextDocumentContentChangeEvent;
 import org.jspecify.annotations.Nullable;
 import org.treesitter.TSInputEdit;
 import org.treesitter.TSLanguage;
-import org.treesitter.TSNode;
 import org.treesitter.TSParser;
 import org.treesitter.TSPoint;
 import org.treesitter.TSTree;
@@ -41,7 +35,7 @@ import org.treesitter.TSTree;
  * Service for parsing Turtle documents using Tree-sitter and maintaining their syntax trees.
  * Supports incremental parsing for efficient updates when documents change.
  */
-public class TreeSitterTurtleParserService implements TurtleDiagnosticsService {
+public class TreeSitterTurtleParserService implements Function<Document, ParsedDocument> {
    private final TSParser parser;
    private final Map<Document, TSTree> syntaxTrees = new HashMap<>();
    private final Map<Document, Rope> previousDocumentStates = new WeakHashMap<>();
@@ -52,8 +46,9 @@ public class TreeSitterTurtleParserService implements TurtleDiagnosticsService {
       parser.setLanguage( turtle );
    }
 
-   public TSTree getConcreteSyntaxTree( final Document document ) {
-      return syntaxTrees.computeIfAbsent( document, this::parseDocument );
+   @Override
+   public ParsedDocument apply( final Document document ) {
+      return new ParsedDocument( document, syntaxTrees.computeIfAbsent( document, this::parseDocument ) );
    }
 
    private TSTree parseDocument( final Document document ) {
@@ -142,35 +137,5 @@ public class TreeSitterTurtleParserService implements TurtleDiagnosticsService {
       final TSTree newTree = parser.parseString( oldTree, document.getContent() );
       syntaxTrees.put( document, newTree );
       previousDocumentStates.put( document, document.getRope() );
-   }
-
-   @Override
-   public DiagnosticReport check( final Document document ) {
-      final TSTree abstractSyntaxTree = getConcreteSyntaxTree( document );
-      return new DiagnosticReport( checkNode( abstractSyntaxTree.getRootNode(), document.getUri() ) );
-   }
-
-   private List<TurtleDiagnostic> checkNode( final TSNode node, final String sourceLocation ) {
-      final List<TurtleDiagnostic> childDiagnostics = IntStream.range( 0, node.getChildCount() )
-            .mapToObj( node::getChild )
-            .flatMap( child -> checkNode( child, sourceLocation ).stream() )
-            .toList();
-      if ( node.hasError() && childDiagnostics.isEmpty() ) {
-         final String message;
-         if ( node.isMissing() ) {
-            message = "Syntax error: Missing '" + node.getGrammarType() + "'";
-         } else if ( node.isExtra() ) {
-            message = node.getGrammarType().equals( "ERROR" )
-                  ? "Syntax error: Unexpected token"
-                  : "Syntax error: Unexpected token '" + node.getGrammarType() + "'";
-         } else {
-            message = "Syntax error";
-         }
-         return List.of( new TurtleDocumentDiagnostic( message,
-               TurtleDiagnostic.TurtleCode.E0003, sourceLocation,
-               node.getStartPoint().getRow(), node.getStartPoint().getColumn(),
-               node.getEndPoint().getRow(), node.getEndPoint().getColumn() ) );
-      }
-      return childDiagnostics;
    }
 }

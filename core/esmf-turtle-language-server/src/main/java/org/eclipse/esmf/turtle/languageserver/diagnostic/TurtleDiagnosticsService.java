@@ -13,8 +13,22 @@
 
 package org.eclipse.esmf.turtle.languageserver.diagnostic;
 
-import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
+import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 
 public interface TurtleDiagnosticsService {
-   DiagnosticReport check( Document document );
+   default DiagnosticReport defaultValidate( final ParsedDocument document ) {
+      return DiagnosticReport.EMPTY;
+   }
+
+   default DiagnosticReport onOpen( final ParsedDocument document ) {
+      return defaultValidate( document );
+   }
+
+   default DiagnosticReport onChange( final ParsedDocument document ) {
+      return defaultValidate( document );
+   }
+
+   default DiagnosticReport onSave( final ParsedDocument document ) {
+      return defaultValidate( document );
+   }
 }

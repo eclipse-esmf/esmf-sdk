@@ -28,6 +28,7 @@ import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDiagnostic;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDiagnosticsService;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDocumentDiagnostic;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
+import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +49,13 @@ public class AspectModelValidationService implements TurtleDiagnosticsService {
    }
 
    @Override
-   public DiagnosticReport check( final Document document ) {
+   public DiagnosticReport onChange( final ParsedDocument document ) {
+      return DiagnosticReport.EMPTY;
+   }
+
+   @Override
+   public DiagnosticReport defaultValidate( final ParsedDocument parsedDocument ) {
+      final Document document = parsedDocument.sourceDocument();
       try ( final InputStream inputStream = document.getInputStream() ) {
          LOG.debug( "[load] loading aspect model from {}", document.getUri() );
          final List<Violation> violations =

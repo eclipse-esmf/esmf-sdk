@@ -15,6 +15,8 @@ package org.eclipse.esmf.turtle.languageserver.diagnostic;
 
 import java.util.List;
 
+import com.google.common.collect.Streams;
+
 public record DiagnosticReport(
       List<TurtleDiagnostic> diagnostics
 ) {
@@ -26,11 +28,21 @@ public record DiagnosticReport(
 
    /**
     * Convenience constructor to create are report for one {@link TurtleBaseDiagnostic}
-    * 
+    *
     * @param message the message
     * @param code the code
     */
    public DiagnosticReport( final String message, final TurtleDiagnostic.TurtleCode code ) {
       this( new TurtleBaseDiagnostic( message, code ) );
+   }
+
+   /**
+    * Create a new DiagnosticsReport from this and another
+    *
+    * @param diagnosticReport the other report
+    * @return the new merged report
+    */
+   public DiagnosticReport merge( final DiagnosticReport diagnosticReport ) {
+      return new DiagnosticReport( Streams.concat( diagnostics.stream(), diagnosticReport.diagnostics().stream() ).toList() );
    }
 }

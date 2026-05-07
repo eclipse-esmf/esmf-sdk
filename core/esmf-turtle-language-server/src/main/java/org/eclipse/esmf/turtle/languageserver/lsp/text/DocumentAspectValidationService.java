@@ -25,7 +25,7 @@ public class DocumentAspectValidationService {
       this.aspectValidationCoordinator = aspectValidationCoordinator;
    }
 
-   public DiagnosticReport validateDocument( final String uri, final Document document ) {
+   public DiagnosticReport validateDocument( final String uri, final ParsedDocument document ) {
       if ( document == null ) {
          return new DiagnosticReport(
                new TurtleBaseDiagnostic( "Document is not available in memory: " + uri, TurtleDiagnostic.TurtleCode.E0001 ) );
