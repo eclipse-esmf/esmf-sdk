@@ -41,10 +41,10 @@ import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
-import org.eclipse.esmf.aspectmodel.resolver.Download;
-import org.eclipse.esmf.aspectmodel.resolver.ProxyConfig;
-import org.eclipse.esmf.aspectmodel.resolver.process.BinaryLauncher;
-import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher;
+import org.eclipse.esmf.util.download.Download;
+import org.eclipse.esmf.util.download.ProxyConfig;
+import org.eclipse.esmf.util.process.BinaryLauncher;
+import org.eclipse.esmf.util.process.ProcessLauncher;
 
 public class DownloadZig extends ZigContext {
    private static final String ZIG_PUB_KEY = "RWSGOq2NVecA2UPNdBUZykf1CCb147pkmdtYxgb3Ti+JO/wCYvhbAb/U";

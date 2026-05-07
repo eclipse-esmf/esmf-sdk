@@ -11,14 +11,14 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.aspectmodel.resolver;
+package org.eclipse.esmf.util.process;
 
-public class DownloadException extends RuntimeException {
-   public DownloadException( final String message ) {
+public class ProcessExecutionException extends RuntimeException {
+   public ProcessExecutionException( final String message ) {
       super( message );
    }
 
-   public DownloadException( final String message, final Throwable cause ) {
-      super( message, cause );
+   public ProcessExecutionException( final Exception exception ) {
+      super( exception );
    }
 }

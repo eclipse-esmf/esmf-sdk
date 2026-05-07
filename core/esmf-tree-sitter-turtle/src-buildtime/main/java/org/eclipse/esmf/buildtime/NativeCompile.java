@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.eclipse.esmf.aspectmodel.resolver.process.BinaryLauncher;
-import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher;
+import org.eclipse.esmf.util.process.BinaryLauncher;
+import org.eclipse.esmf.util.process.ProcessLauncher;
 
 public class NativeCompile extends ZigContext {
    private static final String LIB_NAME = "tree-sitter-turtle";

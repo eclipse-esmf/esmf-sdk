@@ -29,7 +29,7 @@ import java.util.zip.ZipFile;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelFileLoader;
-import org.eclipse.esmf.aspectmodel.resolver.Download;
+import org.eclipse.esmf.util.download.Download;
 import org.eclipse.esmf.aspectmodel.resolver.GithubRepository;
 import org.eclipse.esmf.aspectmodel.resolver.ModelSource;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFile;

@@ -36,7 +36,7 @@ import java.util.Set;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.GithubRepository;
-import org.eclipse.esmf.aspectmodel.resolver.ProxyConfig;
+import org.eclipse.esmf.util.download.ProxyConfig;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.github.GitHubStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.github.GithubModelSourceConfig;

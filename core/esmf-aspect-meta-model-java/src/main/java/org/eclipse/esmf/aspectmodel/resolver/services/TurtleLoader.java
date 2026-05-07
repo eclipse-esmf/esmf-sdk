@@ -23,22 +23,24 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.eclipse.esmf.aspectmodel.ValueParsingException;
-import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
-import org.eclipse.esmf.aspectmodel.resolver.parser.ReaderRiotTurtle;
-import org.eclipse.esmf.metamodel.datatype.SammXsdType;
-
-import io.vavr.control.Try;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFParser;
 import org.apache.jena.riot.RDFParserRegistry;
 import org.apache.jena.riot.RiotException;
 import org.apache.jena.riot.system.FactoryRDFStd;
+
+import org.eclipse.esmf.aspectmodel.ValueParsingException;
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
+import org.eclipse.esmf.aspectmodel.resolver.parser.ReaderRiotTurtle;
+import org.eclipse.esmf.metamodel.datatype.SammXsdType;
+
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.vavr.control.Try;
 
 public final class TurtleLoader {
    private static final Logger LOG = LoggerFactory.getLogger( TurtleLoader.class );

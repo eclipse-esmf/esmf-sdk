@@ -18,10 +18,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import org.eclipse.esmf.aspectmodel.resolver.exceptions.ProcessExecutionException;
-import org.eclipse.esmf.aspectmodel.resolver.process.BinaryLauncher;
-import org.eclipse.esmf.aspectmodel.resolver.process.ExecutableJarLauncher;
-import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher;
+import org.eclipse.esmf.util.process.ProcessExecutionException;
+import org.eclipse.esmf.util.process.BinaryLauncher;
+import org.eclipse.esmf.util.process.ExecutableJarLauncher;
+import org.eclipse.esmf.util.process.ProcessLauncher;
 
 /**
  * Executes an external resolver via the underlying OS command and returns the stdout from the
