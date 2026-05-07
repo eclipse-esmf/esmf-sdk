@@ -49,6 +49,7 @@
    </scm>
 
    <modules>
+      <module>core/esmf-util</module>
       <module>core/esmf-aspect-meta-model-interface</module>
       <module>core/esmf-aspect-meta-model-java</module>
       <module>core/esmf-aspect-model-aas-generator</module>
@@ -88,6 +89,11 @@
    <dependencyManagement>
       <!-- Internal projects -->
       <dependencies>
+         <dependency>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-util</artifactId>
+            <version>${project.version}</version>
+         </dependency>
          <dependency>
             <groupId>org.eclipse.esmf</groupId>
             <artifactId>esmf-aspect-meta-model-interface</artifactId>

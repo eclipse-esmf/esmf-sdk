@@ -54,7 +54,7 @@
    <dependencies>
       <dependency>
          <groupId>org.eclipse.esmf</groupId>
-         <artifactId>esmf-aspect-meta-model-java</artifactId>
+         <artifactId>esmf-util</artifactId>
          <scope>compile</scope>
       </dependency>
       <dependency>

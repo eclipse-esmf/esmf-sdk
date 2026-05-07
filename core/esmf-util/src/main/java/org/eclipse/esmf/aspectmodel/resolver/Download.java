@@ -25,8 +25,6 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,7 +92,7 @@ public class Download {
          final HttpRequest request = builder.build();
          return client.send( request, HttpResponse.BodyHandlers.ofByteArray() );
       } catch ( final InterruptedException | URISyntaxException | IOException exception ) {
-         throw new ModelResolutionException( "Could not retrieve " + fileUrl, exception );
+         throw new DownloadException( "Could not retrieve " + fileUrl, exception );
       }
    }
 
@@ -125,10 +123,10 @@ public class Download {
          if ( httpResponse.statusCode() >= 200 && httpResponse.statusCode() < 300 ) {
             outputStream.write( httpResponse.body() );
          } else {
-            throw new ModelResolutionException( "Could not download file (status code: " + httpResponse.statusCode() + ")" );
+            throw new DownloadException( "Could not download file (status code: " + httpResponse.statusCode() + ")" );
          }
       } catch ( final IOException exception ) {
-         throw new ModelResolutionException( "Could not write file " + outputFile, exception );
+         throw new DownloadException( "Could not write file " + outputFile, exception );
       }
 
       LOG.info( "Downloaded {} to local file {}", fileUrl.getPath(), outputFile );
