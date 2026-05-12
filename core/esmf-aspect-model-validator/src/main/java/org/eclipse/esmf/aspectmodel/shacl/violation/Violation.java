@@ -17,6 +17,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.jena.rdf.model.RDFNode;
+
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.parser.SmartToken;
 import org.eclipse.esmf.aspectmodel.resolver.parser.TokenRegistry;
@@ -27,7 +29,7 @@ import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
 import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
 import org.eclipse.esmf.aspectmodel.validation.RegularExpressionConstraintViolation;
 
-import org.apache.jena.rdf.model.RDFNode;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Represents a single violation raised by one or more SHACL shapes against an RDF model. A
@@ -59,8 +61,8 @@ public interface Violation {
    /**
     * The RDF node this violation focusses on
     */
-   default RDFNode highlight() {
-      return context().element();
+   default @Nullable RDFNode highlight() {
+      return context() == null ? null : context().element();
    }
 
    /**

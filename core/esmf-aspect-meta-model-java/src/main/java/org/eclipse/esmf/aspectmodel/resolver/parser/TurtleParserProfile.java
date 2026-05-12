@@ -13,8 +13,6 @@
 
 package org.eclipse.esmf.aspectmodel.resolver.parser;
 
-import org.eclipse.esmf.aspectmodel.ValueParsingException;
-
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.graph.Graph;
 import org.apache.jena.graph.Node;
@@ -28,16 +26,26 @@ import org.apache.jena.riot.tokens.Token;
 import org.apache.jena.riot.tokens.TokenType;
 import org.apache.jena.sparql.core.Quad;
 
+import org.eclipse.esmf.aspectmodel.ValueParsingException;
+import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
+
+import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Customized parser profile that delegates to Jena's built-in Node generation but also registers
  * the nodes in the {@link TokenRegistry}, where information about the line/column/token can be
  * retrieved at a later time.
  */
 public class TurtleParserProfile implements ParserProfile {
+   private static final Logger LOG = LoggerFactory.getLogger( TurtleParserProfile.class );
    private final ParserProfile parserProfile;
+   private final @Nullable TurtleSyntaxTree syntaxTree;
 
-   public TurtleParserProfile( final ParserProfile parserProfile ) {
+   public TurtleParserProfile( final ParserProfile parserProfile, final @Nullable TurtleSyntaxTree syntaxTree ) {
       this.parserProfile = parserProfile;
+      this.syntaxTree = syntaxTree;
    }
 
    @Override
@@ -45,11 +53,58 @@ public class TurtleParserProfile implements ParserProfile {
       return parserProfile.getBaseURI();
    }
 
+   /**
+    * Finds the matching Tree-sitter token for a given Jena token based on line and column position.
+    * If no exact match is found, returns the nearest token.
+    *
+    * @param token the Jena token to find a match for
+    * @return the matching Tree-sitter token, or null if syntax tree is not available or no tokens
+    *         found
+    */
+   private TurtleSyntaxTree.@Nullable Token findMatchingTreeSitterToken( final Token token ) {
+      if ( syntaxTree == null ) {
+         return null;
+      }
+
+      final long targetLine = token.getLine() - 1;
+      final long targetColumn = token.getColumn();
+
+      TurtleSyntaxTree.Token exactMatch = null;
+      TurtleSyntaxTree.Token nearestMatch = null;
+      long minDistance = Long.MAX_VALUE;
+
+      // Iterate through all tokens in the syntax tree
+      for ( final TurtleSyntaxTree.Token treeToken : syntaxTree.tokens().toList() ) {
+         final int tokenLine = treeToken.location().fromLine();
+         final int tokenColumn = treeToken.location().fromColumn();
+
+         // Check for exact match
+         if ( tokenLine == targetLine && tokenColumn == targetColumn ) {
+            exactMatch = treeToken;
+            break;
+         }
+
+         // Calculate Manhattan distance for nearest match
+         final long distance = Math.abs( tokenLine - targetLine ) * 1000 + Math.abs( tokenColumn - targetColumn );
+
+         if ( distance < minDistance ) {
+            minDistance = distance;
+            nearestMatch = treeToken;
+         }
+      }
+
+      return exactMatch != null ? exactMatch : nearestMatch;
+   }
+
    @Override
    public Node create( final Node currentGraph, final Token token ) {
       try {
          final Node node = parserProfile.create( currentGraph, token );
-         TokenRegistry.put( node, new SmartToken( token ) );
+         final TurtleSyntaxTree.@Nullable Token treeSitterToken = findMatchingTreeSitterToken( token );
+         final SmartToken smartToken = treeSitterToken == null
+               ? new SmartToken( token )
+               : new SmartToken( treeSitterToken );
+         TokenRegistry.put( node, smartToken );
          return node;
       } catch ( final ValueParsingException exception ) {
          exception.setLine( token.getLine() );

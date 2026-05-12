@@ -32,15 +32,19 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.jena.rdf.model.Model;
+
 import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
+import org.eclipse.esmf.treesitterturtle.ParserTokenType;
+import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
+import org.eclipse.esmf.util.download.Download;
 
 import io.vavr.control.Try;
-import org.apache.jena.rdf.model.Model;
 
 /**
  * Loads an input source into a {@link RawAspectModelFile}, i.e., an Aspect Model file that does not
@@ -87,6 +91,18 @@ public class AspectModelFileLoader {
       final Model model = tryModel.getOrElseThrow(
             () -> new ModelResolutionException( "Can not load model", tryModel.getCause() ) );
       return new RawAspectModelFile( rdfTurtle, model, headerComment, Optional.of( sourceLocation ) );
+   }
+
+   public static RawAspectModelFile load( final TurtleSyntaxTree syntaxTree, final URI sourceLocation ) {
+      final String sourceRepresentation = syntaxTree.sourceRepresentationSupplier().get();
+      final List<String> headerComment = headerComment( syntaxTree );
+      final Try<Model> tryModel = TurtleLoader.loadTurtle( syntaxTree, sourceLocation );
+      if ( tryModel.isFailure() && tryModel.getCause() instanceof final ParserException parserException ) {
+         throw parserException;
+      }
+      final Model model = tryModel.getOrElseThrow(
+            () -> new ModelResolutionException( "Can not load model", tryModel.getCause() ) );
+      return new RawAspectModelFile( sourceRepresentation, model, headerComment, Optional.of( sourceLocation ) );
    }
 
    /**
@@ -187,6 +203,16 @@ public class AspectModelFileLoader {
       return content.lines()
             .dropWhile( String::isBlank )
             .takeWhile( line -> line.startsWith( "#" ) )
+            .map( line -> line.substring( 1 ).trim() )
+            .toList();
+   }
+
+   private static List<String> headerComment( final TurtleSyntaxTree turtleSyntaxTree ) {
+      return turtleSyntaxTree.tokens()
+            .filter( token -> !token.type().equals( ParserTokenType.DOCUMENT ) )
+            .takeWhile( token -> token.type().equals( ParserTokenType.COMMENT ) )
+            .map( TurtleSyntaxTree.Token::content )
+            .dropWhile( String::isBlank )
             .map( line -> line.substring( 1 ).trim() )
             .toList();
    }

@@ -26,28 +26,36 @@ import org.apache.jena.riot.tokens.Tokenizer;
 import org.apache.jena.riot.tokens.TokenizerText;
 import org.apache.jena.sparql.util.Context;
 
+import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
+import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
+
 public class ReaderRiotTurtle implements ReaderRIOT {
    public static ReaderRIOTFactory factory = ReaderRiotTurtle::new;
-
-   private final Lang lang;
    private final ParserProfile parserProfile;
 
    ReaderRiotTurtle( final Lang lang, final ParserProfile parserProfile ) {
-      this.lang = lang;
-      this.parserProfile = new TurtleParserProfile( parserProfile );
+      this.parserProfile = parserProfile;
    }
 
    @Override
    public void read( final InputStream in, final String baseUri, final ContentType ct, final StreamRDF output, final Context context ) {
-      final TurtleTokenizer tokenizer = new TurtleTokenizer( in, parserProfile.getErrorHandler() );
-      final TurtleParser parser = TurtleParser.create( tokenizer, parserProfile, output );
+      final TurtleSyntaxTree syntaxTree = context != null && context.get( TurtleLoader.TREE_SITTER_SYNTAX_TREE ) != null
+            ? context.get( TurtleLoader.TREE_SITTER_SYNTAX_TREE )
+            : null;
+      final ParserProfile wrappedParserProfile = new TurtleParserProfile( parserProfile, syntaxTree );
+      final TurtleTokenizer tokenizer = new TurtleTokenizer( in, wrappedParserProfile.getErrorHandler() );
+      final TurtleParser parser = TurtleParser.create( tokenizer, wrappedParserProfile, output );
       parser.parse();
    }
 
    @Override
    public void read( final Reader in, final String baseUri, final ContentType ct, final StreamRDF output, final Context context ) {
-      final Tokenizer tokenizer = TokenizerText.create().source( in ).errorHandler( parserProfile.getErrorHandler() ).build();
-      final TurtleParser parser = TurtleParser.create( tokenizer, parserProfile, output );
+      final TurtleSyntaxTree syntaxTree = context != null && context.get( TurtleLoader.TREE_SITTER_SYNTAX_TREE ) != null
+            ? context.get( TurtleLoader.TREE_SITTER_SYNTAX_TREE )
+            : null;
+      final ParserProfile wrappedParserProfile = new TurtleParserProfile( parserProfile, syntaxTree );
+      final Tokenizer tokenizer = TokenizerText.create().source( in ).errorHandler( wrappedParserProfile.getErrorHandler() ).build();
+      final TurtleParser parser = TurtleParser.create( tokenizer, wrappedParserProfile, output );
       parser.parse();
    }
 }

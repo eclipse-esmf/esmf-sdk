@@ -16,28 +16,38 @@ package org.eclipse.esmf.aspectmodel.resolver.parser;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.eclipse.esmf.aspectmodel.AspectModelFile;
-
 import org.apache.jena.riot.tokens.Token;
 import org.apache.jena.riot.tokens.TokenType;
+
+import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
+
+import org.jspecify.annotations.Nullable;
 
 /**
  * Wrapper class for a {@link Token}. This provides access to the actual string representation of
  * the token, 1-based line and column information.
  */
 public final class SmartToken {
-   private final Token token;
+   private final Token jenaToken;
+   private final TurtleSyntaxTree.Token treesitterToken;
    private AspectModelFile originatingFile;
 
    /**
-    * @param token the token
+    * @param jenaToken the token
     */
-   public SmartToken( final Token token ) {
-      this.token = token;
+   public SmartToken( final Token jenaToken ) {
+      this.jenaToken = jenaToken;
+      treesitterToken = null;
    }
 
-   public TokenType type() {
-      return token.getType();
+   public SmartToken( final TurtleSyntaxTree.Token treesitterToken ) {
+      jenaToken = null;
+      this.treesitterToken = treesitterToken;
+   }
+
+   public @Nullable TokenType type() {
+      return jenaToken.getType();
    }
 
    /**
@@ -46,7 +56,10 @@ public final class SmartToken {
     * @return the lexical representation
     */
    public String image() {
-      return token.getImage();
+      if ( jenaToken != null ) {
+         return jenaToken.getImage();
+      }
+      return treesitterToken.content();
    }
 
    /**
@@ -55,15 +68,24 @@ public final class SmartToken {
     * @return the lexical representation
     */
    public String image2() {
-      return token.getImage2();
+      if ( jenaToken != null ) {
+         return jenaToken.getImage2();
+      }
+      return "";
    }
 
-   public Token subToken1() {
-      return token.getSubToken1();
+   public @Nullable Token subToken1() {
+      if ( jenaToken != null ) {
+         return jenaToken.getSubToken1();
+      }
+      return null;
    }
 
-   public Token subToken2() {
-      return token.getSubToken2();
+   public @Nullable Token subToken2() {
+      if ( jenaToken != null ) {
+         return jenaToken.getSubToken2();
+      }
+      return null;
    }
 
    /**
@@ -72,16 +94,46 @@ public final class SmartToken {
     * @return the line
     */
    public int line() {
-      return (int) token.getLine();
+      if ( jenaToken != null ) {
+         return (int) jenaToken.getLine();
+      }
+      return treesitterToken.location().fromLine() + 1;
    }
 
    /**
-    * The column of the token, 1-based. *
+    * The column of the token, 1-based.
     *
     * @return the column
     */
    public int column() {
-      return (int) token.getColumn();
+      if ( jenaToken != null ) {
+         return (int) jenaToken.getColumn();
+      }
+      return treesitterToken.location().fromColumn() + 1;
+   }
+
+   /**
+    * The line where the token ends, 1-based.
+    * 
+    * @return the line
+    */
+   public int toLine() {
+      if ( jenaToken != null ) {
+         return line();
+      }
+      return treesitterToken.location().toLine() + 1;
+   }
+
+   /**
+    * The column where the token ends, 1-based.
+    * 
+    * @return the colum
+    */
+   public int toColumn() {
+      if ( jenaToken != null ) {
+         return column() + content().length();
+      }
+      return treesitterToken.location().toColumn() + 1;
    }
 
    /**
@@ -93,11 +145,15 @@ public final class SmartToken {
     * @return the token's effective content
     */
    public String content() {
-      return switch ( token.getType() ) {
-         case IRI -> "<" + token.getImage() + ">";
-         case DIRECTIVE -> "@" + token.getImage();
+      if ( treesitterToken != null ) {
+         return treesitterToken.content();
+      }
+      // For Jena, only an approximation of the token can be provided
+      return switch ( jenaToken.getType() ) {
+         case IRI -> "<" + jenaToken.getImage() + ">";
+         case DIRECTIVE -> "@" + jenaToken.getImage();
          case PREFIXED_NAME ->
-            Optional.ofNullable( token.getImage() ).orElse( "" ) + ":" + Optional.ofNullable( token.getImage2() ).orElse( "" );
+            Optional.ofNullable( jenaToken.getImage() ).orElse( "" ) + ":" + Optional.ofNullable( jenaToken.getImage2() ).orElse( "" );
          case LT -> "<";
          case GT -> ">";
          case LE -> "<=";
@@ -122,16 +178,17 @@ public final class SmartToken {
          case STAR -> "*";
          case SLASH -> "/";
          case RSLASH -> "\\";
-         case STRING -> "\"" + token.getImage() + "\"";
-         case LITERAL_LANG -> String.format( "\"%s\"@%s", token.getImage(), token.getImage2() );
+         case STRING -> "\"" + jenaToken.getImage() + "\"";
+         case LITERAL_LANG -> String.format( "\"%s\"@%s", jenaToken.getImage(), jenaToken.getImage2() );
          case LITERAL_DT ->
-            String.format( "\"%s\"^^%s:%s", token.getImage(), token.getSubToken2().getImage(), token.getSubToken2().getImage2() );
-         default -> token.getImage();
+            String.format( "\"%s\"^^%s:%s", jenaToken.getImage(), jenaToken.getSubToken2().getImage(),
+                  jenaToken.getSubToken2().getImage2() );
+         default -> jenaToken.getImage();
       };
    }
 
    public Token token() {
-      return token;
+      return jenaToken;
    }
 
    @Override
@@ -143,21 +200,29 @@ public final class SmartToken {
          return false;
       }
       final var that = (SmartToken) obj;
-      return Objects.equals( token, that.token );
+      return jenaToken != null
+            ? Objects.equals( jenaToken, that.jenaToken )
+            : Objects.equals( treesitterToken, that.treesitterToken );
    }
 
    @Override
    public int hashCode() {
-      return Objects.hash( token );
+      return Objects.hash( jenaToken );
    }
 
    @Override
    public String toString() {
-      return "SmartToken[token=" + token + ']';
+      return jenaToken != null
+            ? "SmartToken[jenaToken=" + jenaToken + ']'
+            : "SmartToken[treesitterToken=" + treesitterToken + ']';
    }
 
-   public Token getToken() {
-      return token;
+   public Token getJenaToken() {
+      return jenaToken;
+   }
+
+   public TurtleSyntaxTree.Token getTreesitterToken() {
+      return treesitterToken;
    }
 
    public AspectModelFile getOriginatingFile() {

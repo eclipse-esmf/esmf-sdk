@@ -23,6 +23,13 @@ import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.samm.KnownVersion;
 
 public class TestResources {
+   @SuppressWarnings( "DataFlowIssue" )
+   public static InputStream testModelSource( final TestAspect model ) {
+      final String path = String.format( "valid/%s/%s/%s.ttl", model.getUrn().getNamespaceMainPart(), model.getUrn().getVersion(),
+            model.getName() );
+      return TestResources.class.getClassLoader().getResourceAsStream( path );
+   }
+
    public static AspectModel load( final TestAspect model ) {
       final KnownVersion metaModelVersion = KnownVersion.getLatest();
       final String path = String.format( "valid/%s/%s/%s.ttl", model.getUrn().getNamespaceMainPart(), model.getUrn().getVersion(),
@@ -47,6 +54,13 @@ public class TestResources {
       final InputStream inputStream = TestResources.class.getClassLoader().getResourceAsStream( path );
       final ResolutionStrategy testModelsResolutionStrategy = new ClasspathStrategy( "valid" );
       return new AspectModelLoader( testModelsResolutionStrategy ).load( inputStream, URI.create( "testmodel:" + path ) );
+   }
+
+   @SuppressWarnings( "DataFlowIssue" )
+   public static InputStream testModelSource( final InvalidTestAspect model ) {
+      final String path = String.format( "invalid/%s/%s/%s.ttl", model.getUrn().getNamespaceMainPart(), model.getUrn().getVersion(),
+            model.getName() );
+      return TestResources.class.getClassLoader().getResourceAsStream( path );
    }
 
    public static AspectModel load( final InvalidTestAspect model ) {

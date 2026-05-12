@@ -14,8 +14,16 @@
 package org.eclipse.esmf.treesitterturtle;
 
 import org.treesitter.TSLanguage;
+import org.treesitter.TSParser;
 import org.treesitter.utils.NativeUtils;
 
+/**
+ * Language definition for RDF/Turtle to be used with {@link TSParser}:
+ * {@code
+ *    TSParser parser = new TSParser();
+ *    parser.setLanguage( new TreeSitterTurtle() );
+ * }
+ */
 public class TreeSitterTurtle extends TSLanguage {
    static {
       NativeUtils.loadLib( "lib/tree-sitter-turtle" );

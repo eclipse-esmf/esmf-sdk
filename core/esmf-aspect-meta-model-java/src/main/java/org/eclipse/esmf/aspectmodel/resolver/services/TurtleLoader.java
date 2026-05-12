@@ -23,17 +23,21 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFParser;
 import org.apache.jena.riot.RDFParserRegistry;
 import org.apache.jena.riot.RiotException;
 import org.apache.jena.riot.system.FactoryRDFStd;
+import org.apache.jena.sparql.util.Context;
+import org.apache.jena.sparql.util.Symbol;
 
 import org.eclipse.esmf.aspectmodel.ValueParsingException;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
 import org.eclipse.esmf.aspectmodel.resolver.parser.ReaderRiotTurtle;
 import org.eclipse.esmf.metamodel.datatype.SammXsdType;
+import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -44,13 +48,11 @@ import io.vavr.control.Try;
 
 public final class TurtleLoader {
    private static final Logger LOG = LoggerFactory.getLogger( TurtleLoader.class );
-
    private static volatile boolean isTurtleRegistered = false;
 
    private TurtleLoader() {}
 
    public static void init() {
-      SammXsdType.setupTypeMapping();
       registerTurtle();
    }
 
@@ -116,6 +118,40 @@ public final class TurtleLoader {
       }
    }
 
+   public static class TreeSitterTurtleSyntaxTreeSymbol extends Symbol {
+      protected TreeSitterTurtleSyntaxTreeSymbol() {
+         super( "treesittersyntaxtree" );
+      }
+   }
+
+   public static final Symbol TREE_SITTER_SYNTAX_TREE = new TreeSitterTurtleSyntaxTreeSymbol();
+
+   public static Try<Model> loadTurtle( final TurtleSyntaxTree syntaxTree, final URI location ) {
+      init();
+      final String sourceRepresentation = syntaxTree.sourceRepresentationSupplier().get();
+      try ( final InputStream input = IOUtils.toInputStream( sourceRepresentation, StandardCharsets.UTF_8 ) ) {
+         final Context context = Context.create();
+         context.put( new TreeSitterTurtleSyntaxTreeSymbol(), syntaxTree );
+         final Model streamModel = RDFParser.create()
+               .factory( new FactoryRDFStd() )
+               .source( input )
+               .lang( Lang.TURTLE )
+               .context( context )
+               .toModel();
+         return Try.success( streamModel );
+      } catch ( final ValueParsingException exception ) {
+         // This is thrown by the custom value parsers in SammXsdType
+         exception.setSourceDocument( sourceRepresentation );
+         exception.setSourceLocation( location );
+         throw exception;
+      } catch ( final RiotException exception ) {
+         // Thrown by Jena for regular syntax errors
+         return Try.failure( new ParserException( exception, sourceRepresentation, location ) );
+      } catch ( final IOException exception ) {
+         return Try.failure( exception );
+      }
+   }
+
    /**
     * Loads a Turtle model from a String containing RDF/Turtle
     *
@@ -132,6 +168,7 @@ public final class TurtleLoader {
       }
       synchronized ( TurtleLoader.class ) {
          if ( !isTurtleRegistered ) {
+            SammXsdType.setupTypeMapping();
             RDFParserRegistry.registerLangTriples( Lang.TURTLE, ReaderRiotTurtle.factory );
             isTurtleRegistered = true;
          }

@@ -33,10 +33,10 @@ public class App {
    private static final Logger LOG = LoggerFactory.getLogger( App.class );
 
    static void main( final String[] args ) {
-      LOG.info( "Starting lsp-server on port {}", PORT );
       final TurtleLanguageServer languageServer = new TurtleLanguageServer();
       try ( final AsynchronousServerSocketChannel serverSocket = AsynchronousServerSocketChannel.open() ) {
          serverSocket.bind( new InetSocketAddress( "localhost", PORT ) );
+         LOG.info( "Starting lsp-server on port {}", PORT );
          final AsynchronousSocketChannel socketChannel = serverSocket.accept().get();
          final Launcher<LanguageClient> launcher =
                Launcher.createIoLauncher( languageServer, LanguageClient.class, Channels.newInputStream( socketChannel ),
@@ -48,7 +48,7 @@ public class App {
             Thread.sleep( 10_000L );
          }
       } catch ( final InterruptedException | ExecutionException | IOException exception ) {
-         LOG.warn( "Could not launch Language Server", exception );
+         LOG.info( "Could not launch Language Server", exception );
       }
    }
 }
