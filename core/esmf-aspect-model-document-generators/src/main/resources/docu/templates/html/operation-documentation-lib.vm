@@ -17,6 +17,19 @@
 
         #description( $operation.getDescription( $i18n.getLocale() ) )
 
+        #if( !$operation.getSee().isEmpty() )
+            <div class="flex border-b pb-1 py-4">
+                <div class="w-80">$i18n.getText( "docu.label.see" )</div>
+                <div class="w-full">
+                    #foreach($item in $operation.getSee())
+                        <ul class="reset-all-styles m-0 list">
+                            <li>$item</li>
+                        </ul>
+                    #end
+                </div>
+            </div>
+        #end
+
         #if( !$operation.getInput().isEmpty() )
             #paragraph( $i18n.getText( "docu.label.input" ) "${aspectModelHelper.buildAnchor( $operation, null, 'operation-in-prop' )}" $aspectModelHelper.increment( $weight ) )
 
