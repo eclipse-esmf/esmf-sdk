@@ -15,11 +15,13 @@ package org.eclipse.esmf.turtle.languageserver.lsp.text;
 
 import java.io.InputStream;
 
+import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
+
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.jspecify.annotations.Nullable;
 
-public class Document {
+public class Document implements TurtleSyntaxTree.TokenProvider {
    private final String uri;
    private Rope content;
 
@@ -63,5 +65,10 @@ public class Document {
       final Position end = range.getEnd();
       content = content.update( start.getLine(), start.getCharacter(),
             end.getLine(), end.getCharacter(), newContent );
+   }
+
+   @Override
+   public String apply( final TurtleSyntaxTree.Location location ) {
+      return subSequence( location.fromLine(), location.fromColumn(), location.toLine(), location.toColumn() );
    }
 }

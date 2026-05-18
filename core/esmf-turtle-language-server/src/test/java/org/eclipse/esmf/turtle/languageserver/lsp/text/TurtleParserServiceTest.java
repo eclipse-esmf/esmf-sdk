@@ -15,6 +15,8 @@ package org.eclipse.esmf.turtle.languageserver.lsp.text;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.eclipse.esmf.treesitterturtle.TreeSitterUtil;
+
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentContentChangeEvent;

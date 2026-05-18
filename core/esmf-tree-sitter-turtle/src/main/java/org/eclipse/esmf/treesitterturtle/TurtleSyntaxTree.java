@@ -79,6 +79,9 @@ public class TurtleSyntaxTree {
          int toColumn
    ) {}
 
+   /**
+    * Provides the token (substring) for a given location
+    */
    public interface TokenProvider extends Function<Location, String> {
    }
 

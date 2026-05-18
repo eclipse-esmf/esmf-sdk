@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.turtle.languageserver.lsp.text;
+package org.eclipse.esmf.treesitterturtle;
 
 import org.jspecify.annotations.Nullable;
 import org.treesitter.TSNode;
@@ -26,30 +26,35 @@ public class TreeSitterUtil {
 
    public static String print( final TSNode node ) {
       final StringBuilder builder = new StringBuilder();
-      print( node, builder, 0 );
+      print( node, builder, 0, null );
       return builder.toString();
    }
 
-   public static String print( final TSTree tree, final Document document ) {
-      return print( tree.getRootNode(), document );
+   public static String print( final TSTree tree, final TurtleSyntaxTree.TokenProvider tokenProvider ) {
+      return print( tree.getRootNode(), tokenProvider );
    }
 
-   public static String print( final TSNode node, final Document document ) {
+   public static String print( final TSNode node, final TurtleSyntaxTree.TokenProvider tokenProvider ) {
       final StringBuilder builder = new StringBuilder();
-      print( node, builder, 0, document );
+      print( node, builder, 0, tokenProvider );
       return builder.toString();
    }
 
-   private static void print( final TSNode node, final StringBuilder builder, final int indentLevel, @Nullable final Document document ) {
+   private static void print( final TSNode node, final StringBuilder builder, final int indentLevel,
+         final TurtleSyntaxTree.@Nullable TokenProvider tokenProvider ) {
       builder.repeat( "  ", indentLevel );
       builder.append( "- '" );
       builder.append( node.getType() );
       builder.append( "'" );
       if ( node.hasError() ) {
          builder.append( " (ERROR)" );
-      } else if ( document != null && node.getStartPoint().getRow() == node.getEndPoint().getRow() ) {
-         final String nodeContent = document.subSequence( node.getStartPoint().getRow(), node.getStartPoint().getColumn(),
-               node.getEndPoint().getRow(), node.getEndPoint().getColumn() );
+      } else if ( tokenProvider != null && node.getStartPoint().getRow() == node.getEndPoint().getRow() ) {
+         final TurtleSyntaxTree.Location location = new TurtleSyntaxTree.Location(
+               node.getStartPoint().getRow(),
+               node.getStartPoint().getColumn(),
+               node.getEndPoint().getRow(),
+               node.getEndPoint().getColumn() );
+         final String nodeContent = tokenProvider.apply( location );
          if ( !nodeContent.equals( node.getType() ) ) {
             builder.append( " (" );
             builder.append( nodeContent );
@@ -58,11 +63,7 @@ public class TreeSitterUtil {
       }
       builder.append( "\n" );
       for ( int i = 0; i < node.getChildCount(); i++ ) {
-         print( node.getChild( i ), builder, indentLevel + 1, document );
+         print( node.getChild( i ), builder, indentLevel + 1, tokenProvider );
       }
-   }
-
-   private static void print( final TSNode node, final StringBuilder builder, final int indentLevel ) {
-      print( node, builder, indentLevel, null );
    }
 }

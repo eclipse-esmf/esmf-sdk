@@ -41,7 +41,7 @@ public class TreeSitterTurtleTest {
          """;
       final TSTree tree = parser.parseString( null, content );
       final TSNode rootNode = tree.getRootNode();
-      assertThat( print( rootNode, content ) ).doesNotContain( "ERROR" );
+      assertThat( TreeSitterUtil.print( rootNode, new TurtleSyntaxTree.StringTokenProvider( content ) ) ).doesNotContain( "ERROR" );
       assertThat( rootNode.hasError() ).isFalse();
       assertThat( rootNode.getChild( 0 ).getChild( 0 ).getChild( 0 ).getGrammarType() ).isEqualTo( "@prefix" );
    }
@@ -62,10 +62,10 @@ public class TreeSitterTurtleTest {
       final TSNode rootNode = tree.getRootNode();
 
       assertThat( rootNode.hasError() ).isFalse();
-      assertThat( print( rootNode, content ) ).doesNotContain( "ERROR" );
+      assertThat( TreeSitterUtil.print( rootNode, new TurtleSyntaxTree.StringTokenProvider( content ) ) ).doesNotContain( "ERROR" );
 
       // Verify the document parses successfully with numeric literals
-      final String treeString = print( rootNode, content );
+      final String treeString = TreeSitterUtil.print( rootNode, new TurtleSyntaxTree.StringTokenProvider( content ) );
       assertThat( treeString ).contains( "42" );
       assertThat( treeString ).contains( "3.14" );
       assertThat( treeString ).contains( "1.23e10" );
@@ -88,7 +88,7 @@ public class TreeSitterTurtleTest {
       final TSNode rootNode = tree.getRootNode();
 
       assertThat( rootNode.hasError() ).isFalse();
-      assertThat( print( rootNode, content ) ).doesNotContain( "ERROR" );
+      assertThat( TreeSitterUtil.print( rootNode, new TurtleSyntaxTree.StringTokenProvider( content ) ) ).doesNotContain( "ERROR" );
    }
 
    @Test
@@ -104,9 +104,9 @@ public class TreeSitterTurtleTest {
       final TSNode rootNode = tree.getRootNode();
 
       assertThat( rootNode.hasError() ).isFalse();
-      assertThat( print( rootNode, content ) ).doesNotContain( "ERROR" );
-      assertThat( print( rootNode, content ) ).contains( "true" );
-      assertThat( print( rootNode, content ) ).contains( "false" );
+      assertThat( TreeSitterUtil.print( rootNode, new TurtleSyntaxTree.StringTokenProvider( content ) ) ).doesNotContain( "ERROR" );
+      assertThat( TreeSitterUtil.print( rootNode, new TurtleSyntaxTree.StringTokenProvider( content ) ) ).contains( "true" );
+      assertThat( TreeSitterUtil.print( rootNode, new TurtleSyntaxTree.StringTokenProvider( content ) ) ).contains( "false" );
    }
 
    @Test
@@ -126,10 +126,10 @@ public class TreeSitterTurtleTest {
       final TSNode rootNode = tree.getRootNode();
 
       assertThat( rootNode.hasError() ).isFalse();
-      assertThat( print( rootNode, content ) ).doesNotContain( "ERROR" );
-      assertThat( print( rootNode, content ) ).contains( "@en" );
-      assertThat( print( rootNode, content ) ).contains( "@de" );
-      assertThat( print( rootNode, content ) ).contains( "@fr" );
+      assertThat( TreeSitterUtil.print( rootNode, new TurtleSyntaxTree.StringTokenProvider( content ) ) ).doesNotContain( "ERROR" );
+      assertThat( TreeSitterUtil.print( rootNode, new TurtleSyntaxTree.StringTokenProvider( content ) ) ).contains( "@en" );
+      assertThat( TreeSitterUtil.print( rootNode, new TurtleSyntaxTree.StringTokenProvider( content ) ) ).contains( "@de" );
+      assertThat( TreeSitterUtil.print( rootNode, new TurtleSyntaxTree.StringTokenProvider( content ) ) ).contains( "@fr" );
    }
 
    @Test
@@ -149,8 +149,8 @@ public class TreeSitterTurtleTest {
       final TSNode rootNode = tree.getRootNode();
 
       assertThat( rootNode.hasError() ).isFalse();
-      assertThat( print( rootNode, content ) ).doesNotContain( "ERROR" );
-      assertThat( print( rootNode, content ) ).contains( "^^" );
+      assertThat( TreeSitterUtil.print( rootNode, new TurtleSyntaxTree.StringTokenProvider( content ) ) ).doesNotContain( "ERROR" );
+      assertThat( TreeSitterUtil.print( rootNode, new TurtleSyntaxTree.StringTokenProvider( content ) ) ).contains( "^^" );
    }
 
    @Test
@@ -170,9 +170,9 @@ public class TreeSitterTurtleTest {
       final TSNode rootNode = tree.getRootNode();
 
       assertThat( rootNode.hasError() ).isFalse();
-      assertThat( print( rootNode, content ) ).doesNotContain( "ERROR" );
-      assertThat( print( rootNode, content ) ).contains( "(" );
-      assertThat( print( rootNode, content ) ).contains( ")" );
+      assertThat( TreeSitterUtil.print( rootNode, new TurtleSyntaxTree.StringTokenProvider( content ) ) ).doesNotContain( "ERROR" );
+      assertThat( TreeSitterUtil.print( rootNode, new TurtleSyntaxTree.StringTokenProvider( content ) ) ).contains( "(" );
+      assertThat( TreeSitterUtil.print( rootNode, new TurtleSyntaxTree.StringTokenProvider( content ) ) ).contains( ")" );
    }
 
    @Test
@@ -209,9 +209,9 @@ public class TreeSitterTurtleTest {
       final TSNode rootNode = tree.getRootNode();
 
       assertThat( rootNode.hasError() ).isFalse();
-      assertThat( print( rootNode, content ) ).doesNotContain( "ERROR" );
-      assertThat( print( rootNode, content ) ).contains( "[" );
-      assertThat( print( rootNode, content ) ).contains( "]" );
+      assertThat( TreeSitterUtil.print( rootNode, new TurtleSyntaxTree.StringTokenProvider( content ) ) ).doesNotContain( "ERROR" );
+      assertThat( TreeSitterUtil.print( rootNode, new TurtleSyntaxTree.StringTokenProvider( content ) ) ).contains( "[" );
+      assertThat( TreeSitterUtil.print( rootNode, new TurtleSyntaxTree.StringTokenProvider( content ) ) ).contains( "]" );
    }
 
    @Test
@@ -248,7 +248,7 @@ public class TreeSitterTurtleTest {
       final TSNode rootNode = tree.getRootNode();
 
       assertThat( rootNode.hasError() ).isFalse();
-      assertThat( print( rootNode, content ) ).doesNotContain( "ERROR" );
+      assertThat( TreeSitterUtil.print( rootNode, new TurtleSyntaxTree.StringTokenProvider( content ) ) ).doesNotContain( "ERROR" );
    }
 
    @Test
@@ -264,7 +264,7 @@ public class TreeSitterTurtleTest {
 
       // Should have errors due to missing dot after prefix declaration
       assertThat( rootNode.hasError() ).isTrue();
-      assertThat( print( rootNode, content ) ).contains( "ERROR" );
+      assertThat( TreeSitterUtil.print( rootNode, new TurtleSyntaxTree.StringTokenProvider( content ) ) ).contains( "ERROR" );
    }
 
    @Test
@@ -280,7 +280,7 @@ public class TreeSitterTurtleTest {
 
       // Should have errors due to invalid URI
       assertThat( rootNode.hasError() ).isTrue();
-      assertThat( print( rootNode, content ) ).contains( "ERROR" );
+      assertThat( TreeSitterUtil.print( rootNode, new TurtleSyntaxTree.StringTokenProvider( content ) ) ).contains( "ERROR" );
    }
 
    @Test
@@ -296,7 +296,7 @@ public class TreeSitterTurtleTest {
 
       // Should have errors due to unterminated string
       assertThat( rootNode.hasError() ).isTrue();
-      assertThat( print( rootNode, content ) ).contains( "ERROR" );
+      assertThat( TreeSitterUtil.print( rootNode, new TurtleSyntaxTree.StringTokenProvider( content ) ) ).contains( "ERROR" );
    }
 
    @Test
@@ -314,7 +314,7 @@ public class TreeSitterTurtleTest {
 
       // Should have errors due to mismatched brackets
       assertThat( rootNode.hasError() ).isTrue();
-      assertThat( print( rootNode, content ) ).contains( "ERROR" );
+      assertThat( TreeSitterUtil.print( rootNode, new TurtleSyntaxTree.StringTokenProvider( content ) ) ).contains( "ERROR" );
    }
 
    @Test
@@ -330,7 +330,7 @@ public class TreeSitterTurtleTest {
 
       // Should have errors due to invalid prefix name (starts with number)
       assertThat( rootNode.hasError() ).isTrue();
-      assertThat( print( rootNode, content ) ).contains( "ERROR" );
+      assertThat( TreeSitterUtil.print( rootNode, new TurtleSyntaxTree.StringTokenProvider( content ) ) ).contains( "ERROR" );
    }
 
    @Test
@@ -346,7 +346,7 @@ public class TreeSitterTurtleTest {
 
       // Should have errors due to missing object
       assertThat( rootNode.hasError() ).isTrue();
-      assertThat( print( rootNode, content ) ).contains( "ERROR" );
+      assertThat( TreeSitterUtil.print( rootNode, new TurtleSyntaxTree.StringTokenProvider( content ) ) ).contains( "ERROR" );
    }
 
    @Test
@@ -364,7 +364,7 @@ public class TreeSitterTurtleTest {
       final TSNode rootNode = tree.getRootNode();
 
       assertThat( rootNode.hasError() ).isFalse();
-      assertThat( print( rootNode, content ) ).doesNotContain( "ERROR" );
+      assertThat( TreeSitterUtil.print( rootNode, new TurtleSyntaxTree.StringTokenProvider( content ) ) ).doesNotContain( "ERROR" );
    }
 
    @Test
@@ -385,83 +385,6 @@ public class TreeSitterTurtleTest {
       final TSNode rootNode = tree.getRootNode();
 
       assertThat( rootNode.hasError() ).isFalse();
-      assertThat( print( rootNode, content ) ).doesNotContain( "ERROR" );
-   }
-
-   public static String print( final TSNode node, final String source ) {
-      final StringBuilder builder = new StringBuilder();
-      print( node, builder, 0, source );
-      return builder.toString();
-   }
-
-   private static void print( final TSNode node, final StringBuilder builder, final int indentLevel, final String source ) {
-      builder.repeat( "  ", indentLevel );
-      builder.append( "- '" );
-      builder.append( node.getType() );
-      builder.append( "'" );
-      if ( node.hasError() ) {
-         builder.append( " (ERROR)" );
-      } else if ( node.getStartPoint().getRow() == node.getEndPoint().getRow() ) {
-         final String nodeContent = getSubDocument( source, node.getStartPoint().getRow(), node.getStartPoint().getColumn(),
-               node.getEndPoint().getRow(), node.getEndPoint().getColumn() );
-         if ( !nodeContent.equals( node.getType() ) ) {
-            builder.append( " (" );
-            builder.append( nodeContent );
-            builder.append( ")" );
-         }
-      }
-      builder.append( "\n" );
-      for ( int i = 0; i < node.getChildCount(); i++ ) {
-         print( node.getChild( i ), builder, indentLevel + 1, source );
-      }
-   }
-
-   /**
-    * Extracts a substring from a multi-line string using line and column coordinates.
-    *
-    * @param originalString the source string
-    * @param fromLine the starting line (0-based)
-    * @param fromColumn the starting column (0-based)
-    * @param toLine the ending line (0-based)
-    * @param toColumn the ending column (0-based, exclusive)
-    * @return the extracted substring
-    */
-   private static String getSubDocument( final String originalString, final int fromLine, final int fromColumn,
-         final int toLine, final int toColumn ) {
-      if ( originalString == null || originalString.isEmpty() ) {
-         return "";
-      }
-
-      // Calculate the start index by navigating to the start line
-      int currentLine = 0;
-      int i = 0;
-
-      while ( i < originalString.length() && currentLine < fromLine ) {
-         if ( originalString.charAt( i ) == '\n' ) {
-            currentLine++;
-         }
-         i++;
-      }
-
-      final int startIndex = i + fromColumn;
-
-      // Calculate the end index by navigating to the end line
-      currentLine = 0;
-      i = 0;
-
-      while ( i < originalString.length() && currentLine < toLine ) {
-         if ( originalString.charAt( i ) == '\n' ) {
-            currentLine++;
-         }
-         i++;
-      }
-
-      final int endIndex = i + toColumn;
-
-      // Clamp indices to valid range
-      final int clampedStart = Math.clamp( startIndex, 0, originalString.length() );
-      final int clampedEnd = Math.clamp( endIndex, clampedStart, originalString.length() );
-
-      return originalString.substring( clampedStart, clampedEnd );
+      assertThat( TreeSitterUtil.print( rootNode, new TurtleSyntaxTree.StringTokenProvider( content ) ) ).doesNotContain( "ERROR" );
    }
 }
