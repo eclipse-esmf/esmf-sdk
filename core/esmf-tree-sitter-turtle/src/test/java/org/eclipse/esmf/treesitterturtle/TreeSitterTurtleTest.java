@@ -194,15 +194,14 @@ public class TreeSitterTurtleTest {
          ] .
 
          # Blank node with multiple predicates and objects
-         ex:person [
+         ex:person
             ex:firstName "John" ;
             ex:lastName "Doe" ;
             ex:age 30 ;
             ex:knows [
                ex:firstName "Jane" ;
                ex:lastName "Smith"
-            ]
-         ] .
+            ] .
          """;
 
       final TSTree tree = parser.parseString( null, content );
