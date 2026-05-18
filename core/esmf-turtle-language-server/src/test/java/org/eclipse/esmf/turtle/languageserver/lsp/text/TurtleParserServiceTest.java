@@ -384,5 +384,3 @@ class TurtleParserServiceTest {
       parserService.onChange( document, change );
    }
 }
-
-

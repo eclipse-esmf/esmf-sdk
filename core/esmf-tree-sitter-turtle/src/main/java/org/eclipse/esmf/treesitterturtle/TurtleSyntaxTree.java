@@ -47,7 +47,7 @@ public class TurtleSyntaxTree {
 
    /**
     * Represents one node in the concrete syntax tree in the source document
-    * 
+    *
     * @param type the type of token, expected to be one of the constants in {@link ParserTokenType}
     * @param content the actual content of the token
     * @param location the location in the source document

@@ -114,7 +114,7 @@ public final class SmartToken {
 
    /**
     * The line where the token ends, 1-based.
-    * 
+    *
     * @return the line
     */
    public int toLine() {
@@ -126,7 +126,7 @@ public final class SmartToken {
 
    /**
     * The column where the token ends, 1-based.
-    * 
+    *
     * @return the colum
     */
    public int toColumn() {

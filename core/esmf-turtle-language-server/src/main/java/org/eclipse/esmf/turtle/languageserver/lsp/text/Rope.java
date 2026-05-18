@@ -38,7 +38,7 @@ public class Rope implements CharSequence {
 
    /**
     * Constructs a new rope from a given string value
-    * 
+    *
     * @param value the value
     */
    public Rope( final String value ) {
@@ -49,7 +49,7 @@ public class Rope implements CharSequence {
 
    /**
     * Constructs a new rope from left and right children
-    * 
+    *
     * @param left left children
     * @param right right children
     */
@@ -77,7 +77,7 @@ public class Rope implements CharSequence {
 
    /**
     * Returns the length of the rope in characters
-    * 
+    *
     * @return the length
     */
    @Override
@@ -95,7 +95,7 @@ public class Rope implements CharSequence {
 
    /**
     * Concatenates another rope to this one
-    * 
+    *
     * @param rope the other rope
     * @return the new rope representing the concatenated result
     */
@@ -123,7 +123,7 @@ public class Rope implements CharSequence {
 
    /**
     * Returns the character at given index
-    * 
+    *
     * @param index the index of the {@code char} value to be returned
     *
     * @return the character at the index
@@ -135,7 +135,7 @@ public class Rope implements CharSequence {
 
    /**
     * Splits this rope into two parts at the given index
-    * 
+    *
     * @param index the index
     * @return an array with two elements, representing the left and right parts of the index. Both
     *         elements could be null,
@@ -176,7 +176,7 @@ public class Rope implements CharSequence {
 
    /**
     * Returns the subsequence of characters between to indices
-    * 
+    *
     * @param start the start index, inclusive
     * @param end the end index, exclusive
     * @return the subsequence of characters
@@ -188,7 +188,7 @@ public class Rope implements CharSequence {
 
    /**
     * Inserts another rope at the given index. The index must be inside the rope.
-    * 
+    *
     * @param rope the other rope
     * @param index the index. This must be less or equal than this rope's length
     * @return the resulting new rope
@@ -200,7 +200,7 @@ public class Rope implements CharSequence {
 
    /**
     * Deletes a section at the given index. The index and index+length must be inside the rope.
-    * 
+    *
     * @param index the index
     * @param length the length to delete
     * @return the resulting new rope
@@ -218,7 +218,7 @@ public class Rope implements CharSequence {
 
    /**
     * Returns the index of the nth linebreak in a string, or -1 if no nth linebreak exists
-    * 
+    *
     * @param string the text to search in
     * @param n the number of the linebreak
     * @return the index or -1
@@ -269,7 +269,7 @@ public class Rope implements CharSequence {
 
    /**
     * Prints the rope as a tree structure
-    * 
+    *
     * @return the tree structure as a visual string
     */
    public String print() {
@@ -360,7 +360,7 @@ public class Rope implements CharSequence {
     * fewer, if
     * not as many are left at the offset. Returns 0 if the end of the source code was reached,
     * otherwise the number of bytes read.
-    * 
+    *
     * @param buffer the buffer to write to
     * @param offset offset to read from
     * @return the number of bytes read

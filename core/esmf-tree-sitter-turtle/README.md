@@ -18,5 +18,5 @@ The build works as follows, in chronological order:
 | process-sources       | exec-maven-plugin     | java | Execute DownloadZig class, to download and extract Zig release |
 | compile               | maven-compiler-plugin | compile | Compile regular Java binding class (TreeSitterTurtle) |
 | compile               | exec-maven-plugin     | java | Execute NativeCompile class, to use Zig compiler to create native libraries from Turtle parser C code |
- 
+
 At the end of the build, platform-specific native libs are present in target/classes/libs.
