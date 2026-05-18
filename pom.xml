@@ -84,6 +84,7 @@
       <apache-parquet-avro.version>1.15.2</apache-parquet-avro.version>
       <apache-parquet-hadoop-client.version>3.4.1</apache-parquet-hadoop-client.version>
       <apache-parquet-avro.version>1.12.0</apache-parquet-avro.version>
+      <xz.version>1.11</xz.version>
    </properties>
 
    <dependencyManagement>
@@ -250,6 +251,12 @@
             </exclusions>
          </dependency>
          <!-- Apache Parquet dependencies end -->
+
+         <dependency>
+            <groupId>org.tukaani</groupId>
+            <artifactId>xz</artifactId>
+            <version>${xz.version}</version>
+         </dependency>
 
          <!-- Overrides due to CVEs -->
          <dependency>
