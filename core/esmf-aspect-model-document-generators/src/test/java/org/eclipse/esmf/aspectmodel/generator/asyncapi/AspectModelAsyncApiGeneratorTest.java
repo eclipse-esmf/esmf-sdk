@@ -46,7 +46,7 @@ class AspectModelAsyncApiGeneratorTest {
       final JsonNode expectedJson = OBJECT_MAPPER.readTree(
             """
                   {
-                     "asyncapi": "3.0.0",
+                     "asyncapi": "3.1.0",
                      "id": "urn:samm:test:test:serve",
                      "info": {
                         "title": "Test Aspect MQTT API",

@@ -56,7 +56,7 @@ public class AspectModelAsyncApiGenerator extends JsonGenerator<Aspect, AsyncApi
    private static final String ACTION_SEND = "send";
    private static final String REQUEST = "Request";
    private static final String RESPONSE = "Response";
-   private static final String V30 = "3.0.0";
+   private static final String V31 = "3.1.0";
 
    private static final String TITLE_FIELD = "title";
    private static final String NAME_FIELD = "name";
@@ -115,7 +115,7 @@ public class AspectModelAsyncApiGenerator extends JsonGenerator<Aspect, AsyncApi
    private ObjectNode getRootJsonNode() throws IOException {
       final InputStream inputStream = getClass().getResourceAsStream( "/asyncapi/AsyncApiRootJson.json" );
       final String string = IOUtils.toString( inputStream, StandardCharsets.UTF_8 )
-            .replace( "${AsyncApiVer}", V30 );
+            .replace( "${AsyncApiVer}", V31 );
       return (ObjectNode) objectMapper.readTree( string );
    }
 

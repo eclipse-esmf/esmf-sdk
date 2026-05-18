@@ -1029,7 +1029,7 @@ class SammCliTest extends SammCliAbstractTest {
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "asyncapi" );
       assertThat( result.exitStatus() ).isZero();
       assertThat( result.stdout() ).isNotEmpty();
-      assertThat( result.stdout() ).contains( "asyncapi: 3.0.0" );
+      assertThat( result.stdout() ).contains( "asyncapi: 3.1.0" );
       assertThat( result.stderr() ).isEmpty();
    }
 
@@ -1038,7 +1038,7 @@ class SammCliTest extends SammCliAbstractTest {
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "asyncapi", "-ai", "test:serve" );
       assertThat( result.exitStatus() ).isZero();
       assertThat( result.stdout() ).isNotEmpty();
-      assertThat( result.stdout() ).contains( "asyncapi: 3.0.0" );
+      assertThat( result.stdout() ).contains( "asyncapi: 3.1.0" );
       assertThat( result.stdout() ).contains( "id: test:serve" );
       assertThat( result.stderr() ).isEmpty();
    }
@@ -1056,7 +1056,7 @@ class SammCliTest extends SammCliAbstractTest {
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "asyncapi" );
       assertThat( result.exitStatus() ).isZero();
       assertThat( result.stdout() ).isNotEmpty();
-      assertThat( result.stdout() ).contains( "asyncapi: 3.0.0" );
+      assertThat( result.stdout() ).contains( "asyncapi: 3.1.0" );
       assertThat( result.stdout() ).contains( "address: /org.eclipse.esmf.test/1.0.0/AspectWithEntity" );
       assertThat( result.stderr() ).isEmpty();
    }
@@ -1067,7 +1067,7 @@ class SammCliTest extends SammCliAbstractTest {
             "-ca", "test/address/aspect/1.0.0/TestAspect" );
       assertThat( result.exitStatus() ).isZero();
       assertThat( result.stdout() ).isNotEmpty();
-      assertThat( result.stdout() ).contains( "asyncapi: 3.0.0" );
+      assertThat( result.stdout() ).contains( "asyncapi: 3.1.0" );
       assertThat( result.stdout() ).contains( "address: test/address/aspect/1.0.0/TestAspect" );
       assertThat( result.stderr() ).isEmpty();
    }
