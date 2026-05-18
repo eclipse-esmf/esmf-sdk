@@ -82,6 +82,12 @@ public class ZigContext {
       } else {
          throw new BuildTimeException( "Unsupported operating system: " + SystemUtils.OS_NAME );
       }
+
+      try {
+         Files.createDirectories( cacheLocation );
+      } catch ( final IOException exception ) {
+         throw new BuildTimeException( "Could not create cache directory: " + cacheLocation );
+      }
    }
 
    protected Path zigDir() {
