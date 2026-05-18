@@ -79,6 +79,7 @@ public class NativeCompile extends ZigContext {
          args.add( "c++" );
          args.add( "-g0" );
          args.add( "-fno-sanitize=undefined" );
+         args.add( "-fdeclspec" );
          args.add( "-shared" );
          args.add( "-target" );
          args.add( target.getTargetName() );
