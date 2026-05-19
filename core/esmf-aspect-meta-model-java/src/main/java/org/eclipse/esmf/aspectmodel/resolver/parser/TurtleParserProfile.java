@@ -13,6 +13,8 @@
 
 package org.eclipse.esmf.aspectmodel.resolver.parser;
 
+import java.util.List;
+
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.graph.Graph;
 import org.apache.jena.graph.Node;
@@ -27,6 +29,7 @@ import org.apache.jena.riot.tokens.TokenType;
 import org.apache.jena.sparql.core.Quad;
 
 import org.eclipse.esmf.aspectmodel.ValueParsingException;
+import org.eclipse.esmf.treesitterturtle.ParserTokenType;
 import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
 
 import org.jspecify.annotations.Nullable;
@@ -41,11 +44,11 @@ import org.slf4j.LoggerFactory;
 public class TurtleParserProfile implements ParserProfile {
    private static final Logger LOG = LoggerFactory.getLogger( TurtleParserProfile.class );
    private final ParserProfile parserProfile;
-   private final @Nullable TurtleSyntaxTree syntaxTree;
+   private final List<TurtleSyntaxTree.Token> tokens;
 
    public TurtleParserProfile( final ParserProfile parserProfile, final @Nullable TurtleSyntaxTree syntaxTree ) {
       this.parserProfile = parserProfile;
-      this.syntaxTree = syntaxTree;
+      tokens = syntaxTree == null ? List.of() : syntaxTree.tokens().toList();
    }
 
    @Override
@@ -57,35 +60,36 @@ public class TurtleParserProfile implements ParserProfile {
     * Finds the matching Tree-sitter token for a given Jena token based on line and column position.
     * If no exact match is found, returns the nearest token.
     *
-    * @param token the Jena token to find a match for
+    * @param targetLine the line of the originating Jena token (1-based)
+    * @param targetColumn the column of the originating Jena token (1-based)
     * @return the matching Tree-sitter token, or null if syntax tree is not available or no tokens
     *         found
     */
-   private TurtleSyntaxTree.@Nullable Token findMatchingTreeSitterToken( final Token token ) {
-      if ( syntaxTree == null ) {
+   private TurtleSyntaxTree.@Nullable Token findMatchingTreeSitterToken( final long targetLine, final long targetColumn ) {
+      if ( tokens.isEmpty() ) {
          return null;
       }
-
-      final long targetLine = token.getLine() - 1;
-      final long targetColumn = token.getColumn();
 
       TurtleSyntaxTree.Token exactMatch = null;
       TurtleSyntaxTree.Token nearestMatch = null;
       long minDistance = Long.MAX_VALUE;
+      final long originatingLine = targetLine - 1;
+      final long originatingColumn = targetColumn - 1;
 
-      // Iterate through all tokens in the syntax tree
-      for ( final TurtleSyntaxTree.Token treeToken : syntaxTree.tokens().toList() ) {
+      for ( final TurtleSyntaxTree.Token treeToken : tokens ) {
+         if ( treeToken.type().equals( ParserTokenType.OBJECT_LIST ) || treeToken.type().equals( ParserTokenType.TRIPLE ) ) {
+            continue;
+         }
          final int tokenLine = treeToken.location().fromLine();
          final int tokenColumn = treeToken.location().fromColumn();
 
-         // Check for exact match
-         if ( tokenLine == targetLine && tokenColumn == targetColumn ) {
+         if ( tokenLine == originatingLine && tokenColumn == originatingColumn ) {
             exactMatch = treeToken;
             break;
          }
 
          // Calculate Manhattan distance for nearest match
-         final long distance = Math.abs( tokenLine - targetLine ) * 1000 + Math.abs( tokenColumn - targetColumn );
+         final long distance = Math.abs( tokenLine - originatingLine ) * 1000 + Math.abs( tokenColumn - originatingColumn );
 
          if ( distance < minDistance ) {
             minDistance = distance;
@@ -94,6 +98,18 @@ public class TurtleParserProfile implements ParserProfile {
       }
 
       return exactMatch != null ? exactMatch : nearestMatch;
+   }
+
+   /**
+    * Finds the matching Tree-sitter token for a given Jena token based on line and column position.
+    * If no exact match is found, returns the nearest token.
+    *
+    * @param token the Jena token to find a match for
+    * @return the matching Tree-sitter token, or null if syntax tree is not available or no tokens
+    *         found
+    */
+   private TurtleSyntaxTree.@Nullable Token findMatchingTreeSitterToken( final Token token ) {
+      return findMatchingTreeSitterToken( token.getLine(), token.getColumn() );
    }
 
    @Override
@@ -145,7 +161,12 @@ public class TurtleParserProfile implements ParserProfile {
 
    @Override
    public Triple createTriple( final Node subject, final Node predicate, final Node object, final long line, final long col ) {
-      return parserProfile.createTriple( subject, predicate, object, line, col );
+      final Triple triple = parserProfile.createTriple( subject, predicate, object, line, col );
+      final TurtleSyntaxTree.@Nullable Token treeSitterToken = findMatchingTreeSitterToken( line, col );
+      if ( treeSitterToken != null ) {
+         TokenRegistry.put( object, new SmartToken( treeSitterToken ) );
+      }
+      return triple;
    }
 
    @Override

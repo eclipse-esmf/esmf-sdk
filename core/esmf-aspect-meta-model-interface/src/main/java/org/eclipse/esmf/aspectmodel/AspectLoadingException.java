@@ -40,4 +40,8 @@ public class AspectLoadingException extends RuntimeException {
       super( message );
       this.highlightElement = highlightElement;
    }
+
+   public @Nullable RDFNode highlightElement() {
+      return highlightElement;
+   }
 }
