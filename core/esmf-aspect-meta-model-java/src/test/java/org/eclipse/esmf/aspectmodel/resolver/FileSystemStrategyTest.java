@@ -21,6 +21,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.io.File;
 import java.net.URISyntaxException;
 
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
+
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
@@ -31,9 +35,6 @@ import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestModel;
 
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.vocabulary.RDF;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -57,12 +58,11 @@ import org.junit.jupiter.params.provider.CsvSource;
  * </p>
  */
 class FileSystemStrategyTest {
-
    private ResolutionStrategy fileSystemStrategy;
 
    @BeforeEach
    void setUp() throws URISyntaxException {
-      File aspectModelsRootDirectory = new File(
+      final File aspectModelsRootDirectory = new File(
             FileSystemStrategyTest.class.getClassLoader()
                   .getResource( KnownVersion.getLatest().toString().toLowerCase() )
                   .toURI().getPath() );
@@ -161,11 +161,11 @@ class FileSystemStrategyTest {
 
          // Verify that sharedProperty from aspectelements_shared.ttl is present
          final Resource sharedProperty = createResource( TestModel.TEST_NAMESPACE + "sharedProperty" );
-         assertThat( result.mergedModel().contains( sharedProperty, RDF.type, (org.apache.jena.rdf.model.RDFNode) null ) ).isTrue();
+         assertThat( result.mergedModel().contains( sharedProperty, RDF.type, (RDFNode) null ) ).isTrue();
 
          // Verify that legacyProperty from its dedicated file legacyProperty.ttl is present
          final Resource legacyProperty = createResource( TestModel.TEST_NAMESPACE + "legacyProperty" );
-         assertThat( result.mergedModel().contains( legacyProperty, RDF.type, (org.apache.jena.rdf.model.RDFNode) null ) ).isTrue();
+         assertThat( result.mergedModel().contains( legacyProperty, RDF.type, (RDFNode) null ) ).isTrue();
       } ).doesNotThrowAnyException();
    }
 
@@ -175,8 +175,10 @@ class FileSystemStrategyTest {
       final AspectModelUrn nonExistentUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "NonExistentElement" );
 
       assertThatThrownBy( () -> new AspectModelLoader( fileSystemStrategy ).load( nonExistentUrn ) )
-            .isInstanceOf( ModelResolutionException.class )
-            .hasMessageContaining( "File does not contain the element definition" );
+            .isInstanceOfSatisfying( ModelResolutionException.class, exception -> {
+               assertThat( exception.getCheckedLocations() ).isNotEmpty();
+            } )
+            .hasMessageContaining( "File does not exist" );
    }
 
 
@@ -202,7 +204,21 @@ class FileSystemStrategyTest {
       final ResolutionStrategySupport support = new AspectModelLoader( fileSystemStrategy );
 
       assertThatThrownBy( () -> fileSystemStrategy.apply( nonExistentUrn, support ) )
-            .isInstanceOf( ModelResolutionException.class );
+            .isInstanceOfSatisfying( ModelResolutionException.class, exception -> {
+               assertThat( exception.getCheckedLocations() ).isNotEmpty();
+            } );
+   }
+
+   @Test
+   void testApplyWithNonExistingNamespace() {
+      // Test that apply throws ModelResolutionException for non-existent namespaces
+      final AspectModelUrn nonExistentUrn = AspectModelUrn.fromUrn( "urn:samm:something.that.does.not.exist:1.0.0#Nothing" );
+      final ResolutionStrategySupport support = new AspectModelLoader( fileSystemStrategy );
+
+      assertThatThrownBy( () -> fileSystemStrategy.apply( nonExistentUrn, support ) )
+            .isInstanceOfSatisfying( ModelResolutionException.class, exception -> {
+               assertThat( exception.getCheckedLocations() ).isNotEmpty();
+            } );
    }
 
    @Test

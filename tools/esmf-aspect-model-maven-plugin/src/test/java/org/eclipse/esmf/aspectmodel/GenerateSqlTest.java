@@ -51,6 +51,6 @@ public class GenerateSqlTest extends AspectModelMojoTest {
 
       assertThat( sqlContent ).contains( "CREATE TABLE aspect_with_simple_types" );
       assertThat( sqlContent ).contains( "custom_column ARRAY<STRING> NOT NULL COMMENT 'Custom column'" );
-      assertThat( sqlContent ).contains( "DECIMAL(23)" );
+      assertThat( sqlContent ).contains( "DECIMAL(23,14)" );
    }
 }

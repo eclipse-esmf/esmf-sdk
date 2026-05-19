@@ -31,8 +31,8 @@ import org.commonmark.renderer.html.HtmlRenderer;
  * This renderer supports a limited subset of Markdown syntax and introduces custom processing for
  * specific annotated blocks commonly used in SAMM descriptions, such as {@code > NOTE: ...},
  * {@code > EXAMPLE: ...}, and {@code > SOURCE: ...}. These blocks are extracted and rendered into
- * semantically meaningful HTML structures (e.g., {@code <div class="note">}, {@code 
- * 
+ * semantically meaningful HTML structures (e.g., {@code <div class="note">}, {@code
+ *
 <ul class="example-list">
  * }, etc.). Remaining content is rendered using the CommonMark parser.
  */
@@ -119,7 +119,7 @@ public class MarkdownHtmlRenderer {
       if ( markdownBuffer.isEmpty() ) {
          return;
       }
-      Node parsed = PARSER.parse( markdownBuffer.toString() );
+      final Node parsed = PARSER.parse( markdownBuffer.toString() );
       html.append( RENDERER.render( parsed ) );
       markdownBuffer.setLength( 0 );
    }
@@ -134,14 +134,14 @@ public class MarkdownHtmlRenderer {
       }
 
       // keep existing behavior: split EXAMPLE into list entries, NOTE/SOURCE as single block
-      List<String> items = splitBlockItems( blockBuffer.toString() );
+      final List<String> items = splitBlockItems( blockBuffer.toString() );
       html.append( renderSpecialBlock( currentType, items ) );
 
       blockBuffer.setLength( 0 );
    }
 
    private static List<String> splitBlockItems( final String blockText ) {
-      String normalized = blockText.strip();
+      final String normalized = blockText.strip();
 
       // Start a new item for each "EXAMPLE X:" header.
       // BLOCK_PATTERN already matches the header line and should be used to detect block boundaries.
@@ -160,8 +160,8 @@ public class MarkdownHtmlRenderer {
     * - For {@code NOTE} and {@code SOURCE}, each entry is rendered in a {@code <div>} with a matching
     * class.<br>
     * - For {@code EXAMPLE}, a single example is rendered as a {@code <div>}; multiple examples as a
-    * {@code 
-    * 
+    * {@code
+    *
    <ul>
     * }.
     *
@@ -184,8 +184,8 @@ public class MarkdownHtmlRenderer {
             if ( items.size() == 1 ) {
                yield "<div class=\"example\">" + renderMarkdownInline( items.get( 0 ).strip() ) + CLOSE_DIV_TAG + "\n";
             } else {
-               StringBuilder sb = new StringBuilder( "<ul class=\"example-list\">\n" );
-               for ( String item : items ) {
+               final StringBuilder sb = new StringBuilder( "<ul class=\"example-list\">\n" );
+               for ( final String item : items ) {
                   sb.append( "<li>" ).append( renderMarkdownInline( item.strip() ) ).append( "</li>\n" );
                }
                sb.append( "</ul>\n" );
@@ -208,13 +208,13 @@ public class MarkdownHtmlRenderer {
     * @return A map of special block types to their associated content.
     */
    private static Map<String, List<String>> collectSpecialBlocks( final String[] lines, final StringBuilder markdownBuffer ) {
-      Map<String, List<String>> specialBlocks = new LinkedHashMap<>();
+      final Map<String, List<String>> specialBlocks = new LinkedHashMap<>();
 
       String currentType = null;
-      StringBuilder block = new StringBuilder();
+      final StringBuilder block = new StringBuilder();
 
-      for ( String line : lines ) {
-         Matcher matcher = DescriptionsUtils.BLOCK_PATTERN.matcher( line );
+      for ( final String line : lines ) {
+         final Matcher matcher = DescriptionsUtils.BLOCK_PATTERN.matcher( line );
          if ( matcher.find() ) {
             flushBlock( currentType, block, specialBlocks );
             currentType = matcher.group( 1 ).toUpperCase();
@@ -253,8 +253,8 @@ public class MarkdownHtmlRenderer {
     * @return An array of trimmed lines.
     */
    private static String[] stripLines( final String rawMarkdown ) {
-      String[] rawLines = rawMarkdown.split( "\\R", -1 );
-      String[] lines = new String[rawLines.length];
+      final String[] rawLines = rawMarkdown.split( "\\R", -1 );
+      final String[] lines = new String[rawLines.length];
       for ( int i = 0; i < rawLines.length; i++ ) {
          lines[i] = rawLines[i].stripLeading();
       }
@@ -269,9 +269,7 @@ public class MarkdownHtmlRenderer {
     * @return HTML output as string.
     */
    private static String renderMarkdownInline( final String text ) {
-      Node node = PARSER.parse( text );
+      final Node node = PARSER.parse( text );
       return RENDERER.render( node ).trim();
    }
 }
-
-

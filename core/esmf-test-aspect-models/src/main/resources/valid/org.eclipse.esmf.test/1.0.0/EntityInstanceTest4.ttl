@@ -37,4 +37,3 @@
    samm:characteristic samm-c:Text .
 
 :entityInstance a :TheEntity .
-

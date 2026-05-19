@@ -31,6 +31,9 @@ import io.soabase.recordbuilder.core.RecordBuilder;
  * @param decimalPrecision the precision to use for decimal columns, see <a href=
  *        "https://docs.databricks.com/en/sql/language-manual/data-types/decimal-type.html">DECIMAL
  *        type</a> for more info.
+ * @param decimalScale the scale to use for decimal columns, see <a href=
+ *        "https://docs.databricks.com/en/sql/language-manual/data-types/decimal-type.html">DECIMAL
+ *        type</a> for more info.
  * @param customColumns custom columns to add to the table
  */
 @RecordBuilder

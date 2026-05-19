@@ -18,7 +18,7 @@
    <parent>
       <groupId>org.eclipse.esmf</groupId>
       <artifactId>esmf-parent</artifactId>
-      <version>23</version>
+      <version>24</version>
    </parent>
 
    <artifactId>esmf-sdk-parent</artifactId>
@@ -77,9 +77,10 @@
       <skip.maven.failsafe>false</skip.maven.failsafe>
       <build-time-sources>${project.basedir}/src-buildtime</build-time-sources>
       <generated-sources>${project.basedir}/src-gen</generated-sources>
-      <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
-      <checkstyle.version>10.26.1</checkstyle.version>
-      <central-publishing-maven-plugin.version>0.8.0</central-publishing-maven-plugin.version>
+      <apache-parquet-hadoop.version>1.15.2</apache-parquet-hadoop.version>
+      <apache-parquet-avro.version>1.15.2</apache-parquet-avro.version>
+      <apache-parquet-hadoop-client.version>3.4.1</apache-parquet-hadoop-client.version>
+      <apache-parquet-avro.version>1.12.0</apache-parquet-avro.version>
    </properties>
 
    <dependencyManagement>
@@ -185,27 +186,62 @@
             <type>pom</type>
             <scope>import</scope>
          </dependency>
+
+         <!-- Apache Parquet dependencies start -->
+         <dependency>
+            <groupId>org.apache.parquet</groupId>
+            <artifactId>parquet-hadoop</artifactId>
+            <version>${apache-parquet-hadoop.version}</version>
+            <exclusions>
+               <exclusion>
+                  <groupId>org.slf4j</groupId>
+                  <artifactId>slf4j-reload4j</artifactId>
+               </exclusion>
+            </exclusions>
+         </dependency>
+         <dependency>
+            <groupId>org.apache.parquet</groupId>
+            <artifactId>parquet-avro</artifactId>
+            <version>${apache-parquet-avro.version}</version>
+            <exclusions>
+               <exclusion>
+                  <groupId>org.slf4j</groupId>
+                  <artifactId>slf4j-reload4j</artifactId>
+               </exclusion>
+            </exclusions>
+         </dependency>
+         <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-client</artifactId>
+            <version>${apache-parquet-hadoop-client.version}</version>
+            <exclusions>
+               <exclusion>
+                  <groupId>org.slf4j</groupId>
+                  <artifactId>slf4j-reload4j</artifactId>
+               </exclusion>
+            </exclusions>
+         </dependency>
+         <dependency>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro</artifactId>
+            <version>${apache-parquet-avro.version}</version>
+            <exclusions>
+               <exclusion>
+                  <groupId>org.slf4j</groupId>
+                  <artifactId>slf4j-reload4j</artifactId>
+               </exclusion>
+            </exclusions>
+         </dependency>
+         <!-- Apache Parquet dependencies end -->
+
+         <!-- Overrides due to CVEs -->
+         <dependency>
+            <groupId>org.apache.maven.shared</groupId>
+            <artifactId>maven-shared-utils</artifactId>
+            <version>[3.3.3,)</version>
+         </dependency>
       </dependencies>
    </dependencyManagement>
-
-   <dependencies>
-      <!-- Overrides due to CVEs -->
-      <dependency>
-         <groupId>org.apache.maven.shared</groupId>
-         <artifactId>maven-shared-utils</artifactId>
-         <version>[3.3.3,)</version>
-      </dependency>
-      <dependency>
-         <groupId>commons-io</groupId>
-         <artifactId>commons-io</artifactId>
-         <version>[2.16.1,)</version>
-      </dependency>
-      <dependency>
-         <groupId>org.codehaus.plexus</groupId>
-         <artifactId>plexus-archiver</artifactId>
-         <version>[4.8.0,)</version>
-      </dependency>
-   </dependencies>
 
    <build>
       <plugins>
@@ -243,23 +279,20 @@
          </plugin>
 
          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-checkstyle-plugin</artifactId>
-            <version>${maven-checkstyle-plugin.version}</version>
+            <groupId>com.diffplug.spotless</groupId>
+            <artifactId>spotless-maven-plugin</artifactId>
             <configuration>
-               <configLocation>${maven.multiModuleProjectDirectory}/.development/esmf-checkstyle.xml</configLocation>
-               <consoleOutput>true</consoleOutput>
-               <failsOnError>true</failsOnError>
-               <failOnViolation>true</failOnViolation>
-               <includeTestSourceDirectory>true</includeTestSourceDirectory>
+               <formats>
+                  <format combine.children="append">
+                     <excludes>
+                        <exclude>**/target/**</exclude>
+                        <exclude>.idea/**</exclude>
+                        <exclude>**/InvalidEncoding.ttl</exclude>
+                        <exclude>**/src/test/resources/submodel-templates/**</exclude>
+                     </excludes>
+                  </format>
+               </formats>
             </configuration>
-            <dependencies>
-               <dependency>
-                  <groupId>com.puppycrawl.tools</groupId>
-                  <artifactId>checkstyle</artifactId>
-                  <version>${checkstyle.version}</version>
-               </dependency>
-            </dependencies>
          </plugin>
 
          <plugin>

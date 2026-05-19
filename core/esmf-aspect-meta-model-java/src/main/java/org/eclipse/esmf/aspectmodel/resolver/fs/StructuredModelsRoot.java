@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * The directory is assumed to contain a file system hierarchy as follows: {@code N/V/X.ttl} where N
  * is the namespace, V is the version of the namespace and X is the name of the model element
  * (Aspect, Characteristic, ...).
- * 
+ *
  * <pre>
  * models   <-- this is the modelsRoot
  * └── com.example

@@ -31,5 +31,3 @@
       a samm-c:Set ;
       samm:dataType xsd:string
    ] .
-
-

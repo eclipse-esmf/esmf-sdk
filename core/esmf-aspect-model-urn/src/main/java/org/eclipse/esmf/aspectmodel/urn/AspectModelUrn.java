@@ -474,11 +474,12 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
       }
    }
 
-   private static String formatSimple( String pattern, final Object... args ) {
+   private static String formatSimple( final String pattern, final Object... args ) {
+      String result = pattern;
       for ( int i = 0; i < args.length; i++ ) {
-         pattern = pattern.replace( "{" + i + "}", String.valueOf( args[i] ) );
+         result = result.replace( "{" + i + "}", String.valueOf( args[i] ) );
       }
-      return pattern;
+      return result;
    }
 
    @Override

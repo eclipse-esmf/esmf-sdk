@@ -43,13 +43,13 @@ public class CustomViolationFormatter implements Violation.Visitor<String> {
        // Handle each error type separately
        List<Violation> dataTypeErrors = errorsByCode.get("ERR_TYPE");
        List<Violation> cardinalityErrors = errorsByCode.get("ERR_MAX_COUNT");
-       
+
        // Process each error type with specific handling logic
        if (dataTypeErrors != null && !dataTypeErrors.isEmpty()) {
            System.out.println("Found " + dataTypeErrors.size() + " data type errors");
            // Handle data type errors...
        }
-       
+
        if (cardinalityErrors != null && !cardinalityErrors.isEmpty()) {
            System.out.println("Found " + cardinalityErrors.size() + " cardinality errors");
            // Handle cardinality errors...

@@ -62,7 +62,7 @@ public class AspectToSvgCommand extends AbstractCommand {
 
    @Override
    public void run() {
-      setResolverConfig( resolverConfiguration );
+      setDetails( details );
       setResolverConfig( resolverConfiguration );
 
       try {

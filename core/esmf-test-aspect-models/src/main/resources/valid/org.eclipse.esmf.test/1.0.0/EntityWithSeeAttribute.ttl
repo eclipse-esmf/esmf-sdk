@@ -18,4 +18,3 @@
    samm:description "This is a test entity."@en ;
    samm:see <http://example.com/> ;
    samm:properties ( ) .
-

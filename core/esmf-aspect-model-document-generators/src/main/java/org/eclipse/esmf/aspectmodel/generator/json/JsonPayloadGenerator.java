@@ -30,10 +30,10 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.eclipse.esmf.aspectmodel.generator.JsonGenerator;
+import org.eclipse.esmf.aspectmodel.generator.Range;
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.BoundDefinition;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.CollectionValue;
 import org.eclipse.esmf.metamodel.Constraint;
@@ -53,8 +53,6 @@ import org.eclipse.esmf.metamodel.characteristic.SortedSet;
 import org.eclipse.esmf.metamodel.characteristic.State;
 import org.eclipse.esmf.metamodel.characteristic.Trait;
 import org.eclipse.esmf.metamodel.constraint.FixedPointConstraint;
-import org.eclipse.esmf.metamodel.constraint.LengthConstraint;
-import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
 import org.eclipse.esmf.metamodel.constraint.RegularExpressionConstraint;
 import org.eclipse.esmf.metamodel.datatype.Curie;
 import org.eclipse.esmf.metamodel.datatype.CurieType;
@@ -84,7 +82,6 @@ public class JsonPayloadGenerator<S extends StructureElement>
       implements AspectVisitor<JsonNode, JsonPayloadGenerator.Context> {
    private static final Logger LOG = LoggerFactory.getLogger( JsonPayloadGenerator.class );
    public static final JsonPayloadGenerationConfig DEFAULT_CONFIG = JsonPayloadGenerationConfigBuilder.builder().build();
-   private static final float EPSILON = .0001f;
 
    public JsonPayloadGenerator( final S element, final JsonPayloadGenerationConfig config ) {
       super( element, config );
@@ -124,120 +121,6 @@ public class JsonPayloadGenerator<S extends StructureElement>
 
       public Context doIgnoreExampleValue( final boolean ignore ) {
          return new Context( constraints(), visitedProperties(), ignore );
-      }
-   }
-
-   private record Range(
-         BigDecimal min, BigDecimal max
-   ) {
-      static final Range OPEN = new Range( null, (BigDecimal) null );
-
-      Range( final Double min, final Double max ) {
-         this( min == null ? null : BigDecimal.valueOf( min ), max == null ? null : BigDecimal.valueOf( max ) );
-      }
-
-      Range( final Long min, final Long max ) {
-         this( min == null ? null : BigDecimal.valueOf( min ), max == null ? null : BigDecimal.valueOf( max ) );
-      }
-
-      Range( final Integer min, final Integer max ) {
-         this( min == null ? null : BigDecimal.valueOf( min ), max == null ? null : BigDecimal.valueOf( max ) );
-      }
-
-      Range( final BigInteger min, final BigInteger max ) {
-         this( min == null ? null : new BigDecimal( min ), max == null ? null : new BigDecimal( max ) );
-      }
-
-      Range merge( final Range other ) {
-         final BigDecimal newMin;
-         final BigDecimal newMax;
-         if ( min == null && other.min == null ) {
-            newMin = null;
-         } else if ( min == null ) {
-            newMin = other.min;
-         } else if ( other.min == null ) {
-            newMin = min;
-         } else {
-            newMin = min.max( other.min );
-         }
-
-         if ( max == null && other.max == null ) {
-            newMax = null;
-         } else if ( max == null ) {
-            newMax = other.max;
-         } else if ( other.max == null ) {
-            newMax = max;
-         } else {
-            newMax = max.min( other.max );
-         }
-         if ( newMin != null && newMax != null && newMin.compareTo( newMax ) > 0 ) {
-            // This happens if the range to merge is disjunct to this range.
-            // In this case, ignore the range to merge.
-            return this;
-         }
-         return new Range( newMin, newMax );
-      }
-
-      Range clamp( final Long min, final Long max ) {
-         return merge( new Range( min, max ) );
-      }
-
-      Range clamp( final Integer min, final Integer max ) {
-         return merge( new Range( min, max ) );
-      }
-
-      Range clamp( final Optional<BigInteger> min, final Optional<BigInteger> max ) {
-         return merge( new Range( min.orElse( null ), max.orElse( null ) ) );
-      }
-
-      private static BigDecimal getScalarValue( final ScalarValue value ) {
-         return value.getValue() instanceof final BigDecimal bigDecimal
-               ? bigDecimal
-               : new BigDecimal( value.getValue().toString() );
-      }
-
-      static Range fromLengthConstraints( final List<Constraint> constraints ) {
-         return constraints.stream()
-               .filter( constraint -> constraint.is( LengthConstraint.class ) )
-               .map( constraint -> constraint.as( LengthConstraint.class ) )
-               .map( lengthConstraint -> new Range( lengthConstraint.getMinValue().orElse( null ),
-                     lengthConstraint.getMaxValue().orElse( null ) ) )
-               .reduce( Range.OPEN, Range::merge );
-      }
-
-      static Range fromRangeConstraints( final List<Constraint> constraints, final boolean floatingPoint ) {
-         return constraints.stream()
-               .<Optional<Range>>map( constraint -> {
-                  if ( constraint instanceof final RangeConstraint rangeConstraint ) {
-                     if ( floatingPoint ) {
-                        final Optional<Double> min = rangeConstraint.getMinValue()
-                              .map( value -> getScalarValue( value ).doubleValue() )
-                              .map( value -> BoundDefinition.GREATER_THAN.equals( rangeConstraint.getLowerBoundDefinition() )
-                                    ? value + EPSILON
-                                    : value );
-                        final Optional<Double> max = rangeConstraint.getMaxValue()
-                              .map( value -> getScalarValue( value ).doubleValue() )
-                              .map( value -> BoundDefinition.LESS_THAN.equals( rangeConstraint.getLowerBoundDefinition() )
-                                    ? value - EPSILON
-                                    : value );
-                        return Optional.of( new Range( min.orElse( null ), max.orElse( null ) ) );
-                     } // else
-                     final Optional<BigDecimal> min = rangeConstraint.getMinValue()
-                           .map( Range::getScalarValue )
-                           .map( value -> BoundDefinition.GREATER_THAN.equals( rangeConstraint.getLowerBoundDefinition() )
-                                 ? value.add( BigDecimal.ONE )
-                                 : value );
-                     final Optional<BigDecimal> max = rangeConstraint.getMaxValue()
-                           .map( Range::getScalarValue )
-                           .map( value -> BoundDefinition.LESS_THAN.equals( rangeConstraint.getLowerBoundDefinition() )
-                                 ? value.add( BigDecimal.valueOf( -1L ) )
-                                 : value );
-                     return Optional.of( new Range( min.orElse( null ), max.orElse( null ) ) );
-                  }
-                  return Optional.empty();
-               } )
-               .flatMap( Optional::stream )
-               .reduce( Range.OPEN, Range::merge );
       }
    }
 
@@ -359,7 +242,7 @@ public class JsonPayloadGenerator<S extends StructureElement>
     * first example element's value may be based on the exampleValue, otherwise the generated structure
     * violates the corresponding JSON Schema's "uniqueItems" constraint. In other words, the following
     * would not be valid, because both values are identical:
-    * 
+    *
     * <pre>
     *  {
     *   "someProperty" : [ {

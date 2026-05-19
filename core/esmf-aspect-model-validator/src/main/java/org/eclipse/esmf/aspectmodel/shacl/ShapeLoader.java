@@ -116,7 +116,7 @@ public class ShapeLoader implements Function<Model, List<Shape.Node>> {
                .put( SHACL.minLength(), context -> new MinLengthConstraint( context.statement().getLiteral().getInt() ) )
                .put( SHACL.maxLength(), context -> new MaxLengthConstraint( context.statement().getLiteral().getInt() ) )
                .put( SHACL.pattern(), context -> {
-                  String flagsString = Optional.ofNullable( context.statement().getSubject().getProperty( SHACL.flags() ) )
+                  final String flagsString = Optional.ofNullable( context.statement().getSubject().getProperty( SHACL.flags() ) )
                         .map( Statement::getString ).orElse( "" );
                   return new PatternConstraint( buildPattern( context.statement().getLiteral().getString(), flagsString ) );
                } )
@@ -154,11 +154,11 @@ public class ShapeLoader implements Function<Model, List<Shape.Node>> {
                .put( SHACL.in(),
                      context -> new AllowedValuesConstraint( context.statement().getResource().as( RDFList.class ).asJavaList() ) )
                .put( SHACL.closed(), context -> {
-                  boolean closed = context.statement().getBoolean();
+                  final boolean closed = context.statement().getBoolean();
                   if ( !closed ) {
                      throw new ShaclValidationException( "Value of sh:closed may only be true" );
                   }
-                  Set<Property> ignoredProperties = Optional.ofNullable(
+                  final Set<Property> ignoredProperties = Optional.ofNullable(
                         context.statement().getSubject().getProperty( SHACL.ignoredProperties() ) )
                         .map( Statement::getResource )
                         .map( resource -> resource.as( RDFList.class ) )

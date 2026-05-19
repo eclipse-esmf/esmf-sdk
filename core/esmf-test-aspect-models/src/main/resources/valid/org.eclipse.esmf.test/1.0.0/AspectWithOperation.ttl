@@ -20,23 +20,32 @@
    samm:operations ( :testOperation :testOperationTwo ) .
 
 :testOperation a samm:Operation ;
-   samm:preferredName "Test Operation"@en ;
-   samm:description "Test Operation"@en ;
+   samm:preferredName "First Test Operation"@en ;
+   samm:description "Description of the first test operation"@en ;
    samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm:input ( :input ) ;
    samm:output :output .
 
 :output a samm:Property ;
+   samm:preferredName "Test output"@en ;
+   samm:description "Description of a text property that is used for output"@en ;
    samm:characteristic samm-c:Text .
 
 :input a samm:Property ;
+   samm:preferredName "Test input one"@en ;
+   samm:description "Description of a text property that is used for input"@en ;
+   samm:characteristic samm-c:Text .
+
+:input2 a samm:Property ;
+   samm:preferredName "Test input two"@en ;
+   samm:description "Description of a second text property that is used for input"@en ;
    samm:characteristic samm-c:Text .
 
 :testOperationTwo a samm:Operation ;
-   samm:preferredName "Test Operation"@en ;
-   samm:description "Test Operation"@en ;
+   samm:preferredName "Second Test Operation"@en ;
+   samm:description "Description of the second test operation. Has two inputs"@en ;
    samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
-   samm:input ( :input ) ;
+   samm:input ( :input :input2 ) ;
    samm:output :output .

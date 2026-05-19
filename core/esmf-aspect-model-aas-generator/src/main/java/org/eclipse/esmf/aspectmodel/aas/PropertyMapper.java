@@ -75,7 +75,7 @@ public interface PropertyMapper<T extends SubmodelElement> extends Comparable<Pr
    }
 
    @Override
-   default int compareTo( PropertyMapper<T> otherPropertyMapper ) {
+   default int compareTo( final PropertyMapper<T> otherPropertyMapper ) {
       return Integer.compare( getOrder(), otherPropertyMapper.getOrder() );
    }
 

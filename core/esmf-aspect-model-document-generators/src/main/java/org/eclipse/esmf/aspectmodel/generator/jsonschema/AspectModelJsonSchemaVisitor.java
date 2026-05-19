@@ -657,8 +657,8 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
 
    private ObjectNode generateRefOrWrappedRef( final ObjectNode propertyNode, final String referenceNodeName ) {
       if ( !propertyNode.isEmpty() ) {
-         ArrayNode allOfArray = FACTORY.arrayNode();
-         ObjectNode refNode = FACTORY.objectNode();
+         final ArrayNode allOfArray = FACTORY.arrayNode();
+         final ObjectNode refNode = FACTORY.objectNode();
          refNode.put( "$ref", "#/components/schemas/" + referenceNodeName );
          allOfArray.add( refNode );
          propertyNode.set( "allOf", allOfArray );
