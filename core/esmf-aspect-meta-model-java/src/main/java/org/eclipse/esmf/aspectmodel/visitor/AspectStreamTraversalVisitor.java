@@ -26,6 +26,7 @@ import org.eclipse.esmf.metamodel.CollectionValue;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Entity;
 import org.eclipse.esmf.metamodel.EntityInstance;
+import org.eclipse.esmf.metamodel.Event;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Operation;
 import org.eclipse.esmf.metamodel.Property;
@@ -88,6 +89,12 @@ public class AspectStreamTraversalVisitor implements AspectVisitor<Stream<ModelE
             visit( operation.getOutput() ) )
             .reduce( Stream.empty(), Stream::concat );
    }
+
+   @Override
+   public Stream<ModelElement> visitEvent( final Event event, final Void context ) {
+      return visitStructureElement( event, context );
+   }
+
 
    @Override
    public Stream<ModelElement> visitCharacteristic( final Characteristic characteristic, final Void context ) {
