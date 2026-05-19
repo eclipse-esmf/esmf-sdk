@@ -63,10 +63,6 @@
          <version>${tree-sitter.version}</version>
       </dependency>
       <dependency>
-         <groupId>org.slf4j</groupId>
-         <artifactId>slf4j-nop</artifactId>
-      </dependency>
-      <dependency>
          <groupId>org.apache.commons</groupId>
          <artifactId>commons-compress</artifactId>
          <scope>compile</scope>
@@ -86,6 +82,11 @@
       <dependency>
          <groupId>org.assertj</groupId>
          <artifactId>assertj-core</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-nop</artifactId>
          <scope>test</scope>
       </dependency>
    </dependencies>
