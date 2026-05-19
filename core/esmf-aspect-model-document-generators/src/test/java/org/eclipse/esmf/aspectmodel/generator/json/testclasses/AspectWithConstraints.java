@@ -72,7 +72,7 @@ public class AspectWithConstraints {
    private String testPropertyWithMinMaxLengthConstraint;
 
    @Size( min = 1 )
-   private BigInteger testPropertyWithMinLengthConstraint;
+   private String testPropertyWithMinLengthConstraint;
 
    @Size( min = 1,
       max = 10 )
@@ -89,7 +89,7 @@ public class AspectWithConstraints {
          @JsonProperty( value = "testPropertyRangeConstraintWithFloatType" ) Float testPropertyRangeConstraintWithFloatType,
          @JsonProperty( value = "testPropertyRangeConstraintWithDoubleType" ) Double testPropertyRangeConstraintWithDoubleType,
          @JsonProperty( value = "testPropertyWithMinMaxLengthConstraint" ) String testPropertyWithMinMaxLengthConstraint,
-         @JsonProperty( value = "testPropertyWithMinLengthConstraint" ) BigInteger testPropertyWithMinLengthConstraint,
+         @JsonProperty( value = "testPropertyWithMinLengthConstraint" ) String testPropertyWithMinLengthConstraint,
          @JsonProperty( value = "testPropertyCollectionLengthConstraint" ) List<BigInteger> testPropertyCollectionLengthConstraint ) {
       this.testPropertyWithRegularExpression = testPropertyWithRegularExpression;
       this.testPropertyWithDecimalMinDecimalMaxRangeConstraint =
@@ -181,7 +181,7 @@ public class AspectWithConstraints {
     *
     * @return {@link #testPropertyWithMinLengthConstraint}
     */
-   public BigInteger getTestPropertyWithMinLengthConstraint() {
+   public String getTestPropertyWithMinLengthConstraint() {
       return this.testPropertyWithMinLengthConstraint;
    }
 

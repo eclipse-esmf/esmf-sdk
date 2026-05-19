@@ -23,6 +23,7 @@ import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.MetaModelFile;
 import org.eclipse.esmf.aspectmodel.shacl.fix.Fix;
 import org.eclipse.esmf.aspectmodel.shacl.violation.DatatypeViolation;
+import org.eclipse.esmf.aspectmodel.shacl.violation.MinCountViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.SparqlConstraintViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.validation.CycleViolation;
@@ -62,6 +63,13 @@ class AspectModelValidatorTest {
       final AspectModel aspectModel = TestResources.load( testProperty );
       final List<Violation> violations = validator.validateModel( aspectModel );
       assertThat( violations ).isEmpty();
+   }
+
+   @Test
+   void testValidateBlankStructuredValueWithInvalidElementsProperty() {
+      final AspectModel aspectModel = TestResources.load( InvalidTestAspect.ASPECT_WITH_INVALID_BLANK_STRUCTURED_VALUE );
+      final List<Violation> violations = new AspectModelValidator().validateModel( aspectModel );
+      assertThat( violations ).hasExactlyElementsOfTypes( MinCountViolation.class, ProcessingViolation.class );
    }
 
    @ParameterizedTest
