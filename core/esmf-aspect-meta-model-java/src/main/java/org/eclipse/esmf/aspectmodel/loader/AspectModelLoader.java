@@ -660,6 +660,11 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
                .filter( statement -> !statement.getObject().isURIResource() || !statement.getResource().equals( SammNs.SAMM.Namespace() ) )
                .map( Statement::getSubject )
                .filter( RDFNode::isURIResource )
+               .map( resource -> {
+                  final Resource newResource = mergedModel.createResource( resource.getURI() );
+                  TokenRegistry.updateNode( resource.asNode(), newResource.asNode() );
+                  return newResource;
+               } )
                .map( resource -> modelElementFactory.create( ModelElement.class, resource ) )
                .toList();
          aspectModelFile.setElements( fileElements );
