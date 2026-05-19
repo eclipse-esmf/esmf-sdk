@@ -125,6 +125,7 @@ public class ShaclValidator implements RdfBasedValidator<Violation, List<Violati
       final Map<Resource, List<Shape.Node>> sparqlTargetsWithShapes = findSparqlTargets( model );
       return Streams.stream( model.listStatements( null, RDF.type, (RDFNode) null ) )
             .map( Statement::getSubject )
+            .filter( s -> !s.isLiteral() )
             .flatMap( element -> validateElement( element, sparqlTargetsWithShapes, model ).stream() )
             .toList();
    }

@@ -624,6 +624,14 @@ class SubmodelToAspectConverter {
       final Optional<ScalarValue> minValue = Optional.ofNullable( range.getMin() )
             .flatMap( minLexical -> valueInstantiator.buildScalarValue( minLexical, null, dataTypeUri ) );
 
+      // A RangeConstraint requires at least a minValue or a maxValue
+      // if neither is present return a plain Characteristic
+      if ( minValue.isEmpty() && maxValue.isEmpty() ) {
+         final MetaModelBaseAttributes characteristicBaseAttributes = baseAttributes( range, new DetermineAutomatically(
+               propertyUrn.getName() + "Characteristic" ), true, false );
+         return new DefaultCharacteristic( characteristicBaseAttributes, Optional.of( new DefaultScalar( dataTypeUri ) ) );
+      }
+
       final MetaModelBaseAttributes constraintMetaModelBaseAttributes = MetaModelBaseAttributes.builder().isAnonymous().build();
       final RangeConstraint constraint = new DefaultRangeConstraint( constraintMetaModelBaseAttributes, minValue, maxValue,
             BoundDefinition.AT_LEAST, BoundDefinition.AT_MOST );
