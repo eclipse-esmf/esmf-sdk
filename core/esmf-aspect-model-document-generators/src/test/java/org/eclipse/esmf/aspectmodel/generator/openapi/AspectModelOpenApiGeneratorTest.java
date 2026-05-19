@@ -15,6 +15,7 @@ package org.eclipse.esmf.aspectmodel.generator.openapi;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assumptions.assumeThat;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,6 +27,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
+import org.assertj.core.api.InstanceOfAssertFactories;
+
 import org.eclipse.esmf.aspectmodel.generator.AbstractSchemaArtifact;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
 import org.eclipse.esmf.metamodel.Aspect;
@@ -33,9 +37,13 @@ import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.read.ListAppender;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -50,6 +58,10 @@ import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
+
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import io.swagger.parser.OpenAPIParser;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
@@ -59,14 +71,6 @@ import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.parser.core.models.SwaggerParseResult;
-import org.apache.commons.io.IOUtils;
-import org.assertj.core.api.InstanceOfAssertFactories;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
-import org.slf4j.LoggerFactory;
 
 class AspectModelOpenApiGeneratorTest {
    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -301,7 +305,9 @@ class AspectModelOpenApiGeneratorTest {
    @Test
    void testInValidParameterName() throws IOException {
       final ListAppender<ILoggingEvent> logAppender = new ListAppender<>();
-      final Logger logger = (Logger) LoggerFactory.getLogger( AspectModelOpenApiGenerator.class );
+      final org.slf4j.Logger theLogger = LoggerFactory.getLogger( AspectModelOpenApiGenerator.class );
+      assumeThat( theLogger ).isInstanceOf( ch.qos.logback.classic.Logger.class );
+      final Logger logger = (Logger) theLogger;
       logger.addAppender( logAppender );
       logAppender.start();
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE ).aspect();
