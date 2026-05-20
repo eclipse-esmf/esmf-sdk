@@ -376,7 +376,7 @@ class AspectModelJavaGeneratorTest {
             .put( "testPropertyRangeConstraintWithFloatType", Float.class )
             .put( "testPropertyRangeConstraintWithDoubleType", Double.class )
             .put( "testPropertyWithMinMaxLengthConstraint", String.class )
-            .put( "testPropertyWithMinLengthConstraint", BigInteger.class )
+            .put( "testPropertyWithMinLengthConstraint", String.class )
             .put( "testPropertyCollectionLengthConstraint", new TypeToken<List<BigInteger>>() {} )
             .build();
 
