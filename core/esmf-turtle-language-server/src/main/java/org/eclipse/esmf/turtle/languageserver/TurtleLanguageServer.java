@@ -48,18 +48,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TurtleLanguageServer implements LanguageServer, LanguageClientAware {
-   public static final int PORT = 1846;
+   // R=18, D=4, F=6
+   public static final int DEFAULT_PORT = 1846;
 
    private static final Logger LOG = LoggerFactory.getLogger( TurtleLanguageServer.class );
    private final TurtleTextDocumentService textDocumentService;
    private final TurtleWorkspaceService workspaceService;
 
    public TurtleLanguageServer() {
-      this( new TurtleTextDocumentService() );
-   }
-
-   TurtleLanguageServer( final TurtleTextDocumentService textDocumentService ) {
-      this.textDocumentService = textDocumentService;
+      textDocumentService = new TurtleTextDocumentService();
       workspaceService = new TurtleWorkspaceService( textDocumentService );
    }
 
@@ -111,11 +108,36 @@ public class TurtleLanguageServer implements LanguageServer, LanguageClientAware
       return CompletableFuture.completedFuture( textDocumentService.validateDocument( params.uri() ) );
    }
 
-   static void main( final String[] args ) {
+   /**
+    * Starts the language server using stdin/stdout communication.
+    * This method does not return.
+    */
+   @SuppressWarnings( "UseOfSystemOutOrSystemErr" )
+   public static void launchForStdio() {
+      final TurtleLanguageServer server = new TurtleLanguageServer();
+      try {
+         final Launcher<LanguageClient> launcher = Launcher.createLauncher( server, LanguageClient.class, System.in, System.out );
+         server.connect( launcher.getRemoteProxy() );
+         launcher.startListening().get();
+      } catch ( final InterruptedException exception ) {
+         Thread.currentThread().interrupt();
+         LOG.error( "Language server listener was interrupted", exception );
+      } catch ( final Exception exception ) {
+         LOG.error( "Language server terminated with an error", exception );
+      }
+   }
+
+   /**
+    * Starts the language server using socket communication.
+    * This method does not return.
+    *
+    * @param port the port to listen on
+    */
+   public static void launchForSocket( final int port ) {
       final TurtleLanguageServer languageServer = new TurtleLanguageServer();
       try ( final AsynchronousServerSocketChannel serverSocket = AsynchronousServerSocketChannel.open() ) {
-         serverSocket.bind( new InetSocketAddress( "localhost", PORT ) );
-         LOG.info( "Starting lsp-server on port {}", PORT );
+         serverSocket.bind( new InetSocketAddress( "localhost", port ) );
+         LOG.info( "Starting language server on port {}", port );
          final AsynchronousSocketChannel socketChannel = serverSocket.accept().get();
          final Launcher<LanguageClient> launcher =
                Launcher.createIoLauncher( languageServer, LanguageClient.class, Channels.newInputStream( socketChannel ),
@@ -127,7 +149,7 @@ public class TurtleLanguageServer implements LanguageServer, LanguageClientAware
             Thread.sleep( 10_000L );
          }
       } catch ( final InterruptedException | ExecutionException | IOException exception ) {
-         LOG.info( "Could not launch Language Server", exception );
+         LOG.info( "Could not launch language server", exception );
       }
    }
 }

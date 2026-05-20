@@ -128,6 +128,7 @@
          <dependency>
             <groupId>org.eclipse.esmf</groupId>
             <artifactId>esmf-turtle-language-server</artifactId>
+            <version>${project.version}</version>
          </dependency>
          <dependency>
             <groupId>org.eclipse.esmf</groupId>
