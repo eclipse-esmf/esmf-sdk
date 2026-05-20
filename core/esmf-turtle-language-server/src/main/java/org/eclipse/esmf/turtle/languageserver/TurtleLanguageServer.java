@@ -13,7 +13,16 @@
 
 package org.eclipse.esmf.turtle.languageserver;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.nio.channels.AsynchronousServerSocketChannel;
+import java.nio.channels.AsynchronousSocketChannel;
+import java.nio.channels.Channels;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.function.Function;
 
 import org.eclipse.esmf.turtle.languageserver.aspect.request.ValidateDocumentParams;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
@@ -28,14 +37,20 @@ import org.eclipse.lsp4j.SemanticTokensWithRegistrationOptions;
 import org.eclipse.lsp4j.ServerCapabilities;
 import org.eclipse.lsp4j.TextDocumentSyncKind;
 import org.eclipse.lsp4j.TextDocumentSyncOptions;
+import org.eclipse.lsp4j.jsonrpc.Launcher;
 import org.eclipse.lsp4j.jsonrpc.services.JsonRequest;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.LanguageClientAware;
 import org.eclipse.lsp4j.services.LanguageServer;
 import org.eclipse.lsp4j.services.TextDocumentService;
 import org.eclipse.lsp4j.services.WorkspaceService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TurtleLanguageServer implements LanguageServer, LanguageClientAware {
+   public static final int PORT = 1846;
+
+   private static final Logger LOG = LoggerFactory.getLogger( TurtleLanguageServer.class );
    private final TurtleTextDocumentService textDocumentService;
    private final TurtleWorkspaceService workspaceService;
 
@@ -94,5 +109,25 @@ public class TurtleLanguageServer implements LanguageServer, LanguageClientAware
          return CompletableFuture.completedFuture( DiagnosticReport.EMPTY );
       }
       return CompletableFuture.completedFuture( textDocumentService.validateDocument( params.uri() ) );
+   }
+
+   static void main( final String[] args ) {
+      final TurtleLanguageServer languageServer = new TurtleLanguageServer();
+      try ( final AsynchronousServerSocketChannel serverSocket = AsynchronousServerSocketChannel.open() ) {
+         serverSocket.bind( new InetSocketAddress( "localhost", PORT ) );
+         LOG.info( "Starting lsp-server on port {}", PORT );
+         final AsynchronousSocketChannel socketChannel = serverSocket.accept().get();
+         final Launcher<LanguageClient> launcher =
+               Launcher.createIoLauncher( languageServer, LanguageClient.class, Channels.newInputStream( socketChannel ),
+                     Channels.newOutputStream( socketChannel ), Executors.newCachedThreadPool(), Function.identity() );
+         final Future<?> future = launcher.startListening();
+         languageServer.connect( launcher.getRemoteProxy() );
+         while ( !future.isDone() ) {
+            // noinspection BusyWait
+            Thread.sleep( 10_000L );
+         }
+      } catch ( final InterruptedException | ExecutionException | IOException exception ) {
+         LOG.info( "Could not launch Language Server", exception );
+      }
    }
 }
