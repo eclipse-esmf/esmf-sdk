@@ -22,10 +22,9 @@ import org.apache.commons.lang3.ArchUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.arch.Processor;
 
-public class ZigContext {
+public class ZigContext extends BuildTimeTool {
    protected final OperatingSystem currentOs;
    protected final Architecture currentArchitecture;
-   protected final Path cacheLocation;
    protected final String zigVersion;
 
    protected enum OperatingSystem {
@@ -56,7 +55,7 @@ public class ZigContext {
 
 
    public ZigContext( final Path cacheLocation, final String zigVersion ) {
-      this.cacheLocation = cacheLocation;
+      super( cacheLocation );
       this.zigVersion = zigVersion;
 
       final Processor processor = ArchUtils.getProcessor();

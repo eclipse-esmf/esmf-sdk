@@ -167,6 +167,20 @@
             <artifactId>exec-maven-plugin</artifactId>
             <executions>
                <execution>
+                  <id>download-turtle-grammar</id>
+                  <phase>generate-sources</phase>
+                  <goals>
+                     <goal>java</goal>
+                  </goals>
+                  <configuration>
+                     <mainClass>org.eclipse.esmf.buildtime.DownloadTurtleGrammar</mainClass>
+                     <arguments>
+                        <!-- args[0]: output directory for grammar.js -->
+                        <argument>${project.basedir}/src/main/${js.source.directory}</argument>
+                     </arguments>
+                  </configuration>
+               </execution>
+               <execution>
                   <id>tree-sitter-generate</id>
                   <phase>generate-sources</phase>
                   <goals>
@@ -235,7 +249,7 @@
             <executions>
                <execution>
                   <id>compile-build-time-code</id>
-                  <phase>generate-sources</phase>
+                  <phase>initialize</phase>
                   <goals>
                      <goal>compile</goal>
                   </goals>

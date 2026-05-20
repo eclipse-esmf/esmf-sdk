@@ -18,13 +18,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -41,35 +37,19 @@ import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
-import org.eclipse.esmf.util.download.Download;
-import org.eclipse.esmf.util.download.ProxyConfig;
 import org.eclipse.esmf.util.process.BinaryLauncher;
 import org.eclipse.esmf.util.process.ProcessLauncher;
 
 public class DownloadZig extends ZigContext {
    private static final String ZIG_PUB_KEY = "RWSGOq2NVecA2UPNdBUZykf1CCb147pkmdtYxgb3Ti+JO/wCYvhbAb/U";
-   private static final URL MIRRORS_LIST_URL = url( "https://ziglang.org/download/community-mirrors.txt" );
+   private final URL mirrorsListUrl;
 
-   private final ProxyConfig proxyConfig;
    private final String minisignVersion;
 
    public DownloadZig( final Path cacheLocation, final String zigVersion, final String minisignVersion ) {
       super( cacheLocation, zigVersion );
-      proxyConfig = ProxyConfig.detectProxySettings();
       this.minisignVersion = minisignVersion;
-   }
-
-   private File getOrDownloadFile( final URL location ) {
-      final Path filePath = Paths.get( location.getPath() );
-      final String filename = filePath.getName( filePath.getNameCount() - 1 ).toString();
-      final File targetFile = cacheLocation.resolve( filename ).toFile();
-      if ( targetFile.exists() ) {
-         return targetFile;
-      }
-
-      final Download.Config config = new Download.Config( proxyConfig, Duration.ofSeconds( 3L ) );
-      System.out.println( "Downloading " + location + " to " + targetFile.getName() + "..." );
-      return new Download( config ).downloadFile( location, targetFile );
+      mirrorsListUrl = url( "https://ziglang.org/download/community-mirrors.txt" );
    }
 
    private String zigReleaseFileName() {
@@ -96,7 +76,7 @@ public class DownloadZig extends ZigContext {
    }
 
    private List<String> zigMirrorUrls() {
-      final File mirrors = getOrDownloadFile( MIRRORS_LIST_URL );
+      final File mirrors = getOrDownloadFile( mirrorsListUrl );
       try {
          return Files.readAllLines( mirrors.toPath() ).stream().collect( Collectors.collectingAndThen( Collectors.toList(), collected -> {
             Collections.shuffle( collected );
@@ -125,14 +105,6 @@ public class DownloadZig extends ZigContext {
       throw new BuildTimeException( "Could not retrieve " + outputFile.getName() + " from any known mirror. Tried:"
             + triedLocations.stream().map( url -> " - " + url )
                   .collect( Collectors.joining( "\n" ) ) );
-   }
-
-   private static URL url( final String url ) {
-      try {
-         return URI.create( url ).toURL();
-      } catch ( final MalformedURLException exception ) {
-         throw new BuildTimeException( exception );
-      }
    }
 
    private void extractZip( final File zipFile, final Path outputDir ) {
