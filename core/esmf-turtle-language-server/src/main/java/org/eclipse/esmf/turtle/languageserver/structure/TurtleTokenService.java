@@ -78,7 +78,7 @@ public class TurtleTokenService {
          .put( ParserTokenType.PN_PREFIX, SemanticTokenTypes.Function )
          .put( ParserTokenType.PN_LOCAL, SemanticTokenTypes.Property )
          .put( ParserTokenType.SYMBOL_DOUBLE_CARET, SemanticTokenTypes.Decorator )
-         .put( ParserTokenType.SYMBOL_DOT, SemanticTokenTypes.Decorator )
+         .put( ParserTokenType.SYMBOL_FULL_STOP, SemanticTokenTypes.Decorator )
          .put( ParserTokenType.SYMBOL_SEMICOLON, SemanticTokenTypes.Decorator )
          .build();
    private final TreeSitterTurtleParserService parserService;

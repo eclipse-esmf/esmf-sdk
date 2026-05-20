@@ -45,15 +45,6 @@ public class ZigContext extends BuildTimeTool {
       }
    }
 
-   protected void mkdir( final Path path ) {
-      try {
-         Files.createDirectories( path );
-      } catch ( final IOException exception ) {
-         throw new BuildTimeException( exception );
-      }
-   }
-
-
    public ZigContext( final Path cacheLocation, final String zigVersion ) {
       super( cacheLocation );
       this.zigVersion = zigVersion;
@@ -90,7 +81,7 @@ public class ZigContext extends BuildTimeTool {
    }
 
    protected Path zigDir() {
-      return cacheLocation.resolve( "zig" );
+      return cacheLocation().resolve( "zig" );
    }
 
    protected File zigExe() {

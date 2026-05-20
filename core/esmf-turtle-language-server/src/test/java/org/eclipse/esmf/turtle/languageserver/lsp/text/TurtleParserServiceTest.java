@@ -212,7 +212,6 @@ class TurtleParserServiceTest {
       applyChange( document, pos( 3, 2 ), pos( 4, 14 ), replacement );
 
       final TSTree tree = parserService.apply( document ).concreteSyntaxTree();
-      System.out.println( TreeSitterUtil.print( tree, document ) );
       assertThat( tree.getRootNode().hasError() ).isFalse();
       assertThat( document.getContent() ).contains( "ex:newPredicate" );
       assertThat( document.getContent() ).doesNotContain( "ex:predicate1" );
@@ -250,7 +249,6 @@ class TurtleParserServiceTest {
 
       final Document document = new Document( "test.ttl", initialContent );
       final TSTree tree = parserService.apply( document ).concreteSyntaxTree();
-      System.out.println( TreeSitterUtil.print( tree, document ) );
       assertThat( tree.getRootNode().hasError() ).isFalse();
    }
 

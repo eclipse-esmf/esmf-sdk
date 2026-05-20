@@ -176,7 +176,7 @@ public class DownloadZig extends ZigContext {
    }
 
    private File downloadAndExtractMinisign() {
-      final Path minisignDir = cacheLocation.resolve( "minisign" );
+      final Path minisignDir = cacheLocation().resolve( "minisign" );
       final File minisignExe = minisignDir.resolve( minisignExecutablePath() ).toFile();
       if ( minisignExe.exists() ) {
          return minisignExe;
@@ -203,8 +203,8 @@ public class DownloadZig extends ZigContext {
 
       final List<String> mirrors = zigMirrorUrls();
       final String fileName = zigReleaseFileName();
-      final File signatureOutputFile = cacheLocation.resolve( fileName + ".minisig" ).toFile();
-      final File zigReleaseArchive = getOrDownloadFileFromMirror( mirrors, cacheLocation.resolve( fileName ).toFile() );
+      final File signatureOutputFile = cacheLocation().resolve( fileName + ".minisig" ).toFile();
+      final File zigReleaseArchive = getOrDownloadFileFromMirror( mirrors, cacheLocation().resolve( fileName ).toFile() );
       getOrDownloadFileFromMirror( mirrors, signatureOutputFile );
       validateZigReleaseSignature( minisignExe, zigReleaseArchive );
 
