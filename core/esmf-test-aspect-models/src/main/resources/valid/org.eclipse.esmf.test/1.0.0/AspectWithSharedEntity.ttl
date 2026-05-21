@@ -36,4 +36,3 @@
    samm:preferredName "Entity Property"@en ;
    samm:exampleValue "entity property example" ;
    samm:characteristic samm-c:Text .
-
