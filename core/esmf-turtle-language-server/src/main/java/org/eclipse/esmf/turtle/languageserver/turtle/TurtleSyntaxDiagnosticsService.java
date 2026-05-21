@@ -13,8 +13,8 @@
 
 package org.eclipse.esmf.turtle.languageserver.turtle;
 
-import java.util.List;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDiagnostic;
@@ -27,31 +27,30 @@ import org.treesitter.TSNode;
 public class TurtleSyntaxDiagnosticsService implements TurtleDiagnosticsService {
    @Override
    public DiagnosticReport defaultValidate( final ParsedDocument parsedDocument ) {
-      return new DiagnosticReport(
-            checkNode( parsedDocument.concreteSyntaxTree().getRootNode(), parsedDocument.sourceDocument().getUri() ) );
+      return new DiagnosticReport( checkNode( parsedDocument.concreteSyntaxTree().getRootNode(),
+            parsedDocument.sourceDocument().getUri() ).toList() );
    }
 
-   private List<TurtleDiagnostic> checkNode( final TSNode node, final String sourceLocation ) {
-      final List<TurtleDiagnostic> childDiagnostics = IntStream.range( 0, node.getChildCount() )
-            .mapToObj( node::getChild )
-            .flatMap( child -> checkNode( child, sourceLocation ).stream() )
-            .toList();
-      if ( node.hasError() && childDiagnostics.isEmpty() ) {
-         final String message;
-         if ( node.isMissing() ) {
-            message = "Syntax error: Missing '" + node.getGrammarType() + "'";
-         } else if ( node.isExtra() ) {
-            message = node.getGrammarType().equals( "ERROR" )
-                  ? "Syntax error: Unexpected token"
-                  : "Syntax error: Unexpected token '" + node.getGrammarType() + "'";
-         } else {
-            message = "Syntax error";
-         }
-         return List.of( new TurtleDocumentDiagnostic( message,
-               TurtleDiagnostic.TurtleCode.E0003, sourceLocation,
-               node.getStartPoint().getRow(), node.getStartPoint().getColumn(),
-               node.getEndPoint().getRow(), node.getEndPoint().getColumn() ) );
+   private Stream<TurtleDiagnostic> checkNode( final TSNode node, final String sourceLocation ) {
+      return Stream.concat( node.isError() ? Stream.of( diagnosticForNode( node, sourceLocation ) ) : Stream.empty(),
+            IntStream.range( 0, node.getChildCount() ).boxed().map( node::getChild )
+                  .flatMap( child -> checkNode( child, sourceLocation ) ) );
+   }
+
+   private TurtleDocumentDiagnostic diagnosticForNode( final TSNode node, final String sourceLocation ) {
+      final String message;
+      if ( node.isMissing() ) {
+         message = "Syntax error: Missing '" + node.getGrammarType() + "'";
+      } else if ( node.isExtra() ) {
+         message = node.getGrammarType().equals( "ERROR" )
+               ? "Syntax error: Unexpected token"
+               : "Syntax error: Unexpected token '" + node.getGrammarType() + "'";
+      } else {
+         message = "Syntax error";
       }
-      return childDiagnostics;
+      return new TurtleDocumentDiagnostic( message,
+            TurtleDiagnostic.TurtleCode.E0003, sourceLocation,
+            node.getStartPoint().getRow(), node.getStartPoint().getColumn(),
+            node.getEndPoint().getRow(), node.getEndPoint().getColumn() );
    }
 }
