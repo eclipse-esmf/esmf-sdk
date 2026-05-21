@@ -45,4 +45,8 @@ public record DiagnosticReport(
    public DiagnosticReport merge( final DiagnosticReport diagnosticReport ) {
       return new DiagnosticReport( Streams.concat( diagnostics.stream(), diagnosticReport.diagnostics().stream() ).toList() );
    }
+
+   public boolean isEmpty() {
+      return diagnostics.isEmpty();
+   }
 }

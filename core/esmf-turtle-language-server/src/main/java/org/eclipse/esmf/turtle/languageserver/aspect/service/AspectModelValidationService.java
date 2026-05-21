@@ -75,16 +75,26 @@ public class AspectModelValidationService implements TurtleDiagnosticsService {
                validator.validateModel( () -> loader.loadAspectModelFiles( List.of( file ) ) );
          LOG.debug( "[validate] validation finished for {} with {} violation(s)", document.getUri(), violations.size() );
          return new DiagnosticReport( violations.stream().flatMap( violation -> toViolationInfo( violation ).stream() ).toList() );
-      } catch ( final RiotException | ParserException exception ) {
+      } catch ( final RiotException exception ) {
          // Ignore. Syntax errors are handled by the TurtleSyntaxDiagnosticsService
          return DiagnosticReport.EMPTY;
+      } catch ( final ParserException exception ) {
+         // Can happen for cases where Jena complains but TreeSitter doesn't
+         return new DiagnosticReport( diagnosticFromParserException( exception, parsedDocument.getUri() ) );
       } catch ( final Exception exception ) {
          LOG.error( "[validate] unexpected runtime failure for {}", document.getUri(), exception );
          return new DiagnosticReport( exception.getMessage(), TurtleDiagnostic.TurtleCode.E0000 );
       }
    }
 
+   private TurtleDiagnostic diagnosticFromParserException( final ParserException exception, final String sourceLocation ) {
+      return new TurtleDocumentDiagnostic( exception.getMessage(), TurtleDiagnostic.TurtleCode.E0003, sourceLocation,
+            (int) exception.getLine() - 1, (int) exception.getColumn() - 1,
+            (int) exception.getLine() - 1, (int) exception.getColumn() );
+   }
+
    private TurtleDiagnostic.Code classifyViolation( final Violation violation ) {
+      // TODO
       return TurtleDiagnostic.TurtleCode.E0000;
    }
 

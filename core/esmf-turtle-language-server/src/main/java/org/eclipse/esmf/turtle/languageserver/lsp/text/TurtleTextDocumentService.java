@@ -52,10 +52,8 @@ public class TurtleTextDocumentService implements TextDocumentService {
    private final TreeSitterTurtleParserService turtleParserService;
    private final AspectDiagnosticsWorkflow aspectDiagnosticsWorkflow;
    private final TurtleTokenService tokenService;
-   private final List<TurtleDiagnosticsService> diagnosticsServices = List.of(
-         new TurtleSyntaxDiagnosticsService(),
-         new AspectModelValidationService()
-   );
+   private final TurtleDiagnosticsService syntaxDiagnostics;
+   private final TurtleDiagnosticsService aspectModelValidation;
    private final Map<String, Document> documents = new HashMap<>();
 
    public TurtleTextDocumentService() {
@@ -65,6 +63,8 @@ public class TurtleTextDocumentService implements TextDocumentService {
       turtleParserService = new TreeSitterTurtleParserService();
       aspectDiagnosticsWorkflow = new AspectDiagnosticsWorkflow( aspectValidationCoordinator, clientNotifier );
       tokenService = new TurtleTokenService( turtleParserService );
+      syntaxDiagnostics = new TurtleSyntaxDiagnosticsService();
+      aspectModelValidation = new AspectModelValidationService();
    }
 
    public void connect( final LanguageClient client ) {
@@ -81,9 +81,8 @@ public class TurtleTextDocumentService implements TextDocumentService {
          return DiagnosticReport.EMPTY;
       }
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
-      return diagnosticsServices.stream()
-            .map( service -> service.defaultValidate( parsedDocument ) )
-            .reduce( DiagnosticReport.EMPTY, DiagnosticReport::merge );
+      return syntaxDiagnostics.defaultValidate( parsedDocument )
+            .merge( aspectModelValidation.defaultValidate( parsedDocument ) );
    }
 
    @Override
@@ -95,9 +94,8 @@ public class TurtleTextDocumentService implements TextDocumentService {
       documents.put( uri, document );
       turtleParserService.onOpen( document );
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
-      final DiagnosticReport report = diagnosticsServices.stream()
-            .map( service -> service.onOpen( parsedDocument ) )
-            .reduce( DiagnosticReport.EMPTY, DiagnosticReport::merge );
+      final DiagnosticReport report = syntaxDiagnostics.onOpen( parsedDocument )
+            .merge( aspectModelValidation.onOpen( parsedDocument ) );
       clientNotifier.publishDiagnostics( document, report );
    }
 
@@ -111,9 +109,10 @@ public class TurtleTextDocumentService implements TextDocumentService {
       }
       LOG.debug( "[didChange] uri={}, changes={}", uri, params.getContentChanges().size() );
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
-      final DiagnosticReport report = diagnosticsServices.stream()
-            .map( service -> service.onChange( parsedDocument ) )
-            .reduce( DiagnosticReport.EMPTY, DiagnosticReport::merge );
+      final DiagnosticReport syntaxReport = syntaxDiagnostics.onChange( parsedDocument );
+      final DiagnosticReport report = syntaxReport.isEmpty()
+            ? syntaxReport
+            : syntaxReport.merge( aspectModelValidation.onChange( parsedDocument ) );
       clientNotifier.publishDiagnostics( document, report );
       aspectDiagnosticsWorkflow.onDocumentChanged( document );
    }
@@ -136,9 +135,8 @@ public class TurtleTextDocumentService implements TextDocumentService {
       document.getRope().rebalance();
       turtleParserService.onOpen( document );
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
-      final DiagnosticReport report = diagnosticsServices.stream()
-            .map( service -> service.onSave( parsedDocument ) )
-            .reduce( DiagnosticReport.EMPTY, DiagnosticReport::merge );
+      final DiagnosticReport report = syntaxDiagnostics.onSave( parsedDocument )
+            .merge( aspectModelValidation.onSave( parsedDocument ) );
       clientNotifier.publishDiagnostics( document, report );
       aspectDiagnosticsWorkflow.onDocumentSaved( parsedDocument );
    }
