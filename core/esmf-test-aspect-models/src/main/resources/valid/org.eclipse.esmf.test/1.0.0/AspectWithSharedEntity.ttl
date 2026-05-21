@@ -16,7 +16,8 @@
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.2.0#> .
 
 :AspectWithSharedEntity a samm:Aspect ;
-   samm:properties ( :p1 :p2 ) .
+   samm:properties ( :p1 :p2 ) ;
+   samm:operations ( ) .
 
 :p1 a samm:Property ;
    samm:preferredName "Property 1"@en ;
