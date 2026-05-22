@@ -19,15 +19,20 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
+
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+
+import org.apache.jena.vocabulary.RDF;
 
 import org.eclipse.esmf.aspectmodel.generator.JsonGenerator;
 import org.eclipse.esmf.aspectmodel.generator.Range;
@@ -61,15 +66,16 @@ import org.eclipse.esmf.metamodel.datatype.SammType;
 import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
+import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.curiousoddman.rgxgen.RgxGen;
 import com.github.curiousoddman.rgxgen.parsing.dflt.RgxGenParseException;
-import org.apache.jena.vocabulary.RDF;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Generator for random JSON payloads corresponding to a given StructureElement (e.g.,
@@ -103,24 +109,25 @@ public class JsonPayloadGenerator<S extends StructureElement>
     *
     * @param constraints the constraints that apply to the current position
     * @param visitedProperties the Properties that were visited during the traversal
-    * @param ignoreExampleValue whether or not the exampleValue for the next level of Properties should
-    *        be ignored
+    * @param ignoreExampleValue whether the exampleValue for the next level of Properties should be
+    *        ignored
     */
    public record Context(
          List<Constraint> constraints,
          Set<Property> visitedProperties,
+         Map<Entity, JsonNode> visitedEntities,
          boolean ignoreExampleValue
    ) {
       private Context() {
-         this( List.of(), new HashSet<>(), false );
+         this( List.of(), new HashSet<>(), new HashMap<>(), false );
       }
 
       public Context withConstraints( final List<Constraint> constraints ) {
-         return new Context( constraints, visitedProperties(), ignoreExampleValue() );
+         return new Context( constraints, visitedProperties(), visitedEntities(), ignoreExampleValue() );
       }
 
       public Context doIgnoreExampleValue( final boolean ignore ) {
-         return new Context( constraints(), visitedProperties(), ignore );
+         return new Context( constraints(), visitedProperties(), visitedEntities(), ignore );
       }
    }
 
@@ -150,6 +157,9 @@ public class JsonPayloadGenerator<S extends StructureElement>
 
    @Override
    public JsonNode visitEntity( final Entity entity, final Context context ) {
+      if ( context.visitedEntities().containsKey( entity ) && !context.ignoreExampleValue() ) {
+         return context.visitedEntities().get( entity );
+      }
       final ObjectNode result = JsonNodeFactory.instance.objectNode();
       entity.getAllProperties().stream()
             .filter( Objects::nonNull )
@@ -163,6 +173,7 @@ public class JsonPayloadGenerator<S extends StructureElement>
       if ( entity.getExtends().isPresent() && config.addTypeAttributeForEntityInheritance() ) {
          result.put( "@type", entity.getName() );
       }
+      context.visitedEntities().put( entity, result );
       return result;
    }
 
@@ -177,7 +188,7 @@ public class JsonPayloadGenerator<S extends StructureElement>
    }
 
    @Override
-   public JsonNode visitProperty( final Property property, final Context context ) {
+   public @Nullable JsonNode visitProperty( final Property property, final Context context ) {
       if ( property.isNotInPayload() ) {
          return null;
       }
@@ -203,7 +214,7 @@ public class JsonPayloadGenerator<S extends StructureElement>
    }
 
    @Override
-   public JsonNode visitCharacteristic( final Characteristic characteristic, final Context context ) {
+   public @Nullable JsonNode visitCharacteristic( final Characteristic characteristic, final Context context ) {
       return characteristic.getDataType()
             .map( t -> t.accept( this, context ) )
             .orElse( null );
@@ -361,7 +372,7 @@ public class JsonPayloadGenerator<S extends StructureElement>
    }
 
    @Override
-   public JsonNode visitXsdDouble( final SammType.XsdDouble doubleType, final Context context ) {
+   public JsonNode visitXsdDouble( final SammType.@Nullable XsdDouble doubleType, final Context context ) {
       final Range range = Range.fromRangeConstraints( context.constraints(), true )
             .clamp( -100000, 100000 );
       final Optional<FixedPointConstraint> fixedPointConstraint = context.constraints().stream()
@@ -405,7 +416,7 @@ public class JsonPayloadGenerator<S extends StructureElement>
    }
 
    @Override
-   public JsonNode visitXsdDateTime( final SammType.XsdDateTime dateTime, final Context context ) {
+   public JsonNode visitXsdDateTime( final SammType.@Nullable XsdDateTime dateTime, final Context context ) {
       final LocalDateTime now = LocalDateTime.now();
       final XMLGregorianCalendar calendar = DatatypeFactory.newDefaultInstance()
             .newXMLGregorianCalendar( now.getYear(), now.getMonthValue(), now.getDayOfMonth(),
@@ -564,7 +575,8 @@ public class JsonPayloadGenerator<S extends StructureElement>
    public JsonNode visitXsdHexBinary( final SammType.XsdHexBinary hexBinary, final Context context ) {
       final Range range = Range.fromLengthConstraints( context.constraints() )
             .clamp( 1, 10 );
-      final byte[] bytes = randomBytes( range.min().intValue(), range.max().intValue() );
+      final byte[] bytes = randomBytes( Optional.ofNullable( range.min() ).map( BigDecimal::intValue ).orElse( 0 ),
+            Optional.ofNullable( range.max() ).map( BigDecimal::intValue ).orElse( 0 ) );
       final String value = hexBinary.serialize( bytes );
       return JsonNodeFactory.instance.textNode( value );
    }
@@ -573,7 +585,8 @@ public class JsonPayloadGenerator<S extends StructureElement>
    public JsonNode visitXsdBase64Binary( final SammType.XsdBase64Binary base64Binary, final Context context ) {
       final Range range = Range.fromLengthConstraints( context.constraints() )
             .clamp( 1, 10 );
-      final byte[] bytes = randomBytes( range.min().intValue(), range.max().intValue() );
+      final byte[] bytes = randomBytes( Optional.ofNullable( range.min() ).map( BigDecimal::intValue ).orElse( 0 ),
+            Optional.ofNullable( range.max() ).map( BigDecimal::intValue ).orElse( 0 ) );
       final String value = base64Binary.serialize( bytes );
       return JsonNodeFactory.instance.textNode( value );
    }
@@ -591,7 +604,7 @@ public class JsonPayloadGenerator<S extends StructureElement>
    }
 
    @Override
-   public JsonNode visitXsdString( final SammType.XsdString string, final Context context ) {
+   public JsonNode visitXsdString( final SammType.@Nullable XsdString string, final Context context ) {
       final String value = context.constraints().stream()
             .flatMap( constraint -> {
                if ( constraint instanceof final RegularExpressionConstraint regularExpressionConstraint ) {
@@ -613,7 +626,8 @@ public class JsonPayloadGenerator<S extends StructureElement>
             .findFirst()
             .orElseGet( () -> {
                final Range range = Range.fromLengthConstraints( context.constraints() ).clamp( 1, 10 );
-               return randomString( range.min().intValue(), range.max().intValue() );
+               return randomString( Optional.ofNullable( range.min() ).map( BigDecimal::intValue ).orElse( 0 ),
+                     Optional.ofNullable( range.max() ).map( BigDecimal::intValue ).orElse( 0 ) );
             } );
       return JsonNodeFactory.instance.textNode( value );
    }
@@ -627,7 +641,7 @@ public class JsonPayloadGenerator<S extends StructureElement>
       return result;
    }
 
-   protected BigDecimal randomFloatingPointNumber( final BigDecimal start, final BigDecimal end,
+   protected BigDecimal randomFloatingPointNumber( final @Nullable BigDecimal start, final @Nullable BigDecimal end,
          final Optional<FixedPointConstraint> fixedPointConstraint ) {
       return fixedPointConstraint.map( constraint -> {
          final int integerDigits = constraint.getInteger();
@@ -662,7 +676,7 @@ public class JsonPayloadGenerator<S extends StructureElement>
       return builder.toString();
    }
 
-   protected BigDecimal randomNumber( final BigDecimal minInclusive, final BigDecimal maxInclusive ) {
+   protected BigDecimal randomNumber( final @Nullable BigDecimal minInclusive, final @Nullable BigDecimal maxInclusive ) {
       final BigDecimal min = minInclusive == null ? BigDecimal.valueOf( Long.MIN_VALUE ) : minInclusive;
       final BigDecimal max = maxInclusive == null ? BigDecimal.valueOf( Long.MAX_VALUE ) : maxInclusive;
       if ( min.equals( max ) ) {

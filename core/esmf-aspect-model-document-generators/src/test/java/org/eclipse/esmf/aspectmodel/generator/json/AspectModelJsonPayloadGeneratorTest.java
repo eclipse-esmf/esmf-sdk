@@ -37,8 +37,12 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
+
+import org.apache.commons.lang3.StringUtils;
+import org.assertj.core.api.Condition;
 
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AbstractTestEntity;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithAbstractEntity;
@@ -90,18 +94,18 @@ import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 import org.eclipse.esmf.test.shared.compiler.JavaCompiler;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 class AspectModelJsonPayloadGeneratorTest {
    private static final String PACKAGE = "org.eclipse.esmf.test.generatedtestclasses";
@@ -346,13 +350,11 @@ class AspectModelJsonPayloadGeneratorTest {
    @Test
    void testGenerateJsonForAspectWithComplexCollectionOfMinSize2AndExampleValue() throws IOException {
       // We generate a payload for the set of entities, where the Entity's single property has an example
-      // value and the
-      // set has a minimum size of 2. This means that the exampleValue may not reused for every entry.
+      // value and the set has a minimum size of 2. This means that the exampleValue may not be reused for
+      // every entry.
       // We parse the generated JSON using a List instead of a Set though, so that Jackson doesn't "solve"
-      // the problem
-      // by swallowing duplicate values: We want to ensure that the JSON does indeed not contain two
-      // duplicate entries
-      // (i.e., keeps the "set" semantics)
+      // the problem by swallowing duplicate values: We want to ensure that the JSON does indeed not
+      // contain two duplicate entries (i.e., keeps the "set" semantics).
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_COMPLEX_SET );
       final AspectWithComplexSetAsList aspectWithComplexSet = parseJson( generatedJson, AspectWithComplexSetAsList.class );
       final List<URI> list = aspectWithComplexSet.getTestProperty().stream().map( Id::getProductId ).toList();
@@ -604,6 +606,12 @@ class AspectModelJsonPayloadGeneratorTest {
       final AspectWithFixedPointConstraint aspectWithConstraint = parseJson( generatedJson, AspectWithFixedPointConstraint.class );
       assertThat( generatedJson ).contains( "testProperty" );
       assertThat( aspectWithConstraint.getTestProperty() ).matches( "\\s*\\d{3}\\.\\d+" );
+   }
+
+   @Test
+   void testGenerateJsonForAspectWithSharedEntities() {
+      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_SHARED_ENTITY );
+      assertThat( StringUtils.countMatches( generatedJson, "entity property example" ) ).isEqualTo( 2 );
    }
 
    private String generateJsonForModel( final Aspect aspect ) {
