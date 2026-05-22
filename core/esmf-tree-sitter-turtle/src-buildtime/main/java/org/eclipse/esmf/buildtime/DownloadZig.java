@@ -92,8 +92,7 @@ public class DownloadZig extends ZigContext {
          return outputFile;
       }
       final List<String> triedLocations = new ArrayList<>();
-      for ( final Iterator<String> it = mirrorUrls.iterator(); it.hasNext() && !outputFile.exists(); ) {
-         final String mirrorUrl = it.next();
+      for ( final String mirrorUrl : mirrorUrls ) {
          try {
             final URL url = url( mirrorUrl + "/" + outputFile.getName() );
             triedLocations.add( url.toString() );
