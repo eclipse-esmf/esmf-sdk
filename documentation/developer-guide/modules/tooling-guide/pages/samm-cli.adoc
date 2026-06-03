@@ -165,7 +165,7 @@ of model resolution] for more information.
                                        the resulting specification, can be in JSON or YAML                                   | For detailed description, see the section below
                                    | _--separate-files, -sf_ : Create separate files for each schema                         |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
-.8+| [[aspect-to-asyncapi]] aspect <model> to asyncapi | Generate https://www.asyncapi.com/docs/reference/specification/v3.0.0[AsyncAPI] specification for an Aspect Model| `samm aspect AspectModel.ttl to asyncapi`
+.8+| [[aspect-to-asyncapi]] aspect <model> to asyncapi | Generate https://www.asyncapi.com/docs/reference/specification/v3.1.0[AsyncAPI] specification for an Aspect Model| `samm aspect AspectModel.ttl to asyncapi`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--channel-address, -ca_ : Sets the channel address (i.e., for MQTT, the topic's name).
                                        https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification                           | `samm aspect AspectModel.ttl to asyncapi -ca 123-456/789-012/namespace/1.0.0/Aspect`
@@ -839,7 +839,7 @@ And finally for the time based paging:
 == Using the CLI to create a JSON AsyncAPI Specification
 
 As with xref:using-the-cli-to-create-a-json-openapi-specification[OpenAPI], every AsyncAPI specification is based on one Aspect.
-Each Aspect is associated with one https://www.asyncapi.com/docs/reference/specification/v3.0.0#channelObject[channel address].
+Each Aspect is associated with one https://www.asyncapi.com/docs/reference/specification/v3.1.0#channelObject[channel address].
 The channel address is set as string using with`--channel-address` or `-ca` option, e.g.: `-ca 123-456/789-012/test/1.0.0/Aspect`. The default channel address
 is derived from the Aspect's URN and is constructed using the pattern `{namespace}/\{version}/{aspectName}`.
 
@@ -888,7 +888,7 @@ For the generated AsyncAPI specification, the following mapping would apply:
 [source,JSON]
 ----
 {
-  "asyncapi" : "3.0.0",
+  "asyncapi" : "3.1.0",
   "info" : {
     "title" : "My Movement Aspect MQTT API", // <2>
     "version" : "v1", // <1>
@@ -967,10 +967,10 @@ If the Aspect also has a non-empty list of Operations defined, such as the one i
 ----
 
 operations will be generated in some places of AsyncAPI specification:
-https://www.asyncapi.com/docs/reference/specification/v3.0.0#operationObject[operations] section,
+https://www.asyncapi.com/docs/reference/specification/v3.1.0#operationObject[operations] section,
 channel
-https://www.asyncapi.com/docs/reference/specification/v3.0.0#messagesObject[messages] section and
-https://www.asyncapi.com/docs/reference/specification/v3.0.0#schemaObject[schemas] section:
+https://www.asyncapi.com/docs/reference/specification/v3.1.0#messagesObject[messages] section and
+https://www.asyncapi.com/docs/reference/specification/v3.1.0#schemaObject[schemas] section:
 
 [source,JSON]
 ----
@@ -1086,10 +1086,10 @@ If the Aspect also has a non-empty list of events defined, like the one in the f
 ----
 
 events will be generated in some places of AsyncAPI specification:
-https://www.asyncapi.com/docs/reference/specification/v3.0.0#operationObject[operations] section,
+https://www.asyncapi.com/docs/reference/specification/v3.1.0#operationObject[operations] section,
 channel
-https://www.asyncapi.com/docs/reference/specification/v3.0.0#messagesObject[messages] section and
-https://www.asyncapi.com/docs/reference/specification/v3.0.0#schemaObject[schemas] section:
+https://www.asyncapi.com/docs/reference/specification/v3.1.0#messagesObject[messages] section and
+https://www.asyncapi.com/docs/reference/specification/v3.1.0#schemaObject[schemas] section:
 
 [source,JSON]
 ----

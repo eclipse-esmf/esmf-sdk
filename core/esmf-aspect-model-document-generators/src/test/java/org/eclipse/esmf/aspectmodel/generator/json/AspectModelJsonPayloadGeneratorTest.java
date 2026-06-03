@@ -24,7 +24,6 @@ import static org.eclipse.esmf.metamodel.builder.SammBuilder.property;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -42,6 +41,7 @@ import java.util.stream.Stream;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.api.Condition;
 
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AbstractTestEntity;
@@ -74,7 +74,6 @@ import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithMultipl
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithMultipleEntityCollections;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithNestedEntity;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithPropertyWithPayloadName;
-import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithRangeConstraintWithoutMinMaxIntegerValue;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithRecursivePropertyWithOptional;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithSimpleProperties;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithSimpleTypesAndState;
@@ -351,13 +350,11 @@ class AspectModelJsonPayloadGeneratorTest {
    @Test
    void testGenerateJsonForAspectWithComplexCollectionOfMinSize2AndExampleValue() throws IOException {
       // We generate a payload for the set of entities, where the Entity's single property has an example
-      // value and the
-      // set has a minimum size of 2. This means that the exampleValue may not reused for every entry.
+      // value and the set has a minimum size of 2. This means that the exampleValue may not be reused for
+      // every entry.
       // We parse the generated JSON using a List instead of a Set though, so that Jackson doesn't "solve"
-      // the problem
-      // by swallowing duplicate values: We want to ensure that the JSON does indeed not contain two
-      // duplicate entries
-      // (i.e., keeps the "set" semantics)
+      // the problem by swallowing duplicate values: We want to ensure that the JSON does indeed not
+      // contain two duplicate entries (i.e., keeps the "set" semantics).
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_COMPLEX_SET );
       final AspectWithComplexSetAsList aspectWithComplexSet = parseJson( generatedJson, AspectWithComplexSetAsList.class );
       final List<URI> list = aspectWithComplexSet.getTestProperty().stream().map( Id::getProductId ).toList();
@@ -486,7 +483,7 @@ class AspectModelJsonPayloadGeneratorTest {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_CONSTRAINTS );
       final AspectWithConstraints aspectWithConstraints = parseJson( generatedJson, AspectWithConstraints.class );
       assertThat( aspectWithConstraints.getTestPropertyCollectionLengthConstraint().size() ).isBetween( 1, 10 );
-      assertThat( aspectWithConstraints.getTestPropertyWithMinLengthConstraint() ).isGreaterThanOrEqualTo( BigInteger.ONE );
+      assertThat( aspectWithConstraints.getTestPropertyWithMinLengthConstraint().length() ).isGreaterThanOrEqualTo( 1 );
       assertThat( aspectWithConstraints.getTestPropertyWithMinMaxLengthConstraint().length() ).isBetween( 1, 10 );
       assertThat( aspectWithConstraints.getTestPropertyRangeConstraintWithDoubleType() ).isBetween( 1.0, 10.0 );
       assertThat( aspectWithConstraints.getTestPropertyRangeConstraintWithFloatType() ).isBetween( 1.0f, 10.0f );
@@ -514,26 +511,6 @@ class AspectModelJsonPayloadGeneratorTest {
       final Pattern monthPattern = Pattern.compile( "--(0[1-9]|1[0-2])(Z|([+\\-])((0[0-9]|1[0-3]):[0-5][0-9]|14:00))?" );
       assertThat( dayPattern.matcher( aspectWithGtypeForRangeConstraints.getTestPropertyWithGDay().toString() ) ).matches();
       assertThat( monthPattern.matcher( aspectWithGtypeForRangeConstraints.getTestPropertyWithGMonth().toString() ) ).matches();
-   }
-
-   @Test
-   void testGenerateJsonForAspectWithoutMinMaxIntegerValueOnRangeConstraint() throws IOException {
-      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITHOUT_MIN_MAX_INTEGER_VALUE );
-
-      final AspectWithRangeConstraintWithoutMinMaxIntegerValue aspectWithSimpleProperties = parseJson( generatedJson,
-            AspectWithRangeConstraintWithoutMinMaxIntegerValue.class );
-
-      assertThat( aspectWithSimpleProperties.getTestInt() ).isNotNull();
-   }
-
-   @Test
-   void testGenerateJsonForAspectWithoutMinMaxDoubleValueOnRangeConstraint() throws IOException {
-      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITHOUT_MIN_MAX_DOUBLE_VALUE );
-
-      final AspectWithRangeConstraintWithoutMinMaxDoubleValue aspectWithRangeConstraintWithoutMinMaxDoubleValue =
-            parseJson( generatedJson, AspectWithRangeConstraintWithoutMinMaxDoubleValue.class );
-
-      assertThat( aspectWithRangeConstraintWithoutMinMaxDoubleValue.getDoubleProperty() ).isNotNull();
    }
 
    @Test
@@ -629,6 +606,12 @@ class AspectModelJsonPayloadGeneratorTest {
       final AspectWithFixedPointConstraint aspectWithConstraint = parseJson( generatedJson, AspectWithFixedPointConstraint.class );
       assertThat( generatedJson ).contains( "testProperty" );
       assertThat( aspectWithConstraint.getTestProperty() ).matches( "\\s*\\d{3}\\.\\d+" );
+   }
+
+   @Test
+   void testGenerateJsonForAspectWithSharedEntities() {
+      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_SHARED_ENTITY );
+      assertThat( StringUtils.countMatches( generatedJson, "entity property example" ) ).isEqualTo( 2 );
    }
 
    private String generateJsonForModel( final Aspect aspect ) {

@@ -346,7 +346,7 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
                   .put( "TEST_PROPERTY_WITH_MIN_MAX_LENGTH_CONSTRAINT",
                         TypeTokens.staticConstraintProperty( aspectClass, String.class, DefaultCharacteristic.class ) )
                   .put( "TEST_PROPERTY_WITH_MIN_LENGTH_CONSTRAINT",
-                        TypeTokens.staticConstraintProperty( aspectClass, BigInteger.class, DefaultCharacteristic.class ) )
+                        TypeTokens.staticConstraintProperty( aspectClass, String.class, DefaultCharacteristic.class ) )
                   .put( "TEST_PROPERTY_COLLECTION_LENGTH_CONSTRAINT",
                         TypeTokens.staticConstraintContainerProperty( aspectClass, BigInteger.class, TypeTokens.list( BigInteger.class ),
                               DefaultList.class ) )
