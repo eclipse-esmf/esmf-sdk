@@ -62,6 +62,7 @@ import org.eclipse.digitaltwin.aas4j.v3.model.AasSubmodelElements;
 import org.eclipse.digitaltwin.aas4j.v3.model.AssetAdministrationShell;
 import org.eclipse.digitaltwin.aas4j.v3.model.ConceptDescription;
 import org.eclipse.digitaltwin.aas4j.v3.model.DataSpecificationIec61360;
+import org.eclipse.digitaltwin.aas4j.v3.model.DataTypeDefXsd;
 import org.eclipse.digitaltwin.aas4j.v3.model.DataTypeIec61360;
 import org.eclipse.digitaltwin.aas4j.v3.model.EmbeddedDataSpecification;
 import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
@@ -72,6 +73,7 @@ import org.eclipse.digitaltwin.aas4j.v3.model.LangStringPreferredNameTypeIec6136
 import org.eclipse.digitaltwin.aas4j.v3.model.ModellingKind;
 import org.eclipse.digitaltwin.aas4j.v3.model.Operation;
 import org.eclipse.digitaltwin.aas4j.v3.model.OperationVariable;
+import org.eclipse.digitaltwin.aas4j.v3.model.Qualifier;
 import org.eclipse.digitaltwin.aas4j.v3.model.Reference;
 import org.eclipse.digitaltwin.aas4j.v3.model.ReferenceTypes;
 import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
@@ -92,6 +94,7 @@ import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultKey;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultOperation;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultOperationVariable;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultProperty;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultQualifier;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultReference;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodel;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodelElementCollection;
@@ -111,6 +114,9 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
    public static final String ALLOWS_ENUMERATION_VALUE_REGEX = "[^a-zA-Z0-9-_]";
    public static final String CONCEPT_DESCRIPTION_DATA_SPECIFICATION_URL =
          "https://admin-shell.io/DataSpecificationTemplates/DataSpecificationIec61360/3/0";
+   public static final String SMT_CARDINALITY_SEMANTIC_ID_URL = "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0";
+   public static final String SMT_CARDINALITY_QUALIFIER_TYPE = "SMT/Cardinality";
+   public static final String SMT_CARDINALITY_ZERO_TO_ONE = "ZeroToOne";
 
    private static final Pattern IRDI_BARE_PATTERN = Pattern.compile(
          "^\\d{4}-\\d+(?:%23\\d{2}|#\\d{2})-[A-Za-z0-9-]+(?:%23\\d{3}|#\\d{3})$"
@@ -335,6 +341,12 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       final SubmodelElement element = context.getPropertyResult();
       element.setSupplementalSemanticIds( updateGlobalReferenceWithSeeReferences( element, property ) );
 
+      if ( property.isOptional() ) {
+         final List<Qualifier> qualifiers = new ArrayList<>( element.getQualifiers() );
+         qualifiers.add( buildZeroToOneCardinalityQualifier() );
+         element.setQualifiers( qualifiers );
+      }
+
       if ( !property.getPayloadName().isEmpty()
             && !( element instanceof SubmodelElementList )
             && !( element instanceof SubmodelElementCollection ) ) {
@@ -455,6 +467,23 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       return new DefaultReference.Builder()
             .type( ReferenceTypes.EXTERNAL_REFERENCE )
             .keys( key )
+            .build();
+   }
+
+   private Qualifier buildZeroToOneCardinalityQualifier() {
+      final Key key = new DefaultKey.Builder()
+            .type( KeyTypes.GLOBAL_REFERENCE )
+            .value( SMT_CARDINALITY_SEMANTIC_ID_URL )
+            .build();
+      final Reference semanticId = new DefaultReference.Builder()
+            .type( ReferenceTypes.EXTERNAL_REFERENCE )
+            .keys( key )
+            .build();
+      return new DefaultQualifier.Builder()
+            .type( SMT_CARDINALITY_QUALIFIER_TYPE )
+            .valueType( DataTypeDefXsd.STRING )
+            .value( SMT_CARDINALITY_ZERO_TO_ONE )
+            .semanticId( semanticId )
             .build();
    }
 
