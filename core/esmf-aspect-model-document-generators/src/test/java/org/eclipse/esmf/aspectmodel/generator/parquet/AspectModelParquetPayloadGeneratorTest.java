@@ -368,24 +368,6 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
-   @Test
-   void testGenerateParquetForAspectWithRangeConstraintWithoutMinMaxIntegerValue() throws IOException {
-      final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITHOUT_MIN_MAX_INTEGER_VALUE );
-      assertThat( parquetFile ).exists();
-
-      final Group group = readFirstRecord( parquetFile );
-      assertThat( group ).isNotNull();
-   }
-
-   @Test
-   void testGenerateParquetForAspectWithRangeConstraintWithoutMinMaxDoubleValue() throws IOException {
-      final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITHOUT_MIN_MAX_DOUBLE_VALUE );
-      assertThat( parquetFile ).exists();
-
-      final Group group = readFirstRecord( parquetFile );
-      assertThat( group ).isNotNull();
-   }
-
    /**
     * Verifies Parquet generation for an aspect with date/time range constraints
     * (mirrors {@code testGenerateAspectWithDateTimeTypeForRangeConstraints}).

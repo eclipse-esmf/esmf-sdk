@@ -93,7 +93,10 @@ public class DefaultScalarValue implements ScalarValue {
 
    @Override
    public AspectModelUrn urn() {
-      return metaModelBaseAttributes != null ? metaModelBaseAttributes.urn() : ScalarValue.super.urn();
+      if ( metaModelBaseAttributes != null && metaModelBaseAttributes.urn() != null ) {
+         return metaModelBaseAttributes.urn();
+      }
+      return ScalarValue.super.urn();
    }
 
    @Override

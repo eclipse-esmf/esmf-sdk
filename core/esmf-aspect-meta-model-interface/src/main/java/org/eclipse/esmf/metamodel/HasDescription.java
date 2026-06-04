@@ -55,7 +55,7 @@ public interface HasDescription {
             .filter( preferredName -> preferredName.getLanguageTag().equals( locale ) )
             .map( LangString::getValue )
             .findAny()
-            .orElse( getName() );
+            .orElseGet( this::getName );
    }
 
    /**

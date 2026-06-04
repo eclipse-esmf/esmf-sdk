@@ -23,28 +23,34 @@ import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.constraint.LengthConstraint;
 import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Represents a numeric range with optional min/max bounds.
+ *
+ * @param min the mininum value
+ * @param max the maximum value
  */
 public record Range(
-      BigDecimal min, BigDecimal max
+      @Nullable BigDecimal min,
+      @Nullable BigDecimal max
 ) {
    static final Range OPEN = new Range( null, (BigDecimal) null );
    static final float EPSILON = .0001f;
 
-   public Range( final Double min, final Double max ) {
+   public Range( final @Nullable Double min, final @Nullable Double max ) {
       this( min == null ? null : BigDecimal.valueOf( min ), max == null ? null : BigDecimal.valueOf( max ) );
    }
 
-   public Range( final Long min, final Long max ) {
+   public Range( final @Nullable Long min, final @Nullable Long max ) {
       this( min == null ? null : BigDecimal.valueOf( min ), max == null ? null : BigDecimal.valueOf( max ) );
    }
 
-   public Range( final Integer min, final Integer max ) {
+   public Range( final @Nullable Integer min, final @Nullable Integer max ) {
       this( min == null ? null : BigDecimal.valueOf( min ), max == null ? null : BigDecimal.valueOf( max ) );
    }
 
-   public Range( final BigInteger min, final BigInteger max ) {
+   public Range( final @Nullable BigInteger min, final @Nullable BigInteger max ) {
       this( min == null ? null : new BigDecimal( min ), max == null ? null : new BigDecimal( max ) );
    }
 
@@ -76,11 +82,11 @@ public record Range(
       return new Range( newMin, newMax );
    }
 
-   public Range clamp( final Long min, final Long max ) {
+   public Range clamp( final @Nullable Long min, final @Nullable Long max ) {
       return merge( new Range( min, max ) );
    }
 
-   public Range clamp( final Integer min, final Integer max ) {
+   public Range clamp( final @Nullable Integer min, final @Nullable Integer max ) {
       return merge( new Range( min, max ) );
    }
 
