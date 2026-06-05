@@ -21,7 +21,6 @@ import java.nio.channels.Channels;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.function.Function;
 
 import org.eclipse.esmf.turtle.languageserver.aspect.request.ValidateDocumentParams;
@@ -52,6 +51,7 @@ public class TurtleLanguageServer implements LanguageServer, LanguageClientAware
    public static final int DEFAULT_PORT = 1846;
 
    private static final Logger LOG = LoggerFactory.getLogger( TurtleLanguageServer.class );
+   private static volatile boolean serverRunning = true;
    private final TurtleTextDocumentService textDocumentService;
    private final TurtleWorkspaceService workspaceService;
 
@@ -134,22 +134,49 @@ public class TurtleLanguageServer implements LanguageServer, LanguageClientAware
     * @param port the port to listen on
     */
    public static void launchForSocket( final int port ) {
-      final TurtleLanguageServer languageServer = new TurtleLanguageServer();
       try ( final AsynchronousServerSocketChannel serverSocket = AsynchronousServerSocketChannel.open() ) {
          serverSocket.bind( new InetSocketAddress( "localhost", port ) );
          LOG.info( "Starting language server on port {}", port );
-         final AsynchronousSocketChannel socketChannel = serverSocket.accept().get();
-         final Launcher<LanguageClient> launcher =
-               Launcher.createIoLauncher( languageServer, LanguageClient.class, Channels.newInputStream( socketChannel ),
-                     Channels.newOutputStream( socketChannel ), Executors.newCachedThreadPool(), Function.identity() );
-         final Future<?> future = launcher.startListening();
-         languageServer.connect( launcher.getRemoteProxy() );
-         while ( !future.isDone() ) {
-            // noinspection BusyWait
-            Thread.sleep( 10_000L );
+
+         while ( serverRunning ) {
+            LOG.info( "Waiting for client connection on port {}", port );
+            final AsynchronousSocketChannel socketChannel = serverSocket.accept().get();
+            LOG.info( "Client connected" );
+
+            // Handle each connection in a separate thread so we can immediately accept new connections
+            final Thread clientThread = new Thread( () -> handleClientConnection( socketChannel ) );
+            clientThread.setName( "LSP-Client-Handler-" + System.currentTimeMillis() );
+            clientThread.setDaemon( true );
+            clientThread.start();
          }
-      } catch ( final InterruptedException | ExecutionException | IOException exception ) {
-         LOG.info( "Could not launch language server", exception );
+      } catch ( final IOException exception ) {
+         LOG.error( "Could not launch language server", exception );
+      } catch ( final InterruptedException exception ) {
+         Thread.currentThread().interrupt();
+         serverRunning = false;
+         LOG.error( "Language server listener was interrupted", exception );
+      } catch ( final ExecutionException exception ) {
+         LOG.error( "Error accepting client connection", exception );
+      }
+   }
+
+   private static void handleClientConnection( final AsynchronousSocketChannel socketChannel ) {
+      try ( final var inputStream = Channels.newInputStream( socketChannel );
+            final var outputStream = Channels.newOutputStream( socketChannel );
+            final var executorService = Executors.newCachedThreadPool();
+            socketChannel ) {
+         final TurtleLanguageServer languageServer = new TurtleLanguageServer();
+         final Launcher<LanguageClient> launcher =
+               Launcher.createIoLauncher( languageServer, LanguageClient.class, inputStream,
+                     outputStream, executorService, Function.identity() );
+         languageServer.connect( launcher.getRemoteProxy() );
+         launcher.startListening().get();
+         LOG.info( "Client disconnected" );
+      } catch ( final InterruptedException exception ) {
+         Thread.currentThread().interrupt();
+         LOG.error( "Client connection handler was interrupted", exception );
+      } catch ( final Exception exception ) {
+         LOG.error( "Error handling client connection", exception );
       }
    }
 }
