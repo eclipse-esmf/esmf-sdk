@@ -81,6 +81,12 @@ public class AspectToOpenapiCommand extends AbstractCommand {
    private String queryApiPath = null;
 
    @CommandLine.Option(
+      names = { "--operations-api-path", "-oap" },
+      description = "The path for the JSON-RPC endpoint, to which Aspect's operations are mapped."
+            + "Default '/rpc-api/vX', where X is the Aspect Model major version." )
+   private String operationsApiPath = null;
+
+   @CommandLine.Option(
       names = { "--json", "-j" },
       description = "Generate OpenAPI JSON specification for an Aspect Model (when not given, YAML is generated as default format)" )
    boolean generateJsonOpenApiSpec = false;
@@ -212,6 +218,7 @@ public class AspectToOpenapiCommand extends AbstractCommand {
             .baseUrl( aspectApiBaseUrl )
             .readApiPath( readApiPath )
             .queryApiPath( queryApiPath )
+            .operationsApiPath( operationsApiPath )
             .resourcePath( aspectResourcePath )
             .properties( readFile( aspectParameterFile ) )
             .template( readFile( templateFilePath ) )
