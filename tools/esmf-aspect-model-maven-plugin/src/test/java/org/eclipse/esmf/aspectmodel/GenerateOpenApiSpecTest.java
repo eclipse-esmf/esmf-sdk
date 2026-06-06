@@ -120,4 +120,16 @@ public class GenerateOpenApiSpecTest extends AspectModelMojoTest {
       assertThat( generatedFile ).exists()
             .content().contains( "http://example.com/custom/path" );
    }
+
+   @Test
+   @InjectMojo(
+      goal = GenerateOpenApiSpec.MAVEN_GOAL,
+      pom = "src/test/resources/generate-openapi-spec-json-pom-custom-operations-api-path/pom.xml" )
+   public void testGenerateOpenApiSpecCustomOperationsApiPath( final GenerateOpenApiSpec generateOpenApiSpec ) throws IOException {
+      assertThatCode( generateOpenApiSpec::execute ).doesNotThrowAnyException();
+
+      final Path generatedFile = generatedFilePath( "AspectWithOperation.oai.json" );
+      assertThat( generatedFile ).exists()
+            .content().contains( "http://example.com/custom/path" );
+   }
 }

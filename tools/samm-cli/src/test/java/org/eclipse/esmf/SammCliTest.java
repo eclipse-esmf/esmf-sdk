@@ -1025,6 +1025,17 @@ class SammCliTest extends SammCliAbstractTest {
    }
 
    @Test
+   void testAspectToOpenApiWithOperationsApiPath() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect",
+            inputFile( TestAspect.ASPECT_WITH_OPERATION ).getAbsolutePath(), "to", "openapi", "--json",
+            "--api-base-url", "https://test.example.com", "--operations-api-path", "/rpc-api/v2" );
+      assertThat( result.stdout() ).contains( "\"openapi\" : \"3.0.3\"" );
+      assertThat( result.stdout() ).contains( "\"url\" : \"https://test.example.com/api/v1\"" );
+      assertThat( result.stdout() ).contains( "\"url\" : \"https://test.example.com/rpc-api/v2\"" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
    void testAspectToAsyncapiWithoutApplicationId() {
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "asyncapi" );
       assertThat( result.exitStatus() ).isZero();
