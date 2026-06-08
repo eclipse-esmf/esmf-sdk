@@ -242,10 +242,10 @@
                      <goal>exec</goal>
                   </goals>
                   <configuration>
-                     <executable> ${project.build.directory}/node/npx</executable>
+                     <executable>${node.path}</executable>
                      <workingDirectory>${project.basedir}/src/main/js</workingDirectory>
                      <commandlineArgs>
-                        tree-sitter-cli generate grammar.js --output ../${c.source.directory}
+                        ${project.build.directory}/node_modules/tree-sitter-cli/cli.js generate grammar.js --output ../${c.source.directory}
                      </commandlineArgs>
                   </configuration>
                </execution>
