@@ -322,9 +322,50 @@ class AspectModelDocumentationGeneratorTest {
             // exampleValue
             .contains( "Example Value" )
 
-            // see links
+            // see links from property
+            .contains( "<li>http://example.com/</li>" )
+            .contains( "<li>http://example.com/me</li>" )
+
+            // see link from event itself
+            .contains( "<li>http://example.com/event</li>" );
+   }
+
+   @Test
+   void testAspectWithOperationWithSeeAttributeDisplaysSeeValues() {
+      final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_OPERATION_WITH_SEE_ATTRIBUTE );
+
+      assertThat( documentation )
+            .contains( "<li>http://example.com/</li>" );
+   }
+
+   @Test
+   void testAspectWithOperationWithMultipleSeeAttributesDisplaysAllValues() {
+      final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_OPERATION_WITH_MULTIPLE_SEE_ATTRIBUTES );
+
+      assertThat( documentation )
             .contains( "<li>http://example.com/</li>" )
             .contains( "<li>http://example.com/me</li>" );
+   }
+
+   @Test
+   void testAspectWithSeeAttributeDisplaysSeeValue() {
+      final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_SEE_ATTRIBUTE );
+
+      assertThat( documentation )
+            .contains( "<li>http://example.com/</li>" );
+   }
+
+   @Test
+   void testEnumValueWithSeeAttributeDisplaysSeeAndMetadata() {
+      final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_ANY_VALUE_DECLARATIONS );
+
+      assertThat( documentation )
+            // named value with see should show see link
+            .contains( "<li>https://en.wikipedia.org/wiki/Traffic_light</li>" )
+            // named value preferredName should be shown
+            .contains( "Normal" )
+            // simple anonymous value should still appear
+            .contains( "yellow" );
    }
 
    @Test

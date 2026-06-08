@@ -25,6 +25,19 @@
         #description( $descriptionsUtils.toHtml( $event.getDescription( $i18n.getLocale() ) ) )
     #end
 
+    #if( !$event.getSee().isEmpty() )
+        <div class="flex border-b pb-1 py-4">
+            <div class="w-80">$i18n.getText( "docu.label.see" )</div>
+            <div class="w-full">
+                #foreach($item in $event.getSee())
+                    <ul class="reset-all-styles m-0 list">
+                        <li>$item</li>
+                    </ul>
+                #end
+            </div>
+        </div>
+    #end
+
     <div class="flex border-b pb-1 py-4">
         <div class="w-80">$i18n.getText( "docu.label.name" )</div>
         <div class="w-full">$event.getName()</div>
