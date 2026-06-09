@@ -590,6 +590,22 @@ class AspectModelAasGeneratorTest {
             .containsExactlyInAnyOrder( "en", "de" );
    }
 
+   @Test
+   void testEnumerationValueReferencesUseConceptDescriptions() throws DeserializationException {
+      final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_ENUMERATION );
+      final DataSpecificationIec61360 dataSpecificationContent = (DataSpecificationIec61360) env.getConceptDescriptions().stream()
+            .filter( conceptDescription -> conceptDescription.getIdShort().equals( "testProperty" ) )
+            .findFirst()
+            .orElseThrow()
+            .getEmbeddedDataSpecifications()
+            .getFirst()
+            .getDataSpecificationContent();
+
+      assertThat( dataSpecificationContent.getValueList().getValueReferencePairs() )
+            .allSatisfy( pair -> assertThat( pair.getValueId().getKeys().getFirst().getType() )
+                  .isEqualTo( KeyTypes.CONCEPT_DESCRIPTION ) );
+   }
+
    private void checkDataSpecificationIec61360( final Set<String> semanticIds, final Environment env ) {
       semanticIds.forEach( semanticId -> getDataSpecificationIec61360( semanticId, env ) );
    }

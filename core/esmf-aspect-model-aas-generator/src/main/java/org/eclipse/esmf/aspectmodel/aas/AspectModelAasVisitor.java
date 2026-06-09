@@ -413,7 +413,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
          throw new IllegalStateException( e );
       }
       final Key key = new DefaultKey.Builder()
-            .type( KeyTypes.DATA_ELEMENT )
+            .type( KeyTypes.CONCEPT_DESCRIPTION )
             .value( DEFAULT_MAPPER.determineIdentifierFor( enumeration ) + ":" + updatedValue )
             .build();
       return new DefaultReference.Builder().type( ReferenceTypes.MODEL_REFERENCE ).keys( key ).build();
