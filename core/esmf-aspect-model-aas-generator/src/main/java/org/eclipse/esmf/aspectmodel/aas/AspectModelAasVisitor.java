@@ -275,6 +275,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
                   .administration( new DefaultAdministrativeInformation.Builder().build() )
                   .assetInformation( new DefaultAssetInformation.Builder()
                         .assetKind( usedContext.getAssetKind() )
+                        .globalAssetId( DEFAULT_MAPPER.determineIdentifierFor( aspect ) )
                         .build() )
                   .submodels( buildReferenceForSubmodel( submodelId ) )
                   .build();

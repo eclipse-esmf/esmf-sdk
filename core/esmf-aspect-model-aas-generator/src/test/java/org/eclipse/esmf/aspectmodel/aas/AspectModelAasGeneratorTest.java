@@ -550,6 +550,14 @@ class AspectModelAasGeneratorTest {
       assertThat( smc.getIdShort() ).isEqualTo( sml.getIdShort() );
    }
 
+   @Test
+   void testGeneratedShellHasGlobalAssetId() throws DeserializationException {
+      final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_PROPERTY );
+
+      assertThat( env.getAssetAdministrationShells().getFirst().getAssetInformation().getGlobalAssetId() )
+            .isEqualTo( "urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithProperty" );
+   }
+
    private void checkDataSpecificationIec61360( final Set<String> semanticIds, final Environment env ) {
       semanticIds.forEach( semanticId -> getDataSpecificationIec61360( semanticId, env ) );
    }
