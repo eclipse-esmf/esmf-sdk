@@ -423,7 +423,7 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
       if ( !aspect.getOperations().isEmpty() ) {
 
          final ObjectNode objectNode = FACTORY.objectNode();
-         setServers( objectNode, baseUrl, apiVersion, OPERATIONS_SERVER_PATH );
+         setServers( objectNode, baseUrl, apiVersion, OPERATIONS_SERVER_PATH.formatted( apiVersion ) );
          objectNode.set( "tags", FACTORY.arrayNode().add( aspect.getName() ) );
          objectNode.put( FIELD_OPERATION_ID, FIELD_POST + FIELD_OPERATION + aspect.getName() );
          objectNode.set( FIELD_PARAMETERS, getRequiredParameters( parameterNode, isEmpty( resourcePath ) ) );

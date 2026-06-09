@@ -530,6 +530,8 @@ class AspectModelOpenApiGeneratorTest {
       final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
+      assertThat( openApi.getPaths().get( "/" + TEST_RESOURCE_PATH + "/operations" ).getPost().getServers().getFirst()
+              .getUrl() ).isEqualTo( TEST_BASE_URL + "/rpc-api/v1.0.0" );
       assertThat( openApi.getComponents().getSchemas() ).containsKey( "AspectWithOperation" );
       assertThat( openApi.getComponents().getSchemas() ).containsKey( "Operation" );
       assertThat( openApi.getComponents().getSchemas() ).containsKey( "OperationResponse" );
