@@ -558,6 +558,38 @@ class AspectModelAasGeneratorTest {
             .isEqualTo( "urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithProperty" );
    }
 
+   @Test
+   void testDataSpecificationIec61360UsesCurrentDataSpecificationReferenceAndNoShortName() throws DeserializationException {
+      final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_PROPERTY );
+      final ConceptDescription conceptDescription = env.getConceptDescriptions().stream()
+            .filter( cd -> cd.getId().equals( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty" ) )
+            .findFirst()
+            .orElseThrow();
+
+      final EmbeddedDataSpecification embeddedDataSpecification = conceptDescription.getEmbeddedDataSpecifications().getFirst();
+      assertThat( embeddedDataSpecification.getDataSpecification().getKeys().getFirst().getValue() )
+            .isEqualTo( "https://admin-shell.io/DataSpecificationTemplates/DataSpecificationIec61360/3" );
+
+      final DataSpecificationIec61360 dataSpecification =
+            (DataSpecificationIec61360) embeddedDataSpecification.getDataSpecificationContent();
+      assertThat( dataSpecification.getShortName() ).isNullOrEmpty();
+      assertThat( dataSpecification.getDefinition() ).isNotEmpty();
+   }
+
+   @Test
+   void testDataSpecificationIec61360FallsBackToPreferredNameDefinitions() throws DeserializationException {
+      final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_PROPERTY_WITH_PREFERRED_NAMES );
+      final DataSpecificationIec61360 dataSpecification =
+            (DataSpecificationIec61360) getDataSpecificationIec61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testBoolean", env );
+
+      assertThat( dataSpecification.getDefinition() )
+            .extracting( AbstractLangString::getText )
+            .containsOnly( "Test Boolean" );
+      assertThat( dataSpecification.getDefinition() )
+            .extracting( AbstractLangString::getLanguage )
+            .containsExactlyInAnyOrder( "en", "de" );
+   }
+
    private void checkDataSpecificationIec61360( final Set<String> semanticIds, final Environment env ) {
       semanticIds.forEach( semanticId -> getDataSpecificationIec61360( semanticId, env ) );
    }
