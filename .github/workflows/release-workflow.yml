@@ -121,14 +121,14 @@ jobs:
           cp tools/samm-cli/scripts/linux/run.sh ./${bundle}/
           chmod +x ./${bundle}/run.sh
 
-          curl -Lo warp-packer https://github.com/dgiagio/warp/releases/download/v0.3.0/linux-x64.warp-packer
-          if [ "$(sha256sum warp-packer | cut -d' ' -f1)" != "ba5da4d224077fffea78c7872df47413234e4ee179c941c821aae0b33bd9f594" ]; then
+          curl -Lo warp-packer https://github.com/kirbylink/warp/releases/download/v1.3.0/linux-x64.warp-packer
+          if [ "$(sha256sum warp-packer | cut -d' ' -f1)" != "add6f937db8b9207d1bb81a900ef609f41875f07c6c8b2d596bfc134c8f285ff" ]; then
             echo "Warp packer checksum does not match"
             exit 1
           fi
           chmod +x warp-packer
 
-          ./warp-packer --arch linux-x64 --input_dir ${bundle} --exec run.sh --output samm
+          ./warp-packer pack --arch linux-x64 --input-dir ${bundle} --exec run.sh --output samm --prefix samm-cli-${RELEASE_VERSION}
           chmod a+x samm
           tar cfvz samm-cli-${RELEASE_VERSION}-linux-x86_64.tar.gz samm
           cp tools/samm-cli/target/samm-cli-*.jar .
@@ -197,14 +197,14 @@ jobs:
           cp tools/samm-cli/scripts/macos/run.sh ./${bundle}/
           chmod +x ./${bundle}/run.sh
 
-          curl -Lo warp-packer https://github.com/dgiagio/warp/releases/download/v0.3.0/macos-x64.warp-packer
-          if [ "$(sha256sum warp-packer | cut -d' ' -f1)" != "01d00038dbbe4e5a6e2ca19c1235f051617ac0e6e582d2407a06cec33125044b" ]; then
+          curl -Lo warp-packer https://github.com/kirbylink/warp/releases/download/v1.3.0/macos-x64.warp-packer
+          if [ "$(sha256sum warp-packer | cut -d' ' -f1)" != "311bd238d087ea92f486d3d754a0f11826d9bd49d6f8ae849e5d6f6089a2e9c9" ]; then
             echo "Warp packer checksum does not match"
             exit 1
           fi
           chmod +x warp-packer
 
-          ./warp-packer --arch macos-x64 --input_dir ${bundle} --exec run.sh --output samm
+          ./warp-packer pack --arch macos-x64 --input-dir ${bundle} --exec run.sh --output samm --prefix samm-cli-${RELEASE_VERSION}
           chmod a+x samm
           tar cfvz samm-cli-${RELEASE_VERSION}-macos-x86_64.tar.gz samm
         shell: bash
@@ -277,13 +277,13 @@ jobs:
           cp tools/samm-cli/target/samm-cli-${RELEASE_VERSION}.jar ./${bundle}/
           cp tools/samm-cli/scripts/windows/run.bat ./${bundle}/
 
-          curl -Lo warp-packer.exe https://github.com/dgiagio/warp/releases/download/v0.3.0/windows-x64.warp-packer.exe
-          if [ "$(sha256sum warp-packer | cut -d' ' -f1)" != "4f9a0f223f0e9f689fc718fdf86a147a357921ffa69c236deadc3274091070c1" ]; then
+          curl -Lo warp-packer.exe https://github.com/kirbylink/warp/releases/download/v1.3.0/windows-x64.warp-packer.exe
+          if [ "$(sha256sum warp-packer | cut -d' ' -f1)" != "483726e0eb10a43167c03c8e4f27a2901741affd245e5ec8ed45509f9dcd7a8a" ]; then
             echo "Warp packer checksum does not match"
             exit 1
           fi
 
-          ./warp-packer.exe --arch windows-x64 --input_dir ${bundle} --exec run.bat --output samm.exe
+          ./warp-packer.exe pack --arch windows-x64 --input-dir ${bundle} --exec run.bat --output samm.exe --prefix samm-cli-${RELEASE_VERSION}
         shell: bash
 
       - name: Upload Windows binary
