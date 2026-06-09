@@ -186,6 +186,31 @@ See https://www.w3.org/TR/shacl/#ClassConstraintComponent[sh:class] for more inf
 
 **Resolution:** Verify that all referenced elements are properly defined and accessible. Check that the element has the correct rdf:type declaration for the expected class.
 
+[[ERR-INVALID-PROPERTY]]
+==== ERR_INVALID_PROPERTY - Invalid Property in Properties List
+
+An element in an Aspect's or Entity's `samm:properties` list is not a valid property reference.
+
+A valid entry must be either:
+
+* a direct reference to a `samm:Property`, or
+* a blank node referencing a property with `samm:optional "true"^^xsd:boolean` and/or `samm:payloadName`, or
+* a blank node referencing a property with `samm:notInPayload "true"^^xsd:boolean` (Entity only, when the Entity is used as the data type of an Enumeration).
+
+**Resolution:** Check each entry in the `samm:properties` list of the Aspect or Entity. Replace invalid entries with proper property references. When using optional or payload-customized properties, ensure the blank node structure is correct:
+
+```turtle
+:MyEntity a samm:Entity ;
+   samm:properties ( :directProperty [ samm:property :optProp ; samm:optional "true"^^xsd:boolean ] ) .
+```
+
+**Example:**
+```
+ERR_INVALID_PROPERTY: Element ':ToggleResult' in the Entity's ':MyEntity' properties list must be a
+property - either directly or via a reference to a property with an attribute
+samm:optional "true"^^xsd:boolean and/or samm:payloadName or samm:notInPayload "true"^^xsd:boolean.
+```
+
 [[enumeration-violations]]
 === Enumeration and Choice Violations
 
