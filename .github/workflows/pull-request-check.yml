@@ -150,6 +150,7 @@ jobs:
             exit 1
           fi
           chmod +x warp-packer
+          xattr -d com.apple.quarantine warp-packer || true
 
           ./warp-packer pack --arch macos-x64 --input-dir ${bundle} --exec run.sh --output samm --prefix samm-cli-${RELEASE_VERSION}
           chmod a+x samm
