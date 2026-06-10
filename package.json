@@ -1,0 +1,14 @@
+{
+  "name": "maven-build-dependencies",
+  "version": "1.0.0",
+  "description": "Package containing all NPM packages for Maven build. No npm install required, fully integrated into maven build.",
+  "license": "MPL-2.0",
+  "author": "Robert Bosch Manufacturing Solutions GmbH",
+  "type": "commonjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "tree-sitter-cli": "^0.25.10"
+  }
+}

@@ -49,6 +49,7 @@
    </scm>
 
    <modules>
+      <module>core/esmf-util</module>
       <module>core/esmf-aspect-meta-model-interface</module>
       <module>core/esmf-aspect-meta-model-java</module>
       <module>core/esmf-aspect-model-aas-generator</module>
@@ -63,6 +64,8 @@
       <module>core/esmf-aspect-model-urn</module>
       <module>core/esmf-aspect-model-validator</module>
       <module>core/esmf-aspect-static-meta-model-java</module>
+      <module>core/esmf-tree-sitter-turtle</module>
+      <module>core/esmf-turtle-language-server</module>
       <module>core/esmf-test-aspect-models</module>
       <module>core/esmf-test-resources</module>
       <module>tools/esmf-aspect-model-maven-plugin</module>
@@ -81,11 +84,17 @@
       <apache-parquet-avro.version>1.15.2</apache-parquet-avro.version>
       <apache-parquet-hadoop-client.version>3.4.1</apache-parquet-hadoop-client.version>
       <apache-parquet-avro.version>1.12.0</apache-parquet-avro.version>
+      <xz.version>1.11</xz.version>
    </properties>
 
    <dependencyManagement>
       <!-- Internal projects -->
       <dependencies>
+         <dependency>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-util</artifactId>
+            <version>${project.version}</version>
+         </dependency>
          <dependency>
             <groupId>org.eclipse.esmf</groupId>
             <artifactId>esmf-aspect-meta-model-interface</artifactId>
@@ -114,6 +123,11 @@
          <dependency>
             <groupId>org.eclipse.esmf</groupId>
             <artifactId>esmf-aspect-model-github-resolver</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-turtle-language-server</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
@@ -154,6 +168,11 @@
          <dependency>
             <groupId>org.eclipse.esmf</groupId>
             <artifactId>esmf-aspect-static-meta-model-java</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-tree-sitter-turtle</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
@@ -233,6 +252,12 @@
             </exclusions>
          </dependency>
          <!-- Apache Parquet dependencies end -->
+
+         <dependency>
+            <groupId>org.tukaani</groupId>
+            <artifactId>xz</artifactId>
+            <version>${xz.version}</version>
+         </dependency>
 
          <!-- Overrides due to CVEs -->
          <dependency>

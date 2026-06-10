@@ -98,7 +98,7 @@ public class PropertyInstantiator extends Instantiator<Property> {
       if ( node.isLiteral() ) {
          final Literal literal = node.asLiteral();
          return valueInstantiator.buildScalarValue( literal.getLexicalForm(), literal.getLanguage(), literal.getDatatypeURI() )
-               .orElseThrow( () -> new AspectLoadingException( "Literal cannot be parsed: " + literal ) );
+               .orElseThrow( () -> new AspectLoadingException( "Literal cannot be parsed: " + literal, literal ) );
       }
 
       if ( node.isResource() ) {
@@ -108,7 +108,7 @@ public class PropertyInstantiator extends Instantiator<Property> {
             final Optional<String> valueOpt = optionalAttributeValue( resource, SammNs.SAMM.value() ).map( Statement::getString );
 
             if ( valueOpt.isEmpty() ) {
-               throw new AspectLoadingException( "samm:Value must contain a samm:value property" );
+               throw new AspectLoadingException( "samm:Value must contain a samm:value property", resource );
             }
 
             return new DefaultScalarValue( buildBaseAttributes( resource ), valueOpt.get(), new DefaultScalar( expectedType.toString() ) );
@@ -117,6 +117,6 @@ public class PropertyInstantiator extends Instantiator<Property> {
          return new DefaultScalarValue( buildBaseAttributes( resource ), resource.getURI(), new DefaultScalar( expectedType.toString() ) );
       }
 
-      throw new AspectLoadingException( "Unexpected RDF node type: " + node );
+      throw new AspectLoadingException( "Unexpected RDF node type: " + node, node );
    }
 }

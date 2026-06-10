@@ -38,6 +38,15 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.XSD;
+
 import org.eclipse.esmf.aspectmodel.AspectLoadingException;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.RdfUtil;
@@ -68,19 +77,13 @@ import org.eclipse.esmf.metamodel.impl.DefaultAspectModel;
 import org.eclipse.esmf.metamodel.impl.DefaultNamespace;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
-import com.google.common.collect.Streams;
-import io.vavr.control.Either;
-import io.vavr.control.Try;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.rdf.model.StmtIterator;
-import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.XSD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Streams;
+
+import io.vavr.control.Either;
+import io.vavr.control.Try;
 
 /**
  * The core class to load an {@link AspectModel}. The AspectModelLoader is also a
@@ -336,6 +339,23 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
          loaderContext.unresolvedUrns().add( inputUrn.toString() );
       }
       resolve( List.of(), loaderContext );
+      return loadAspectModelFiles( loaderContext.loadedFiles() );
+   }
+
+   /**
+    * Load an Aspect Model from a String containing the RDF/Turtle represenatation and set the srouce
+    * location
+    * for this input
+    *
+    * @param turtleRepresentation the document as RDF/Turtle
+    * @param sourceLocation the source location for the model
+    * @return the Aspect Model
+    */
+   public AspectModel load( final String turtleRepresentation, final URI sourceLocation ) {
+      final AspectModelFile rawFile = AspectModelFileLoader.load( turtleRepresentation, sourceLocation );
+      final AspectModelFile migratedModel = migrate( rawFile );
+      final LoaderContext loaderContext = new LoaderContext();
+      resolve( List.of( migratedModel ), loaderContext );
       return loadAspectModelFiles( loaderContext.loadedFiles() );
    }
 
@@ -640,7 +660,11 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
                .filter( statement -> !statement.getObject().isURIResource() || !statement.getResource().equals( SammNs.SAMM.Namespace() ) )
                .map( Statement::getSubject )
                .filter( RDFNode::isURIResource )
-               .map( resource -> mergedModel.createResource( resource.getURI() ) )
+               .map( resource -> {
+                  final Resource newResource = mergedModel.createResource( resource.getURI() );
+                  TokenRegistry.updateNode( resource.asNode(), newResource.asNode() );
+                  return newResource;
+               } )
                .map( resource -> modelElementFactory.create( ModelElement.class, resource ) )
                .toList();
          aspectModelFile.setElements( fileElements );

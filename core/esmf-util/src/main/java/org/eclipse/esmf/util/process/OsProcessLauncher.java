@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2026 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.aspectmodel.resolver.process;
+package org.eclipse.esmf.util.process;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -27,8 +27,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
-
-import org.eclipse.esmf.aspectmodel.resolver.exceptions.ProcessExecutionException;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;

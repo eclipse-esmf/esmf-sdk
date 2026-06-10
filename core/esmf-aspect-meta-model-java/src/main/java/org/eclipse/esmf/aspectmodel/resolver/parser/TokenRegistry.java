@@ -16,10 +16,11 @@ package org.eclipse.esmf.aspectmodel.resolver.parser;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.jena.graph.Node;
+
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 
 import com.google.common.collect.MapMaker;
-import org.apache.jena.graph.Node;
 
 /**
  * This map keeps track of location information for nodes, i.e., when an RDF document is parsed
@@ -43,5 +44,18 @@ public class TokenRegistry {
 
    public static Optional<SmartToken> getToken( final Node node ) {
       return Optional.ofNullable( TOKENS.get( node ) );
+   }
+
+   /**
+    * Replace a registered node, but keep the associated token
+    *
+    * @param oldNode the old node
+    * @param newNode the new node
+    */
+   public static synchronized void updateNode( final Node oldNode, final Node newNode ) {
+      if ( TOKENS.containsKey( oldNode ) ) {
+         final SmartToken token = TOKENS.remove( oldNode );
+         TOKENS.put( newNode, token );
+      }
    }
 }

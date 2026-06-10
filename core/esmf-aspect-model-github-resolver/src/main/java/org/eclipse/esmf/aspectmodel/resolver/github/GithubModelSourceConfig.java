@@ -16,7 +16,7 @@ package org.eclipse.esmf.aspectmodel.resolver.github;
 import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.resolver.GithubRepository;
-import org.eclipse.esmf.aspectmodel.resolver.ProxyConfig;
+import org.eclipse.esmf.util.download.ProxyConfig;
 
 import io.soabase.recordbuilder.core.RecordBuilder;
 

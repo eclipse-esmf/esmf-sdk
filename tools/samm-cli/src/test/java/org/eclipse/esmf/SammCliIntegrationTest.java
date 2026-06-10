@@ -18,9 +18,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 import java.util.List;
 
-import org.eclipse.esmf.aspectmodel.resolver.exceptions.ProcessExecutionException;
-import org.eclipse.esmf.aspectmodel.resolver.process.ExecutableJarLauncher;
-import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher;
+import org.eclipse.esmf.util.process.ProcessExecutionException;
+import org.eclipse.esmf.util.process.ExecutableJarLauncher;
+import org.eclipse.esmf.util.process.ProcessLauncher;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;

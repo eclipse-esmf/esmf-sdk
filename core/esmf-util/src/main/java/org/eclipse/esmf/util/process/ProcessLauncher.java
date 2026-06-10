@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2026 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.aspectmodel.resolver.process;
+package org.eclipse.esmf.util.process;
 
 import java.io.File;
 import java.util.Arrays;
@@ -20,8 +20,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
-
-import org.eclipse.esmf.aspectmodel.resolver.exceptions.ProcessExecutionException;
 
 /**
  * This class abstracts running a "process", i.e. running a program by providing its arguments,
