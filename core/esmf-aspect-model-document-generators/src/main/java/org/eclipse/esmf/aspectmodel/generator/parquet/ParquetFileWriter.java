@@ -114,13 +114,6 @@ class ParquetFileWriter {
 
       // Generate denormalized rows based on collections
       final List<Map<String, Object>> denormalizedRows = createDenormalizedRows( aspect, flattenedExampleData );
-      final Map<String, List<Map.Entry<String, Object>>> propertyNameKeyValueMap = new HashMap<>();
-
-      denormalizedRows.stream().flatMap( map -> map.entrySet().stream() )
-            .forEach( entrySet -> {
-               final String mapKey = getFirstPartBeforeDoubleUnderscore( entrySet.getKey() );
-               propertyNameKeyValueMap.computeIfAbsent( mapKey, k -> new ArrayList<>() ).add( entrySet );
-            } );
 
       try ( final ParquetWriter<Group> writer = ExampleParquetWriter.builder( outputFile )
             .withType( messageTypeSchema )
@@ -128,12 +121,10 @@ class ParquetFileWriter {
 
          final SimpleGroupFactory simpleGroupFactory = new SimpleGroupFactory( messageTypeSchema );
 
-         propertyNameKeyValueMap.forEach( ( key, entryList ) -> {
+         denormalizedRows.forEach( denormalizedRow -> {
             final Group groupNew = simpleGroupFactory.newGroup();
 
-            entryList.forEach( entry -> {
-               final String fieldName = entry.getKey();
-               final Object value = entry.getValue();
+            denormalizedRow.forEach( ( fieldName, value ) -> {
                if ( value != null && flattenedExampleData.containsKey( fieldName ) ) {
                   final PrimitiveType parquetType = flattenedExampleData.get( fieldName )._2;
                   addGroup( value, parquetType, fieldName, groupNew );
