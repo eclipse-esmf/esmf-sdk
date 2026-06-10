@@ -714,7 +714,55 @@ Configuration Properties:
 | `githubServerId` | The id of the `<server>` entry describing the GitHub repository to resolve models from. | `String` | none | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated JSON payload will be written to. | `String` | none | {ok}
-| `addTypeAttribute` | Adds a `@type` attribute for inherited Entities | `Boolean` | `false` | {ok}
+| `addTypeAttribute` | Adds a `@type` attribute for inherited Entities | `Boolean` | `false` | {nok}
+|===
+
+=== Generating Sample Parquet Payload
+
+The `generateParquetPayload` goal generates a valid sample Apache Parquet payload for a given Aspect Model as it
+could be returned by an Aspect that implements that Aspect Model. The default life cycle phase for
+the goal is `generate-resources`.
+
+Usage:
+
+[source,xml,subs=attributes+]
+----
+<build>
+  <plugins>
+    <plugin>
+      <artifactId>esmf-aspect-model-maven-plugin</artifactId>
+      <executions>
+        <execution>
+          <id>generate-parquet-payload</id>
+          <goals>
+            <goal>generateParquetPayload</goal>
+          </goals>
+        </execution>
+      </executions>
+      <configuration>
+        <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
+        <includes>
+          <include>$\{urn-of-aspect-model-to-be-included}</include>
+        </includes>
+        <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
+      </configuration>
+    </plugin>
+  </plugins>
+</build>
+----
+
+Configuration Properties:
+
+[width="100%", options="header", cols="20,50,10,10,10"]
+|===
+| Property | Description | Type | Default Value | Required
+| `detailedValidationMessages` | Detailed validation messages if the model can not be loaded | `Boolean` | `false` | {nok}
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
+| `githubServerIds` | A list of `githubServerId` values, each referring to a `<server>` entry in the Maven `settings.xml`, defining the GitHub repositories to resolve models from. | `List<String>` | none | {nok}
+| `githubServerId` | The id of the `<server>` entry describing the GitHub repository to resolve models from. | `String` | none | {nok}
+| `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
+| `outputDirectory` | The path to the directory where the generated Parquet payload will be written to. | `String` | none | {ok}
+| `addTypeAttribute` | Adds a `@type` attribute for inherited Entities | `Boolean` | `false` | {nok}
 |===
 
 === Generating JSON-LD representation of an Aspect Model
