@@ -50,6 +50,7 @@ import org.eclipse.esmf.metamodel.characteristic.SortedSet;
 import org.eclipse.esmf.metamodel.characteristic.State;
 import org.eclipse.esmf.metamodel.characteristic.StructuredValue;
 import org.eclipse.esmf.metamodel.characteristic.Trait;
+import org.eclipse.esmf.metamodel.datatype.LangString;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.google.common.collect.ImmutableMap;
@@ -110,7 +111,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
    public static final String CONCEPT_DESCRIPTION_CATEGORY = "APPLICATION_CLASS";
    public static final String ALLOWS_ENUMERATION_VALUE_REGEX = "[^a-zA-Z0-9-_]";
    public static final String CONCEPT_DESCRIPTION_DATA_SPECIFICATION_URL =
-         "https://admin-shell.io/DataSpecificationTemplates/DataSpecificationIec61360/3/0";
+         "https://admin-shell.io/DataSpecificationTemplates/DataSpecificationIec61360/3";
 
    private static final Pattern IRDI_BARE_PATTERN = Pattern.compile(
          "^\\d{4}-\\d+(?:%23\\d{2}|#\\d{2})-[A-Za-z0-9-]+(?:%23\\d{3}|#\\d{3})$"
@@ -275,6 +276,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
                   .administration( new DefaultAdministrativeInformation.Builder().build() )
                   .assetInformation( new DefaultAssetInformation.Builder()
                         .assetKind( usedContext.getAssetKind() )
+                        .globalAssetId( DEFAULT_MAPPER.determineIdentifierFor( aspect ) )
                         .build() )
                   .submodels( buildReferenceForSubmodel( submodelId ) )
                   .build();
@@ -411,7 +413,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
          throw new IllegalStateException( e );
       }
       final Key key = new DefaultKey.Builder()
-            .type( KeyTypes.DATA_ELEMENT )
+            .type( KeyTypes.CONCEPT_DESCRIPTION )
             .value( DEFAULT_MAPPER.determineIdentifierFor( enumeration ) + ":" + updatedValue )
             .build();
       return new DefaultReference.Builder().type( ReferenceTypes.MODEL_REFERENCE ).keys( key ).build();
@@ -535,9 +537,8 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
             : property.getPreferredNames().stream().map( LangStringMapper.PREFERRED_NAME::map ).collect( Collectors.toList() );
 
       return new DefaultDataSpecificationIec61360.Builder()
-            .definition( definitionsProperty )
+            .definition( definitions( definitionsProperty, property.getPreferredNames(), property.getName() ) )
             .preferredName( preferredNames )
-            .shortName( LangStringMapper.SHORT_NAME.createLangString( property.getName(), DEFAULT_LOCALE ) )
             .dataType( mapIec61360DataType( property.getCharacteristic() ) )
             .build();
    }
@@ -548,9 +549,10 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
             : operation.getPreferredNames().stream().map( LangStringMapper.PREFERRED_NAME::map ).collect( Collectors.toList() );
 
       return new DefaultDataSpecificationIec61360.Builder()
-            .definition( operation.getDescriptions().stream().map( LangStringMapper.DEFINITION::map ).collect( Collectors.toList() ) )
+            .definition( definitions(
+                  operation.getDescriptions().stream().map( LangStringMapper.DEFINITION::map ).collect( Collectors.toList() ),
+                  operation.getPreferredNames(), operation.getName() ) )
             .preferredName( preferredNames )
-            .shortName( LangStringMapper.SHORT_NAME.createLangString( operation.getName(), DEFAULT_LOCALE ) )
             .build();
    }
 
@@ -560,10 +562,24 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
             : aspect.getPreferredNames().stream().map( LangStringMapper.PREFERRED_NAME::map ).collect( Collectors.toList() );
 
       return new DefaultDataSpecificationIec61360.Builder()
-            .definition( aspect.getDescriptions().stream().map( LangStringMapper.DEFINITION::map ).collect( Collectors.toList() ) )
+            .definition( definitions(
+                  aspect.getDescriptions().stream().map( LangStringMapper.DEFINITION::map ).collect( Collectors.toList() ),
+                  aspect.getPreferredNames(), aspect.getName() ) )
             .preferredName( preferredNames )
-            .shortName( LangStringMapper.SHORT_NAME.createLangString( aspect.getName(), DEFAULT_LOCALE ) )
             .build();
+   }
+
+   private List<LangStringDefinitionTypeIec61360> definitions( final List<LangStringDefinitionTypeIec61360> definitions,
+         final Set<LangString> preferredNames, final String fallbackName ) {
+      if ( !definitions.isEmpty() ) {
+         return definitions;
+      }
+
+      if ( !preferredNames.isEmpty() ) {
+         return preferredNames.stream().map( LangStringMapper.DEFINITION::map ).collect( Collectors.toList() );
+      }
+
+      return Collections.singletonList( LangStringMapper.DEFINITION.createLangString( fallbackName, DEFAULT_LOCALE ) );
    }
 
    private DataTypeIec61360 mapIec61360DataType( final Optional<Characteristic> characteristic ) {
