@@ -348,9 +348,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
          element.setQualifiers( qualifiers );
       }
 
-      if ( !property.getPayloadName().isEmpty()
-            && !( element instanceof SubmodelElementList )
-            && !( element instanceof SubmodelElementCollection ) ) {
+      if ( !property.getPayloadName().isEmpty() ) {
          element.setIdShort( property.getPayloadName() );
       }
 

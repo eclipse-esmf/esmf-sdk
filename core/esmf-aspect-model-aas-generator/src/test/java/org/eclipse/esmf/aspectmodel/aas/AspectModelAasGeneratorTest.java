@@ -176,7 +176,7 @@ class AspectModelAasGeneratorTest {
       assertThat( env.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
       final Submodel submodel = env.getSubmodels().get( 0 );
       assertThat( submodel.getSubmodelElements().get( 0 ) ).isInstanceOfSatisfying( SubmodelElementCollection.class, collection -> {
-         assertThat( collection.getIdShort() ).isEqualTo( "TestEntity" );
+         assertThat( collection.getIdShort() ).isEqualTo( "testProperty" );
 
          final SubmodelElement property = collection.getValue().stream().findFirst().get();
          assertThat( property.getIdShort() ).isEqualTo( "entityProperty" );
@@ -455,6 +455,21 @@ class AspectModelAasGeneratorTest {
    }
 
    @Test
+   void testEntityCollectionUsesPayloadNamesForSubmodelElementListAndNestedProperties() throws DeserializationException {
+      final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_ENTITY_COLLECTION_WITH_PAYLOAD_NAMES );
+      final Submodel sm = env.getSubmodels().getFirst();
+      final SubmodelElementList sml = (SubmodelElementList) sm.getSubmodelElements().getFirst();
+
+      assertThat( sml.getIdShort() ).isEqualTo( "PartSources" );
+
+      final SubmodelElementCollection smc = (SubmodelElementCollection) sml.getValue().getFirst();
+      assertThat( smc.getIdShort() ).isEqualTo( "PartSupplierEntity" );
+      assertThat( smc.getValue() )
+            .extracting( SubmodelElement::getIdShort )
+            .containsExactly( "NameOfSupplier", "EmailAddressOfSupplier" );
+   }
+
+   @Test
    void testSubmodelListSemanticIdIsPropertyUrnEntityCollection() throws DeserializationException {
       final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_ENTITY_COLLECTION );
 
@@ -540,7 +555,7 @@ class AspectModelAasGeneratorTest {
    }
 
    @Test
-   void testSubmodelListSemanticIdSsPropertyUrnAndSmlSmcIdShortAreEntityName() throws DeserializationException {
+   void testSubmodelListSemanticIdSsPropertyUrnAndPayloadNameIdShorts() throws DeserializationException {
       final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_ENTITY_COLLECTION );
 
       assertThat( env.getSubmodels() ).hasSize( 1 );
@@ -556,16 +571,13 @@ class AspectModelAasGeneratorTest {
       assertThat( sml.getSemanticId().getKeys().get( 0 ).getValue() )
             .isEqualTo( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty" );
 
-      // (3) idShort of SML = Entity name
-      assertThat( sml.getIdShort() ).isEqualTo( "TestEntity" );
+      assertThat( sml.getIdShort() ).isEqualTo( "testProperty" );
 
       assertThat( sml.getValue() ).isNotEmpty();
       assertThat( sml.getValue().get( 0 ) ).isInstanceOf( SubmodelElementCollection.class );
       final SubmodelElementCollection smc = (SubmodelElementCollection) sml.getValue().get( 0 );
 
-      // (3) idShort of SMC = idShort of SML = Entity name
       assertThat( smc.getIdShort() ).isEqualTo( "TestEntity" );
-      assertThat( smc.getIdShort() ).isEqualTo( sml.getIdShort() );
    }
 
    @Test
