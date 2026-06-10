@@ -489,7 +489,7 @@ class AspectModelAasGeneratorTest {
    }
 
    @Test
-   void testSubmodelCollectionInsideSubmodelListHasNoSemanticId() throws DeserializationException {
+   void testSubmodelCollectionInsideSubmodelListHasEntitySemanticId() throws DeserializationException {
       final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_ENTITY_LIST );
       final Submodel sm = env.getSubmodels().getFirst();
       final SubmodelElementList sml = (SubmodelElementList) sm.getSubmodelElements().getFirst();
@@ -500,7 +500,9 @@ class AspectModelAasGeneratorTest {
 
       final SubmodelElementCollection smc = (SubmodelElementCollection) values.getFirst();
 
-      assertThat( smc.getSemanticId() ).isNull();
+      assertThat( smc.getSemanticId() ).isNotNull();
+      assertThat( smc.getSemanticId().getKeys().getFirst().getValue() )
+            .isEqualTo( "urn:samm:org.eclipse.esmf.test:1.0.0#TestEntity" );
 
       final List<Reference> supp = smc.getSupplementalSemanticIds();
       assertThat( supp == null || supp.isEmpty() ).isTrue();
@@ -519,7 +521,9 @@ class AspectModelAasGeneratorTest {
 
       final SubmodelElementCollection smc = (SubmodelElementCollection) sme;
 
-      assertThat( smc.getSemanticId() ).isNull();
+      assertThat( smc.getSemanticId() ).isNotNull();
+      assertThat( smc.getSemanticId().getKeys().getFirst().getValue() )
+            .isEqualTo( "urn:samm:org.eclipse.esmf.test:1.0.0#TestEntity" );
 
       final List<String> supp = smc.getSupplementalSemanticIds() == null
             ? List.of()
@@ -555,7 +559,7 @@ class AspectModelAasGeneratorTest {
    }
 
    @Test
-   void testSubmodelListSemanticIdSsPropertyUrnAndPayloadNameIdShorts() throws DeserializationException {
+   void testSubmodelListSemanticIdsAndPayloadNameIdShorts() throws DeserializationException {
       final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_ENTITY_COLLECTION );
 
       assertThat( env.getSubmodels() ).hasSize( 1 );
@@ -570,6 +574,9 @@ class AspectModelAasGeneratorTest {
       assertThat( sml.getSemanticId().getKeys() ).isNotEmpty();
       assertThat( sml.getSemanticId().getKeys().get( 0 ).getValue() )
             .isEqualTo( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty" );
+      assertThat( sml.getSemanticIdListElement() ).isNotNull();
+      assertThat( sml.getSemanticIdListElement().getKeys().getFirst().getValue() )
+            .isEqualTo( "urn:samm:org.eclipse.esmf.test:1.0.0#TestEntity" );
 
       assertThat( sml.getIdShort() ).isEqualTo( "testProperty" );
 
@@ -578,6 +585,9 @@ class AspectModelAasGeneratorTest {
       final SubmodelElementCollection smc = (SubmodelElementCollection) sml.getValue().get( 0 );
 
       assertThat( smc.getIdShort() ).isEqualTo( "TestEntity" );
+      assertThat( smc.getSemanticId() ).isNotNull();
+      assertThat( smc.getSemanticId().getKeys().getFirst().getValue() )
+            .isEqualTo( "urn:samm:org.eclipse.esmf.test:1.0.0#TestEntity" );
    }
 
    @Test

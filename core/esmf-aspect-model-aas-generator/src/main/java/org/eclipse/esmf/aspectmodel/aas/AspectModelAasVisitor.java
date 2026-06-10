@@ -381,7 +381,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
             .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
             .value( submodelElements )
             .supplementalSemanticIds( buildGlobalReferenceForSeeReferences( entity ) )
-            .semanticId( null )
+            .semanticId( buildReferenceForCollection( DEFAULT_MAPPER.determineIdentifierFor( entity ) ) )
             .build();
    }
 
@@ -661,6 +661,10 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
             .filter( Entity.class::isInstance )
             .map( ModelElement::getName )
             .orElse( null );
+      final Optional<Reference> semanticIdListElement = collection.getDataType()
+            .filter( Entity.class::isInstance )
+            .map( Entity.class::cast )
+            .map( entity -> buildReferenceForCollection( DEFAULT_MAPPER.determineIdentifierFor( entity ) ) );
 
       final SubmodelElementBuilder defaultBuilder = property -> {
          final DefaultSubmodelElementList.Builder submodelBuilder = new DefaultSubmodelElementList.Builder()
@@ -671,6 +675,8 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
                .typeValueListElement( AasSubmodelElements.SUBMODEL_ELEMENT_COLLECTION )
                .supplementalSemanticIds( buildGlobalReferenceForSeeReferences( collection ) )
                .orderRelevant( false );
+
+         semanticIdListElement.ifPresent( submodelBuilder::semanticIdListElement );
 
          if ( !collection.isAnonymous() ) {
             final String propertyUrn = DEFAULT_MAPPER.determineIdentifierFor( property );
@@ -698,6 +704,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
                                  .typeValueListElement( AasSubmodelElements.SUBMODEL_ELEMENT )
                                  .orderRelevant( false )
                                  .semanticId( buildReferenceForCollection( propertyUrn ) )
+                                 .semanticIdListElement( semanticIdListElement.orElse( null ) )
                                  .build();
                         } ) )
                   .orElse( defaultBuilder );
