@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2026 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -11,14 +11,14 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.aspectmodel.resolver.exceptions;
+package org.eclipse.esmf.util.download;
 
-public class ProcessExecutionException extends RuntimeException {
-   public ProcessExecutionException( final String message ) {
+public class DownloadException extends RuntimeException {
+   public DownloadException( final String message ) {
       super( message );
    }
 
-   public ProcessExecutionException( final Exception exception ) {
-      super( exception );
+   public DownloadException( final String message, final Throwable cause ) {
+      super( message, cause );
    }
 }

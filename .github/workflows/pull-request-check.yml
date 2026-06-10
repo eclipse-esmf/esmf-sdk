@@ -124,7 +124,7 @@ jobs:
           cp tools/samm-cli/scripts/windows/run.bat ./${bundle}/
 
           curl -Lo warp-packer.exe https://github.com/kirbylink/warp/releases/download/v1.3.0/windows-x64.warp-packer.exe
-          if [ "$(sha256sum warp-packer | cut -d' ' -f1)" != "483726e0eb10a43167c03c8e4f27a2901741affd245e5ec8ed45509f9dcd7a8a" ]; then
+          if [ "$(sha256sum warp-packer.exe | cut -d' ' -f1)" != "483726e0eb10a43167c03c8e4f27a2901741affd245e5ec8ed45509f9dcd7a8a" ]; then
             echo "Warp packer checksum does not match"
             exit 1
           fi
@@ -145,7 +145,7 @@ jobs:
           chmod +x ./${bundle}/run.sh
 
           curl -Lo warp-packer https://github.com/kirbylink/warp/releases/download/v1.3.0/macos-x64.warp-packer
-          if [ "$(sha256sum warp-packer | cut -d' ' -f1)" != "311bd238d087ea92f486d3d754a0f11826d9bd49d6f8ae849e5d6f6089a2e9c9" ]; then
+          if [ "$(shasum -a 256 warp-packer | cut -d' ' -f1)" != "311bd238d087ea92f486d3d754a0f11826d9bd49d6f8ae849e5d6f6089a2e9c9" ]; then
             echo "Warp packer checksum does not match"
             exit 1
           fi

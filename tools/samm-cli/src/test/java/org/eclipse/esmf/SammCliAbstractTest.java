@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
-import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher;
+import org.eclipse.esmf.util.process.ProcessLauncher;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.InvalidTestAspect;
 import org.eclipse.esmf.test.OrderingTestAspect;

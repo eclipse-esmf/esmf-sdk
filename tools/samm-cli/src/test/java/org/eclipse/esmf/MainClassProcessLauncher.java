@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import org.eclipse.esmf.aspectmodel.resolver.process.OsProcessLauncher;
-import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher;
+import org.eclipse.esmf.util.process.OsProcessLauncher;
+import org.eclipse.esmf.util.process.ProcessLauncher;
 
 /**
  * A {@link ProcessLauncher} that executes the static main(String[] args) function of a given class
