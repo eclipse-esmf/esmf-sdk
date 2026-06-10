@@ -30,7 +30,7 @@ import org.eclipse.esmf.aspectmodel.edit.AspectChangeManager;
 import org.eclipse.esmf.aspectmodel.edit.AspectChangeManagerConfig;
 import org.eclipse.esmf.aspectmodel.edit.AspectChangeManagerConfigBuilder;
 import org.eclipse.esmf.aspectmodel.edit.Change;
-import org.eclipse.esmf.aspectmodel.resolver.Download;
+import org.eclipse.esmf.util.download.Download;
 import org.eclipse.esmf.aspectmodel.resolver.NamespacePackage;
 import org.eclipse.esmf.aspectmodel.resolver.fs.ModelsRoot;
 import org.eclipse.esmf.exception.SubCommandException;

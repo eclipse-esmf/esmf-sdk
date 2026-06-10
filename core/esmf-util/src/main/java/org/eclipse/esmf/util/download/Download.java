@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2026 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.aspectmodel.resolver;
+package org.eclipse.esmf.util.download;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -25,8 +25,6 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,10 +34,19 @@ import org.slf4j.LoggerFactory;
  */
 public class Download {
    private static final Logger LOG = LoggerFactory.getLogger( Download.class );
-   private final ProxyConfig proxyConfig;
+   private final Config config;
+
+   public record Config(
+         ProxyConfig proxyConfig,
+         Duration timeout
+   ) {}
 
    public Download( final ProxyConfig proxyConfig ) {
-      this.proxyConfig = proxyConfig;
+      this( new Config( proxyConfig, Duration.ofSeconds( 10 ) ) );
+   }
+
+   public Download( final Config config ) {
+      this.config = config;
    }
 
    public Download() {
@@ -69,21 +76,23 @@ public class Download {
          final HttpClient.Builder clientBuilder = HttpClient.newBuilder()
                .version( HttpClient.Version.HTTP_1_1 )
                .followRedirects( HttpClient.Redirect.ALWAYS )
-               .connectTimeout( Duration.ofSeconds( 10 ) );
-         proxyConfig.proxy().ifPresent( clientBuilder::proxy );
-         proxyConfig.authenticator().ifPresent( clientBuilder::authenticator );
+               .connectTimeout( config.timeout() );
+         config.proxyConfig().proxy().ifPresent( clientBuilder::proxy );
+         config.proxyConfig().authenticator().ifPresent( clientBuilder::authenticator );
          final HttpClient client = clientBuilder.build();
          final String[] headersArray = headers.entrySet().stream()
                .flatMap( entry -> Stream.of( entry.getKey(), entry.getValue() ) )
                .toList()
                .toArray( new String[0] );
-         final HttpRequest request = HttpRequest.newBuilder()
-               .uri( fileUrl.toURI() )
-               .headers( headersArray )
-               .build();
+         final HttpRequest.Builder builder = HttpRequest.newBuilder()
+               .uri( fileUrl.toURI() );
+         if ( headersArray.length > 0 ) {
+            builder.headers( headersArray );
+         }
+         final HttpRequest request = builder.build();
          return client.send( request, HttpResponse.BodyHandlers.ofByteArray() );
       } catch ( final InterruptedException | URISyntaxException | IOException exception ) {
-         throw new ModelResolutionException( "Could not retrieve " + fileUrl, exception );
+         throw new DownloadException( "Could not retrieve " + fileUrl, exception );
       }
    }
 
@@ -114,10 +123,10 @@ public class Download {
          if ( httpResponse.statusCode() >= 200 && httpResponse.statusCode() < 300 ) {
             outputStream.write( httpResponse.body() );
          } else {
-            throw new ModelResolutionException( "Could not download file (status code: " + httpResponse.statusCode() + ")" );
+            throw new DownloadException( "Could not download file (status code: " + httpResponse.statusCode() + ")" );
          }
       } catch ( final IOException exception ) {
-         throw new ModelResolutionException( "Could not write file " + outputFile, exception );
+         throw new DownloadException( "Could not write file " + outputFile, exception );
       }
 
       LOG.info( "Downloaded {} to local file {}", fileUrl.getPath(), outputFile );

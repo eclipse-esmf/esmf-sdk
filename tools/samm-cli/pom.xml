@@ -46,6 +46,10 @@
          <artifactId>esmf-aspect-model-github-resolver</artifactId>
       </dependency>
       <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-turtle-language-server</artifactId>
+      </dependency>
+      <dependency>
          <groupId>com.fasterxml.jackson.core</groupId>
          <artifactId>jackson-databind</artifactId>
       </dependency>
@@ -241,12 +245,11 @@
                         <filter>
                            <artifact>*:*</artifact>
                            <excludes>
-                              <exclude>module-info.class</exclude>
+                              <!-- Exclude module-info.class files also from subfolders like versions -->
+                              <exclude>**/module-info.class</exclude>
                               <exclude>META-INF/*</exclude>
                               <exclude>META-INF/sisu/javax.inject.Named</exclude>
                               <exclude>META-INF/plexus/components.xml</exclude>
-                              <exclude>META-INF.versions*/**</exclude>
-                              <exclude>META-INF/versions*/**</exclude>
                               <exclude>META-INF/maven/**</exclude>
                               <exclude>plugin.xml</exclude>
                               <exclude>about.html</exclude>

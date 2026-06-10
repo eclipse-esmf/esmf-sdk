@@ -1,0 +1,472 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2026 Robert Bosch Manufacturing Solutions GmbH
+  ~
+  ~ See the AUTHORS file(s) distributed with this work for additional
+  ~ information regarding authorship.
+  ~
+  ~ This Source Code Form is subject to the terms of the Mozilla Public
+  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~ file, You can obtain one at https://mozilla.org/MPL/2.0/.
+  ~
+  ~ SPDX-License-Identifier: MPL-2.0
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <parent>
+      <groupId>org.eclipse.esmf</groupId>
+      <artifactId>esmf-sdk-parent</artifactId>
+      <version>DEV-SNAPSHOT</version>
+      <relativePath>../../pom.xml</relativePath>
+   </parent>
+   <modelVersion>4.0.0</modelVersion>
+
+   <artifactId>esmf-tree-sitter-turtle</artifactId>
+   <name>ESMF Tree Sitter Turtle</name>
+   <packaging>jar</packaging>
+
+   <properties>
+      <!-- Plugin versions -->
+      <frontend-maven-plugin.version>1.12.1</frontend-maven-plugin.version>
+      <zig-maven-plugin.version>0.2.1</zig-maven-plugin.version>
+      <download-maven-plugin.version>1.9.0</download-maven-plugin.version>
+
+      <npm.version>11.2.0</npm.version>
+      <node.version>22.14.0</node.version>
+      <zig.version>0.15.2</zig.version>
+      <minisign.version>0.11</minisign.version>
+      <!-- update according to https://github.com/openjdk/jdk/tags -->
+      <openjdk.tag>jdk-25+36</openjdk.tag>
+
+      <!-- Don't use versions >0.25.10 since they require GLIBC 2.39, i.e.,
+           won't work e.g. on Ubuntu 22.04 -->
+      <tree-sitter-cli.version>0.25.10</tree-sitter-cli.version>
+      <tree-sitter.directory>tree-sitter-cli</tree-sitter.directory>
+      <tree-sitter.version>0.26.6</tree-sitter.version>
+
+      <!-- Paths and other settings -->
+      <node.path>${project.build.directory}/node/node</node.path>
+      <zig-cache.path>${project.basedir}/.zig-cache</zig-cache.path>
+      <!-- Relative to src/main -->
+      <c.source.directory>c</c.source.directory>
+      <js.source.directory>js</js.source.directory>
+   </properties>
+
+   <dependencies>
+      <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-util</artifactId>
+         <scope>compile</scope>
+      </dependency>
+      <dependency>
+         <groupId>io.github.bonede</groupId>
+         <artifactId>tree-sitter</artifactId>
+         <version>${tree-sitter.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.commons</groupId>
+         <artifactId>commons-compress</artifactId>
+         <scope>compile</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.tukaani</groupId>
+         <artifactId>xz</artifactId>
+         <scope>compile</scope>
+      </dependency>
+      <dependency>
+         <groupId>com.fasterxml.jackson.core</groupId>
+         <artifactId>jackson-databind</artifactId>
+         <scope>compile</scope>
+      </dependency>
+
+      <!-- Test dependencies -->
+      <dependency>
+         <groupId>org.junit.jupiter</groupId>
+         <artifactId>junit-jupiter</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.assertj</groupId>
+         <artifactId>assertj-core</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-nop</artifactId>
+         <scope>test</scope>
+      </dependency>
+   </dependencies>
+
+   <build>
+      <pluginManagement>
+         <plugins>
+            <plugin>
+               <groupId>com.github.eirslett</groupId>
+               <artifactId>frontend-maven-plugin</artifactId>
+               <version>${frontend-maven-plugin.version}</version>
+            </plugin>
+         </plugins>
+      </pluginManagement>
+
+      <plugins>
+         <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <executions>
+               <execution>
+                  <id>add-generated-sources</id>
+                  <phase>initialize</phase>
+                  <goals>
+                     <goal>add-source</goal>
+                  </goals>
+                  <configuration>
+                     <sources>
+                        <source>${generated-sources}/main/java</source>
+                     </sources>
+                  </configuration>
+               </execution>
+               <execution>
+                  <id>add-buildtime-sources</id>
+                  <phase>initialize</phase>
+                  <goals>
+                     <goal>add-source</goal>
+                  </goals>
+                  <configuration>
+                     <sources>
+                        <source>${build-time-sources}/main/java</source>
+                     </sources>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <configuration>
+               <excludes>
+                  <exclude>**/buildtime/*.class</exclude>
+               </excludes>
+            </configuration>
+         </plugin>
+
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-clean-plugin</artifactId>
+            <configuration>
+               <filesets>
+                  <fileset>
+                     <directory>${generated-sources}</directory>
+                  </fileset>
+               </filesets>
+            </configuration>
+         </plugin>
+
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-resources-plugin</artifactId>
+            <executions>
+               <execution>
+                  <id>copy-npm-config</id>
+                  <phase>initialize</phase>
+                  <goals>
+                     <goal>copy-resources</goal>
+                  </goals>
+                  <configuration>
+                     <resources>
+                        <resource>
+                           <directory>${project.basedir}/../..</directory>
+                           <includes>
+                              <include>package-lock.json</include>
+                              <include>package.json</include>
+                           </includes>
+                        </resource>
+                     </resources>
+                     <outputDirectory>${project.build.directory}</outputDirectory>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+
+         <plugin>
+            <groupId>com.googlecode.maven-download-plugin</groupId>
+            <artifactId>download-maven-plugin</artifactId>
+            <version>${download-maven-plugin.version}</version>
+            <executions>
+               <execution>
+                  <id>download-jni-header</id>
+                  <phase>initialize</phase>
+                  <goals>
+                     <goal>wget</goal>
+                  </goals>
+                  <configuration>
+                     <url>https://raw.githubusercontent.com/openjdk/jdk/refs/tags/${openjdk.tag}/src/java.base/share/native/include/jni.h</url>
+                     <outputDirectory>${project.basedir}/src/main/c/include</outputDirectory>
+                     <overwrite>true</overwrite>
+                  </configuration>
+               </execution>
+               <execution>
+                  <id>download-jni-headers-unix</id>
+                  <phase>initialize</phase>
+                  <goals>
+                     <goal>wget</goal>
+                  </goals>
+                  <configuration>
+                     <url>https://raw.githubusercontent.com/openjdk/jdk/refs/tags/${openjdk.tag}/src/java.base/unix/native/include/jni_md.h</url>
+                     <outputDirectory>${project.basedir}/src/main/c/include/linux</outputDirectory>
+                     <overwrite>true</overwrite>
+                  </configuration>
+               </execution>
+               <execution>
+                  <id>download-jni-headers-macos</id>
+                  <phase>initialize</phase>
+                  <goals>
+                     <goal>wget</goal>
+                  </goals>
+                  <configuration>
+                     <url>https://raw.githubusercontent.com/openjdk/jdk/refs/tags/${openjdk.tag}/src/java.base/unix/native/include/jni_md.h</url>
+                     <outputDirectory>${project.basedir}/src/main/c/include/macos</outputDirectory>
+                     <overwrite>true</overwrite>
+                  </configuration>
+               </execution>
+               <execution>
+                  <id>download-jni-headers-windows</id>
+                  <phase>initialize</phase>
+                  <goals>
+                     <goal>wget</goal>
+                  </goals>
+                  <configuration>
+                     <url>https://raw.githubusercontent.com/openjdk/jdk/refs/tags/${openjdk.tag}/src/java.base/windows/native/include/jni_md.h</url>
+                     <outputDirectory>${project.basedir}/src/main/c/include/windows</outputDirectory>
+                     <overwrite>true</overwrite>
+                  </configuration>
+               </execution>
+               <execution>
+                  <id>download-jawt-headers-unix</id>
+                  <phase>initialize</phase>
+                  <goals>
+                     <goal>wget</goal>
+                  </goals>
+                  <configuration>
+                     <url>https://raw.githubusercontent.com/openjdk/jdk/refs/tags/${openjdk.tag}/src/java.desktop/unix/native/include/jawt_md.h</url>
+                     <outputDirectory>${project.basedir}/src/main/c/include/linux</outputDirectory>
+                     <overwrite>true</overwrite>
+                  </configuration>
+               </execution>
+               <execution>
+                  <id>download-jawt-headers-macos</id>
+                  <phase>initialize</phase>
+                  <goals>
+                     <goal>wget</goal>
+                  </goals>
+                  <configuration>
+                     <url>https://raw.githubusercontent.com/openjdk/jdk/refs/tags/${openjdk.tag}/src/java.desktop/unix/native/include/jawt_md.h</url>
+                     <outputDirectory>${project.basedir}/src/main/c/include/macos</outputDirectory>
+                     <overwrite>true</overwrite>
+                  </configuration>
+               </execution>
+               <execution>
+                  <id>download-jawt-headers-windows</id>
+                  <phase>initialize</phase>
+                  <goals>
+                     <goal>wget</goal>
+                  </goals>
+                  <configuration>
+                     <url>https://raw.githubusercontent.com/openjdk/jdk/refs/tags/${openjdk.tag}/src/java.desktop/windows/native/include/jawt_md.h</url>
+                     <outputDirectory>${project.basedir}/src/main/c/include/windows</outputDirectory>
+                     <overwrite>true</overwrite>
+                  </configuration>
+               </execution>
+               <execution>
+                  <id>download-accessbridge-callbacks-windows</id>
+                  <phase>initialize</phase>
+                  <goals>
+                     <goal>wget</goal>
+                  </goals>
+                  <configuration>
+                     <url>
+                        https://raw.githubusercontent.com/openjdk/jdk/refs/tags/${openjdk.tag}/src/jdk.accessibility/windows/native/include/bridge/AccessBridgeCallbacks.h
+                     </url>
+                     <outputDirectory>${project.basedir}/src/main/c/include/windows/bridge</outputDirectory>
+                     <overwrite>true</overwrite>
+                  </configuration>
+               </execution>
+               <execution>
+                  <id>download-accessbridge-calls-windows</id>
+                  <phase>initialize</phase>
+                  <goals>
+                     <goal>wget</goal>
+                  </goals>
+                  <configuration>
+                     <url>
+                        https://raw.githubusercontent.com/openjdk/jdk/refs/tags/${openjdk.tag}/src/jdk.accessibility/windows/native/include/bridge/AccessBridgeCalls.h
+                     </url>
+                     <outputDirectory>${project.basedir}/src/main/c/include/windows/bridge</outputDirectory>
+                     <overwrite>true</overwrite>
+                  </configuration>
+               </execution>
+               <execution>
+                  <id>download-accessbridge-packages-windows</id>
+                  <phase>initialize</phase>
+                  <goals>
+                     <goal>wget</goal>
+                  </goals>
+                  <configuration>
+                     <url>
+                        https://raw.githubusercontent.com/openjdk/jdk/refs/tags/${openjdk.tag}/src/jdk.accessibility/windows/native/include/bridge/AccessBridgePackages.h
+                     </url>
+                     <outputDirectory>${project.basedir}/src/main/c/include/windows/bridge</outputDirectory>
+                     <overwrite>true</overwrite>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+
+         <plugin>
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+            <executions>
+               <execution>
+                  <id>install-node-and-npm</id>
+                  <phase>initialize</phase>
+                  <goals>
+                     <goal>install-node-and-npm</goal>
+                  </goals>
+                  <configuration>
+                     <nodeVersion>v${node.version}</nodeVersion>
+                     <npmVersion>${npm.version}</npmVersion>
+                     <installDirectory>${project.build.directory}</installDirectory>
+                  </configuration>
+               </execution>
+               <execution>
+                  <id>install-tree-sitter-cli</id>
+                  <phase>initialize</phase>
+                  <goals>
+                     <goal>npm</goal>
+                  </goals>
+                  <configuration>
+                     <workingDirectory>${project.build.directory}</workingDirectory>
+                     <arguments>ci --prefix .</arguments>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+
+         <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <executions>
+               <execution>
+                  <id>download-turtle-grammar</id>
+                  <phase>generate-sources</phase>
+                  <goals>
+                     <goal>java</goal>
+                  </goals>
+                  <configuration>
+                     <mainClass>org.eclipse.esmf.buildtime.DownloadTurtleGrammar</mainClass>
+                     <arguments>
+                        <!-- args[0]: output directory for grammar.js -->
+                        <argument>${project.basedir}/src/main/${js.source.directory}</argument>
+                     </arguments>
+                  </configuration>
+               </execution>
+               <execution>
+                  <id>tree-sitter-generate</id>
+                  <phase>generate-sources</phase>
+                  <goals>
+                     <goal>exec</goal>
+                  </goals>
+                  <configuration>
+                     <executable>${node.path}</executable>
+                     <workingDirectory>${project.basedir}/src/main/js</workingDirectory>
+                     <commandlineArgs>
+                        ${project.build.directory}/node_modules/tree-sitter-cli/cli.js generate grammar.js --output ../${c.source.directory}
+                     </commandlineArgs>
+                  </configuration>
+               </execution>
+               <execution>
+                  <id>download-zig</id>
+                  <phase>process-sources</phase>
+                  <goals>
+                     <goal>java</goal>
+                  </goals>
+                  <configuration>
+                     <mainClass>org.eclipse.esmf.buildtime.DownloadZig</mainClass>
+                     <arguments>
+                        <!-- args[0]: Path to zig cache-->
+                        <argument>${zig-cache.path}</argument>
+                        <!-- args[1]: zig version -->
+                        <argument>${zig.version}</argument>
+                        <!-- args[2]: minisign version, required for validating zig download -->
+                        <argument>${minisign.version}</argument>
+                     </arguments>
+                     <additionalClasspathElements>
+                        <additionalClasspathElement>${settings.localRepository}/org/tukaani/xz/${xz.version}/xz-${xz.version}.jar</additionalClasspathElement>
+                     </additionalClasspathElements>
+                  </configuration>
+               </execution>
+               <execution>
+                  <id>native-compile</id>
+                  <phase>compile</phase>
+                  <goals>
+                     <goal>java</goal>
+                  </goals>
+                  <configuration>
+                     <mainClass>org.eclipse.esmf.buildtime.NativeCompile</mainClass>
+                     <arguments>
+                        <!-- args[0]: Path to zig cache-->
+                        <argument>${zig-cache.path}</argument>
+                        <!-- args[1]: zig version -->
+                        <argument>${zig.version}</argument>
+                        <!-- args[2]: output directory for libs -->
+                        <argument>${project.build.outputDirectory}/lib</argument>
+                        <!-- args[3]: native sources directory -->
+                        <argument>${project.basedir}/src/main/${c.source.directory}</argument>
+                     </arguments>
+                  </configuration>
+               </execution>
+               <execution>
+                  <id>generate-parser-token-types</id>
+                  <phase>process-sources</phase>
+                  <goals>
+                     <goal>java</goal>
+                  </goals>
+                  <configuration>
+                     <mainClass>org.eclipse.esmf.buildtime.GenerateParserTokenType</mainClass>
+                     <arguments>
+                        <!-- args[0]: path to node-types.json -->
+                        <argument>${project.basedir}/src/main/${c.source.directory}/node-types.json</argument>
+                        <!-- args[1]: output directory for generated Java sources -->
+                        <argument>${generated-sources}</argument>
+                     </arguments>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+
+         <plugin>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+               <compilerArgs>
+                  <arg>-h</arg>
+                  <arg>${project.build.directory}/generated-include</arg>
+               </compilerArgs>
+            </configuration>
+            <executions>
+               <execution>
+                  <id>compile-build-time-code</id>
+                  <phase>initialize</phase>
+                  <goals>
+                     <goal>compile</goal>
+                  </goals>
+                  <configuration>
+                     <compileSourceRoots>${build-time-sources}</compileSourceRoots>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+      </plugins>
+   </build>
+</project>

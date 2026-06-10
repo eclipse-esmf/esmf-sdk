@@ -13,8 +13,13 @@
 
 package org.eclipse.esmf.aspectmodel.validation;
 
+import org.apache.jena.rdf.model.RDFNode;
+
+import org.eclipse.esmf.aspectmodel.AspectLoadingException;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+
+import org.jspecify.annotations.Nullable;
 
 /**
  * Meta violation: The validation was unsuccessful, for example because the model could not be
@@ -40,6 +45,11 @@ public record ProcessingViolation(
    @Override
    public String message() {
       return violationSpecificMessage();
+   }
+
+   @Override
+   public @Nullable RDFNode highlight() {
+      return cause instanceof final AspectLoadingException aspectLoadingException ? aspectLoadingException.highlightElement() : null;
    }
 
    @Override

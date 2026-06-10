@@ -32,6 +32,7 @@ import org.eclipse.esmf.aspectmodel.VersionInfo;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.exception.SubCommandException;
 import org.eclipse.esmf.importer.ImportCommand;
+import org.eclipse.esmf.lsp.LspCommand;
 import org.eclipse.esmf.namespacepackage.PackageCommand;
 import org.eclipse.esmf.namespacepackage.PackageExportCommand;
 import org.eclipse.esmf.namespacepackage.PackageImportCommand;
@@ -106,6 +107,7 @@ public class SammCli extends AbstractCommand {
             .addSubcommand( new AasCommand() )
             .addSubcommand( new PackageCommand() )
             .addSubcommand( new ImportCommand() )
+            .addSubcommand( new LspCommand() )
             .setCaseInsensitiveEnumValuesAllowed( true )
             .setExecutionStrategy( LoggingMixin::executionStrategy );
       initialCommandLine.getHelpSectionMap().put( SECTION_KEY_COMMAND_LIST, new CustomCommandListRenderer() );

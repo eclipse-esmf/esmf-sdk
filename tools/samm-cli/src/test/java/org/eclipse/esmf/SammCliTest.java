@@ -29,8 +29,8 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
-import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher;
-import org.eclipse.esmf.aspectmodel.resolver.process.ProcessLauncher.ExecutionResult;
+import org.eclipse.esmf.util.process.ProcessLauncher;
+import org.eclipse.esmf.util.process.ProcessLauncher.ExecutionResult;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
 import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
