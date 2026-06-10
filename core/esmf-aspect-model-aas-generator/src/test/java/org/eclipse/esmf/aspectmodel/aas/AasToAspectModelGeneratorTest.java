@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -344,6 +345,53 @@ class AasToAspectModelGeneratorTest {
 
       assertThat( entityPreferredNames )
             .contains( "Document versions from concept description" );
+   }
+
+   @Test
+   void testSubmodelElementCollectionSemanticIdIsUsedAsEntityTypeNotPropertyIdentifier() {
+      final String entitySemanticId = "urn:samm:org.eclipse.esmf.test:1.0.0#TestEntity";
+      final SubmodelElementCollection collection = new DefaultSubmodelElementCollection.Builder()
+            .idShort( "testProperty" )
+            .semanticId( new DefaultReference.Builder()
+                  .type( ReferenceTypes.EXTERNAL_REFERENCE )
+                  .keys( List.of( new DefaultKey.Builder()
+                        .type( KeyTypes.GLOBAL_REFERENCE )
+                        .value( entitySemanticId )
+                        .build() ) )
+                  .build() )
+            .value( List.of( new DefaultProperty.Builder()
+                  .idShort( "entityProperty" )
+                  .valueType( DataTypeDefXsd.STRING )
+                  .build() ) )
+            .build();
+      final Submodel submodel = new DefaultSubmodel.Builder()
+            .id( "urn:samm:org.eclipse.esmf.test:1.0.0#TestAspect" )
+            .idShort( "TestAspect" )
+            .kind( ModellingKind.TEMPLATE )
+            .submodelElements( List.of( collection ) )
+            .build();
+      final Environment environment = new DefaultEnvironment.Builder()
+            .submodels( List.of( submodel ) )
+            .build();
+
+      final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( environment );
+      final Aspect aspect = aspectModelGenerator.generate().map( AspectArtifact::getContent ).findFirst().orElseThrow();
+
+      final Property property = aspect.getProperties().getFirst();
+      assertThat( property.getName() ).isEqualTo( "testProperty" );
+      assertThat( property.urn().toString() ).isEqualTo( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty" );
+
+      final Entity entity = property.getCharacteristic()
+            .flatMap( Characteristic::getDataType )
+            .map( Entity.class::cast )
+            .orElseThrow();
+      assertThat( entity.getName() ).isEqualTo( "TestEntity" );
+      assertThat( entity.urn().toString() ).isEqualTo( entitySemanticId );
+
+      final String result = AspectSerializer.INSTANCE.aspectToString( aspect );
+      final AspectModel aspectModel = new AspectModelLoader().load( new ByteArrayInputStream( result.getBytes() ), URI.create(
+            "urn:samm:org.eclipse.esmf.test:1.0.0#TestAspect" ) );
+      assertThat( new AspectModelValidator().validateModel( aspectModel ) ).isEmpty();
    }
 
    private static Environment buildTemplateEnvironment( final SubmodelElement submodelElement ) {
