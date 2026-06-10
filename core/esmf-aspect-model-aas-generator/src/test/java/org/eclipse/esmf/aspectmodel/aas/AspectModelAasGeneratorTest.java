@@ -313,6 +313,24 @@ class AspectModelAasGeneratorTest {
    }
 
    @Test
+   void testOptionalPropertyHasZeroToOneCardinalityQualifier() throws DeserializationException {
+      final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_OPTIONAL_PROPERTY );
+      final SubmodelElement element = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
+      assertThat( element.getQualifiers() )
+            .hasSize( 1 )
+            .first()
+            .satisfies( qualifier -> {
+               assertThat( qualifier.getType() ).isEqualTo( AspectModelAasVisitor.SMT_CARDINALITY_QUALIFIER_TYPE );
+               assertThat( qualifier.getValue() ).isEqualTo( AspectModelAasVisitor.SMT_CARDINALITY_ZERO_TO_ONE );
+               assertThat( qualifier.getValueType() ).isEqualTo( DataTypeDefXsd.STRING );
+               assertThat( qualifier.getSemanticId().getKeys() )
+                     .singleElement()
+                     .satisfies( key -> assertThat( key.getValue() )
+                           .isEqualTo( AspectModelAasVisitor.SMT_CARDINALITY_SEMANTIC_ID_URL ) );
+            } );
+   }
+
+   @Test
    void testGenerateAasxFromAspectModelWithRecursivePropertyWithOptional() throws DeserializationException {
       final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_RECURSIVE_PROPERTY_WITH_OPTIONAL );
       assertThat( env.getSubmodels() ).hasSize( 1 );
