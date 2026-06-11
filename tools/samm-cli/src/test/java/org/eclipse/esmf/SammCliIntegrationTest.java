@@ -49,4 +49,12 @@ public class SammCliIntegrationTest extends SammCliAbstractTest {
       assertThat( result.stdout() ).contains( "Input model is valid" );
       assertThat( result.stderr() ).isEmpty();
    }
+
+   @Test
+   void testDiagramGeneration() {
+      final ProcessLauncher.ExecutionResult result =
+            sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "svg" );
+      assertThat( result.stdout() ).contains( "<svg" );
+      assertThat( result.stderr() ).isEmpty();
+   }
 }
