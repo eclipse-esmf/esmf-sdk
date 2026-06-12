@@ -80,9 +80,6 @@
       <skip.maven.failsafe>false</skip.maven.failsafe>
       <build-time-sources>${project.basedir}/src-buildtime</build-time-sources>
       <generated-sources>${project.basedir}/src-gen</generated-sources>
-
-      <!-- Version overrides -->
-      <spotless-maven-plugin.version>3.4.0</spotless-maven-plugin.version>
    </properties>
 
    <dependencyManagement>
