@@ -18,7 +18,7 @@
    <parent>
       <groupId>org.eclipse.esmf</groupId>
       <artifactId>esmf-parent</artifactId>
-      <version>24</version>
+      <version>25</version>
    </parent>
 
    <artifactId>esmf-sdk-parent</artifactId>
@@ -80,11 +80,10 @@
       <skip.maven.failsafe>false</skip.maven.failsafe>
       <build-time-sources>${project.basedir}/src-buildtime</build-time-sources>
       <generated-sources>${project.basedir}/src-gen</generated-sources>
-      <apache-parquet-hadoop.version>1.15.2</apache-parquet-hadoop.version>
-      <apache-parquet-avro.version>1.15.2</apache-parquet-avro.version>
-      <apache-parquet-hadoop-client.version>3.4.1</apache-parquet-hadoop-client.version>
-      <apache-parquet-avro.version>1.12.0</apache-parquet-avro.version>
-      <xz.version>1.11</xz.version>
+
+      <!-- Fix graalvm version to latest version in which truffle still
+        supports x86_64 mac. Can be removed when build is switched to aarch64 -->
+      <graalvm.version>25.0.2</graalvm.version>
    </properties>
 
    <dependencyManagement>
@@ -204,59 +203,6 @@
             <version>${spring-boot.version}</version>
             <type>pom</type>
             <scope>import</scope>
-         </dependency>
-
-         <!-- Apache Parquet dependencies start -->
-         <dependency>
-            <groupId>org.apache.parquet</groupId>
-            <artifactId>parquet-hadoop</artifactId>
-            <version>${apache-parquet-hadoop.version}</version>
-            <exclusions>
-               <exclusion>
-                  <groupId>org.slf4j</groupId>
-                  <artifactId>slf4j-reload4j</artifactId>
-               </exclusion>
-            </exclusions>
-         </dependency>
-         <dependency>
-            <groupId>org.apache.parquet</groupId>
-            <artifactId>parquet-avro</artifactId>
-            <version>${apache-parquet-avro.version}</version>
-            <exclusions>
-               <exclusion>
-                  <groupId>org.slf4j</groupId>
-                  <artifactId>slf4j-reload4j</artifactId>
-               </exclusion>
-            </exclusions>
-         </dependency>
-         <dependency>
-            <groupId>org.apache.hadoop</groupId>
-            <artifactId>hadoop-client</artifactId>
-            <version>${apache-parquet-hadoop-client.version}</version>
-            <exclusions>
-               <exclusion>
-                  <groupId>org.slf4j</groupId>
-                  <artifactId>slf4j-reload4j</artifactId>
-               </exclusion>
-            </exclusions>
-         </dependency>
-         <dependency>
-            <groupId>org.apache.avro</groupId>
-            <artifactId>avro</artifactId>
-            <version>${apache-parquet-avro.version}</version>
-            <exclusions>
-               <exclusion>
-                  <groupId>org.slf4j</groupId>
-                  <artifactId>slf4j-reload4j</artifactId>
-               </exclusion>
-            </exclusions>
-         </dependency>
-         <!-- Apache Parquet dependencies end -->
-
-         <dependency>
-            <groupId>org.tukaani</groupId>
-            <artifactId>xz</artifactId>
-            <version>${xz.version}</version>
          </dependency>
 
          <!-- Overrides due to CVEs -->
