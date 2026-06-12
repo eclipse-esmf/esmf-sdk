@@ -80,6 +80,10 @@
       <skip.maven.failsafe>false</skip.maven.failsafe>
       <build-time-sources>${project.basedir}/src-buildtime</build-time-sources>
       <generated-sources>${project.basedir}/src-gen</generated-sources>
+
+      <!-- Fix graalvm version to latest version in which truffle still
+        supports x86_64 mac. Can be removed when build is switched to aarch64 -->
+      <graalvm.version>25.0.2</graalvm.version>
    </properties>
 
    <dependencyManagement>
