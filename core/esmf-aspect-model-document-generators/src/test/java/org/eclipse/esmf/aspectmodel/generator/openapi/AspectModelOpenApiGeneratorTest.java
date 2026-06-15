@@ -567,15 +567,15 @@ class AspectModelOpenApiGeneratorTest {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_OPERATION ).aspect();
       final String apiEndpoint = "/custom/api-path";
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
-              .baseUrl( TEST_BASE_URL )
-              .resourcePath( TEST_RESOURCE_PATH )
-              .operationsApiPath( apiEndpoint )
-              .build();
+            .baseUrl( TEST_BASE_URL )
+            .resourcePath( TEST_RESOURCE_PATH )
+            .operationsApiPath( apiEndpoint )
+            .build();
       final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
       assertThat( openApi.getPaths().get( "/" + TEST_RESOURCE_PATH + "/operations" ).getPost().getServers().getFirst()
-              .getUrl() ).isEqualTo( TEST_BASE_URL + apiEndpoint );
+            .getUrl() ).isEqualTo( TEST_BASE_URL + apiEndpoint );
    }
 
    @Test
