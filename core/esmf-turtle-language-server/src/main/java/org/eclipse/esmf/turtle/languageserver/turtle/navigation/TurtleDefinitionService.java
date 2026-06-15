@@ -58,8 +58,8 @@ public class TurtleDefinitionService {
             .flatMap( node -> node.children().stream() )
             .filter( node -> {
                if ( node instanceof TurtleSyntaxTree.Token token ) {
-                  return ParserTokenType.PN_PREFIX.equals( token.type() ) &&
-                        token.content().equals( prefixName );
+                  return ParserTokenType.PN_PREFIX.equals( token.type() )
+                        && token.content().equals( prefixName );
                }
                return false;
             } )
@@ -69,14 +69,14 @@ public class TurtleDefinitionService {
 
    private Optional<Location> findElementDefinition( final Position position, final ParsedDocument parsedDocument,
          final TurtleSyntaxTree turtleSyntaxTree ) {
-      TurtleSyntaxTree.Token prefixedName = turtleSyntaxTree
+      final TurtleSyntaxTree.Token prefixedName = turtleSyntaxTree
             .findMatchingTreeSitterToken( List.of( ParserTokenType.PREFIXED_NAME ), position.getLine(), position.getCharacter() );
 
       if ( prefixedName == null ) {
          return Optional.empty();
       }
 
-      Optional<TurtleSyntaxTree.Node> elementDefinition = turtleSyntaxTree.tokens()
+      final Optional<TurtleSyntaxTree.Node> elementDefinition = turtleSyntaxTree.tokens()
             .filter( t -> ParserTokenType.TRIPLE.equals( t.type() ) )
             .filter( this::hasTypeDefinitionPredicate )
             .flatMap( t -> t.children().stream() )
