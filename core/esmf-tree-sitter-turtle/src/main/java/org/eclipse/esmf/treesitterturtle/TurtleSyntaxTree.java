@@ -189,17 +189,18 @@ public class TurtleSyntaxTree {
    }
 
    /**
-    * Finds the matching Tree-sitter token for a given Jena token based on a type filter, line and column position.
+    * Finds the matching Tree-sitter token for a given Jena token based on a type filter, line and
+    * column position.
     *
     * @param desiredTypes filter for this type of token
     * @param targetLine the line of the originating cursor position
     * @param targetColumn the column of the originating cursor position
     * @return the matching Tree-sitter token, or null if syntax tree is not available or no tokens
-    * found
+    *         found
     */
    public TurtleSyntaxTree.@Nullable Token findMatchingTreeSitterToken( final List<String> desiredTypes, final long targetLine,
          final long targetColumn ) {
-      List<Token> tokens = this.tokens().toList();
+      final List<Token> tokens = this.tokens().toList();
       if ( tokens.isEmpty() ) {
          return null;
       }
@@ -217,9 +218,9 @@ public class TurtleSyntaxTree {
          final int tokenToLine = treeToken.location().toLine();
          final int tokenToColumn = treeToken.location().toColumn();
 
-         if ( ( targetLine < tokenFromLine || targetLine > tokenToLine ) ||
-               ( targetLine == tokenFromLine && targetColumn < tokenFromColumn ) ||
-               ( targetLine == tokenToLine && targetColumn >= tokenToColumn ) ) {
+         if ( ( targetLine < tokenFromLine || targetLine > tokenToLine )
+               || ( targetLine == tokenFromLine && targetColumn < tokenFromColumn )
+               || ( targetLine == tokenToLine && targetColumn >= tokenToColumn ) ) {
             continue;
          }
 

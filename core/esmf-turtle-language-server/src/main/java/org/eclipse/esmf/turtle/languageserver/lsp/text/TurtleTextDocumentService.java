@@ -166,8 +166,9 @@ public class TurtleTextDocumentService implements TextDocumentService {
             location -> parsedDocument.sourceDocument().subSequence( location.fromLine(), location.fromColumn(),
                   location.toLine(), location.toColumn() ) );
 
-      final Optional<Location> declaration = turtleDefinitionService.findDefinition( parsedDocument, turtleSyntaxTree, params.getPosition() );
-      if ( declaration.isPresent()) {
+      final Optional<Location> declaration =
+            turtleDefinitionService.findDefinition( parsedDocument, turtleSyntaxTree, params.getPosition() );
+      if ( declaration.isPresent() ) {
          return CompletableFuture.completedFuture( Either.forLeft( List.of( declaration.get() ) ) );
       }
       return CompletableFuture.completedFuture( Either.forLeft( List.of() ) );
