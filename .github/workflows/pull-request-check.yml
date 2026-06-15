@@ -72,6 +72,7 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Check code style
+        if: matrix.os != 'windows-latest'
         run: |
           mvn spotless:check
           mvn checkstyle:check

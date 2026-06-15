@@ -149,9 +149,8 @@ public class AspectModelAsyncApiGenerator extends JsonGenerator<Aspect, AsyncApi
    private ObjectNode buildChannelMessages( final Aspect aspect ) {
       final ObjectNode messagesNode = FACTORY.objectNode();
 
-      aspect.getEvents().forEach( event ->
-            messagesNode.set( event.getName(),
-                  FACTORY.objectNode().put( "$ref", ref( COMPONENTS_MESSAGES_REF, event.getName() ) ) ) );
+      aspect.getEvents().forEach( event -> messagesNode.set( event.getName(),
+            FACTORY.objectNode().put( "$ref", ref( COMPONENTS_MESSAGES_REF, event.getName() ) ) ) );
 
       aspect.getOperations().forEach( operation -> {
          if ( !operation.getInput().isEmpty() ) {
@@ -227,8 +226,7 @@ public class AspectModelAsyncApiGenerator extends JsonGenerator<Aspect, AsyncApi
 
       final AspectModelJsonSchemaVisitor schemaVisitor = new AspectModelJsonSchemaVisitor( createJsonSchemaConfig() );
 
-      aspect.getEvents().forEach( event ->
-            addEventMessage( messagesNode, schemasNode, event, schemaVisitor ) );
+      aspect.getEvents().forEach( event -> addEventMessage( messagesNode, schemasNode, event, schemaVisitor ) );
 
       aspect.getOperations().forEach( operation -> {
          if ( !operation.getInput().isEmpty() ) {
