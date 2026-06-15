@@ -16,8 +16,10 @@ package org.eclipse.esmf.turtle.languageserver.lsp.text;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
 import org.eclipse.esmf.turtle.languageserver.aspect.diagnostic.AspectDiagnosticMapper;
 import org.eclipse.esmf.turtle.languageserver.aspect.service.AspectModelValidationService;
 import org.eclipse.esmf.turtle.languageserver.aspect.service.AspectValidationCoordinator;
@@ -25,7 +27,7 @@ import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDiagnosticsService;
 import org.eclipse.esmf.turtle.languageserver.structure.TurtleTokenService;
 import org.eclipse.esmf.turtle.languageserver.turtle.TurtleSyntaxDiagnosticsService;
-import org.eclipse.esmf.turtle.languageserver.turtle.navigation.TurtlePrefixDefinitionService;
+import org.eclipse.esmf.turtle.languageserver.turtle.navigation.TurtleDefinitionService;
 
 import org.eclipse.lsp4j.DefinitionParams;
 import org.eclipse.lsp4j.DidChangeTextDocumentParams;
@@ -47,7 +49,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
    private static final Logger LOG = LoggerFactory.getLogger( TurtleTextDocumentService.class );
 
    private final TextDocumentClientNotifier clientNotifier;
-   private final TurtlePrefixDefinitionService prefixDefinitionService;
+   private final TurtleDefinitionService turtleDefinitionService;
    private final AspectValidationCoordinator aspectValidationCoordinator;
    private final TreeSitterTurtleParserService turtleParserService;
    private final AspectDiagnosticsWorkflow aspectDiagnosticsWorkflow;
@@ -58,7 +60,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
 
    public TurtleTextDocumentService() {
       clientNotifier = new TextDocumentClientNotifier( new AspectDiagnosticMapper() );
-      prefixDefinitionService = new TurtlePrefixDefinitionService();
+      turtleDefinitionService = new TurtleDefinitionService();
       aspectValidationCoordinator = new AspectValidationCoordinator( new AspectModelValidationService() );
       turtleParserService = new TreeSitterTurtleParserService();
       aspectDiagnosticsWorkflow = new AspectDiagnosticsWorkflow( aspectValidationCoordinator, clientNotifier );
@@ -158,11 +160,17 @@ public class TurtleTextDocumentService implements TextDocumentService {
          return CompletableFuture.completedFuture( Either.forLeft( List.of() ) );
       }
 
-      final Location declaration = prefixDefinitionService.findPrefixDeclaration( document, params.getPosition() );
-      if ( declaration == null ) {
-         return CompletableFuture.completedFuture( Either.forLeft( List.of() ) );
-      }
+      final ParsedDocument parsedDocument = turtleParserService.apply( document );
+      final TurtleSyntaxTree turtleSyntaxTree = TurtleSyntaxTree.fromConcreteSyntaxTree( parsedDocument.concreteSyntaxTree(),
+            () -> parsedDocument.sourceDocument().getContent(),
+            location -> parsedDocument.sourceDocument().subSequence( location.fromLine(), location.fromColumn(),
+                  location.toLine(), location.toColumn() ) );
 
-      return CompletableFuture.completedFuture( Either.forLeft( List.of( declaration ) ) );
+      final Optional<Location> declaration =
+            turtleDefinitionService.findDefinition( parsedDocument, turtleSyntaxTree, params.getPosition() );
+      if ( declaration.isPresent() ) {
+         return CompletableFuture.completedFuture( Either.forLeft( List.of( declaration.get() ) ) );
+      }
+      return CompletableFuture.completedFuture( Either.forLeft( List.of() ) );
    }
 }
