@@ -142,29 +142,29 @@ class AspectModelAsyncApiGeneratorTest {
                """ );
       final JsonNode expectedComponentsSchemas = OBJECT_MAPPER.readTree(
             """
-                  {
-                       "SomeEvent" : {
-                         "type" : "object",
-                         "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#SomeEvent",
-                         "properties" : {
-                           "testProperty" : {
-                             "description" : "This is a test property.",
-                             "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty",
-                             "allOf" : [ {
-                               "$ref" : "#/components/schemas/Text"
-                             } ]
-                           }
-                         },
-                         "required" : [ "testProperty" ]
-                       },
-                       "Text" : {
-                         "type" : "string",
-                         "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#Text",
-                         "description" : "Describes a Property which contains plain text. \
-This is intended exclusively for human readable strings, not for identifiers, measurement values, etc."
-                       }
-                  }
-               """ );
+                                 {
+                                      "SomeEvent" : {
+                                        "type" : "object",
+                                        "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#SomeEvent",
+                                        "properties" : {
+                                          "testProperty" : {
+                                            "description" : "This is a test property.",
+                                            "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty",
+                                            "allOf" : [ {
+                                              "$ref" : "#/components/schemas/Text"
+                                            } ]
+                                          }
+                                        },
+                                        "required" : [ "testProperty" ]
+                                      },
+                                      "Text" : {
+                                        "type" : "string",
+                                        "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#Text",
+                                        "description" : "Describes a Property which contains plain text. \
+               This is intended exclusively for human readable strings, not for identifiers, measurement values, etc."
+                                      }
+                                 }
+                              """ );
 
       assertThat( json.get( "info" ).get( "title" ).asText() ).isEqualTo( "Test Aspect MQTT API" );
       assertThat( json.get( "info" ).get( "description" ).asText() ).isEqualTo( "This is a test description" );
@@ -259,55 +259,55 @@ This is intended exclusively for human readable strings, not for identifiers, me
       );
       final JsonNode expectedComponentsSchemas = OBJECT_MAPPER.readTree(
             """
-                  {
-                       "testOperationRequest" : {
-                         "title" : "First Test Operation",
-                         "allOf" : [ {
-                           "description" : "Description of a text property that is used for input",
-                           "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#input",
-                           "allOf" : [ {
-                             "$ref" : "#/components/schemas/Text"
-                           } ]
-                         } ]
-                       },
-                       "testOperationResponse" : {
-                         "description" : "Description of a text property that is used for output",
-                         "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#output",
-                         "allOf" : [ {
-                           "$ref" : "#/components/schemas/Text"
-                         } ]
-                       },
-                       "testOperationTwoRequest" : {
-                         "title" : "Second Test Operation",
-                         "allOf" : [ {
-                           "description" : "Description of a text property that is used for input",
-                           "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#input",
-                           "allOf" : [ {
-                             "$ref" : "#/components/schemas/Text"
-                           } ]
-                         }, {
-                           "description" : "Description of a second text property that is used for input",
-                           "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#input2",
-                           "allOf" : [ {
-                             "$ref" : "#/components/schemas/Text"
-                           } ]
-                         } ]
-                       },
-                       "testOperationTwoResponse" : {
-                         "description" : "Description of a text property that is used for output",
-                         "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#output",
-                         "allOf" : [ {
-                           "$ref" : "#/components/schemas/Text"
-                         } ]
-                       },
-                       "Text" : {
-                         "type" : "string",
-                         "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#Text",
-                         "description" : "Describes a Property which contains plain text. \
-This is intended exclusively for human readable strings, not for identifiers, measurement values, etc."
-                       }
-                  }
-               """
+                                 {
+                                      "testOperationRequest" : {
+                                        "title" : "First Test Operation",
+                                        "allOf" : [ {
+                                          "description" : "Description of a text property that is used for input",
+                                          "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#input",
+                                          "allOf" : [ {
+                                            "$ref" : "#/components/schemas/Text"
+                                          } ]
+                                        } ]
+                                      },
+                                      "testOperationResponse" : {
+                                        "description" : "Description of a text property that is used for output",
+                                        "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#output",
+                                        "allOf" : [ {
+                                          "$ref" : "#/components/schemas/Text"
+                                        } ]
+                                      },
+                                      "testOperationTwoRequest" : {
+                                        "title" : "Second Test Operation",
+                                        "allOf" : [ {
+                                          "description" : "Description of a text property that is used for input",
+                                          "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#input",
+                                          "allOf" : [ {
+                                            "$ref" : "#/components/schemas/Text"
+                                          } ]
+                                        }, {
+                                          "description" : "Description of a second text property that is used for input",
+                                          "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#input2",
+                                          "allOf" : [ {
+                                            "$ref" : "#/components/schemas/Text"
+                                          } ]
+                                        } ]
+                                      },
+                                      "testOperationTwoResponse" : {
+                                        "description" : "Description of a text property that is used for output",
+                                        "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#output",
+                                        "allOf" : [ {
+                                          "$ref" : "#/components/schemas/Text"
+                                        } ]
+                                      },
+                                      "Text" : {
+                                        "type" : "string",
+                                        "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#Text",
+                                        "description" : "Describes a Property which contains plain text. \
+               This is intended exclusively for human readable strings, not for identifiers, measurement values, etc."
+                                      }
+                                 }
+                              """
       );
 
       assertThat( json.get( "info" ).get( "title" ).asText() ).isEqualTo( "AspectWithOperation MQTT API" );
@@ -366,59 +366,59 @@ This is intended exclusively for human readable strings, not for identifiers, me
       );
       final JsonNode expectedComponentsSchemas = OBJECT_MAPPER.readTree(
             """
-                  {
-                    "EntityEvent" : {
-                      "type" : "object",
-                      "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#EntityEvent",
-                      "properties" : {
-                        "entityProperty" : {
-                          "description" : "This is a property with an entity type.",
-                          "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#entityProperty",
-                          "allOf" : [ {
-                            "$ref" : "#/components/schemas/EntityCharacteristic"
-                          } ]
-                        },
-                        "testString" : {
-                          "description" : "A scalar test property.",
-                          "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#testString",
-                          "allOf" : [ {
-                            "$ref" : "#/components/schemas/Text"
-                          } ]
-                        }
-                      },
-                      "required" : [ "entityProperty", "testString" ]
-                    },
-                    "Text" : {
-                      "type" : "string",
-                      "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#Text",
-                      "description" : "Describes a Property which contains plain text. \
-This is intended exclusively for human readable strings, not for identifiers, measurement values, etc."
-                    },
-                    "TestEntity" : {
-                      "description" : "This is a test entity",
-                      "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#TestEntity",
-                      "type" : "object",
-                      "properties" : {
-                        "innerProperty" : {
-                          "description" : "An inner property of the entity.",
-                          "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#innerProperty",
-                          "allOf" : [ {
-                            "$ref" : "#/components/schemas/Text"
-                          } ]
-                        }
-                      },
-                      "required" : [ "innerProperty" ]
-                    },
-                    "EntityCharacteristic" : {
-                      "description" : "A characteristic with entity data type",
-                      "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#EntityCharacteristic",
-                      "type" : "object",
-                      "allOf" : [ {
-                        "$ref" : "#/components/schemas/TestEntity"
-                      } ]
-                    }
-                  }
-               """
+                                 {
+                                   "EntityEvent" : {
+                                     "type" : "object",
+                                     "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#EntityEvent",
+                                     "properties" : {
+                                       "entityProperty" : {
+                                         "description" : "This is a property with an entity type.",
+                                         "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#entityProperty",
+                                         "allOf" : [ {
+                                           "$ref" : "#/components/schemas/EntityCharacteristic"
+                                         } ]
+                                       },
+                                       "testString" : {
+                                         "description" : "A scalar test property.",
+                                         "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#testString",
+                                         "allOf" : [ {
+                                           "$ref" : "#/components/schemas/Text"
+                                         } ]
+                                       }
+                                     },
+                                     "required" : [ "entityProperty", "testString" ]
+                                   },
+                                   "Text" : {
+                                     "type" : "string",
+                                     "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#Text",
+                                     "description" : "Describes a Property which contains plain text. \
+               This is intended exclusively for human readable strings, not for identifiers, measurement values, etc."
+                                   },
+                                   "TestEntity" : {
+                                     "description" : "This is a test entity",
+                                     "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#TestEntity",
+                                     "type" : "object",
+                                     "properties" : {
+                                       "innerProperty" : {
+                                         "description" : "An inner property of the entity.",
+                                         "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#innerProperty",
+                                         "allOf" : [ {
+                                           "$ref" : "#/components/schemas/Text"
+                                         } ]
+                                       }
+                                     },
+                                     "required" : [ "innerProperty" ]
+                                   },
+                                   "EntityCharacteristic" : {
+                                     "description" : "A characteristic with entity data type",
+                                     "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#EntityCharacteristic",
+                                     "type" : "object",
+                                     "allOf" : [ {
+                                       "$ref" : "#/components/schemas/TestEntity"
+                                     } ]
+                                   }
+                                 }
+                              """
       );
 
       assertThat( json.get( "info" ).get( "title" ).asText() ).isEqualTo( "Test Aspect MQTT API" );

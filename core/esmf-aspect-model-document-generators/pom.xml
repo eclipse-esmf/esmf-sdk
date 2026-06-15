@@ -90,6 +90,46 @@
          <groupId>com.google.guava</groupId>
          <artifactId>guava</artifactId>
       </dependency>
+      <dependency>
+         <groupId>org.apache.parquet</groupId>
+         <artifactId>parquet-hadoop</artifactId>
+         <exclusions>
+            <exclusion>
+               <groupId>org.slf4j</groupId>
+               <artifactId>slf4j-reload4j</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.parquet</groupId>
+         <artifactId>parquet-avro</artifactId>
+         <exclusions>
+            <exclusion>
+               <groupId>org.slf4j</groupId>
+               <artifactId>slf4j-reload4j</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.hadoop</groupId>
+         <artifactId>hadoop-client</artifactId>
+         <exclusions>
+            <exclusion>
+               <groupId>org.slf4j</groupId>
+               <artifactId>slf4j-reload4j</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.avro</groupId>
+         <artifactId>avro</artifactId>
+         <exclusions>
+            <exclusion>
+               <groupId>org.slf4j</groupId>
+               <artifactId>slf4j-reload4j</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
 
       <!-- Test dependencies -->
       <dependency>
@@ -168,24 +208,6 @@
          <type>test-jar</type>
          <scope>test</scope>
       </dependency>
-      <!-- Apache Parquet dependencies start -->
-      <dependency>
-         <groupId>org.apache.parquet</groupId>
-         <artifactId>parquet-hadoop</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>org.apache.parquet</groupId>
-         <artifactId>parquet-avro</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>org.apache.hadoop</groupId>
-         <artifactId>hadoop-client</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>org.apache.avro</groupId>
-         <artifactId>avro</artifactId>
-      </dependency>
-      <!-- Apache Parquet dependencies end -->
    </dependencies>
 
    <build>
