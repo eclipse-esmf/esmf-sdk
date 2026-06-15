@@ -72,6 +72,10 @@ public class TurtleDefinitionService {
       TurtleSyntaxTree.Token prefixedName = turtleSyntaxTree
             .findMatchingTreeSitterToken( List.of( ParserTokenType.PREFIXED_NAME ), position.getLine(), position.getCharacter() );
 
+      if ( prefixedName == null ) {
+         return Optional.empty();
+      }
+
       Optional<TurtleSyntaxTree.Node> elementDefinition = turtleSyntaxTree.tokens()
             .filter( t -> ParserTokenType.TRIPLE.equals( t.type() ) )
             .filter( this::hasTypeDefinitionPredicate )
