@@ -2,6 +2,8 @@
 
 ## Context and Problem Statement
 
+* **Status:** Superseded by [ADR-0003: Use warp-packer instead of native binaries](0003-warp-packer.md)
+
 The SDK's command line interface should be usable as convenient to use as possible, i.e., it should
 be usable without requiring a user to have a certain version of Java installed. It should also be
 directly launchable, i.e., by typing its name (without the `java -jar` incantation).
