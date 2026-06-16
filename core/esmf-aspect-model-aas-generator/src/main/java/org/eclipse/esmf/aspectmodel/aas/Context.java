@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import org.eclipse.esmf.metamodel.Property;
+import org.eclipse.esmf.metamodel.ScalarValue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.eclipse.digitaltwin.aas4j.v3.model.AssetKind;
@@ -177,7 +178,25 @@ public class Context {
     * @return the property value at the current property path
     */
    public String getPropertyValue( final String defaultValue ) {
-      return getRawPropertyValue().flatMap( valueNode -> Optional.ofNullable( valueNode.asText() ) ).orElse( defaultValue );
+      return getRawPropertyValue()
+            .flatMap( valueNode -> Optional.ofNullable( valueNode.asText() ) )
+            .or( this::getExampleValue )
+            .orElse( defaultValue );
+   }
+
+   /**
+    * Retrieves the SAMM example value for the current property when a template is generated.
+    *
+    * @return a present {@link Optional} with the example value if one is available
+    */
+   public Optional<String> getExampleValue() {
+      if ( aspectData != null || property == null ) {
+         return Optional.empty();
+      }
+
+      return property.getExampleValue()
+            .map( ScalarValue::getValue )
+            .map( Object::toString );
    }
 
    /**
