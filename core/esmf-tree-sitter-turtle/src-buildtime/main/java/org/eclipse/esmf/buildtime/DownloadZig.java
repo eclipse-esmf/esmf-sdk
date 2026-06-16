@@ -198,6 +198,8 @@ public class DownloadZig extends ZigContext {
             getOrDownloadFileFromMirror( mirror, zigReleaseArchive );
             getOrDownloadFileFromMirror( mirror, signatureOutputFile );
             validateZigReleaseSignature( minisignExe, zigReleaseArchive );
+            // exit the loop if we reach this point without any exception
+            break;
          } catch ( Exception e ) {
             System.out.println( e.getMessage() );
             try {
