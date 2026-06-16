@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
 import org.treesitter.TSNode;
 import org.treesitter.TSTree;
 
@@ -180,5 +181,58 @@ public class TurtleSyntaxTree {
 
    public Stream<Token> tokens() {
       return nodes().filter( Token.class::isInstance ).map( Token.class::cast );
+   }
+
+   public TurtleSyntaxTree.@Nullable Token findMatchingTreeSitterToken( final long targetLine,
+         final long targetColumn ) {
+      return findMatchingTreeSitterToken( List.of(), targetLine, targetColumn );
+   }
+
+   /**
+    * Finds the matching Tree-sitter token for a given Jena token based on a type filter, line and
+    * column position.
+    *
+    * @param desiredTypes filter for this type of token
+    * @param targetLine the line of the originating cursor position
+    * @param targetColumn the column of the originating cursor position
+    * @return the matching Tree-sitter token, or null if syntax tree is not available or no tokens
+    *         found
+    */
+   public TurtleSyntaxTree.@Nullable Token findMatchingTreeSitterToken( final List<String> desiredTypes, final long targetLine,
+         final long targetColumn ) {
+      final List<Token> tokens = this.tokens().toList();
+      if ( tokens.isEmpty() ) {
+         return null;
+      }
+
+      TurtleSyntaxTree.Token shortestMatch = null;
+      long minTokenLength = Long.MAX_VALUE;
+
+      for ( final TurtleSyntaxTree.Token treeToken : tokens ) {
+         if ( !desiredTypes.isEmpty() && !desiredTypes.contains( treeToken.type ) ) {
+            continue;
+         }
+
+         final int tokenFromLine = treeToken.location().fromLine();
+         final int tokenFromColumn = treeToken.location().fromColumn();
+         final int tokenToLine = treeToken.location().toLine();
+         final int tokenToColumn = treeToken.location().toColumn();
+
+         if ( ( targetLine < tokenFromLine || targetLine > tokenToLine )
+               || ( targetLine == tokenFromLine && targetColumn < tokenFromColumn )
+               || ( targetLine == tokenToLine && targetColumn >= tokenToColumn ) ) {
+            continue;
+         }
+
+         final long tokenLength = Math.abs( tokenFromLine - targetLine ) * 1000 + Math.abs( tokenFromColumn - targetColumn )
+               + Math.abs( tokenToLine - targetLine ) * 1000 + Math.abs( tokenToColumn - targetColumn );
+
+         if ( tokenLength < minTokenLength ) {
+            minTokenLength = tokenLength;
+            shortestMatch = treeToken;
+         }
+      }
+
+      return shortestMatch;
    }
 }

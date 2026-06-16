@@ -379,8 +379,9 @@ class AspectModelAasGeneratorTest {
    @Execution( ExecutionMode.CONCURRENT )
    // Disable ASPECT_WITH_OPERATION test until aas4j is upgraded to v1.0.5 or higher.
    // Current version fails to properly serialize operations with multiple inputs
-   @EnumSource( value = TestAspect.class, names = { "ASPECT_WITH_OPERATION" },
-         mode = EnumSource.Mode.EXCLUDE )
+   @EnumSource( value = TestAspect.class,
+      names = { "ASPECT_WITH_OPERATION" },
+      mode = EnumSource.Mode.EXCLUDE )
    void testGeneration( final TestAspect testAspect ) throws DeserializationException {
       final String aasXmlString = aspectToAasXml( testAspect );
       final byte[] aasXmlInput = aasXmlString.getBytes();

@@ -27,10 +27,6 @@
    <name>ESMF RDF/Turtle Language Server</name>
    <packaging>jar</packaging>
 
-   <properties>
-      <lsp4j.version>1.0.0</lsp4j.version>
-   </properties>
-
    <dependencies>
       <dependency>
          <groupId>org.eclipse.esmf</groupId>
@@ -53,7 +49,6 @@
       <dependency>
          <groupId>org.eclipse.lsp4j</groupId>
          <artifactId>org.eclipse.lsp4j</artifactId>
-         <version>${lsp4j.version}</version>
       </dependency>
       <dependency>
          <groupId>org.slf4j</groupId>

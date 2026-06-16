@@ -384,7 +384,7 @@ class AspectChangeManagerTest {
       final Namespace targetNamespace = new DefaultNamespace( targetUrn, List.of(), Optional.empty() );
       final Change move = new MoveElementToOtherNamespaceExistingFile( aspectModel.aspect(), file2, targetNamespace );
 
-       changeManager.applyChange( move );
+      changeManager.applyChange( move );
       assertThat( changeManager.modifiedFiles() ).hasSize( 2 );
       assertThat( changeManager.createdFiles() ).isEmpty();
 

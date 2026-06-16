@@ -26,10 +26,6 @@
    <packaging>maven-plugin</packaging>
    <name>ESMF Aspect Model Maven Plugin</name>
 
-   <properties>
-      <mockito.version>5.20.0</mockito.version>
-   </properties>
-
    <dependencies>
       <dependency>
          <groupId>org.apache.maven</groupId>
