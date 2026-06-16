@@ -56,6 +56,9 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
    private String queryApiPath;
 
    @Parameter
+   private String operationsApiPath;
+
+   @Parameter
    private String aspectParameterFile;
 
    @Parameter( defaultValue = "false" )
@@ -116,6 +119,7 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
             .baseUrl( aspectApiBaseUrl )
             .readApiPath( readApiPath )
             .queryApiPath( queryApiPath )
+            .operationsApiPath( operationsApiPath )
             .resourcePath( aspectResourcePath )
             .properties( readFile( aspectParameterFile ) )
             .template( readFile( templateFilePath ) )

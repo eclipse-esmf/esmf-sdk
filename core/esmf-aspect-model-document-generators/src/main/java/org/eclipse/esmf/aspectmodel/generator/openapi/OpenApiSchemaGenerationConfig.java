@@ -49,6 +49,7 @@ public record OpenApiSchemaGenerationConfig(
       String baseUrl,
       String readApiPath,
       String queryApiPath,
+      String operationsApiPath,
       String resourcePath,
       ObjectNode properties,
       PagingOption pagingOption,
