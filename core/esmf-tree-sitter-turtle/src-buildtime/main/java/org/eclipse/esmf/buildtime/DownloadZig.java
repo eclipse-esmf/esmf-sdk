@@ -86,23 +86,12 @@ public class DownloadZig extends ZigContext {
       }
    }
 
-   private File getOrDownloadFileFromMirror( final List<String> mirrorUrls, final File outputFile ) {
+   private File getOrDownloadFileFromMirror( final String mirrorUrl, final File outputFile ) {
       if ( outputFile.exists() ) {
          return outputFile;
       }
-      final List<String> triedLocations = new ArrayList<>();
-      for ( final String mirrorUrl : mirrorUrls ) {
-         try {
-            final URL url = url( mirrorUrl + "/" + outputFile.getName() );
-            triedLocations.add( url.toString() );
-            return getOrDownloadFile( url );
-         } catch ( final Exception exception ) {
-            // try the next mirror
-         }
-      }
-      throw new BuildTimeException( "Could not retrieve " + outputFile.getName() + " from any known mirror. Tried:"
-            + triedLocations.stream().map( url -> " - " + url )
-                  .collect( Collectors.joining( "\n" ) ) );
+      final URL url = url( mirrorUrl + "/" + outputFile.getName() );
+      return getOrDownloadFile( url );
    }
 
    private void extractZip( final File zipFile, final Path outputDir ) {
@@ -199,12 +188,33 @@ public class DownloadZig extends ZigContext {
          return zigExe;
       }
 
-      final List<String> mirrors = zigMirrorUrls();
       final String fileName = zigReleaseFileName();
       final File signatureOutputFile = cacheLocation().resolve( fileName + ".minisig" ).toFile();
-      final File zigReleaseArchive = getOrDownloadFileFromMirror( mirrors, cacheLocation().resolve( fileName ).toFile() );
-      getOrDownloadFileFromMirror( mirrors, signatureOutputFile );
-      validateZigReleaseSignature( minisignExe, zigReleaseArchive );
+      final File zigReleaseArchive = cacheLocation().resolve( fileName ).toFile();
+      final List<String> mirrors = zigMirrorUrls();
+
+      for ( final String mirror : mirrors ) {
+         try {
+            getOrDownloadFileFromMirror( mirror, zigReleaseArchive );
+            getOrDownloadFileFromMirror( mirror, signatureOutputFile );
+            validateZigReleaseSignature( minisignExe, zigReleaseArchive );
+            // exit the loop if we reach this point without any exception
+            break;
+         } catch ( Exception e ) {
+            System.out.println( e.getMessage() );
+            try {
+               // Cache should be removed if it can't be downloaded or its signature is invalid
+               FileUtils.delete( zigReleaseArchive );
+               FileUtils.delete( signatureOutputFile );
+            } catch ( final IOException exception ) {
+               // ignore, since it's only the cache
+            }
+         }
+      }
+
+      if ( !zigReleaseArchive.exists() || !signatureOutputFile.exists() ) {
+         throw new BuildTimeException( "File download or signature check failed on all of the following mirrors: " + mirrors );
+      }
 
       if ( !zigDir().toFile().exists() ) {
          extractArchive( zigReleaseArchive, zigDir() );
