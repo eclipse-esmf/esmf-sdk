@@ -413,12 +413,18 @@ class SubmodelToAspectConverter {
 
    private MetaModelBaseAttributes baseAttributes( final SubmodelElement element, final ElementNamingStrategy elementNamingStrategy,
          final boolean upperCase, final boolean includeSee ) {
+      return baseAttributes( element, elementNamingStrategy, upperCase, includeSee, true );
+   }
+
+   private MetaModelBaseAttributes baseAttributes( final SubmodelElement element, final ElementNamingStrategy elementNamingStrategy,
+         final boolean upperCase, final boolean includeSee, final boolean useSemanticIdUrnForAutomaticNames ) {
       final ElementName elementName;
       final AspectModelUrn urn;
       if ( elementNamingStrategy instanceof final DetermineAutomatically automatically ) {
          elementName = determineSubmodelElementName( element, automatically.namePrefix(), upperCase, automatically.appendElementIdShort() );
          final String uniqueName = nextUniqueName( elementName.name() );
-         final boolean useSemanticIdUrn = automatically.namePrefix().isEmpty() && automatically.appendElementIdShort();
+         final boolean useSemanticIdUrn =
+               useSemanticIdUrnForAutomaticNames && automatically.namePrefix().isEmpty() && automatically.appendElementIdShort();
          urn = useSemanticIdUrn
                ? aspectModelUrnFromSemanticId( element ).orElseGet( () -> aspectUrn.withName( uniqueName ) )
                : aspectUrn.withName( uniqueName );
@@ -500,7 +506,9 @@ class SubmodelToAspectConverter {
          return existingProperty;
       }
 
-      final MetaModelBaseAttributes metaModelBaseAttributes = baseAttributes( submodelElement, new DetermineAutomatically(), false, true );
+      final boolean useSemanticIdUrnForProperty = !( submodelElement instanceof SubmodelElementCollection );
+      final MetaModelBaseAttributes metaModelBaseAttributes =
+            baseAttributes( submodelElement, new DetermineAutomatically(), false, true, useSemanticIdUrnForProperty );
       final Characteristic characteristic = createCharacteristic( submodelElement, metaModelBaseAttributes.urn() );
       final Optional<ScalarValue> exampleValue =
             submodelElement instanceof final org.eclipse.digitaltwin.aas4j.v3.model.Property property
