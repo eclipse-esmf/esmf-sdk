@@ -100,6 +100,7 @@ class AspectModelParquetPayloadGeneratorTest {
             final MessageType schema = reader.getFooter().getFileMetaData().getSchema();
             assertThat( schema ).isNotNull();
             assertThat( schema.getFields() ).isNotEmpty();
+            assertThat( reader.getRecordCount() ).isEqualTo( 1 );
          }
       } ).doesNotThrowAnyException();
    }
