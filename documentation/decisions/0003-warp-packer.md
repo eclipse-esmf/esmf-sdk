@@ -93,4 +93,3 @@ to install a Java runtime first, it comes with several problems:
 ## Decision Outcome
 
 Chosen option: "Use warp-packer".
-
