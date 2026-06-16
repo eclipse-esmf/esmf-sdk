@@ -75,6 +75,7 @@
 
    <properties>
       <!-- General settings -->
+      <aas4j.version>2.0.2</aas4j.version>
       <skip.maven.surefire>false</skip.maven.surefire>
       <skip.maven.shade>false</skip.maven.shade>
       <skip.maven.failsafe>false</skip.maven.failsafe>

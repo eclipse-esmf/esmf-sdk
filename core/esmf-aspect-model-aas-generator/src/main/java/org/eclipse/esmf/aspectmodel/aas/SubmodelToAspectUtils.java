@@ -59,13 +59,20 @@ final class SubmodelToAspectUtils {
    static List<String> seeReferences( final List<Reference> supplementalSemanticIds, final Reference semanticId, final Logger logger ) {
       final Stream<Reference> supplemental = Optional.ofNullable( supplementalSemanticIds ).orElseGet( List::of ).stream();
       return Stream.concat( supplemental, Optional.ofNullable( semanticId ).stream() )
-            .flatMap( id -> id.getKeys().stream() )
+            .flatMap( SubmodelToAspectUtils::keys )
             .filter( key -> key.getType() == KeyTypes.CONCEPT_DESCRIPTION || key.getType() == KeyTypes.GLOBAL_REFERENCE
                   || key.getType() == KeyTypes.SUBMODEL )
             .map( Key::getValue )
             .flatMap( value -> validIrdiOrUri( value, logger ).stream() )
             .map( SubmodelToAspectUtils::sanitizeValue )
             .toList();
+   }
+
+   static Stream<Key> keys( final Reference reference ) {
+      return Optional.ofNullable( reference )
+            .map( Reference::getKeys )
+            .orElseGet( List::of )
+            .stream();
    }
 
    static Optional<String> validIrdiOrUri( final String input, final Logger logger ) {
