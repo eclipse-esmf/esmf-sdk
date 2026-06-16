@@ -1,0 +1,51 @@
+# Copyright (c) 2026 S1Seven GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+@prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:AspectWithEntityCollectionWithPayloadNames a samm:Aspect ;
+   samm:properties ( [
+      samm:property :partSources ;
+      samm:payloadName "PartSources" ;
+   ] ) ;
+   samm:operations ( ) .
+
+:partSources a samm:Property ;
+   samm:preferredName "Part Sources"@en ;
+   samm:description "Sources for replacement parts."@en ;
+   samm:characteristic :PartSourceCollection .
+
+:PartSourceCollection a samm-c:Collection ;
+   samm:dataType :PartSupplierEntity .
+
+:PartSupplierEntity a samm:Entity ;
+   samm:preferredName "Part Supplier Entity"@en ;
+   samm:properties (
+      [
+         samm:property :supplierName ;
+         samm:payloadName "NameOfSupplier" ;
+      ]
+      [
+         samm:property :supplierEmail ;
+         samm:payloadName "EmailAddressOfSupplier" ;
+      ]
+   ) .
+
+:supplierName a samm:Property ;
+   samm:preferredName "Supplier Name"@en ;
+   samm:characteristic samm-c:Text .
+
+:supplierEmail a samm:Property ;
+   samm:preferredName "Supplier Email"@en ;
+   samm:characteristic samm-c:Text .
