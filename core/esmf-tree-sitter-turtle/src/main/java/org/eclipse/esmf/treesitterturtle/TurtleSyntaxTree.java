@@ -86,11 +86,15 @@ public class TurtleSyntaxTree {
       }
    }
 
+   public enum ErrorType {
+      SYNTAX_ERROR,
+      MISSING_TOKEN
+   }
+
    public record Error(
          String type,
-         Location location,
-         boolean isMissing,
-         boolean isExtra
+         ErrorType errorType,
+         Location location
    ) implements Node {
       @Override
       public boolean isError() {
@@ -195,7 +199,9 @@ public class TurtleSyntaxTree {
             inputNode.getEndPoint().getRow(),
             inputNode.getEndPoint().getColumn() );
       if ( inputNode.isError() ) {
-         return new Error( inputNode.getType(), location, inputNode.isMissing(), inputNode.isExtra() );
+         return new Error( inputNode.getType(), ErrorType.SYNTAX_ERROR, location );
+      } else if ( inputNode.isMissing() ) {
+         return new Error( inputNode.getType(), ErrorType.MISSING_TOKEN, location );
       }
       final String token = tokenProvider.apply( location );
       final List<Node> children = IntStream.range( 0, inputNode.getChildCount() )

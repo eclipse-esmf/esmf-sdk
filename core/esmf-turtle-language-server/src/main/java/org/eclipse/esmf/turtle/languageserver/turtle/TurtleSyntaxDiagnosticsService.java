@@ -32,7 +32,7 @@ public class TurtleSyntaxDiagnosticsService implements TurtleDiagnosticsService 
    }
 
    private Stream<TurtleDiagnostic> checkNode( final TSNode node, final String sourceLocation ) {
-      return Stream.concat( node.isError() ? Stream.of( diagnosticForNode( node, sourceLocation ) ) : Stream.empty(),
+      return Stream.concat( node.isError() || node.isMissing() ? Stream.of( diagnosticForNode( node, sourceLocation ) ) : Stream.empty(),
             IntStream.range( 0, node.getChildCount() ).boxed().map( node::getChild )
                   .flatMap( child -> checkNode( child, sourceLocation ) ) );
    }
@@ -41,10 +41,6 @@ public class TurtleSyntaxDiagnosticsService implements TurtleDiagnosticsService 
       final String message;
       if ( node.isMissing() ) {
          message = "Syntax error: Missing '" + node.getGrammarType() + "'";
-      } else if ( node.isExtra() ) {
-         message = node.getGrammarType().equals( "ERROR" )
-               ? "Syntax error: Unexpected token"
-               : "Syntax error: Unexpected token '" + node.getGrammarType() + "'";
       } else {
          message = "Syntax error";
       }
