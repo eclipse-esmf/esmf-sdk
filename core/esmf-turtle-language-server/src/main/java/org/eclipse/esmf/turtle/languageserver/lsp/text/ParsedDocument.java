@@ -13,6 +13,8 @@
 
 package org.eclipse.esmf.turtle.languageserver.lsp.text;
 
+import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
+
 import org.treesitter.TSTree;
 
 public record ParsedDocument(
@@ -21,5 +23,17 @@ public record ParsedDocument(
 ) {
    public String getUri() {
       return sourceDocument().getUri();
+   }
+
+   /**
+    * Retrieve the {@link TurtleSyntaxTree} for this parsed document
+    *
+    * @return the turtle syntax tree
+    */
+   public TurtleSyntaxTree turtleSyntaxTree() {
+      return TurtleSyntaxTree.fromConcreteSyntaxTree( concreteSyntaxTree(),
+            () -> sourceDocument().getContent(),
+            location -> sourceDocument().subSequence( location.fromLine(), location.fromColumn(),
+                  location.toLine(), location.toColumn() ) );
    }
 }

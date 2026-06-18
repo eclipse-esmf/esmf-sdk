@@ -29,6 +29,7 @@ import org.eclipse.esmf.turtle.languageserver.lsp.text.TurtleTextDocumentService
 import org.eclipse.esmf.turtle.languageserver.lsp.workspace.TurtleWorkspaceService;
 import org.eclipse.esmf.turtle.languageserver.structure.TurtleTokenService;
 
+import org.eclipse.lsp4j.DocumentSymbolOptions;
 import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.InitializeResult;
 import org.eclipse.lsp4j.SaveOptions;
@@ -71,6 +72,7 @@ public class TurtleLanguageServer implements LanguageServer, LanguageClientAware
       capabilities.setDefinitionProvider( true );
       capabilities.setSemanticTokensProvider(
             new SemanticTokensWithRegistrationOptions( TurtleTokenService.SUPPORTED_TOKEN_TYPES, true, false ) );
+      capabilities.setDocumentSymbolProvider( new DocumentSymbolOptions( "Turtle Document Symbols" ) );
       return CompletableFuture.completedFuture( new InitializeResult( capabilities ) );
    }
 
