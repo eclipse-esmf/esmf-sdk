@@ -13,16 +13,19 @@
 
 package org.eclipse.esmf.turtle.languageserver.diagnostic;
 
+import org.eclipse.esmf.Diagnostic;
+import org.eclipse.esmf.TurtleDiagnostic;
+
 public class TurtleBaseDiagnostic implements TurtleDiagnostic {
    private final String message;
-   private final Code code;
-   private final Severity severity;
+   private final Diagnostic.Code code;
+   private final Diagnostic.Severity severity;
 
-   public TurtleBaseDiagnostic( final String message, final Code code ) {
-      this( message, code, Severity.ERROR );
+   public TurtleBaseDiagnostic( final String message, final Diagnostic.Code code ) {
+      this( message, code, Diagnostic.Severity.ERROR );
    }
 
-   public TurtleBaseDiagnostic( final String message, final Code code, final Severity severity ) {
+   public TurtleBaseDiagnostic( final String message, final Diagnostic.Code code, final Diagnostic.Severity severity ) {
       this.message = message;
       this.code = code;
       this.severity = severity;
@@ -34,12 +37,12 @@ public class TurtleBaseDiagnostic implements TurtleDiagnostic {
    }
 
    @Override
-   public Code code() {
+   public Diagnostic.Code code() {
       return code;
    }
 
    @Override
-   public Severity severity() {
+   public Diagnostic.Severity severity() {
       return severity;
    }
 }

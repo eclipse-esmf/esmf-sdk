@@ -21,6 +21,7 @@ import java.util.Optional;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.riot.RiotException;
 
+import org.eclipse.esmf.Diagnostic;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelFileLoader;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
@@ -32,7 +33,7 @@ import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
 import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleBaseDiagnostic;
-import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDiagnostic;
+import org.eclipse.esmf.TurtleDiagnostic;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDiagnosticsService;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDocumentDiagnostic;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
@@ -93,7 +94,7 @@ public class AspectModelValidationService implements TurtleDiagnosticsService {
             (int) exception.getLine() - 1, (int) exception.getColumn() );
    }
 
-   private TurtleDiagnostic.Code classifyViolation( final Violation violation ) {
+   private Diagnostic.Code classifyViolation( final Violation violation ) {
       // TODO
       return TurtleDiagnostic.TurtleCode.E0000;
    }
