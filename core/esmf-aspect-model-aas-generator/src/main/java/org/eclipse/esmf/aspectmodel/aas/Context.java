@@ -35,7 +35,6 @@ import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
  * Contains and tracks the context while the {@link AspectModelAasVisitor} traverses the metamodel.
  */
 public class Context {
-
    Environment environment;
    final Submodel submodel;
    Property property;
@@ -153,6 +152,22 @@ public class Context {
       return AssetKind.INSTANCE;
    }
 
+   public <T extends SubmodelElement> String getPropertyIdShort( final PropertyMapper<T> mapper ) {
+      final String idShort;
+      if ( ModellingKind.TEMPLATE.equals( getModelingKind() ) ) {
+         idShort = mapper.determineIdShortFor( property );
+      } else {
+         idShort = mapper.determineIdShortFor( property ) + propertyPath.stream()
+               .map( indices::get )
+               .filter( Objects::nonNull )
+               .map( Objects::toString )
+               .collect( Collectors.joining( "_" ) );
+      }
+
+      return idShort;
+   }
+
+   @Deprecated( forRemoval = true )
    public String getPropertyShortId() {
       final String shortId;
       if ( ModellingKind.TEMPLATE.equals( getModelingKind() ) ) {

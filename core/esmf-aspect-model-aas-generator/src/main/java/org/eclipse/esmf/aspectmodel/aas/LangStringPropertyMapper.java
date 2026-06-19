@@ -33,7 +33,6 @@ import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultMultiLanguageProperty;
  * multiple localized strings.
  */
 public class LangStringPropertyMapper implements PropertyMapper<MultiLanguageProperty> {
-
    @Override
    public boolean canHandle( final Property property ) {
       return property.getDataType()
@@ -44,15 +43,16 @@ public class LangStringPropertyMapper implements PropertyMapper<MultiLanguagePro
 
    @Override
    public MultiLanguageProperty mapToAasProperty( final Type type, final Property property, final Context context ) {
-      return new DefaultMultiLanguageProperty.Builder().idShort( context.getPropertyShortId() )
+      return new DefaultMultiLanguageProperty.Builder()
+            .idShort( context.getPropertyIdShort( this ) )
             .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
             .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
             .semanticId( buildPropertyReferenceToGlobalReference( property ) )
-            .value( extractLangStrings( property, context ) )
+            .value( extractLangStrings( context ) )
             .build();
    }
 
-   private List<LangStringTextType> extractLangStrings( final Property property, final Context context ) {
+   private List<LangStringTextType> extractLangStrings( final Context context ) {
       return context.getRawPropertyValue().stream()
             .flatMap( node -> node.isArray() ? StreamSupport.stream( node.spliterator(), false ) : Stream.of( node ) )
             .filter( JsonNode::isObject )
