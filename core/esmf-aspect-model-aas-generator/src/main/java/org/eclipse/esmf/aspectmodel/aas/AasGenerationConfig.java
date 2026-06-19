@@ -17,7 +17,7 @@ import java.util.List;
 
 import org.eclipse.esmf.aspectmodel.generator.GenerationConfig;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import io.soabase.recordbuilder.core.RecordBuilder;
 
 @RecordBuilder

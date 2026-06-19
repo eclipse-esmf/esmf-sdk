@@ -12,21 +12,20 @@
  */
 package org.eclipse.esmf.aspectmodel.aas;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import org.eclipse.esmf.metamodel.Property;
-import org.eclipse.esmf.metamodel.Type;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.jena.vocabulary.RDF;
 import org.eclipse.digitaltwin.aas4j.v3.model.LangStringTextType;
 import org.eclipse.digitaltwin.aas4j.v3.model.MultiLanguageProperty;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultMultiLanguageProperty;
+
+import org.eclipse.esmf.metamodel.Property;
+import org.eclipse.esmf.metamodel.Type;
+
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Special mapper to create {@link MultiLanguageProperty}s from Aspect Model properties that carry
@@ -57,12 +56,8 @@ public class LangStringPropertyMapper implements PropertyMapper<MultiLanguagePro
             .flatMap( node -> node.isArray() ? StreamSupport.stream( node.spliterator(), false ) : Stream.of( node ) )
             .filter( JsonNode::isObject )
             .map( ObjectNode.class::cast )
-            .flatMap( node -> {
-               final Map<String, String> entries = new HashMap<>();
-               node.fields().forEachRemaining( field -> entries.put( field.getKey(), field.getValue().asText() ) );
-               return entries.entrySet().stream();
-            } )
-            .map( entry -> LangStringMapper.TEXT.createLangString( entry.getValue(), entry.getKey() ) )
+            .flatMap( node -> node.properties().stream()
+                  .map( entry -> LangStringMapper.TEXT.createLangString( entry.getValue().asString(), entry.getKey() ) ) )
             .toList();
    }
 }

@@ -101,11 +101,10 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import tools.jackson.core.StreamReadFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.type.TypeFactory;
 
 class AspectModelJsonPayloadGeneratorTest {
    private static final String PACKAGE = "org.eclipse.esmf.test.generatedtestclasses";
@@ -140,8 +139,7 @@ class AspectModelJsonPayloadGeneratorTest {
          final String payload = new AspectModelJsonPayloadGenerator( aspect,
                AspectModelJsonPayloadGenerator.DEFAULT_CONFIG ).generateJson();
          assertThat( payload ).doesNotContain( "\"@type\"" );
-         final ObjectMapper mapper = objectMapper();
-         mapper.setTypeFactory( mapper.getTypeFactory().withClassLoader( compilationResult.classLoader() ) );
+         final ObjectMapper mapper = objectMapperWithTypeMapper( compilationResult.classLoader() );
          mapper.readValue( payload, aspectClass );
       } ).doesNotThrowAnyException();
    }
@@ -173,8 +171,7 @@ class AspectModelJsonPayloadGeneratorTest {
                .build();
          final String payload = new AspectModelJsonPayloadGenerator( aspect, jsonPayloadGenerationConfig ).generateJson();
          assertThat( payload ).contains( "\"@type\"" );
-         final ObjectMapper mapper = objectMapper();
-         mapper.setTypeFactory( mapper.getTypeFactory().withClassLoader( compilationResult.classLoader() ) );
+         final ObjectMapper mapper = objectMapperWithTypeMapper( compilationResult.classLoader() );
          mapper.readValue( payload, aspectClass );
       } ).doesNotThrowAnyException();
    }
@@ -192,7 +189,7 @@ class AspectModelJsonPayloadGeneratorTest {
    private JavaCompiler.CompilationResult compile( final Aspect aspect, final JavaCodeGenerationConfig config ) {
       final AspectModelJavaGenerator codeGenerator = new AspectModelJavaGenerator( aspect, config );
       final Map<QualifiedName, ByteArrayOutputStream> outputs = new LinkedHashMap<>();
-      codeGenerator.generate( name -> outputs.computeIfAbsent( name, name2 -> new ByteArrayOutputStream() ) );
+      codeGenerator.generate( name -> outputs.computeIfAbsent( name, _ -> new ByteArrayOutputStream() ) );
 
       final Map<QualifiedName, String> sources = new LinkedHashMap<>();
       final List<QualifiedName> loadOrder = new ArrayList<>();
@@ -218,21 +215,17 @@ class AspectModelJsonPayloadGeneratorTest {
    }
 
    @Test
-   void testGenerateJsonForAspectWithCollectionOfEntities() throws IOException {
+   void testGenerateJsonForAspectWithCollectionOfEntities() {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_ENTITY_LIST );
-
       final AspectWithEntityCollection aspectWithEntityCollection = parseJson( generatedJson, AspectWithEntityCollection.class );
-
       assertThat( aspectWithEntityCollection.getTestList() ).hasSizeBetween( 1, 5 );
-
-      final TestEntityWithSimpleTypes testEntityWithSimpleTypes = aspectWithEntityCollection.getTestList().get( 0 );
-
+      final TestEntityWithSimpleTypes testEntityWithSimpleTypes = aspectWithEntityCollection.getTestList().getFirst();
       assertThat( generatedJson ).contains( "[" ).contains( "]" );
       assertTestEntityWithSimpleTypes( testEntityWithSimpleTypes );
    }
 
    @Test
-   void testGenerateJsonForAspectWithSimpleProperties() throws IOException {
+   void testGenerateJsonForAspectWithSimpleProperties() {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES );
 
       final AspectWithSimpleProperties aspectWithSimpleProperties = parseJson( generatedJson, AspectWithSimpleProperties.class );
@@ -250,7 +243,7 @@ class AspectModelJsonPayloadGeneratorTest {
    }
 
    @Test
-   void testGenerateJsonForAspectWithStateType() throws IOException {
+   void testGenerateJsonForAspectWithStateType() {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES_AND_STATE );
 
       final AspectWithSimpleTypesAndState aspectWithSimpleTypes = parseJson( generatedJson, AspectWithSimpleTypesAndState.class );
@@ -264,7 +257,7 @@ class AspectModelJsonPayloadGeneratorTest {
    }
 
    @Test
-   void testGenerateJsonForAspectWithEntity() throws IOException {
+   void testGenerateJsonForAspectWithEntity() {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_ENTITY_WITH_MULTIPLE_PROPERTIES );
 
       final AspectWithEntity aspectWithEntity = parseJson( generatedJson, AspectWithEntity.class );
@@ -272,7 +265,7 @@ class AspectModelJsonPayloadGeneratorTest {
    }
 
    @Test
-   void testGenerateJsonForAspectWithRecursivePropertyWithOptional() throws IOException {
+   void testGenerateJsonForAspectWithRecursivePropertyWithOptional() {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_RECURSIVE_PROPERTY_WITH_OPTIONAL );
       final AspectWithRecursivePropertyWithOptional aspectWithRecursivePropertyWithOptional = parseJson( generatedJson,
             AspectWithRecursivePropertyWithOptional.class );
@@ -280,7 +273,7 @@ class AspectModelJsonPayloadGeneratorTest {
    }
 
    @Test
-   void testGenerateJsonForAspectWithMultipleEntities() throws IOException {
+   void testGenerateJsonForAspectWithMultipleEntities() {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_MULTIPLE_ENTITIES );
 
       final AspectWithMultipleEntities aspectWithMultipleEntities = parseJson( generatedJson, AspectWithMultipleEntities.class );
@@ -289,7 +282,7 @@ class AspectModelJsonPayloadGeneratorTest {
    }
 
    @Test
-   void testGenerateJsonForAspectWithNestedEntity() throws IOException {
+   void testGenerateJsonForAspectWithNestedEntity() {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_NESTED_ENTITY );
 
       final AspectWithNestedEntity aspectWithNestedEntity = parseJson( generatedJson, AspectWithNestedEntity.class );
@@ -302,14 +295,14 @@ class AspectModelJsonPayloadGeneratorTest {
    }
 
    @Test
-   void testGenerateJsonForAspectWithMultipleCollectionsOfSimpleType() throws IOException {
+   void testGenerateJsonForAspectWithMultipleCollectionsOfSimpleType() {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_MULTIPLE_COLLECTIONS_OF_SIMPLE_TYPE );
       parseJson( generatedJson, AspectWithMultipleCollectionsOfSimpleType.class );
       assertThat( generatedJson ).contains( "[" ).contains( "]" );
    }
 
    @Test
-   void testGenerateJsonForAspectWithCollectionOfSimpleType() throws IOException {
+   void testGenerateJsonForAspectWithCollectionOfSimpleType() {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_COLLECTION_OF_SIMPLE_TYPE );
 
       final AspectWithCollectionOfSimpleType aspectWithCollectionOfSimpleType = parseJson( generatedJson,
@@ -320,7 +313,7 @@ class AspectModelJsonPayloadGeneratorTest {
    }
 
    @Test
-   void testGenerateJsonForAspectWithEitherType() throws IOException {
+   void testGenerateJsonForAspectWithEitherType() {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_EITHER );
       final AspectWithEither aspectWithEither = parseJson( generatedJson, AspectWithEither.class );
       final Condition<AspectWithEither> isLeft = new Condition<>( x -> x.getEither().getLeft() != null, "left is present" );
@@ -342,13 +335,11 @@ class AspectModelJsonPayloadGeneratorTest {
                   .build() )
             .build();
 
-      assertThatCode( () -> {
-         generateJsonForModel( aspect );
-      } ).doesNotThrowAnyException();
+      assertThatCode( () -> generateJsonForModel( aspect ) ).doesNotThrowAnyException();
    }
 
    @Test
-   void testGenerateJsonForAspectWithComplexCollectionOfMinSize2AndExampleValue() throws IOException {
+   void testGenerateJsonForAspectWithComplexCollectionOfMinSize2AndExampleValue() {
       // We generate a payload for the set of entities, where the Entity's single property has an example
       // value and the set has a minimum size of 2. This means that the exampleValue may not be reused for
       // every entry.
@@ -363,7 +354,7 @@ class AspectModelJsonPayloadGeneratorTest {
    }
 
    @Test
-   void testGenerateJsonForAspectWithEnumHavingNestedEntities() throws IOException {
+   void testGenerateJsonForAspectWithEnumHavingNestedEntities() {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_ENUM_HAVING_NESTED_ENTITIES );
 
       final AspectWithEnumHavingNestedEntities aspectWithEnum = parseJson( generatedJson, AspectWithEnumHavingNestedEntities.class );
@@ -376,7 +367,7 @@ class AspectModelJsonPayloadGeneratorTest {
    }
 
    @Test
-   void testGenerateJsonForAspectWithEntityEnumerationAndLangString() throws IOException {
+   void testGenerateJsonForAspectWithEntityEnumerationAndLangString() {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_AND_LANG_STRING );
 
       final AspectWithEntityEnumerationAndLangString aspectWithEnum = parseJson( generatedJson,
@@ -386,7 +377,7 @@ class AspectModelJsonPayloadGeneratorTest {
    }
 
    @Test
-   void testGenerateJsonForAspectWithComplexEnum() throws IOException {
+   void testGenerateJsonForAspectWithComplexEnum() {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_COMPLEX_ENUM );
 
       final AspectWithEnum aspectWithEnum = parseJson( generatedJson, AspectWithEnum.class );
@@ -397,7 +388,7 @@ class AspectModelJsonPayloadGeneratorTest {
    }
 
    @Test
-   void testGenerateJsonForAspectWithComplextEntityCollectionEnum() throws IOException {
+   void testGenerateJsonForAspectWithComplextEntityCollectionEnum() {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_COMPLEX_ENTITY_COLLECTION_ENUM );
 
       final AspectWithComplexEntityCollectionEnum aspectWithComplexEntityCollectionEnum = parseJson( generatedJson,
@@ -407,7 +398,7 @@ class AspectModelJsonPayloadGeneratorTest {
             .getEntityPropertyOne();
       assertThat( generatedJson ).contains( "[" ).contains( "]" );
       assertThat( myEntityTwoList ).hasSize( 1 );
-      assertThat( myEntityTwoList.get( 0 ).getEntityPropertyTwo() ).isEqualTo( "foo" );
+      assertThat( myEntityTwoList.getFirst().getEntityPropertyTwo() ).isEqualTo( "foo" );
    }
 
    @Test
@@ -433,10 +424,10 @@ class AspectModelJsonPayloadGeneratorTest {
       assertThat( aspectWithEntityCollection.getTestListOne() ).hasSizeBetween( 1, 5 );
       assertThat( aspectWithEntityCollection.getTestListTwo() ).hasSizeBetween( 1, 5 );
 
-      TestEntityWithSimpleTypes testEntityWithSimpleTypes = aspectWithEntityCollection.getTestListOne().get( 0 );
+      TestEntityWithSimpleTypes testEntityWithSimpleTypes = aspectWithEntityCollection.getTestListOne().getFirst();
       assertTestEntityWithSimpleTypes( testEntityWithSimpleTypes );
 
-      testEntityWithSimpleTypes = aspectWithEntityCollection.getTestListTwo().get( 0 );
+      testEntityWithSimpleTypes = aspectWithEntityCollection.getTestListTwo().getFirst();
       assertTestEntityWithSimpleTypes( testEntityWithSimpleTypes );
    }
 
@@ -595,9 +586,7 @@ class AspectModelJsonPayloadGeneratorTest {
       // Entries are pair-wise non-equal
       IntStream.range( 1, list.size() )
             .mapToObj( i -> Map.entry( list.get( i - 1 ), list.get( i ) ) )
-            .forEach( entry -> {
-               assertThat( entry.getKey() ).isNotEqualTo( entry.getValue() );
-            } );
+            .forEach( entry -> assertThat( entry.getKey() ).isNotEqualTo( entry.getValue() ) );
    }
 
    @Test
@@ -635,17 +624,24 @@ class AspectModelJsonPayloadGeneratorTest {
    }
 
    private ObjectMapper objectMapper() {
-      final ObjectMapper mapper = new ObjectMapper();
-      mapper.registerModule( new JavaTimeModule() );
-      mapper.registerModule( new Jdk8Module() );
-      mapper.registerModule( new AspectModelJacksonModule() );
-      mapper.configure( JsonParser.Feature.INCLUDE_SOURCE_IN_LOCATION, true );
-      mapper.configure( SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false );
-      mapper.configure( SerializationFeature.FAIL_ON_EMPTY_BEANS, false );
-      return mapper;
+      return JsonMapper.builder()
+            .addModule( new AspectModelJacksonModule() )
+            .configure( StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION, true )
+            .configure( tools.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS, false )
+            .build();
    }
 
-   private <T> T parseJson( final String json, final Class<T> targetClass ) throws IOException {
+   private ObjectMapper objectMapperWithTypeMapper( final ClassLoader typeMapper ) {
+      final TypeFactory defaultTypeFactory = JsonMapper.builder().build().getTypeFactory();
+      return JsonMapper.builder()
+            .addModule( new AspectModelJacksonModule() )
+            .configure( StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION, true )
+            .configure( tools.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS, false )
+            .typeFactory( defaultTypeFactory.withClassLoader( typeMapper ) )
+            .build();
+   }
+
+   private <T> T parseJson( final String json, final Class<T> targetClass ) {
       return objectMapper().readValue( json, targetClass );
    }
 }

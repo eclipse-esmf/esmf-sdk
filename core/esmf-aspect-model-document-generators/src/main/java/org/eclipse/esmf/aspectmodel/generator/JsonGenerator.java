@@ -20,10 +20,10 @@ import java.util.function.Function;
 import org.eclipse.esmf.aspectmodel.jackson.AspectModelJacksonModule;
 import org.eclipse.esmf.metamodel.StructureElement;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Base class for generators that create JSON
@@ -41,11 +41,10 @@ public abstract class JsonGenerator<S extends StructureElement, C extends JsonGe
    public JsonGenerator( final S element, final C config ) {
       super( element, config );
 
-      objectMapper = new ObjectMapper();
-      objectMapper.registerModule( new JavaTimeModule() );
-      objectMapper.registerModule( new AspectModelJacksonModule() );
-      objectMapper.configure( SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false );
-      objectMapper.configure( SerializationFeature.FAIL_ON_EMPTY_BEANS, false );
+      objectMapper = JsonMapper.builder()
+            .addModule( new AspectModelJacksonModule() )
+            .configure( SerializationFeature.FAIL_ON_EMPTY_BEANS, false )
+            .build();
    }
 
    /**

@@ -30,7 +30,7 @@ import org.eclipse.esmf.aspectmodel.generator.openapi.OpenApiSchemaGenerationCon
 import org.eclipse.esmf.aspectmodel.generator.openapi.PagingOption;
 import org.eclipse.esmf.metamodel.Aspect;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import io.vavr.control.Try;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;

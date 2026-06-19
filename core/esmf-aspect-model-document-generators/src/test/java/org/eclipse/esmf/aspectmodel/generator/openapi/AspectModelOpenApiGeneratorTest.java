@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -44,16 +43,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import com.google.common.collect.Streams;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
@@ -71,6 +60,16 @@ import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.parser.core.models.SwaggerParseResult;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.JsonToken;
+import tools.jackson.core.ObjectReadContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.dataformat.yaml.YAMLFactory;
+import tools.jackson.dataformat.yaml.YAMLMapper;
+import tools.jackson.dataformat.yaml.YAMLWriteFeature;
 
 class AspectModelOpenApiGeneratorTest {
    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -84,6 +83,7 @@ class AspectModelOpenApiGeneratorTest {
          "$id", "patternProperties", "propertyNames" );
    private final Configuration config = Configuration.defaultConfiguration().addOptions( Option.SUPPRESS_EXCEPTIONS );
 
+   @SuppressWarnings( "checkstyle:LineLength" )
    @ParameterizedTest
    @Execution( ExecutionMode.CONCURRENT )
    @EnumSource( value = TestAspect.class )
@@ -98,25 +98,23 @@ class AspectModelOpenApiGeneratorTest {
       final JsonNode json = result.getContent();
       assertSpecificationIsValid( json, json.toString(), aspect );
       assertThat( json.get( "info" ).get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION ) ).isNotNull();
-      assertThat( json.get( "info" ).get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION ).asText() ).isEqualTo( aspect.urn().toString() );
+      assertThat( json.get( "info" ).get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION ).asString() ).isEqualTo( aspect.urn().toString() );
 
       // Check that the map containing separate schema files contains the same information as the
       // all-in-one JSON document
       final Map<Path, JsonNode> jsonMap = result.getContentWithSeparateSchemasAsJson();
       assertThat( jsonMap ).containsKey( Path.of( aspect.getName() + ".oai.json" ) );
-      for ( final Iterator<Map.Entry<String, JsonNode>> it = json.get( "components" ).get( "schemas" ).fields(); it.hasNext(); ) {
-         final Map.Entry<String, JsonNode> schema = it.next();
+      for ( final Map.Entry<String, JsonNode> schema : json.get( "components" ).get( "schemas" ).properties() ) {
          final Path keyForSchemaName = Path.of( schema.getKey() + ".json" );
          assertThat( jsonMap ).containsKey( keyForSchemaName );
       }
       final JsonNode rootDocument = jsonMap.get( Path.of( aspect.getName() + ".oai.json" ) );
-      assertThat( Streams.stream( rootDocument.get( "components" ).fieldNames() ).toList() ).doesNotContain( "schemas" );
+      assertThat( rootDocument.get( "components" ).propertyNames() ).doesNotContain( "schemas" );
 
       // And the same thing for YAML format
       final Map<Path, String> yamlMap = result.getContentWithSeparateSchemasAsYaml();
       assertThat( yamlMap ).containsKey( Path.of( aspect.getName() + ".oai.yaml" ) );
-      for ( final Iterator<Map.Entry<String, JsonNode>> it = json.get( "components" ).get( "schemas" ).fields(); it.hasNext(); ) {
-         final Map.Entry<String, JsonNode> schema = it.next();
+      for ( final Map.Entry<String, JsonNode> schema : json.get( "components" ).get( "schemas" ).properties() ) {
          final Path keyForSchemaName = Path.of( schema.getKey() + ".yaml" );
          assertThat( yamlMap ).containsKey( keyForSchemaName );
       }
@@ -136,7 +134,7 @@ class AspectModelOpenApiGeneratorTest {
 
       assertThat( openApi.getInfo().getVersion() ).isEqualTo( "v1.0.0" );
       assertThat( json.get( "info" ).get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION ) ).isNotNull();
-      assertThat( json.get( "info" ).get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION ).asText() ).isEqualTo( aspect.urn().toString() );
+      assertThat( json.get( "info" ).get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION ).asString() ).isEqualTo( aspect.urn().toString() );
 
       openApi.getServers().forEach( server -> assertThat( server.getUrl() ).contains( "v1.0.0" ) );
    }
@@ -333,8 +331,10 @@ class AspectModelOpenApiGeneratorTest {
    void testYamlGenerator() throws IOException {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE ).aspect();
       final YAMLFactory yamlFactory = YAMLFactory.builder()
-            .stringQuotingChecker( new AbstractSchemaArtifact.OpenApiStringQuotingChecker() ).build();
-      final YAMLMapper yamlMapper = new YAMLMapper( yamlFactory ).enable( YAMLGenerator.Feature.MINIMIZE_QUOTES );
+            .stringQuotingChecker( new AbstractSchemaArtifact.OpenApiStringQuotingChecker() )
+            .enable( YAMLWriteFeature.MINIMIZE_QUOTES )
+            .build();
+      final YAMLMapper yamlMapper = new YAMLMapper( yamlFactory );
       final OpenApiSchemaGenerationConfig yamlConfig = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
@@ -947,7 +947,7 @@ class AspectModelOpenApiGeneratorTest {
       assertThat( openApi.getInfo().getVersion() ).isEqualTo( expectedApiVersion );
 
       assertThat( node.get( "info" ).get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION ) ).isNotNull();
-      assertThat( node.get( "info" ).get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION ).asText() ).isEqualTo( aspect.urn().toString() );
+      assertThat( node.get( "info" ).get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION ).asString() ).isEqualTo( aspect.urn().toString() );
 
       assertThat( openApi.getServers() ).hasSize( 1 );
       assertThat( openApi.getServers().get( 0 ).getUrl() ).isEqualTo( TEST_BASE_URL + "/api/" + expectedApiVersion );
@@ -976,7 +976,7 @@ class AspectModelOpenApiGeneratorTest {
    private void validateReferences( final JsonNode rootNode ) {
       final List<JsonNode> nodes = rootNode.findValues( "$ref" ).stream().distinct().toList();
       nodes.forEach( node -> {
-         final String[] text = node.asText().split( "/" );
+         final String[] text = node.asString().split( "/" );
          final DocumentContext context = JsonPath.using( config ).parse( rootNode.toString() );
          final LinkedHashMap<String, Object> read = context
                .<LinkedHashMap<String, Object>>read( String.format( "$['%s']['%s']['%s']", text[1], text[2], text[3] ) );
@@ -999,9 +999,9 @@ class AspectModelOpenApiGeneratorTest {
    }
 
    private void validateUnsupportedKeywords( final JsonNode jsonNode ) throws IOException {
-      final JsonParser jsonParser = jsonNode.traverse();
+      final JsonParser jsonParser = jsonNode.traverse( ObjectReadContext.empty() );
       while ( !jsonParser.isClosed() ) {
-         if ( jsonParser.nextToken() == JsonToken.FIELD_NAME ) {
+         if ( jsonParser.nextToken() == JsonToken.PROPERTY_NAME ) {
             assertThat( jsonParser.currentName() ).isNotIn( UNSUPPORTED_KEYWORDS );
          }
       }

@@ -70,12 +70,13 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.curiousoddman.rgxgen.RgxGen;
 import com.github.curiousoddman.rgxgen.parsing.dflt.RgxGenParseException;
+
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Generator for random JSON payloads corresponding to a given StructureElement (e.g.,
@@ -319,7 +320,7 @@ public class JsonPayloadGenerator<S extends StructureElement>
                .put( langString.getLanguageTag().toLanguageTag(), langString.getValue() );
       }
       if ( scalarValue.getValue() instanceof Curie( final String value ) ) {
-         return JsonNodeFactory.instance.textNode( value );
+         return JsonNodeFactory.instance.stringNode( value );
       }
       return objectMapper.valueToTree( scalarValue.getValue() );
    }
@@ -402,7 +403,7 @@ public class JsonPayloadGenerator<S extends StructureElement>
             .newXMLGregorianCalendar( now.getYear(), now.getMonthValue(), now.getDayOfMonth(),
                   DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED,
                   DatatypeConstants.FIELD_UNDEFINED, 0 );
-      return JsonNodeFactory.instance.textNode( calendar.toXMLFormat() );
+      return JsonNodeFactory.instance.stringNode( calendar.toXMLFormat() );
    }
 
    @Override
@@ -412,7 +413,7 @@ public class JsonPayloadGenerator<S extends StructureElement>
             .newXMLGregorianCalendar( DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED,
                   DatatypeConstants.FIELD_UNDEFINED,
                   now.getHour(), now.getMinute(), now.getSecond(), 0, 0 );
-      return JsonNodeFactory.instance.textNode( calendar.toXMLFormat() );
+      return JsonNodeFactory.instance.stringNode( calendar.toXMLFormat() );
    }
 
    @Override
@@ -421,7 +422,7 @@ public class JsonPayloadGenerator<S extends StructureElement>
       final XMLGregorianCalendar calendar = DatatypeFactory.newDefaultInstance()
             .newXMLGregorianCalendar( now.getYear(), now.getMonthValue(), now.getDayOfMonth(),
                   now.getHour(), now.getMinute(), now.getSecond(), 0, 0 );
-      return JsonNodeFactory.instance.textNode( calendar.toXMLFormat() );
+      return JsonNodeFactory.instance.stringNode( calendar.toXMLFormat() );
    }
 
    @Override
@@ -431,44 +432,44 @@ public class JsonPayloadGenerator<S extends StructureElement>
 
    @Override
    public JsonNode visitXsdGYear( final SammType.XsdGYear gYear, final Context context ) {
-      return JsonNodeFactory.instance.textNode( "" + LocalDateTime.now().getYear() );
+      return JsonNodeFactory.instance.stringNode( "" + LocalDateTime.now().getYear() );
    }
 
    @Override
    public JsonNode visitXsdGMonth( final SammType.XsdGMonth gMonth, final Context context ) {
-      return JsonNodeFactory.instance.textNode( "--%02d".formatted( LocalDateTime.now().getMonthValue() ) );
+      return JsonNodeFactory.instance.stringNode( "--%02d".formatted( LocalDateTime.now().getMonthValue() ) );
    }
 
    @Override
    public JsonNode visitXsdGDay( final SammType.XsdGDay gDay, final Context context ) {
-      return JsonNodeFactory.instance.textNode( "---%02d".formatted( LocalDateTime.now().getDayOfMonth() ) );
+      return JsonNodeFactory.instance.stringNode( "---%02d".formatted( LocalDateTime.now().getDayOfMonth() ) );
    }
 
    @Override
    public JsonNode visitXsdGYearMonth( final SammType.XsdGYearMonth gYearMonth, final Context context ) {
       final LocalDateTime now = LocalDateTime.now();
-      return JsonNodeFactory.instance.textNode( "%04d-%02d".formatted( now.getYear(), now.getMonthValue() ) );
+      return JsonNodeFactory.instance.stringNode( "%04d-%02d".formatted( now.getYear(), now.getMonthValue() ) );
    }
 
    @Override
    public JsonNode visitXsdGMonthDay( final SammType.XsdMonthDay monthDay, final Context context ) {
       final LocalDateTime now = LocalDateTime.now();
-      return JsonNodeFactory.instance.textNode( "--%02d-%02d".formatted( now.getMonthValue(), now.getDayOfMonth() ) );
+      return JsonNodeFactory.instance.stringNode( "--%02d-%02d".formatted( now.getMonthValue(), now.getDayOfMonth() ) );
    }
 
    @Override
    public JsonNode visitXsdDuration( final SammType.XsdDuration duration, final Context context ) {
-      return JsonNodeFactory.instance.textNode( "P%02dD".formatted( randomInt( 1, 10 ) ) );
+      return JsonNodeFactory.instance.stringNode( "P%02dD".formatted( randomInt( 1, 10 ) ) );
    }
 
    @Override
    public JsonNode visitXsdYearMonthDuration( final SammType.XsdYearMonthDuration yearMonthDuration, final Context context ) {
-      return JsonNodeFactory.instance.textNode( randomValueOf( "P10M", "P5Y2M" ) );
+      return JsonNodeFactory.instance.stringNode( randomValueOf( "P10M", "P5Y2M" ) );
    }
 
    @Override
    public JsonNode visitXsdDayTimeDuration( final SammType.XsdDayTimeDuration dayTimeDuration, final Context context ) {
-      return JsonNodeFactory.instance.textNode( randomValueOf( "P30D", "P1DT5H", "PT1H5M0S" ) );
+      return JsonNodeFactory.instance.stringNode( randomValueOf( "P30D", "P1DT5H", "PT1H5M0S" ) );
    }
 
    @Override
@@ -578,7 +579,7 @@ public class JsonPayloadGenerator<S extends StructureElement>
       final byte[] bytes = randomBytes( Optional.ofNullable( range.min() ).map( BigDecimal::intValue ).orElse( 0 ),
             Optional.ofNullable( range.max() ).map( BigDecimal::intValue ).orElse( 0 ) );
       final String value = hexBinary.serialize( bytes );
-      return JsonNodeFactory.instance.textNode( value );
+      return JsonNodeFactory.instance.stringNode( value );
    }
 
    @Override
@@ -588,19 +589,19 @@ public class JsonPayloadGenerator<S extends StructureElement>
       final byte[] bytes = randomBytes( Optional.ofNullable( range.min() ).map( BigDecimal::intValue ).orElse( 0 ),
             Optional.ofNullable( range.max() ).map( BigDecimal::intValue ).orElse( 0 ) );
       final String value = base64Binary.serialize( bytes );
-      return JsonNodeFactory.instance.textNode( value );
+      return JsonNodeFactory.instance.stringNode( value );
    }
 
    @Override
    public JsonNode visitXsdAnyUri( final SammType.XsdAnyUri anyUri, final Context context ) {
       final String value = "https://example.com/" + randomString( 5, 10 );
-      return JsonNodeFactory.instance.textNode( value );
+      return JsonNodeFactory.instance.stringNode( value );
    }
 
    @Override
    public JsonNode visitCurieType( final CurieType curieType, final Context context ) {
       final String value = randomValueOf( "unit:kilometre", "unit:hectopascal", "unit:newton" );
-      return JsonNodeFactory.instance.textNode( value );
+      return JsonNodeFactory.instance.stringNode( value );
    }
 
    @Override
@@ -629,7 +630,7 @@ public class JsonPayloadGenerator<S extends StructureElement>
                return randomString( Optional.ofNullable( range.min() ).map( BigDecimal::intValue ).orElse( 0 ),
                      Optional.ofNullable( range.max() ).map( BigDecimal::intValue ).orElse( 0 ) );
             } );
-      return JsonNodeFactory.instance.textNode( value );
+      return JsonNodeFactory.instance.stringNode( value );
    }
 
    @Override

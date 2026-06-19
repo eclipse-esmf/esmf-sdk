@@ -14,12 +14,14 @@ package org.eclipse.esmf.aspectmodel.generator;
 
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.google.common.collect.ImmutableMap;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
+
+import com.google.common.collect.ImmutableMap;
+
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.JsonNodeFactory;
 
 public class XsdToJsonTypeMapping {
    public enum JsonType {
@@ -27,10 +29,10 @@ public class XsdToJsonTypeMapping {
 
       public JsonNode toJsonNode() {
          return switch ( this ) {
-            case NUMBER -> JsonNodeFactory.instance.textNode( "number" );
-            case BOOLEAN -> JsonNodeFactory.instance.textNode( "boolean" );
-            case OBJECT -> JsonNodeFactory.instance.textNode( "object" );
-            default -> JsonNodeFactory.instance.textNode( "string" );
+            case NUMBER -> JsonNodeFactory.instance.stringNode( "number" );
+            case BOOLEAN -> JsonNodeFactory.instance.stringNode( "boolean" );
+            case OBJECT -> JsonNodeFactory.instance.stringNode( "object" );
+            default -> JsonNodeFactory.instance.stringNode( "string" );
          };
       }
    }

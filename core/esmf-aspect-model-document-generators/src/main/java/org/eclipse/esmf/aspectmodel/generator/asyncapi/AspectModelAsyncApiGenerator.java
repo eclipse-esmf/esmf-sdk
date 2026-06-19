@@ -19,6 +19,9 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import org.eclipse.esmf.aspectmodel.VersionNumber;
 import org.eclipse.esmf.aspectmodel.generator.JsonGenerator;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
@@ -31,14 +34,13 @@ import org.eclipse.esmf.metamodel.Event;
 import org.eclipse.esmf.metamodel.Operation;
 import org.eclipse.esmf.metamodel.Property;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
 
 public class AspectModelAsyncApiGenerator extends JsonGenerator<Aspect, AsyncApiSchemaGenerationConfig, JsonNode, AsyncApiSchemaArtifact> {
    public static final AsyncApiSchemaGenerationConfig DEFAULT_CONFIG = AsyncApiSchemaGenerationConfigBuilder.builder().build();
@@ -159,7 +161,7 @@ public class AspectModelAsyncApiGenerator extends JsonGenerator<Aspect, AsyncApi
                   FACTORY.objectNode().put( "$ref", ref( COMPONENTS_MESSAGES_REF, requestMessageName ) ) );
          }
 
-         operation.getOutput().ifPresent( output -> {
+         operation.getOutput().ifPresent( _ -> {
             final String responseMessageName = operation.getName() + RESPONSE;
             messagesNode.set( responseMessageName,
                   FACTORY.objectNode().put( "$ref", ref( COMPONENTS_MESSAGES_REF, responseMessageName ) ) );
@@ -298,7 +300,7 @@ public class AspectModelAsyncApiGenerator extends JsonGenerator<Aspect, AsyncApi
       final ObjectNode requestComponentSchema = schemasNode.putObject( requestComponentName );
       requestComponentSchema.put( TITLE_FIELD, operation.getPreferredName( locale ) );
       final ArrayNode messageArrayNode = requestComponentSchema.putArray( "allOf" );
-      for ( Property input : operation.getInput() ) {
+      for ( final Property input : operation.getInput() ) {
          messageArrayNode.add( input.accept( schemaVisitor, null ) );
       }
    }

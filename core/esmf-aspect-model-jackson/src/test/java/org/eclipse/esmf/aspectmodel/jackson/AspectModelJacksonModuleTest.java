@@ -32,6 +32,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfig;
@@ -46,16 +47,16 @@ import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 import org.eclipse.esmf.test.shared.compiler.JavaCompiler;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.junit.jupiter.api.Test;
+
 import com.google.common.io.Resources;
 import com.google.common.reflect.TypeToken;
+
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
-import org.junit.jupiter.api.Test;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 class AspectModelJacksonModuleTest {
    private static final String PACKAGE = "org.eclipse.esmf.test";
@@ -263,7 +264,7 @@ class AspectModelJacksonModuleTest {
             .build();
       final AspectModelJavaGenerator codeGenerator = new AspectModelJavaGenerator( aspect, config );
       final Map<QualifiedName, ByteArrayOutputStream> outputs = new LinkedHashMap<>();
-      codeGenerator.generate( name -> outputs.computeIfAbsent( name, name2 -> new ByteArrayOutputStream() ) );
+      codeGenerator.generate( name -> outputs.computeIfAbsent( name, _ -> new ByteArrayOutputStream() ) );
 
       final Map<QualifiedName, String> sources = new LinkedHashMap<>();
       final List<QualifiedName> loadOrder = new ArrayList<>();
@@ -281,14 +282,12 @@ class AspectModelJacksonModuleTest {
    }
 
    private <T> T parseJson( final String json, final Class<T> targetClass ) {
-      final ObjectMapper mapper = new ObjectMapper();
-      mapper.registerModule( new JavaTimeModule() );
-      mapper.registerModule( new Jdk8Module() );
-      mapper.registerModule( new AspectModelJacksonModule() );
-      mapper.configure( SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false );
+      final ObjectMapper mapper = JsonMapper.builder()
+            .addModule( new AspectModelJacksonModule() )
+            .build();
       try {
          return mapper.readValue( json, targetClass );
-      } catch ( final JsonProcessingException exception ) {
+      } catch ( final JacksonException exception ) {
          throw new EnumAttributeNotFoundException( exception );
       }
    }

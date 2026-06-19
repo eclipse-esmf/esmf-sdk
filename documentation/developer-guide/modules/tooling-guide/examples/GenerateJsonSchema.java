@@ -21,7 +21,7 @@ import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.metamodel.AspectModel;
 
 import java.util.Locale;
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 // end::imports[]
 import java.io.File;
 import java.io.IOException;

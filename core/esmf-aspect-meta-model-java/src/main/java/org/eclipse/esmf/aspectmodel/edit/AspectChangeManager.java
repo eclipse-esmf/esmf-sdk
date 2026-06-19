@@ -152,7 +152,7 @@ public class AspectChangeManager implements ChangeContext {
          final AspectModelFile file = stateEntry.getKey();
          final FileState state = stateEntry.getValue();
 
-         if ( file instanceof final RawAspectModelFile rawFile ) {
+         if ( file instanceof RawAspectModelFile ) {
             final Optional<AspectModelFile> updatedAspectModelFile = aspectModel.files().stream()
                   .filter( f -> f.sourceLocation().isPresent() )
                   .filter( f -> f.sourceLocation().equals( file.sourceLocation() ) )
