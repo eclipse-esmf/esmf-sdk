@@ -17,7 +17,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
-import org.eclipse.esmf.TurtleDiagnostic;
+import org.eclipse.esmf.treesitterturtle.TurtleDiagnostic;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDiagnosticsService;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDocumentDiagnostic;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;

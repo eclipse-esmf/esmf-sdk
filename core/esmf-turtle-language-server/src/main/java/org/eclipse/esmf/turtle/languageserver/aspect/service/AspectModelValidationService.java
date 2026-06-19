@@ -33,7 +33,7 @@ import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
 import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleBaseDiagnostic;
-import org.eclipse.esmf.TurtleDiagnostic;
+import org.eclipse.esmf.treesitterturtle.TurtleDiagnostic;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDiagnosticsService;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDocumentDiagnostic;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;

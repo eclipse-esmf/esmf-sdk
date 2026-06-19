@@ -14,7 +14,7 @@
 package org.eclipse.esmf.turtle.languageserver.diagnostic;
 
 import org.eclipse.esmf.Diagnostic;
-import org.eclipse.esmf.TurtleDiagnostic;
+import org.eclipse.esmf.treesitterturtle.TurtleDiagnostic;
 
 public class TurtleBaseDiagnostic implements TurtleDiagnostic {
    private final String message;

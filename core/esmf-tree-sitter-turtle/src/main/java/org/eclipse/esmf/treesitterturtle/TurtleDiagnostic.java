@@ -2,7 +2,9 @@
  * Copyright (c) 2026 Robert Bosch Manufacturing Solutions GmbH, Germany. All rights reserved.
  */
 
-package org.eclipse.esmf;
+package org.eclipse.esmf.treesitterturtle;
+
+import org.eclipse.esmf.Diagnostic;
 
 public interface TurtleDiagnostic extends Diagnostic<Diagnostic.Code> {
    enum TurtleCode implements Diagnostic.Code {
@@ -10,7 +12,7 @@ public interface TurtleDiagnostic extends Diagnostic<Diagnostic.Code> {
       E0001( "Could not load document" ),
       E0002( "Document validation failed" ),
       E0003( "Syntax error" ),
-      E0004( "Missing Token" );
+      E0004( "Missing token" );
 
       private final String description;
 

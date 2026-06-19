@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiConsumer;
 
 import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
-import org.eclipse.esmf.TurtleDiagnostic;
+import org.eclipse.esmf.treesitterturtle.TurtleDiagnostic;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 

@@ -23,7 +23,6 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.Diagnostic;
-import org.eclipse.esmf.TurtleDiagnostic;
 
 import org.jspecify.annotations.Nullable;
 import org.treesitter.TSNode;

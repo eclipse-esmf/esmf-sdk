@@ -15,7 +15,7 @@ package org.eclipse.esmf.turtle.languageserver.diagnostic;
 
 import java.util.List;
 
-import org.eclipse.esmf.TurtleDiagnostic;
+import org.eclipse.esmf.treesitterturtle.TurtleDiagnostic;
 
 import com.google.common.collect.Streams;
 
@@ -24,7 +24,7 @@ public record DiagnosticReport(
 ) {
    public static final DiagnosticReport EMPTY = new DiagnosticReport( List.of() );
 
-   public DiagnosticReport( final org.eclipse.esmf.TurtleDiagnostic diagnostic ) {
+   public DiagnosticReport( final TurtleDiagnostic diagnostic ) {
       this( List.of( diagnostic ) );
    }
 
