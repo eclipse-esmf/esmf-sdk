@@ -60,6 +60,9 @@ import tools.jackson.databind.json.JsonMapper;
 
 class AspectModelJacksonModuleTest {
    private static final String PACKAGE = "org.eclipse.esmf.test";
+   final ObjectMapper mapper = JsonMapper.builder()
+         .addModule( new AspectModelJacksonModule() )
+         .build();
 
    @Test
    void testAspectWithMultiLanguageText() throws Exception {
@@ -282,9 +285,6 @@ class AspectModelJacksonModuleTest {
    }
 
    private <T> T parseJson( final String json, final Class<T> targetClass ) {
-      final ObjectMapper mapper = JsonMapper.builder()
-            .addModule( new AspectModelJacksonModule() )
-            .build();
       try {
          return mapper.readValue( json, targetClass );
       } catch ( final JacksonException exception ) {

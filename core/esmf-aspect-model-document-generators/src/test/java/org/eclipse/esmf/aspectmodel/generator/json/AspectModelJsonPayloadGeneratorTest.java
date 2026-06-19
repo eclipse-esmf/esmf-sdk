@@ -104,7 +104,6 @@ import org.junit.jupiter.params.provider.EnumSource;
 import tools.jackson.core.StreamReadFeature;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
-import tools.jackson.databind.type.TypeFactory;
 
 class AspectModelJsonPayloadGeneratorTest {
    private static final String PACKAGE = "org.eclipse.esmf.test.generatedtestclasses";
@@ -139,7 +138,10 @@ class AspectModelJsonPayloadGeneratorTest {
          final String payload = new AspectModelJsonPayloadGenerator( aspect,
                AspectModelJsonPayloadGenerator.DEFAULT_CONFIG ).generateJson();
          assertThat( payload ).doesNotContain( "\"@type\"" );
-         final ObjectMapper mapper = objectMapperWithTypeMapper( compilationResult.classLoader() );
+         final ObjectMapper mapper = objectMapper()
+               .rebuild()
+               .typeFactory( JsonMapper.builder().build().getTypeFactory().withClassLoader( compilationResult.classLoader() ) )
+               .build();
          mapper.readValue( payload, aspectClass );
       } ).doesNotThrowAnyException();
    }
@@ -171,7 +173,10 @@ class AspectModelJsonPayloadGeneratorTest {
                .build();
          final String payload = new AspectModelJsonPayloadGenerator( aspect, jsonPayloadGenerationConfig ).generateJson();
          assertThat( payload ).contains( "\"@type\"" );
-         final ObjectMapper mapper = objectMapperWithTypeMapper( compilationResult.classLoader() );
+         final ObjectMapper mapper = objectMapper()
+               .rebuild()
+               .typeFactory( JsonMapper.builder().build().getTypeFactory().withClassLoader( compilationResult.classLoader() ) )
+               .build();
          mapper.readValue( payload, aspectClass );
       } ).doesNotThrowAnyException();
    }
@@ -628,16 +633,6 @@ class AspectModelJsonPayloadGeneratorTest {
             .addModule( new AspectModelJacksonModule() )
             .configure( StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION, true )
             .configure( tools.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS, false )
-            .build();
-   }
-
-   private ObjectMapper objectMapperWithTypeMapper( final ClassLoader typeMapper ) {
-      final TypeFactory defaultTypeFactory = JsonMapper.builder().build().getTypeFactory();
-      return JsonMapper.builder()
-            .addModule( new AspectModelJacksonModule() )
-            .configure( StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION, true )
-            .configure( tools.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS, false )
-            .typeFactory( defaultTypeFactory.withClassLoader( typeMapper ) )
             .build();
    }
 

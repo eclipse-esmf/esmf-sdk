@@ -103,12 +103,12 @@ final class SubmodelToAspectUtils {
          for ( final Class<?> iface : clazz.getInterfaces() ) {
             final Optional<AasSubmodelElements> match = findEnumForClass( iface );
             if ( match.isPresent() ) {
-               return match.orElse( null );
+               return match.get();
             }
          }
          final Optional<AasSubmodelElements> match = findEnumForClass( clazz );
          if ( match.isPresent() ) {
-            return match.orElse( null );
+            return match.get();
          }
          clazz = clazz.getSuperclass();
       }

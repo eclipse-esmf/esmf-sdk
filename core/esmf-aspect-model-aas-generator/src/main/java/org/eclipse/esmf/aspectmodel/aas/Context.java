@@ -154,18 +154,14 @@ public class Context {
    }
 
    public <T extends SubmodelElement> String getPropertyIdShort( final PropertyMapper<T> mapper ) {
-      final String idShort;
       if ( ModellingKind.TEMPLATE.equals( getModelingKind() ) ) {
-         idShort = mapper.determineIdShortFor( property );
-      } else {
-         idShort = mapper.determineIdShortFor( property ) + propertyPath.stream()
-               .map( indices::get )
-               .filter( Objects::nonNull )
-               .map( Objects::toString )
-               .collect( Collectors.joining( "_" ) );
+         return mapper.determineIdShortFor( property );
       }
-
-      return idShort;
+      return mapper.determineIdShortFor( property ) + propertyPath.stream()
+            .map( indices::get )
+            .filter( Objects::nonNull )
+            .map( Objects::toString )
+            .collect( Collectors.joining( "_" ) );
    }
 
    @Deprecated( forRemoval = true )
