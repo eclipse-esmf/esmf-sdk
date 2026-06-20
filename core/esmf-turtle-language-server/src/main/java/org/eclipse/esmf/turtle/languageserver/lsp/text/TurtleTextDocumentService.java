@@ -19,12 +19,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
 import org.eclipse.esmf.turtle.languageserver.aspect.diagnostic.AspectDiagnosticMapper;
 import org.eclipse.esmf.turtle.languageserver.aspect.service.AspectModelValidationService;
 import org.eclipse.esmf.turtle.languageserver.aspect.service.AspectValidationCoordinator;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDiagnosticsService;
+import org.eclipse.esmf.turtle.languageserver.structure.DocumentSymbolService;
 import org.eclipse.esmf.turtle.languageserver.structure.TurtleTokenService;
 import org.eclipse.esmf.turtle.languageserver.turtle.TurtleSyntaxDiagnosticsService;
 import org.eclipse.esmf.turtle.languageserver.turtle.navigation.TurtleDefinitionService;
@@ -34,10 +34,13 @@ import org.eclipse.lsp4j.DidChangeTextDocumentParams;
 import org.eclipse.lsp4j.DidCloseTextDocumentParams;
 import org.eclipse.lsp4j.DidOpenTextDocumentParams;
 import org.eclipse.lsp4j.DidSaveTextDocumentParams;
+import org.eclipse.lsp4j.DocumentSymbol;
+import org.eclipse.lsp4j.DocumentSymbolParams;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.LocationLink;
 import org.eclipse.lsp4j.SemanticTokens;
 import org.eclipse.lsp4j.SemanticTokensParams;
+import org.eclipse.lsp4j.SymbolInformation;
 import org.eclipse.lsp4j.TextDocumentContentChangeEvent;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.LanguageClient;
@@ -56,6 +59,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
    private final TurtleTokenService tokenService;
    private final TurtleDiagnosticsService syntaxDiagnostics;
    private final TurtleDiagnosticsService aspectModelValidation;
+   private final DocumentSymbolService documentSymbolService;
    private final Map<String, Document> documents = new HashMap<>();
 
    public TurtleTextDocumentService() {
@@ -67,6 +71,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
       tokenService = new TurtleTokenService( turtleParserService );
       syntaxDiagnostics = new TurtleSyntaxDiagnosticsService();
       aspectModelValidation = new AspectModelValidationService();
+      documentSymbolService = new DocumentSymbolService( turtleParserService );
    }
 
    public void connect( final LanguageClient client ) {
@@ -161,16 +166,25 @@ public class TurtleTextDocumentService implements TextDocumentService {
       }
 
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
-      final TurtleSyntaxTree turtleSyntaxTree = TurtleSyntaxTree.fromConcreteSyntaxTree( parsedDocument.concreteSyntaxTree(),
-            () -> parsedDocument.sourceDocument().getContent(),
-            location -> parsedDocument.sourceDocument().subSequence( location.fromLine(), location.fromColumn(),
-                  location.toLine(), location.toColumn() ) );
-
       final Optional<Location> declaration =
-            turtleDefinitionService.findDefinition( parsedDocument, turtleSyntaxTree, params.getPosition() );
-      if ( declaration.isPresent() ) {
-         return CompletableFuture.completedFuture( Either.forLeft( List.of( declaration.get() ) ) );
-      }
-      return CompletableFuture.completedFuture( Either.forLeft( List.of() ) );
+            turtleDefinitionService.findDefinition( parsedDocument, params.getPosition() );
+      return declaration.<CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>>>map(
+            location -> CompletableFuture.completedFuture( Either.forLeft( List.of( location ) ) ) )
+            .orElseGet( () -> CompletableFuture.completedFuture( Either.forLeft( List.of() ) ) );
    }
+
+   @Override
+   public CompletableFuture<List<Either<SymbolInformation, DocumentSymbol>>> documentSymbol( final DocumentSymbolParams params ) {
+      final String uri = params.getTextDocument().getUri();
+      final Document document = documents.get( uri );
+      LOG.debug( "[documentSymbol] uri={}", uri );
+      if ( document == null ) {
+         return CompletableFuture.completedFuture( List.of() );
+      }
+      final List<Either<SymbolInformation, DocumentSymbol>> symbols = documentSymbolService.symbols( document ).stream()
+            .map( Either::<SymbolInformation, DocumentSymbol>forRight ).toList();
+      return CompletableFuture.completedFuture( symbols );
+   }
+
+
 }

@@ -18,7 +18,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TreeSitterTurtleParserService;
@@ -115,12 +114,8 @@ class TurtleDefinitionServiceTest {
          final int expectedCharacter ) {
       final Document document = new Document( "test.ttl", content );
       final ParsedDocument parsedDocument = parserService.apply( document );
-      final TurtleSyntaxTree syntaxTree = TurtleSyntaxTree.fromConcreteSyntaxTree(
-            parsedDocument.concreteSyntaxTree(),
-            document::getContent,
-            document );
 
-      final Optional<Location> definition = definitionService.findDefinition( parsedDocument, syntaxTree, position );
+      final Optional<Location> definition = definitionService.findDefinition( parsedDocument, position );
 
       assertThat( definition ).isPresent();
       final Location location = definition.get();
@@ -194,12 +189,7 @@ class TurtleDefinitionServiceTest {
          final int expectedCharacter ) {
       final Document document = new Document( "test.ttl", content );
       final ParsedDocument parsedDocument = parserService.apply( document );
-      final TurtleSyntaxTree syntaxTree = TurtleSyntaxTree.fromConcreteSyntaxTree(
-            parsedDocument.concreteSyntaxTree(),
-            document::getContent,
-            document );
-
-      final Optional<Location> definition = definitionService.findDefinition( parsedDocument, syntaxTree, position );
+      final Optional<Location> definition = definitionService.findDefinition( parsedDocument, position );
 
       assertThat( definition ).isPresent();
       final Location location = definition.get();
@@ -275,12 +265,7 @@ class TurtleDefinitionServiceTest {
       final ParsedDocument parsedDocument = parserService.apply( document );
 
       if ( buildSyntaxTree && !content.isEmpty() ) {
-         final TurtleSyntaxTree syntaxTree = TurtleSyntaxTree.fromConcreteSyntaxTree(
-               parsedDocument.concreteSyntaxTree(),
-               document::getContent,
-               document );
-
-         final Optional<Location> definition = definitionService.findDefinition( parsedDocument, syntaxTree, position );
+         final Optional<Location> definition = definitionService.findDefinition( parsedDocument, position );
          assertThat( definition ).isEmpty();
       } else {
          // For empty document, just verify the parser can handle it

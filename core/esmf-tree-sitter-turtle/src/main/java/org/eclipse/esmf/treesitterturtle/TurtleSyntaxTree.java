@@ -16,6 +16,7 @@ package org.eclipse.esmf.treesitterturtle;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
@@ -32,6 +33,9 @@ public class TurtleSyntaxTree {
    private final Supplier<String> sourceRepresentationSupplier;
    private final Node rootNode;
 
+   public static class TurtleSyntaxTreeTraversalError extends RuntimeException {
+   }
+
    public sealed interface Node {
       String type();
 
@@ -41,8 +45,24 @@ public class TurtleSyntaxTree {
          return false;
       }
 
+      default boolean isToken() {
+         return !isError();
+      }
+
       default List<Node> children() {
          return List.of();
+      }
+
+      default Optional<Node> childWithType( final String type ) {
+         return children().stream().filter( n -> n.type().equals( type ) ).findFirst();
+      }
+
+      default Token asToken() {
+         throw new TurtleSyntaxTreeTraversalError();
+      }
+
+      default Error asError() {
+         throw new TurtleSyntaxTreeTraversalError();
       }
    }
 
@@ -59,7 +79,12 @@ public class TurtleSyntaxTree {
          String content,
          Location location,
          List<Node> children
-   ) implements Node {}
+   ) implements Node {
+      @Override
+      public Token asToken() {
+         return this;
+      }
+   }
 
    public record Error(
          String type,
@@ -71,8 +96,21 @@ public class TurtleSyntaxTree {
       public boolean isError() {
          return true;
       }
+
+      @Override
+      public Error asError() {
+         return this;
+      }
    }
 
+   /**
+    * Zero-based section of a document
+    *
+    * @param fromLine starting line
+    * @param fromColumn starting column
+    * @param toLine ending line
+    * @param toColumn ending column
+    */
    public record Location(
          int fromLine,
          int fromColumn,
@@ -200,7 +238,7 @@ public class TurtleSyntaxTree {
     */
    public TurtleSyntaxTree.@Nullable Token findMatchingTreeSitterToken( final List<String> desiredTypes, final long targetLine,
          final long targetColumn ) {
-      final List<Token> tokens = this.tokens().toList();
+      final List<Token> tokens = tokens().toList();
       if ( tokens.isEmpty() ) {
          return null;
       }
