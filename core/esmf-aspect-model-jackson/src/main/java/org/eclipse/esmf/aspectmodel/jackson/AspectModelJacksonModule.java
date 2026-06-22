@@ -13,18 +13,21 @@
 
 package org.eclipse.esmf.aspectmodel.jackson;
 
+import java.io.Serial;
+
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.eclipse.esmf.metamodel.datatype.Curie;
 import org.eclipse.esmf.metamodel.datatype.LangString;
 
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import tools.jackson.databind.module.SimpleModule;
 
 /**
  * A Jackson module to register serializers and deserializers specific to Aspect models
  */
 public class AspectModelJacksonModule extends SimpleModule {
-   private static final long serialVersionUID = -2621996753536054906L;
+   @Serial
+   private static final long serialVersionUID = -2621996753536054907L;
 
    public AspectModelJacksonModule() {
       addSerializer( XMLGregorianCalendar.class, XmlGregorianCalendarSerializer.INSTANCE );

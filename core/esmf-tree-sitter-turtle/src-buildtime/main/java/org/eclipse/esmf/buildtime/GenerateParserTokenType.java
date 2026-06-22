@@ -23,9 +23,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Streams;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 public class GenerateParserTokenType extends BuildTimeTool {
    private static final String CLASS_NAME = "ParserTokenType";
@@ -84,8 +83,8 @@ public class GenerateParserTokenType extends BuildTimeTool {
 
    private Stream<String> getNodeTypes( final JsonNode node ) {
       return node.isArray()
-            ? Streams.stream( node.elements() ).flatMap( this::getNodeTypes )
-            : Optional.ofNullable( node.get( "type" ) ).map( JsonNode::asText ).stream();
+            ? node.values().stream().flatMap( this::getNodeTypes )
+            : Optional.ofNullable( node.get( "type" ) ).map( JsonNode::asString ).stream();
    }
 
    static void main( final String[] args ) {

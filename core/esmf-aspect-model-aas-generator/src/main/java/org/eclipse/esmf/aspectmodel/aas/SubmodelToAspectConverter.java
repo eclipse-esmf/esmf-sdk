@@ -26,6 +26,32 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.jena.iri.IRI;
+import org.apache.jena.iri.IRIFactory;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.XSD;
+import org.eclipse.digitaltwin.aas4j.v3.model.AasSubmodelElements;
+import org.eclipse.digitaltwin.aas4j.v3.model.Blob;
+import org.eclipse.digitaltwin.aas4j.v3.model.Capability;
+import org.eclipse.digitaltwin.aas4j.v3.model.EventElement;
+import org.eclipse.digitaltwin.aas4j.v3.model.File;
+import org.eclipse.digitaltwin.aas4j.v3.model.HasSemantics;
+import org.eclipse.digitaltwin.aas4j.v3.model.Identifiable;
+import org.eclipse.digitaltwin.aas4j.v3.model.Key;
+import org.eclipse.digitaltwin.aas4j.v3.model.KeyTypes;
+import org.eclipse.digitaltwin.aas4j.v3.model.MultiLanguageProperty;
+import org.eclipse.digitaltwin.aas4j.v3.model.OperationVariable;
+import org.eclipse.digitaltwin.aas4j.v3.model.Range;
+import org.eclipse.digitaltwin.aas4j.v3.model.Reference;
+import org.eclipse.digitaltwin.aas4j.v3.model.ReferenceElement;
+import org.eclipse.digitaltwin.aas4j.v3.model.RelationshipElement;
+import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
+import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
+import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElementCollection;
+import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElementList;
+
 import org.eclipse.esmf.aspectmodel.VersionNumber;
 import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.loader.ValueInstantiator;
@@ -56,31 +82,6 @@ import org.eclipse.esmf.metamodel.impl.DefaultProperty;
 import org.eclipse.esmf.metamodel.impl.DefaultScalar;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.jena.iri.IRI;
-import org.apache.jena.iri.IRIFactory;
-import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.XSD;
-import org.eclipse.digitaltwin.aas4j.v3.model.AasSubmodelElements;
-import org.eclipse.digitaltwin.aas4j.v3.model.Blob;
-import org.eclipse.digitaltwin.aas4j.v3.model.Capability;
-import org.eclipse.digitaltwin.aas4j.v3.model.EventElement;
-import org.eclipse.digitaltwin.aas4j.v3.model.File;
-import org.eclipse.digitaltwin.aas4j.v3.model.HasSemantics;
-import org.eclipse.digitaltwin.aas4j.v3.model.Identifiable;
-import org.eclipse.digitaltwin.aas4j.v3.model.Key;
-import org.eclipse.digitaltwin.aas4j.v3.model.KeyTypes;
-import org.eclipse.digitaltwin.aas4j.v3.model.MultiLanguageProperty;
-import org.eclipse.digitaltwin.aas4j.v3.model.OperationVariable;
-import org.eclipse.digitaltwin.aas4j.v3.model.Range;
-import org.eclipse.digitaltwin.aas4j.v3.model.Reference;
-import org.eclipse.digitaltwin.aas4j.v3.model.ReferenceElement;
-import org.eclipse.digitaltwin.aas4j.v3.model.RelationshipElement;
-import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
-import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
-import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElementCollection;
-import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElementList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -182,7 +183,7 @@ class SubmodelToAspectConverter {
    private String determineAspectModelUrnNamespace( final Submodel element ) {
       return iri( element.getId() )
             .map( this::iriToReversedHostNameNotation )
-            .or( () -> Optional.ofNullable( element.getSemanticId() ).flatMap( semanticId -> semanticId.getKeys().stream()
+            .or( () -> Optional.ofNullable( element.getSemanticId() ).flatMap( semanticId -> SubmodelToAspectUtils.keys( semanticId )
                   .filter( key -> key.getType() == KeyTypes.CONCEPT_DESCRIPTION || key.getType() == KeyTypes.GLOBAL_REFERENCE )
                   .map( Key::getValue )
                   .flatMap( value -> iri( value ).stream() )
@@ -327,7 +328,7 @@ class SubmodelToAspectConverter {
 
    private Optional<AspectModelUrn> aspectModelUrnFromSemanticId( final HasSemantics element ) {
       return Optional.ofNullable( element.getSemanticId() )
-            .flatMap( semanticId -> semanticId.getKeys().stream()
+            .flatMap( semanticId -> SubmodelToAspectUtils.keys( semanticId )
                   .filter( key -> key.getType() == KeyTypes.CONCEPT_DESCRIPTION || key.getType() == KeyTypes.GLOBAL_REFERENCE )
                   .flatMap( key -> AspectModelUrn.from( key.getValue() ).toJavaOptional().stream() )
                   .findFirst()
@@ -484,7 +485,7 @@ class SubmodelToAspectConverter {
    private Optional<ConceptDescriptionInfo> conceptDescriptionInfoFor( final SubmodelElement element ) {
       return Optional.ofNullable( element.getSemanticId() )
             .stream()
-            .flatMap( semanticId -> semanticId.getKeys().stream() )
+            .flatMap( SubmodelToAspectUtils::keys )
             .map( Key::getValue )
             .map( conceptDescriptionInfoById::get )
             .filter( java.util.Objects::nonNull )
@@ -572,10 +573,13 @@ class SubmodelToAspectConverter {
 
    private Characteristic createCharacteristicFromRelationShipElement( final RelationshipElement relationshipElement,
          final AspectModelUrn propertyUrn ) {
-      final Function<Reference, String> describeReference = ref -> switch ( ref.getType() ) {
-         case MODEL_REFERENCE -> "Model reference ";
-         case EXTERNAL_REFERENCE -> "External reference ";
-      } + ref.getKeys().stream().map( Key::getValue ).collect( Collectors.joining( "/" ) );
+      final Function<Reference, String> describeReference = ref -> {
+         final String referenceType = ref == null ? "Reference " : switch ( ref.getType() ) {
+            case MODEL_REFERENCE -> "Model reference ";
+            case EXTERNAL_REFERENCE -> "External reference ";
+         };
+         return referenceType + SubmodelToAspectUtils.keys( ref ).map( Key::getValue ).collect( Collectors.joining( "/" ) );
+      };
 
       final String characteristicDescription = "First reference: %s, second reference: %s".formatted(
             describeReference.apply( relationshipElement.getFirst() ), describeReference.apply( relationshipElement.getSecond() ) );
@@ -672,7 +676,7 @@ class SubmodelToAspectConverter {
       final MetaModelBaseAttributes entityMetaModelBaseAttributes = namedBaseAttributes( entity, entityNamePrefix );
       final MetaModelBaseAttributes characteristicMetaModelBaseAttributes = baseAttributes( entity,
             new DetermineAutomatically( entityMetaModelBaseAttributes.urn().getName() + "Characteristic", false ), true, false );
-      final List<Property> entityProperties = entity.getStatements().stream()
+      final List<Property> entityProperties = Optional.ofNullable( entity.getStatements() ).orElse( List.of() ).stream()
             .map( this::createProperty )
             .toList();
       final Entity entityType = new DefaultEntity( entityMetaModelBaseAttributes, entityProperties );

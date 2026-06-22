@@ -13,27 +13,19 @@
 
 package org.eclipse.esmf.aspectmodel.jackson;
 
-import java.io.IOException;
-import java.io.Serial;
-
 import org.eclipse.esmf.metamodel.datatype.Curie;
 import org.eclipse.esmf.metamodel.datatype.CurieType;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
 
-public class CurieSerializer extends StdSerializer<Curie> {
-   @Serial
-   private static final long serialVersionUID = -6772194217411185019L;
+public class CurieSerializer extends ValueSerializer<Curie> {
    public static final CurieSerializer INSTANCE = new CurieSerializer();
 
-   private CurieSerializer() {
-      super( Curie.class );
-   }
-
    @Override
-   public void serialize( final Curie value, final JsonGenerator generator, final SerializerProvider provider ) throws IOException {
+   public void serialize( final Curie value, final JsonGenerator generator, final SerializationContext context ) throws JacksonException {
       generator.writeString( CurieType.INSTANCE.serialize( value ) );
    }
 }

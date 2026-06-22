@@ -13,6 +13,8 @@
 
 package org.eclipse.esmf.turtle.languageserver.diagnostic;
 
+import org.eclipse.esmf.Diagnostic;
+
 public class TurtleDocumentDiagnostic extends TurtleBaseDiagnostic {
    private final String sourceLocation;
    private final int fromLine;
@@ -20,7 +22,7 @@ public class TurtleDocumentDiagnostic extends TurtleBaseDiagnostic {
    private final int toLine;
    private final int toColumn;
 
-   public TurtleDocumentDiagnostic( final String message, final Code code, final String sourceLocation, final int fromLine,
+   public TurtleDocumentDiagnostic( final String message, final Diagnostic.Code code, final String sourceLocation, final int fromLine,
          final int fromColumn, final int toLine, final int toColumn ) {
       super( message, code );
       this.sourceLocation = sourceLocation;

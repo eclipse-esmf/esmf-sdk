@@ -24,7 +24,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * added due to cyclic dependencies.
  */
 public class Either<L, R> {
-
    private final Optional<L> left;
    private final Optional<R> right;
 

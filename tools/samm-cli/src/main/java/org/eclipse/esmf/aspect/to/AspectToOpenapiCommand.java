@@ -29,6 +29,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.ResolverConfigurationMixin;
@@ -41,16 +45,14 @@ import org.eclipse.esmf.aspectmodel.generator.openapi.PagingOption;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.Aspect;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import io.vavr.control.Try;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import picocli.CommandLine;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.dataformat.yaml.YAMLFactory;
+import tools.jackson.dataformat.yaml.YAMLMapper;
+import tools.jackson.dataformat.yaml.YAMLWriteFeature;
 
 @CommandLine.Command(
    name = AspectToOpenapiCommand.COMMAND_NAME,
@@ -61,7 +63,8 @@ import picocli.CommandLine;
 public class AspectToOpenapiCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "openapi";
    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-   private static final ObjectMapper YAML_MAPPER = new YAMLMapper().enable( YAMLGenerator.Feature.MINIMIZE_QUOTES );
+   private static final ObjectMapper YAML_MAPPER =
+         new YAMLMapper( YAMLFactory.builder().enable( YAMLWriteFeature.MINIMIZE_QUOTES ).build() );
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(

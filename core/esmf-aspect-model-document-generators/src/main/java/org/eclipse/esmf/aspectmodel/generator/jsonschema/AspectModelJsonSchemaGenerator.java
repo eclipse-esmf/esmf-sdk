@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 import org.eclipse.esmf.aspectmodel.generator.JsonGenerator;
 import org.eclipse.esmf.metamodel.Aspect;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
 /**
  * Generator that generates a JSON Schema for payloads corresponding to a given Aspect model.
