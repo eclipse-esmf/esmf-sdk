@@ -121,7 +121,7 @@ class AasToAspectModelGeneratorTest {
       } catch ( final IOException exception ) {
          fail( exception );
       } catch ( final AspectModelGenerationException aspectModelGenerationException ) {
-         if ( aspectModelGenerationException.getCause() instanceof final DeserializationException cause ) {
+         if ( aspectModelGenerationException.getCause() instanceof DeserializationException ) {
             System.err.println( "Could not load AASX file: " + aasxFile.getName() + ". Consider reporting to IDTA or AAS4J project." );
          } else {
             fail( aspectModelGenerationException );

@@ -19,7 +19,7 @@ import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.generator.AbstractSchemaArtifact;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
 public class JsonSchemaArtifact extends AbstractSchemaArtifact<JsonNode> {
    public JsonSchemaArtifact( final String id, final JsonNode content ) {

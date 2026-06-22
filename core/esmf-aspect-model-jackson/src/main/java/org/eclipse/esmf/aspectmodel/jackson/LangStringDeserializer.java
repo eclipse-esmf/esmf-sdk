@@ -13,27 +13,25 @@
 
 package org.eclipse.esmf.aspectmodel.jackson;
 
-import java.io.IOException;
 import java.util.Locale;
 
 import org.eclipse.esmf.metamodel.datatype.LangString;
 
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.deser.std.StdNodeBasedDeserializer;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ValueDeserializer;
 
-public class LangStringDeserializer extends StdNodeBasedDeserializer<LangString> {
-   private static final long serialVersionUID = 8007942189722606011L;
+public class LangStringDeserializer extends ValueDeserializer<LangString> {
    public static final LangStringDeserializer INSTANCE = new LangStringDeserializer();
 
-   private LangStringDeserializer() {
-      super( LangString.class );
-   }
-
    @Override
-   public LangString convert( final JsonNode root, final DeserializationContext ctxt ) throws IOException {
-      final String key = root.fieldNames().next();
-      final Locale languageTag = Locale.forLanguageTag( key );
-      return new LangString( root.get( key ).asText(), languageTag );
+   public LangString deserialize( final JsonParser parser, final DeserializationContext context ) throws JacksonException {
+      final JsonNode node = parser.readValueAsTree();
+      final String languageTag = node.properties().iterator().next().getKey();
+      final Locale locale = Locale.forLanguageTag( languageTag );
+      final String text = node.get( languageTag ).asString();
+      return new LangString( text, locale );
    }
 }

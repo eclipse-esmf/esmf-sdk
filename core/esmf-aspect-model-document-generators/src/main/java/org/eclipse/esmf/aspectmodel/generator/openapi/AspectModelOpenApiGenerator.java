@@ -20,7 +20,6 @@ import static org.eclipse.esmf.aspectmodel.generator.openapi.AspectModelOpenApiG
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -34,6 +33,10 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections4.IterableUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.stream.Streams;
+
 import org.eclipse.esmf.aspectmodel.VersionNumber;
 import org.eclipse.esmf.aspectmodel.generator.JsonGenerator;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
@@ -45,16 +48,15 @@ import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Operation;
 import org.eclipse.esmf.metamodel.Property;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.CaseFormat;
-import org.apache.commons.collections4.IterableUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.stream.Streams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.CaseFormat;
+
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
 
 @SuppressWarnings( "OptionalUsedAsFieldOrParameterType" )
 public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSchemaGenerationConfig, ObjectNode, OpenApiSchemaArtifact> {
@@ -345,8 +347,8 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
                      responseArrayNode.add( FACTORY.objectNode().put( REF, COMPONENTS_SCHEMAS + key + "Response" ) );
                   } );
          }
-         SCHEMA_VISITOR.getRootNode().get( FIELD_COMPONENTS ).get( FIELD_SCHEMAS ).fields()
-               .forEachRemaining( field -> schemas.set( field.getKey(), field.getValue() ) );
+         SCHEMA_VISITOR.getRootNode().get( FIELD_COMPONENTS ).get( FIELD_SCHEMAS ).properties()
+               .forEach( field -> schemas.set( field.getKey(), field.getValue() ) );
       }
    }
 
@@ -614,8 +616,7 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
       if ( aspectSchema.has( FIELD_COMPONENTS ) ) {
          final JsonNode definitionsNode = aspectSchema.get( FIELD_COMPONENTS ).get( FIELD_SCHEMAS );
          aspectSchema.remove( FIELD_COMPONENTS );
-         for ( final Iterator<String> it = definitionsNode.fieldNames(); it.hasNext(); ) {
-            final String nodeName = it.next();
+         for ( final String nodeName : definitionsNode.propertyNames() ) {
             final JsonNode node = definitionsNode.get( nodeName );
             rootSchemaNode.set( nodeName, node );
          }
@@ -646,7 +647,7 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
             return node;
          }
          // cycle for result.fields()
-         extension.fields().forEachRemaining( entry -> {
+         extension.properties().forEach( entry -> {
             final String key = entry.getKey();
             final JsonNode value = entry.getValue();
 
@@ -697,7 +698,7 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
          final Function<String, Function<JsonNode, String>> getText =
                fieldName -> objNode -> Optional.ofNullable( objNode.get( fieldName ) )
                      .filter( Predicate.not( JsonNode::isNull ) )
-                     .map( JsonNode::asText )
+                     .map( JsonNode::asString )
                      .orElse( null );
 
          final Set<JsonNode> original = Streams.of( node ).collect( asSet() );

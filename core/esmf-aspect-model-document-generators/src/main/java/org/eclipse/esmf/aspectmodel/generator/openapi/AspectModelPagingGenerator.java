@@ -24,6 +24,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.IOUtils;
+
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Characteristic;
@@ -33,23 +35,23 @@ import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.characteristic.Collection;
 import org.eclipse.esmf.metamodel.characteristic.TimeSeries;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.vavr.collection.Stream;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.vavr.collection.Stream;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
 
 class AspectModelPagingGenerator {
    private static final JsonNodeFactory FACTORY = JsonNodeFactory.instance;
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelPagingGenerator.class );
 
    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-   private static final String UNSPECIFIC_PAGING_TYPE = "There is more than one option for paging. %s will be used.";
+   private static final String UNSPECIFIC_PAGING_TYPE = "There is more than one option for paging. {} will be used.";
    private static final String NO_PAGING_POSSIBLE = "There is no possible paging type defined in the aspect.";
-   private static final String WRONG_TYPE_CHOSEN = "The specified paging type %s is not possible for the given aspect.";
+   private static final String WRONG_TYPE_CHOSEN = "The specified paging type {} is not possible for the given aspect.";
 
    /**
     * Sets the paging properties for an aspect to a given ObjectNode.
@@ -59,11 +61,8 @@ class AspectModelPagingGenerator {
     * @param objectNode The ObjectNode where the properties shall be inserted.
     * @throws IOException In case, the root property file can't be loaded.
     */
-   public void setPagingProperties(
-         final Aspect aspect,
-         final PagingOption selectedPagingOption,
-         final ObjectNode objectNode ) throws IOException {
-
+   public void setPagingProperties( final Aspect aspect, final PagingOption selectedPagingOption, final ObjectNode objectNode )
+         throws IOException {
       final PagingOption resolved = resolvePagingOption( aspect, selectedPagingOption );
 
       if ( resolved == PagingOption.NO_PAGING ) {
@@ -74,7 +73,7 @@ class AspectModelPagingGenerator {
    }
 
    /**
-    * Sets the paging schema for an aspect to an given ObjectNode.
+    * Sets the paging schema for an aspect to a given ObjectNode.
     *
     * @param aspect The related aspect for the paging schema.
     * @param selectedPagingOption The selected paging option.
@@ -108,7 +107,7 @@ class AspectModelPagingGenerator {
       if ( selectedPagingOption == null ) {
          final PagingOption pagingOption = pickOneOfManyPagingOptions( possiblePagingOptions );
          if ( possiblePagingOptions.size() > 1 ) {
-            LOG.info( String.format( UNSPECIFIC_PAGING_TYPE, pagingOption ) );
+            LOG.info( UNSPECIFIC_PAGING_TYPE, pagingOption );
          }
          setSchemaInformation( aspect, pagingOption, schemaNode );
          return;
@@ -156,7 +155,7 @@ class AspectModelPagingGenerator {
       final ObjectNode node = (ObjectNode) getPathRootNode( resolved ).get( "response" );
       schemaNode.set( AspectModelOpenApiGenerator.FIELD_PAGING_SCHEMA, node );
 
-      final Property property = aspect.getProperties().get( 0 );
+      final Property property = aspect.getProperties().getFirst();
       final String propertyName = property.getName();
 
       final ObjectNode propertiesNode = (ObjectNode) node.get( "properties" );
@@ -195,7 +194,7 @@ class AspectModelPagingGenerator {
       if ( option == PagingOption.AUTO ) {
          final PagingOption resolved = pickOneOfManyPagingOptions( possiblePagingOptions );
          if ( possiblePagingOptions.size() > 1 ) {
-            LOG.info( String.format( UNSPECIFIC_PAGING_TYPE, resolved ) );
+            LOG.info( UNSPECIFIC_PAGING_TYPE, resolved );
          }
          return resolved;
       }
@@ -226,9 +225,8 @@ class AspectModelPagingGenerator {
 
       // If a concrete paging type was chosen, it must be supported by the aspect.
       if ( !possiblePagingOptions.contains( definedPagingOption ) ) {
-         final String errorMessage = String.format( WRONG_TYPE_CHOSEN, definedPagingOption );
-         LOG.error( errorMessage );
-         throw new IllegalArgumentException( errorMessage );
+         LOG.error( WRONG_TYPE_CHOSEN, definedPagingOption );
+         throw new IllegalArgumentException( WRONG_TYPE_CHOSEN.replace( "{}", definedPagingOption.toString() ) );
       }
    }
 

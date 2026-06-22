@@ -18,10 +18,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import tools.jackson.databind.ObjectMapper;
 
 public class AspectModelUrnJsonTest {
    private static final ObjectMapper MAPPER = new ObjectMapper();
@@ -33,7 +34,7 @@ public class AspectModelUrnJsonTest {
          + ".samm:aspect-model:Aspect:1.0.0\"}";
 
    @Test
-   public void serializeToJson() throws JsonProcessingException {
+   public void serializeToJson() {
       assertThat( MAPPER.writeValueAsString( TEST_MODEL ) )
             .isEqualTo( TEST_MODEL_JSON );
    }

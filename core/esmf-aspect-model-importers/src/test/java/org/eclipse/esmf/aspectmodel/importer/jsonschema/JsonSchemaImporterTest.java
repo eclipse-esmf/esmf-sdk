@@ -36,6 +36,11 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.vocabulary.RDF;
+
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.aspectmodel.generator.AspectArtifact;
@@ -61,18 +66,6 @@ import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
 import org.eclipse.esmf.test.TestResources;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fge.jsonschema.core.exceptions.ProcessingException;
-import com.github.fge.jsonschema.core.report.ProcessingReport;
-import com.github.fge.jsonschema.main.JsonSchema;
-import com.github.fge.jsonschema.main.JsonSchemaFactory;
-import com.google.common.collect.Streams;
-import io.vavr.control.Either;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.vocabulary.RDF;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
@@ -82,11 +75,32 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.github.fge.jsonschema.core.exceptions.ProcessingException;
+import com.github.fge.jsonschema.core.report.ProcessingReport;
+import com.github.fge.jsonschema.main.JsonSchema;
+import com.github.fge.jsonschema.main.JsonSchemaFactory;
+import com.google.common.collect.Streams;
+
+import io.vavr.control.Either;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+
 public class JsonSchemaImporterTest {
    private final AspectModelValidator validator = new AspectModelValidator();
    private static final String SCHEMAS_LOCATION = "schemas";
    final ObjectMapper objectMapper = new ObjectMapper();
+   final com.fasterxml.jackson.databind.ObjectMapper legacyObjectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
    final AspectModelUrn testUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "Test" );
+
+   private com.fasterxml.jackson.databind.JsonNode toLegacyJsonNode( final JsonNode node ) {
+      final String jsonString = objectMapper.writeValueAsString( node );
+      try {
+         return legacyObjectMapper.readTree( jsonString );
+      } catch ( final JsonProcessingException exception ) {
+         throw new RuntimeException( exception );
+      }
+   }
 
    private JsonNode generateJsonData( final Aspect aspect ) {
       try {
@@ -178,7 +192,7 @@ public class JsonSchemaImporterTest {
 
       final JsonNode jsonData = generateJsonData( importedAspect );
       try {
-         final ProcessingReport report = parseSchema( jsonSchema ).validate( jsonData );
+         final ProcessingReport report = parseSchema( jsonSchema ).validate( toLegacyJsonNode( jsonData ) );
          if ( !report.isSuccess() ) {
             System.out.println( report );
          }
@@ -433,7 +447,7 @@ public class JsonSchemaImporterTest {
    private JsonSchema parseSchema( final JsonNode jsonSchema ) {
       final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
       try {
-         return factory.getJsonSchema( jsonSchema );
+         return factory.getJsonSchema( toLegacyJsonNode( jsonSchema ) );
       } catch ( final ProcessingException e ) {
          e.printStackTrace();
          fail();
@@ -444,12 +458,7 @@ public class JsonSchemaImporterTest {
    @SuppressWarnings( "CallToPrintStackTrace" )
    private void showJson( final JsonNode node ) {
       final ByteArrayOutputStream out = new ByteArrayOutputStream();
-      try {
-         objectMapper.writerWithDefaultPrettyPrinter().writeValue( out, node );
-      } catch ( final IOException e ) {
-         e.printStackTrace();
-         fail();
-      }
+      objectMapper.writerWithDefaultPrettyPrinter().writeValue( out, node );
       System.out.println( out );
    }
 }

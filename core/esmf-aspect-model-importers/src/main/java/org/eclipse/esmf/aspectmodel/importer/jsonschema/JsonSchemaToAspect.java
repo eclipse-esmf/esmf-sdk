@@ -19,7 +19,7 @@ import org.eclipse.esmf.aspectmodel.generator.AspectArtifact;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.builder.SammBuilder;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
 /**
  * Generator that translates a JSON Schema into an {@link Aspect}

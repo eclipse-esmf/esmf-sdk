@@ -21,11 +21,10 @@ import org.eclipse.esmf.aspectmodel.generator.openapi.PagingOption;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.metamodel.AspectModel;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 // end::imports[]
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.dataformat.yaml.YAMLMapper;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +32,7 @@ import org.junit.jupiter.api.Test;
 
 public class GenerateOpenApi {
    @Test
-   public void generateYaml() throws JsonProcessingException {
+   public void generateYaml() {
       // tag::generateYaml[]
       // AspectModel as returned by the AspectModelLoader
       final AspectModel aspectModel = // ...
@@ -125,7 +124,7 @@ public class GenerateOpenApi {
       // end::generateJson[]
    }
 
-   private static ObjectNode readYaml( String content ) throws JsonProcessingException {
+   private static ObjectNode readYaml( String content ) {
       return (ObjectNode) new YAMLMapper().readTree( content );
    }
 }

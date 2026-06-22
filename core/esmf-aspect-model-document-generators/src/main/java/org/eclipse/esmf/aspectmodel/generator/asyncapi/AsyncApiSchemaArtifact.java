@@ -19,7 +19,7 @@ import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.generator.AbstractSchemaArtifact;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
 /**
  * The result of generating an AsyncAPI specification from an Aspect Model. The result can be
