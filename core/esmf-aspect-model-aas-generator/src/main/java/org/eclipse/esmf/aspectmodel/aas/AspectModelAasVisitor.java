@@ -47,6 +47,7 @@ import org.eclipse.digitaltwin.aas4j.v3.model.ModellingKind;
 import org.eclipse.digitaltwin.aas4j.v3.model.Operation;
 import org.eclipse.digitaltwin.aas4j.v3.model.OperationVariable;
 import org.eclipse.digitaltwin.aas4j.v3.model.Qualifier;
+import org.eclipse.digitaltwin.aas4j.v3.model.QualifierKind;
 import org.eclipse.digitaltwin.aas4j.v3.model.Reference;
 import org.eclipse.digitaltwin.aas4j.v3.model.ReferenceTypes;
 import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
@@ -118,9 +119,11 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
    public static final String ALLOWS_ENUMERATION_VALUE_REGEX = "[^a-zA-Z0-9-_]";
    public static final String CONCEPT_DESCRIPTION_DATA_SPECIFICATION_URL =
          "https://admin-shell.io/DataSpecificationTemplates/DataSpecificationIec61360/3";
-   public static final String SMT_CARDINALITY_SEMANTIC_ID_URL = "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0";
-   public static final String SMT_CARDINALITY_QUALIFIER_TYPE = "SMT/Cardinality";
-   public static final String SMT_CARDINALITY_ZERO_TO_ONE = "ZeroToOne";
+   public static final String CARDINALITY_QUALIFIER_TYPE = "SMT/Cardinality";
+   public static final String CARDINALITY_QUALIFIER_SEMANTIC_ID =
+         "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0";
+   public static final String EXAMPLE_VALUE_QUALIFIER_TYPE = "SMT/ExampleValue";
+
    private static final Pattern IRDI_BARE_PATTERN = Pattern.compile(
          "^\\d{4}-\\d+(?:%23\\d{2}|#\\d{2})-[A-Za-z0-9-]+(?:%23\\d{3}|#\\d{3})$"
    );
@@ -344,15 +347,10 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       final SubmodelElement element = context.getPropertyResult();
       element.setSupplementalSemanticIds( updateGlobalReferenceWithSeeReferences( element, property ) );
 
-      if ( property.isOptional() ) {
-         final List<Qualifier> qualifiers = new ArrayList<>( element.getQualifiers() );
-         qualifiers.add( buildZeroToOneCardinalityQualifier() );
-         element.setQualifiers( qualifiers );
-      }
-
       if ( !property.getPayloadName().isEmpty() ) {
          element.setIdShort( AasIdShort.from( property.getPayloadName() ) );
       }
+      addTemplateQualifiers( element, property, characteristic, context );
 
       recursiveProperty.remove( property );
 
@@ -385,6 +383,55 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
             .supplementalSemanticIds( buildGlobalReferenceForSeeReferences( entity ) )
             .semanticId( buildReferenceForCollection( DEFAULT_MAPPER.determineIdentifierFor( entity ) ) )
             .build();
+   }
+
+   private void addTemplateQualifiers( final SubmodelElement element, final Property property, final Characteristic characteristic,
+         final Context context ) {
+      if ( !ModellingKind.TEMPLATE.equals( context.getModelingKind() ) ) {
+         return;
+      }
+
+      final List<Qualifier> qualifiers = new ArrayList<>( Optional.ofNullable( element.getQualifiers() ).orElseGet( List::of ) );
+      addQualifierIfAbsent( qualifiers, buildCardinalityQualifier( property, characteristic ) );
+      context.getExampleValue()
+            .map( this::buildExampleValueQualifier )
+            .ifPresent( qualifier -> addQualifierIfAbsent( qualifiers, qualifier ) );
+
+      if ( !qualifiers.isEmpty() ) {
+         element.setQualifiers( qualifiers );
+      }
+   }
+
+   private void addQualifierIfAbsent( final List<Qualifier> qualifiers, final Qualifier qualifier ) {
+      if ( qualifiers.stream().noneMatch( current -> qualifier.getType().equals( current.getType() ) ) ) {
+         qualifiers.add( qualifier );
+      }
+   }
+
+   private Qualifier buildCardinalityQualifier( final Property property, final Characteristic characteristic ) {
+      final String value;
+      if ( characteristic instanceof Collection ) {
+         value = property.isOptional() ? "ZeroToMany" : "OneToMany";
+      } else {
+         value = property.isOptional() ? "ZeroToOne" : "One";
+      }
+
+      final DefaultQualifier qualifier = new DefaultQualifier();
+      qualifier.setKind( QualifierKind.TEMPLATE_QUALIFIER );
+      qualifier.setSemanticId( buildReferenceForSeeElement( CARDINALITY_QUALIFIER_SEMANTIC_ID ) );
+      qualifier.setType( CARDINALITY_QUALIFIER_TYPE );
+      qualifier.setValueType( DataTypeDefXsd.STRING );
+      qualifier.setValue( value );
+      return qualifier;
+   }
+
+   private Qualifier buildExampleValueQualifier( final String value ) {
+      final DefaultQualifier qualifier = new DefaultQualifier();
+      qualifier.setKind( QualifierKind.TEMPLATE_QUALIFIER );
+      qualifier.setType( EXAMPLE_VALUE_QUALIFIER_TYPE );
+      qualifier.setValueType( DataTypeDefXsd.STRING );
+      qualifier.setValue( value );
+      return qualifier;
    }
 
    private Operation mapText( final org.eclipse.esmf.metamodel.Operation operation, final Context context ) {
@@ -468,23 +515,6 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       return new DefaultReference.Builder()
             .type( ReferenceTypes.EXTERNAL_REFERENCE )
             .keys( key )
-            .build();
-   }
-
-   private Qualifier buildZeroToOneCardinalityQualifier() {
-      final Key key = new DefaultKey.Builder()
-            .type( KeyTypes.GLOBAL_REFERENCE )
-            .value( SMT_CARDINALITY_SEMANTIC_ID_URL )
-            .build();
-      final Reference semanticId = new DefaultReference.Builder()
-            .type( ReferenceTypes.EXTERNAL_REFERENCE )
-            .keys( key )
-            .build();
-      return new DefaultQualifier.Builder()
-            .type( SMT_CARDINALITY_QUALIFIER_TYPE )
-            .valueType( DataTypeDefXsd.STRING )
-            .value( SMT_CARDINALITY_ZERO_TO_ONE )
-            .semanticId( semanticId )
             .build();
    }
 

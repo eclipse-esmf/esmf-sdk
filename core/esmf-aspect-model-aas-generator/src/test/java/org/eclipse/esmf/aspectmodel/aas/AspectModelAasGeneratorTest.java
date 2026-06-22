@@ -50,6 +50,7 @@ import org.eclipse.digitaltwin.aas4j.v3.model.Key;
 import org.eclipse.digitaltwin.aas4j.v3.model.KeyTypes;
 import org.eclipse.digitaltwin.aas4j.v3.model.MultiLanguageProperty;
 import org.eclipse.digitaltwin.aas4j.v3.model.Property;
+import org.eclipse.digitaltwin.aas4j.v3.model.Qualifier;
 import org.eclipse.digitaltwin.aas4j.v3.model.Reference;
 import org.eclipse.digitaltwin.aas4j.v3.model.ReferenceTypes;
 import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
@@ -320,13 +321,13 @@ class AspectModelAasGeneratorTest {
             .hasSize( 1 )
             .first()
             .satisfies( qualifier -> {
-               assertThat( qualifier.getType() ).isEqualTo( AspectModelAasVisitor.SMT_CARDINALITY_QUALIFIER_TYPE );
-               assertThat( qualifier.getValue() ).isEqualTo( AspectModelAasVisitor.SMT_CARDINALITY_ZERO_TO_ONE );
+               assertThat( qualifier.getType() ).isEqualTo( AspectModelAasVisitor.CARDINALITY_QUALIFIER_TYPE );
+               assertThat( qualifier.getValue() ).isEqualTo( "ZeroToOne" );
                assertThat( qualifier.getValueType() ).isEqualTo( DataTypeDefXsd.STRING );
                assertThat( qualifier.getSemanticId().getKeys() )
                      .singleElement()
                      .satisfies( key -> assertThat( key.getValue() )
-                           .isEqualTo( AspectModelAasVisitor.SMT_CARDINALITY_SEMANTIC_ID_URL ) );
+                           .isEqualTo( AspectModelAasVisitor.CARDINALITY_QUALIFIER_SEMANTIC_ID ) );
             } );
    }
 
@@ -647,8 +648,44 @@ class AspectModelAasGeneratorTest {
                   .isEqualTo( KeyTypes.CONCEPT_DESCRIPTION ) );
    }
 
+   @Test
+   void testCollectionTemplateElementHasCardinalityQualifier() throws DeserializationException {
+      final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_ENTITY_LIST );
+      final SubmodelElement element = env.getSubmodels().getFirst().getSubmodelElements().getFirst();
+
+      assertThat( qualifierValue( element, AspectModelAasVisitor.CARDINALITY_QUALIFIER_TYPE ) )
+            .isEqualTo( "OneToMany" );
+   }
+
+   @Test
+   void testExampleValueIsUsedAsTemplateValueAndQualifier() throws DeserializationException {
+      final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_ENTITY_LIST );
+      final SubmodelElementCollection smc = (SubmodelElementCollection) ( (SubmodelElementList) env.getSubmodels()
+            .getFirst()
+            .getSubmodelElements()
+            .getFirst() )
+                  .getValue()
+                  .getFirst();
+      final Property testString = (Property) smc.getValue().stream()
+            .filter( element -> element.getIdShort().equals( "testString" ) )
+            .findFirst()
+            .orElseThrow();
+
+      assertThat( testString.getValue() ).isEqualTo( "Example Value Test" );
+      assertThat( qualifierValue( testString, AspectModelAasVisitor.EXAMPLE_VALUE_QUALIFIER_TYPE ) )
+            .isEqualTo( "Example Value Test" );
+   }
+
    private void checkDataSpecificationIec61360( final Set<String> semanticIds, final Environment env ) {
       semanticIds.forEach( semanticId -> getDataSpecificationIec61360( semanticId, env ) );
+   }
+
+   private String qualifierValue( final SubmodelElement element, final String type ) {
+      return element.getQualifiers().stream()
+            .filter( qualifier -> qualifier.getType().equals( type ) )
+            .map( Qualifier::getValue )
+            .findFirst()
+            .orElseThrow();
    }
 
    private DataSpecificationContent getDataSpecificationIec61360( final String semanticId, final Environment env ) {
@@ -719,4 +756,5 @@ class AspectModelAasGeneratorTest {
       final XmlDeserializer deserializer = new XmlDeserializer();
       return deserializer.read( new ByteArrayInputStream( data ) );
    }
+
 }
