@@ -266,7 +266,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       final String submodelId = aspect.urn().getUrn().toString() + "/submodel";
 
       final Submodel submodel = usedContext.getSubmodel();
-      submodel.setIdShort( DEFAULT_MAPPER.determineIdShortFor( aspect ) );
+      submodel.setIdShort( AasIdShort.from( aspect.getName() ) );
       submodel.setId( submodelId );
       submodel.setSemanticId( buildAspectReferenceToGlobalReference( aspect ) );
       submodel.setSupplementalSemanticIds( buildGlobalReferenceForSeeReferences( aspect ) );
@@ -351,7 +351,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       }
 
       if ( !property.getPayloadName().isEmpty() ) {
-         element.setIdShort( DEFAULT_MAPPER.determineIdShortFor( property, true ) );
+         element.setIdShort( AasIdShort.from( property.getPayloadName() ) );
       }
 
       recursiveProperty.remove( property );
@@ -378,7 +378,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
          final Context context ) {
       final List<SubmodelElement> submodelElements = visitProperties( entity.getAllProperties(), context );
       return new DefaultSubmodelElementCollection.Builder()
-            .idShort( DEFAULT_MAPPER.determineIdShortFor( entity ) )
+            .idShort( AasIdShort.from( entity.getName() ) )
             .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
             .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
             .value( submodelElements )
@@ -393,7 +393,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
             .displayName( LangStringMapper.NAME.map( operation.getPreferredNames() ) )
             .description( LangStringMapper.TEXT.map( operation.getDescriptions() ) )
             .semanticId( buildReferenceToOperation( operation ) )
-            .idShort( DEFAULT_MAPPER.determineIdShortFor( operation ) )
+            .idShort( AasIdShort.from( operation.getName() ) )
             .inputVariables( operation.getInput().stream()
                   .map( input -> mapOperationVariable( input, context ) )
                   .collect( Collectors.toList() ) )
@@ -496,7 +496,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       if ( !context.hasEnvironmentConceptDescription( property.urn().toString() ) ) {
          final ConceptDescription conceptDescription =
                new DefaultConceptDescription.Builder()
-                     .idShort( DEFAULT_MAPPER.determineIdShortFor( property ) )
+                     .idShort( AasIdShort.from( property.getName() ) )
                      .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
                      .embeddedDataSpecifications( extractEmbeddedDataSpecification( property ) )
                      .id( DEFAULT_MAPPER.determineIdentifierFor( property ) )
@@ -510,7 +510,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       if ( !context.hasEnvironmentConceptDescription( operation.urn().toString() ) ) {
          final ConceptDescription conceptDescription =
                new DefaultConceptDescription.Builder()
-                     .idShort( DEFAULT_MAPPER.determineIdShortFor( operation ) )
+                     .idShort( AasIdShort.from( operation.getName() ) )
                      .displayName( LangStringMapper.NAME.map( operation.getPreferredNames() ) )
                      .embeddedDataSpecifications( extractEmbeddedDataSpecification( operation ) )
                      .id( DEFAULT_MAPPER.determineIdentifierFor( operation ) )
@@ -524,7 +524,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       if ( !context.hasEnvironmentConceptDescription( aspect.urn().toString() ) ) {
          final ConceptDescription conceptDescription =
                new DefaultConceptDescription.Builder()
-                     .idShort( DEFAULT_MAPPER.determineIdShortFor( aspect ) )
+                     .idShort( AasIdShort.from( aspect.getName() ) )
                      .displayName( LangStringMapper.NAME.map( aspect.getPreferredNames() ) )
                      .embeddedDataSpecifications( extractEmbeddedDataSpecification( aspect ) )
                      .id( DEFAULT_MAPPER.determineIdentifierFor( aspect ) )
@@ -670,7 +670,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
 
       final SubmodelElementBuilder defaultBuilder = property -> {
          final DefaultSubmodelElementList.Builder submodelBuilder = new DefaultSubmodelElementList.Builder()
-               .idShort( listIdShort != null ? listIdShort : DEFAULT_MAPPER.determineIdShortFor( property ) )
+               .idShort( AasIdShort.from( listIdShort != null ? listIdShort : property.getName() ) )
                .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
                .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
                .value( List.of( decideOnMapping( property, context ) ) )
@@ -699,7 +699,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
                            final List<SubmodelElement> values = getValues( collection, property, context, arrayNode );
                            final String propertyUrn = DEFAULT_MAPPER.determineIdentifierFor( property );
                            return new DefaultSubmodelElementList.Builder()
-                                 .idShort( listIdShort != null ? listIdShort : DEFAULT_MAPPER.determineIdShortFor( property ) )
+                                 .idShort( AasIdShort.from( listIdShort != null ? listIdShort : property.getName() ) )
                                  .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
                                  .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
                                  .value( values )
@@ -756,7 +756,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
 
       final SubmodelElementList eitherSubModelElements =
             new DefaultSubmodelElementList.Builder()
-                  .idShort( DEFAULT_MAPPER.determineIdShortFor( either ) )
+                  .idShort( AasIdShort.from( either.getName() ) )
                   .typeValueListElement( AasSubmodelElements.DATA_ELEMENT )
                   .displayName( LangStringMapper.NAME.map( either.getPreferredNames() ) )
                   .description( LangStringMapper.TEXT.map( either.getDescriptions() ) )

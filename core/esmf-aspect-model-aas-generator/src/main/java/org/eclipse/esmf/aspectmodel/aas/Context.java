@@ -177,7 +177,7 @@ public class Context {
                .collect( Collectors.joining( "_" ) );
       }
 
-      return shortId;
+      return AasIdShort.from( shortId );
    }
 
    /**

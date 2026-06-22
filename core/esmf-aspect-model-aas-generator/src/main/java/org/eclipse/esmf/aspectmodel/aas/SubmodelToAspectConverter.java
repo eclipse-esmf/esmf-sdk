@@ -183,7 +183,7 @@ class SubmodelToAspectConverter {
    private String determineAspectModelUrnNamespace( final Submodel element ) {
       return iri( element.getId() )
             .map( this::iriToReversedHostNameNotation )
-            .or( () -> Optional.ofNullable( element.getSemanticId() ).flatMap( semanticId -> semanticId.getKeys().stream()
+            .or( () -> Optional.ofNullable( element.getSemanticId() ).flatMap( semanticId -> SubmodelToAspectUtils.keys( semanticId )
                   .filter( key -> key.getType() == KeyTypes.CONCEPT_DESCRIPTION || key.getType() == KeyTypes.GLOBAL_REFERENCE )
                   .map( Key::getValue )
                   .flatMap( value -> iri( value ).stream() )
@@ -328,7 +328,7 @@ class SubmodelToAspectConverter {
 
    private Optional<AspectModelUrn> aspectModelUrnFromSemanticId( final HasSemantics element ) {
       return Optional.ofNullable( element.getSemanticId() )
-            .flatMap( semanticId -> semanticId.getKeys().stream()
+            .flatMap( semanticId -> SubmodelToAspectUtils.keys( semanticId )
                   .filter( key -> key.getType() == KeyTypes.CONCEPT_DESCRIPTION || key.getType() == KeyTypes.GLOBAL_REFERENCE )
                   .flatMap( key -> AspectModelUrn.from( key.getValue() ).toJavaOptional().stream() )
                   .findFirst()
@@ -485,7 +485,7 @@ class SubmodelToAspectConverter {
    private Optional<ConceptDescriptionInfo> conceptDescriptionInfoFor( final SubmodelElement element ) {
       return Optional.ofNullable( element.getSemanticId() )
             .stream()
-            .flatMap( semanticId -> semanticId.getKeys().stream() )
+            .flatMap( SubmodelToAspectUtils::keys )
             .map( Key::getValue )
             .map( conceptDescriptionInfoById::get )
             .filter( java.util.Objects::nonNull )
@@ -573,10 +573,13 @@ class SubmodelToAspectConverter {
 
    private Characteristic createCharacteristicFromRelationShipElement( final RelationshipElement relationshipElement,
          final AspectModelUrn propertyUrn ) {
-      final Function<Reference, String> describeReference = ref -> switch ( ref.getType() ) {
-         case MODEL_REFERENCE -> "Model reference ";
-         case EXTERNAL_REFERENCE -> "External reference ";
-      } + Optional.ofNullable( ref.getKeys() ).orElse( List.of() ).stream().map( Key::getValue ).collect( Collectors.joining( "/" ) );
+      final Function<Reference, String> describeReference = ref -> {
+         final String referenceType = ref == null ? "Reference " : switch ( ref.getType() ) {
+            case MODEL_REFERENCE -> "Model reference ";
+            case EXTERNAL_REFERENCE -> "External reference ";
+         };
+         return referenceType + SubmodelToAspectUtils.keys( ref ).map( Key::getValue ).collect( Collectors.joining( "/" ) );
+      };
 
       final String characteristicDescription = "First reference: %s, second reference: %s".formatted(
             describeReference.apply( relationshipElement.getFirst() ), describeReference.apply( relationshipElement.getSecond() ) );
