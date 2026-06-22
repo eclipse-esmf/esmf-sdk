@@ -13,6 +13,11 @@
 
 package org.eclipse.esmf.turtle.languageserver.lsp.text;
 
+import java.util.List;
+
+import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
+import org.eclipse.esmf.treesitterturtle.ParserTokenType;
 import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
 
 import org.treesitter.TSTree;
@@ -21,6 +26,8 @@ public record ParsedDocument(
       Document sourceDocument,
       TSTree concreteSyntaxTree
 ) {
+   private static final List<String> SAMM_PREFIXES = SammNs.sammNamespaces().map( RdfNamespace::getShortForm ).toList();
+
    public String getUri() {
       return sourceDocument().getUri();
    }
@@ -35,5 +42,17 @@ public record ParsedDocument(
             () -> sourceDocument().getContent(),
             location -> sourceDocument().subSequence( location.fromLine(), location.fromColumn(),
                   location.toLine(), location.toColumn() ) );
+   }
+
+   public boolean isAspectModel() {
+      return this.turtleSyntaxTree().nodes().anyMatch(
+            node -> {
+               if ( node instanceof TurtleSyntaxTree.Token token ) {
+                  return ParserTokenType.PN_PREFIX.equals( token.type() )
+                        && SAMM_PREFIXES.contains( token.content() );
+               }
+               return false;
+            }
+      );
    }
 }

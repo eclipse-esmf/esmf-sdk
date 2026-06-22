@@ -22,6 +22,8 @@ import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.eclipse.esmf.Diagnostic;
+
 import org.jspecify.annotations.Nullable;
 import org.treesitter.TSNode;
 import org.treesitter.TSTree;
@@ -88,9 +90,8 @@ public class TurtleSyntaxTree {
 
    public record Error(
          String type,
-         Location location,
-         boolean isMissing,
-         boolean isExtra
+         Diagnostic.Code errorType,
+         Location location
    ) implements Node {
       @Override
       public boolean isError() {
@@ -195,7 +196,9 @@ public class TurtleSyntaxTree {
             inputNode.getEndPoint().getRow(),
             inputNode.getEndPoint().getColumn() );
       if ( inputNode.isError() ) {
-         return new Error( inputNode.getType(), location, inputNode.isMissing(), inputNode.isExtra() );
+         return new Error( inputNode.getType(), TurtleDiagnostic.TurtleCode.E0003, location );
+      } else if ( inputNode.isMissing() ) {
+         return new Error( inputNode.getType(), TurtleDiagnostic.TurtleCode.E0004, location );
       }
       final String token = tokenProvider.apply( location );
       final List<Node> children = IntStream.range( 0, inputNode.getChildCount() )

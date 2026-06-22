@@ -145,7 +145,7 @@ public class Rope implements CharSequence {
       return split( this, index );
    }
 
-   private Rope[] split( final Rope node, final int index ) {
+   private @Nullable Rope @NonNull [] split( final Rope node, final int index ) {
       final Rope node0;
       final Rope node1;
       if ( node.left == null ) {
@@ -183,7 +183,8 @@ public class Rope implements CharSequence {
     */
    @Override
    public @NonNull Rope subSequence( final int start, final int end ) {
-      return split( start )[1].split( end - start )[0];
+      final Rope result = split( start )[1].split( end - start )[0];
+      return result == null ? EMPTY : result;
    }
 
    /**

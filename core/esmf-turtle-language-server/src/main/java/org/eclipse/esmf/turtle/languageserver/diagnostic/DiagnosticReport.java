@@ -15,6 +15,8 @@ package org.eclipse.esmf.turtle.languageserver.diagnostic;
 
 import java.util.List;
 
+import org.eclipse.esmf.treesitterturtle.TurtleDiagnostic;
+
 import com.google.common.collect.Streams;
 
 public record DiagnosticReport(
