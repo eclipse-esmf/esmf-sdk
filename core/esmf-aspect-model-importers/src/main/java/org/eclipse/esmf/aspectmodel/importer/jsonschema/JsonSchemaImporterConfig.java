@@ -19,8 +19,8 @@ import java.util.function.Function;
 import org.eclipse.esmf.aspectmodel.generator.GenerationConfig;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.soabase.recordbuilder.core.RecordBuilder;
+import tools.jackson.databind.JsonNode;
 
 /**
  * Configuration for the JSON Schema importer

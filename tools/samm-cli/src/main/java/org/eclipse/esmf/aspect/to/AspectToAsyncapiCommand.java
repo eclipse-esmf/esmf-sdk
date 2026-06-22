@@ -35,13 +35,9 @@ import org.eclipse.esmf.aspectmodel.generator.asyncapi.AsyncApiSchemaGenerationC
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.Aspect;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 @CommandLine.Command(
    name = AspectToAsyncapiCommand.COMMAND_NAME,
@@ -50,11 +46,7 @@ import picocli.CommandLine;
    parameterListHeading = "%n@|bold Parameters|@:%n",
    optionListHeading = "%n@|bold Options|@:%n" )
 public class AspectToAsyncapiCommand extends AbstractCommand {
-
    public static final String COMMAND_NAME = "asyncapi";
-
-   private static final Logger LOG = LoggerFactory.getLogger( AspectToAsyncapiCommand.class );
-   private static final ObjectMapper YAML_MAPPER = new YAMLMapper().enable( YAMLGenerator.Feature.MINIMIZE_QUOTES );
    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
    @CommandLine.Option(

@@ -13,32 +13,24 @@
 
 package org.eclipse.esmf.aspectmodel.jackson;
 
-import java.io.IOException;
-import java.io.Serial;
 import java.util.Optional;
 
 import org.eclipse.esmf.metamodel.datatype.Curie;
 import org.eclipse.esmf.metamodel.datatype.CurieType;
 
-import com.fasterxml.jackson.core.JacksonException;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonTokenId;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.JsonTokenId;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.ValueDeserializer;
 
-public class CurieDeserializer extends StdDeserializer<Curie> {
-   @Serial
-   private static final long serialVersionUID = 1285377288430239636L;
+public class CurieDeserializer extends ValueDeserializer<Curie> {
    public static final CurieDeserializer INSTANCE = new CurieDeserializer();
 
-   private CurieDeserializer() {
-      super( Curie.class );
-   }
-
    @Override
-   public Curie deserialize( final JsonParser parser, final DeserializationContext context ) throws IOException, JacksonException {
+   public Curie deserialize( final JsonParser parser, final DeserializationContext context ) throws JacksonException {
       if ( parser.currentTokenId() == JsonTokenId.ID_STRING ) {
-         final Optional<Curie> value = CurieType.INSTANCE.parseTyped( parser.getText() );
+         final Optional<Curie> value = CurieType.INSTANCE.parseTyped( parser.getString() );
          if ( value.isPresent() ) {
             return value.get();
          }

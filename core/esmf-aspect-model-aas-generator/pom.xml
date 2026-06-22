@@ -43,6 +43,10 @@
          <artifactId>poi</artifactId>
       </dependency>
       <dependency>
+         <groupId>tools.jackson.core</groupId>
+         <artifactId>jackson-core</artifactId>
+      </dependency>
+      <dependency>
          <groupId>io.soabase.record-builder</groupId>
          <artifactId>record-builder-processor</artifactId>
          <scope>provided</scope>

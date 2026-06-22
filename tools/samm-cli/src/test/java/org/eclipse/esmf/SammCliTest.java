@@ -28,9 +28,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.tika.mime.MediaType;
+
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
-import org.eclipse.esmf.util.process.ProcessLauncher;
-import org.eclipse.esmf.util.process.ProcessLauncher.ExecutionResult;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
 import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
@@ -41,11 +42,9 @@ import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
 import org.eclipse.esmf.test.TestResources;
 import org.eclipse.esmf.test.TestSharedModel;
+import org.eclipse.esmf.util.process.ProcessLauncher;
+import org.eclipse.esmf.util.process.ProcessLauncher.ExecutionResult;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.io.FileUtils;
-import org.apache.tika.mime.MediaType;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
@@ -56,6 +55,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * The tests for the CLI that are executed by Maven Surefire. They work using the
@@ -1234,7 +1236,7 @@ class SammCliTest extends SammCliAbstractTest {
       // Set up file system structure of writable files
       final Path modelLocation = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
             .resolve( testModel.getUrn().getVersion() );
-      modelLocation.toFile().mkdirs();
+      Files.createDirectories( modelLocation );
       final File inputFile = modelLocation.resolve( "AspectWithEntity.ttl" ).toFile();
       FileUtils.copyFile( inputFile( testModel ).getAbsoluteFile(), inputFile );
       final File targetFile = modelLocation.resolve( "target.ttl" ).toFile();
@@ -1259,7 +1261,7 @@ class SammCliTest extends SammCliAbstractTest {
       // Set up file system structure of writable files
       final Path modelLocation = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
             .resolve( testModel.getUrn().getVersion() );
-      modelLocation.toFile().mkdirs();
+      Files.createDirectories( modelLocation );
       final File inputFile = modelLocation.resolve( "AspectWithEntity.ttl" ).toFile();
       FileUtils.copyFile( inputFile( testModel ).getAbsoluteFile(), inputFile );
       final File targetFile = modelLocation.resolve( "target.ttl" ).toFile();
@@ -1284,7 +1286,7 @@ class SammCliTest extends SammCliAbstractTest {
       // Set up file system structure of writable files
       final Path modelLocation = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
             .resolve( testModel.getUrn().getVersion() );
-      modelLocation.toFile().mkdirs();
+      Files.createDirectories( modelLocation );
       final File inputFile = modelLocation.resolve( "AspectWithEntity.ttl" ).toFile();
       FileUtils.copyFile( inputFile( testModel ).getAbsoluteFile(), inputFile );
       final File targetFile = modelLocation.resolve( "target.ttl" ).toFile();
@@ -1307,7 +1309,7 @@ class SammCliTest extends SammCliAbstractTest {
       // Set up file system structure of writable files
       final Path modelLocation = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
             .resolve( testModel.getUrn().getVersion() );
-      modelLocation.toFile().mkdirs();
+      Files.createDirectories( modelLocation );
       final File inputFile = modelLocation.resolve( "AspectWithEntity.ttl" ).toFile();
       FileUtils.copyFile( inputFile( testModel ).getAbsoluteFile(), inputFile );
       final File targetFile = modelLocation.resolve( "target.ttl" ).toFile();
@@ -1330,14 +1332,14 @@ class SammCliTest extends SammCliAbstractTest {
       // Set up file system structure of writable files
       final Path modelLocationNs1 = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
             .resolve( testModel.getUrn().getVersion() );
-      modelLocationNs1.toFile().mkdirs();
+      Files.createDirectories( modelLocationNs1 );
       final File inputFile = modelLocationNs1.resolve( "AspectWithEntity.ttl" ).toFile();
       FileUtils.copyFile( inputFile( testModel ).getAbsoluteFile(), inputFile );
       final String targetNamespace = "urn:samm:org.eclipse.example.newnamespace:1.0.0";
       final AspectModelUrn newNamespace = AspectModelUrn.fromUrn( targetNamespace );
       final Path modelLocationNs2 = outputDirectory.resolve( newNamespace.getNamespaceMainPart() )
             .resolve( newNamespace.getVersion() );
-      modelLocationNs2.toFile().mkdirs();
+      Files.createDirectories( modelLocationNs2 );
       final File targetFile = modelLocationNs2.resolve( "target.ttl" ).toFile();
       Files.createFile( targetFile.toPath() );
       try ( final PrintWriter out = new PrintWriter( targetFile ) ) {
@@ -1360,14 +1362,14 @@ class SammCliTest extends SammCliAbstractTest {
       // Set up file system structure of writable files
       final Path modelLocationNs1 = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
             .resolve( testModel.getUrn().getVersion() );
-      modelLocationNs1.toFile().mkdirs();
+      Files.createDirectories( modelLocationNs1 );
       final File inputFile = modelLocationNs1.resolve( "AspectWithEntity.ttl" ).toFile();
       FileUtils.copyFile( inputFile( testModel ).getAbsoluteFile(), inputFile );
       final String targetNamespace = "urn:samm:org.eclipse.example.newnamespace:1.0.0";
       final AspectModelUrn newNamespace = AspectModelUrn.fromUrn( targetNamespace );
       final Path modelLocationNs2 = outputDirectory.resolve( newNamespace.getNamespaceMainPart() )
             .resolve( newNamespace.getVersion() );
-      modelLocationNs2.toFile().mkdirs();
+      Files.createDirectories( modelLocationNs2 );
       final File targetFile = modelLocationNs2.resolve( "target.ttl" ).toFile();
       Files.createFile( targetFile.toPath() );
       try ( final PrintWriter out = new PrintWriter( targetFile ) ) {
@@ -1392,7 +1394,7 @@ class SammCliTest extends SammCliAbstractTest {
       // Set up file system structure of writable files
       final Path modelLocationNs1 = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
             .resolve( testModel.getUrn().getVersion() );
-      modelLocationNs1.toFile().mkdirs();
+      Files.createDirectories( modelLocationNs1 );
       final File inputFile = modelLocationNs1.resolve( "AspectWithEntity.ttl" ).toFile();
       FileUtils.copyFile( inputFile( testModel ).getAbsoluteFile(), inputFile );
       final String targetNamespace = "urn:samm:org.eclipse.example.newnamespace:1.0.0";
@@ -1419,7 +1421,7 @@ class SammCliTest extends SammCliAbstractTest {
       // Set up file system structure of writable files
       final Path modelLocationNs1 = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
             .resolve( testModel.getUrn().getVersion() );
-      modelLocationNs1.toFile().mkdirs();
+      Files.createDirectories( modelLocationNs1 );
       final File inputFile = modelLocationNs1.resolve( "AspectWithEntity.ttl" ).toFile();
       FileUtils.copyFile( inputFile( testModel ).getAbsoluteFile(), inputFile );
       final String targetNamespace = "urn:samm:org.eclipse.example.newnamespace:1.0.0";
@@ -1446,7 +1448,7 @@ class SammCliTest extends SammCliAbstractTest {
       // Set up file system structure of writable files
       final Path modelLocation = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
             .resolve( testModel.getUrn().getVersion() );
-      modelLocation.toFile().mkdirs();
+      Files.createDirectories( modelLocation );
       final File inputFile = modelLocation.resolve( "AspectWithEntity.ttl" ).toFile();
       FileUtils.copyFile( inputFile( testModel ).getAbsoluteFile(), inputFile );
 
@@ -1466,7 +1468,7 @@ class SammCliTest extends SammCliAbstractTest {
       // Set up file system structure of writable files
       final Path modelLocation = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
             .resolve( testModel.getUrn().getVersion() );
-      modelLocation.toFile().mkdirs();
+      Files.createDirectories( modelLocation );
       final File inputFile = modelLocation.resolve( "AspectWithEntity.ttl" ).toFile();
       FileUtils.copyFile( inputFile( testModel ).getAbsoluteFile(), inputFile );
 
@@ -1519,10 +1521,10 @@ class SammCliTest extends SammCliAbstractTest {
    }
 
    @Test
-   void testPackageImport( @TempDir final Path outputDirectory ) {
+   void testPackageImport( @TempDir final Path outputDirectory ) throws IOException {
       // Set up new empty models root directory
       final File modelsRoot = outputDirectory.toFile();
-      modelsRoot.mkdirs();
+      Files.createDirectories( outputDirectory );
 
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "package",
             inputFile( "namespaces.zip" ).getAbsolutePath(), "import", "--models-root", modelsRoot.getAbsolutePath() );

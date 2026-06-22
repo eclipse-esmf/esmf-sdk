@@ -26,11 +26,11 @@ import org.eclipse.esmf.aspectmodel.validation.Validator;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.samm.KnownVersion;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 public class TestResources {
    public record IdentifiedInputStream(

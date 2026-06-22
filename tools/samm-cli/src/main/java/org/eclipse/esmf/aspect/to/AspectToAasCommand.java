@@ -14,7 +14,6 @@
 package org.eclipse.esmf.aspect.to;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.LoggingMixin;
@@ -26,11 +25,12 @@ import org.eclipse.esmf.aspectmodel.aas.AasGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.aas.AspectModelAasGenerator;
 import org.eclipse.esmf.metamodel.Aspect;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import picocli.CommandLine;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 @CommandLine.Command(
    name = AspectToAasCommand.COMMAND_NAME,
@@ -81,7 +81,7 @@ public class AspectToAasCommand extends AbstractCommand {
       final ObjectMapper objectMapper = new ObjectMapper();
       try {
          return objectMapper.readTree( aspectData );
-      } catch ( final IOException exception ) {
+      } catch ( final Exception exception ) {
          LOG.error( "Could not read Aspect JSON data from file: {}", aspectData );
          return null;
       }

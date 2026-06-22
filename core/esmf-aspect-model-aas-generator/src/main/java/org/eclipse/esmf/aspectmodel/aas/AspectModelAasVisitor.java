@@ -26,34 +26,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
-import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
-import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.Characteristic;
-import org.eclipse.esmf.metamodel.CollectionValue;
-import org.eclipse.esmf.metamodel.Entity;
-import org.eclipse.esmf.metamodel.EntityInstance;
-import org.eclipse.esmf.metamodel.ModelElement;
-import org.eclipse.esmf.metamodel.Property;
-import org.eclipse.esmf.metamodel.Scalar;
-import org.eclipse.esmf.metamodel.ScalarValue;
-import org.eclipse.esmf.metamodel.Type;
-import org.eclipse.esmf.metamodel.characteristic.Code;
-import org.eclipse.esmf.metamodel.characteristic.Collection;
-import org.eclipse.esmf.metamodel.characteristic.Duration;
-import org.eclipse.esmf.metamodel.characteristic.Either;
-import org.eclipse.esmf.metamodel.characteristic.Enumeration;
-import org.eclipse.esmf.metamodel.characteristic.Measurement;
-import org.eclipse.esmf.metamodel.characteristic.Quantifiable;
-import org.eclipse.esmf.metamodel.characteristic.SingleEntity;
-import org.eclipse.esmf.metamodel.characteristic.SortedSet;
-import org.eclipse.esmf.metamodel.characteristic.State;
-import org.eclipse.esmf.metamodel.characteristic.StructuredValue;
-import org.eclipse.esmf.metamodel.characteristic.Trait;
-import org.eclipse.esmf.metamodel.datatype.LangString;
-
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.google.common.collect.ImmutableMap;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
@@ -102,8 +74,39 @@ import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodelElementCollect
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodelElementList;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultValueList;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultValueReferencePair;
+
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
+import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.Characteristic;
+import org.eclipse.esmf.metamodel.CollectionValue;
+import org.eclipse.esmf.metamodel.Entity;
+import org.eclipse.esmf.metamodel.EntityInstance;
+import org.eclipse.esmf.metamodel.ModelElement;
+import org.eclipse.esmf.metamodel.Property;
+import org.eclipse.esmf.metamodel.Scalar;
+import org.eclipse.esmf.metamodel.ScalarValue;
+import org.eclipse.esmf.metamodel.Type;
+import org.eclipse.esmf.metamodel.characteristic.Code;
+import org.eclipse.esmf.metamodel.characteristic.Collection;
+import org.eclipse.esmf.metamodel.characteristic.Duration;
+import org.eclipse.esmf.metamodel.characteristic.Either;
+import org.eclipse.esmf.metamodel.characteristic.Enumeration;
+import org.eclipse.esmf.metamodel.characteristic.Measurement;
+import org.eclipse.esmf.metamodel.characteristic.Quantifiable;
+import org.eclipse.esmf.metamodel.characteristic.SingleEntity;
+import org.eclipse.esmf.metamodel.characteristic.SortedSet;
+import org.eclipse.esmf.metamodel.characteristic.State;
+import org.eclipse.esmf.metamodel.characteristic.StructuredValue;
+import org.eclipse.esmf.metamodel.characteristic.Trait;
+import org.eclipse.esmf.metamodel.datatype.LangString;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.ImmutableMap;
+
+import tools.jackson.databind.node.ArrayNode;
 
 public class AspectModelAasVisitor implements AspectVisitor<Environment, Context> {
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelAasVisitor.class );
@@ -263,7 +266,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       final String submodelId = aspect.urn().getUrn().toString() + "/submodel";
 
       final Submodel submodel = usedContext.getSubmodel();
-      submodel.setIdShort( aspect.getName() );
+      submodel.setIdShort( DEFAULT_MAPPER.determineIdShortFor( aspect ) );
       submodel.setId( submodelId );
       submodel.setSemanticId( buildAspectReferenceToGlobalReference( aspect ) );
       submodel.setSupplementalSemanticIds( buildGlobalReferenceForSeeReferences( aspect ) );
@@ -316,14 +319,13 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
          // property will be excluded from generation.
          recursiveProperty.remove( property );
          if ( property.isOptional() ) {
-            LOG.warn(
-                  String.format( "Having a recursive Property %s which is optional. Will be excluded from AAS mapping.", property.urn() ) );
+            LOG.warn( "Having a recursive Property {} which is optional. Will be excluded from AAS mapping.", property.urn() );
             return defaultResultForProperty;
          } else {
-            LOG.error( String.format(
-                  "Having a recursive property: %s which is not optional is not valid. Check the model. Property will be excluded from "
+            LOG.error(
+                  "Having a recursive property: {} which is not optional is not valid. Check the model. Property will be excluded from "
                         + "AAS mapping.",
-                  property.urn() ) );
+                  property.urn() );
          }
          return defaultResultForProperty;
       }
@@ -349,7 +351,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       }
 
       if ( !property.getPayloadName().isEmpty() ) {
-         element.setIdShort( property.getPayloadName() );
+         element.setIdShort( DEFAULT_MAPPER.determineIdShortFor( property, true ) );
       }
 
       recursiveProperty.remove( property );
@@ -376,7 +378,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
          final Context context ) {
       final List<SubmodelElement> submodelElements = visitProperties( entity.getAllProperties(), context );
       return new DefaultSubmodelElementCollection.Builder()
-            .idShort( entity.getName() )
+            .idShort( DEFAULT_MAPPER.determineIdShortFor( entity ) )
             .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
             .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
             .value( submodelElements )
@@ -391,7 +393,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
             .displayName( LangStringMapper.NAME.map( operation.getPreferredNames() ) )
             .description( LangStringMapper.TEXT.map( operation.getDescriptions() ) )
             .semanticId( buildReferenceToOperation( operation ) )
-            .idShort( operation.getName() )
+            .idShort( DEFAULT_MAPPER.determineIdShortFor( operation ) )
             .inputVariables( operation.getInput().stream()
                   .map( input -> mapOperationVariable( input, context ) )
                   .collect( Collectors.toList() ) )
@@ -494,7 +496,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       if ( !context.hasEnvironmentConceptDescription( property.urn().toString() ) ) {
          final ConceptDescription conceptDescription =
                new DefaultConceptDescription.Builder()
-                     .idShort( property.getName() )
+                     .idShort( DEFAULT_MAPPER.determineIdShortFor( property ) )
                      .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
                      .embeddedDataSpecifications( extractEmbeddedDataSpecification( property ) )
                      .id( DEFAULT_MAPPER.determineIdentifierFor( property ) )
@@ -508,7 +510,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       if ( !context.hasEnvironmentConceptDescription( operation.urn().toString() ) ) {
          final ConceptDescription conceptDescription =
                new DefaultConceptDescription.Builder()
-                     .idShort( operation.getName() )
+                     .idShort( DEFAULT_MAPPER.determineIdShortFor( operation ) )
                      .displayName( LangStringMapper.NAME.map( operation.getPreferredNames() ) )
                      .embeddedDataSpecifications( extractEmbeddedDataSpecification( operation ) )
                      .id( DEFAULT_MAPPER.determineIdentifierFor( operation ) )
@@ -522,7 +524,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       if ( !context.hasEnvironmentConceptDescription( aspect.urn().toString() ) ) {
          final ConceptDescription conceptDescription =
                new DefaultConceptDescription.Builder()
-                     .idShort( aspect.getName() )
+                     .idShort( DEFAULT_MAPPER.determineIdShortFor( aspect ) )
                      .displayName( LangStringMapper.NAME.map( aspect.getPreferredNames() ) )
                      .embeddedDataSpecifications( extractEmbeddedDataSpecification( aspect ) )
                      .id( DEFAULT_MAPPER.determineIdentifierFor( aspect ) )
@@ -659,7 +661,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
    private <T extends Collection> Environment visitCollectionProperty( final T collection, final Context context ) {
       final String listIdShort = collection.getDataType()
             .filter( Entity.class::isInstance )
-            .map( ModelElement::getName )
+            .map( DEFAULT_MAPPER::determineIdShortFor )
             .orElse( null );
       final Optional<Reference> semanticIdListElement = collection.getDataType()
             .filter( Entity.class::isInstance )
@@ -668,7 +670,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
 
       final SubmodelElementBuilder defaultBuilder = property -> {
          final DefaultSubmodelElementList.Builder submodelBuilder = new DefaultSubmodelElementList.Builder()
-               .idShort( listIdShort != null ? listIdShort : property.getName() )
+               .idShort( listIdShort != null ? listIdShort : DEFAULT_MAPPER.determineIdShortFor( property ) )
                .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
                .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
                .value( List.of( decideOnMapping( property, context ) ) )
@@ -697,7 +699,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
                            final List<SubmodelElement> values = getValues( collection, property, context, arrayNode );
                            final String propertyUrn = DEFAULT_MAPPER.determineIdentifierFor( property );
                            return new DefaultSubmodelElementList.Builder()
-                                 .idShort( listIdShort != null ? listIdShort : property.getName() )
+                                 .idShort( listIdShort != null ? listIdShort : DEFAULT_MAPPER.determineIdShortFor( property ) )
                                  .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
                                  .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
                                  .value( values )
@@ -754,7 +756,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
 
       final SubmodelElementList eitherSubModelElements =
             new DefaultSubmodelElementList.Builder()
-                  .idShort( either.getName() )
+                  .idShort( DEFAULT_MAPPER.determineIdShortFor( either ) )
                   .typeValueListElement( AasSubmodelElements.DATA_ELEMENT )
                   .displayName( LangStringMapper.NAME.map( either.getPreferredNames() ) )
                   .description( LangStringMapper.TEXT.map( either.getDescriptions() ) )

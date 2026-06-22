@@ -20,8 +20,8 @@ import java.util.Locale;
 import org.eclipse.esmf.aspectmodel.generator.GenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.JsonGenerationConfig;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.soabase.recordbuilder.core.RecordBuilder;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * A {@link GenerationConfig} for OpenAPI schema. Note that for providing additional properties, you

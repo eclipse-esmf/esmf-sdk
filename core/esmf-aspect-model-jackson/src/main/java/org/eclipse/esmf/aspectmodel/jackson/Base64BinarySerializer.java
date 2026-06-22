@@ -13,25 +13,18 @@
 
 package org.eclipse.esmf.aspectmodel.jackson;
 
-import java.io.IOException;
-
 import org.eclipse.esmf.metamodel.datatype.SammType;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
 
-public class Base64BinarySerializer extends StdSerializer<byte[]> {
-   private static final long serialVersionUID = 2028371627433200656L;
+public class Base64BinarySerializer extends ValueSerializer<byte[]> {
    public static final Base64BinarySerializer INSTANCE = new Base64BinarySerializer();
 
-   private Base64BinarySerializer() {
-      super( byte[].class );
-   }
-
    @Override
-   public void serialize( final byte[] value, final JsonGenerator generator, final SerializerProvider provider )
-         throws IOException {
+   public void serialize( final byte[] value, final JsonGenerator generator, final SerializationContext context ) throws JacksonException {
       generator.writeString( SammType.BASE64_BINARY.serialize( value ) );
    }
 }
