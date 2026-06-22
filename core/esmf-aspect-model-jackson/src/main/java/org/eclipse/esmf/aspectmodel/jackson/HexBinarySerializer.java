@@ -13,25 +13,18 @@
 
 package org.eclipse.esmf.aspectmodel.jackson;
 
-import java.io.IOException;
-
 import org.eclipse.esmf.metamodel.datatype.SammType;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
 
-public class HexBinarySerializer extends StdSerializer<byte[]> {
-   private static final long serialVersionUID = 6817718561520140283L;
+public class HexBinarySerializer extends ValueSerializer<byte[]> {
    public static final HexBinarySerializer INSTANCE = new HexBinarySerializer();
 
-   private HexBinarySerializer() {
-      super( byte[].class );
-   }
-
    @Override
-   public void serialize( final byte[] value, final JsonGenerator generator, final SerializerProvider provider )
-         throws IOException {
+   public void serialize( final byte[] value, final JsonGenerator generator, final SerializationContext context ) throws JacksonException {
       generator.writeString( SammType.HEX_BINARY.serialize( value ) );
    }
 }

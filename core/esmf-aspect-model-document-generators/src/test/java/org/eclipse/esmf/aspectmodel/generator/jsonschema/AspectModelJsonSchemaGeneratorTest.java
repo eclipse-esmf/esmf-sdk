@@ -17,10 +17,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import org.assertj.core.data.Percentage;
 
 import org.eclipse.esmf.aspectmodel.generator.json.AspectModelJsonPayloadGenerator;
 import org.eclipse.esmf.metamodel.Aspect;
@@ -29,13 +30,13 @@ import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
 import org.eclipse.esmf.test.TestResources;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
@@ -43,21 +44,31 @@ import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
-import org.assertj.core.data.Percentage;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
+
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
 
 class AspectModelJsonSchemaGeneratorTest {
    private final ObjectMapper objectMapper = new ObjectMapper();
+   final com.fasterxml.jackson.databind.ObjectMapper legacyObjectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
    final Configuration config = Configuration.defaultConfiguration().addOptions( Option.SUPPRESS_EXCEPTIONS );
+
+   private com.fasterxml.jackson.databind.JsonNode toLegacyJsonNode( final JsonNode node ) {
+      final String jsonString = objectMapper.writeValueAsString( node );
+      try {
+         return legacyObjectMapper.readTree( jsonString );
+      } catch ( final JsonProcessingException exception ) {
+         throw new RuntimeException( exception );
+      }
+   }
 
    private JsonNode parseJson( final String json ) {
       try {
          return objectMapper.readTree( json );
-      } catch ( final JsonProcessingException e ) {
+      } catch ( final Exception e ) {
          e.printStackTrace();
          fail();
       }
@@ -68,7 +79,7 @@ class AspectModelJsonSchemaGeneratorTest {
       final ByteArrayOutputStream out = new ByteArrayOutputStream();
       try {
          objectMapper.writerWithDefaultPrettyPrinter().writeValue( out, node );
-      } catch ( final IOException e ) {
+      } catch ( final Exception e ) {
          e.printStackTrace();
          fail();
       }
@@ -91,8 +102,8 @@ class AspectModelJsonSchemaGeneratorTest {
    private JsonSchema parseSchema( final JsonNode jsonSchema ) {
       final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
       try {
-         return factory.getJsonSchema( jsonSchema );
-      } catch ( final ProcessingException e ) {
+         return factory.getJsonSchema( toLegacyJsonNode( jsonSchema ) );
+      } catch ( final Exception e ) {
          e.printStackTrace();
          fail();
       }
@@ -101,7 +112,7 @@ class AspectModelJsonSchemaGeneratorTest {
 
    private void assertPayloadIsValid( final JsonNode schema, final JsonNode payload ) {
       try {
-         final ProcessingReport report = parseSchema( schema ).validate( payload );
+         final ProcessingReport report = parseSchema( schema ).validate( toLegacyJsonNode( payload ) );
          if ( !report.isSuccess() ) {
             System.out.println( report );
          }

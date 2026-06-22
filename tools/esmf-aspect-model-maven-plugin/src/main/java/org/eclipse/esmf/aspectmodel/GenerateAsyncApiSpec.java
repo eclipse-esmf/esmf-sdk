@@ -22,32 +22,35 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+
 import org.eclipse.esmf.aspectmodel.generator.asyncapi.AspectModelAsyncApiGenerator;
 import org.eclipse.esmf.aspectmodel.generator.asyncapi.AsyncApiSchemaArtifact;
 import org.eclipse.esmf.aspectmodel.generator.asyncapi.AsyncApiSchemaGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.asyncapi.AsyncApiSchemaGenerationConfigBuilder;
 import org.eclipse.esmf.metamodel.Aspect;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import io.vavr.control.Try;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.vavr.control.Try;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.dataformat.yaml.YAMLFactory;
+import tools.jackson.dataformat.yaml.YAMLMapper;
+import tools.jackson.dataformat.yaml.YAMLWriteFeature;
 
 @Mojo( name = GenerateAsyncApiSpec.MAVEN_GOAL,
    defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateAsyncApiSpec extends AspectModelMojo {
    public static final String MAVEN_GOAL = "generateAsyncApiSpec";
    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-   private static final ObjectMapper YAML_MAPPER = new YAMLMapper().enable( YAMLGenerator.Feature.MINIMIZE_QUOTES );
+   private static final ObjectMapper YAML_MAPPER =
+         new YAMLMapper( YAMLFactory.builder().enable( YAMLWriteFeature.MINIMIZE_QUOTES ).build() );
    private static final Logger LOG = LoggerFactory.getLogger( GenerateAsyncApiSpec.class );
 
    @Parameter( required = true )
@@ -130,7 +133,7 @@ public class GenerateAsyncApiSpec extends AspectModelMojo {
    private String jsonToYaml( final JsonNode json ) {
       try {
          return YAML_MAPPER.writeValueAsString( json );
-      } catch ( final JsonProcessingException exception ) {
+      } catch ( final Exception exception ) {
          LOG.error( "JSON could not be converted to YAML", exception );
          return json.toString();
       }

@@ -21,9 +21,8 @@ import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
 class AspectModelAsyncApiGeneratorTest {
@@ -80,7 +79,7 @@ class AspectModelAsyncApiGeneratorTest {
    }
 
    @Test
-   void testAsyncApiGeneratorWithoutApplicationIdDoesNotAddEmptyId() throws JsonProcessingException {
+   void testAsyncApiGeneratorWithoutApplicationIdDoesNotAddEmptyId() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_EVENT ).aspect();
       final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( false )

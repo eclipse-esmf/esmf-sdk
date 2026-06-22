@@ -15,7 +15,7 @@ package org.eclipse.esmf.aspectmodel.generator.json;
 
 import org.eclipse.esmf.aspectmodel.generator.JsonArtifact;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
 public class JsonPayloadArtifact extends JsonArtifact<JsonNode> {
    public JsonPayloadArtifact( final String id, final JsonNode content ) {

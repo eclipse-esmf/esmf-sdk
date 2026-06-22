@@ -15,7 +15,7 @@ package org.eclipse.esmf.aspectmodel.generator.jsonld;
 
 import org.eclipse.esmf.aspectmodel.generator.JsonArtifact;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
 public class JsonLdArtifact extends JsonArtifact<JsonNode> {
    public JsonLdArtifact( final String id, final JsonNode content ) {

@@ -19,8 +19,8 @@ import java.util.stream.Stream;
 import org.eclipse.esmf.aspectmodel.generator.JsonGenerator;
 import org.eclipse.esmf.metamodel.Aspect;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
 import org.apache.jena.riot.RDFLanguages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +52,7 @@ public class AspectModelToJsonLdGenerator extends JsonGenerator<Aspect, JsonLdGe
       final String content = stringWriter.toString();
       try {
          return Stream.of( new JsonLdArtifact( aspect().getName() + ".json", objectMapper.readTree( content ) ) );
-      } catch ( final JsonProcessingException exception ) {
+      } catch ( final JacksonException exception ) {
          LOG.error( "Could not parse JSON-LD for {}", aspect().getName() );
       }
       return Stream.empty();

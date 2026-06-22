@@ -42,10 +42,6 @@
          <artifactId>esmf-aspect-model-generator</artifactId>
       </dependency>
       <dependency>
-         <groupId>com.fasterxml.jackson.datatype</groupId>
-         <artifactId>jackson-datatype-jsr310</artifactId>
-      </dependency>
-      <dependency>
          <groupId>org.jeasy</groupId>
          <artifactId>easy-random-core</artifactId>
       </dependency>
@@ -78,7 +74,7 @@
          <artifactId>vavr</artifactId>
       </dependency>
       <dependency>
-         <groupId>com.fasterxml.jackson.dataformat</groupId>
+         <groupId>tools.jackson.dataformat</groupId>
          <artifactId>jackson-dataformat-yaml</artifactId>
       </dependency>
       <dependency>

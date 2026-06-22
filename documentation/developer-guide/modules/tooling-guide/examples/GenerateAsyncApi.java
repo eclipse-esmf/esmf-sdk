@@ -20,7 +20,7 @@ import org.eclipse.esmf.aspectmodel.generator.asyncapi.AsyncApiSchemaGenerationC
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.metamodel.AspectModel;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 // end::imports[]
 
 import java.io.File;

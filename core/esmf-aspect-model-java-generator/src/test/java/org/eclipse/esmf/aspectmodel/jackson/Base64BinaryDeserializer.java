@@ -13,18 +13,19 @@
 
 package org.eclipse.esmf.aspectmodel.jackson;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.ValueDeserializer;
 
 /*
  * Dummy Class - this exists only here to be present in the classpath during compilation tests.
  * A dependency to the module containing the real class (esmf-aspect-model-jackson) can not be
  * added due to cyclic dependencies.
  */
-public class Base64BinaryDeserializer extends JsonDeserializer<byte[]> {
+public class Base64BinaryDeserializer extends ValueDeserializer<byte[]> {
    @Override
-   public byte[] deserialize( final JsonParser p, final DeserializationContext ctxt ) {
+   public byte[] deserialize( final JsonParser parser, final DeserializationContext context ) throws JacksonException {
       throw new UnsupportedOperationException( "This is a dummy class only intended for tests" );
    }
 }

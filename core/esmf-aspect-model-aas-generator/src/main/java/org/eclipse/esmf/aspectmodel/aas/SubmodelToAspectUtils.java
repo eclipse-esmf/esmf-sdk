@@ -24,17 +24,19 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.esmf.metamodel.datatype.LangString;
-
-import com.google.common.base.CaseFormat;
 import org.eclipse.digitaltwin.aas4j.v3.model.AasSubmodelElements;
 import org.eclipse.digitaltwin.aas4j.v3.model.AbstractLangString;
 import org.eclipse.digitaltwin.aas4j.v3.model.Key;
 import org.eclipse.digitaltwin.aas4j.v3.model.KeyTypes;
 import org.eclipse.digitaltwin.aas4j.v3.model.Reference;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
+
+import org.eclipse.esmf.metamodel.datatype.LangString;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.CaseFormat;
 
 final class SubmodelToAspectUtils {
    private static final Logger LOG = LoggerFactory.getLogger( SubmodelToAspectUtils.class );
@@ -105,15 +107,15 @@ final class SubmodelToAspectUtils {
    static AasSubmodelElements submodelElementType( final SubmodelElement element ) {
       Class<?> clazz = element.getClass();
       while ( clazz != null ) {
-         for ( Class<?> iface : clazz.getInterfaces() ) {
-            final AasSubmodelElements match = findEnumForClass( iface );
-            if ( match != null ) {
-               return match;
+         for ( final Class<?> iface : clazz.getInterfaces() ) {
+            final Optional<AasSubmodelElements> match = findEnumForClass( iface );
+            if ( match.isPresent() ) {
+               return match.get();
             }
          }
-         final AasSubmodelElements match = findEnumForClass( clazz );
-         if ( match != null ) {
-            return match;
+         final Optional<AasSubmodelElements> match = findEnumForClass( clazz );
+         if ( match.isPresent() ) {
+            return match.get();
          }
          clazz = clazz.getSuperclass();
       }
@@ -125,14 +127,13 @@ final class SubmodelToAspectUtils {
       return value.replace( "/ ", "/" );
    }
 
-   private static AasSubmodelElements findEnumForClass( final Class<?> clazz ) {
+   private static Optional<AasSubmodelElements> findEnumForClass( final Class<?> clazz ) {
       final String className = clazz.getSimpleName();
       return Arrays.stream( AasSubmodelElements.values() )
             .filter( entry -> {
                final String enumClassName = CaseFormat.UPPER_UNDERSCORE.to( CaseFormat.UPPER_CAMEL, entry.toString() );
                return className.equals( enumClassName );
             } )
-            .findFirst()
-            .orElse( null );
+            .findFirst();
    }
 }
