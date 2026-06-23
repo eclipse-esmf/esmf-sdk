@@ -87,7 +87,7 @@ class TurtleCompletionServiceTest {
 
                      ex:subject ex:predicate ex:object ;
                         ex:otherPredicate ex:""",
-                  // '   '(0-2) ex:otherPredicate(3-19) ' '(20) ex:obj(21-26)
+                  // ' '(0-2) ex:otherPredicate(3-19) ' '(20) ex:obj(21-26)
                   new Position( 3, 24 ),
                   List.of( "subject", "predicate", "object", "otherPredicate" )
             ),
