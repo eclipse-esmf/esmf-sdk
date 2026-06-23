@@ -49,15 +49,10 @@ public class TurtleDefinitionService extends TurtleService {
    private Optional<Location> findPrefixDefinition( final String prefixName, final ParsedDocument parsedDocument,
          final TurtleSyntaxTree turtleSyntaxTree ) {
       final Optional<TurtleSyntaxTree.Node> prefixDefinitionNode = this.getPrefixDefinitionTokens( turtleSyntaxTree )
-            .flatMap( node -> node.children().stream() )
-            .filter( node -> {
-               if ( node instanceof final TurtleSyntaxTree.Token token ) {
-                  return ParserTokenType.PN_PREFIX.equals( token.type() )
-                        && token.content().equals( prefixName );
-               }
-               return false;
-            } )
-            .findFirst();
+            .filter( token -> ParserTokenType.PN_PREFIX.equals( token.type() )
+                  && token.content().equals( prefixName ) )
+            .findFirst()
+            .map( TurtleSyntaxTree.Node.class::cast );
       return prefixDefinitionNode.map( definition -> getLocationForLsp( parsedDocument, definition ) );
    }
 
