@@ -12,6 +12,7 @@
  */
 package org.eclipse.esmf.metamodel.vocabulary;
 
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -301,5 +302,20 @@ public class SAMMC implements RdfNamespace {
             .of( Code(), Duration(), Either(), Enumeration(), Measurement(), Quantifiable(), SingleEntity(), State(),
                   StructuredValue() );
       return Stream.of( allCollections(), allConstraints(), miscCharacteristics ).flatMap( Function.identity() );
+   }
+
+   @Override
+   public List<Resource> allResources() {
+      return List.of( RangeConstraint(), EncodingConstraint(), RegularExpressionConstraint(), LengthConstraint(), LanguageConstraint(),
+            LocaleConstraint(), StructuredValue(), Quantifiable(), Measurement(), Duration(), State(), Enumeration(), Collection(),
+            Set(), SortedSet(), List(), TimeSeries(), SingleEntity(), Code(), FixedPointConstraint(), Trait(), Either(), Timestamp(),
+            Text(), MultiLanguageText(), Language(), Locale(), Boolean(), ResourcePath(), MimeType(), UnitReference() );
+   }
+
+   @Override
+   public List<Property> allProperties() {
+      return List.of( minValue(), maxValue(), unit(), baseCharacteristic(), values(), defaultValue(), left(), right(),
+            lowerBoundDefinition(), upperBoundDefinition(), elements(), deconstructionRule(), scale(), integer(),
+            elementCharacteristic(), constraint(), languageCode(), localeCode() );
    }
 }

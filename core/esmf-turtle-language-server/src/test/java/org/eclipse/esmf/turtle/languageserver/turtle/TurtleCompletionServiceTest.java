@@ -1,27 +1,20 @@
 /*
- * Copyright (c) 2026 Robert Bosch Manufacturing Solutions GmbH
- *
- * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship.
- *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at https://mozilla.org/MPL/2.0/.
- *
- * SPDX-License-Identifier: MPL-2.0
+ * Copyright (c) 2026 Robert Bosch Manufacturing Solutions GmbH, Germany. All rights reserved.
  */
 
-package org.eclipse.esmf.turtle.languageserver;
+package org.eclipse.esmf.turtle.languageserver.turtle;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TreeSitterTurtleParserService;
-import org.eclipse.esmf.turtle.languageserver.turtle.TurtleCompletionService;
 
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionParams;
@@ -46,62 +39,36 @@ class TurtleCompletionServiceTest {
    static Stream<Arguments> completionScenarios() {
       return Stream.of(
             Arguments.of(
-                  "typing partial object in new incomplete triple – names collected from whole document",
+                  "typing a known SAMM prefix returns vocabulary completions",
                   """
-                     @prefix ex: <http://example.org/> .
+                     @prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.2.0#> .
 
-                     ex:subject ex:predicate ex:object .
-                     ex:newSubject ex:predicate ex:obj""",
-                  // ex:newSubject(0-12) ' '(13) ex:predicate(14-25) ' '(26) ex:obj(27-32)
-                  new Position( 3, 33 ), // cursor after 'j'; char-1=32 is within ex:obj [27,33)
-                  List.of( "subject", "predicate", "object", "newSubject", "obj" )
+                     samm-e:""",
+                  new Position( 2, 6 ),
+                  List.of( "TimeSeriesEntity", "Point3d", "FileResource", "Quantity", "resource", "mimeType", "timestamp", "value",
+                        "x", "y", "z", "unit" )
             ),
             Arguments.of(
-                  "multiple prefixes active – only names for the typed prefix are returned",
+                  "typing inside the local-name part for a SAMM prefix still resolves by namespace",
                   """
-                     @prefix ex: <http://example.org/> .
-                     @prefix ns: <http://namespace.org/> .
+                     @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+                     @prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.2.0#> .
 
-                     ex:subject ns:predicate ex:object .
-                     ex:subject ns:predicate ns:""",
-                  // ex:subject(0-9) ' '(10) ns:predicate(11-22) ' '(23) ns:(24-27)
-                  new Position( 4, 27 ), // cursor after 'ns:'
-                  List.of( "predicate" )
+                     samm-e:Tim""",
+                  new Position( 3, 8 ),
+                  List.of( "TimeSeriesEntity", "Point3d", "FileResource", "Quantity", "resource", "mimeType", "timestamp", "value",
+                        "x", "y", "z", "unit" )
             ),
             Arguments.of(
-                  "deduplication – repeated local names across triples appear only once",
+                  "typing partial object with default prefix returns local names from the document",
                   """
-                     @prefix ex: <http://example.org/> .
+                     @prefix : <http://example.org/> .
 
-                     ex:subject ex:predicate ex:object .
-                     ex:subject ex:otherPredicate ex:object .
-                     ex:subject ex:predicate ex:obj""",
-                  // ex:subject(0-9) ' '(10) ex:predicate(11-22) ' '(23) ex:obj(24-29)
-                  new Position( 4, 30 ), // cursor after 'j'; char-1=29 is within ex:obj [24,30)
+                     :subject :predicate :object .
+                     :subject :otherPredicate :object .
+                     :subject :predicate :obj""",
+                  new Position( 4, 21 ),
                   List.of( "subject", "predicate", "object", "otherPredicate", "obj" )
-            ),
-            Arguments.of(
-                  "typing partial object in semicolon-continued property list",
-                  """
-                     @prefix ex: <http://example.org/> .
-
-                     ex:subject ex:predicate ex:object ;
-                        ex:otherPredicate ex:""",
-                  // ' '(0-2) ex:otherPredicate(3-19) ' '(20) ex:obj(21-26)
-                  new Position( 3, 24 ),
-                  List.of( "subject", "predicate", "object", "otherPredicate" )
-            ),
-            Arguments.of(
-                  "typing a fresh prefixed name on a new line at the end of the document (incomplete subject)",
-                  """
-                     @prefix ex: <http://example.org/> .
-
-                     ex:subject ex:predicate ex:object .
-                     ex:obj""",
-                  // ex:obj is the start of a new, still incomplete statement -> tree-sitter wraps it in an
-                  // ERROR node; the nested prefixed_name must still be discoverable for completion.
-                  new Position( 3, 3 ), // cursor after 'j'; char-1=5 is within ex:obj [0,6)
-                  List.of( "subject", "predicate", "object", "obj" )
             )
       );
    }
@@ -124,6 +91,14 @@ class TurtleCompletionServiceTest {
 
    static Stream<Arguments> noCompletionScenarios() {
       return Stream.of(
+            Arguments.of(
+                  "typing an unknown non-SAMM prefix",
+                  """
+                     @prefix ex: <http://example.org/> .
+
+                     ex:""",
+                  new Position( 2, 3 )
+            ),
             Arguments.of(
                   "cursor inside a string literal being typed",
                   """
@@ -171,5 +146,34 @@ class TurtleCompletionServiceTest {
       final ParsedDocument parsedDocument = parserService.apply( document );
       final CompletionParams params = new CompletionParams( new TextDocumentIdentifier( "test.ttl" ), position );
       assertThat( completionService.complete( parsedDocument, params ) ).isEmpty();
+   }
+
+   private static List<String> expectedLabelsForPrefix( final String prefix ) {
+      return SammNs.sammNamespaces()
+            .filter( namespace -> ( namespace.getShortForm() + ":" ).equals( prefix ) )
+            .findFirst()
+            .stream()
+            .flatMap( TurtleCompletionServiceTest::namespaceLabels )
+            .distinct()
+            .toList();
+   }
+
+   private static Stream<String> namespaceLabels( final RdfNamespace namespace ) {
+      return Stream.of( "allResources", "allProperties" )
+            .flatMap( methodName -> invokeCollectionMethod( namespace, methodName ).stream() )
+            .map( Object::toString )
+            .map( iri -> iri.substring( iri.lastIndexOf( '#' ) + 1 ) );
+   }
+
+   private static Collection<?> invokeCollectionMethod( final RdfNamespace namespace, final String methodName ) {
+      try {
+         final Object result = namespace.getClass().getMethod( methodName ).invoke( namespace );
+         if ( result instanceof Collection<?> collection ) {
+            return collection;
+         }
+      } catch ( final ReflectiveOperationException ignored ) {
+         // Older vocabulary variants may not expose these methods for tests.
+      }
+      return List.of();
    }
 }

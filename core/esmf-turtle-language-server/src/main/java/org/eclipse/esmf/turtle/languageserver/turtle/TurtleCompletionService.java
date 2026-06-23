@@ -4,9 +4,13 @@
 
 package org.eclipse.esmf.turtle.languageserver.turtle;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.treesitterturtle.ParserTokenType;
 import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
@@ -16,6 +20,13 @@ import org.eclipse.lsp4j.CompletionParams;
 import org.eclipse.lsp4j.Position;
 
 public class TurtleCompletionService extends TurtleService {
+   static final Map<String, List<CompletionItem>> SAMM_PREFIXES_COMPLETION_MAP = SammNs.sammNamespaces().map( n -> {
+      final String prefix = n.getShortForm() + ":";
+      final List<CompletionItem> elements = Stream.of( n.allResources(), n.allProperties() )
+            .flatMap( Collection::stream )
+            .map( r -> new CompletionItem( r.getLocalName() ) ).toList();
+      return Map.entry( prefix, elements );
+   } ).collect( Collectors.toMap( Map.Entry::getKey, Map.Entry::getValue ) );
 
    public List<CompletionItem> complete( final ParsedDocument parsedDocument, final CompletionParams completionParams ) {
       final Position position = completionParams.getPosition();
@@ -46,17 +57,21 @@ public class TurtleCompletionService extends TurtleService {
             return List.of();
          }
       }
-
       final String prefix = namespaceAtCursor.content();
-      return parsedDocument.turtleSyntaxTree().nodes()
-            .filter( t -> ParserTokenType.PREFIXED_NAME.equals( t.type() ) )
-            .filter( n -> isPrefixedBy( n, prefix ) )
-            .flatMap( n -> n.children().stream() )
-            .filter( t -> ParserTokenType.PN_LOCAL.equals( t.type() ) )
-            .filter( TurtleSyntaxTree.Token.class::isInstance )
-            .map( TurtleSyntaxTree.Token.class::cast )
-            .map( TurtleSyntaxTree.Token::content )
-            .map( CompletionItem::new )
-            .collect( Collectors.toSet() ).stream().toList();
+
+      if ( ":".equals( prefix ) ) {
+         return parsedDocument.turtleSyntaxTree().nodes()
+               .filter( t -> ParserTokenType.PREFIXED_NAME.equals( t.type() ) )
+               .filter( n -> isPrefixedBy( n, prefix ) )
+               .flatMap( n -> n.children().stream() )
+               .filter( t -> ParserTokenType.PN_LOCAL.equals( t.type() ) )
+               .filter( TurtleSyntaxTree.Token.class::isInstance )
+               .map( TurtleSyntaxTree.Token.class::cast )
+               .map( TurtleSyntaxTree.Token::content )
+               .map( CompletionItem::new )
+               .collect( Collectors.toSet() ).stream().toList();
+      }
+
+      return SAMM_PREFIXES_COMPLETION_MAP.getOrDefault( prefix, List.of() );
    }
 }
