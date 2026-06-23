@@ -17,6 +17,7 @@ import static org.eclipse.esmf.aspectmodel.StreamUtil.asSortedMap;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.eclipse.esmf.treesitterturtle.ParserTokenType;
 import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
@@ -39,6 +40,14 @@ public abstract class TurtleService {
             .anyMatch( TYPE_DEFINITION_PREDICATES::contains );
    }
 
+   protected boolean isPrefixedBy( final TurtleSyntaxTree.Node prefixedName, final String prefix ) {
+      return prefixedName.children().stream()
+            .filter( TurtleSyntaxTree.Token.class::isInstance )
+            .map( TurtleSyntaxTree.Token.class::cast )
+            .filter( n -> ParserTokenType.NAMESPACE.equals( n.type() ) )
+            .anyMatch( n -> n.content().equals( prefix ) );
+   }
+
    protected Map<TurtleSyntaxTree.Token, TurtleSyntaxTree.Token> predicateObjectMapForTriple( final TurtleSyntaxTree.Token triple ) {
       return triple.childWithType( ParserTokenType.PROPERTY_LIST ).stream()
             .flatMap( propertyList -> propertyList.children().stream()
@@ -51,5 +60,17 @@ public abstract class TurtleService {
                         .map( TurtleSyntaxTree.Node::asToken ).stream()
                         .map( objectToken -> Map.entry( predicate, objectToken ) ) ) )
             .collect( asSortedMap() );
+   }
+
+   protected Stream<TurtleSyntaxTree.Token> getPrefixDefinitionTokens( final TurtleSyntaxTree turtleSyntaxTree ) {
+      return turtleSyntaxTree.nodes()
+            .filter( node -> ParserTokenType.DIRECTIVE.equals( node.type() ) )
+            .flatMap( node -> node.children().stream() )
+            .filter( node -> ParserTokenType.PREFIX_ID.equals( node.type() ) )
+            .flatMap( node -> node.children().stream() )
+            .filter( node -> ParserTokenType.NAMESPACE.equals( node.type() ) )
+            .flatMap( node -> node.children().stream() )
+            .filter( TurtleSyntaxTree.Token.class::isInstance )
+            .map( TurtleSyntaxTree.Token.class::cast );
    }
 }

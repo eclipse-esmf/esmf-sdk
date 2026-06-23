@@ -48,12 +48,7 @@ public class TurtleDefinitionService extends TurtleService {
 
    private Optional<Location> findPrefixDefinition( final String prefixName, final ParsedDocument parsedDocument,
          final TurtleSyntaxTree turtleSyntaxTree ) {
-      final Optional<TurtleSyntaxTree.Node> prefixDefinitionNode = turtleSyntaxTree.nodes()
-            .filter( node -> ParserTokenType.DIRECTIVE.equals( node.type() ) )
-            .flatMap( node -> node.children().stream() )
-            .filter( node -> ParserTokenType.PREFIX_ID.equals( node.type() ) )
-            .flatMap( node -> node.children().stream() )
-            .filter( node -> ParserTokenType.NAMESPACE.equals( node.type() ) )
+      final Optional<TurtleSyntaxTree.Node> prefixDefinitionNode = this.getPrefixDefinitionTokens( turtleSyntaxTree )
             .flatMap( node -> node.children().stream() )
             .filter( node -> {
                if ( node instanceof final TurtleSyntaxTree.Token token ) {

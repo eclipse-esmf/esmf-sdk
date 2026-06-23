@@ -18,6 +18,7 @@ import java.net.InetSocketAddress;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.Channels;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
@@ -29,6 +30,7 @@ import org.eclipse.esmf.turtle.languageserver.lsp.text.TurtleTextDocumentService
 import org.eclipse.esmf.turtle.languageserver.lsp.workspace.TurtleWorkspaceService;
 import org.eclipse.esmf.turtle.languageserver.structure.TurtleTokenService;
 
+import org.eclipse.lsp4j.CompletionOptions;
 import org.eclipse.lsp4j.DocumentSymbolOptions;
 import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.InitializeResult;
@@ -51,6 +53,7 @@ public class TurtleLanguageServer implements LanguageServer, LanguageClientAware
    // R=18, D=4, F=6
    public static final int DEFAULT_PORT = 1846;
 
+   private static final List<String> COMPLETION_TRIGGER_SYMBOLS = List.of( ":" );
    private static final Logger LOG = LoggerFactory.getLogger( TurtleLanguageServer.class );
    private static volatile boolean serverRunning = true;
    private final TurtleTextDocumentService textDocumentService;
@@ -70,6 +73,7 @@ public class TurtleLanguageServer implements LanguageServer, LanguageClientAware
       syncOptions.setSave( new SaveOptions( true ) );
       capabilities.setTextDocumentSync( syncOptions );
       capabilities.setDefinitionProvider( true );
+      capabilities.setCompletionProvider( new CompletionOptions( false, COMPLETION_TRIGGER_SYMBOLS ) );
       capabilities.setSemanticTokensProvider(
             new SemanticTokensWithRegistrationOptions( TurtleTokenService.SUPPORTED_TOKEN_TYPES, true, false ) );
       capabilities.setDocumentSymbolProvider( new DocumentSymbolOptions( "Turtle Document Symbols" ) );
