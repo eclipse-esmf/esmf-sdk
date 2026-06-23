@@ -26,7 +26,9 @@ import org.apache.jena.rdf.model.RDFNode;
  * @param allowedValue the allowed value
  * @param actualValue the encountered value
  */
-public record EqualsViolation( EvaluationContext context, Property otherProperty, RDFNode allowedValue, RDFNode actualValue )
+public record EqualsViolation(
+      EvaluationContext context, Property otherProperty, RDFNode allowedValue, RDFNode actualValue
+)
       implements Violation {
    public static final String ERROR_CODE = "ERR_EQUALS";
 

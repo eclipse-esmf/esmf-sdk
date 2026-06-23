@@ -65,8 +65,8 @@ public class TestContext {
       }
 
       final Map<QualifiedName, ByteArrayOutputStream> outputs = new LinkedHashMap<>();
-      generators.forEach( generator ->
-            generator.generate( name -> outputs.computeIfAbsent( name, name2 -> new ByteArrayOutputStream() ) ) );
+      generators
+            .forEach( generator -> generator.generate( name -> outputs.computeIfAbsent( name, name2 -> new ByteArrayOutputStream() ) ) );
 
       final Map<QualifiedName, String> sources = new LinkedHashMap<>();
       final List<QualifiedName> loadOrder = new ArrayList<>();
@@ -79,9 +79,9 @@ public class TestContext {
          writeFile( className.getClassName(), classContent, subFolder );
       }
 
-      final List<String> referencedClasses = generators.stream().flatMap( generator ->
-                  Stream.concat( generator.getConfig().importTracker().getUsedImports().stream(),
-                        generator.getConfig().importTracker().getUsedStaticImports().stream() ) )
+      final List<String> referencedClasses = generators.stream()
+            .flatMap( generator -> Stream.concat( generator.getConfig().importTracker().getUsedImports().stream(),
+                  generator.getConfig().importTracker().getUsedStaticImports().stream() ) )
             .collect( Collectors.toList() );
 
       return new GeneratedCodeAndClasses( JavaCompiler.compile( loadOrder, sources, referencedClasses ).compilationUnits(), sources );

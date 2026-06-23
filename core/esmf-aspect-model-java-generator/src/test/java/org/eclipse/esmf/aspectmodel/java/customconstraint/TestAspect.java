@@ -17,22 +17,28 @@ import org.eclipse.esmf.metamodel.BoundDefinition;
 
 public class TestAspect {
 
-   @DoubleMin( value = "5", boundDefinition = BoundDefinition.AT_LEAST )
+   @DoubleMin( value = "5",
+      boundDefinition = BoundDefinition.AT_LEAST )
    private final double testMinDouble;
 
-   @DoubleMax( value = "10", boundDefinition = BoundDefinition.LESS_THAN )
+   @DoubleMax( value = "10",
+      boundDefinition = BoundDefinition.LESS_THAN )
    private final double testMaxDouble;
 
-   @FloatMin( value = "1.5", boundDefinition = BoundDefinition.GREATER_THAN )
+   @FloatMin( value = "1.5",
+      boundDefinition = BoundDefinition.GREATER_THAN )
    private final float testMinFloat;
 
-   @FloatMax( value = "5.6", boundDefinition = BoundDefinition.AT_MOST )
+   @FloatMax( value = "5.6",
+      boundDefinition = BoundDefinition.AT_MOST )
    private final float testMaxFloat;
 
-   @IntegerMin( value = 5, boundDefinition = BoundDefinition.AT_LEAST )
+   @IntegerMin( value = 5,
+      boundDefinition = BoundDefinition.AT_LEAST )
    private final int testMinInt;
 
-   @IntegerMax( value = 10, boundDefinition = BoundDefinition.AT_MOST )
+   @IntegerMax( value = 10,
+      boundDefinition = BoundDefinition.AT_MOST )
    private final int testMaxInt;
 
    public TestAspect( final double testMinDouble, final double testMaxDouble, final float testMinFloat,

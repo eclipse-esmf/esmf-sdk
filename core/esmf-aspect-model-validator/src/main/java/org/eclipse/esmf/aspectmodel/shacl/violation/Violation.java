@@ -17,6 +17,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.jena.rdf.model.RDFNode;
+
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.parser.SmartToken;
 import org.eclipse.esmf.aspectmodel.resolver.parser.TokenRegistry;
@@ -25,15 +27,17 @@ import org.eclipse.esmf.aspectmodel.validation.CycleViolation;
 import org.eclipse.esmf.aspectmodel.validation.InvalidLexicalValueViolation;
 import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
 import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
+import org.eclipse.esmf.aspectmodel.validation.RegularExpressionConstraintViolation;
 
-import org.apache.jena.rdf.model.RDFNode;
+import org.jspecify.annotations.Nullable;
 
 /**
- * Represents a single violation raised by one or more SHACL shapes against an RDF model.
- * A human-readable representation of the violation is available via {@link #message()} while details about the context
- * in which the violation occurred (such as offending model element, RDF statements and the SHACL shape that raised the
- * violation) are available via {@link #context()}. To handle information specific to each type of violation,
- * implement {@link Visitor} and call {@link #accept(Visitor)} on the violation(s).
+ * Represents a single violation raised by one or more SHACL shapes against an RDF model. A
+ * human-readable representation of the violation is available via {@link #message()} while details
+ * about the context in which the violation occurred (such as offending model element, RDF
+ * statements and the SHACL shape that raised the violation) are available via {@link #context()}.
+ * To handle information specific to each type of violation, implement {@link Visitor} and call
+ * {@link #accept(Visitor)} on the violation(s).
  */
 public interface Violation {
    /**
@@ -42,7 +46,8 @@ public interface Violation {
    String errorCode();
 
    /**
-    * The evaluation context providing information about the source location, context element etc. if available.
+    * The evaluation context providing information about the source location, context element etc. if
+    * available.
     *
     * @return the evalauation context if available, or null
     */
@@ -56,12 +61,13 @@ public interface Violation {
    /**
     * The RDF node this violation focusses on
     */
-   default RDFNode highlight() {
-      return context().element();
+   default @Nullable RDFNode highlight() {
+      return context() == null ? null : context().element();
    }
 
    /**
-    * The logical location of the input (e.g., {@link AspectModelFile}) the violation applies to if known
+    * The logical location of the input (e.g., {@link AspectModelFile}) the violation applies to if
+    * known
     */
    default Optional<URI> sourceLocation() {
       return Optional.ofNullable( highlight() ).map( RDFNode::asNode )
@@ -99,6 +105,10 @@ public interface Violation {
       }
 
       default T visitCycleViolation( final CycleViolation violation ) {
+         return visit( violation );
+      }
+
+      default T visitRegularExpressionConstraint( final RegularExpressionConstraintViolation violation ) {
          return visit( violation );
       }
 
@@ -227,4 +237,3 @@ public interface Violation {
       return List.of();
    }
 }
-

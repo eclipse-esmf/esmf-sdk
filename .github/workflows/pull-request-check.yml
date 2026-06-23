@@ -5,63 +5,78 @@ on:
       - main
     paths-ignore:
       - 'documentation/decisions/**'
+
+permissions: {}
+
 jobs:
   build-and-test:
     name: ${{ matrix.os }} build
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
     strategy:
       fail-fast: true
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-13]
+        os: [windows-latest, ubuntu-latest, macos-15-intel]
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Disable git autocrlf (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+
+      - name: Enable long paths for checkout (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        env:
+          GIT_CONFIG_GLOBAL: ${{ runner.temp }}\.gitconfig
+        run: |
+          git config --global core.longpaths true
+
+      - name: Checkout repository (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+        env:
+          GIT_CONFIG_GLOBAL: ${{ runner.temp }}\.gitconfig
         with:
           submodules: recursive
+          persist-credentials: false
 
-      - name: Check code style
-        if: matrix.os == 'ubuntu-latest'
-        uses: dbelyaev/action-checkstyle@e89baf0f8b488b946345b7de8e975be1e3606387 # v1.5.6
+      - name: Checkout repository (non-Windows)
+        if: matrix.os != 'windows-latest'
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: github-pr-review
-          checkstyle_config: esmf-checkstyle.xml
-          level: warning
-          fail_on_error: true
+          submodules: recursive
+          persist-credentials: false
 
       - name: Setup JDK
-        uses: graalvm/setup-graalvm@01ed653ac833fe80569f1ef9f25585ba2811baab # v1.3.3
+        uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e
         with:
-          java-version: '21.0.7'
-          distribution: 'graalvm'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          native-image-job-reports: 'true'
+          java-version: '25.0.1'
+          distribution: 'temurin'
+      - name: Set RELEASE_VERSION from Maven project.version
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version --non-recursive)"
+          echo "RELEASE_VERSION=$version" >> "$GITHUB_ENV"
+          echo "RELEASE_VERSION=$version"
+
 
       - name: Cache Maven packages
-        uses: actions/cache@v4
+        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb #v5.0.1
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Configure Pagefile (Windows)
-        if: matrix.os == 'windows-latest'
-        # Fix for "LINK : fatal error LNK1171: unable to load mspdbcore.dll (error code: 1455)":
-        # This seems to be caused by running out of memory; increasing page file
-        # size suggested here:
-        # https://github.com/actions/virtual-environments/issues/3420#issuecomment-861342418
-        uses: al-cheb/configure-pagefile-action@86589fd789a4de3e62ba628dda2cb10027b66d67 # v1.3
-        with:
-          minimum-size: 32GB
-          maximum-size: 32GB
-          disk-root: "C:"
-
-      - name: Set Swap Space (Linux)
-        if: matrix.os == 'ubuntu-latest'
-        uses: pierotofy/set-swap-space@49819abfb41bd9b44fb781159c033dba90353a7c # master
-        with:
-          swap-size-gb: 12
+      - name: Check code style
+        if: matrix.os != 'windows-latest'
+        run: |
+          mvn spotless:check
+          mvn checkstyle:check
+        shell: bash
 
       - name: Build and run tests
         run: |
@@ -69,95 +84,106 @@ jobs:
           export MAVEN_OPTS="-Xmx4096m"
           export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
           # Actual build of core SDK
-          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
-          # Build samm-cli executable jar and run integration tests
+          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+          # Build samm-cli executable jar
           unset JAVA_TOOL_OPTIONS
           mvn -B -pl tools/samm-cli clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
         shell: bash
 
-      - name: Build native image
-        if: matrix.os != 'macos-13'
+      - name: Build native image (Linux)
+        if: matrix.os == 'ubuntu-latest'
         run: |
-          export MAVEN_OPTS="-Xmx4096m"
-          # Build native binary and run integration tests
-          mvn -B -pl tools/samm-cli verify -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+          bundle="samm-cli-${RELEASE_VERSION}"
+          mkdir ${bundle}
+          curl -Lo jre.tar.gz https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.1%2B8/OpenJDK25U-jre_x64_linux_hotspot_25.0.1_8.tar.gz
+          tar -xvf jre.tar.gz
+          mv ./jdk-25.0.1+8-jre ./${bundle}/jre
+          cp tools/samm-cli/target/samm-cli-${RELEASE_VERSION}.jar ./${bundle}/
+          cp tools/samm-cli/scripts/linux/run.sh ./${bundle}/
+          chmod +x ./${bundle}/run.sh
+
+          curl -Lo warp-packer https://github.com/kirbylink/warp/releases/download/v1.3.0/linux-x64.warp-packer
+          if [ "$(sha256sum warp-packer | cut -d' ' -f1)" != "add6f937db8b9207d1bb81a900ef609f41875f07c6c8b2d596bfc134c8f285ff" ]; then
+            echo "Warp packer checksum does not match"
+            exit 1
+          fi
+          chmod +x warp-packer
+
+          ./warp-packer pack --arch linux-x64 --input-dir ${bundle} --exec run.sh --output samm --prefix samm-cli-${RELEASE_VERSION}
+          chmod a+x samm
+        shell: bash
+
+      - name: Build native image (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          bundle="samm-cli-${RELEASE_VERSION}"
+          mkdir ${bundle}
+          curl -Lo jre.zip https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.1%2B8/OpenJDK25U-jre_x64_windows_hotspot_25.0.1_8.zip
+          7z x jre.zip
+          mv ./jdk-25.0.1+8-jre ./${bundle}/jre
+          cp tools/samm-cli/target/samm-cli-${RELEASE_VERSION}.jar ./${bundle}/
+          cp tools/samm-cli/scripts/windows/run.bat ./${bundle}/
+
+          curl -Lo warp-packer.exe https://github.com/kirbylink/warp/releases/download/v1.3.0/windows-x64.warp-packer.exe
+          if [ "$(sha256sum warp-packer.exe | cut -d' ' -f1)" != "483726e0eb10a43167c03c8e4f27a2901741affd245e5ec8ed45509f9dcd7a8a" ]; then
+            echo "Warp packer checksum does not match"
+            exit 1
+          fi
+
+          ./warp-packer.exe pack --arch windows-x64 --input-dir ${bundle} --exec run.bat --output samm.exe --prefix samm-cli-${RELEASE_VERSION}
         shell: bash
 
       - name: Build native image (Mac)
-        if: matrix.os == 'macos-13'
+        if: matrix.os == 'macos-15-intel'
         run: |
-          bundle="samm-bundle-DEV-SNAPSHOT-$(date +%s)"
+          bundle="samm-cli-${RELEASE_VERSION}"
           mkdir ${bundle}
-          curl -Lo jre.tar.gz https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.7%2B6/OpenJDK21U-jre_x64_mac_hotspot_21.0.7_6.tar.gz
+          curl -Lo jre.tar.gz https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.1%2B8/OpenJDK25U-jre_x64_mac_hotspot_25.0.1_8.tar.gz
           tar -xvf jre.tar.gz
-          cp -r ./jdk-21.0.7+6-jre/Contents/Home ./${bundle}/jre
-          cp tools/samm-cli/target/samm-cli-DEV-SNAPSHOT.jar ./${bundle}/
-
-          cat <<EOF > ./${bundle}/run.sh
-          #!/usr/bin/env bash
-
-          HERE=\${BASH_SOURCE%/*}
-
-          "\$HERE/jre/bin/java" -jar "\$HERE/samm-cli-DEV-SNAPSHOT.jar" "\$@"
-          EOF
+          mv ./jdk-25.0.1+8-jre ./${bundle}/jre
+          cp tools/samm-cli/target/samm-cli-${RELEASE_VERSION}.jar ./${bundle}/
+          cp tools/samm-cli/scripts/macos/run.sh ./${bundle}/
           chmod +x ./${bundle}/run.sh
 
-          curl -Lo warp-packer https://github.com/dgiagio/warp/releases/download/v0.3.0/macos-x64.warp-packer
+          curl -Lo warp-packer https://github.com/kirbylink/warp/releases/download/v1.3.0/macos-x64.warp-packer
+          if [ "$(shasum -a 256 warp-packer | cut -d' ' -f1)" != "311bd238d087ea92f486d3d754a0f11826d9bd49d6f8ae849e5d6f6089a2e9c9" ]; then
+            echo "Warp packer checksum does not match"
+            exit 1
+          fi
           chmod +x warp-packer
-          ./warp-packer --arch macos-x64 --input_dir ${bundle} --exec run.sh --output samm
-          chmod +x samm
+          xattr -d com.apple.quarantine warp-packer || true
+
+          ./warp-packer pack --arch macos-x64 --input-dir ${bundle} --exec run.sh --output samm --prefix samm-cli-${RELEASE_VERSION}
+          chmod a+x samm
         shell: bash
-
-      - name: Create convenience batch file
-        if: matrix.os == 'windows-latest'
-        run: |
-          echo "start cmd /k samm.exe help" > tools/samm-cli/target/start-samm-cli.bat
-        shell: bash
-
-      - name: Switch to Temurin JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '21'
-          overwrite-settings: false
-
-      - name: Test executable jar on Temurin
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          cd tools/samm-cli
-          mvn -B -Denforcer.skip -Dskip.maven.surefire failsafe:integration-test -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
 
       - name: Upload executable jar
         # We only need one OS job to upload the jar
         if: matrix.os == 'ubuntu-latest'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f #v6.0.0
         with:
           name: samm-cli-jar
           path: tools/samm-cli/target/samm-cli-*.jar
 
       - name: Upload binary (Windows)
         if: matrix.os == 'windows-latest'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f #v6.0.0
         with:
           name: samm-cli-binary-${{ matrix.os }}
           path: |
-            tools/samm-cli/target/samm.exe
-            tools/samm-cli/target/*.dll
-            tools/samm-cli/target/*.bat
-            tools/samm-cli/target/lib/
+            samm.exe
 
       - name: Upload binary (Linux)
         if: matrix.os == 'ubuntu-latest'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f #v6.0.0
         with:
           name: samm-cli-binary-${{ matrix.os }}
           path: |
-            tools/samm-cli/target/samm
-            tools/samm-cli/target/*.so
+            samm
 
       - name: Upload binary (Mac)
-        if: matrix.os == 'macos-13'
-        uses: actions/upload-artifact@v4
+        if: matrix.os == 'macos-15-intel'
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f #v6.0.0
         with:
           name: samm-cli-binary-${{ matrix.os }}
           path: |

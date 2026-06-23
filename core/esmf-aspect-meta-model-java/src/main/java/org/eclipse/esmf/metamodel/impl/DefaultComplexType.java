@@ -37,8 +37,7 @@ public class DefaultComplexType extends ModelElementImpl implements ComplexType 
          final List<? extends Property> properties,
          @SuppressWarnings( "checkstyle:ParameterName" ) final Optional<ComplexType> extends_,
          final List<AspectModelUrn> extendingElements,
-         final ModelElementFactory loadedElements
-   ) {
+         final ModelElementFactory loadedElements ) {
       super( metaModelBaseAttributes );
       this.properties = new ArrayList<>( properties );
       this.extends_ = extends_;

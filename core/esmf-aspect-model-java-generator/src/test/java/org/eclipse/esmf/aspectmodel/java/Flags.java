@@ -19,8 +19,8 @@ package org.eclipse.esmf.aspectmodel.java;
 public class Flags {
    /**
     * In order to ease debugging of unit tests that generate code, run the corresponding JVM with
-    * -Dorg.eclipse.esmf.javacompiler.writesources=true
-    * This will write the generated sources into files in src/test/java.
+    * -Dorg.eclipse.esmf.javacompiler.writesources=true This will write the generated sources into
+    * files in src/test/java.
     */
    public static final String WRITE_SOURCES_PROPERTY = "org.eclipse.esmf.javacompiler.writesources";
 
@@ -29,6 +29,5 @@ public class Flags {
     */
    public static final String RUN_PERFORMANCE_TEST = "org.eclipse.esmf.javacompiler.performancetest";
 
-   private Flags() {
-   }
+   private Flags() {}
 }

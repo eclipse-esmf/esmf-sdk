@@ -28,29 +28,28 @@ import org.apache.commons.io.FileUtils;
 import picocli.CommandLine;
 
 @CommandLine.Command(
-      name = AspectToHtmlCommand.COMMAND_NAME,
-      description = "Generate HTML documentation for an Aspect Model",
-      descriptionHeading = "%n@|bold Description|@:%n%n",
-      parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n"
-)
+   name = AspectToHtmlCommand.COMMAND_NAME,
+   description = "Generate HTML documentation for an Aspect Model",
+   descriptionHeading = "%n@|bold Description|@:%n%n",
+   parameterListHeading = "%n@|bold Parameters|@:%n",
+   optionListHeading = "%n@|bold Options|@:%n" )
 public class AspectToHtmlCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "html";
 
    @CommandLine.Option(
-         names = { "--output", "-o" },
-         description = "Output file path (default: stdout)" )
+      names = { "--output", "-o" },
+      description = "Output file path (default: stdout)" )
    private String outputFilePath = "-";
 
    @CommandLine.Option(
-         names = { "--css", "-c" },
-         description = "CSS file with custom styles to be included in the generated HTML documentation" )
+      names = { "--css", "-c" },
+      description = "CSS file with custom styles to be included in the generated HTML documentation" )
    private String customCssFile;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--language", "-l" },
-         description = "The language from the model for which the html should be generated (default: en)" )
+      names = { "--language", "-l" },
+      description = "The language from the model for which the html should be generated (default: en)" )
    private String language = "en";
 
    @CommandLine.ParentCommand
@@ -58,8 +57,8 @@ public class AspectToHtmlCommand extends AbstractCommand {
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--details" },
-         description = "Print detailed reports on errors" )
+      names = { "--details" },
+      description = "Print detailed reports on errors" )
    private boolean details = false;
 
    @CommandLine.Mixin

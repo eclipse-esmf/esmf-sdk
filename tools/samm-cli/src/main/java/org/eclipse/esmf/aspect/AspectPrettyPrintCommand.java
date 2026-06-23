@@ -28,13 +28,12 @@ import org.eclipse.esmf.exception.CommandException;
 import picocli.CommandLine;
 
 @CommandLine.Command(
-      name = AspectPrettyPrintCommand.COMMAND_NAME,
-      description = "Pretty print (format) Aspect Model",
-      headerHeading = "@|bold Usage|@:%n%n",
-      descriptionHeading = "%n@|bold Description|@:%n%n",
-      parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n"
-)
+   name = AspectPrettyPrintCommand.COMMAND_NAME,
+   description = "Pretty print (format) Aspect Model",
+   headerHeading = "@|bold Usage|@:%n%n",
+   descriptionHeading = "%n@|bold Description|@:%n%n",
+   parameterListHeading = "%n@|bold Parameters|@:%n",
+   optionListHeading = "%n@|bold Options|@:%n" )
 public class AspectPrettyPrintCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "prettyprint";
 
@@ -45,19 +44,19 @@ public class AspectPrettyPrintCommand extends AbstractCommand {
    private ResolverConfigurationMixin resolverConfiguration;
 
    @CommandLine.Option(
-         names = { "--output", "-o" },
-         description = "Output file path (default: stdout)" )
+      names = { "--output", "-o" },
+      description = "Output file path (default: stdout)" )
    String outputFilePath = "-";
 
    @CommandLine.Option(
-         names = { "--overwrite", "-w" },
-         description = "Overwrite the input file" )
+      names = { "--overwrite", "-w" },
+      description = "Overwrite the input file" )
    boolean overwrite;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--details" },
-         description = "Print detailed reports on errors" )
+      names = { "--details" },
+      description = "Print detailed reports on errors" )
    private boolean details = false;
 
    @CommandLine.ParentCommand

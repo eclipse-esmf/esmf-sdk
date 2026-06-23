@@ -21,8 +21,8 @@ import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 
 /**
- * A {@link javax.tools.JavaFileManager} to be used by the compiler that creates in-memory {@link CompilerOutput}s as
- * File objects.
+ * A {@link javax.tools.JavaFileManager} to be used by the compiler that creates in-memory
+ * {@link CompilerOutput}s as File objects.
  */
 public class InMemoryClassFileManager extends ForwardingJavaFileManager<StandardJavaFileManager> {
    private final Map<String, CompilerOutput> output = new HashMap<>();

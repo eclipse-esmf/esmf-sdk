@@ -15,7 +15,8 @@ package org.eclipse.esmf.metamodel.vocabulary;
 
 import org.eclipse.esmf.samm.KnownVersion;
 
-// Since the class is an RDF vocabulary, naming rules for the class and for several methods (which should be named identically
+// Since the class is an RDF vocabulary, naming rules for the class and for several methods (which
+// should be named identically
 // to the corresponding model elements) are suppressed.
 @SuppressWarnings( { "checkstyle:AbbreviationAsWordInName", "CheckStyle" } )
 public class UNIT implements RdfNamespace {

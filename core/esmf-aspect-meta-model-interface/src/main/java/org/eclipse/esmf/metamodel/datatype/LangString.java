@@ -17,7 +17,8 @@ import java.util.Locale;
 import java.util.Objects;
 
 /**
- * Java representation of an <a href="https://www.w3.org/TR/rdf11-concepts/#section-Graph-Literal">rdf:langString</a> value.
+ * Java representation of an
+ * <a href="https://www.w3.org/TR/rdf11-concepts/#section-Graph-Literal">rdf:langString</a> value.
  */
 public class LangString implements Comparable<LangString> {
    private final String value;

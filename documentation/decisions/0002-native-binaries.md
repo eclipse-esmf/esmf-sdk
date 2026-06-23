@@ -2,6 +2,8 @@
 
 ## Context and Problem Statement
 
+* **Status:** Superseded by [ADR-0003: Use warp-packer instead of native binaries](0003-warp-packer.md)
+
 The SDK's command line interface should be usable as convenient to use as possible, i.e., it should
 be usable without requiring a user to have a certain version of Java installed. It should also be
 directly launchable, i.e., by typing its name (without the `java -jar` incantation).
@@ -36,7 +38,7 @@ Java CLI](https://atextor.de/2020/07/27/building-a-decent-java-cli.html).
     * Binary can not be distributed on its own; it will always need a complete folder (containing
       the JRE).
     * Overall startup time: startup time of the .exe + startup time of the JVM.
-* [GraalVM Native Image](https://www.graalvm.org/latest/reference-manual/native-image/basics/): 
+* [GraalVM Native Image](https://www.graalvm.org/latest/reference-manual/native-image/basics/):
   * Remarks
     * Project driven by Oracle to create native binaries from Java applications, including compiler,
       custom runtime (that will be baked into the binary) and accompanying tooling such as source
@@ -48,9 +50,8 @@ Java CLI](https://atextor.de/2020/07/27/building-a-decent-java-cli.html).
     * Startup time overhead is removed/reduced.
   * Disadvantages
     * Additional configuration effort for resources, reflection, JNI,...
-    
+
 ## Decision Outcome
 
 Chosen option: "GraalVM Native Image", because only this option will provide a quickly starting,
 self-contained binary.
-

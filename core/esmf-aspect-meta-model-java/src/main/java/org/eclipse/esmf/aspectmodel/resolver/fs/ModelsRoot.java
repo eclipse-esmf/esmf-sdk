@@ -19,6 +19,7 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
@@ -30,7 +31,6 @@ import org.slf4j.LoggerFactory;
 public abstract class ModelsRoot {
 
    private static final Logger LOG = LoggerFactory.getLogger( ModelsRoot.class );
-   private static final File EMPTY_FILE = new File( "" );
    private final Path root;
 
    protected ModelsRoot( final Path root ) {
@@ -58,32 +58,34 @@ public abstract class ModelsRoot {
    /**
     * Resolve the aspect model file for the given {@link AspectModelUrn}.
     *
-    * <p>Constructs the file path by resolving the namespace directory.
-    * Validates the file using its canonical path.
+    * <p>
+    * Constructs the file path by resolving the namespace directory. Validates the file using its
+    * canonical path.
     *
-    * <p>Returns an empty file if the resolution fails.s
+    * <p>
+    * Returns Optional.empty() if the resolution fails or file does not exist.
     *
     * @param urn the {@link AspectModelUrn} representing the aspect model.
-    * @return the resolved {@link File}, or an empty file if resolution fails.
+    * @return Optional of the resolved {@link File}, or Optional.empty() if resolution fails.
     */
-   public File resolveAspectModelFile( final AspectModelUrn urn ) {
-      Path path = constructAspectModelFilePath( urn );
+   public Optional<File> resolveAspectModelFile( final AspectModelUrn urn ) {
+      final Path path = constructAspectModelFilePath( urn );
       return resolveByCanonicalPath( path );
    }
 
-   private Path constructAspectModelFilePath( final AspectModelUrn urn ) {
+   public Path constructAspectModelFilePath( final AspectModelUrn urn ) {
       return directoryForNamespace( urn ).resolve( urn.getName() + ".ttl" );
    }
 
-   private static File resolveByCanonicalPath( final Path path ) {
-      File file = path.toFile();
+   private static Optional<File> resolveByCanonicalPath( final Path path ) {
+      final File file = path.toFile();
       try {
          if ( file.exists() && Objects.equals( path.normalize().toString(), file.getCanonicalPath() ) ) {
-            return file;
+            return Optional.of( file );
          }
-      } catch ( IOException exception ) {
+      } catch ( final IOException exception ) {
          LOG.error( "Error resolving canonical path for file: {}", file.getPath(), exception );
       }
-      return EMPTY_FILE;
+      return Optional.empty();
    }
 }

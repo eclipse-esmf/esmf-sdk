@@ -42,8 +42,7 @@ import org.apache.velocity.runtime.RuntimeConstants;
 import org.jboss.forge.roaster.Roaster;
 
 /**
- * A {@link ArtifactGenerator} that generates Java Pojo code
- * for {@link Enumeration}s
+ * A {@link ArtifactGenerator} that generates Java Pojo code for {@link Enumeration}s
  *
  * @param <E> the element type
  */
@@ -54,7 +53,7 @@ public class EnumerationJavaArtifactGenerator<E extends Enumeration> implements 
       importTracker.importExplicit( EnumAttributeNotFoundException.class );
       importTracker.importExplicit( Generated.class );
 
-      final Map<String, Object> context = ImmutableMap.<String, Object> builder()
+      final Map<String, Object> context = ImmutableMap.<String, Object>builder()
             .put( "Arrays", Arrays.class )
             .put( "className", element.getName() )
             .put( "codeGenerationConfig", config )

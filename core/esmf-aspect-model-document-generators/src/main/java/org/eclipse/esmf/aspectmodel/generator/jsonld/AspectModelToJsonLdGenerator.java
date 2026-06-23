@@ -19,13 +19,13 @@ import java.util.stream.Stream;
 import org.eclipse.esmf.aspectmodel.generator.JsonGenerator;
 import org.eclipse.esmf.metamodel.Aspect;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
 import org.apache.jena.riot.RDFLanguages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AspectModelToJsonLdGenerator extends JsonGenerator<JsonLdGenerationConfig, JsonNode, JsonLdArtifact> {
+public class AspectModelToJsonLdGenerator extends JsonGenerator<Aspect, JsonLdGenerationConfig, JsonNode, JsonLdArtifact> {
    public static final JsonLdGenerationConfig DEFAULT_CONFIG = JsonLdGenerationConfigBuilder.builder().build();
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelToJsonLdGenerator.class );
 
@@ -37,8 +37,13 @@ public class AspectModelToJsonLdGenerator extends JsonGenerator<JsonLdGeneration
       super( aspect, config );
    }
 
+   private Aspect aspect() {
+      return structureElement();
+   }
+
    /**
-    * Generates a JSON-LD representation of the aspect's source model and writes it to an output stream.
+    * Generates a JSON-LD representation of the aspect's source model and writes it to an output
+    * stream.
     */
    @Override
    public Stream<JsonLdArtifact> generate() {
@@ -47,7 +52,7 @@ public class AspectModelToJsonLdGenerator extends JsonGenerator<JsonLdGeneration
       final String content = stringWriter.toString();
       try {
          return Stream.of( new JsonLdArtifact( aspect().getName() + ".json", objectMapper.readTree( content ) ) );
-      } catch ( final JsonProcessingException exception ) {
+      } catch ( final JacksonException exception ) {
          LOG.error( "Could not parse JSON-LD for {}", aspect().getName() );
       }
       return Stream.empty();

@@ -35,7 +35,8 @@ public interface AspectModelUrnArbitraries {
 
    @Provide
    default Arbitrary<String> anyUrnNamespacePart() {
-      // Regex as defined in AspectModelUrn: "[a-zA-Z][a-zA-Z0-9]{1,62}\\.[a-zA-Z0-9-]{1,63}(\\.[a-zA-Z0-9_-]{1,63})*"
+      // Regex as defined in AspectModelUrn:
+      // "[a-zA-Z][a-zA-Z0-9]{1,62}\\.[a-zA-Z0-9-]{1,63}(\\.[a-zA-Z0-9_-]{1,63})*"
       final Arbitrary<String> firstSection = Combinators.combine(
             Arbitraries.strings().withCharRange( 'a', 'z' ).withCharRange( 'A', 'Z' ).ofLength( 1 ),
             Arbitraries.strings().withCharRange( 'a', 'z' ).withCharRange( 'A', 'Z' ).numeric().ofMinLength( 1 ).ofMaxLength( 62 )
@@ -47,8 +48,8 @@ public interface AspectModelUrnArbitraries {
       final Arbitrary<String> subsequentSection = Arbitraries.strings().withCharRange( 'a', 'z' ).withCharRange( 'A', 'Z' )
             .numeric().withChars( '_', '-' ).ofMinLength( 1 ).ofMaxLength( 63 ).map( section -> "." + section );
       final Arbitrary<List<String>> subsequentSections = subsequentSection.list().ofMinSize( 0 ).ofMaxSize( 3 );
-      return Combinators.combine( firstSection, secondSection, subsequentSections ).as( ( first, second, subsequent ) ->
-            first + second + String.join( "", subsequent ) );
+      return Combinators.combine( firstSection, secondSection, subsequentSections )
+            .as( ( first, second, subsequent ) -> first + second + String.join( "", subsequent ) );
    }
 
    @Provide
@@ -74,16 +75,15 @@ public interface AspectModelUrnArbitraries {
    @Provide
    default Arbitrary<String> anyModelElementUrn() {
       return Combinators.combine( anyUrnNamespacePart(), anyUrnVersion(), anyModelElementName() )
-            .as( ( namespace, version, elementName ) ->
-                  String.format( "urn:samm:%s:%s#%s", namespace, version, elementName ) )
+            .as( ( namespace, version, elementName ) -> String.format( "urn:samm:%s:%s#%s", namespace, version, elementName ) )
             .filter( urn -> urn.length() <= 256 );
    }
 
    @Provide
    default Arbitrary<String> anyMetaModelElementUrn() {
       return Combinators.combine( anyUrnNamespacePart(), anyMetaModelUrnType(), anyUrnVersion(), anyModelElementName() )
-            .as( ( namespace, urnType, version, elementName ) ->
-                  String.format( "urn:samm:%s:%s:%s#%s", namespace, urnType, version, elementName ) )
+            .as( ( namespace, urnType, version, elementName ) -> String.format( "urn:samm:%s:%s:%s#%s", namespace, urnType, version,
+                  elementName ) )
             .filter( urn -> urn.length() <= 256 );
    }
 

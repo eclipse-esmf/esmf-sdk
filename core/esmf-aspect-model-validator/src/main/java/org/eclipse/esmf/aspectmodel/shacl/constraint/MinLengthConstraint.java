@@ -27,7 +27,9 @@ import org.apache.jena.rdf.model.RDFNode;
  *
  * @param minLength the min length
  */
-public record MinLengthConstraint( int minLength ) implements Constraint {
+public record MinLengthConstraint(
+      int minLength
+) implements Constraint {
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
       // sh:minLength is applicable to literals and IRIs, but not blank nodes

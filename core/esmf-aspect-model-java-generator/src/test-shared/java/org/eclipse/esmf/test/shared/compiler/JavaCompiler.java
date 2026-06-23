@@ -89,8 +89,7 @@ public class JavaCompiler {
             }
          };
          final Map<QualifiedName, Class<?>> compilationUnits = loadOrder.stream()
-               .collect( Collectors.toMap( Function.identity(), qualifiedName ->
-                     defineAndLoad( qualifiedName, classLoader ) ) );
+               .collect( Collectors.toMap( Function.identity(), qualifiedName -> defineAndLoad( qualifiedName, classLoader ) ) );
          return new CompilationResult( compilationUnits, sources, classLoader );
       } catch ( final IOException e ) {
          throw new RuntimeException( e );

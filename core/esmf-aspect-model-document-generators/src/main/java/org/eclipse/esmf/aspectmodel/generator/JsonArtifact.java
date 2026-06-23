@@ -15,13 +15,13 @@ package org.eclipse.esmf.aspectmodel.generator;
 
 import java.nio.charset.StandardCharsets;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import tools.jackson.databind.JsonNode;
+import tools.jackson.dataformat.yaml.YAMLFactory;
+import tools.jackson.dataformat.yaml.YAMLMapper;
+import tools.jackson.dataformat.yaml.YAMLWriteFeature;
 
 public class JsonArtifact<T extends JsonNode> implements Artifact<String, T> {
    private static final Logger LOG = LoggerFactory.getLogger( JsonArtifact.class );
@@ -56,10 +56,11 @@ public class JsonArtifact<T extends JsonNode> implements Artifact<String, T> {
    protected String jsonToYaml( final JsonNode json ) {
       try {
          final YAMLFactory yamlFactory = YAMLFactory.builder()
-               .stringQuotingChecker( new AbstractSchemaArtifact.OpenApiStringQuotingChecker() ).build();
-         return new YAMLMapper( yamlFactory ).enable( YAMLGenerator.Feature.MINIMIZE_QUOTES )
-               .writeValueAsString( json );
-      } catch ( final JsonProcessingException exception ) {
+               .stringQuotingChecker( new AbstractSchemaArtifact.OpenApiStringQuotingChecker() )
+               .enable( YAMLWriteFeature.MINIMIZE_QUOTES )
+               .build();
+         return new YAMLMapper( yamlFactory ).writeValueAsString( json );
+      } catch ( final Exception exception ) {
          LOG.error( "JSON could not be converted to YAML", exception );
          return json.toString();
       }

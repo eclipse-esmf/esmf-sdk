@@ -56,11 +56,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Represents a namespace package as described in
- * <a href="https://github.com/eclipse-esmf/esmf-semantic-aspect-meta-model/blob/main/documentation/decisions/0009-namespace-packages.md">
+ * Represents a namespace package as described in <a href=
+ * "https://github.com/eclipse-esmf/esmf-semantic-aspect-meta-model/blob/main/documentation/decisions/0009-namespace-packages.md">
  * ADR-0009</a>. A namespace package can be created from its raw representation in a zip file, via
- * {@link #NamespacePackage(byte[], URI)} (i.e., a "loading" operation), or from an existing {@link AspectModel} (i.e., a "writing"
- * operation). A namespace package is also a {@link ResolutionStrategy} (model elements are resolved from its contents).
+ * {@link #NamespacePackage(byte[], URI)} (i.e., a "loading" operation), or from an existing
+ * {@link AspectModel} (i.e., a "writing" operation). A namespace package is also a
+ * {@link ResolutionStrategy} (model elements are resolved from its contents).
  */
 public class NamespacePackage implements ResolutionStrategy, Artifact<URI, byte[]> {
    private static final Logger LOG = LoggerFactory.getLogger( NamespacePackage.class );
@@ -110,7 +111,8 @@ public class NamespacePackage implements ResolutionStrategy, Artifact<URI, byte[
    }
 
    /**
-    * Create a NamespacePackage from an existing Aspect Model that should be serialized, i.e., a "save as" operation
+    * Create a NamespacePackage from an existing Aspect Model that should be serialized, i.e., a "save
+    * as" operation
     *
     * @param aspectModel the input aspect model
     */
@@ -123,9 +125,8 @@ public class NamespacePackage implements ResolutionStrategy, Artifact<URI, byte[
    }
 
    /**
-    * Determines the location of the models root inside the package zip, as described in
-    * <a
-    * href="https://github.com/eclipse-esmf/esmf-semantic-aspect-meta-model/blob/main/documentation/decisions/0009-namespace-packages
+    * Determines the location of the models root inside the package zip, as described in <a href=
+    * "https://github.com/eclipse-esmf/esmf-semantic-aspect-meta-model/blob/main/documentation/decisions/0009-namespace-packages
     * .md#namespace-package-specification">ADR-0009</a>.
     *
     * @return The location of the models root, e.g., "", "aspect-models" or "something/aspect-models"
@@ -147,7 +148,8 @@ public class NamespacePackage implements ResolutionStrategy, Artifact<URI, byte[
       if ( directoryNames.contains( ASPECT_MODELS_FOLDER ) ) {
          return ASPECT_MODELS_FOLDER;
       }
-      // Otherwise, the directories in / of the ZIP are traversed non-recursively in lexicographically sorted order (by en-US locale)
+      // Otherwise, the directories in / of the ZIP are traversed non-recursively in lexicographically
+      // sorted order (by en-US locale)
       // and the first subdirectory of any of them that is called aspect-models is the models root.
       final Collator collator = Collator.getInstance( Locale.forLanguageTag( "en-US" ) );
       collator.setStrength( Collator.PRIMARY );
@@ -213,12 +215,12 @@ public class NamespacePackage implements ResolutionStrategy, Artifact<URI, byte[
       final String pathToFilter = modelsRoot.isEmpty()
             ? namespace.getNamespaceMainPart() + "/" + namespace.getVersion()
             : modelsRoot + "/" + namespace.getNamespaceMainPart() + "/" + namespace.getVersion();
-      return listContents().filter( uri ->
-            uri.toString().contains( pathToFilter ) );
+      return listContents().filter( uri -> uri.toString().contains( pathToFilter ) );
    }
 
    /**
-    * Similar to {@link #loadContents()} except files are not automatically migrated to the latest SAMM version.
+    * Similar to {@link #loadContents()} except files are not automatically migrated to the latest SAMM
+    * version.
     *
     * @return The stream of files
     */
@@ -317,8 +319,8 @@ public class NamespacePackage implements ResolutionStrategy, Artifact<URI, byte[
    }
 
    /**
-    * Returns the location of the namespace package, if it was created from an external location. If it was created from an in-memory
-    * {@link AspectModel}, the returned location is null.
+    * Returns the location of the namespace package, if it was created from an external location. If it
+    * was created from an in-memory {@link AspectModel}, the returned location is null.
     *
     * @return the location if set, or null
     */
@@ -331,7 +333,8 @@ public class NamespacePackage implements ResolutionStrategy, Artifact<URI, byte[
    }
 
    /**
-    * Turn the files from this namespace package to a series of "add file" changes relative to a models root
+    * Turn the files from this namespace package to a series of "add file" changes relative to a models
+    * root
     *
     * @param modelsRoot the target models root
     * @return the changes
@@ -341,8 +344,9 @@ public class NamespacePackage implements ResolutionStrategy, Artifact<URI, byte[
             .map( file -> {
                // Set the destination inside the target models root for each Aspect Model File
                final URI targetLocation = modelsRoot.directoryForNamespace( file.namespaceUrn() )
-                     .resolve( file.filename().orElseThrow( () ->
-                           new ModelChangeException( "Encountered an unnamed Aspect Model File in Aspect Model that should be written" ) ) )
+                     .resolve( file.filename()
+                           .orElseThrow( () -> new ModelChangeException(
+                                 "Encountered an unnamed Aspect Model File in Aspect Model that should be written" ) ) )
                      .toUri();
                return RawAspectModelFileBuilder.builder()
                      .sourceModel( file.sourceModel() )
@@ -350,7 +354,7 @@ public class NamespacePackage implements ResolutionStrategy, Artifact<URI, byte[
                      .headerComment( file.headerComment() )
                      .build();
             } )
-            .<Change> map( AddAspectModelFile::new )
+            .<Change>map( AddAspectModelFile::new )
             .toList() );
    }
 }

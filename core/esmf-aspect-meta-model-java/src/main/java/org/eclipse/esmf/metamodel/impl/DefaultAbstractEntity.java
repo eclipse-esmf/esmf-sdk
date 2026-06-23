@@ -37,8 +37,7 @@ public class DefaultAbstractEntity extends DefaultComplexType implements Abstrac
          final List<? extends Property> properties,
          @SuppressWarnings( "checkstyle:ParameterName" ) final Optional<ComplexType> extends_,
          final List<AspectModelUrn> extendingElements,
-         final ModelElementFactory loadedElements
-   ) {
+         final ModelElementFactory loadedElements ) {
       super( metaModelBaseAttributes, properties, extends_, extendingElements, loadedElements );
    }
 

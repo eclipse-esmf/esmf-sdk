@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.VersionNumber;
 import org.eclipse.esmf.aspectmodel.edit.change.AddAspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.change.AddElementDefinition;
 import org.eclipse.esmf.aspectmodel.edit.change.CopyFileWithIncreasedNamespaceVersion;
@@ -47,6 +48,9 @@ import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.vocabulary.RDF;
 import org.junit.jupiter.api.Test;
 
@@ -167,15 +171,15 @@ class AspectChangeManagerTest {
       final AspectModelFile aspectModelFile = RawAspectModelFileBuilder.builder()
             .sourceLocation( Optional.of( URI.create( "file:///temp/test.ttl" ) ) )
             .sourceModel( createModel( """
-                  @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> .
-                  @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-                  @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
-                  
-                  :Aspect a samm:Aspect ;
-                     samm:description "This is a test description"@en ;
-                     samm:properties ( ) ;
-                     samm:operations ( ) .
-                  """.formatted( KnownVersion.getLatest().toVersionString() )
+               @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> .
+               @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+               @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
+
+               :Aspect a samm:Aspect ;
+                  samm:description "This is a test description"@en ;
+                  samm:properties ( ) ;
+                  samm:operations ( ) .
+               """.formatted( KnownVersion.getLatest().toVersionString() )
             ) )
             .build();
       final Change addFile = new AddAspectModelFile( aspectModelFile );
@@ -206,15 +210,15 @@ class AspectChangeManagerTest {
             new AddAspectModelFile( aspectModelFile ),
             new AddElementDefinition( AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.test:1.0.0#Aspect" ),
                   createModel( """
-                        @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> .
-                        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-                        @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
-                        
-                        :Aspect a samm:Aspect ;
-                           samm:description "This is a test description"@en ;
-                           samm:properties ( ) ;
-                           samm:operations ( ) .
-                        """.formatted( KnownVersion.getLatest().toVersionString() ) ), aspectModelFile )
+                     @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> .
+                     @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+                     @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
+
+                     :Aspect a samm:Aspect ;
+                        samm:description "This is a test description"@en ;
+                        samm:properties ( ) ;
+                        samm:operations ( ) .
+                     """.formatted( KnownVersion.getLatest().toVersionString() ) ), aspectModelFile )
       );
 
       changeManager.applyChange( changes );
@@ -275,15 +279,15 @@ class AspectChangeManagerTest {
       final AspectModelFile file1 = RawAspectModelFileBuilder.builder()
             .sourceLocation( file1Location )
             .sourceModel( createModel( """
-                  @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> .
-                  @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-                  @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
-                  
-                  :Aspect a samm:Aspect ;
-                     samm:description "This is a test description"@en ;
-                     samm:properties ( ) ;
-                     samm:operations ( ) .
-                  """.formatted( KnownVersion.getLatest().toVersionString() )
+               @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> .
+               @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+               @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
+
+               :Aspect a samm:Aspect ;
+                  samm:description "This is a test description"@en ;
+                  samm:properties ( ) ;
+                  samm:operations ( ) .
+               """.formatted( KnownVersion.getLatest().toVersionString() )
             ) )
             .build();
       final AspectModelFile file2 = RawAspectModelFileBuilder.builder().sourceLocation( file2Location ).build();
@@ -356,15 +360,15 @@ class AspectChangeManagerTest {
       final AspectModelFile file1 = RawAspectModelFileBuilder.builder()
             .sourceLocation( file1Location )
             .sourceModel( createModel( """
-                  @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> .
-                  @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-                  @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
-                  
-                  :Aspect a samm:Aspect ;
-                     samm:description "This is a test description"@en ;
-                     samm:properties ( ) ;
-                     samm:operations ( ) .
-                  """.formatted( KnownVersion.getLatest().toVersionString() )
+               @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> .
+               @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+               @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
+
+               :Aspect a samm:Aspect ;
+                  samm:description "This is a test description"@en ;
+                  samm:properties ( ) ;
+                  samm:operations ( ) .
+               """.formatted( KnownVersion.getLatest().toVersionString() )
             ) )
             .build();
       final AspectModelFile file2 = RawAspectModelFileBuilder.builder().sourceLocation( file2Location ).build();
@@ -380,7 +384,7 @@ class AspectChangeManagerTest {
       final Namespace targetNamespace = new DefaultNamespace( targetUrn, List.of(), Optional.empty() );
       final Change move = new MoveElementToOtherNamespaceExistingFile( aspectModel.aspect(), file2, targetNamespace );
 
-      final ChangeReport changeReport = changeManager.applyChange( move );
+      changeManager.applyChange( move );
       assertThat( changeManager.modifiedFiles() ).hasSize( 2 );
       assertThat( changeManager.createdFiles() ).isEmpty();
 
@@ -438,9 +442,6 @@ class AspectChangeManagerTest {
       final Change copyNamespaceWithIncreasedVersion = new CopyNamespaceWithIncreasedVersion( namespace,
             IncreaseVersion.MAJOR );
 
-      final AspectChangeManagerConfig config = AspectChangeManagerConfigBuilder.builder()
-            .detailedChangeReport( true )
-            .build();
       final AspectChangeManager changeManager = new AspectChangeManager( aspectModel );
 
       assertThat( aspectModel.namespaces() ).hasSize( 1 );
@@ -450,7 +451,7 @@ class AspectChangeManagerTest {
       assertThat( aspectModel ).files().hasSize( 1 );
       assertThat( aspectModel.files().get( 0 ).sourceLocation().get().toString() ).contains( "1.0.0" );
 
-      final ChangeReport changeReport = changeManager.applyChange( copyNamespaceWithIncreasedVersion );
+      changeManager.applyChange( copyNamespaceWithIncreasedVersion );
       assertThat( aspectModel.namespaces() ).hasSize( 2 );
       assertThat( aspectModel.namespaces() ).map( ns -> ns.version().getMajor() ).containsExactlyInAnyOrder( 1, 2 );
       assertThat( aspectModel.aspects() ).hasSize( 2 );
@@ -467,9 +468,6 @@ class AspectChangeManagerTest {
       final Change copyFileWithIncreasedNamespaceVersion = new CopyFileWithIncreasedNamespaceVersion( aspectModel.files().get( 0 ),
             IncreaseVersion.MAJOR );
 
-      final AspectChangeManagerConfig config = AspectChangeManagerConfigBuilder.builder()
-            .detailedChangeReport( true )
-            .build();
       final AspectChangeManager changeManager = new AspectChangeManager( aspectModel );
 
       assertThat( aspectModel.namespaces() ).hasSize( 1 );
@@ -479,7 +477,7 @@ class AspectChangeManagerTest {
       assertThat( aspectModel ).files().hasSize( 1 );
       assertThat( aspectModel.files().get( 0 ).sourceLocation().get().toString() ).contains( "1.0.0" );
 
-      final ChangeReport changeReport = changeManager.applyChange( copyFileWithIncreasedNamespaceVersion );
+      changeManager.applyChange( copyFileWithIncreasedNamespaceVersion );
       assertThat( aspectModel.namespaces() ).hasSize( 2 );
       assertThat( aspectModel.namespaces() ).map( ns -> ns.version().getMajor() ).containsExactlyInAnyOrder( 1, 2 );
       assertThat( aspectModel.aspects() ).hasSize( 2 );
@@ -488,5 +486,67 @@ class AspectChangeManagerTest {
       assertThat( aspectModel ).files().map( file -> file.sourceLocation().get().toString() )
             .anyMatch( location -> location.contains( "1.0.0" ) )
             .anyMatch( location -> location.contains( "2.0.0" ) );
+   }
+
+   @Test
+   void testCopyFileWithIncreasedVersion_doesNotKeepOldNamespaceIrisInNewFile() {
+      // Arrange
+      final AspectModel aspectModel = TestResources.load( TestAspect.ASPECT_WITH_PROPERTY );
+
+      final AspectModelFile originalFile = aspectModel.files().get( 0 );
+      final String oldNsPrefix = originalFile.namespace().urn().toString() + "#";
+      final String propertyLocalName = "testProperty";
+
+      // sanity: ensure the fixture really contains a reference to the property in old namespace (e.g.,
+      // via rdf:first)
+      assertThat( originalFile.sourceModel()
+            .listStatements( null, null, originalFile.sourceModel().createResource( oldNsPrefix + propertyLocalName ) )
+            .hasNext()
+      ).as( "Test fixture must contain old namespace property IRI" ).isTrue();
+
+      final VersionNumber currentVersion = originalFile.namespace().version();
+      final VersionNumber nextVersion = IncreaseVersion.MAJOR.apply( currentVersion );
+      final String nextVersionStr = nextVersion.toString();
+
+      final Change change = new CopyFileWithIncreasedNamespaceVersion( originalFile, IncreaseVersion.MAJOR );
+      final AspectChangeManager changeManager = new AspectChangeManager( aspectModel );
+
+      // Act
+      changeManager.applyChange( change );
+
+      // Assert: find the newly created file by computed next version
+      final AspectModelFile v2File = aspectModel.files().stream()
+            .filter( f -> f.sourceLocation().map( URI::toString ).orElse( "" ).contains( nextVersionStr ) )
+            .findFirst()
+            .orElseThrow( () -> new AssertionError( "Expected a copied file with version " + nextVersionStr + " in sourceLocation" ) );
+
+      final Model m = v2File.sourceModel();
+
+      // 1) No subject/predicate/object IRI in the NEW file must still point to the OLD namespace prefix
+      final StmtIterator it = m.listStatements();
+      while ( it.hasNext() ) {
+         final Statement st = it.nextStatement();
+
+         if ( st.getSubject().isURIResource() ) {
+            assertThat( st.getSubject().getURI() )
+                  .as( "Old namespace leaked in SUBJECT: %s", st )
+                  .doesNotStartWith( oldNsPrefix );
+         }
+
+         assertThat( st.getPredicate().getURI() )
+               .as( "Old namespace leaked in PREDICATE: %s", st )
+               .doesNotStartWith( oldNsPrefix );
+
+         if ( st.getObject().isURIResource() ) {
+            assertThat( st.getObject().asResource().getURI() )
+                  .as( "Old namespace leaked in OBJECT (catches rdf:first in lists): %s", st )
+                  .doesNotStartWith( oldNsPrefix );
+         }
+      }
+
+      // 2) Targeted check: old property IRI must not appear anywhere as object
+      assertThat( m.listStatements( null, null, m.createResource( oldNsPrefix + propertyLocalName ) ).hasNext() )
+            .as( "New file must not reference old property IRI (catches samm:properties list/rdf:first issue)" )
+            .isFalse();
    }
 }

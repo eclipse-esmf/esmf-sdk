@@ -27,7 +27,6 @@
    samm:description "This is a test property."@en ;
    samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
-   samm:exampleValue "5.0"^^xsd:float ;
    samm:characteristic :TestCollection .
 
 :TestCollection a samm-c:Collection ;

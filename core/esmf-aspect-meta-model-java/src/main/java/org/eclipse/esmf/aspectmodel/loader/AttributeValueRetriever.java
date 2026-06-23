@@ -31,13 +31,15 @@ import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.vocabulary.RDF;
 
 /**
- * This class provides utilities to retrieve attribute values from model elements, e.g., a samm:Property's samm:characteristic.
- * It knows how to handle:
+ * This class provides utilities to retrieve attribute values from model elements, e.g., a
+ * samm:Property's samm:characteristic. It knows how to handle:
  * <ul>
- *   <li>optionality (e.g., samm-c:upperBoundDefinition on a samm-c:RangeConstraint is not mandatory)</li>
- *   <li>n-ary attributes (e.g., samm:preferredName and samm:description can appear multiple times)</li>
- *   <li>abstract Properties (i.e., a bnode with samm:extends used as a Property)</li>
- *   <li>Property references (i.e., a bnode with samm:property used as a Property)</li>
+ * <li>optionality (e.g., samm-c:upperBoundDefinition on a samm-c:RangeConstraint is not
+ * mandatory)</li>
+ * <li>n-ary attributes (e.g., samm:preferredName and samm:description can appear multiple
+ * times)</li>
+ * <li>abstract Properties (i.e., a bnode with samm:extends used as a Property)</li>
+ * <li>Property references (i.e., a bnode with samm:property used as a Property)</li>
  * </ul>
  */
 public class AttributeValueRetriever {
@@ -47,7 +49,8 @@ public class AttributeValueRetriever {
     * @param modelElement the model element
     * @param attribute the given attribute
     * @return the statement asserting the value
-    * @throws AspectLoadingException when the attribute is not present or is present multiple times, or if samm:extends is used wrong
+    * @throws AspectLoadingException when the attribute is not present or is present multiple times, or
+    *         if samm:extends is used wrong
     */
    protected Statement attributeValue( final Resource modelElement, final Property attribute ) {
       return optionalAttributeValue( modelElement, attribute ).orElseThrow(
@@ -70,32 +73,31 @@ public class AttributeValueRetriever {
    }
 
    /**
-    * Returns the values of n-ary attributes on a model element (or its super elements), or if a given attribute is an rdf:List, the list
-    * elements. The list will be ordered by precedence, e.g., if a Property is present on both the current element and its superelement,
-    * the assertion on the current element will be on a lower list index. Duplicate attribute assertions are removed and only the assertion
-    * with the highest precedence will be returned (bottom-most in the inheritance tree), this includes multiple assertions for the same
-    * attribute with rdf:langString values with the same language tag. For example:
+    * Returns the values of n-ary attributes on a model element (or its super elements), or if a given
+    * attribute is an rdf:List, the list elements. The list will be ordered by precedence, e.g., if a
+    * Property is present on both the current element and its superelement, the assertion on the
+    * current element will be on a lower list index. Duplicate attribute assertions are removed and
+    * only the assertion with the highest precedence will be returned (bottom-most in the inheritance
+    * tree), this includes multiple assertions for the same attribute with rdf:langString values with
+    * the same language tag. For example:
     *
     * <p>
-    * :SuperEntity a samm:AbstractEntity ;
-    * samm:description "I'm abstract"@en ;
-    * samm:description "Ich bin abstrakt"@de ;
+    * :SuperEntity a samm:AbstractEntity ; samm:description "I'm abstract"@en ; samm:description "Ich
+    * bin abstrakt"@de ; samm:properties () .
+    * </p>
+    *
+    * <p>
+    * :MyEntity a samm:Entity ; samm:extends :SuperEntity ; samm:description "I'm concrete"@en ;
     * samm:properties () .
     * </p>
     *
     * <p>
-    * :MyEntity a samm:Entity ;
-    * samm:extends :SuperEntity ;
-    * samm:description "I'm concrete"@en ;
-    * samm:properties () .
+    * Here, attributeValues( :MyEntity, samm:description ) will return: List( Statement( :MyEntity
+    * samm:description "I'm contrete"@en ), Statement( :SuperEntity samm:description "Ich bin
+    * abstrakt"@de ) )
     * </p>
-    *
-    * <p>
-    * Here, attributeValues( :MyEntity, samm:description ) will return:
-    * List( Statement( :MyEntity samm:description "I'm contrete"@en ),
-    * Statement( :SuperEntity samm:description "Ich bin abstrakt"@de ) )
-    * </p>
-    * The attribute that is overridden with a new value takes precedence, the one that is not overridden is inherited.
+    * The attribute that is overridden with a new value takes precedence, the one that is not
+    * overridden is inherited.
     *
     * @param modelElement the model element
     * @param attribute the given attribute
@@ -116,7 +118,8 @@ public class AttributeValueRetriever {
          }
       }
 
-      // If the model element is a bnode with samm:property given, it's a Property reference. Follow it to retrieve the sought-for
+      // If the model element is a bnode with samm:property given, it's a Property reference. Follow it to
+      // retrieve the sought-for
       // attribute assertions.
       final StmtIterator referenceIterator = modelElement.listProperties( SammNs.SAMM.property() );
       if ( referenceIterator.hasNext() ) {
@@ -128,7 +131,8 @@ public class AttributeValueRetriever {
          return result;
       }
 
-      // If the model element is samm:extends another element, retrieve attribute assertions from this supertype as well.
+      // If the model element is samm:extends another element, retrieve attribute assertions from this
+      // supertype as well.
       final StmtIterator extendsIterator = modelElement.listProperties( SammNs.SAMM._extends() );
       if ( extendsIterator.hasNext() ) {
          final RDFNode superElementNode = extendsIterator.next().getObject();

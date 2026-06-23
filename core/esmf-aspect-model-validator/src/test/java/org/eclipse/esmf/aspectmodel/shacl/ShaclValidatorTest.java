@@ -74,24 +74,24 @@ public class ShaclValidatorTest {
    @Test
    public void testLoadingCustomShape() {
       final Model shapesModel = createModel( """
-            @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-            @prefix : <http://example.com#> .
+         @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                  sh:path :testProperty ;
-                  sh:datatype xsd:integer ;
-                  sh:minCount 1 ;
-                  sh:name "Test property" ;
-                  sh:description "Test description" ;
-               ] ;
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+               sh:path :testProperty ;
+               sh:datatype xsd:integer ;
+               sh:minCount 1 ;
+               sh:name "Test property" ;
+               sh:description "Test description" ;
+            ] ;
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       assertThat( validator.getShapes().size() ).isEqualTo( 1 );
@@ -116,35 +116,35 @@ public class ShaclValidatorTest {
    @Test
    public void testClassConstraintEvaluation() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                  sh:path :testProperty ;
-                  sh:class :TestClass2 ;
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+               sh:path :testProperty ;
+               sh:class :TestClass2 ;
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-            @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+         @prefix : <http://example.com#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-            :MySuperType a :TestClass2 .
-            :MyType rdfs:subClassOf :MySuperType .
+         :MySuperType a :TestClass2 .
+         :MyType rdfs:subClassOf :MySuperType .
 
-            :Bar a :TestClass ;
-              :testProperty [ a :MyType ] .
+         :Bar a :TestClass ;
+           :testProperty [ a :MyType ] .
 
-            :Foo a :TestClass ;
-              :testProperty [ a :SomethingElse ] .
-            """ );
+         :Foo a :TestClass ;
+           :testProperty [ a :SomethingElse ] .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -173,27 +173,27 @@ public class ShaclValidatorTest {
    @Test
    public void testDatatypeConstraintEvaluation() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                  sh:path :testProperty ;
-                  sh:datatype xsd:string ;
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+               sh:path :testProperty ;
+               sh:datatype xsd:string ;
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-            :Foo a :TestClass ;
-              :testProperty 42 .
-            """ );
+         @prefix : <http://example.com#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         :Foo a :TestClass ;
+           :testProperty 42 .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -222,27 +222,27 @@ public class ShaclValidatorTest {
    @Test
    public void testNodeKindConstraintEvaluation() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                  sh:path :testProperty ;
-                  sh:nodeKind sh:IRI ;
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+               sh:path :testProperty ;
+               sh:nodeKind sh:IRI ;
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-            :Foo a :TestClass ;
-              :testProperty 42 .
-            """ );
+         @prefix : <http://example.com#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         :Foo a :TestClass ;
+           :testProperty 42 .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -270,24 +270,24 @@ public class ShaclValidatorTest {
    @Test
    public void testMinCountConstraintEvaluation() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                  sh:path :testProperty ;
-                  sh:minCount 1 ;
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+               sh:path :testProperty ;
+               sh:minCount 1 ;
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass .
-            """ );
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.listSubjects().nextResource().asResource();
@@ -313,26 +313,26 @@ public class ShaclValidatorTest {
    @Test
    public void testMaxCountEvaluation() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                  sh:path :testProperty ;
-                  sh:maxCount 1 ;
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+               sh:path :testProperty ;
+               sh:maxCount 1 ;
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :testProperty "foo" ;
-              :testProperty "bar" .
-            """ );
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass ;
+           :testProperty "foo" ;
+           :testProperty "bar" .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -358,25 +358,25 @@ public class ShaclValidatorTest {
    @Test
    public void testMinExclusiveConstraint() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                  sh:path :testProperty ;
-                  sh:minExclusive 42 ;
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+               sh:path :testProperty ;
+               sh:minExclusive 42 ;
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :testProperty 42 .
-            """ );
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass ;
+           :testProperty 42 .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -404,25 +404,25 @@ public class ShaclValidatorTest {
    @Test
    public void testMinInclusiveConstraint() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                  sh:path :testProperty ;
-                  sh:minInclusive 42 ;
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+               sh:path :testProperty ;
+               sh:minInclusive 42 ;
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :testProperty 41 .
-            """ );
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass ;
+           :testProperty 41 .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -451,25 +451,25 @@ public class ShaclValidatorTest {
    @Test
    public void testMaxExclusiveConstraint() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                  sh:path :testProperty ;
-                  sh:maxExclusive 42 ;
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+               sh:path :testProperty ;
+               sh:maxExclusive 42 ;
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :testProperty 42 .
-            """ );
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass ;
+           :testProperty 42 .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -497,25 +497,25 @@ public class ShaclValidatorTest {
    @Test
    public void testMaxInclusiveConstraint() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                  sh:path :testProperty ;
-                  sh:maxInclusive 42 ;
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+               sh:path :testProperty ;
+               sh:maxInclusive 42 ;
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :testProperty 43 .
-            """ );
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass ;
+           :testProperty 43 .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -544,25 +544,25 @@ public class ShaclValidatorTest {
    @Test
    public void testMinLengthConstraint() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                  sh:path :testProperty ;
-                  sh:minLength 5 ;
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+               sh:path :testProperty ;
+               sh:minLength 5 ;
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :testProperty "abc" .
-            """ );
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass ;
+           :testProperty "abc" .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -591,25 +591,25 @@ public class ShaclValidatorTest {
    @Test
    public void testMaxLengthConstraint() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                  sh:path :testProperty ;
-                  sh:maxLength 5 ;
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+               sh:path :testProperty ;
+               sh:maxLength 5 ;
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :testProperty "abcabc" .
-            """ );
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass ;
+           :testProperty "abcabc" .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -638,29 +638,29 @@ public class ShaclValidatorTest {
    @Test
    public void testPatternConstraint() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                  sh:path :testProperty ;
-                  sh:pattern "^x" ;
-                  sh:flags "i" ;
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+               sh:path :testProperty ;
+               sh:pattern "^x" ;
+               sh:flags "i" ;
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :testProperty "y" .
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass ;
+           :testProperty "y" .
 
-            :Bar a :TestClass ;
-              :testProperty "X" .
-            """ );
+         :Bar a :TestClass ;
+           :testProperty "X" .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -689,28 +689,28 @@ public class ShaclValidatorTest {
    @Test
    public void testAllowedLanguageConstraint() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                  sh:path :testProperty ;
-                  sh:languageIn ( "en" "de" ) ;
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+               sh:path :testProperty ;
+               sh:languageIn ( "en" "de" ) ;
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :testProperty "non valide"@fr .
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass ;
+           :testProperty "non valide"@fr .
 
-            :Bar a :TestClass ;
-              :testProperty "valid"@en .
-            """ );
+         :Bar a :TestClass ;
+           :testProperty "valid"@en .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -739,30 +739,30 @@ public class ShaclValidatorTest {
    @Test
    public void testEqualsConstraint() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                  sh:path :testProperty ;
-                  sh:equals :anotherTestProperty ;
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+               sh:path :testProperty ;
+               sh:equals :anotherTestProperty ;
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :testProperty "some value" ;
-              :anotherTestProperty "a different value" .
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass ;
+           :testProperty "some value" ;
+           :anotherTestProperty "a different value" .
 
-            :Bar a :TestClass ;
-              :testProperty "some value" ;
-              :anotherTestProperty "some value" .
-            """ );
+         :Bar a :TestClass ;
+           :testProperty "some value" ;
+           :anotherTestProperty "some value" .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -792,30 +792,30 @@ public class ShaclValidatorTest {
    @Test
    public void testDisjointConstraint() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                  sh:path :testProperty ;
-                  sh:disjoint :anotherTestProperty ;
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+               sh:path :testProperty ;
+               sh:disjoint :anotherTestProperty ;
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :testProperty "some value" ;
-              :anotherTestProperty "some value" .
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass ;
+           :testProperty "some value" ;
+           :anotherTestProperty "some value" .
 
-            :Bar a :TestClass ;
-              :testProperty "some value" ;
-              :anotherTestProperty "a different value" .
-            """ );
+         :Bar a :TestClass ;
+           :testProperty "some value" ;
+           :anotherTestProperty "a different value" .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -843,30 +843,30 @@ public class ShaclValidatorTest {
    @Test
    public void testLessThanConstraint() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                  sh:path :testProperty ;
-                  sh:lessThan :anotherTestProperty ;
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+               sh:path :testProperty ;
+               sh:lessThan :anotherTestProperty ;
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :testProperty 10 ;
-              :anotherTestProperty 5 .
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass ;
+           :testProperty 10 ;
+           :anotherTestProperty 5 .
 
-            :Bar a :TestClass ;
-              :testProperty 10 ;
-              :anotherTestProperty 20 .
-            """ );
+         :Bar a :TestClass ;
+           :testProperty 10 ;
+           :anotherTestProperty 20 .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -895,30 +895,30 @@ public class ShaclValidatorTest {
    @Test
    public void testLessThanOrEqualsConstraint() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                  sh:path :testProperty ;
-                  sh:lessThanOrEquals :anotherTestProperty ;
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+               sh:path :testProperty ;
+               sh:lessThanOrEquals :anotherTestProperty ;
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :testProperty 10 ;
-              :anotherTestProperty 5 .
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass ;
+           :testProperty 10 ;
+           :anotherTestProperty 5 .
 
-            :Bar a :TestClass ;
-              :testProperty 10 ;
-              :anotherTestProperty 10 .
-            """ );
+         :Bar a :TestClass ;
+           :testProperty 10 ;
+           :anotherTestProperty 10 .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -948,30 +948,30 @@ public class ShaclValidatorTest {
    @Test
    public void testUniqueLangConstraint() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                  sh:path :testProperty ;
-                  sh:uniqueLang true ;
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+               sh:path :testProperty ;
+               sh:uniqueLang true ;
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :testProperty "hello"@en ;
-              :testProperty "hello again"@en .
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass ;
+           :testProperty "hello"@en ;
+           :testProperty "hello again"@en .
 
-            :Bar a :TestClass ;
-              :testProperty "hello"@en ;
-              :testProperty "hallo"@de .
-            """ );
+         :Bar a :TestClass ;
+           :testProperty "hello"@en ;
+           :testProperty "hallo"@de .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -998,28 +998,28 @@ public class ShaclValidatorTest {
    @Test
    public void testHasValueConstraint() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                  sh:path :testProperty ;
-                  sh:hasValue 42 ;
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+               sh:path :testProperty ;
+               sh:hasValue 42 ;
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :testProperty "hello" .
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass ;
+           :testProperty "hello" .
 
-            :Bar a :TestClass ;
-              :testProperty 42 .
-            """ );
+         :Bar a :TestClass ;
+           :testProperty 42 .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -1047,25 +1047,25 @@ public class ShaclValidatorTest {
    @Test
    public void testAllowedValuesEvaluation() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                  sh:path :testProperty ;
-                  sh:in ( "foo" "bar" ) ;
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+               sh:path :testProperty ;
+               sh:in ( "foo" "bar" ) ;
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :testProperty "baz" .
-            """ );
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass ;
+           :testProperty "baz" .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -1095,34 +1095,34 @@ public class ShaclValidatorTest {
    @Test
    public void testNodeConstraint() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                 sh:path :testProperty ;
-                 sh:node :AnotherNodeShape ;
-               ] .
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+              sh:path :testProperty ;
+              sh:node :AnotherNodeShape ;
+            ] .
 
-            :AnotherNodeShape
-              a sh:NodeShape ;
-              sh:property [
-                sh:path :nestedProperty ;
-                sh:hasValue "foo" ;
-              ] .
-            """ );
+         :AnotherNodeShape
+           a sh:NodeShape ;
+           sh:property [
+             sh:path :nestedProperty ;
+             sh:hasValue "foo" ;
+           ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :testProperty :Bar .
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass ;
+           :testProperty :Bar .
 
-            :Bar :nestedProperty "bar" .
-            """ );
+         :Bar :nestedProperty "bar" .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -1151,42 +1151,42 @@ public class ShaclValidatorTest {
    @Test
    public void testMultipleNodeConstraints() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix : <http://example.com#> .
 
-            :SomeNodeShape
-              a sh:NodeShape ;
-              sh:property [
-                sh:path :testProperty ;
-                sh:minInclusive 5 ;
-              ] .
+         :SomeNodeShape
+           a sh:NodeShape ;
+           sh:property [
+             sh:path :testProperty ;
+             sh:minInclusive 5 ;
+           ] .
 
-            :AnotherNodeShape
-              a sh:NodeShape ;
-              sh:property [
-                sh:path :testProperty ;
-                sh:minInclusive 10 ;
-              ] .
+         :AnotherNodeShape
+           a sh:NodeShape ;
+           sh:property [
+             sh:path :testProperty ;
+             sh:minInclusive 10 ;
+           ] .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                 sh:path :myProperty ;
-                 sh:node :SomeNodeShape ;
-                 sh:node :AnotherNodeShape ;
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+              sh:path :myProperty ;
+              sh:node :SomeNodeShape ;
+              sh:node :AnotherNodeShape ;
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :myProperty :element .
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass ;
+           :myProperty :element .
 
-            :element :testProperty 1 .
-            """ );
+         :element :testProperty 1 .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource foo = dataModel.createResource( namespace + "Foo" );
@@ -1208,28 +1208,28 @@ public class ShaclValidatorTest {
    @Test
    public void testClosedConstraint() {
       final Model shapesModel = createModel( """
-            @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix : <http://example.com#> .
+         @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                 sh:path :testProperty ;
-               ] ;
-               sh:closed true ;
-               sh:ignoredProperties ( rdf:type ) .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+              sh:path :testProperty ;
+            ] ;
+            sh:closed true ;
+            sh:ignoredProperties ( rdf:type ) .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :testProperty "bar" ;
-              :aDifferentProperty "foo".
-            """ );
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass ;
+           :testProperty "bar" ;
+           :aDifferentProperty "foo".
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -1258,51 +1258,51 @@ public class ShaclValidatorTest {
    @Test
    public void testSparqlConstraintEvaluation() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         @prefix : <http://example.com#> .
 
-            :prefixDeclarations
-               sh:declare [
-                  sh:prefix "" ;
-                  sh:namespace "http://example.com#"^^xsd:anyURI ;
-               ] .
+         :prefixDeclarations
+            sh:declare [
+               sh:prefix "" ;
+               sh:namespace "http://example.com#"^^xsd:anyURI ;
+            ] .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                  sh:path :testProperty ;
-                  sh:datatype xsd:string ;
-               ] ;
-               sh:sparql [
-                  a sh:SPARQLConstraint ;
-                  sh:message "Constraint was violated on {$this}, value was {?value}." ;
-                  sh:prefixes :prefixDeclarations ;
-                  sh:select ""\"
-                     select $this ?value ?code ?highlight
-                     where {
-                       $this a :TestClass .
-                       $this :testProperty ?value .
-                       filter( ?value != "secret valid value" )
-                       bind( "ERR_CUSTOM" as ?code )
-                       bind( ?value as ?highlight )
-                     }
-                  ""\"
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+               sh:path :testProperty ;
+               sh:datatype xsd:string ;
+            ] ;
+            sh:sparql [
+               a sh:SPARQLConstraint ;
+               sh:message "Constraint was violated on {$this}, value was {?value}." ;
+               sh:prefixes :prefixDeclarations ;
+               sh:select ""\"
+                  select $this ?value ?code ?highlight
+                  where {
+                    $this a :TestClass .
+                    $this :testProperty ?value .
+                    filter( ?value != "secret valid value" )
+                    bind( "ERR_CUSTOM" as ?code )
+                    bind( ?value as ?highlight )
+                  }
+               ""\"
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-            :Foo a :TestClass ;
-              :testProperty "foo" .
+         @prefix : <http://example.com#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         :Foo a :TestClass ;
+           :testProperty "foo" .
 
-            :Bar a :TestClass ;
-              :testProperty "secret valid value" .
-            """ );
+         :Bar a :TestClass ;
+           :testProperty "secret valid value" .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -1327,38 +1327,38 @@ public class ShaclValidatorTest {
    @Test
    public void testBooleanJsConstraintEvaluation() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         @prefix : <http://example.com#> .
 
-            :MyJavaScriptLibrary
-               a sh:JSLibrary ;
-               sh:jsLibraryURL "$RESOURCE_URL"^^xsd:anyURI .
+         :MyJavaScriptLibrary
+            a sh:JSLibrary ;
+            sh:jsLibraryURL "$RESOURCE_URL"^^xsd:anyURI .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                  sh:path :testProperty ;
-                  sh:datatype xsd:string ;
-                  sh:js [
-                     a sh:JSConstraint ;
-                     sh:message "JavaScript constraint validation failed." ;
-                     sh:jsLibrary :MyJavaScriptLibrary ;
-                     sh:jsFunctionName "isRegularExpression" ;
-                  ] ;
-               ] .
-            """.replace( "$RESOURCE_URL", getClass().getClassLoader()
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+               sh:path :testProperty ;
+               sh:datatype xsd:string ;
+               sh:js [
+                  a sh:JSConstraint ;
+                  sh:message "JavaScript constraint validation failed." ;
+                  sh:jsLibrary :MyJavaScriptLibrary ;
+                  sh:jsFunctionName "isRegularExpression" ;
+               ] ;
+            ] .
+         """.replace( "$RESOURCE_URL", getClass().getClassLoader()
             .getResource( "JsConstraintTest.js" ).toString() ) );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-            :Foo a :TestClass ;
-              :testProperty "(((" .
-            """ );
+         @prefix : <http://example.com#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         :Foo a :TestClass ;
+           :testProperty "(((" .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -1383,38 +1383,38 @@ public class ShaclValidatorTest {
    @Test
    public void testMessageObjectJsConstraintEvaluation() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         @prefix : <http://example.com#> .
 
-            :MyJavaScriptLibrary
-               a sh:JSLibrary ;
-               sh:jsLibraryURL "$RESOURCE_URL"^^xsd:anyURI .
+         :MyJavaScriptLibrary
+            a sh:JSLibrary ;
+            sh:jsLibraryURL "$RESOURCE_URL"^^xsd:anyURI .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                  sh:path :testProperty ;
-                  sh:datatype xsd:string ;
-                  sh:js [
-                     a sh:JSConstraint ;
-                     sh:message "JavaScript constraint validation failed" ;
-                     sh:jsLibrary :MyJavaScriptLibrary ;
-                     sh:jsFunctionName "testTermFactoryAndMessageResult" ;
-                  ] ;
-               ] .
-            """.replace( "$RESOURCE_URL", getClass().getClassLoader()
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+               sh:path :testProperty ;
+               sh:datatype xsd:string ;
+               sh:js [
+                  a sh:JSConstraint ;
+                  sh:message "JavaScript constraint validation failed" ;
+                  sh:jsLibrary :MyJavaScriptLibrary ;
+                  sh:jsFunctionName "testTermFactoryAndMessageResult" ;
+               ] ;
+            ] .
+         """.replace( "$RESOURCE_URL", getClass().getClassLoader()
             .getResource( "JsConstraintTest.js" ).toString() ) );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-            :Foo a :TestClass ;
-              :testProperty "some value" .
-            """ );
+         @prefix : <http://example.com#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         :Foo a :TestClass ;
+           :testProperty "some value" .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -1443,27 +1443,27 @@ public class ShaclValidatorTest {
    @Test
    public void testSequencePath() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                 sh:path ( :prop1 :prop2 ) ;
-                 sh:hasValue 42  ;
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+              sh:path ( :prop1 :prop2 ) ;
+              sh:hasValue 42  ;
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :prop1 [
-                :prop2 23 ;
-              ] .
-            """ );
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass ;
+           :prop1 [
+             :prop2 23 ;
+           ] .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -1491,26 +1491,26 @@ public class ShaclValidatorTest {
    @Test
    public void testAlternativePath() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                 sh:path [ sh:alternativePath ( :prop1 :prop2 ) ] ;
-                 sh:hasValue 42  ;
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+              sh:path [ sh:alternativePath ( :prop1 :prop2 ) ] ;
+              sh:hasValue 42  ;
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :prop1 42 ;
-              :prop2 23 .
-            """ );
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass ;
+           :prop1 42 ;
+           :prop2 23 .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -1538,26 +1538,26 @@ public class ShaclValidatorTest {
    @Test
    public void testInversePath() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                 sh:path ( :testProperty [ sh:inversePath :testProperty ] :testProperty2 ) ;
-                 sh:hasValue 42  ;
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+              sh:path ( :testProperty [ sh:inversePath :testProperty ] :testProperty2 ) ;
+              sh:hasValue 42  ;
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :testProperty :Bar ;
-              :testProperty2 23 .
-            """ );
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass ;
+           :testProperty :Bar ;
+           :testProperty2 23 .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -1585,29 +1585,29 @@ public class ShaclValidatorTest {
    @Test
    public void testZeroOrMorePath() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                 sh:path ( :testProperty [ sh:zeroOrMorePath :testProperty2 ] ) ;
-                 sh:nodeKind sh:BlankNode  ;
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+              sh:path ( :testProperty [ sh:zeroOrMorePath :testProperty2 ] ) ;
+              sh:nodeKind sh:BlankNode  ;
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :testProperty [
-                 :testProperty2 [
-                   :testProperty2 23 ;
-                 ]
-               ] .
-            """ );
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass ;
+           :testProperty [
+              :testProperty2 [
+                :testProperty2 23 ;
+              ]
+            ] .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -1635,29 +1635,29 @@ public class ShaclValidatorTest {
    @Test
    public void testOneOrMorePath() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                 sh:path ( :testProperty [ sh:oneOrMorePath :testProperty2 ] ) ;
-                 sh:nodeKind sh:BlankNode  ;
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+              sh:path ( :testProperty [ sh:oneOrMorePath :testProperty2 ] ) ;
+              sh:nodeKind sh:BlankNode  ;
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :testProperty [
-                 :testProperty2 [
-                   :testProperty2 23 ;
-                 ]
-               ] .
-            """ );
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass ;
+           :testProperty [
+              :testProperty2 [
+                :testProperty2 23 ;
+              ]
+            ] .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -1685,27 +1685,27 @@ public class ShaclValidatorTest {
    @Test
    public void testZeroOrOnePath() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                 sh:path ( :testProperty [ sh:zeroOrOnePath :testProperty2 ] ) ;
-                 sh:nodeKind sh:BlankNode  ;
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+              sh:path ( :testProperty [ sh:zeroOrOnePath :testProperty2 ] ) ;
+              sh:nodeKind sh:BlankNode  ;
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :testProperty [
-                 :testProperty2 23 ;
-               ] .
-            """ );
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass ;
+           :testProperty [
+              :testProperty2 23 ;
+            ] .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -1733,29 +1733,29 @@ public class ShaclValidatorTest {
    @Test
    public void testNotConstraint() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                 sh:path :testProperty ;
-                 sh:not [
-                   sh:nodeKind sh:BlankNode ;
-                 ] ;
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+              sh:path :testProperty ;
+              sh:not [
+                sh:nodeKind sh:BlankNode ;
+              ] ;
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :testProperty [
-                 :testProperty2 23 ;
-               ] .
-            """ );
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass ;
+           :testProperty [
+              :testProperty2 23 ;
+            ] .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -1784,31 +1784,31 @@ public class ShaclValidatorTest {
    @Test
    public void testAndConstraint() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                 sh:path :testProperty ;
-                 sh:and (
-                   [ sh:nodeKind sh:BlankNode ]
-                   [ sh:nodeKind sh:IRI ]
-                 ) ;
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+              sh:path :testProperty ;
+              sh:and (
+                [ sh:nodeKind sh:BlankNode ]
+                [ sh:nodeKind sh:IRI ]
+              ) ;
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :testProperty [
-                 :testProperty2 42 ;
-              ] .
-            """ );
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass ;
+           :testProperty [
+              :testProperty2 42 ;
+           ] .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -1837,29 +1837,29 @@ public class ShaclValidatorTest {
    @Test
    public void testOrConstraint() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                 sh:path :testProperty ;
-                 sh:or (
-                   [ sh:hasValue 17 ]
-                   [ sh:hasValue 23 ]
-                 ) ;
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+              sh:path :testProperty ;
+              sh:or (
+                [ sh:hasValue 17 ]
+                [ sh:hasValue 23 ]
+              ) ;
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :testProperty 42 .
-            """ );
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass ;
+           :testProperty 42 .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -1875,19 +1875,19 @@ public class ShaclValidatorTest {
                assertThat( violation ).isInstanceOf( OrViolation.class );
                assertThat( ( (OrViolation) violation ).violations() )
                      .hasSize( 2 )
-                     .anySatisfy( subviolation ->
-                           assertThat( subviolation ).isInstanceOfSatisfying( InvalidValueViolation.class, invalidValueViolation -> {
-                              assertThat( invalidValueViolation.allowed() ).isInstanceOfSatisfying( Literal.class, allowedLiteral ->
-                                    assertThat( allowedLiteral.getInt() ).isEqualTo( 17 ) );
-                              assertThat( invalidValueViolation.actual() ).isInstanceOfSatisfying( Literal.class, actualLiteral ->
-                                    assertThat( actualLiteral.getInt() ).isEqualTo( 42 ) );
+                     .anySatisfy( subviolation -> assertThat( subviolation ).isInstanceOfSatisfying( InvalidValueViolation.class,
+                           invalidValueViolation -> {
+                              assertThat( invalidValueViolation.allowed() ).isInstanceOfSatisfying( Literal.class,
+                                    allowedLiteral -> assertThat( allowedLiteral.getInt() ).isEqualTo( 17 ) );
+                              assertThat( invalidValueViolation.actual() ).isInstanceOfSatisfying( Literal.class,
+                                    actualLiteral -> assertThat( actualLiteral.getInt() ).isEqualTo( 42 ) );
                            } ) )
-                     .anySatisfy( subviolation ->
-                           assertThat( subviolation ).isInstanceOfSatisfying( InvalidValueViolation.class, invalidValueViolation -> {
-                              assertThat( invalidValueViolation.allowed() ).isInstanceOfSatisfying( Literal.class, allowedLiteral ->
-                                    assertThat( allowedLiteral.getInt() ).isEqualTo( 23 ) );
-                              assertThat( invalidValueViolation.actual() ).isInstanceOfSatisfying( Literal.class, actualLiteral ->
-                                    assertThat( actualLiteral.getInt() ).isEqualTo( 42 ) );
+                     .anySatisfy( subviolation -> assertThat( subviolation ).isInstanceOfSatisfying( InvalidValueViolation.class,
+                           invalidValueViolation -> {
+                              assertThat( invalidValueViolation.allowed() ).isInstanceOfSatisfying( Literal.class,
+                                    allowedLiteral -> assertThat( allowedLiteral.getInt() ).isEqualTo( 23 ) );
+                              assertThat( invalidValueViolation.actual() ).isInstanceOfSatisfying( Literal.class,
+                                    actualLiteral -> assertThat( actualLiteral.getInt() ).isEqualTo( 42 ) );
                            } ) );
             } );
    }
@@ -1895,28 +1895,28 @@ public class ShaclValidatorTest {
    @Test
    public void testXoneConstraintInPropertyShape() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                 sh:path :testProperty ;
-                 sh:xone (
-                   [ sh:nodeKind sh:IRI ]
-                 ) ;
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+              sh:path :testProperty ;
+              sh:xone (
+                [ sh:nodeKind sh:IRI ]
+              ) ;
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :testProperty 42 .
-            """ );
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass ;
+           :testProperty 42 .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -1947,37 +1947,37 @@ public class ShaclValidatorTest {
    @Test
    void testXoneConstraintInPropertyShapeWithNoSubViolations() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                 sh:path :testProperty ;
-                 sh:xone (
-                   :NodeKindAssertion
-                   :ValueAssertion
-                 ) ;
-               ] .
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+              sh:path :testProperty ;
+              sh:xone (
+                :NodeKindAssertion
+                :ValueAssertion
+              ) ;
+            ] .
 
-            :NodeKindAssertion
-              a sh:NodeShape ;
-              sh:nodeKind sh:Literal .
+         :NodeKindAssertion
+           a sh:NodeShape ;
+           sh:nodeKind sh:Literal .
 
-            :ValueAssertion
-              a sh:NodeShape ;
-              sh:hasValue 42 .
-            """ );
+         :ValueAssertion
+           a sh:NodeShape ;
+           sh:hasValue 42 .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :testProperty 42 .
-            """ );
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass ;
+           :testProperty 42 .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -1999,36 +1999,36 @@ public class ShaclValidatorTest {
    @Test
    void testXoneConstraintInNodeShapeExpectSuccess() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:xone (
-                 :Property1Shape
-                 :Property2Shape
-               ) .
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetClass :TestClass ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:xone (
+              :Property1Shape
+              :Property2Shape
+            ) .
 
-            :Property1Shape
-              a sh:PropertyShape ;
-              sh:path :foo ;
-              sh:minCount 1 .
+         :Property1Shape
+           a sh:PropertyShape ;
+           sh:path :foo ;
+           sh:minCount 1 .
 
-            :Property2Shape
-              a sh:PropertyShape ;
-              sh:path :bar ;
-              sh:minCount 1 .
-            """ );
+         :Property2Shape
+           a sh:PropertyShape ;
+           sh:path :bar ;
+           sh:minCount 1 .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :foo 1 .
-            """ );
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass ;
+           :foo 1 .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -2041,37 +2041,37 @@ public class ShaclValidatorTest {
    void testXoneConstraintInNodeShapeExpectFailure() {
       final Model shapesModel = createModel(
             """
-                  @prefix sh: <http://www.w3.org/ns/shacl#> .
-                  @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-                  @prefix : <http://example.com#> .
+               @prefix sh: <http://www.w3.org/ns/shacl#> .
+               @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+               @prefix : <http://example.com#> .
 
-                  :MyShape
-                     a sh:NodeShape ;
-                     sh:targetClass :TestClass ;
-                     sh:name "Test shape" ;
-                     sh:description "Test shape description" ;
-                     sh:xone (
-                       :Property1Shape
-                       :Property2Shape
-                     ) .
+               :MyShape
+                  a sh:NodeShape ;
+                  sh:targetClass :TestClass ;
+                  sh:name "Test shape" ;
+                  sh:description "Test shape description" ;
+                  sh:xone (
+                    :Property1Shape
+                    :Property2Shape
+                  ) .
 
-                  :Property1Shape
-                    a sh:PropertyShape ;
-                    sh:path :foo ;
-                    sh:minCount 1 .
+               :Property1Shape
+                 a sh:PropertyShape ;
+                 sh:path :foo ;
+                 sh:minCount 1 .
 
-                  :Property2Shape
-                    a sh:PropertyShape ;
-                    sh:path ( :bar :baz ) ;
-                    sh:minCount 1 .
-                  """
+               :Property2Shape
+                 a sh:PropertyShape ;
+                 sh:path ( :bar :baz ) ;
+                 sh:minCount 1 .
+               """
       );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :testProperty 42 .
-            """ );
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass ;
+           :testProperty 42 .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -2083,65 +2083,63 @@ public class ShaclValidatorTest {
       assertThat( finding.message() ).startsWith( "Exactly one of the following violations must be fixed:" );
       assertThat( finding.message() ).contains( "Mandatory property :foo is missing on :Foo" );
       assertThat( finding.message() ).contains( "Mandatory property :bar/:baz is missing on :Foo" );
-      assertThat( finding ).isInstanceOfSatisfying( XoneViolation.class, xoneViolation ->
-            assertThat( xoneViolation.violations() ).satisfiesExactly(
-                  violation ->
-                        assertThat( violation ).isInstanceOfSatisfying( MinCountViolation.class, minCountViolation -> {
-                           assertThat( minCountViolation.allowed() ).isEqualTo( 1 );
-                           assertThat( minCountViolation.actual() ).isEqualTo( 0 );
-                           assertThat( minCountViolation.context().propertyShape() ).hasValueSatisfying( property ->
-                                 assertThat( property.path() ).isInstanceOfSatisfying( PredicatePath.class, predicatePath ->
-                                       assertThat( predicatePath.toString() ).isEqualTo( ":foo" ) ) );
-                        } ),
-                  violation ->
-                        assertThat( violation ).isInstanceOfSatisfying( MinCountViolation.class, minCountViolation -> {
-                           assertThat( minCountViolation.allowed() ).isEqualTo( 1 );
-                           assertThat( minCountViolation.actual() ).isEqualTo( 0 );
-                           assertThat( minCountViolation.context().propertyShape() ).hasValueSatisfying( property ->
-                                 assertThat( property.path() ).isInstanceOfSatisfying( SequencePath.class, sequencePath ->
-                                       assertThat( sequencePath.toString() ).isEqualTo( ":bar/:baz" ) ) );
-                        } )
+      assertThat( finding ).isInstanceOfSatisfying( XoneViolation.class,
+            xoneViolation -> assertThat( xoneViolation.violations() ).satisfiesExactly(
+                  violation -> assertThat( violation ).isInstanceOfSatisfying( MinCountViolation.class, minCountViolation -> {
+                     assertThat( minCountViolation.allowed() ).isEqualTo( 1 );
+                     assertThat( minCountViolation.actual() ).isEqualTo( 0 );
+                     assertThat( minCountViolation.context().propertyShape() )
+                           .hasValueSatisfying( property -> assertThat( property.path() ).isInstanceOfSatisfying( PredicatePath.class,
+                                 predicatePath -> assertThat( predicatePath.toString() ).isEqualTo( ":foo" ) ) );
+                  } ),
+                  violation -> assertThat( violation ).isInstanceOfSatisfying( MinCountViolation.class, minCountViolation -> {
+                     assertThat( minCountViolation.allowed() ).isEqualTo( 1 );
+                     assertThat( minCountViolation.actual() ).isEqualTo( 0 );
+                     assertThat( minCountViolation.context().propertyShape() )
+                           .hasValueSatisfying( property -> assertThat( property.path() ).isInstanceOfSatisfying( SequencePath.class,
+                                 sequencePath -> assertThat( sequencePath.toString() ).isEqualTo( ":bar/:baz" ) ) );
+                  } )
             ) );
    }
 
    @Test
    void testSparqlTargetWithGenericConstraint() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         @prefix : <http://example.com#> .
 
-            :prefixDeclarations
-               sh:declare [
-                  sh:prefix "" ;
-                  sh:namespace "http://example.com#"^^xsd:anyURI ;
-               ] .
+         :prefixDeclarations
+            sh:declare [
+               sh:prefix "" ;
+               sh:namespace "http://example.com#"^^xsd:anyURI ;
+            ] .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:target [
-                  a sh:SPARQLTarget ;
-                  sh:prefixes :prefixDeclarations ;
-                  sh:select ""\"
-                     select $this
-                     where {
-                        $this a :TestClass .
-                     }
-                  ""\"
-               ] ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                 sh:path :testProperty ;
-                 sh:maxLength 2 ;
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:target [
+               a sh:SPARQLTarget ;
+               sh:prefixes :prefixDeclarations ;
+               sh:select ""\"
+                  select $this
+                  where {
+                     $this a :TestClass .
+                  }
+               ""\"
+            ] ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+              sh:path :testProperty ;
+              sh:maxLength 2 ;
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :testProperty "abc" .
-            """ );
+         @prefix : <http://example.com#> .
+         :Foo a :TestClass ;
+           :testProperty "abc" .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -2155,59 +2153,59 @@ public class ShaclValidatorTest {
    @Test
    void testSparqlTargetWithShapeSparqlConstraint() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         @prefix : <http://example.com#> .
 
-            :prefixDeclarations
-               sh:declare [
-                  sh:prefix "" ;
-                  sh:namespace "http://example.com#"^^xsd:anyURI ;
-               ] .
+         :prefixDeclarations
+            sh:declare [
+               sh:prefix "" ;
+               sh:namespace "http://example.com#"^^xsd:anyURI ;
+            ] .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:target [
-                  a sh:SPARQLTarget ;
-                  sh:prefixes :prefixDeclarations ;
-                  sh:select ""\"
-                     select $this
-                     where {
-                        $this a :TestClass .
-                     }
-                  ""\"
-               ] ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                  sh:path :testProperty ;
-                  sh:datatype xsd:string ;
-               ] ;
-               sh:sparql [
-                  a sh:SPARQLConstraint ;
-                  sh:message "Constraint was violated on {$this}, value was {?value}." ;
-                  sh:prefixes :prefixDeclarations ;
-                  sh:select ""\"
-                     select $this ?value ?code
-                     where {
-                       $this a :TestClass .
-                       $this :testProperty ?value .
-                       filter( ?value != "secret valid value" )
-                       bind( "ERR_CUSTOM" as ?code )
-                     }
-                  ""\"
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:target [
+               a sh:SPARQLTarget ;
+               sh:prefixes :prefixDeclarations ;
+               sh:select ""\"
+                  select $this
+                  where {
+                     $this a :TestClass .
+                  }
+               ""\"
+            ] ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+               sh:path :testProperty ;
+               sh:datatype xsd:string ;
+            ] ;
+            sh:sparql [
+               a sh:SPARQLConstraint ;
+               sh:message "Constraint was violated on {$this}, value was {?value}." ;
+               sh:prefixes :prefixDeclarations ;
+               sh:select ""\"
+                  select $this ?value ?code
+                  where {
+                    $this a :TestClass .
+                    $this :testProperty ?value .
+                    filter( ?value != "secret valid value" )
+                    bind( "ERR_CUSTOM" as ?code )
+                  }
+               ""\"
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-            :Foo a :TestClass ;
-              :testProperty "foo" .
+         @prefix : <http://example.com#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         :Foo a :TestClass ;
+           :testProperty "foo" .
 
-            :Bar a :TestClass ;
-              :testProperty "secret valid value" .
-            """ );
+         :Bar a :TestClass ;
+           :testProperty "secret valid value" .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -2221,58 +2219,58 @@ public class ShaclValidatorTest {
    @Test
    void testSparqlTargetWithPropertySparqlConstraint() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         @prefix : <http://example.com#> .
 
-            :prefixDeclarations
-               sh:declare [
-                  sh:prefix "" ;
-                  sh:namespace "http://example.com#"^^xsd:anyURI ;
-               ] .
+         :prefixDeclarations
+            sh:declare [
+               sh:prefix "" ;
+               sh:namespace "http://example.com#"^^xsd:anyURI ;
+            ] .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:target [
-                  a sh:SPARQLTarget ;
+         :MyShape
+            a sh:NodeShape ;
+            sh:target [
+               a sh:SPARQLTarget ;
+               sh:prefixes :prefixDeclarations ;
+               sh:select ""\"
+                  select $this
+                  where {
+                     $this a :TestClass .
+                  }
+               ""\"
+            ] ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+               sh:path :testProperty ;
+               sh:datatype xsd:string ;
+               sh:sparql [
+                  a sh:SPARQLConstraint ;
+                  sh:message "Required property 'testProperty' does not exist on {$this}." ;
                   sh:prefixes :prefixDeclarations ;
                   sh:select ""\"
-                     select $this
+                     select $this ?code
                      where {
-                        $this a :TestClass .
+                       $this a :TestClass .
+                       filter ( not exists { $this :testProperty [] } ) .
+                       bind( "ERR_CUSTOM" as ?code )
                      }
                   ""\"
                ] ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                  sh:path :testProperty ;
-                  sh:datatype xsd:string ;
-                  sh:sparql [
-                     a sh:SPARQLConstraint ;
-                     sh:message "Required property 'testProperty' does not exist on {$this}." ;
-                     sh:prefixes :prefixDeclarations ;
-                     sh:select ""\"
-                        select $this ?code
-                        where {
-                          $this a :TestClass .
-                          filter ( not exists { $this :testProperty [] } ) .
-                          bind( "ERR_CUSTOM" as ?code )
-                        }
-                     ""\"
-                  ] ;
-               ] .
-            """ );
+            ] .
+         """ );
 
       // important detail: ':testProperty' is missing on ':Foo', the SPARQLConstraint must run anyway
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-            :Foo a :TestClass.
+         @prefix : <http://example.com#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         :Foo a :TestClass.
 
-            :Bar a :TestClass ;
-              :testProperty "secret valid value" .
-            """ );
+         :Bar a :TestClass ;
+           :testProperty "secret valid value" .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource element = dataModel.createResource( namespace + "Foo" );
@@ -2286,59 +2284,59 @@ public class ShaclValidatorTest {
    @Test
    void testMultiElementValidation() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         @prefix : <http://example.com#> .
 
-            :prefixDeclarations
-               sh:declare [
-                  sh:prefix "" ;
-                  sh:namespace "http://example.com#"^^xsd:anyURI ;
-               ] .
+         :prefixDeclarations
+            sh:declare [
+               sh:prefix "" ;
+               sh:namespace "http://example.com#"^^xsd:anyURI ;
+            ] .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:target [
-                  a sh:SPARQLTarget ;
-                  sh:prefixes :prefixDeclarations ;
-                  sh:select ""\"
-                     select $this
-                     where {
-                        $this a :TestClass .
-                     }
-                  ""\"
-               ] ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                  sh:path :testProperty ;
-                  sh:datatype xsd:string ;
-               ] ;
-               sh:sparql [
-                  a sh:SPARQLConstraint ;
-                  sh:message "Constraint was violated on {$this}, value was {?value}." ;
-                  sh:prefixes :prefixDeclarations ;
-                  sh:select ""\"
-                     select $this ?value ?code
-                     where {
-                       $this a :TestClass .
-                       $this :testProperty ?value .
-                       filter( ?value != "secret valid value" )
-                       bind( "ERR_CUSTOM" as ?code )
-                     }
-                  ""\"
-               ] .
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:target [
+               a sh:SPARQLTarget ;
+               sh:prefixes :prefixDeclarations ;
+               sh:select ""\"
+                  select $this
+                  where {
+                     $this a :TestClass .
+                  }
+               ""\"
+            ] ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+               sh:path :testProperty ;
+               sh:datatype xsd:string ;
+            ] ;
+            sh:sparql [
+               a sh:SPARQLConstraint ;
+               sh:message "Constraint was violated on {$this}, value was {?value}." ;
+               sh:prefixes :prefixDeclarations ;
+               sh:select ""\"
+                  select $this ?value ?code
+                  where {
+                    $this a :TestClass .
+                    $this :testProperty ?value .
+                    filter( ?value != "secret valid value" )
+                    bind( "ERR_CUSTOM" as ?code )
+                  }
+               ""\"
+            ] .
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-            :Foo a :TestClass ;
-              :testProperty "foo" .
+         @prefix : <http://example.com#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         :Foo a :TestClass ;
+           :testProperty "foo" .
 
-            :Bar a :TestClass ;
-              :testProperty "bar" .
-            """ );
+         :Bar a :TestClass ;
+           :testProperty "bar" .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource foo = dataModel.createResource( namespace + "Foo" );
@@ -2353,31 +2351,31 @@ public class ShaclValidatorTest {
    @Test
    void testTargetObjectsOf() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-            @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetObjectsOf rdf:type ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                  sh:path :testProperty ;
-                  sh:datatype xsd:string ;
-               ] ;
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetObjectsOf rdf:type ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+               sh:path :testProperty ;
+               sh:datatype xsd:string ;
+            ] ;
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-            :Foo a :TestClass ;
-              :testProperty 2 .
+         @prefix : <http://example.com#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         :Foo a :TestClass ;
+           :testProperty 2 .
 
-            :Bar a :TestClass ;
-              :testProperty 3 .
-            """ );
+         :Bar a :TestClass ;
+           :testProperty 3 .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource foo = dataModel.createResource( namespace + "Foo" );
@@ -2392,31 +2390,31 @@ public class ShaclValidatorTest {
    @Test
    void testNodeTargets() {
       final Model shapesModel = createModel( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-            @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-            @prefix : <http://example.com#> .
+         @prefix sh: <http://www.w3.org/ns/shacl#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+         @prefix : <http://example.com#> .
 
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetNode :Foo ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:property [
-                  sh:path :testProperty ;
-                  sh:datatype xsd:string ;
-               ] ;
-            """ );
+         :MyShape
+            a sh:NodeShape ;
+            sh:targetNode :Foo ;
+            sh:name "Test shape" ;
+            sh:description "Test shape description" ;
+            sh:property [
+               sh:path :testProperty ;
+               sh:datatype xsd:string ;
+            ] ;
+         """ );
 
       final Model dataModel = createModel( """
-            @prefix : <http://example.com#> .
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-            :Foo a :TestClass ;
-              :testProperty 2 .
+         @prefix : <http://example.com#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         :Foo a :TestClass ;
+           :testProperty 2 .
 
-            :Bar a :TestClass ;
-              :testProperty 3 .
-            """ );
+         :Bar a :TestClass ;
+           :testProperty 3 .
+         """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       final Resource foo = dataModel.createResource( namespace + "Foo" );

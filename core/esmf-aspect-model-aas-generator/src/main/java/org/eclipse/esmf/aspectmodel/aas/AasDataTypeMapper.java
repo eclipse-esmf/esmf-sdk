@@ -1,3 +1,15 @@
+/*
+ * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ *
+ * See the AUTHORS file(s) distributed with this work for additional
+ * information regarding authorship.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * SPDX-License-Identifier: MPL-2.0
+ */
 package org.eclipse.esmf.aspectmodel.aas;
 
 import java.util.Map;
@@ -10,14 +22,13 @@ import org.eclipse.digitaltwin.aas4j.v3.model.DataTypeDefXsd;
 
 public class AasDataTypeMapper {
 
-   private AasDataTypeMapper() {
-   }
+   private AasDataTypeMapper() {}
 
    /**
     * Maps Aspect types to DataTypeDefXsd Schema types, with no explicit mapping defaulting to string
     */
    static final Map<Resource, DataTypeDefXsd> ASPECT_TYPE_TO_AAS_XSD_TYPE_MAP =
-         ImmutableMap.<Resource, DataTypeDefXsd> builder()
+         ImmutableMap.<Resource, DataTypeDefXsd>builder()
                .put( XSD.anyURI, DataTypeDefXsd.ANY_URI )
                .put( XSD.yearMonthDuration, DataTypeDefXsd.DURATION )
                .put( XSD.xboolean, DataTypeDefXsd.BOOLEAN )
@@ -51,10 +62,11 @@ public class AasDataTypeMapper {
                .build();
 
    /**
-    * Maps DataTypeDefXsd Schema types to Aspect types, with no explicit mapping defaulting to normalizedString.
+    * Maps DataTypeDefXsd Schema types to Aspect types, with no explicit mapping defaulting to
+    * normalizedString.
     */
    static final Map<DataTypeDefXsd, Resource> AAS_XSD_TYPE_TO_ASPECT_TYPE_MAP =
-         ImmutableMap.<DataTypeDefXsd, Resource> builder()
+         ImmutableMap.<DataTypeDefXsd, Resource>builder()
                .put( DataTypeDefXsd.ANY_URI, XSD.anyURI )
                .put( DataTypeDefXsd.BOOLEAN, XSD.xboolean )
                .put( DataTypeDefXsd.BYTE, XSD.xbyte )

@@ -24,7 +24,9 @@ import org.apache.jena.rdf.model.RDFNode;
  * @param allowed the allowed value
  * @param actual the encountered value
  */
-public record MinCountViolation( EvaluationContext context, int allowed, int actual ) implements Violation {
+public record MinCountViolation(
+      EvaluationContext context, int allowed, int actual
+) implements Violation {
    public static final String ERROR_CODE = "ERR_MIN_COUNT";
 
    @Override
@@ -37,7 +39,7 @@ public record MinCountViolation( EvaluationContext context, int allowed, int act
       return allowed == 1
             ? String.format( "Mandatory property %s is missing on %s.", context.propertyName(), context.elementName() )
             : String.format( "Property %s must be present on %s at least %d time%s, but is present only %d time%s.",
-            context.propertyName(), context.elementName(), allowed, allowed > 1 ? "s" : "", actual, actual > 1 ? "s" : "" );
+                  context.propertyName(), context.elementName(), allowed, allowed > 1 ? "s" : "", actual, actual > 1 ? "s" : "" );
    }
 
    @Override

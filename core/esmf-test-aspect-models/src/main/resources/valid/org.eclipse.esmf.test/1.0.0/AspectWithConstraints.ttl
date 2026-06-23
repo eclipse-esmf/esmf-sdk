@@ -162,7 +162,7 @@
    ] ;
    samm-c:baseCharacteristic [
       a samm:Characteristic ;
-      samm:dataType xsd:nonNegativeInteger
+      samm:dataType xsd:string
    ] .
 
 :testPropertyCollectionLengthConstraint a samm:Property ;

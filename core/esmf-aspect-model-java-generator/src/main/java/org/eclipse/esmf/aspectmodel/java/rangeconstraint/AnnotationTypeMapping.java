@@ -44,7 +44,7 @@ import jakarta.validation.constraints.DecimalMin;
 public enum AnnotationTypeMapping {
 
    MINIMUM(
-         ImmutableMap.<Class<?>, Class<?>> builder()
+         ImmutableMap.<Class<?>, Class<?>>builder()
                .put( Integer.class, IntegerMin.class )
                .put( Short.class, ShortMin.class )
                .put( Long.class, LongMin.class )
@@ -56,7 +56,7 @@ public enum AnnotationTypeMapping {
                .put( BigInteger.class, DecimalMin.class )
                .build() ),
    MAXIMUM(
-         ImmutableMap.<Class<?>, Class<?>> builder()
+         ImmutableMap.<Class<?>, Class<?>>builder()
                .put( Integer.class, IntegerMax.class )
                .put( Short.class, ShortMax.class )
                .put( Long.class, LongMax.class )
@@ -66,12 +66,11 @@ public enum AnnotationTypeMapping {
                .put( Duration.class, DurationMax.class )
                .put( XMLGregorianCalendar.class, GregorianCalendarMax.class )
                .put( BigInteger.class, DecimalMax.class )
-               .build()
-   );
+               .build() );
 
    private final Map<Class<?>, Class<?>> typeMapping;
 
-   //Enum constructor is used
+   // Enum constructor is used
    @SuppressWarnings( "squid:UnusedPrivateMethod " )
    AnnotationTypeMapping( final Map<Class<?>, Class<?>> typeMapping ) {
       this.typeMapping = typeMapping;

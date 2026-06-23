@@ -28,7 +28,8 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 
 /**
- * Removes the definition of a model element from an AspectModelFile. The definition is given as a set of RDF statements (a {@link Model}).
+ * Removes the definition of a model element from an AspectModelFile. The definition is given as a
+ * set of RDF statements (a {@link Model}).
  */
 public class RemoveElementDefinition extends EditAspectModel {
    private final AspectModelUrn elementUrn;
@@ -46,8 +47,8 @@ public class RemoveElementDefinition extends EditAspectModel {
    }
 
    public RemoveElementDefinition( final AspectModelUrn elementUrn, final AspectModelFile targetFile ) {
-      this( elementUrn, targetFile.sourceLocation().orElseThrow( () ->
-            new ModelChangeException( "Can remove element defintion only from named file" ) ) );
+      this( elementUrn, targetFile.sourceLocation()
+            .orElseThrow( () -> new ModelChangeException( "Can remove element defintion only from named file" ) ) );
    }
 
    @Override
@@ -75,7 +76,7 @@ public class RemoveElementDefinition extends EditAspectModel {
          protected ModelChanges calculateChangesForFile( final AspectModelFile aspectModelFile ) {
             return aspectModelFile.sourceLocation().equals( fileWithOriginalDefinition.sourceLocation() )
                   ? new ModelChanges( "Add back definition of " + elementUrn,
-                  definition, ModelFactory.createDefaultModel() )
+                        definition, ModelFactory.createDefaultModel() )
                   : ModelChanges.NONE;
          }
 

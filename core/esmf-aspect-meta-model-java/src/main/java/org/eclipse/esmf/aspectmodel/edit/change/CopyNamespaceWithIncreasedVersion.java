@@ -24,7 +24,8 @@ import org.eclipse.esmf.aspectmodel.edit.ChangeReport;
 import org.eclipse.esmf.metamodel.Namespace;
 
 /**
- * Creates a copy of a namespace with a new version, including copies of all files in the namespace with updated URNs
+ * Creates a copy of a namespace with a new version, including copies of all files in the namespace
+ * with updated URNs
  */
 public class CopyNamespaceWithIncreasedVersion extends StructuralChange {
    private Change changes;
@@ -46,7 +47,7 @@ public class CopyNamespaceWithIncreasedVersion extends StructuralChange {
       final VersionNumber currentVersion = namespace.version();
       final VersionNumber nextVersion = increaseVersion.apply( currentVersion );
       final List<Change> fileChanges = namespaceFiles.stream()
-            .<Change> map( file -> new CopyFileWithIncreasedNamespaceVersion( file, increaseVersion ) )
+            .<Change>map( file -> new CopyFileWithIncreasedNamespaceVersion( file, increaseVersion ) )
             .toList();
       changes = new ChangeGroup( "Copy namespace " + namespace.urn() + " to new version " + nextVersion, fileChanges );
       return changes.fire( changeContext );

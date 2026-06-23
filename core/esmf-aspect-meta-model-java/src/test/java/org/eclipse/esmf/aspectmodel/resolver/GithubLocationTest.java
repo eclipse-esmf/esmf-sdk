@@ -53,17 +53,20 @@ public class GithubLocationTest {
             // Regular file on branch with directory
             Arguments.arguments(
                   "https://github.com/eclipse-esmf/esmf-sdk/blob/main/core/esmf-test-aspect-models/src/main/resources/valid/"
-                        + "org.eclipse.esmf.test/1.0.0/AspectWithEntity.ttl", aspectWithEntityOnMain
+                        + "org.eclipse.esmf.test/1.0.0/AspectWithEntity.ttl",
+                  aspectWithEntityOnMain
             ),
             // Regular file on tag with directory
             Arguments.arguments(
                   "https://github.com/eclipse-esmf/esmf-sdk/blob/v2.9.0/core/esmf-test-aspect-models/src/main/resources/valid/org.eclipse"
-                        + ".esmf.test/1.0.0/AspectWithEntity.ttl", aspectWithEntityOnTag
+                        + ".esmf.test/1.0.0/AspectWithEntity.ttl",
+                  aspectWithEntityOnTag
             ),
             // Raw file reference on branch with directory
             Arguments.arguments(
                   "https://github.com/eclipse-esmf/esmf-sdk/raw/refs/heads/main/core/esmf-test-aspect-models/src/main/resources/valid/org"
-                        + ".eclipse.esmf.test/1.0.0/AspectWithEntity.ttl", aspectWithEntityOnMain
+                        + ".eclipse.esmf.test/1.0.0/AspectWithEntity.ttl",
+                  aspectWithEntityOnMain
             ),
             // Raw file reference on tag with directory
             Arguments.arguments(
@@ -75,22 +78,26 @@ public class GithubLocationTest {
             // Regular file on branch without directory
             Arguments.arguments(
                   "https://github.com/eclipse-tractusx/sldt-semantic-models/blob/main/io.catenax.battery.battery_pass/6.0.0/BatteryPass"
-                        + ".ttl", cxBatteryPassOnMain
+                        + ".ttl",
+                  cxBatteryPassOnMain
             ),
             // Regular file on tag without directory
             Arguments.arguments(
                   "https://github.com/eclipse-tractusx/sldt-semantic-models/blob/v24.05/io.catenax.battery.battery_pass/6.0.0/BatteryPass"
-                        + ".ttl", cxBatteryPassOnTag
+                        + ".ttl",
+                  cxBatteryPassOnTag
             ),
             // Raw file reference on branch without directory
             Arguments.arguments(
                   "https://github.com/eclipse-tractusx/sldt-semantic-models/raw/refs/heads/main/io.catenax.battery.battery_pass/6.0"
-                        + ".0/BatteryPass.ttl", cxBatteryPassOnMain
+                        + ".0/BatteryPass.ttl",
+                  cxBatteryPassOnMain
             ),
             // Raw file reference on tag without directory
             Arguments.arguments(
                   "https://github.com/eclipse-tractusx/sldt-semantic-models/raw/refs/tags/v24.05/io.catenax.battery.battery_pass/6.0"
-                        + ".0/BatteryPass.ttl", cxBatteryPassOnTag
+                        + ".0/BatteryPass.ttl",
+                  cxBatteryPassOnTag
             )
       );
    }

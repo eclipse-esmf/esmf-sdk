@@ -1,0 +1,6 @@
+*.md text working-tree-encoding=UTF-8 eol=lf
+*.java text working-tree-encoding=UTF-8 eol=lf
+*.adoc text working-tree-encoding=UTF-8 eol=lf
+*.ttl text working-tree-encoding=UTF-8 eol=lf
+*.xml text working-tree-encoding=UTF-8 eol=lf
+

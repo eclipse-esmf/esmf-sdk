@@ -27,7 +27,7 @@ public sealed interface ChangeReport {
    /**
     * Indicates that no changes are performed
     */
-   record NoChanges( ) implements ChangeReport {
+   record NoChanges() implements ChangeReport {
       @Override
       public <T, C> T accept( final Visitor<T, C> visitor, final C context ) {
          return visitor.visitNoChanges( this, context );
@@ -39,7 +39,9 @@ public sealed interface ChangeReport {
     *
     * @param text the description text
     */
-   record SimpleEntry( String text ) implements ChangeReport {
+   record SimpleEntry(
+         String text
+   ) implements ChangeReport {
       @Override
       public <T, C> T accept( final Visitor<T, C> visitor, final C context ) {
          return visitor.visitSimpleEntry( this, context );
@@ -52,7 +54,9 @@ public sealed interface ChangeReport {
     * @param summary the summary
     * @param details detailed descriptions of models used for changes
     */
-   record EntryWithDetails( String summary, Map<String, Model> details ) implements ChangeReport {
+   record EntryWithDetails(
+         String summary, Map<String, Model> details
+   ) implements ChangeReport {
       @Override
       public <T, C> T accept( final Visitor<T, C> visitor, final C context ) {
          return visitor.visitEntryWithDetails( this, context );
@@ -65,7 +69,9 @@ public sealed interface ChangeReport {
     * @param summary the summary
     * @param entries the nested reports
     */
-   record MultipleEntries( String summary, List<ChangeReport> entries ) implements ChangeReport {
+   record MultipleEntries(
+         String summary, List<ChangeReport> entries
+   ) implements ChangeReport {
       public MultipleEntries( final List<ChangeReport> entries ) {
          this( null, entries );
       }

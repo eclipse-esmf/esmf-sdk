@@ -53,4 +53,3 @@ public class AspectWithRangeConstraintWithoutMinMaxIntegerValue {
       return Objects.equals( testInt, that.testInt );
    }
 }
-

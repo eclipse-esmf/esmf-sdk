@@ -24,7 +24,9 @@ import org.apache.jena.rdf.model.RDFNode;
  * @param actual the encountered string
  * @param pattern the regular expression pattern the string should adhere to
  */
-public record PatternViolation( EvaluationContext context, String actual, String pattern ) implements Violation {
+public record PatternViolation(
+      EvaluationContext context, String actual, String pattern
+) implements Violation {
    public static final String ERROR_CODE = "ERR_PATTERN";
 
    @Override

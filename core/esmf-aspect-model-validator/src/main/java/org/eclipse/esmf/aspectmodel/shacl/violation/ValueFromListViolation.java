@@ -27,7 +27,9 @@ import org.apache.jena.rdf.model.RDFNode;
  * @param allowed the list of allowed values
  * @param actual the encountered value
  */
-public record ValueFromListViolation( EvaluationContext context, List<RDFNode> allowed, RDFNode actual ) implements Violation {
+public record ValueFromListViolation(
+      EvaluationContext context, List<RDFNode> allowed, RDFNode actual
+) implements Violation {
    public static final String ERROR_CODE = "ERR_VALUE_FROM_LIST";
 
    @Override

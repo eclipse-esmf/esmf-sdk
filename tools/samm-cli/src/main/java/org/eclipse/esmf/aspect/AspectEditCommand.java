@@ -22,18 +22,17 @@ import org.eclipse.esmf.exception.SubCommandException;
 import picocli.CommandLine;
 
 @CommandLine.Command(
-      name = AspectEditCommand.COMMAND_NAME,
-      description = "Edit (refactor) an Aspect Model",
-      subcommands = {
-            CommandLine.HelpCommand.class,
-            AspectEditMoveCommand.class,
-            AspectEditNewVersionCommand.class
-      },
-      headerHeading = "@|bold Usage|@:%n%n",
-      descriptionHeading = "%n@|bold Description|@:%n%n",
-      parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n"
-)
+   name = AspectEditCommand.COMMAND_NAME,
+   description = "Edit (refactor) an Aspect Model",
+   subcommands = {
+         CommandLine.HelpCommand.class,
+         AspectEditMoveCommand.class,
+         AspectEditNewVersionCommand.class
+   },
+   headerHeading = "@|bold Usage|@:%n%n",
+   descriptionHeading = "%n@|bold Description|@:%n%n",
+   parameterListHeading = "%n@|bold Parameters|@:%n",
+   optionListHeading = "%n@|bold Options|@:%n" )
 public class AspectEditCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "edit";
 

@@ -36,6 +36,11 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.vocabulary.RDF;
+
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.aspectmodel.generator.AspectArtifact;
@@ -61,18 +66,6 @@ import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
 import org.eclipse.esmf.test.TestResources;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fge.jsonschema.core.exceptions.ProcessingException;
-import com.github.fge.jsonschema.core.report.ProcessingReport;
-import com.github.fge.jsonschema.main.JsonSchema;
-import com.github.fge.jsonschema.main.JsonSchemaFactory;
-import com.google.common.collect.Streams;
-import io.vavr.control.Either;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.vocabulary.RDF;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
@@ -82,11 +75,32 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.github.fge.jsonschema.core.exceptions.ProcessingException;
+import com.github.fge.jsonschema.core.report.ProcessingReport;
+import com.github.fge.jsonschema.main.JsonSchema;
+import com.github.fge.jsonschema.main.JsonSchemaFactory;
+import com.google.common.collect.Streams;
+
+import io.vavr.control.Either;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+
 public class JsonSchemaImporterTest {
    private final AspectModelValidator validator = new AspectModelValidator();
    private static final String SCHEMAS_LOCATION = "schemas";
    final ObjectMapper objectMapper = new ObjectMapper();
+   final com.fasterxml.jackson.databind.ObjectMapper legacyObjectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
    final AspectModelUrn testUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "Test" );
+
+   private com.fasterxml.jackson.databind.JsonNode toLegacyJsonNode( final JsonNode node ) {
+      final String jsonString = objectMapper.writeValueAsString( node );
+      try {
+         return legacyObjectMapper.readTree( jsonString );
+      } catch ( final JsonProcessingException exception ) {
+         throw new RuntimeException( exception );
+      }
+   }
 
    private JsonNode generateJsonData( final Aspect aspect ) {
       try {
@@ -113,45 +127,50 @@ public class JsonSchemaImporterTest {
    }
 
    /**
-    * For several test models, valid schemas can be generated but they don't match the payload structure of the original Aspect Model.
-    * This is to be expected due to the structural differences between Aspect Models and JSON schema, so we exclude them here.
-    * The point of the test is to provide a regression test for the remaining models where the structure described by the imported
+    * For several test models, valid schemas can be generated but they don't match the payload
+    * structure of the original Aspect Model. This is to be expected due to the structural differences
+    * between Aspect Models and JSON schema, so we exclude them here. The point of the test is to
+    * provide a regression test for the remaining models where the structure described by the imported
     * Aspect corresponds to the original schema.
     */
    @ParameterizedTest
    @Execution( ExecutionMode.CONCURRENT )
-   @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
-         "ASPECT_WITH_ABSTRACT_ENTITY",
-         "ASPECT_WITH_ABSTRACT_PROPERTY",
-         "ASPECT_WITH_ABSTRACT_SINGLE_ENTITY",
-         "ASPECT_WITH_COLLECTION_AND_ELEMENT_CHARACTERISTIC",
-         "ASPECT_WITH_COMPLEX_COLLECTION_ENUM",
-         "ASPECT_WITH_COMPLEX_ENTITY_COLLECTION_ENUM",
-         "ASPECT_WITH_COMPLEX_ENUM",
-         "ASPECT_WITH_COMPLEX_ENUM_INCL_OPTIONAL",
-         "ASPECT_WITH_COMPLEX_SET",
-         "ASPECT_WITH_CURIE_ENUMERATION",
-         "ASPECT_WITH_ENTITY",
-         "ASPECT_WITH_ENTITY_ENUMERATION_AND_LANG_STRING",
-         "ASPECT_WITH_ENTITY_ENUMERATION_AND_NOT_IN_PAYLOAD_PROPERTIES",
-         "ASPECT_WITH_ENTITY_ENUMERATION_WITH_NOT_EXISTING_ENUM",
-         "ASPECT_WITH_ENTITY_INSTANCE_WITH_SCALAR_LIST_PROPERTY",
-         "ASPECT_WITH_ENTITY_WITH_NESTED_ENTITY_LIST_PROPERTY",
-         "ASPECT_WITH_ENTITY_WITHOUT_PROPERTY",
-         "ASPECT_WITH_ENUM_HAVING_NESTED_ENTITIES",
-         "ASPECT_WITH_EXTENDED_ENTITY",
-         "ASPECT_WITH_EXTENDED_ENUMS",
-         "ASPECT_WITH_EXTENDED_ENUMS_WITH_NOT_IN_PAYLOAD_PROPERTY",
-         "ASPECT_WITH_LIST_ENTITY_ENUMERATION",
-         "ASPECT_WITH_MULTIPLE_ENUMERATIONS_ON_MULTIPLE_LEVELS",
-         "ASPECT_WITH_OPTIONAL_PROPERTIES_AND_ENTITY_WITH_SEPARATE_FILES",
-         "ASPECT_WITH_QUANTITY",
-         "ASPECT_WITH_RECURSIVE_PROPERTY_WITH_OPTIONAL_AND_ENTITY_PROPERTY",
-         "ASPECT_WITH_SIMPLE_ENTITY",
-         "ASPECT_WITH_TIME_SERIES",
-         "MODEL_WITH_BROKEN_CYCLES",
-         "ASPECT_WITH_VALID_ANNOTATION_TEST"
-   } )
+   @EnumSource( value = TestAspect.class,
+      mode = EnumSource.Mode.EXCLUDE,
+      names = {
+            "ASPECT_WITH_ABSTRACT_ENTITY",
+            "ASPECT_WITH_ABSTRACT_PROPERTY",
+            "ASPECT_WITH_ABSTRACT_SINGLE_ENTITY",
+            "ASPECT_WITH_COLLECTION_AND_ELEMENT_CHARACTERISTIC",
+            "ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY",
+            "ASPECT_WITH_COMPLEX_COLLECTION_ENUM",
+            "ASPECT_WITH_COMPLEX_ENTITY_COLLECTION_ENUM",
+            "ASPECT_WITH_COMPLEX_ENUM",
+            "ASPECT_WITH_COMPLEX_ENUM_INCL_OPTIONAL",
+            "ASPECT_WITH_COMPLEX_SET",
+            "ASPECT_WITH_CURIE_ENUMERATION",
+            "ASPECT_WITH_ENTITY",
+            "ASPECT_WITH_ENTITY_COLLECTION_WITH_PAYLOAD_NAMES",
+            "ASPECT_WITH_ENTITY_ENUMERATION_AND_LANG_STRING",
+            "ASPECT_WITH_ENTITY_ENUMERATION_AND_NOT_IN_PAYLOAD_PROPERTIES",
+            "ASPECT_WITH_ENTITY_ENUMERATION_WITH_NOT_EXISTING_ENUM",
+            "ASPECT_WITH_ENTITY_INSTANCE_WITH_SCALAR_LIST_PROPERTY",
+            "ASPECT_WITH_ENTITY_WITH_NESTED_ENTITY_LIST_PROPERTY",
+            "ASPECT_WITH_ENTITY_WITHOUT_PROPERTY",
+            "ASPECT_WITH_ENUM_HAVING_NESTED_ENTITIES",
+            "ASPECT_WITH_EXTENDED_ENTITY",
+            "ASPECT_WITH_EXTENDED_ENUMS",
+            "ASPECT_WITH_EXTENDED_ENUMS_WITH_NOT_IN_PAYLOAD_PROPERTY",
+            "ASPECT_WITH_LIST_ENTITY_ENUMERATION",
+            "ASPECT_WITH_MULTIPLE_ENUMERATIONS_ON_MULTIPLE_LEVELS",
+            "ASPECT_WITH_OPTIONAL_PROPERTIES_AND_ENTITY_WITH_SEPARATE_FILES",
+            "ASPECT_WITH_QUANTITY",
+            "ASPECT_WITH_RECURSIVE_PROPERTY_WITH_OPTIONAL_AND_ENTITY_PROPERTY",
+            "ASPECT_WITH_SIMPLE_ENTITY",
+            "ASPECT_WITH_TIME_SERIES",
+            "MODEL_WITH_BROKEN_CYCLES",
+            "ASPECT_WITH_VALID_ANNOTATION_TEST"
+      } )
    void testRoundTripTranslation( final TestModel testAspect ) {
       final Aspect originalAspect = TestResources.load( testAspect ).aspect();
       final JsonNode jsonSchema = new AspectModelJsonSchemaGenerator( originalAspect ).getContent();
@@ -173,7 +192,7 @@ public class JsonSchemaImporterTest {
 
       final JsonNode jsonData = generateJsonData( importedAspect );
       try {
-         final ProcessingReport report = parseSchema( jsonSchema ).validate( jsonData );
+         final ProcessingReport report = parseSchema( jsonSchema ).validate( toLegacyJsonNode( jsonData ) );
          if ( !report.isSuccess() ) {
             System.out.println( report );
          }
@@ -428,7 +447,7 @@ public class JsonSchemaImporterTest {
    private JsonSchema parseSchema( final JsonNode jsonSchema ) {
       final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
       try {
-         return factory.getJsonSchema( jsonSchema );
+         return factory.getJsonSchema( toLegacyJsonNode( jsonSchema ) );
       } catch ( final ProcessingException e ) {
          e.printStackTrace();
          fail();
@@ -439,12 +458,7 @@ public class JsonSchemaImporterTest {
    @SuppressWarnings( "CallToPrintStackTrace" )
    private void showJson( final JsonNode node ) {
       final ByteArrayOutputStream out = new ByteArrayOutputStream();
-      try {
-         objectMapper.writerWithDefaultPrettyPrinter().writeValue( out, node );
-      } catch ( final IOException e ) {
-         e.printStackTrace();
-         fail();
-      }
+      objectMapper.writerWithDefaultPrettyPrinter().writeValue( out, node );
       System.out.println( out );
    }
 }

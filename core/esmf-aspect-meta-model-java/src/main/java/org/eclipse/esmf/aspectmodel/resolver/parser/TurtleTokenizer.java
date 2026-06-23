@@ -28,13 +28,15 @@ import org.apache.jena.riot.tokens.Tokenizer;
 import org.apache.jena.riot.tokens.TokenizerText;
 
 /**
- * This tokenizer implementation wraps a {@link TokenizerText} and does things on top: (1) It swallows the wrapped tokenizer's exceptions,
- * (2) it provides diagnostics about errors using a custom error handler, (3) it tokenizes the input document on construction and caches
- * the results. There are two ways to retrieve the tokens: Via the {@link #tokens()} method which returns a regular immutable list of the
- * tokens, and via the iterator interface ({@link #hasNext()}, {@link #next()}. In order to reset the iterator to the start to re-read the
- * tokens, call {@link #close()}. The second method is implemented mainly to make the TurtleTokenizer usable with Apache Jena's
- * {@link org.apache.jena.riot.lang.LangEngine}, the base class for RDF parsers, and its derived classes such as
- * {@link org.apache.jena.riot.lang.LangTurtle}.
+ * This tokenizer implementation wraps a {@link TokenizerText} and does things on top: (1) It
+ * swallows the wrapped tokenizer's exceptions, (2) it provides diagnostics about errors using a
+ * custom error handler, (3) it tokenizes the input document on construction and caches the results.
+ * There are two ways to retrieve the tokens: Via the {@link #tokens()} method which returns a
+ * regular immutable list of the tokens, and via the iterator interface ({@link #hasNext()},
+ * {@link #next()}. In order to reset the iterator to the start to re-read the tokens, call
+ * {@link #close()}. The second method is implemented mainly to make the TurtleTokenizer usable with
+ * Apache Jena's {@link org.apache.jena.riot.lang.LangEngine}, the base class for RDF parsers, and
+ * its derived classes such as {@link org.apache.jena.riot.lang.LangTurtle}.
  */
 public class TurtleTokenizer implements Tokenizer {
    private PeekIterator<Token> iterator;
@@ -48,10 +50,13 @@ public class TurtleTokenizer implements Tokenizer {
                .source( stream )
                .errorHandler( errorHandler ).build();
          tokens = Streams.stream( tokenizer ).map( SmartToken::new ).collect( Collectors.toList() );
-         // TODO: Extract comments from source document and put them into tokens list. These are thrown away by TokenizerText, but
-         // nobody stops us from extracting them ourselves and adding them; there is even a corresponding TokenType COMMENT.
+         // TODO: Extract comments from source document and put them into tokens list. These are thrown away
+         // by TokenizerText, but
+         // nobody stops us from extracting them ourselves and adding them; there is even a corresponding
+         // TokenType COMMENT.
       } catch ( final RiotParseException parseException ) {
-         // If Jena deems the input unparsable and the error handling encounters a "fatal" state, it will throw.
+         // If Jena deems the input unparsable and the error handling encounters a "fatal" state, it will
+         // throw.
          // At this point we will already have created the corresponding Diagnostic object.
       }
       iterator = PeekIterator.create( tokens.stream().map( SmartToken::token ).iterator() );

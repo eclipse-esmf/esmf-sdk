@@ -19,7 +19,6 @@
    samm:operations ( ) .
 
 :testList a samm:Property ;
-   samm:exampleValue "35"^^xsd:int ;
    samm:characteristic :IntegerList .
 
 :IntegerList a samm-c:List ;

@@ -43,9 +43,10 @@ public class LoggingMixin {
       return new CommandLine.RunLast().execute( parseResult );
    }
 
-   @CommandLine.Option( names = { "-v", "--verbose" }, description = {
-         "Specify multiple -v options to increase verbosity,",
-         "e.g. use `-v`, `-vv` or `-vvv` for more details" } )
+   @CommandLine.Option( names = { "-v", "--verbose" },
+      description = {
+            "Specify multiple -v options to increase verbosity,",
+            "e.g. use `-v`, `-vv` or `-vvv` for more details" } )
    public void setVerbose( final boolean[] verbosity ) {
       getTopLevelCommandLoggingMixin( mixee ).verbosity = verbosity;
    }
@@ -101,4 +102,3 @@ public class LoggingMixin {
       root.addAppender( appender );
    }
 }
-

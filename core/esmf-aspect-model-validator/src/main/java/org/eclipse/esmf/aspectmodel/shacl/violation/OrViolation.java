@@ -25,7 +25,9 @@ import org.eclipse.esmf.aspectmodel.shacl.constraint.OrConstraint;
  * @param context the evaluation context
  * @param violations the list of violations that were encountered
  */
-public record OrViolation( EvaluationContext context, List<Violation> violations ) implements Violation {
+public record OrViolation(
+      EvaluationContext context, List<Violation> violations
+) implements Violation {
    public static final String ERROR_CODE = "ERR_OR";
 
    @Override
@@ -36,11 +38,12 @@ public record OrViolation( EvaluationContext context, List<Violation> violations
    @Override
    public String violationSpecificMessage() {
       return "At least one of the following violations"
-            + (context.property().isPresent() ? " for " + context.propertyName() : "")
+            + ( context.property().isPresent() ? " for " + context.propertyName() : "" )
             + " must be fixed: "
             + IntStream.range( 0, violations.size() )
-            .mapToObj( i -> String.format( "(%d) %s", i + 1, violations().get( i ).message().replaceAll( "\\.$", "" ) ) )
-            .collect( Collectors.joining( ", " ) ) + ".";
+                  .mapToObj( i -> String.format( "(%d) %s", i + 1, violations().get( i ).message().replaceAll( "\\.$", "" ) ) )
+                  .collect( Collectors.joining( ", " ) )
+            + ".";
    }
 
    @Override

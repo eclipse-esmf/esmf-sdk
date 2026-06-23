@@ -23,18 +23,17 @@ import picocli.CommandLine;
  * Top-level command for working with Namespace Packages
  */
 @CommandLine.Command(
-      name = PackageCommand.COMMAND_NAME,
-      description = "Import and export Namespace Packages",
-      subcommands = {
-            CommandLine.HelpCommand.class,
-            PackageImportCommand.class,
-            PackageExportCommand.class
-      },
-      headerHeading = "@|bold Usage|@:%n%n",
-      descriptionHeading = "%n@|bold Description|@:%n%n",
-      parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n"
-)
+   name = PackageCommand.COMMAND_NAME,
+   description = "Import and export Namespace Packages",
+   subcommands = {
+         CommandLine.HelpCommand.class,
+         PackageImportCommand.class,
+         PackageExportCommand.class
+   },
+   headerHeading = "@|bold Usage|@:%n%n",
+   descriptionHeading = "%n@|bold Description|@:%n%n",
+   parameterListHeading = "%n@|bold Parameters|@:%n",
+   optionListHeading = "%n@|bold Options|@:%n" )
 public class PackageCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "package";
 
@@ -42,11 +41,10 @@ public class PackageCommand extends AbstractCommand {
    private LoggingMixin loggingMixin;
 
    @CommandLine.Parameters(
-         paramLabel = "INPUT",
-         description = "Input Namespace Package file, URL or Aspect Model URN",
-         arity = "1",
-         index = "0"
-   )
+      paramLabel = "INPUT",
+      description = "Input Namespace Package file, URL or Aspect Model URN",
+      arity = "1",
+      index = "0" )
    private String input;
 
    @Override

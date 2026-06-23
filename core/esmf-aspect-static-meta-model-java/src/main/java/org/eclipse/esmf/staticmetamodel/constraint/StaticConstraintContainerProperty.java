@@ -22,7 +22,8 @@ import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.staticmetamodel.ContainerProperty;
 
 /**
- * Extends {@link StaticConstraintProperty} to represent container or wrapper types like {@code Collection} or {@code
+ * Extends {@link StaticConstraintProperty} to represent container or wrapper types like
+ * {@code Collection} or {@code
  * Optional} and carries type information about the contained type and includes a constraint
  */
 public abstract class StaticConstraintContainerProperty<E, R, T, C extends Characteristic>

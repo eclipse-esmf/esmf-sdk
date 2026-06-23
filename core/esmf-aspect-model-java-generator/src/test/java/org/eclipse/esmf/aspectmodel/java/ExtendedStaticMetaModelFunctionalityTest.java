@@ -23,6 +23,8 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.reflect.ConstructorUtils;
+
 import org.eclipse.esmf.staticmetamodel.ComputedProperty;
 import org.eclipse.esmf.staticmetamodel.StaticContainerProperty;
 import org.eclipse.esmf.staticmetamodel.StaticProperty;
@@ -31,8 +33,9 @@ import org.eclipse.esmf.staticmetamodel.propertychain.ContainerPropertyChain;
 import org.eclipse.esmf.staticmetamodel.propertychain.PropertyChain;
 import org.eclipse.esmf.test.TestAspect;
 
-import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -202,12 +205,12 @@ public class ExtendedStaticMetaModelFunctionalityTest extends StaticMetaModelGen
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, false,
             JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
 
-      final Class<?> aspectClass = findGeneratedClass( result, "AspectWithNestedEntityList" );
+      findGeneratedClass( result, "AspectWithNestedEntityList" );
       final Class<?> entityClass = findGeneratedClass( result, "TestFirstEntity" );
       final Class<?> nestedEntityClass = findGeneratedClass( result, "TestSecondEntity" );
-      final Class<?> metaAspectClass = findGeneratedClass( result, "MetaAspectWithNestedEntityList" );
+      findGeneratedClass( result, "MetaAspectWithNestedEntityList" );
       final Class<?> metaEntity = findGeneratedClass( result, "MetaTestFirstEntity" );
-      final Class<?> metaNestedEntity = findGeneratedClass( result, "MetaTestSecondEntity" );
+      findGeneratedClass( result, "MetaTestSecondEntity" );
 
       final Object ne1 = ConstructorUtils.invokeConstructor( nestedEntityClass, null, "nested-string1" );
       final Object ne2 = ConstructorUtils.invokeConstructor( nestedEntityClass, null, "nested-string2" );
@@ -296,6 +299,7 @@ public class ExtendedStaticMetaModelFunctionalityTest extends StaticMetaModelGen
    }
 
    @ParameterizedTest( name = "{0}" )
+   @Execution( ExecutionMode.CONCURRENT )
    @MethodSource( "mutatePropertiesInput" )
    void testMutatePropertiesThroughStaticProperties( final String testName, final boolean generateSetters,
          final JavaCodeGenerationConfig.SetterStyle setterStyle,

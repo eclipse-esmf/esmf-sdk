@@ -13,9 +13,11 @@
 
 package org.eclipse.esmf.aspectmodel;
 
+import java.io.OutputStream;
 import java.util.Set;
 
 import org.eclipse.esmf.aspectmodel.generator.json.AspectModelJsonPayloadGenerator;
+import org.eclipse.esmf.aspectmodel.generator.json.JsonPayloadArtifact;
 import org.eclipse.esmf.aspectmodel.generator.json.JsonPayloadGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.json.JsonPayloadGenerationConfigBuilder;
 import org.eclipse.esmf.metamodel.Aspect;
@@ -28,7 +30,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Mojo( name = GenerateJsonPayload.MAVEN_GOAL, defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
+@Mojo( name = GenerateJsonPayload.MAVEN_GOAL,
+   defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateJsonPayload extends AspectModelMojo {
    public static final String MAVEN_GOAL = "generateJsonPayload";
    private static final Logger LOG = LoggerFactory.getLogger( GenerateJsonPayload.class );
@@ -46,7 +49,14 @@ public class GenerateJsonPayload extends AspectModelMojo {
                .addTypeAttributeForEntityInheritance( addTypeAttribute )
                .build();
          final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator( context, config );
-         generator.generateThrowing( name -> getOutputStreamForFile( name, outputDirectory ) );
+         for ( final JsonPayloadArtifact artifact : generator.generate().toList() ) {
+            try ( final OutputStream output = getOutputStreamForFile( context.getName() + ".json", outputDirectory ) ) {
+               output.write( artifact.serialize() );
+               output.flush();
+            } catch ( final Throwable exception ) {
+               throw new MojoExecutionException( "Could not write to output " + outputDirectory, exception );
+            }
+         }
       }
       LOG.info( "Successfully generated example JSON payloads for Aspect Models." );
    }

@@ -16,17 +16,21 @@ package org.eclipse.esmf.aspectmodel;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.apache.maven.plugin.Mojo;
-import org.junit.Test;
+import org.apache.maven.api.plugin.testing.InjectMojo;
+import org.apache.maven.api.plugin.testing.MojoTest;
+import org.junit.jupiter.api.Test;
 
-@SuppressWarnings( "JUnitMixedFramework" )
+@MojoTest
 public class GenerateSqlTest extends AspectModelMojoTest {
    @Test
-   public void testGenerateSqlWithDefaultSettings() throws Exception {
-      final Mojo generateSql = getMojo( "generate-sql-pom-valid-aspect-model-default-settings", "generateSql" );
+   @InjectMojo(
+      goal = GenerateSql.MAVEN_GOAL,
+      pom = "src/test/resources/generate-sql-pom-valid-aspect-model-default-settings/pom.xml" )
+   public void testGenerateSqlWithDefaultSettings( final GenerateSql generateSql ) throws IOException {
       assertThatCode( generateSql::execute ).doesNotThrowAnyException();
       final Path generatedFile = generatedFilePath( "AspectWithSimpleTypes.sql" );
       assertThat( generatedFile ).exists();
@@ -36,8 +40,10 @@ public class GenerateSqlTest extends AspectModelMojoTest {
    }
 
    @Test
-   public void testGenerateSqlWithAdjustedSettings() throws Exception {
-      final Mojo generateSql = getMojo( "generate-sql-pom-valid-aspect-model-adjusted-settings", "generateSql" );
+   @InjectMojo(
+      goal = GenerateSql.MAVEN_GOAL,
+      pom = "src/test/resources/generate-sql-pom-valid-aspect-model-adjusted-settings/pom.xml" )
+   public void testGenerateSqlWithAdjustedSettings( final GenerateSql generateSql ) throws IOException {
       assertThatCode( generateSql::execute ).doesNotThrowAnyException();
       final Path generatedFile = generatedFilePath( "AspectWithSimpleTypes.sql" );
       assertThat( generatedFile ).exists();
@@ -45,6 +51,6 @@ public class GenerateSqlTest extends AspectModelMojoTest {
 
       assertThat( sqlContent ).contains( "CREATE TABLE aspect_with_simple_types" );
       assertThat( sqlContent ).contains( "custom_column ARRAY<STRING> NOT NULL COMMENT 'Custom column'" );
-      assertThat( sqlContent ).contains( "DECIMAL(23)" );
+      assertThat( sqlContent ).contains( "DECIMAL(23,14)" );
    }
 }

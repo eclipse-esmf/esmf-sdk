@@ -30,7 +30,9 @@ import org.apache.jena.rdf.model.RDFNode;
  *
  * @param otherProperty the property of which the value must match the given property value
  */
-public record LessThanConstraint( Property otherProperty ) implements Constraint {
+public record LessThanConstraint(
+      Property otherProperty
+) implements Constraint {
    @Override
    public boolean canBeUsedOnNodeShapes() {
       return false;
@@ -38,7 +40,7 @@ public record LessThanConstraint( Property otherProperty ) implements Constraint
 
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
-      //noinspection DuplicatedCode
+      // noinspection DuplicatedCode
       final List<Violation> nodeKindViolations = new NodeKindConstraint( Shape.NodeKind.Literal ).apply( rdfNode, context );
       if ( !nodeKindViolations.isEmpty() ) {
          return nodeKindViolations;

@@ -36,13 +36,13 @@ class ValueInstantiatorTest {
    @Test
    void testBuildLanguageStringEmptyLanguageTag() {
       // Arrange
-      String lexicalRepresentation = "hello";
-      String languageTag = "";
-      String datatypeUri = RDF.langString.getURI();
-      ValueInstantiator valueInstantiator = new ValueInstantiator();
+      final String lexicalRepresentation = "hello";
+      final String languageTag = "";
+      final String datatypeUri = RDF.langString.getURI();
+      final ValueInstantiator valueInstantiator = new ValueInstantiator();
 
       // Act
-      Optional<ScalarValue> result = valueInstantiator.buildScalarValue( lexicalRepresentation, languageTag, datatypeUri );
+      final Optional<ScalarValue> result = valueInstantiator.buildScalarValue( lexicalRepresentation, languageTag, datatypeUri );
 
       // Assert
       assertThat( result ).isEmpty();
@@ -51,13 +51,13 @@ class ValueInstantiatorTest {
    @Test
    void testBuildLanguageStringNonEmptyLanguageTag() {
       // Arrange
-      String lexicalRepresentation = "hello";
-      String languageTag = "en";
-      String datatypeUri = RDF.langString.getURI();
-      ValueInstantiator valueInstantiator = new ValueInstantiator();
+      final String lexicalRepresentation = "hello";
+      final String languageTag = "en";
+      final String datatypeUri = RDF.langString.getURI();
+      final ValueInstantiator valueInstantiator = new ValueInstantiator();
 
       // Act
-      Optional<ScalarValue> result = valueInstantiator.buildScalarValue( lexicalRepresentation, languageTag, datatypeUri );
+      final Optional<ScalarValue> result = valueInstantiator.buildScalarValue( lexicalRepresentation, languageTag, datatypeUri );
 
       // Assert
       assertThat( result ).isPresent();

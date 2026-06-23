@@ -23,6 +23,14 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.RDFList;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.vocabulary.RDF;
+
 import org.eclipse.esmf.aspectmodel.AspectLoadingException;
 import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
@@ -33,22 +41,16 @@ import org.eclipse.esmf.metamodel.Entity;
 import org.eclipse.esmf.metamodel.EntityInstance;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Property;
+import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Value;
+import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 import org.eclipse.esmf.metamodel.impl.DefaultCollectionValue;
 import org.eclipse.esmf.metamodel.impl.DefaultEntityInstance;
 import org.eclipse.esmf.metamodel.impl.DefaultScalar;
 import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
 import org.eclipse.esmf.metamodel.vocabulary.SAMM;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
-
-import org.apache.jena.rdf.model.Literal;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.RDFList;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.vocabulary.RDF;
 
 public abstract class Instantiator<T extends ModelElement> extends AttributeValueRetriever implements Function<Resource, T> {
    protected final ModelElementFactory modelElementFactory;
@@ -68,10 +70,12 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
    }
 
    /**
-    * Extracts all {@link SAMM#Property()} model elements which are referenced in the given Property List, e.g.
-    * {@link SAMM#properties()}, and creates {@link Property} instances for these model elements.
+    * Extracts all {@link SAMM#Property()} model elements which are referenced in the given Property
+    * List, e.g. {@link SAMM#properties()}, and creates {@link Property} instances for these model
+    * elements.
     *
-    * @param elementWithProperties the {@link Resource} which has the propertyRdfClass list for which the model elements are extracted
+    * @param elementWithProperties the {@link Resource} which has the propertyRdfClass list for which
+    *        the model elements are extracted
     * @param rootProperty the {@link org.apache.jena.rdf.model.Property} defining the property list
     * @return a {@link List} containing the {@link Property} instances
     */
@@ -105,7 +109,10 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
          return modelElementFactory.create( AbstractEntity.class, entityStatement.get().getSubject() );
       }
 
-      return new DefaultScalar( dataTypeResource.getURI() );
+      final Scalar scalar = SammXsdType.typeByUri( dataTypeResource.getURI() )
+            .map( Scalar.class::cast )
+            .orElseGet( () -> new DefaultScalar( dataTypeResource.getURI() ) );
+      return scalar;
    }
 
    /**
@@ -121,7 +128,8 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
                final Statement dataType = resource.getProperty( SammNs.SAMM.dataType() );
                if ( dataType == null ) {
                   throw new AspectLoadingException(
-                        String.format( "No datatype is defined on the Characteristic instance '%s: '.", resource.getLocalName() ) );
+                        String.format( "No datatype is defined on the Characteristic instance '%s'.", resource.getLocalName() ),
+                        resource );
                }
                return dataType;
             } );
@@ -130,17 +138,18 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
    protected Optional<Characteristic> getElementCharacteristic( final Resource collection ) {
       return optionalAttributeValue( collection, SammNs.SAMMC.elementCharacteristic() )
             .map( Statement::getResource )
-            .map( elementCharacteristicResource ->
-                  modelElementFactory.create( Characteristic.class, elementCharacteristicResource ) );
+            .map( elementCharacteristicResource -> modelElementFactory.create( Characteristic.class, elementCharacteristicResource ) );
    }
 
    /**
-    * Creates a {@link Value} from a given constant value in the RDF model. This can be either a scalar, a collection or an Entity.
-    * What is constructed can depend on the type of RDF node, but also on the Characteristic of the Property this value is used for.
+    * Creates a {@link Value} from a given constant value in the RDF model. This can be either a
+    * scalar, a collection or an Entity. What is constructed can depend on the type of RDF node, but
+    * also on the Characteristic of the Property this value is used for.
     *
     * @param node the RDF node that represents the value
-    * @param characteristicResource the resources that represents the Characteristic that describes the value. This can be empty for the
-    * values of collections that have no samm-c:elementCharacterisic set
+    * @param characteristicResource the resources that represents the Characteristic that describes the
+    *        value. This can be empty for the values of collections that have no
+    *        samm-c:elementCharacterisic set
     * @param type the type that describes the value
     * @return a value instance
     */
@@ -149,7 +158,7 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
       if ( node.isLiteral() ) {
          final Literal literal = node.asLiteral();
          return valueInstantiator.buildScalarValue( literal.getLexicalForm(), literal.getLanguage(), literal.getDatatypeURI() )
-               .orElseThrow( () -> new AspectLoadingException( "Literal can not be parsed: " + literal ) );
+               .orElseThrow( () -> new AspectLoadingException( "Literal can not be parsed: " + literal, literal ) );
       }
 
       if ( node.isResource() ) {
@@ -158,7 +167,7 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
             final Optional<String> valueOpt = optionalAttributeValue( resource, SammNs.SAMM.value() ).map( Statement::getString );
 
             if ( valueOpt.isEmpty() ) {
-               throw new AspectLoadingException( "samm:Value must contain a samm:value property" );
+               throw new AspectLoadingException( "samm:Value must contain a samm:value property", resource );
             }
 
             return new DefaultScalarValue( buildBaseAttributes( resource ), valueOpt.get(), new DefaultScalar( type.getUrn() ) );
@@ -170,7 +179,7 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
          final Resource characteristic = characteristicResource.get();
          final Optional<Resource> elementCharacteristic = optionalAttributeValue( characteristic,
                SammNs.SAMMC.elementCharacteristic() ).map(
-               Statement::getResource );
+                     Statement::getResource );
          CollectionValue.CollectionType collectionType = null;
          if ( RdfUtil.isTypeOfOrSubtypeOf( characteristic, SammNs.SAMMC.Set() ) ) {
             collectionType = CollectionValue.CollectionType.SET;
@@ -188,7 +197,7 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
 
       // This could happen if an entity instance should be constructed for an AbstractEntity type
       if ( !type.is( Entity.class ) ) {
-         throw new AspectLoadingException( "Expected type of value " + node + " to be samm:Entity, but it is not" );
+         throw new AspectLoadingException( "Expected type of value " + node + " to be samm:Entity, but it is not", node );
       }
 
       // Entities
@@ -213,11 +222,12 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
             if ( property.isOptional() ) {
                return;
             }
-            throw new AspectLoadingException( "Mandatory Property " + property + " not found in Entity instance " + entityInstance );
+            throw new AspectLoadingException( "Mandatory Property " + property + " not found in Entity instance " + entityInstance,
+                  entityInstance );
          }
          final RDFNode rdfValue = entityInstance.getProperty( rdfProperty ).getObject();
          final Type propertyType = property.getDataType()
-               .orElseThrow( () -> new AspectLoadingException( "Invalid Property without a dataType found" ) );
+               .orElseThrow( () -> new AspectLoadingException( "Invalid Property without a dataType found", entityInstance ) );
          final Resource characteristic = attributeValue( rdfProperty, SammNs.SAMM.characteristic() ).getResource();
          final Value value = buildValue( rdfValue, Optional.of( characteristic ), propertyType );
          assertions.put( property, value );

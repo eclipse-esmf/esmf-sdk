@@ -32,14 +32,14 @@ public class ChangeRdfPrefixes extends EditAspectModel {
    private final Map<String, String> removePrefixes;
 
    public ChangeRdfPrefixes( final AspectModelFile targetFile, final Map<String, String> addPrefixes ) {
-      this( targetFile.sourceLocation().orElseThrow( () ->
-            new ModelChangeException( "Can add prefixes only to named file" ) ), addPrefixes );
+      this( targetFile.sourceLocation().orElseThrow( () -> new ModelChangeException( "Can add prefixes only to named file" ) ),
+            addPrefixes );
    }
 
    public ChangeRdfPrefixes( final AspectModelFile targetFile, final Map<String, String> addPrefixes,
          final Map<String, String> removePrefixes ) {
-      this( targetFile.sourceLocation().orElseThrow( () ->
-            new ModelChangeException( "Can add prefixes only to named file" ) ), addPrefixes, removePrefixes );
+      this( targetFile.sourceLocation().orElseThrow( () -> new ModelChangeException( "Can add prefixes only to named file" ) ), addPrefixes,
+            removePrefixes );
    }
 
    public ChangeRdfPrefixes( final URI targetLocation, final Map<String, String> addPrefixes ) {

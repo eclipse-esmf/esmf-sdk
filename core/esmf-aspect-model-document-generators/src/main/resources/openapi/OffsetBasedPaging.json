@@ -31,9 +31,6 @@
   "response": {
     "type": "object",
     "properties": {
-      "items": {
-        "type": "array"
-      },
       "totalItems": {
         "type": "number"
       },

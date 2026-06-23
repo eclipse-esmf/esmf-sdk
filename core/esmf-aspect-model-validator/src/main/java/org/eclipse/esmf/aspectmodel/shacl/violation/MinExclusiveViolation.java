@@ -25,7 +25,9 @@ import org.apache.jena.rdf.model.RDFNode;
  * @param min the given minimum value
  * @param actual the encountered value
  */
-public record MinExclusiveViolation( EvaluationContext context, Literal min, Literal actual ) implements Violation {
+public record MinExclusiveViolation(
+      EvaluationContext context, Literal min, Literal actual
+) implements Violation {
    public static final String ERROR_CODE = "ERR_MIN_EXCLUSIVE";
 
    @Override

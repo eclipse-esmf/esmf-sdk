@@ -21,9 +21,6 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-import org.eclipse.esmf.metamodel.Property;
-
-import com.fasterxml.jackson.databind.JsonNode;
 import org.eclipse.digitaltwin.aas4j.v3.model.AssetKind;
 import org.eclipse.digitaltwin.aas4j.v3.model.ConceptDescription;
 import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
@@ -31,11 +28,15 @@ import org.eclipse.digitaltwin.aas4j.v3.model.ModellingKind;
 import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
 
+import org.eclipse.esmf.metamodel.Property;
+import org.eclipse.esmf.metamodel.ScalarValue;
+
+import tools.jackson.databind.JsonNode;
+
 /**
  * Contains and tracks the context while the {@link AspectModelAasVisitor} traverses the metamodel.
  */
 public class Context {
-
    Environment environment;
    final Submodel submodel;
    Property property;
@@ -50,10 +51,9 @@ public class Context {
    }
 
    /**
-    * When iterating over the aspect data of a collection-valued property, this method has to be used to track the iteration for each
-    * property in the property
-    * graph.
-    * Iteration is always forward, i.e. the index will always increase by 1.
+    * When iterating over the aspect data of a collection-valued property, this method has to be used
+    * to track the iteration for each property in the property graph. Iteration is always forward, i.e.
+    * the index will always increase by 1.
     *
     * @param collectionProperty the property being iterated
     * @return {@code this} context
@@ -154,6 +154,18 @@ public class Context {
       return AssetKind.INSTANCE;
    }
 
+   public <T extends SubmodelElement> String getPropertyIdShort( final PropertyMapper<T> mapper ) {
+      if ( ModellingKind.TEMPLATE.equals( getModelingKind() ) ) {
+         return mapper.determineIdShortFor( property );
+      }
+      return mapper.determineIdShortFor( property ) + propertyPath.stream()
+            .map( indices::get )
+            .filter( Objects::nonNull )
+            .map( Objects::toString )
+            .collect( Collectors.joining( "_" ) );
+   }
+
+   @Deprecated( forRemoval = true )
    public String getPropertyShortId() {
       final String shortId;
       if ( ModellingKind.TEMPLATE.equals( getModelingKind() ) ) {
@@ -166,23 +178,44 @@ public class Context {
                .collect( Collectors.joining( "_" ) );
       }
 
-      return shortId;
+      return AasIdShort.from( shortId );
    }
 
    /**
-    * Retrieves the string value at the current property path or the given default value, if none exists.
+    * Retrieves the string value at the current property path or the given default value, if none
+    * exists.
     *
-    * @param defaultValue the default value to use when no value could be found at the current property path
+    * @param defaultValue the default value to use when no value could be found at the current property
+    *        path
     * @return the property value at the current property path
     */
    public String getPropertyValue( final String defaultValue ) {
-      return getRawPropertyValue().flatMap( valueNode -> Optional.ofNullable( valueNode.asText() ) ).orElse( defaultValue );
+      return getRawPropertyValue()
+            .flatMap( valueNode -> Optional.ofNullable( valueNode.asText() ) )
+            .or( this::getExampleValue )
+            .orElse( defaultValue );
+   }
+
+   /**
+    * Retrieves the SAMM example value for the current property when a template is generated.
+    *
+    * @return a present {@link Optional} with the example value if one is available
+    */
+   public Optional<String> getExampleValue() {
+      if ( aspectData != null || property == null ) {
+         return Optional.empty();
+      }
+
+      return property.getExampleValue()
+            .map( ScalarValue::getValue )
+            .map( Object::toString );
    }
 
    /**
     * Retrieves the raw JSON property value at the current property path.
     *
-    * @return a present {@link Optional} with the {@link JsonNode} if it could be found, {@link Optional#empty()} else.
+    * @return a present {@link Optional} with the {@link JsonNode} if it could be found,
+    *         {@link Optional#empty()} else.
     */
    public Optional<JsonNode> getRawPropertyValue() {
       if ( aspectData == null ) {

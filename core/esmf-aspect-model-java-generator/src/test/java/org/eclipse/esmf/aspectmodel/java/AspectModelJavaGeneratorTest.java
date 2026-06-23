@@ -41,12 +41,12 @@ import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
+import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.Parameter;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.resolution.types.ResolvedArrayType;
 import com.github.javaparser.resolution.types.ResolvedPrimitiveType;
@@ -59,11 +59,15 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
+import org.jspecify.annotations.NullMarked;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
+@NullMarked
 class AspectModelJavaGeneratorTest {
    private Collection<JavaGenerator> getGenerators( final TestAspect testAspect, final JavaCodeGenerationConfig config ) {
       final Aspect aspect = TestResources.load( testAspect ).aspect();
@@ -105,8 +109,7 @@ class AspectModelJavaGeneratorTest {
    }
 
    private Collection<JavaGenerator> getGenerators( final TestAspect testAspect, final String namePrefix, final String namePostfix,
-         final boolean enableSetters, final
-         JavaCodeGenerationConfig.SetterStyle setterStyle ) {
+         final boolean enableSetters, final JavaCodeGenerationConfig.SetterStyle setterStyle ) {
       final AspectModel aspectModel = TestResources.load( testAspect );
       final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
             .enableJacksonAnnotations( true )
@@ -126,39 +129,44 @@ class AspectModelJavaGeneratorTest {
     * @param testAspect the injected Aspect model
     */
    @ParameterizedTest
-   @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
-         "ASPECT_WITH_USED_AND_UNUSED_ENUMERATION", // No code will be generated for an unused enumeration
-         "MODEL_WITH_BROKEN_CYCLES" // Contains elements that are not references from the Aspect
-   } )
+   @Execution( ExecutionMode.CONCURRENT )
+   @EnumSource( value = TestAspect.class,
+      mode = EnumSource.Mode.EXCLUDE,
+      names = {
+            "ASPECT_WITH_USED_AND_UNUSED_ENUMERATION", // No code will be generated for an unused enumeration
+            "MODEL_WITH_BROKEN_CYCLES" // Contains elements that are not references from the Aspect
+      } )
    void testCodeGeneration( final TestAspect testAspect ) {
       assertThatCode( () -> {
-               final AspectModel aspectModel = TestResources.load( testAspect );
-               final Model model = aspectModel.files().iterator().next().sourceModel();
-               final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspectModel ) );
+         final AspectModel aspectModel = TestResources.load( testAspect );
+         final Model model = aspectModel.files().getFirst().sourceModel();
+         final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspectModel ) );
 
-               final Pattern uninterpolatedTemplate = Pattern.compile( "\\$[a-zA-Z]" );
-               result.compilationUnits.values().forEach( compilationUnit -> {
-                  // Check that all template variables have been replaced. If Velocity fails to insert a value (because evaluation of the
-                  // expression throws an exception), it leaves the template unchanged, i.e., leaving literal $ characters
-                  assertThat( compilationUnit.toString() ).doesNotContainPattern( uninterpolatedTemplate );
-               } );
+         final Pattern uninterpolatedTemplate = Pattern.compile( "\\$[a-zA-Z]" );
+         result.compilationUnits.values().forEach( compilationUnit -> {
+            // Check that all template variables have been replaced. If Velocity fails to insert a value
+            // (because evaluation of the
+            // expression throws an exception), it leaves the template unchanged, i.e., leaving literal $
+            // characters
+            assertThat( compilationUnit.toString() ).doesNotContainPattern( uninterpolatedTemplate );
+         } );
 
-               final int numberOfFiles = result.compilationUnits.size();
-               final List<Resource> structureElements = Streams.stream( model.listStatements( null, RDF.type, (RDFNode) null ) )
-                     .filter( statement -> {
-                        final Resource type = statement.getObject().asResource();
-                        return type.equals( SammNs.SAMM.Aspect() )
-                              || type.equals( SammNs.SAMM.Entity() )
-                              || type.equals( SammNs.SAMM.Event() )
-                              || type.equals( SammNs.SAMM.AbstractEntity() )
-                              || type.equals( SammNs.SAMMC.Enumeration() );
-                     } )
-                     .map( Statement::getSubject )
-                     .toList();
+         final int numberOfFiles = result.compilationUnits.size();
+         final List<Resource> structureElements = Streams.stream( model.listStatements( null, RDF.type, (RDFNode) null ) )
+               .filter( statement -> {
+                  final Resource type = statement.getObject().asResource();
+                  return type.equals( SammNs.SAMM.Aspect() )
+                        || type.equals( SammNs.SAMM.Entity() )
+                        || type.equals( SammNs.SAMM.Event() )
+                        || type.equals( SammNs.SAMM.AbstractEntity() )
+                        || type.equals( SammNs.SAMMC.Enumeration() );
+               } )
+               .map( Statement::getSubject )
+               .toList();
 
-               final long numberOfStructureElements = structureElements.size();
-               assertThat( numberOfFiles ).isGreaterThanOrEqualTo( (int) numberOfStructureElements );
-            }
+         final long numberOfStructureElements = structureElements.size();
+         assertThat( numberOfFiles ).isGreaterThanOrEqualTo( (int) numberOfStructureElements );
+      }
       ).doesNotThrowAnyException();
    }
 
@@ -168,14 +176,14 @@ class AspectModelJavaGeneratorTest {
     */
    @Test
    void testGenerateAspectModelMultipleEntitiesOnMultipleLevels() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
             .put( "testEntityOne", "TestEntity" )
             .put( "testEntityTwo", "TestEntity" )
             .put( "testString", String.class )
             .put( "testSecondEntity", "SecondTestEntity" )
             .build();
 
-      final ImmutableMap<String, Object> expectedFieldsForEntityClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForEntityClass = ImmutableMap.<String, Object>builder()
             .put( "testLocalDateTime", XMLGregorianCalendar.class )
             .put( "randomValue", String.class )
             .put( "testThirdEntity", "ThirdTestEntity" )
@@ -196,12 +204,12 @@ class AspectModelJavaGeneratorTest {
    }
 
    /**
-    * Generates Java classes for an aspect model that has multiple enumeration properties as well as a entity property,
-    * also nested ones. In total 5 classes should be written.
+    * Generates Java classes for an aspect model that has multiple enumeration properties as well as a
+    * entity property, also nested ones. In total 5 classes should be written.
     */
    @Test
    void testGenerateAspectModelMultipleEnumerationsOnMultipleLevels() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
             .put( "testPropertyWithEnumOne", "TestEnumOneCharacteristic" )
             .put( "testPropertyWithEnumTwo", "TestEnumTwoCharacteristic" )
             .put( "testEntityWithEnumOne", "TestEntityWithEnumOne" )
@@ -212,7 +220,7 @@ class AspectModelJavaGeneratorTest {
       result.assertNumberOfFiles( 5 );
       result.assertFields( "AspectWithMultipleEnumerationsOnMultipleLevels", expectedFieldsForAspectClass, new HashMap<>() );
       assertConstructor( result, "AspectWithMultipleEnumerationsOnMultipleLevels", expectedFieldsForAspectClass );
-      result.assertFields( "TestEnumOneCharacteristic", ImmutableMap.<String, Object> builder().put( "value", BigInteger.class ).build(),
+      result.assertFields( "TestEnumOneCharacteristic", ImmutableMap.<String, Object>builder().put( "value", BigInteger.class ).build(),
             new HashMap<>() );
       result.assertEnumConstants( "TestEnumOneCharacteristic", ImmutableSet.of( "NUMBER_1", "NUMBER_2", "NUMBER_3" ),
             Collections.emptyMap() );
@@ -220,7 +228,7 @@ class AspectModelJavaGeneratorTest {
 
    @Test
    void testGenerateRecursiveAspectModel() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
             .put( "testProperty", "Optional<TestEntity>" )
             .build();
 
@@ -233,7 +241,7 @@ class AspectModelJavaGeneratorTest {
 
    @Test
    void testGenerateAspectModelWithOptionalProperties() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
             .put( "numberProperty", "Optional<BigInteger>" )
             .put( "timestampProperty", XMLGregorianCalendar.class )
             .build();
@@ -247,7 +255,7 @@ class AspectModelJavaGeneratorTest {
 
    @Test
    void testGenerateAspectWithOptionalPropertyAndEntityWithSeparateFiles() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
             .put( "productionPeriod", "Optional<ProductionPeriodEntity>" )
             .build();
 
@@ -269,7 +277,7 @@ class AspectModelJavaGeneratorTest {
 
    @Test
    void testGenerateAspectModelWithCurie() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
             .put( "testCurie", "Curie" )
             .put( "testCurieWithoutExampleValue", "Curie" )
             .build();
@@ -283,20 +291,19 @@ class AspectModelJavaGeneratorTest {
 
    @Test
    void testGenerateAspectModelWithExtendedEnums() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
             .put( "result", "EvaluationResults" )
             .put( "simpleResult", "YesNo" )
             .build();
 
-      final ImmutableMap<String, Object> expectedFieldsForEvaluationResults = ImmutableMap.<String, Object> builder()
-            .put( "average", new TypeToken<Optional<BigInteger>>() {
-            } )
+      final ImmutableMap<String, Object> expectedFieldsForEvaluationResults = ImmutableMap.<String, Object>builder()
+            .put( "average", new TypeToken<Optional<BigInteger>>() {} )
             .put( "numericCode", Short.class )
             .put( "description", String.class )
             .put( "nestedResult", "NestedResult" )
             .build();
 
-      final ImmutableMap<String, Object> expectedFieldsForNestedResult = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForNestedResult = ImmutableMap.<String, Object>builder()
             .put( "average", BigInteger.class )
             .put( "description", String.class )
             .build();
@@ -308,11 +315,11 @@ class AspectModelJavaGeneratorTest {
       assertConstructor( result, "AspectWithExtendedEnums", expectedFieldsForAspectClass );
       result.assertFields( "EvaluationResult", expectedFieldsForEvaluationResults, new HashMap<>() );
       assertConstructor( result, "EvaluationResult", expectedFieldsForEvaluationResults );
-      result.assertFields( "EvaluationResults", ImmutableMap.<String, Object> builder().put( "value", "EvaluationResult" ).build(),
+      result.assertFields( "EvaluationResults", ImmutableMap.<String, Object>builder().put( "value", "EvaluationResult" ).build(),
             new HashMap<>() );
       result.assertEnumConstants( "EvaluationResults", ImmutableSet.of( "RESULT_GOOD", "RESULT_BAD", "RESULT_NO_STATUS" ),
             Collections.emptyMap() );
-      result.assertFields( "YesNo", ImmutableMap.<String, Object> builder().put( "value", String.class ).build(), new HashMap<>() );
+      result.assertFields( "YesNo", ImmutableMap.<String, Object>builder().put( "value", String.class ).build(), new HashMap<>() );
       result.assertEnumConstants( "YesNo", ImmutableSet.of( "YES", "NO" ), Collections.emptyMap() );
       result.assertFields( "NestedResult", expectedFieldsForNestedResult, new HashMap<>() );
       assertConstructor( result, "NestedResult", expectedFieldsForNestedResult );
@@ -320,17 +327,15 @@ class AspectModelJavaGeneratorTest {
 
    @Test
    void testGenerateAspectModelWithExtendedEnumsWithNotInPayloadProperty() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForEvaluationResults = ImmutableMap.<String, Object> builder()
-            .put( "average", new TypeToken<Optional<BigInteger>>() {
-            } )
+      final ImmutableMap<String, Object> expectedFieldsForEvaluationResults = ImmutableMap.<String, Object>builder()
+            .put( "average", new TypeToken<Optional<BigInteger>>() {} )
             .put( "numericCode", Short.class )
             .put( "description", String.class )
             .put( "nestedResult", "NestedResult" )
             .build();
 
-      final ImmutableMap<String, Object> expectedFieldsForJacksonConstructor = ImmutableMap.<String, Object> builder()
-            .put( "average", new TypeToken<Optional<BigInteger>>() {
-            } )
+      final ImmutableMap<String, Object> expectedFieldsForJacksonConstructor = ImmutableMap.<String, Object>builder()
+            .put( "average", new TypeToken<Optional<BigInteger>>() {} )
             .put( "numericCode", Short.class )
             .put( "nestedResult", "NestedResult" )
             .build();
@@ -342,7 +347,7 @@ class AspectModelJavaGeneratorTest {
             .findAll( ConstructorDeclaration.class );
       assertThat( constructorDeclarations ).hasSize( 2 );
 
-      result.assertFields( "EvaluationResult", expectedFieldsForEvaluationResults, ImmutableMap.<String, String> builder()
+      result.assertFields( "EvaluationResult", expectedFieldsForEvaluationResults, ImmutableMap.<String, String>builder()
             .put( "average", "" )
             .put( "numericCode", "@NotNull" ).put( "description", "" ).put( "nestedResult", "@Valid@NotNull" )
             .build()
@@ -362,7 +367,7 @@ class AspectModelJavaGeneratorTest {
 
    @Test
    void testGenerateAspectModelWithConstraints() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
             .put( "testPropertyWithRegularExpression", String.class )
             .put( "testPropertyWithDecimalMinDecimalMaxRangeConstraint", BigDecimal.class )
             .put( "testPropertyWithDecimalMaxRangeConstraint", BigDecimal.class )
@@ -371,16 +376,15 @@ class AspectModelJavaGeneratorTest {
             .put( "testPropertyRangeConstraintWithFloatType", Float.class )
             .put( "testPropertyRangeConstraintWithDoubleType", Double.class )
             .put( "testPropertyWithMinMaxLengthConstraint", String.class )
-            .put( "testPropertyWithMinLengthConstraint", BigInteger.class )
-            .put( "testPropertyCollectionLengthConstraint", new TypeToken<List<BigInteger>>() {
-            } )
+            .put( "testPropertyWithMinLengthConstraint", String.class )
+            .put( "testPropertyCollectionLengthConstraint", new TypeToken<List<BigInteger>>() {} )
             .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_CONSTRAINTS;
       final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, true, false, null ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithConstraints", expectedFieldsForAspectClass,
-            ImmutableMap.<String, String> builder()
+            ImmutableMap.<String, String>builder()
                   .put( "testPropertyWithRegularExpression", "@NotNull" + "@Pattern(regexp = \"^[a-zA-Z]\\\\.[0-9]\")" )
                   .put( "testPropertyWithDecimalMinDecimalMaxRangeConstraint",
                         "@NotNull" + "@DecimalMin(value = \"2.3\")" + "@DecimalMax(value = \"10.5\")" )
@@ -406,7 +410,7 @@ class AspectModelJavaGeneratorTest {
 
    @Test
    void testGenerateAspectModelWithOptionalAndConstraints() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
             .put( "stringProperty", "Optional<@Size(max = 3) String>" )
             .build();
 
@@ -414,7 +418,7 @@ class AspectModelJavaGeneratorTest {
       final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, true, false, null ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithOptionalPropertyAndConstraint", expectedFieldsForAspectClass,
-            ImmutableMap.<String, String> builder()
+            ImmutableMap.<String, String>builder()
                   .put( "stringProperty", "" )
                   .build() );
       assertConstructor( result, "AspectWithOptionalPropertyAndConstraint", expectedFieldsForAspectClass );
@@ -422,9 +426,8 @@ class AspectModelJavaGeneratorTest {
 
    @Test
    void testGenerateAspectWithConstrainedCollection() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-            .put( "testCollection", new TypeToken<List<BigInteger>>() {
-            } ).build();
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
+            .put( "testCollection", new TypeToken<List<BigInteger>>() {} ).build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_CONSTRAINED_COLLECTION;
       final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect ) );
@@ -436,7 +439,7 @@ class AspectModelJavaGeneratorTest {
 
    @Test
    void testGenerateAspectWithExclusiveRangeConstraint() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
             .put( "floatProp", Float.class )
             .put( "doubleProp", Double.class )
             .put( "decimalProp", BigDecimal.class )
@@ -449,7 +452,7 @@ class AspectModelJavaGeneratorTest {
             .apply( getGenerators( aspect, true, false, null ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithExclusiveRangeConstraint", expectedFieldsForAspectClass,
-            ImmutableMap.<String, String> builder()
+            ImmutableMap.<String, String>builder()
                   .put( "floatProp", "@NotNull"
                         + "@FloatMin(value = \"12.3\", boundDefinition = BoundDefinition.GREATER_THAN)"
                         + "@FloatMax(value = \"23.45\", boundDefinition = BoundDefinition.LESS_THAN)" )
@@ -472,7 +475,7 @@ class AspectModelJavaGeneratorTest {
 
    @Test
    void testGenerateAspectWithEither() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
             .put( "testProperty", "Either<LeftEntity, RightEntity>" )
             .build();
 
@@ -485,7 +488,7 @@ class AspectModelJavaGeneratorTest {
 
    @Test
    void testGenerateAspectWithBoolean() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
             .put( "testBoolean", Boolean.class.getSimpleName() ).build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_BOOLEAN;
@@ -493,13 +496,13 @@ class AspectModelJavaGeneratorTest {
             .apply( getGenerators( aspect, true, false, null ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithBoolean", expectedFieldsForAspectClass,
-            ImmutableMap.<String, String> builder().put( "testBoolean", "@NotNull" ).build() );
+            ImmutableMap.<String, String>builder().put( "testBoolean", "@NotNull" ).build() );
       assertConstructor( result, "AspectWithBoolean", expectedFieldsForAspectClass );
    }
 
    @Test
    void testGenerateAspectWithBinary() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
             .put( "testBinary", new ResolvedArrayType( ResolvedPrimitiveType.BYTE ) )
             .build();
 
@@ -508,8 +511,8 @@ class AspectModelJavaGeneratorTest {
             .apply( getGenerators( aspect, true, false, null ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithBinary", expectedFieldsForAspectClass,
-            ImmutableMap.<String, String> builder().put( "testBinary",
-                        "@NotNull@JsonSerialize(using = HexBinarySerializer.class)@JsonDeserialize(using = HexBinaryDeserializer.class)" )
+            ImmutableMap.<String, String>builder().put( "testBinary",
+                  "@NotNull@JsonSerialize(using = HexBinarySerializer.class)@JsonDeserialize(using = HexBinaryDeserializer.class)" )
                   .build() );
       assertConstructor( result, "AspectWithBinary", expectedFieldsForAspectClass );
    }
@@ -533,12 +536,12 @@ class AspectModelJavaGeneratorTest {
 
    @Test
    void testGenerateAspectModelWithComplexEnumeration() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
             .put( "result", "EvaluationResults" )
             .put( "simpleResult", "YesNo" )
             .build();
 
-      final ImmutableMap<String, Object> expectedFieldsForEvaluationResult = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForEvaluationResult = ImmutableMap.<String, Object>builder()
             .put( "numericCode", Short.class.getSimpleName() )
             .put( "description", String.class.getSimpleName() )
             .build();
@@ -550,17 +553,17 @@ class AspectModelJavaGeneratorTest {
       assertConstructor( result, "AspectWithComplexEnum", expectedFieldsForAspectClass );
       result.assertFields( "EvaluationResult", expectedFieldsForEvaluationResult, new HashMap<>() );
       assertConstructor( result, "EvaluationResult", expectedFieldsForEvaluationResult );
-      result.assertFields( "EvaluationResults", ImmutableMap.<String, Object> builder().put( "value", "EvaluationResult" ).build(),
+      result.assertFields( "EvaluationResults", ImmutableMap.<String, Object>builder().put( "value", "EvaluationResult" ).build(),
             new HashMap<>() );
       result.assertEnumConstants( "EvaluationResults",
             ImmutableSet.of( "RESULT_NO_STATUS", "RESULT_GOOD", "RESULT_BAD" ),
-            ImmutableMap.<String, String> builder()
+            ImmutableMap.<String, String>builder()
                   .put( "RESULT_NO_STATUS", "new EvaluationResult(Short.parseShort(\"-1\"), \"No status\")" )
                   .put( "RESULT_GOOD", "new EvaluationResult(Short.parseShort(\"1\"), \"Good\")" )
                   .put( "RESULT_BAD", "new EvaluationResult(Short.parseShort(\"2\"), \"Bad\")" )
                   .build() );
 
-      result.assertFields( "YesNo", ImmutableMap.<String, Object> builder().put( "value", String.class ).build(), new HashMap<>() );
+      result.assertFields( "YesNo", ImmutableMap.<String, Object>builder().put( "value", String.class ).build(), new HashMap<>() );
       result.assertEnumConstants( "YesNo", ImmutableSet.of( "YES", "NO" ), Collections.emptyMap() );
 
       assertThat( result.getGeneratedSource( new QualifiedName( "EvaluationResults", "org.eclipse.esmf.test" ) ) )
@@ -583,7 +586,7 @@ class AspectModelJavaGeneratorTest {
 
    @Test
    void testGenerateAspectWithState() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
             .put( "status", "TestState" )
             .build();
 
@@ -599,14 +602,14 @@ class AspectModelJavaGeneratorTest {
 
    @Test
    void testGenerateAspectModelMultipleEntitiesOnMultipleLevelsWithoutJacksonAnnotations() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
             .put( "testEntityOne", "TestEntity" )
             .put( "testEntityTwo", "TestEntity" )
             .put( "testString", String.class )
             .put( "testSecondEntity", "SecondTestEntity" )
             .build();
 
-      final ImmutableMap<String, Object> expectedFieldsForEntityClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForEntityClass = ImmutableMap.<String, Object>builder()
             .put( "testLocalDateTime", XMLGregorianCalendar.class )
             .put( "randomValue", String.class )
             .put( "testThirdEntity", "ThirdTestEntity" )
@@ -624,14 +627,14 @@ class AspectModelJavaGeneratorTest {
 
    @Test
    void testGenerateAspectWithStructuredValue() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
             .put( "date", XMLGregorianCalendar.class )
             .put( "year", new TypeToken<Optional<Long>>() {}.getType() )
             .put( "month", new TypeToken<Optional<Long>>() {}.getType() )
             .put( "day", new TypeToken<Optional<Long>>() {}.getType() )
             .build();
 
-      final ImmutableMap<String, Object> expectedConstructorArguments = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedConstructorArguments = ImmutableMap.<String, Object>builder()
             .put( "date", XMLGregorianCalendar.class )
             .build();
 
@@ -649,7 +652,7 @@ class AspectModelJavaGeneratorTest {
       result.assertNumberOfFiles( 4 );
       result.assertEnumConstants( "EvaluationResults",
             ImmutableSet.of( "RESULT_NO_STATUS", "RESULT_GOOD", "RESULT_BAD" ),
-            ImmutableMap.<String, String> builder()
+            ImmutableMap.<String, String>builder()
                   .put( "RESULT_NO_STATUS", "new EvaluationResult(Optional.of(Short.parseShort(\"-1\")), Optional.of(\"No status\"))" )
                   .put( "RESULT_GOOD", "new EvaluationResult(Optional.of(Short.parseShort(\"1\")), Optional.of(\"Good\"))" )
                   .put( "RESULT_BAD", "new EvaluationResult(Optional.of(Short.parseShort(\"2\")), Optional.of(\"Bad\"))" )
@@ -662,18 +665,18 @@ class AspectModelJavaGeneratorTest {
       final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect ) );
       result.assertNumberOfFiles( 9 );
       result.assertEnumConstants( "MyEnumerationOne", ImmutableSet.of( "ENTITY_INSTANCE_ONE" ),
-            ImmutableMap.<String, String> builder()
+            ImmutableMap.<String, String>builder()
                   .put( "ENTITY_INSTANCE_ONE", "new MyEntityOne(new ArrayList<>(){{ add(\"fooOne\");add(\"barOne\");add(\"bazOne\"); }})" )
                   .build() );
 
       result.assertEnumConstants( "MyEnumerationThree", ImmutableSet.of( "ENTITY_INSTANCE_THREE" ),
-            ImmutableMap.<String, String> builder()
+            ImmutableMap.<String, String>builder()
                   .put( "ENTITY_INSTANCE_THREE",
                         "new MyEntityThree(new LinkedHashSet<>(){{ add(\"fooThree\");add(\"barThree\");add(\"bazThree\"); }})" )
                   .build() );
 
       result.assertEnumConstants( "MyEnumerationFour", ImmutableSet.of( "ENTITY_INSTANCE_FOUR" ),
-            ImmutableMap.<String, String> builder()
+            ImmutableMap.<String, String>builder()
                   .put( "ENTITY_INSTANCE_FOUR",
                         "new MyEntityFour(new ArrayList<>(){{ add(\"fooFour\");add(\"barFour\");add(\"bazFour\"); }})" )
                   .build() );
@@ -685,18 +688,18 @@ class AspectModelJavaGeneratorTest {
       final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect ) );
       result.assertNumberOfFiles( 4 );
       result.assertEnumConstants( "MyEnumerationOne", ImmutableSet.of( "ENTITY_INSTANCE_ONE" ),
-            ImmutableMap.<String, String> builder()
+            ImmutableMap.<String, String>builder()
                   .put( "ENTITY_INSTANCE_ONE", "new MyEntityOne(new ArrayList<>(){{ add(newMyEntityTwo(\"foo\")); }})" )
                   .build() );
    }
 
    @Test
    void testGenerateAspectModelWithFixedPointConstraint() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
             .put( "testProperty", BigDecimal.class.getSimpleName() )
             .build();
 
-      final ImmutableMap<String, String> expectedAnnotations = ImmutableMap.<String, String> builder()
+      final ImmutableMap<String, String> expectedAnnotations = ImmutableMap.<String, String>builder()
             .put( "testProperty", "@NotNull@Digits(fraction = 5, integer = 3)" )
             .build();
 
@@ -710,9 +713,8 @@ class AspectModelJavaGeneratorTest {
 
    @Test
    void testGenerateAspectModelWithList() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-            .put( "testProperty", new TypeToken<List<String>>() {
-            } )
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
+            .put( "testProperty", new TypeToken<List<String>>() {} )
             .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_LIST;
@@ -726,9 +728,8 @@ class AspectModelJavaGeneratorTest {
 
    @Test
    void testGenerateAspectModelWithListAndElementCharacteristic() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-            .put( "testProperty", new TypeToken<List<String>>() {
-            } )
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
+            .put( "testProperty", new TypeToken<List<String>>() {} )
             .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_LIST_AND_ELEMENT_CHARACTERISTIC;
@@ -742,9 +743,8 @@ class AspectModelJavaGeneratorTest {
 
    @Test
    void testGenerateAspectModelWithListAndElementConstraint() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-            .put( "testProperty", new TypeToken<List<Float>>() {
-            } )
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
+            .put( "testProperty", new TypeToken<List<Float>>() {} )
             .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_LIST_AND_ELEMENT_CONSTRAINT;
@@ -763,9 +763,8 @@ class AspectModelJavaGeneratorTest {
 
    @Test
    void testGenerateAspectModelWithSet() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-            .put( "testProperty", new TypeToken<Set<String>>() {
-            } )
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
+            .put( "testProperty", new TypeToken<Set<String>>() {} )
             .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_SET;
@@ -779,7 +778,7 @@ class AspectModelJavaGeneratorTest {
 
    @Test
    void testGenerateAspectWithRdfLangString() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
             .put( "prop", LangString.class )
             .build();
 
@@ -800,14 +799,14 @@ class AspectModelJavaGeneratorTest {
       final String expectedJsonAnnotation = "@JsonProperty(value = \"%s\")";
       final ImmutableMap.Builder<String, String> expectedAnnotationBuilder = ImmutableMap.builder();
 
-      expectedFields.keySet().forEach( fieldName ->
-            expectedAnnotationBuilder.put( fieldName, String.format( expectedJsonAnnotation, fieldName ) ) );
+      expectedFields.keySet()
+            .forEach( fieldName -> expectedAnnotationBuilder.put( fieldName, String.format( expectedJsonAnnotation, fieldName ) ) );
       return expectedAnnotationBuilder.build();
    }
 
    @Test
    void testGenerateAspectModelWithDurationTypeForRangeConstraints() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
             .put( "testPropertyWithDayTimeDuration", Duration.class )
             .put( "testPropertyWithDuration", Duration.class )
             .put( "testPropertyWithYearMonthDuration", Duration.class )
@@ -818,7 +817,7 @@ class AspectModelJavaGeneratorTest {
             .apply( getGenerators( aspect, true, false, null ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithDurationTypeForRangeConstraints", expectedFieldsForAspectClass,
-            ImmutableMap.<String, String> builder()
+            ImmutableMap.<String, String>builder()
                   .put( "testPropertyWithDayTimeDuration", "@NotNull"
                         + "@DurationMin(value = \"P1DT5H\", boundDefinition = BoundDefinition.AT_LEAST)"
                         + "@DurationMax(value = \"P1DT8H\", boundDefinition = BoundDefinition.AT_MOST)" )
@@ -835,7 +834,7 @@ class AspectModelJavaGeneratorTest {
 
    @Test
    void testGenerateAspectModelWithDateTimeTypeForRangeConstraints() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
             .put( "testPropertyWithDateTime", XMLGregorianCalendar.class )
             .put( "testPropertyWithDateTimeStamp", XMLGregorianCalendar.class )
             .build();
@@ -845,7 +844,7 @@ class AspectModelJavaGeneratorTest {
             .apply( getGenerators( aspect, true, false, null ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithDateTimeTypeForRangeConstraints", expectedFieldsForAspectClass,
-            ImmutableMap.<String, String> builder()
+            ImmutableMap.<String, String>builder()
                   .put( "testPropertyWithDateTime", "@NotNull"
                         + "@GregorianCalendarMin(value = \"2000-01-01T14:23:00\", boundDefinition = BoundDefinition.AT_LEAST)"
                         + "@GregorianCalendarMax(value = \"2000-01-02T15:23:00\", boundDefinition = BoundDefinition.AT_MOST)" )
@@ -859,7 +858,7 @@ class AspectModelJavaGeneratorTest {
 
    @Test
    void testGenerateAspectModelWithGtypeForRangeConstraints() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
             .put( "testPropertyWithGYear", XMLGregorianCalendar.class )
             .put( "testPropertyWithGMonth", XMLGregorianCalendar.class )
             .put( "testPropertyWithGDay", XMLGregorianCalendar.class )
@@ -872,7 +871,7 @@ class AspectModelJavaGeneratorTest {
             .apply( getGenerators( aspect, true, false, null ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithGTypeForRangeConstraints", expectedFieldsForAspectClass,
-            ImmutableMap.<String, String> builder()
+            ImmutableMap.<String, String>builder()
                   .put( "testPropertyWithGYear", "@NotNull"
                         + "@GregorianCalendarMin(value = \"2000\", boundDefinition = BoundDefinition.AT_LEAST)"
                         + "@GregorianCalendarMax(value = \"2001\", boundDefinition = BoundDefinition.AT_MOST)" )
@@ -895,7 +894,7 @@ class AspectModelJavaGeneratorTest {
 
    @Test
    void testGenerateAspectModelWithPropertyWithPayloadName() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
             .put( "test", "String" )
             .build();
 
@@ -908,9 +907,8 @@ class AspectModelJavaGeneratorTest {
 
    @Test
    void testGenerateAspectModelWithBlankNode() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-            .put( "list", new TypeToken<Collection<String>>() {
-            } )
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
+            .put( "list", new TypeToken<Collection<String>>() {} )
             .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_BLANK_NODE;
@@ -970,20 +968,20 @@ class AspectModelJavaGeneratorTest {
 
    @Test
    void testGenerateAspectModelWithAbstractEntity() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
             .put( "testProperty", "ExtendingTestEntity" )
             .build();
 
-      final ImmutableMap<String, Object> expectedFieldsForEntityClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForEntityClass = ImmutableMap.<String, Object>builder()
             .put( "entityProperty", String.class )
             .build();
 
-      final ImmutableMap<String, Object> expectedConstructorArgumentsForEntityClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedConstructorArgumentsForEntityClass = ImmutableMap.<String, Object>builder()
             .put( "entityProperty", String.class )
             .put( "abstractTestProperty", BigInteger.class )
             .build();
 
-      final ImmutableMap<String, Object> expectedFieldsForAbstractEntityClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForAbstractEntityClass = ImmutableMap.<String, Object>builder()
             .put( "abstractTestProperty", BigInteger.class )
             .build();
 
@@ -1010,20 +1008,20 @@ class AspectModelJavaGeneratorTest {
 
    @Test
    void testGenerateAspectModelWithCollectionWithAbstractEntity() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-            .put( "testProperty", "Collection<AbstractTestEntity>" )
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
+            .put( "testProperty", "Collection<ExtendingTestEntity>" )
             .build();
 
-      final ImmutableMap<String, Object> expectedFieldsForEntityClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForEntityClass = ImmutableMap.<String, Object>builder()
             .put( "entityProperty", String.class )
             .build();
 
-      final ImmutableMap<String, Object> expectedConstructorArgumentsForEntityClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedConstructorArgumentsForEntityClass = ImmutableMap.<String, Object>builder()
             .put( "entityProperty", String.class )
             .put( "abstractTestProperty", BigInteger.class )
             .build();
 
-      final ImmutableMap<String, Object> expectedFieldsForAbstractEntityClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForAbstractEntityClass = ImmutableMap.<String, Object>builder()
             .put( "abstractTestProperty", BigInteger.class )
             .build();
 
@@ -1057,7 +1055,7 @@ class AspectModelJavaGeneratorTest {
       final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect ) );
       result.assertNumberOfFiles( 3 );
 
-      final ImmutableMap<String, String> expectedConstantArguments = ImmutableMap.<String, String> builder()
+      final ImmutableMap<String, String> expectedConstantArguments = ImmutableMap.<String, String>builder()
             .put( "ENTITY_INSTANCE",
                   "new TestEntity(new LangString(\"This is a test.\", Locale.forLanguageTag(\"en\")))" )
             .build();
@@ -1179,7 +1177,7 @@ class AspectModelJavaGeneratorTest {
 
    @Test
    void testGenerateAspectWithPrefixAndPostfix() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
             .put( "testProperty", String.class )
             .build();
 
@@ -1193,7 +1191,7 @@ class AspectModelJavaGeneratorTest {
 
    @Test
    void testGenerateEntityWithPrefixAndPostfix() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
             .put( "testProperty", "BaseTestEntityPostfix" )
             .build();
 
@@ -1225,10 +1223,13 @@ class AspectModelJavaGeneratorTest {
             .apply( getGenerators( aspect, null, null, true, JavaCodeGenerationConfig.SetterStyle.FLUENT ) );
       result.assertNumberOfFiles( 2 );
 
-      result.assertMethodBody( "AspectWithEntity", "setTestProperty", false, Optional.of( new ClassOrInterfaceType( "AspectWithEntity" ) ),
+      final JavaParser javaParser = new JavaParser();
+      result.assertMethodBody( "AspectWithEntity", "setTestProperty", false,
+            javaParser.parseClassOrInterfaceType( "AspectWithEntity" ).getResult(),
             1,
             List.of( "this.testProperty=testProperty;", "returnthis;" ) );
-      result.assertMethodBody( "TestEntity", "setEntityProperty", false, Optional.of( new ClassOrInterfaceType( "TestEntity" ) ), 1,
+      result.assertMethodBody( "TestEntity", "setEntityProperty", false, javaParser.parseClassOrInterfaceType( "TestEntity" ).getResult(),
+            1,
             List.of( "this.entityProperty=entityProperty;", "returnthis;" ) );
    }
 
@@ -1239,16 +1240,18 @@ class AspectModelJavaGeneratorTest {
             .apply( getGenerators( aspect, null, null, true, JavaCodeGenerationConfig.SetterStyle.FLUENT_COMPACT ) );
       result.assertNumberOfFiles( 2 );
 
-      result.assertMethodBody( "AspectWithEntity", "testProperty", false, Optional.of( new ClassOrInterfaceType( "AspectWithEntity" ) ),
+      final JavaParser javaParser = new JavaParser();
+      result.assertMethodBody( "AspectWithEntity", "testProperty", false,
+            javaParser.parseClassOrInterfaceType( "AspectWithEntity" ).getResult(),
             1,
             List.of( "this.testProperty=testProperty;", "returnthis;" ) );
-      result.assertMethodBody( "TestEntity", "entityProperty", false, Optional.of( new ClassOrInterfaceType( "TestEntity" ) ), 1,
+      result.assertMethodBody( "TestEntity", "entityProperty", false, javaParser.parseClassOrInterfaceType( "TestEntity" ).getResult(), 1,
             List.of( "this.entityProperty=entityProperty;", "returnthis;" ) );
    }
 
    @Test
    void testValidAnnotationRules() throws IOException {
-      final ImmutableMap<String, Object> expectedFieldsForEvaluationResults = ImmutableMap.<String, Object> builder()
+      final ImmutableMap<String, Object> expectedFieldsForEvaluationResults = ImmutableMap.<String, Object>builder()
             .put( "entity", "TestEntity" )
             .put( "collectionEntity", "Collection<TestEntity>" )
             .put( "optionalEntity", "Optional<TestEntity>" )
@@ -1262,7 +1265,7 @@ class AspectModelJavaGeneratorTest {
 
       result.assertNumberOfFiles( 2 );
       result.assertFields( "AspectWithValidAnnotationTest", expectedFieldsForEvaluationResults,
-            ImmutableMap.<String, String> builder()
+            ImmutableMap.<String, String>builder()
                   .put( "entity", "@Valid@NotNull" )
                   .put( "collectionEntity", "@Valid@NotNull" )
                   .put( "optionalEntity", "@Valid" )

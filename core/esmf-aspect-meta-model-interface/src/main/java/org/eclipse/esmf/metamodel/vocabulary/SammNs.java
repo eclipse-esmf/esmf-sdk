@@ -31,8 +31,7 @@ public class SammNs {
    private static RdfNamespace RDFS;
    private static RdfNamespace XSD;
 
-   private SammNs() {
-   }
+   private SammNs() {}
 
    /**
     * All SAMM-specific metamodel RDF namespaces

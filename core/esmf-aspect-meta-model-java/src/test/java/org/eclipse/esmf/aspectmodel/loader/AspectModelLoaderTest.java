@@ -66,7 +66,7 @@ class AspectModelLoaderTest {
    void loadAspectModelWithoutCharacteristicDatatype() {
       assertThatThrownBy( () -> TestResources.load( InvalidTestAspect.INVALID_CHARACTERISTIC_DATATYPE ) )
             .isInstanceOf( AspectLoadingException.class )
-            .hasMessage( "No datatype is defined on the Characteristic instance 'Characteristic1: '." );
+            .hasMessage( "No datatype is defined on the Characteristic instance 'Characteristic1'." );
    }
 
    @Test
@@ -100,8 +100,8 @@ class AspectModelLoaderTest {
          Assertions.assertThat( type ).extracting( ComplexType::getExtends ).extracting( Optional::get )
                .isSameAs( abstractEntity );
       } );
-      assertThat( entities ).extracting( "testEntityTwo" ).isInstanceOfSatisfying( ComplexType.class, type ->
-            Assertions.assertThat( type ).extracting( ComplexType::getExtends ).extracting( Optional::get )
+      assertThat( entities ).extracting( "testEntityTwo" ).isInstanceOfSatisfying( ComplexType.class,
+            type -> Assertions.assertThat( type ).extracting( ComplexType::getExtends ).extracting( Optional::get )
                   .isSameAs( abstractEntity ) );
    }
 

@@ -14,7 +14,8 @@
 package org.eclipse.esmf.functions;
 
 /**
- * A Function similar to {@link java.util.function.Function} except a {@link Throwable} can be thrown
+ * A Function similar to {@link java.util.function.Function} except a {@link Throwable} can be
+ * thrown
  *
  * @param <T> the type of the input to the function
  * @param <R> the type of the result of the function

@@ -13,16 +13,13 @@
 
 package org.eclipse.esmf.aspectmodel.generator.openapi;
 
-import static java.lang.String.format;
-import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.eclipse.esmf.aspectmodel.StreamUtil.asSet;
 import static org.eclipse.esmf.aspectmodel.generator.openapi.AspectModelOpenApiGenerator.ObjectNodeExtension.merge;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -36,6 +33,11 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections4.IterableUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.stream.Streams;
+
+import org.eclipse.esmf.aspectmodel.VersionNumber;
 import org.eclipse.esmf.aspectmodel.generator.JsonGenerator;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaVisitor;
@@ -46,19 +48,18 @@ import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Operation;
 import org.eclipse.esmf.metamodel.Property;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.CaseFormat;
-import org.apache.commons.collections4.IterableUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.stream.Streams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.CaseFormat;
+
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
+
 @SuppressWarnings( "OptionalUsedAsFieldOrParameterType" )
-public class AspectModelOpenApiGenerator extends JsonGenerator<OpenApiSchemaGenerationConfig, ObjectNode, OpenApiSchemaArtifact> {
+public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSchemaGenerationConfig, ObjectNode, OpenApiSchemaArtifact> {
    public static final OpenApiSchemaGenerationConfig DEFAULT_CONFIG = OpenApiSchemaGenerationConfigBuilder.builder().build();
 
    private static final String APPLICATION_JSON = "application/json";
@@ -86,6 +87,7 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<OpenApiSchemaGene
    private static final String FIELD_REQUEST_BODY = "requestBody";
    private static final String FIELD_REQUIRED = "required";
    private static final String FIELD_RESPONSES = "responses";
+   private static final String FIELD_ALL_OF = "allOf";
    private static final String FIELD_SCHEMA = "schema";
    private static final String FIELD_SCHEMAS = "schemas";
    private static final String FIELD_STRING = "string";
@@ -121,6 +123,10 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<OpenApiSchemaGene
       super( aspect, config );
    }
 
+   private Aspect aspect() {
+      return structureElement();
+   }
+
    /**
     * Generates an OpenAPI specification for the given Aspect Model.
     *
@@ -137,13 +143,32 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<OpenApiSchemaGene
                .put( "title", aspect().getPreferredName( config.locale() ) )
                .put( "version", apiVersion )
                .put( AspectModelJsonSchemaGenerator.SAMM_EXTENSION, aspect().urn().toString() );
-         setServers( rootNode, config.baseUrl(), apiVersion, READ_SERVER_PATH );
-         final boolean includePaging = includePaging( aspect(), config.pagingOption() );
+         final String apiPath = Optional.ofNullable( config.readApiPath() )
+               .orElse( READ_SERVER_PATH.formatted( apiVersion ) );
+         setServers( rootNode, config.baseUrl(), apiVersion, apiPath );
+
+         final PagingOption selectedPaging = config.pagingOption();
+         final boolean pagingPossible = PAGING_GENERATOR.isPagingPossible( aspect() );
+         final boolean includePaging = selectedPaging == PagingOption.AUTO
+               ? pagingPossible
+               : selectedPaging != PagingOption.NO_PAGING;
+
          setOptionalSchemas( aspect(), config, includePaging, rootNode );
          setAspectSchemas( aspect(), config, rootNode );
          setRequestBodies( aspect(), config, rootNode );
          setResponseBodies( aspect(), rootNode, includePaging );
-         rootNode.set( "paths", getPathsNode( aspect(), config, apiVersion, config.properties(), config.queriesTemplate() ) );
+
+         rootNode.set(
+               "paths",
+               getPathsNode(
+                     aspect(),
+                     config,
+                     apiVersion,
+                     config.properties(),
+                     config.queriesTemplate(),
+                     includePaging
+               )
+         );
          artifact = new OpenApiSchemaArtifact( aspect().getName(), merge( rootNode, config.documentTemplate() ) );
       } catch ( final Exception exception ) {
          LOG.error( "There was an exception during the read of the root or the validation.", exception );
@@ -156,15 +181,10 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<OpenApiSchemaGene
       final ArrayNode arrayNode = objectNode.putArray( "servers" );
       final ObjectNode node = FACTORY.objectNode();
       final ObjectNode variables = FACTORY.objectNode();
-      node.put( "url", baseUrl + format( endPointPath, apiVersion ) );
+      node.put( "url", baseUrl + endPointPath );
       node.set( "variables", variables );
       variables.set( "api-version", FACTORY.objectNode().put( "default", apiVersion ) );
       arrayNode.add( node );
-   }
-
-   private boolean includePaging( final Aspect aspect, final PagingOption pagingType ) {
-      return pagingType != PagingOption.NO_PAGING
-            && PAGING_GENERATOR.isPagingPossible( aspect );
    }
 
    private ObjectNode getPropertiesNode( final String resourcePath, final ObjectNode properties ) {
@@ -177,7 +197,8 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<OpenApiSchemaGene
          final List<String> dynamicParameters = Pattern.compile( "[{]\\S+?[}]" ).matcher( resourcePath ).results()
                .map( match -> match.group( 0 ) ).toList();
          if ( !dynamicParameters.isEmpty() && properties == null ) {
-            final String errorString = format( "Resource path contains properties %s, but has no properties map.", dynamicParameters );
+            final String errorString = String.format( "Resource path contains properties %s, but has no properties map.",
+                  dynamicParameters );
             LOG.error( errorString );
             throw new IllegalArgumentException( errorString );
          }
@@ -187,7 +208,7 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<OpenApiSchemaGene
                validateParameterName( nodeName );
                final JsonNode node = properties.get( nodeName );
                if ( node == null ) {
-                  final String errorString = format( "Resource path contains property %s, but can't be found in properties map.%s",
+                  final String errorString = String.format( "Resource path contains property %s, but can't be found in properties map.%s",
                         nodeName, properties );
                   LOG.error( errorString );
                   throw new IllegalArgumentException( errorString );
@@ -202,7 +223,8 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<OpenApiSchemaGene
    private void validateParameterName( final String nodeName ) {
       final Matcher a = Pattern.compile( PARAMETER_CONVENTION ).matcher( nodeName );
       if ( !a.matches() ) {
-         final String errorString = format( "The parameter name %s is not in the correct form. A valid form is described as: %s", nodeName,
+         final String errorString = String.format( "The parameter name %s is not in the correct form. A valid form is described as: %s",
+               nodeName,
                PARAMETER_CONVENTION );
          LOG.error( errorString );
          throw new IllegalArgumentException( errorString );
@@ -233,29 +255,35 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<OpenApiSchemaGene
       }
    }
 
-   @SuppressWarnings( "squid:S3655" ) // An Aspect always has a URN
    private String getApiVersion( final Aspect aspect, final boolean useSemanticVersion ) {
-      final String aspectVersion = aspect.urn().getVersion();
-      if ( useSemanticVersion ) {
-         return format( "v%s", aspectVersion );
-      }
-      final int endIndexOfMajorVersion = aspectVersion.indexOf( '.' );
-      final String majorAspectVersion = aspectVersion.substring( 0, endIndexOfMajorVersion );
-      return format( "v%s", majorAspectVersion );
+      return useSemanticVersion
+            ? "v" + aspect.urn().getVersion()
+            : "v" + VersionNumber.parse( aspect.urn().getVersion() ).getMajor();
    }
 
    private void setResponseBodies( final Aspect aspect, final ObjectNode jsonNode, final boolean includePaging ) {
-      final ObjectNode componentsResponseNode = (ObjectNode) jsonNode.get( FIELD_COMPONENTS ).get( FIELD_RESPONSES );
+      final ObjectNode componentsResponseNode = (ObjectNode) jsonNode.get( FIELD_COMPONENTS );
+      final ObjectNode schemasResponseNode = (ObjectNode) componentsResponseNode.get( FIELD_SCHEMAS );
+      final ObjectNode responsesResponseNode = (ObjectNode) componentsResponseNode.get( FIELD_RESPONSES );
+
+      final boolean pagingSchemaExists = schemasResponseNode.has( FIELD_PAGING_SCHEMA );
+
+      final String schemaName =
+            ( includePaging && pagingSchemaExists ) ? FIELD_PAGING_SCHEMA : aspect.getName();
+
       final ObjectNode referenceNode = FACTORY.objectNode()
-            .put( REF, COMPONENTS_SCHEMAS + ( includePaging ? FIELD_PAGING_SCHEMA : aspect.getName() ) );
+            .put( REF, COMPONENTS_SCHEMAS + schemaName );
+
       final ObjectNode contentNode = getApplicationNode( referenceNode, false );
-      componentsResponseNode.set( aspect.getName(), contentNode );
+      responsesResponseNode.set( aspect.getName(), contentNode );
       contentNode.put( FIELD_DESCRIPTION, "The request was successful." );
+
       if ( !aspect.getOperations().isEmpty() ) {
          final ObjectNode operationResponseNode = FACTORY.objectNode()
                .put( REF, COMPONENTS_SCHEMAS + FIELD_OPERATION_RESPONSE );
+
          final ObjectNode wrappedOperationNode = getApplicationNode( operationResponseNode, false );
-         componentsResponseNode.set( FIELD_OPERATION_RESPONSE, wrappedOperationNode );
+         responsesResponseNode.set( FIELD_OPERATION_RESPONSE, wrappedOperationNode );
          wrappedOperationNode.put( FIELD_DESCRIPTION, "The request was successful." );
       }
    }
@@ -319,14 +347,15 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<OpenApiSchemaGene
                      responseArrayNode.add( FACTORY.objectNode().put( REF, COMPONENTS_SCHEMAS + key + "Response" ) );
                   } );
          }
-         SCHEMA_VISITOR.getRootNode().get( FIELD_COMPONENTS ).get( FIELD_SCHEMAS ).fields()
-               .forEachRemaining( field -> schemas.set( field.getKey(), field.getValue() ) );
+         SCHEMA_VISITOR.getRootNode().get( FIELD_COMPONENTS ).get( FIELD_SCHEMAS ).properties()
+               .forEach( field -> schemas.set( field.getKey(), field.getValue() ) );
       }
    }
 
    private ObjectNode getRootJsonNode( final boolean generateCommentForSeeAttributes ) throws IOException {
       try ( final InputStream inputStream = getClass().getResourceAsStream( "/openapi/OpenApiRootJson.json" ) ) {
-         // at least one important OpenAPI tool (swagger-ui) still does not support v3.1, so for the time being we stay with the version
+         // at least one important OpenAPI tool (swagger-ui) still does not support v3.1, so for the time
+         // being we stay with the version
          // 3.0.3;
          // only when $comment is explicitly requested (a v3.1 feature) we switch to 3.1.0
          Objects.requireNonNull( inputStream, "OpenApiRootJson.json not found" );
@@ -337,7 +366,7 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<OpenApiSchemaGene
    }
 
    private ObjectNode getPathsNode( final Aspect aspect, final OpenApiSchemaGenerationConfig config, final String apiVersion,
-         final ObjectNode properties, final ObjectNode queriesTemplate ) throws IOException {
+         final ObjectNode properties, final ObjectNode queriesTemplate, final boolean includePaging ) throws IOException {
       final ObjectNode endpointPathsNode = FACTORY.objectNode();
       final ObjectNode pathNode = FACTORY.objectNode();
       final ObjectNode propertiesNode = getPropertiesNode( config.resourcePath(), properties );
@@ -349,7 +378,7 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<OpenApiSchemaGene
 
       endpointPathsNode.set( finalResourcePath, pathNode );
 
-      if ( includePaging( aspect, config.pagingOption() ) ) {
+      if ( includePaging ) {
          PAGING_GENERATOR.setPagingProperties( aspect, config.pagingOption(), propertiesNode );
       }
 
@@ -376,13 +405,14 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<OpenApiSchemaGene
          includeQueryPathNode.set( FIELD_POST,
                merge( getRequestEndpointFilter( aspect, propertiesNode, config.baseUrl(), apiVersion, config.resourcePath() ),
                      queriesTemplate, FIELD_POST ) );
-         endpointPathsNode.set( String.format( QUERY_SERVER_PATH, apiVersion ) + finalResourcePath,
-               includeQueryPathNode );
+         final String queryApiPath = Optional.ofNullable( config.queryApiPath() )
+               .orElse( QUERY_SERVER_PATH.formatted( apiVersion ) + finalResourcePath );
+         endpointPathsNode.set( queryApiPath, includeQueryPathNode );
       }
 
       final Optional<ObjectNode> operationsNode = getRequestEndpointOperations( aspect, propertiesNode, config.baseUrl(), apiVersion,
             config.resourcePath(), queriesTemplate );
-      operationsNode.ifPresent( ops -> endpointPathsNode.set( format( OPERATIONS_ENDPOINT_PATH, finalResourcePath ), ops ) );
+      operationsNode.ifPresent( ops -> endpointPathsNode.set( String.format( OPERATIONS_ENDPOINT_PATH, finalResourcePath ), ops ) );
       return endpointPathsNode;
    }
 
@@ -395,7 +425,9 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<OpenApiSchemaGene
       if ( !aspect.getOperations().isEmpty() ) {
 
          final ObjectNode objectNode = FACTORY.objectNode();
-         setServers( objectNode, baseUrl, apiVersion, OPERATIONS_SERVER_PATH );
+         final String operationsApiPath = Optional.ofNullable( config.operationsApiPath() )
+               .orElse( OPERATIONS_SERVER_PATH.formatted( apiVersion ) );
+         setServers( objectNode, baseUrl, apiVersion, operationsApiPath );
          objectNode.set( "tags", FACTORY.arrayNode().add( aspect.getName() ) );
          objectNode.put( FIELD_OPERATION_ID, FIELD_POST + FIELD_OPERATION + aspect.getName() );
          objectNode.set( FIELD_PARAMETERS, getRequiredParameters( parameterNode, isEmpty( resourcePath ) ) );
@@ -465,10 +497,10 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<OpenApiSchemaGene
    }
 
    private ObjectNode getRequestEndpointFilter( final Aspect aspect, final ObjectNode parameterNode, final String baseUrl,
-         final String apiVersion,
-         final String resourcePath ) {
+         final String apiVersion, final String resourcePath ) {
       final ObjectNode objectNode = FACTORY.objectNode();
-      setServers( objectNode, baseUrl, apiVersion, QUERY_SERVER_PATH );
+      final String queryServerPath = Optional.ofNullable( config.queryApiPath() ).orElse( QUERY_SERVER_PATH.formatted( apiVersion ) );
+      setServers( objectNode, baseUrl, apiVersion, queryServerPath );
       objectNode.set( "tags", FACTORY.arrayNode().add( aspect.getName() ) );
       objectNode.put( FIELD_OPERATION_ID, FIELD_POST + "Base" + aspect.getName() );
       objectNode.set( FIELD_PARAMETERS, getRequiredParameters( parameterNode, isEmpty( resourcePath ) ) );
@@ -507,7 +539,6 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<OpenApiSchemaGene
       objectNode.put( FIELD_OPERATION_ID, ( isPut ? FIELD_PUT : FIELD_PATCH ) + aspect.getName() );
       objectNode.set( FIELD_PARAMETERS, getRequiredParameters( parameterNode, isEmpty( resourcePath ) ) );
       final ObjectNode requestBody = FACTORY.objectNode();
-      requestBody.put( FIELD_REQUIRED, true );
       requestBody.put( REF, COMPONENTS_REQUESTS + aspect.getName() );
       objectNode.set( FIELD_REQUEST_BODY, requestBody );
       objectNode.set( FIELD_RESPONSES, getResponsesForGet( aspect ) );
@@ -585,8 +616,7 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<OpenApiSchemaGene
       if ( aspectSchema.has( FIELD_COMPONENTS ) ) {
          final JsonNode definitionsNode = aspectSchema.get( FIELD_COMPONENTS ).get( FIELD_SCHEMAS );
          aspectSchema.remove( FIELD_COMPONENTS );
-         for ( final Iterator<String> it = definitionsNode.fieldNames(); it.hasNext(); ) {
-            final String nodeName = it.next();
+         for ( final String nodeName : definitionsNode.propertyNames() ) {
             final JsonNode node = definitionsNode.get( nodeName );
             rootSchemaNode.set( nodeName, node );
          }
@@ -609,15 +639,15 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<OpenApiSchemaGene
       }
 
       public static ObjectNode merge( final ObjectNode node, final ObjectNode extension, final String field ) {
-         return ofNullable( extension ).map( getter( field ) ).map( ext -> merge( node.deepCopy(), ext ) ).orElse( node );
+         return Optional.ofNullable( extension ).map( getter( field ) ).map( ext -> merge( node.deepCopy(), ext ) ).orElse( node );
       }
 
       private static ObjectNode mergeObjectNode( final ObjectNode node, final ObjectNode extension ) {
          if ( extension == null || extension.isEmpty() ) {
             return node;
          }
-         //  cycle for result.fields()
-         extension.fields().forEachRemaining( entry -> {
+         // cycle for result.fields()
+         extension.properties().forEach( entry -> {
             final String key = entry.getKey();
             final JsonNode value = entry.getValue();
 
@@ -649,7 +679,7 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<OpenApiSchemaGene
                || IterableUtils.matchesAny( extension, nd -> !nd.isValueNode() ) ) {
             return node;
          }
-         final Set<JsonNode> original = Streams.of( node ).collect( toSet() );
+         final Set<JsonNode> original = Streams.of( node ).collect( asSet() );
          final ArrayNode result = node.deepCopy();
          extension.forEach( nd -> {
             if ( !original.contains( nd ) ) {
@@ -665,22 +695,21 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<OpenApiSchemaGene
             return node;
          }
 
-         final Function<String, Function<JsonNode, String>> getText = fieldName -> objNode ->
-               ofNullable( objNode.get( fieldName ) )
+         final Function<String, Function<JsonNode, String>> getText =
+               fieldName -> objNode -> Optional.ofNullable( objNode.get( fieldName ) )
                      .filter( Predicate.not( JsonNode::isNull ) )
-                     .map( JsonNode::asText )
+                     .map( JsonNode::asString )
                      .orElse( null );
 
-         final Set<JsonNode> original = Streams.of( node ).collect( toSet() );
-         final Set<String> originalNames = original.stream().map( getText.apply( "name" ) ).filter( Objects::nonNull ).collect( toSet() );
-         final Set<String> originalUrls = original.stream().map( getText.apply( "url" ) ).filter( Objects::nonNull ).collect( toSet() );
+         final Set<JsonNode> original = Streams.of( node ).collect( asSet() );
+         final Set<String> originalNames = original.stream().map( getText.apply( "name" ) ).collect( asSet() );
+         final Set<String> originalUrls = original.stream().map( getText.apply( "url" ) ).collect( asSet() );
 
          final ArrayNode result = node.deepCopy();
          extension.forEach( nd -> {
             if ( !original.contains( nd )
                   && !originalNames.contains( getText.apply( "name" ).apply( nd ) )
-                  && !originalUrls.contains( getText.apply( "url" ).apply( nd ) )
-            ) {
+                  && !originalUrls.contains( getText.apply( "url" ).apply( nd ) ) ) {
                result.add( nd );
             }
          } );

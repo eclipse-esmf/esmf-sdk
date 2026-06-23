@@ -3,20 +3,31 @@ The following document contains a compilation of conventions and guidelines to f
 write code for the ESMF SDK.
 
 ## General Conventions
-Our code conventions are based on the [Google Java Style
+Our code conventions are loosely based on the [Google Java Style
 Guide](https://google.github.io/styleguide/javaguide.html) but detailed and adjusted for the needs
-of the ESMF SDK. The code style is described using [Checkstyle](https://checkstyle.sourceforge.io/)
-and can be found in the file esmf-checkstyle.xml. You can use this file to configure Checkstyle
-using a suitable plugin in your favorite IDE, or to run Checkstyle via the command line, e.g., from
-the root directory of the esmf-sdk, run:
-`java -jar /path/to/checkstyle-10.13.0-all.jar com.puppycrawl.tools.checkstyle.Main -c esmf-checkstyle.xml .`
-Furthermore, the files esmf-intellij-codestyle.xml and esmf-intellij-inspections.xml are provided
-that can be
+of the ESMF SDK. The code style is described using the Eclipse code style formatter XML and can be
+found in the file `.development/esmf-eclipse-codestyle.xml`.
+
+* If you develop using the Eclipse IDE, you can import this file as project code style.
+* If you develop using IntelliJ, you can install the (third part) "Adapter for Eclipse Code
+  Formatter" plugin, then configure the plugin to use the file.
+* In any way, you can use `mvn spotless:check` to validate the code style of current state of your
+  copy of the code base; and `mvn spotless:apply` to automatically apply the code style to the whole
+  code base.
+
+Additional conventions are described using [Checkstyle](https://checkstyle.sourceforge.io/) which can
+be found in the file `.development/esmf-checkstyle.xml`. You can validate if your code adheres to the
+rules using `mvn checkstyle:check`.
+
+Furthermore, the files `.development/esmf-intellij-codestyle.xml` and
+`.development/esmf-intellij-inspections.xml` are provided that can be
 [imported](https://www.jetbrains.com/help/idea/configuring-code-style.html#import-export-schemes) in
 the Java code style settings and
 [imported](https://www.jetbrains.com/help/idea/inspections-settings.html#profile_management) in the
-Inspections, respectively, in the IntelliJ IDEA IDE.
- 
+Inspections, respectively, in the IntelliJ IDEA IDE. Note however, that there might be slight
+differences in automatic formatting due to technical limitations; the leading code style description
+is esmf-eclipse-codestyle.xml as described above.
+
 ## Copyright header
 See [CONTRIBUTING](CONTRIBUTING.md)
 
@@ -73,20 +84,19 @@ Developer documentation is put into a README.md placed in the project root. This
 * Checking out the source code and getting it to run/build
 * Mandatory (external system) dependencies and how to set them up (e.g. databases)
 * Configuration options and how to apply them
-* General important concepts that are relevant to working on the project but are not directly obvious from the source code 
+* General important concepts that are relevant to working on the project but are not directly obvious from the source code
 itself. Links to further readings and information, e.g. wiki or other external sources.
 
 ### User documentation
-User documentation (this includes technical documentation on how to use an application or tool from the SDK) should be on 
+User documentation (this includes technical documentation on how to use an application or tool from the SDK) should be on
 its own.
 It is written in AsciiDoc, rendered with [Antora](https://antora.org) and the generated static content is
-publically hosted for direct user access. 
+publically hosted for direct user access.
 The source files of the documentation are placed in a subfolder /documentation from the project root.
 Documentation is structured so that it can be processed by Antora. This e.g. involves structuring the documentation files
 according to [Antora's specification](https://docs.antora.org/antora/2.3/organize-content-files/) and organizing resources
 so that Antora [can handle them](https://docs.antora.org/antora/2.3/page/resource-id/).
-[AsciiDoc's syntax](https://docs.antora.org/antora/2.3/asciidoc/asciidoc/) is pretty close to Markdown, however it is 
-way more targeted towards writing fully fledged documents and with its multitude of backends (HTML, PDF, ...) it is a 
+[AsciiDoc's syntax](https://docs.antora.org/antora/2.3/asciidoc/asciidoc/) is pretty close to Markdown, however it is
+way more targeted towards writing fully fledged documents and with its multitude of backends (HTML, PDF, ...) it is a
 very good source format.
 Publishing is realized by means of [Github pages](https://docs.antora.org/antora/2.3/publish-to-github-pages/).
-

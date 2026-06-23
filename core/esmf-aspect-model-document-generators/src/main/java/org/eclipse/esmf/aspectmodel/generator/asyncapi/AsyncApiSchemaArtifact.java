@@ -19,11 +19,11 @@ import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.generator.AbstractSchemaArtifact;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
 /**
- * The result of generating an AsyncAPI specification from an Aspect Model. The result can be retrieved in JSON ({@link #getContent()}
- * format as self-contained schemas.
+ * The result of generating an AsyncAPI specification from an Aspect Model. The result can be
+ * retrieved in JSON ({@link #getContent()} format as self-contained schemas.
  */
 public class AsyncApiSchemaArtifact extends AbstractSchemaArtifact<JsonNode> {
    protected AsyncApiSchemaArtifact( final String id, final JsonNode content ) {

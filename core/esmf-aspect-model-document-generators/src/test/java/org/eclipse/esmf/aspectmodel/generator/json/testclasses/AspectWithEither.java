@@ -16,13 +16,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class AspectWithEither {
 
-   private final Either<String, Integer> either;
+   private final Either<String, Boolean> either;
 
-   public AspectWithEither( @JsonProperty( "testProperty" ) Either<String, Integer> either ) {
+   public AspectWithEither( @JsonProperty( "testProperty" ) final Either<String, Boolean> either ) {
       this.either = either;
    }
 
-   public Either<String, Integer> getEither() {
+   public Either<String, Boolean> getEither() {
       return either;
    }
 }

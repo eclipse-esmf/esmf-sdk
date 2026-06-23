@@ -24,7 +24,9 @@ import org.apache.jena.rdf.model.RDFNode;
  * @param context the evaluation context
  * @param negatedConstraint the constraint that was given as negated
  */
-public record NotViolation( EvaluationContext context, Constraint negatedConstraint ) implements Violation {
+public record NotViolation(
+      EvaluationContext context, Constraint negatedConstraint
+) implements Violation {
    public static final String ERROR_CODE = "ERR_NOT";
 
    @Override
@@ -36,9 +38,9 @@ public record NotViolation( EvaluationContext context, Constraint negatedConstra
    public String violationSpecificMessage() {
       return context.property().isPresent()
             ? String.format( "Expected violation of constraint %s on %s on %s, but it did not occur.", negatedConstraint.name(),
-            context.propertyName(), context.elementName() )
+                  context.propertyName(), context.elementName() )
             : String.format( "Expected violation of constraint %s on element %s, but it did not occur.", negatedConstraint.name(),
-            context.elementName() );
+                  context.elementName() );
    }
 
    @Override

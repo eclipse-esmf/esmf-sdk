@@ -56,4 +56,3 @@
 :ProductIdCharacteristic a samm:Characteristic;
     samm:preferredName "Unique Identifier Characteristic"@en;
     samm:dataType xsd:anyURI.
-

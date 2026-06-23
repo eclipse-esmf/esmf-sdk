@@ -92,7 +92,7 @@ THE SOFTWARE.
 This package contains the following copyright statements and is licensed under the following declared licenses.
 ### Copyright Statements
 
-Copyright (C) Christian Robertson  
+Copyright (C) Christian Robertson
 
 
 ### Declared License (Apache-2.0)
@@ -306,7 +306,7 @@ Copyright (C) Christian Robertson
 This package contains the following copyright statements and is licensed under the following declared licenses.
 ### Copyright Statements
 
-Copyright (C) Nicolas Gallagher  
+Copyright (C) Nicolas Gallagher
 
 ### Declared License (MIT)
 ```
@@ -387,7 +387,7 @@ with others.
 
 The OFL allows the licensed fonts to be used, studied, modified and
 redistributed freely as long as they are not sold by themselves. The
-fonts, including any derivative works, can be bundled, embedded, 
+fonts, including any derivative works, can be bundled, embedded,
 redistributed and/or sold with any software provided that any reserved
 names are not used by derivative works. The fonts and derivatives,
 however, cannot be released under any other type of license. The
@@ -496,7 +496,7 @@ with others.
 
 The OFL allows the licensed fonts to be used, studied, modified and
 redistributed freely as long as they are not sold by themselves. The
-fonts, including any derivative works, can be bundled, embedded, 
+fonts, including any derivative works, can be bundled, embedded,
 redistributed and/or sold with any software provided that any reserved
 names are not used by derivative works. The fonts and derivatives,
 however, cannot be released under any other type of license. The

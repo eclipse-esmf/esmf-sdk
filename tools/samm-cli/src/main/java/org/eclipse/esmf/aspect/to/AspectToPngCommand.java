@@ -25,32 +25,31 @@ import org.eclipse.esmf.exception.CommandException;
 import picocli.CommandLine;
 
 @CommandLine.Command(
-      name = AspectToPngCommand.COMMAND_NAME,
-      description = "Generate PNG diagram for an Aspect Model",
-      descriptionHeading = "%n@|bold Description|@:%n%n",
-      parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n"
-)
+   name = AspectToPngCommand.COMMAND_NAME,
+   description = "Generate PNG diagram for an Aspect Model",
+   descriptionHeading = "%n@|bold Description|@:%n%n",
+   parameterListHeading = "%n@|bold Parameters|@:%n",
+   optionListHeading = "%n@|bold Options|@:%n" )
 public class AspectToPngCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "png";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--output", "-o" },
-         description = "Output file path (default: stdout; as PNG is a binary format, it is strongly recommended to output the result to "
-               + "a file by using the -o option or the console redirection operator '>')" )
+      names = { "--output", "-o" },
+      description = "Output file path (default: stdout; as PNG is a binary format, it is strongly recommended to output the result to "
+            + "a file by using the -o option or the console redirection operator '>')" )
    private String outputFilePath = "-";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--language", "-l" },
-         description = "The language from the model for which the diagram should be generated (default: en)" )
+      names = { "--language", "-l" },
+      description = "The language from the model for which the diagram should be generated (default: en)" )
    private String language = "en";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--details" },
-         description = "Print detailed reports on errors" )
+      names = { "--details" },
+      description = "Print detailed reports on errors" )
    private boolean details = false;
 
    @CommandLine.ParentCommand

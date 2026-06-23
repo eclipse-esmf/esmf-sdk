@@ -36,7 +36,8 @@ public interface ComplexType extends Type, StructureElement {
    }
 
    /**
-    * @return all {@link Property}s defined in the context of this Complex Type as well as all extended Complex Types
+    * @return all {@link Property}s defined in the context of this Complex Type as well as all extended
+    *         Complex Types
     */
    default List<Property> getAllProperties() {
       if ( getExtends().isPresent() ) {

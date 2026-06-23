@@ -38,11 +38,12 @@ public class LanguageCollectorTest {
    @ParameterizedTest
    @Execution( ExecutionMode.CONCURRENT )
    @EnumSource( value = TestAspect.class,
-         mode = EnumSource.Mode.EXCLUDE,
-         names = {
-               // Contains a language tag on an element that does not count to the collected languages, so exclude it
-               "ASPECT_WITH_MULTILANGUAGE_EXAMPLE_VALUE"
-         } )
+      mode = EnumSource.Mode.EXCLUDE,
+      names = {
+            // Contains a language tag on an element that does not count to the collected languages, so exclude
+            // it
+            "ASPECT_WITH_MULTILANGUAGE_EXAMPLE_VALUE"
+      } )
    public void testCollectLanguagesExpectSuccess( final TestAspect testAspect ) {
       final AspectModel aspectModel = TestResources.load( testAspect );
       final Model model = aspectModel.mergedModel();
@@ -56,7 +57,8 @@ public class LanguageCollectorTest {
             .collect( Collectors.toSet() );
 
       final Set<Locale> localesFromAspect = LanguageCollector.collectUsedLanguages( aspectModel.aspect() );
-      // Sets are not necessarily identical; e.g., if a model refers to samm-c:Text, the language collector will find
+      // Sets are not necessarily identical; e.g., if a model refers to samm-c:Text, the language
+      // collector will find
       // samm-c:Text's description's language, but the simple string matcher will find nothing.
       assertThat( localesFromAspect ).containsAll( langTagsInModel );
    }

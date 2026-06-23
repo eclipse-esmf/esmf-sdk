@@ -26,8 +26,7 @@ public interface UriArbitraries {
    default Arbitrary<String> anyIpV4Address() {
       final Arbitrary<Integer> numericPart = Arbitraries.integers().between( 0, 255 );
       return Combinators.combine( numericPart, numericPart, numericPart, numericPart )
-            .as( ( part1, part2, part3, part4 ) ->
-                  String.format( "%d.%d.%d.%d", part1, part2, part3, part3 ) );
+            .as( ( part1, part2, part3, part4 ) -> String.format( "%d.%d.%d.%d", part1, part2, part3, part3 ) );
    }
 
    @Provide
@@ -74,8 +73,7 @@ public interface UriArbitraries {
    @Provide
    default Arbitrary<String> anyUrl() {
       return Combinators.combine( anyUrlScheme(), anyHost(), anyUrlPath(), anyUrlFragment() )
-            .as( ( protocol, hostname, path, fragment ) ->
-                  String.format( "%s://%s%s%s", protocol, hostname, path, fragment ) );
+            .as( ( protocol, hostname, path, fragment ) -> String.format( "%s://%s%s%s", protocol, hostname, path, fragment ) );
    }
 
    @Provide

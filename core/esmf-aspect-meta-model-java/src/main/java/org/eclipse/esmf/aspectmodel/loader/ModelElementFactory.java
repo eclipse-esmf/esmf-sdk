@@ -14,6 +14,7 @@
 package org.eclipse.esmf.aspectmodel.loader;
 
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -24,6 +25,15 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
 
 import org.eclipse.esmf.aspectmodel.AspectLoadingException;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
@@ -76,18 +86,10 @@ import org.eclipse.esmf.metamodel.vocabulary.SAMM;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import com.google.common.collect.Streams;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.rdf.model.StmtIterator;
-import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.RDFS;
 
 /**
- * Used as part of the loading process in the {@link AspectModelLoader}, it creates instance for the {@link ModelElement}s
- * in an AspectModel.
+ * Used as part of the loading process in the {@link AspectModelLoader}, it creates instance for the
+ * {@link ModelElement}s in an AspectModel.
  */
 public class ModelElementFactory extends AttributeValueRetriever {
    private final Model model;
@@ -112,8 +114,8 @@ public class ModelElementFactory extends AttributeValueRetriever {
       registerInstantiator( SammNs.SAMM.Property(), new PropertyInstantiator( this ) );
 
       /*
-       * Registers an instantiator for the {@link Value} type.
-       * In aspect-meta-model, {@link Value} corresponds to {@link ScalarValueInstantiator} in the SDK.
+       * Registers an instantiator for the {@link Value} type. In aspect-meta-model, {@link Value}
+       * corresponds to {@link ScalarValueInstantiator} in the SDK.
        */
       registerInstantiator( SammNs.SAMM.Value(), new ScalarValueInstantiator( this ) );
 
@@ -169,11 +171,12 @@ public class ModelElementFactory extends AttributeValueRetriever {
 
       // No generic instantiator could be found. This means the element is an entity instance
       if ( !model.contains( targetType, RDF.type, (RDFNode) null ) ) {
-         throw new AspectLoadingException( "Could not load " + modelElement + ": Unknown type " + targetType );
+         throw new AspectLoadingException( "Could not load " + modelElement + ": Unknown type " + targetType, modelElement );
       }
       final Entity entity = create( Entity.class, targetType );
       if ( entity == null ) {
-         throw new AspectLoadingException( "Could not load " + modelElement + ": Expected " + targetType + " to be an Entity" );
+         throw new AspectLoadingException( "Could not load " + modelElement + ": Expected " + targetType + " to be an Entity",
+               modelElement );
       }
       return (T) new EntityInstanceInstantiator( this, entity ).apply( modelElement );
    }
@@ -188,12 +191,12 @@ public class ModelElementFactory extends AttributeValueRetriever {
    public Unit findOrCreateUnit( final Resource unitResource ) {
       if ( SammNs.UNIT.getNamespace().equals( unitResource.getNameSpace() ) ) {
          final AspectModelUrn unitUrn = AspectModelUrn.fromUrn( unitResource.getURI() );
-         return Units.fromName( unitUrn.getName() ).orElseThrow( () ->
-               new AspectLoadingException( "Unit definition for " + unitUrn + " is invalid" ) );
+         return Units.fromName( unitUrn.getName() )
+               .orElseThrow( () -> new AspectLoadingException( "Unit definition for " + unitUrn + " is invalid", unitResource ) );
       }
 
       final Set<QuantityKind> quantityKinds = Streams.stream(
-                  model.listStatements( unitResource, SammNs.SAMM.quantityKind(), (RDFNode) null ) )
+            model.listStatements( unitResource, SammNs.SAMM.quantityKind(), (RDFNode) null ) )
             .map( quantityKindStatement -> findOrCreateQuantityKind( quantityKindStatement.getObject().asResource() ) )
             .collect( Collectors.toSet() );
       return new DefaultUnit(
@@ -206,21 +209,20 @@ public class ModelElementFactory extends AttributeValueRetriever {
    }
 
    private Resource resourceType( final Resource resource ) {
-      final Supplier<Optional<Resource>> directType = () ->
-            optionalAttributeValue( resource, RDF.type ).map( Statement::getResource );
-      final Supplier<Optional<Resource>> propertyUsageType = () ->
-            optionalAttributeValue( resource, SammNs.SAMM.property() ).map( statement -> resourceType( statement.getResource() ) );
-      final Supplier<Optional<Resource>> subClassType = () ->
-            optionalAttributeValue( resource, RDFS.subClassOf ).map( Statement::getResource ).map( this::resourceType );
-      final Supplier<Optional<Resource>> extendsType = () ->
-            optionalAttributeValue( resource, SammNs.SAMM._extends() ).map( Statement::getResource ).map( this::resourceType );
+      final Supplier<Optional<Resource>> directType = () -> optionalAttributeValue( resource, RDF.type ).map( Statement::getResource );
+      final Supplier<Optional<Resource>> propertyUsageType =
+            () -> optionalAttributeValue( resource, SammNs.SAMM.property() ).map( statement -> resourceType( statement.getResource() ) );
+      final Supplier<Optional<Resource>> subClassType =
+            () -> optionalAttributeValue( resource, RDFS.subClassOf ).map( Statement::getResource ).map( this::resourceType );
+      final Supplier<Optional<Resource>> extendsType =
+            () -> optionalAttributeValue( resource, SammNs.SAMM._extends() ).map( Statement::getResource ).map( this::resourceType );
 
       return Stream.of( directType, propertyUsageType, subClassType, extendsType )
             .map( Supplier::get )
             .filter( Optional::isPresent )
             .map( Optional::get )
             .findFirst()
-            .orElseThrow( () -> new AspectLoadingException( "Resource " + resource + " has no type" ) );
+            .orElseThrow( () -> new AspectLoadingException( "Resource " + resource + " has no type", resource ) );
    }
 
    protected Model getModel() {
@@ -270,17 +272,20 @@ public class ModelElementFactory extends AttributeValueRetriever {
    }
 
    /**
-    * @param modelElement the RDF {@link Resource} representing the Aspect Model element to be processed
-    * @param attribute the RDF {@link org.apache.jena.rdf.model.Property} for which the values will be retrieved
+    * @param modelElement the RDF {@link Resource} representing the Aspect Model element to be
+    *        processed
+    * @param attribute the RDF {@link org.apache.jena.rdf.model.Property} for which the values will be
+    *        retrieved
     * @param valueRetriever the {@link AttributeValueRetriever} used to retrieve the attribute values
-    * @return a {@link List} containing all values for the given Property in the given Aspect Model element
+    * @return a {@link List} containing all values for the given Property in the given Aspect Model
+    *         element
     */
    private static Set<LangString> getLanguages( final Resource modelElement,
          final org.apache.jena.rdf.model.Property attribute, final AttributeValueRetriever valueRetriever ) {
       return valueRetriever.attributeValues( modelElement, attribute ).stream()
             .filter( languageStatement -> !"und".equals( Locale.forLanguageTag( languageStatement.getLanguage() ).toLanguageTag() ) )
             .map( statement -> new LangString( statement.getString(), Locale.forLanguageTag( statement.getLanguage() ) ) )
-            .collect( Collectors.toSet() );
+            .collect( Collectors.toCollection( LinkedHashSet::new ) );
    }
 
    /**
@@ -298,7 +303,8 @@ public class ModelElementFactory extends AttributeValueRetriever {
    private static String getSyntheticName( final Resource modelElement ) {
       final Resource namedParent = getNamedParent( modelElement, modelElement.getModel() );
       if ( namedParent == null ) {
-         throw new AspectLoadingException( "At least one anonymous node in the model does not have a parent with a regular name." );
+         throw new AspectLoadingException( "At least one anonymous node in the model does not have a parent with a regular name.",
+               modelElement );
       }
       final String parentModelElementUri = namedParent.getURI();
       final String parentModelElementName = AspectModelUrn.from( parentModelElementUri )
@@ -317,15 +323,18 @@ public class ModelElementFactory extends AttributeValueRetriever {
       return parentModelElementName + modelElementTypeName;
    }
 
-   // We have to be careful when searching for the parent nodes with a regular name - the "listStatements" API returns the matching nodes
-   // in no particular order; with some very specific models this could lead to non-deterministic behavior.
-   // In the following very simplified example we are looking for ":NumberList" as the parent of "_:blankNode", but could get the
+   // We have to be careful when searching for the parent nodes with a regular name - the
+   // "listStatements" API returns the matching nodes
+   // in no particular order; with some very specific models this could lead to non-deterministic
+   // behavior.
+   // In the following very simplified example we are looking for ":NumberList" as the parent of
+   // "_:blankNode", but could get the
    // anonymous node [] instead.
    // [
-   //  aux:contains _:blankNode ;
+   // aux:contains _:blankNode ;
    // ] .
    // :NumberList a samm-c:List ;
-   //    samm-c:elementCharacteristic _:blankNode .
+   // samm-c:elementCharacteristic _:blankNode .
    // _:blankNode a samm-c:Trait ;
    private static Resource getNamedParent( final Resource modelElement, final Model model ) {
       final StmtIterator elements = model.listStatements( null, null, modelElement );
@@ -349,7 +358,8 @@ public class ModelElementFactory extends AttributeValueRetriever {
          return typeStatement.getObject().asResource();
       }
 
-      // If the model element is a Property reference, the actual type will be found when we follow samm:property
+      // If the model element is a Property reference, the actual type will be found when we follow
+      // samm:property
       final Statement propertyStatement = modelElement.getProperty( SammNs.SAMM.property() );
       if ( propertyStatement != null ) {
          return getModelElementType( propertyStatement.getObject().asResource() );
@@ -358,7 +368,7 @@ public class ModelElementFactory extends AttributeValueRetriever {
       // This model element has no type, but maybe it extends another element
       final Statement extendsStatement = modelElement.getProperty( SammNs.SAMM._extends() );
       if ( extendsStatement == null ) {
-         throw new AspectLoadingException( "Model element has no type and does not extend another type: " + modelElement );
+         throw new AspectLoadingException( "Model element has no type and does not extend another type: " + modelElement, modelElement );
       }
 
       final Resource superElement = extendsStatement.getObject().asResource();

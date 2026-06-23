@@ -29,6 +29,7 @@ import org.eclipse.esmf.aspectmodel.shacl.path.PathNodeRetriever;
 import org.eclipse.esmf.aspectmodel.shacl.path.PredicatePath;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+import org.eclipse.esmf.aspectmodel.validation.RdfBasedValidator;
 
 import com.google.common.collect.Streams;
 import org.apache.jena.query.Query;
@@ -45,10 +46,11 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 
 /**
- * Implementation of a SHACL engine that allows validation on a per-element basis: {@link #validateElement(Resource)} can be used to
- * retrieve validation results only for this specific resource.
+ * Implementation of a SHACL engine that allows validation on a per-element basis:
+ * {@link #validateElement(Resource)} can be used to retrieve validation results only for this
+ * specific resource.
  */
-public class ShaclValidator {
+public class ShaclValidator implements RdfBasedValidator<Violation, List<Violation>> {
    private final List<Shape.Node> shapes;
    private final Map<Resource, List<Shape.Node>> shapesWithClassTargets;
    private final Model shapesModel;
@@ -68,17 +70,18 @@ public class ShaclValidator {
       shapesWithClassTargets = distinctTargetResources.stream().collect(
             Collectors.toMap( Function.identity(),
                   targetResource -> shapes.stream()
-                        .filter( shape ->
-                              shape.attributes().targetClass().map( resource -> resource.equals( targetResource ) ).orElse( false ) )
+                        .filter( shape -> shape.attributes().targetClass().map( resource -> resource.equals( targetResource ) )
+                              .orElse( false ) )
                         .toList() ) );
    }
 
    /**
-    * Validates a model element using the SHACL shapes the validator was initialized with.
-    * If you have more than one element to validate, prefer the method {@link #validateElements(List)} to calling this method in a loop
-    * for better performance.
-    * {@link Resource#getModel()} on the element must not return null, i.e., the resource may not be created using
-    * {@link ResourceFactory#createProperty(String)}, but instead must be created via {@link Model#createResource(String)}.
+    * Validates a model element using the SHACL shapes the validator was initialized with. If you have
+    * more than one element to validate, prefer the method {@link #validateElements(List)} to calling
+    * this method in a loop for better performance. {@link Resource#getModel()} on the element must not
+    * return null, i.e., the resource may not be created using
+    * {@link ResourceFactory#createProperty(String)}, but instead must be created via
+    * {@link Model#createResource(String)}.
     *
     * @param element the element to be validated
     * @return the list of {@link Violation}s if there are violations
@@ -117,11 +120,12 @@ public class ShaclValidator {
     * @param model the model to be validated
     * @return the list of {@link Violation}s if there are violations
     */
+   @Override
    public List<Violation> validateModel( final Model model ) {
       final Map<Resource, List<Shape.Node>> sparqlTargetsWithShapes = findSparqlTargets( model );
       return Streams.stream( model.listStatements( null, RDF.type, (RDFNode) null ) )
             .map( Statement::getSubject )
-            .filter( Resource::isURIResource )
+            .filter( s -> !s.isLiteral() )
             .flatMap( element -> validateElement( element, sparqlTargetsWithShapes, model ).stream() )
             .toList();
    }
@@ -129,8 +133,8 @@ public class ShaclValidator {
    private Map<Resource, List<Shape.Node>> findSparqlTargets( final Model model ) {
       final Map<Resource, List<Shape.Node>> resourceShapes = new HashMap<>();
       for ( final Shape.Node shape : targetSparqlShapes() ) {
-         final List<Resource> shapeTargets = querySparqlTargets( model, shape.attributes().targetSparql().orElseThrow( () ->
-               new ShaclValidationException( "SPARQL node shape is missing a target SPARQL expression" ) ) );
+         final List<Resource> shapeTargets = querySparqlTargets( model, shape.attributes().targetSparql()
+               .orElseThrow( () -> new ShaclValidationException( "SPARQL node shape is missing a target SPARQL expression" ) ) );
          for ( final Resource node : shapeTargets ) {
             addResourceShape( resourceShapes, node, shape );
          }
@@ -196,14 +200,16 @@ public class ShaclValidator {
 
       for ( final Constraint constraint : propertyShape.attributes().constraints() ) {
          final List<Statement> reachableNodes = propertyShape.path().accept( element, retriever );
-         // For all values that are present on the target node, check the applicable shapes and collect violations
+         // For all values that are present on the target node, check the applicable shapes and collect
+         // violations
          for ( final Statement assertion : reachableNodes ) {
             final EvaluationContext context = new EvaluationContext( element, nodeShape, Optional.of( propertyShape ),
                   Optional.of( assertion.getPredicate() ), parentContext, List.of( assertion ), this, resolvedModel );
             violations.addAll( constraint.apply( assertion.getObject(), context ) );
          }
 
-         // important detail: Sparql constraints must run independent of whether there are any matches via the sh:path property or not
+         // important detail: Sparql constraints must run independent of whether there are any matches via
+         // the sh:path property or not
          // ( the check could be the verification whether the property exists )
          if ( reachableNodes.isEmpty() && constraint instanceof SparqlConstraint ) {
             final EvaluationContext context = new EvaluationContext( element, nodeShape, Optional.of( propertyShape ), Optional.empty(),
@@ -211,7 +217,8 @@ public class ShaclValidator {
             violations.addAll( constraint.apply( null, context ) );
          }
 
-         // MinCount needs to be handled separately: If the property is not used at all on the target node, but a MinCount constraints
+         // MinCount needs to be handled separately: If the property is not used at all on the target node,
+         // but a MinCount constraints
          // >= 1 exists, a violation must be emitted even though no value for the property exists
          if ( reachableNodes.isEmpty() && constraint instanceof MinCountConstraint ) {
             final Optional<Property> property = propertyShape.path() instanceof PredicatePath
@@ -227,8 +234,8 @@ public class ShaclValidator {
    }
 
    /**
-    * Returns the shapes that apply to the element because the element has a type (or the type has a transitive supertype) that
-    * is given as sh:targetClass
+    * Returns the shapes that apply to the element because the element has a type (or the type has a
+    * transitive supertype) that is given as sh:targetClass
     *
     * @param element a model element
     * @return the stream of shapes
@@ -241,29 +248,29 @@ public class ShaclValidator {
    }
 
    /**
-    * Returns the shapes that apply to the element because the element uses a property which is given as sh:targetSubjectsOf
+    * Returns the shapes that apply to the element because the element uses a property which is given
+    * as sh:targetSubjectsOf
     *
     * @param element a model element
     * @return the stream of shapes
     */
    private Set<Shape.Node> targetSubjectShapesThatApplyToElement( final Resource element ) {
       return shapes.stream()
-            .filter( shape ->
-                  shape.attributes().targetSubjectsOf().map( property -> element.getProperty( property ) != null ).orElse( false ) )
+            .filter( shape -> shape.attributes().targetSubjectsOf().map( property -> element.getProperty( property ) != null )
+                  .orElse( false ) )
             .collect( Collectors.toSet() );
    }
 
    private Set<Shape.Node> targetObjectShapesThatApplyToElement( final Resource element ) {
       return shapes.stream()
-            .filter( shape ->
-                  shape.attributes().targetObjectsOf().map( property -> element.getProperty( property ) != null ).orElse( false ) )
+            .filter(
+                  shape -> shape.attributes().targetObjectsOf().map( property -> element.getProperty( property ) != null ).orElse( false ) )
             .collect( Collectors.toSet() );
    }
 
    private Set<Shape.Node> targetNodeShapesThatApplyToElement( final Resource element ) {
       return shapes.stream()
-            .filter( shape ->
-                  shape.attributes().targetNode().map( element::equals ).orElse( false ) )
+            .filter( shape -> shape.attributes().targetNode().map( element::equals ).orElse( false ) )
             .collect( Collectors.toSet() );
    }
 

@@ -24,9 +24,6 @@
   "response": {
     "type": "object",
     "properties": {
-      "items": {
-        "type": "array"
-      },
       "cursor": {
         "type": "object",
         "properties": {

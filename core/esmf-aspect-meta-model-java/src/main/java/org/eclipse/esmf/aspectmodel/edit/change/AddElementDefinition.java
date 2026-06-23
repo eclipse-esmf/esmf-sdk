@@ -24,7 +24,8 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 
 /**
- * Adds the definition of a model element to an AspectModelFile. The definition is given as a set of RDF statements (a {@link Model}).
+ * Adds the definition of a model element to an AspectModelFile. The definition is given as a set of
+ * RDF statements (a {@link Model}).
  */
 public class AddElementDefinition extends EditAspectModel {
    private final AspectModelUrn elementUrn;
@@ -39,8 +40,8 @@ public class AddElementDefinition extends EditAspectModel {
     * @param targetFile the target file
     */
    public AddElementDefinition( final AspectModelUrn elementUrn, final Model definition, final AspectModelFile targetFile ) {
-      this( elementUrn, definition, targetFile.sourceLocation().orElseThrow( () ->
-            new ModelChangeException( "Can add definition only to named file" ) ) );
+      this( elementUrn, definition,
+            targetFile.sourceLocation().orElseThrow( () -> new ModelChangeException( "Can add definition only to named file" ) ) );
    }
 
    /**

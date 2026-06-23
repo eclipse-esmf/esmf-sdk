@@ -29,7 +29,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Mojo( name = GenerateDocumentation.MAVEN_GOAL, defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
+@Mojo( name = GenerateDocumentation.MAVEN_GOAL,
+   defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateDocumentation extends AspectModelMojo {
    public static final String MAVEN_GOAL = "generateDocumentation";
    private static final Logger LOG = LoggerFactory.getLogger( GenerateDocumentation.class );

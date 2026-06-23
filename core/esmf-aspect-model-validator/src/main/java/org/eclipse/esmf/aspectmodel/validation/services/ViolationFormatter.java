@@ -32,18 +32,21 @@ import org.eclipse.esmf.aspectmodel.validation.CycleViolation;
 import org.eclipse.esmf.aspectmodel.validation.InvalidLexicalValueViolation;
 import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
 import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
+import org.eclipse.esmf.aspectmodel.validation.RegularExpressionConstraintViolation;
 
 /**
- * Formats one or multiple {@link Violation}s in a human-readable way. Note that this is intended only for places with raw textual output,
- * such as a text console. For a more sensible representation of violations in other contexts, implement {@link Violation.Visitor}.
+ * Formats one or multiple {@link Violation}s in a human-readable way. Note that this is intended
+ * only for places with raw textual output, such as a text console. For a more sensible
+ * representation of violations in other contexts, implement {@link Violation.Visitor}.
  */
 public class ViolationFormatter implements Function<List<Violation>, String>, Violation.Visitor<String> {
    protected final RdfTextFormatter textFormatter;
    protected final String additionalHints;
    protected final RustLikeFormatter formatter;
 
-   private static final String ERROR_CODES_DOC_LINK = "https://eclipse-esmf.github.io/esmf-developer-guide/tooling-guide/error-codes.html";
-   private static final String ERROR_CODES_DOC_STRING = "For more information, see: documentation: " + ERROR_CODES_DOC_LINK;
+   protected static final String ERROR_CODES_DOC_LINK =
+         "https://eclipse-esmf.github.io/esmf-developer-guide/tooling-guide/error-codes.html#";
+   private static final String ERROR_CODES_DOC_STRING = "For more information, see documentation: " + ERROR_CODES_DOC_LINK;
 
    public ViolationFormatter( final String additionalHints ) {
       this( new PlainTextFormatter(), additionalHints );
@@ -90,13 +93,15 @@ public class ViolationFormatter implements Function<List<Violation>, String>, Vi
             // Include error code in the violation message
             final String errorCode = violation.errorCode();
             final String enhancedMessage = String.format( "[%s] %s", errorCode, violation.message() );
-            builder.append( indent( violation.accept( this ), 2 ) ).append( System.lineSeparator() );
+            builder.append( String.format( "> %s: %n", enhancedMessage ) );
+            builder.append( indent( violation.accept( this ), 2 ) );
+            builder.append( System.lineSeparator() );
             for ( final Fix possibleFix : violation.fixes() ) {
                builder.append( "  > Possible fix: " )
                      .append( possibleFix.description() );
             }
             // Add documentation link
-            builder.append( String.format( ERROR_CODES_DOC_STRING + "#%s%n",
+            builder.append( String.format( ERROR_CODES_DOC_STRING + "%s%n",
                   errorCode.toLowerCase().replace( "_", "-" ) ) );
             builder.append( System.lineSeparator() );
          }
@@ -153,20 +158,21 @@ public class ViolationFormatter implements Function<List<Violation>, String>, Vi
                         textFormatter.formatError( failure.description() ) ) )
                   .collect( Collectors.joining( "\n",
                         "No file containing the definition of " + textFormatter.formatIri( element.toString() )
-                              + " could be resolved. Checked locations:\n", "" ) );
-         } ).map( message ->
-               modelResolutionException.getCheckedLocations().size() > 1
-                     ? "%s%n%n%s additional elements could not be resolved. %s%n".formatted(
+                              + " could be resolved. Checked locations:\n",
+                        "" ) );
+         } ).map( message -> modelResolutionException.getCheckedLocations().size() > 1
+               ? "%s%n%n%s additional elements could not be resolved. %s%n".formatted(
                      message, textFormatter.formatIri( "" + ( modelResolutionException.getCheckedLocations().size() - 1 ) ),
                      additionalHints )
-                     : message ).orElse( "" );
+               : message ).orElse( "" );
 
          final String fileLoadingFailure = modelResolutionException.getCheckedLocations()
                .stream()
                .filter( failure -> failure.element().isEmpty() )
                .findFirst()
                .map( failure -> "Aspect Model file %s could not be loaded: %s".formatted(
-                     textFormatter.formatName( failure.location() ), failure.description() ) ).orElse( "" );
+                     textFormatter.formatName( failure.location() ), failure.description() ) )
+               .orElse( "" );
 
          return elementFailure.isEmpty()
                ? fileLoadingFailure
@@ -176,7 +182,8 @@ public class ViolationFormatter implements Function<List<Violation>, String>, Vi
    }
 
    /**
-    * Returns the list of lines of the source document surrounding a given line, indexed by original line number (0-based)
+    * Returns the list of lines of the source document surrounding a given line, indexed by original
+    * line number (0-based)
     *
     * @param sourceDocument the source document
     * @param line the line to focus on
@@ -205,6 +212,12 @@ public class ViolationFormatter implements Function<List<Violation>, String>, Vi
 
    @Override
    public String visitCycleViolation( final CycleViolation violation ) {
+      return formatter.constructDetailedMessage( violation.highlight(), violation.violationSpecificMessage(),
+            violation.highlight().getModel() );
+   }
+
+   @Override
+   public String visitRegularExpressionConstraint( final RegularExpressionConstraintViolation violation ) {
       return formatter.constructDetailedMessage( violation.highlight(), violation.violationSpecificMessage(),
             violation.highlight().getModel() );
    }

@@ -33,14 +33,13 @@ import io.vavr.control.Try;
 import picocli.CommandLine;
 
 @CommandLine.Command(
-      name = AspectUsageCommand.COMMAND_NAME,
-      description = "Shows where model elements are used in Aspect Models",
-      headerHeading = "@|bold Usage|@:%n%n",
-      descriptionHeading = "%n@|bold Description|@:%n%n",
-      parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n",
-      mixinStandardHelpOptions = true
-)
+   name = AspectUsageCommand.COMMAND_NAME,
+   description = "Shows where model elements are used in Aspect Models",
+   headerHeading = "@|bold Usage|@:%n%n",
+   descriptionHeading = "%n@|bold Description|@:%n%n",
+   parameterListHeading = "%n@|bold Parameters|@:%n",
+   optionListHeading = "%n@|bold Options|@:%n",
+   mixinStandardHelpOptions = true )
 @SuppressWarnings( "UseOfSystemOutOrSystemErr" )
 public class AspectUsageCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "usage";
@@ -50,8 +49,8 @@ public class AspectUsageCommand extends AbstractCommand {
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--details" },
-         description = "Print detailed reports on errors" )
+      names = { "--details" },
+      description = "Print detailed reports on errors" )
    private boolean details = false;
 
    @CommandLine.Mixin
@@ -87,7 +86,7 @@ public class AspectUsageCommand extends AbstractCommand {
                && resolverConfiguration != null
                && resolverConfiguration.modelsRoots.isEmpty()
                && ( resolverConfiguration.gitHubResolverOptions == null
-               || resolverConfiguration.gitHubResolverOptions.isEmpty() ) ) {
+                     || resolverConfiguration.gitHubResolverOptions.isEmpty() ) ) {
             System.out.println( "Did you forget to set a models root or GitHub resolution?" );
          }
          System.exit( 0 );

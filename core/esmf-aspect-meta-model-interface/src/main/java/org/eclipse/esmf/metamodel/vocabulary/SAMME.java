@@ -20,7 +20,8 @@ import org.eclipse.esmf.samm.KnownVersion;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 
-// Since the class is an RDF vocabulary, naming rules for the class and for several methods (which should be named identically
+// Since the class is an RDF vocabulary, naming rules for the class and for several methods (which
+// should be named identically
 // to the corresponding model elements) are suppressed.
 @SuppressWarnings( { "checkstyle:AbbreviationAsWordInName", "NewMethodNamingConvention" } )
 public class SAMME implements RdfNamespace {

@@ -19,8 +19,8 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 /**
- * Validates assigned values of type {@link Long}, which must be above or equal to this limit depending on the
- * provided {@link BoundDefinition}.
+ * Validates assigned values of type {@link Long}, which must be above or equal to this limit
+ * depending on the provided {@link BoundDefinition}.
  */
 public class LongMinValidator implements ConstraintValidator<LongMin, Long> {
 

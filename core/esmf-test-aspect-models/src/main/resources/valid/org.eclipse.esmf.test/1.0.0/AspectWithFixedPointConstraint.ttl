@@ -37,5 +37,5 @@
    samm-c:baseCharacteristic :Measurement .
 
 :Measurement a samm-c:Measurement ;
-   samm:dataType xsd:float ;
+   samm:dataType xsd:decimal ;
    samm-c:unit unit:metrePerSecond .

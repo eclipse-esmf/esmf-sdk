@@ -31,10 +31,13 @@ import org.apache.jena.rdf.model.Statement;
  *
  * @param targetShape the node shape this sh:node refers to
  */
-public record NodeConstraint( Supplier<Shape.Node> targetShape, Optional<Path> path ) implements Constraint {
+public record NodeConstraint(
+      Supplier<Shape.Node> targetShape, Optional<Path> path
+) implements Constraint {
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
-      // Having a path means that the node constraint is used inside a property shape, i.e., it applies to the element the
+      // Having a path means that the node constraint is used inside a property shape, i.e., it applies to
+      // the element the
       // shape's path points to
       if ( path.isPresent() && !rdfNode.isResource() ) {
          return List.of( new NodeKindViolation( context, Shape.NodeKind.BlankNodeOrIRI, Shape.NodeKind.forNode( rdfNode ) ) );
@@ -43,8 +46,8 @@ public record NodeConstraint( Supplier<Shape.Node> targetShape, Optional<Path> p
       return context.offendingStatements().stream()
             .filter( statement -> statement.getObject().isResource() )
             .map( Statement::getResource )
-            .flatMap( element ->
-                  context.validator().validateShapeForElement( element, targetShape.get(), context.resolvedModel() ).stream() )
+            .flatMap(
+                  element -> context.validator().validateShapeForElement( element, targetShape.get(), context.resolvedModel() ).stream() )
             .toList();
    }
 

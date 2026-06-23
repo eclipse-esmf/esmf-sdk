@@ -64,7 +64,9 @@ public class DefaultNamespace implements Namespace {
       this( splitUri( uri ).namespacePart(), splitUri( uri ).version(), elements, source, baseAttributes );
    }
 
-   private record UrnParts( String namespacePart, VersionNumber version ) {}
+   private record UrnParts(
+         String namespacePart, VersionNumber version
+   ) {}
 
    private static UrnParts splitUri( final String uri ) {
       final String[] parts = uri.split( ":" );

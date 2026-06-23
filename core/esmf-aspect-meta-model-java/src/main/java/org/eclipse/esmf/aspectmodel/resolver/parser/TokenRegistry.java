@@ -16,24 +16,25 @@ package org.eclipse.esmf.aspectmodel.resolver.parser;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.jena.graph.Node;
+
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 
 import com.google.common.collect.MapMaker;
-import org.apache.jena.graph.Node;
 
 /**
- * This map keeps track of location information for nodes, i.e., when an RDF document is parsed using {@link TurtleParserProfile}
- * (i.e., also when using {@link TurtleLoader}), the TokenRegistry will know about line/column/token information for each RDF node
- * in the document.
+ * This map keeps track of location information for nodes, i.e., when an RDF document is parsed
+ * using {@link TurtleParserProfile} (i.e., also when using {@link TurtleLoader}), the TokenRegistry
+ * will know about line/column/token information for each RDF node in the document.
  */
 public class TokenRegistry {
    /**
-    * The map that holds the node->token relations. It's important that this map shares the properties of both an
-    * IdentityHashMap (key identity must be determined using == instead of equals(), because Jena's Node_URI will be equal
-    * to another if the URI matches, but here we need to distinguish between their actual occurences) and a
-    * WeakHashMap (because we'd cause a memory leak if we keep token information around once a node is GC'ed).
-    * For this reason, Guava MapMaker with weakKeys() is used for the map implementation, as it defaults to object
-    * identity for comparison.
+    * The map that holds the node->token relations. It's important that this map shares the properties
+    * of both an IdentityHashMap (key identity must be determined using == instead of equals(), because
+    * Jena's Node_URI will be equal to another if the URI matches, but here we need to distinguish
+    * between their actual occurences) and a WeakHashMap (because we'd cause a memory leak if we keep
+    * token information around once a node is GC'ed). For this reason, Guava MapMaker with weakKeys()
+    * is used for the map implementation, as it defaults to object identity for comparison.
     */
    private static final Map<Node, SmartToken> TOKENS = new MapMaker().weakKeys().makeMap();
 
@@ -43,5 +44,18 @@ public class TokenRegistry {
 
    public static Optional<SmartToken> getToken( final Node node ) {
       return Optional.ofNullable( TOKENS.get( node ) );
+   }
+
+   /**
+    * Replace a registered node, but keep the associated token
+    *
+    * @param oldNode the old node
+    * @param newNode the new node
+    */
+   public static synchronized void updateNode( final Node oldNode, final Node newNode ) {
+      if ( TOKENS.containsKey( oldNode ) ) {
+         final SmartToken token = TOKENS.remove( oldNode );
+         TOKENS.put( newNode, token );
+      }
    }
 }

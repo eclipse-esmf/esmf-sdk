@@ -16,7 +16,8 @@ package org.eclipse.esmf.metamodel.constraint;
 import org.eclipse.esmf.metamodel.Constraint;
 
 /**
- * Restricts a string value to a regular expression as defined by XQuery 1.0 and XPath 2.0 Functions and Operators.
+ * Restricts a string value to a regular expression as defined by XQuery 1.0 and XPath 2.0 Functions
+ * and Operators.
  *
  * @since SAMM 1.0.0
  */

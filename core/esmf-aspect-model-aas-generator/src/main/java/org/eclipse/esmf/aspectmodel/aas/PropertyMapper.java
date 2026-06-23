@@ -12,10 +12,6 @@
  */
 package org.eclipse.esmf.aspectmodel.aas;
 
-import org.eclipse.esmf.metamodel.ModelElement;
-import org.eclipse.esmf.metamodel.Property;
-import org.eclipse.esmf.metamodel.Type;
-
 import org.eclipse.digitaltwin.aas4j.v3.model.Key;
 import org.eclipse.digitaltwin.aas4j.v3.model.KeyTypes;
 import org.eclipse.digitaltwin.aas4j.v3.model.Reference;
@@ -23,6 +19,10 @@ import org.eclipse.digitaltwin.aas4j.v3.model.ReferenceTypes;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultKey;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultReference;
+
+import org.eclipse.esmf.metamodel.ModelElement;
+import org.eclipse.esmf.metamodel.Property;
+import org.eclipse.esmf.metamodel.Type;
 
 /**
  * Base interface for any class that can map a property to a {@link SubmodelElement}.
@@ -45,7 +45,8 @@ public interface PropertyMapper<T extends SubmodelElement> extends Comparable<Pr
    T mapToAasProperty( Type type, Property property, Context context );
 
    /**
-    * Whether this {@code PropertyMapper} can handle the given property. Defaults to {@code true}, implementors should override.
+    * Whether this {@code PropertyMapper} can handle the given property. Defaults to {@code true},
+    * implementors should override.
     *
     * @param property the property to test
     * @return {@code true} if this property mapper can handle the given property, {@code false} else
@@ -57,11 +58,15 @@ public interface PropertyMapper<T extends SubmodelElement> extends Comparable<Pr
    /**
     * Returns the ordering value for this property mapper.
     *
-    * <p>The order is used to determine the correct mapper if multiple matches can occur. By default mappers have
-    * {@link Integer#MAX_VALUE} applied as their order value, meaning they will be sorted to the very end.
+    * <p>
+    * The order is used to determine the correct mapper if multiple matches can occur. By default
+    * mappers have {@link Integer#MAX_VALUE} applied as their order value, meaning they will be sorted
+    * to the very end.
     *
-    * <p>One example for the need of a proper ordering is, if a general mapper for a specific property type is used, but an even more
-    * specific mapper should be used for one exact property, that also has this type.
+    * <p>
+    * One example for the need of a proper ordering is, if a general mapper for a specific property
+    * type is used, but an even more specific mapper should be used for one exact property, that also
+    * has this type.
     *
     * @return the order value
     */
@@ -70,7 +75,7 @@ public interface PropertyMapper<T extends SubmodelElement> extends Comparable<Pr
    }
 
    @Override
-   default int compareTo( PropertyMapper<T> otherPropertyMapper ) {
+   default int compareTo( final PropertyMapper<T> otherPropertyMapper ) {
       return Integer.compare( getOrder(), otherPropertyMapper.getOrder() );
    }
 
@@ -96,5 +101,32 @@ public interface PropertyMapper<T extends SubmodelElement> extends Comparable<Pr
     */
    default String determineIdentifierFor( final ModelElement element ) {
       return element.urn().toString();
+   }
+
+   /**
+    * Determines the idShort for the given {@link ModelElement}
+    *
+    * @param element the element to get the idShort fo
+    * @return the idShort
+    */
+   default String determineIdShortFor( final ModelElement element ) {
+      return escapeIdShort( element.getName() );
+   }
+
+   /**
+    * Similar to {@link #determineIdShortFor(ModelElement)} specifically for Properties, but can base
+    * the
+    * idShort on the payloadName
+    *
+    * @param property the property
+    * @param usePayloadName whether to use the Property's payloadName
+    * @return the idShort
+    */
+   default String determineIdShortFor( final Property property, final boolean usePayloadName ) {
+      return usePayloadName ? escapeIdShort( property.getPayloadName() ) : determineIdShortFor( property );
+   }
+
+   private String escapeIdShort( final String idShort ) {
+      return idShort.length() == 1 ? idShort + "_" : idShort;
    }
 }

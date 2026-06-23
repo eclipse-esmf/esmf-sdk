@@ -35,7 +35,8 @@ public class OrConstraint extends AbstractLogicalConstraint {
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
       final List<List<Violation>> violationsPerConstraint = violationsPerShape( rdfNode, context );
       final long numberOfEmptyViolationLists = numberOfEmptyViolationLists( violationsPerConstraint );
-      // The 'or' constraint is evaluated successfully if any of the provided constraints evaluates successfully
+      // The 'or' constraint is evaluated successfully if any of the provided constraints evaluates
+      // successfully
       if ( numberOfEmptyViolationLists > 0 ) {
          return List.of();
       }

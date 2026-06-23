@@ -27,7 +27,9 @@ import org.apache.jena.rdf.model.RDFNode;
  *
  * @param maxCount the max count
  */
-public record MaxCountConstraint( int maxCount ) implements Constraint {
+public record MaxCountConstraint(
+      int maxCount
+) implements Constraint {
    @Override
    public boolean canBeUsedOnNodeShapes() {
       return false;

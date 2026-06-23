@@ -20,21 +20,20 @@ import org.eclipse.esmf.exception.SubCommandException;
 import picocli.CommandLine;
 
 @CommandLine.Command(
-      name = AspectCommand.COMMAND_NAME,
-      description = "Validate and transform Aspect Models",
-      subcommands = {
-            CommandLine.HelpCommand.class,
-            AspectToCommand.class,
-            AspectPrettyPrintCommand.class,
-            AspectValidateCommand.class,
-            AspectEditCommand.class,
-            AspectUsageCommand.class
-      },
-      headerHeading = "@|bold Usage|@:%n%n",
-      descriptionHeading = "%n@|bold Description|@:%n%n",
-      parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n"
-)
+   name = AspectCommand.COMMAND_NAME,
+   description = "Validate and transform Aspect Models",
+   subcommands = {
+         CommandLine.HelpCommand.class,
+         AspectToCommand.class,
+         AspectPrettyPrintCommand.class,
+         AspectValidateCommand.class,
+         AspectEditCommand.class,
+         AspectUsageCommand.class
+   },
+   headerHeading = "@|bold Usage|@:%n%n",
+   descriptionHeading = "%n@|bold Description|@:%n%n",
+   parameterListHeading = "%n@|bold Parameters|@:%n",
+   optionListHeading = "%n@|bold Options|@:%n" )
 public class AspectCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "aspect";
 
@@ -42,10 +41,10 @@ public class AspectCommand extends AbstractCommand {
    private LoggingMixin loggingMixin;
 
    @CommandLine.Parameters(
-         paramLabel = "INPUT",
-         description = "Input Aspect Model file, URN or URL",
-         arity = "1",
-         index = "0" )
+      paramLabel = "INPUT",
+      description = "Input Aspect Model file, URN or URL",
+      arity = "1",
+      index = "0" )
    private String input;
 
    public String getInput() {

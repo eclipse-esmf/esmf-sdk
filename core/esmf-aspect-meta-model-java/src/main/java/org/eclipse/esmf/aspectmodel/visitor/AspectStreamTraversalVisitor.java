@@ -26,6 +26,7 @@ import org.eclipse.esmf.metamodel.CollectionValue;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Entity;
 import org.eclipse.esmf.metamodel.EntityInstance;
+import org.eclipse.esmf.metamodel.Event;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Operation;
 import org.eclipse.esmf.metamodel.Property;
@@ -58,14 +59,15 @@ public class AspectStreamTraversalVisitor implements AspectVisitor<Stream<ModelE
    @Override
    public Stream<ModelElement> visitAspect( final Aspect aspect, final Void context ) {
       return Stream.of(
-                  visitStructureElement( aspect, null ),
-                  visit( aspect.getEvents() ),
-                  visit( aspect.getOperations() ) )
+            visitStructureElement( aspect, null ),
+            visit( aspect.getEvents() ),
+            visit( aspect.getOperations() ) )
             .flatMap( Function.identity() );
    }
 
    @SuppressWarnings( "squid:S2250" )
-   //Amount of elements in list is in regard to amount of properties in aspect model. Even in bigger aspects this should not lead to
+   // Amount of elements in list is in regard to amount of properties in aspect model. Even in bigger
+   // aspects this should not lead to
    // performance issues
    @Override
    public Stream<ModelElement> visitProperty( final Property property, final Void context ) {
@@ -74,7 +76,7 @@ public class AspectStreamTraversalVisitor implements AspectVisitor<Stream<ModelE
       }
       hasVisited.add( property );
 
-      return Stream.of( Stream.<ModelElement> of( property ),
+      return Stream.of( Stream.<ModelElement>of( property ),
             visit( property.getCharacteristic() ),
             visit( property.getExtends() )
       ).flatMap( Function.identity() );
@@ -82,11 +84,17 @@ public class AspectStreamTraversalVisitor implements AspectVisitor<Stream<ModelE
 
    @Override
    public Stream<ModelElement> visitOperation( final Operation operation, final Void context ) {
-      return Stream.of( Stream.<ModelElement> of( operation ),
-                  visit( operation.getInput() ),
-                  visit( operation.getOutput() ) )
+      return Stream.of( Stream.<ModelElement>of( operation ),
+            visit( operation.getInput() ),
+            visit( operation.getOutput() ) )
             .reduce( Stream.empty(), Stream::concat );
    }
+
+   @Override
+   public Stream<ModelElement> visitEvent( final Event event, final Void context ) {
+      return visitStructureElement( event, context );
+   }
+
 
    @Override
    public Stream<ModelElement> visitCharacteristic( final Characteristic characteristic, final Void context ) {
@@ -120,19 +128,19 @@ public class AspectStreamTraversalVisitor implements AspectVisitor<Stream<ModelE
    @Override
    public Stream<ModelElement> visitTrait( final Trait trait, final Void context ) {
       return Stream.of(
-                  visitCharacteristic( (Characteristic) trait, null ),
-                  trait.getBaseCharacteristic().accept( this, null ),
-                  visit( trait.getConstraints() ) )
+            visitCharacteristic( (Characteristic) trait, null ),
+            trait.getBaseCharacteristic().accept( this, null ),
+            visit( trait.getConstraints() ) )
             .flatMap( Function.identity() );
    }
 
    @Override
    public Stream<ModelElement> visitStructuredValue( final StructuredValue structuredValue, final Void context ) {
       return Stream.of(
-                  visitCharacteristic( (Characteristic) structuredValue, null ),
-                  structuredValue.getElements().stream().filter( Property.class::isInstance )
-                        .map( Property.class::cast )
-                        .flatMap( property -> property.accept( this, null ) ) )
+            visitCharacteristic( (Characteristic) structuredValue, null ),
+            structuredValue.getElements().stream().filter( Property.class::isInstance )
+                  .map( Property.class::cast )
+                  .flatMap( property -> property.accept( this, null ) ) )
             .flatMap( Function.identity() );
    }
 
@@ -153,9 +161,9 @@ public class AspectStreamTraversalVisitor implements AspectVisitor<Stream<ModelE
       }
       hasVisited.add( entity );
       return Stream.of(
-                  visitStructureElement( entity, null ),
-                  visit( entity.getExtendingElements() ),
-                  visit( entity.getExtends() ) )
+            visitStructureElement( entity, null ),
+            visit( entity.getExtendingElements() ),
+            visit( entity.getExtends() ) )
             .flatMap( Function.identity() );
    }
 

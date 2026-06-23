@@ -27,7 +27,9 @@ import org.apache.jena.rdf.model.RDFNode;
  *
  * @param otherProperty this value nodes' value must be less than otherProperty's value
  */
-public record EqualsConstraint( Property otherProperty ) implements Constraint {
+public record EqualsConstraint(
+      Property otherProperty
+) implements Constraint {
    @Override
    public boolean canBeUsedOnNodeShapes() {
       return false;

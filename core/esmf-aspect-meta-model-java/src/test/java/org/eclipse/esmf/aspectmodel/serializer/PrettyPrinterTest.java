@@ -66,9 +66,9 @@ class PrettyPrinterTest {
 
    static Stream<Arguments> testModels() {
       return Stream.concat( Arrays.stream( TestAspect.values() ), Arrays.stream( TestProperty.values() )
-            ).filter( testModel ->
-                  // contains blank nodes which are not referenced from an aspect and therefore not pretty-printed
-                  testModel != TestAspect.MODEL_WITH_BLANK_AND_ADDITIONAL_NODES )
+      ).filter( testModel ->
+      // contains blank nodes which are not referenced from an aspect and therefore not pretty-printed
+      testModel != TestAspect.MODEL_WITH_BLANK_AND_ADDITIONAL_NODES )
             .map( Arguments::arguments );
    }
 

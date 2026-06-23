@@ -33,7 +33,9 @@ public sealed interface DatabricksType {
    DatabricksType TIMESTAMP_NTZ = new DatabricksTimestampNtz();
    DatabricksType TINYINT = new DatabricksTinyint();
 
-   record DatabricksDecimal( Optional<Integer> precision, Optional<Integer> scale ) implements DatabricksType {
+   record DatabricksDecimal(
+         Optional<Integer> precision, Optional<Integer> scale
+   ) implements DatabricksType {
       public DatabricksDecimal( final Optional<Integer> precision ) {
          this( precision, Optional.empty() );
       }
@@ -46,24 +48,28 @@ public sealed interface DatabricksType {
       public String toString() {
          if ( precision.isPresent() ) {
             if ( scale().isPresent() ) {
-               //noinspection OptionalGetWithoutIsPresent
+               // noinspection OptionalGetWithoutIsPresent
                return "DECIMAL(" + precision().get() + "," + scale().get() + ")";
             }
-            //noinspection OptionalGetWithoutIsPresent
+            // noinspection OptionalGetWithoutIsPresent
             return "DECIMAL(" + precision().get() + ")";
          }
          return "DECIMAL";
       }
    }
 
-   record DatabricksArray( DatabricksType elementType ) implements DatabricksType {
+   record DatabricksArray(
+         DatabricksType elementType
+   ) implements DatabricksType {
       @Override
       public String toString() {
          return "ARRAY<" + elementType() + ">";
       }
    }
 
-   record DatabricksMap( DatabricksType keyType, DatabricksType valueType ) implements DatabricksType {
+   record DatabricksMap(
+         DatabricksType keyType, DatabricksType valueType
+   ) implements DatabricksType {
       public DatabricksMap {
          if ( keyType instanceof DatabricksMap ) {
             throw new RuntimeException( "Key type cannot be MAP" );
@@ -76,7 +82,9 @@ public sealed interface DatabricksType {
       }
    }
 
-   record DatabricksStructEntry( String name, DatabricksType type, boolean nullable, Optional<String> comment ) {
+   record DatabricksStructEntry(
+         String name, DatabricksType type, boolean nullable, Optional<String> comment
+   ) {
       @Override
       public String toString() {
          return name + ": " + type + ( nullable ? "" : " NOT NULL" )
@@ -84,7 +92,9 @@ public sealed interface DatabricksType {
       }
    }
 
-   record DatabricksStruct( List<DatabricksStructEntry> entries ) implements DatabricksType {
+   record DatabricksStruct(
+         List<DatabricksStructEntry> entries
+   ) implements DatabricksType {
       @Override
       public String toString() {
          return "STRUCT<" + String.join( ", ", entries.stream().map( DatabricksStructEntry::toString ).toList() ) + ">";

@@ -74,8 +74,7 @@ public class AspectModelJavaUtil {
 
    public static final String CURRENT_DATE_ISO_8601 = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSSX" ).format( new Date() );
 
-   private AspectModelJavaUtil() {
-   }
+   private AspectModelJavaUtil() {}
 
    /**
     * Determines the type of a property and wraps it in an Optional if it has been marked as optional.
@@ -100,7 +99,8 @@ public class AspectModelJavaUtil {
     * Resolves and tracks data type of the given meta model property.
     *
     * @param property the property to resolve the data type for
-    * @return the fully qualified class name (potentially including type parameters) of the resolved data type
+    * @return the fully qualified class name (potentially including type parameters) of the resolved
+    *         data type
     */
    public static String getPropertyType( final Property property, final JavaCodeGenerationConfig codeGenerationConfig ) {
       if ( property.isAbstract() ) {
@@ -115,19 +115,20 @@ public class AspectModelJavaUtil {
    }
 
    /**
-    * Determines whether the property has a container type, i.e. it will result in an Optional, Collection or
-    * something similar.
+    * Determines whether the property has a container type, i.e. it will result in an Optional,
+    * Collection or something similar.
     *
     * @param property the property to check
     * @return {@code true} if the property has a container type, {@code false} else
     */
    public static boolean hasContainerType( final Property property ) {
       return property.isOptional()
-            || (property.getEffectiveCharacteristic().map( characteristic -> characteristic.is( Collection.class ) ).orElse( false ));
+            || ( property.getEffectiveCharacteristic().map( characteristic -> characteristic.is( Collection.class ) ).orElse( false ) );
    }
 
    /**
-    * Determines whether the property has a Quantifiable characteristic that actually has a Unit assigned.
+    * Determines whether the property has a Quantifiable characteristic that actually has a Unit
+    * assigned.
     *
     * @param characteristic the characteristic to check
     * @return {@code true} if the property carries a Unit, {@code false} else
@@ -142,17 +143,18 @@ public class AspectModelJavaUtil {
    /**
     * Determines the type of a property
     *
-    * @param optionalCharacteristic the {@link Characteristic} which describes the data type for a property
-    * @param inclValidation a boolean indicating whether the element validation annotations should be included for the Collection
-    * declarations
+    * @param optionalCharacteristic the {@link Characteristic} which describes the data type for a
+    *        property
+    * @param inclValidation a boolean indicating whether the element validation annotations should be
+    *        included for the Collection declarations
     * @return {@link String} containing the definition of the Java Data Type for the property
     */
    public static String determinePropertyType( final Optional<Characteristic> optionalCharacteristic, final boolean inclValidation,
          final JavaCodeGenerationConfig codeGenerationConfig ) {
 
       final Optional<Type> dataType = optionalCharacteristic.flatMap( Characteristic::getDataType );
-      final Characteristic characteristic = optionalCharacteristic.orElseThrow( () ->
-            new CodeGenerationException( "Can not determine type of missing Characteristic" ) );
+      final Characteristic characteristic =
+            optionalCharacteristic.orElseThrow( () -> new CodeGenerationException( "Can not determine type of missing Characteristic" ) );
 
       if ( characteristic.is( Collection.class ) ) {
          return determineCollectionType( characteristic.as( Collection.class ), inclValidation, codeGenerationConfig );
@@ -328,7 +330,7 @@ public class AspectModelJavaUtil {
          final Type actualDataType = dataType.get();
          if ( actualDataType instanceof ComplexType ) {
             final String complexDataType = actualDataType.getName();
-            if ( (!codeGenerationConfig.namePrefix().isBlank() || !codeGenerationConfig.namePostfix().isBlank()) ) {
+            if ( ( !codeGenerationConfig.namePrefix().isBlank() || !codeGenerationConfig.namePostfix().isBlank() ) ) {
                return codeGenerationConfig.namePrefix() + complexDataType + codeGenerationConfig.namePostfix();
             }
             return complexDataType;
@@ -364,8 +366,8 @@ public class AspectModelJavaUtil {
    }
 
    /**
-    * Convert a string given as upper or lower camel case into a constant format. For example {@code someVariable} would become
-    * {@code SOME_VARIABLE}.
+    * Convert a string given as upper or lower camel case into a constant format. For example
+    * {@code someVariable} would become {@code SOME_VARIABLE}.
     *
     * @param upperOrLowerCamel the string to convert
     * @return the string formatted as a constant.
@@ -382,8 +384,8 @@ public class AspectModelJavaUtil {
    }
 
    /**
-    * Creates a string literal with escaped double quotes around the given string. The string is escaped using
-    * {@link #escapeForLiteral(String)}.
+    * Creates a string literal with escaped double quotes around the given string. The string is
+    * escaped using {@link #escapeForLiteral(String)}.
     *
     * @param value the string to create the literal for
     * @return the literal
@@ -393,9 +395,9 @@ public class AspectModelJavaUtil {
    }
 
    /**
-    * Escapes a string properly to be used as a literal. Performs escaping according to Java String rules and afterwards additionally
-    * translates escaped Unicode characters back to Unicode. The latter step is necessary to avoid Unicode escape sequences within the
-    * String literal.
+    * Escapes a string properly to be used as a literal. Performs escaping according to Java String
+    * rules and afterwards additionally translates escaped Unicode characters back to Unicode. The
+    * latter step is necessary to avoid Unicode escape sequences within the String literal.
     *
     * @param value the string to be escaped
     * @return the escaped string
@@ -415,7 +417,8 @@ public class AspectModelJavaUtil {
    }
 
    /**
-    * Takes a class body with FQCNs and replaces them with applied imports (i.e. simply use the class name).
+    * Takes a class body with FQCNs and replaces them with applied imports (i.e. simply use the class
+    * name).
     */
    public static String applyImports( final String body, final JavaCodeGenerationConfig codeGenerationConfig ) {
       String importsApplied = body;
@@ -438,7 +441,8 @@ public class AspectModelJavaUtil {
       return trait.getConstraints().stream()
             .map( constraint -> new ConstraintAnnotationBuilder().setConstraintClass( constraint )
                   .setImportTracker( codeGenerationConfig.importTracker() )
-                  .build() ).collect( Collectors.joining() );
+                  .build() )
+            .collect( Collectors.joining() );
    }
 
    public static boolean anyPropertyNotInPayload( final HasProperties element ) {
@@ -543,7 +547,7 @@ public class AspectModelJavaUtil {
                         || typeUrn.equals( XSD.duration.getURI() )
                         || typeUrn.equals( XSD.yearMonthDuration.getURI() )
                         || typeUrn.equals(
-                        XSD.dayTimeDuration.getURI() ) );
+                              XSD.dayTimeDuration.getURI() ) );
    }
 
    public static boolean doesValueNeedToBeQuoted( final String typeUrn ) {
@@ -578,7 +582,7 @@ public class AspectModelJavaUtil {
    }
 
    public static String generateClassName( final ModelElement element, final JavaCodeGenerationConfig config ) {
-      if ( (!config.namePrefix().isBlank() || !config.namePostfix().isBlank()) && element.is( StructureElement.class ) ) {
+      if ( ( !config.namePrefix().isBlank() || !config.namePostfix().isBlank() ) && element.is( StructureElement.class ) ) {
          return config.namePrefix() + element.getName() + config.namePostfix();
       }
       return element.getName();
@@ -589,8 +593,9 @@ public class AspectModelJavaUtil {
     *
     * @param allProperties the list of properties that are turned into arguments
     * @param codeGenerationConfig the code generation context
-    * @param enableJacksonAnnotations overriding whether Jackson annotations should be generated or not. This is because in certain
-    * situations multiple constructors are generated, only one of which is @JsonCreator and uses @JsonProperty on the arguments
+    * @param enableJacksonAnnotations overriding whether Jackson annotations should be generated or
+    *        not. This is because in certain situations multiple constructors are generated, only one
+    *        of which is @JsonCreator and uses @JsonProperty on the arguments
     * @return the constructor argument string
     */
    public static String constructorArguments( final List<Property> allProperties, final JavaCodeGenerationConfig codeGenerationConfig,
@@ -671,10 +676,10 @@ public class AspectModelJavaUtil {
    public static String getterName( final Property property ) {
       final boolean isBooleanType = !property.isOptional()
             && property.getDataType()
-            .filter( Type::isScalar )
-            .map( type -> XSD.xboolean.getURI().equals( type.getUrn() ) )
-            .orElse( false );
-      return (isBooleanType ? "is" : "get") + StringUtils.capitalize( property.getPayloadName() );
+                  .filter( Type::isScalar )
+                  .map( type -> XSD.xboolean.getURI().equals( type.getUrn() ) )
+                  .orElse( false );
+      return ( isBooleanType ? "is" : "get" ) + StringUtils.capitalize( property.getPayloadName() );
    }
 
    public static String setterName( final Property property, final JavaCodeGenerationConfig codeGenerationConfig ) {
@@ -692,8 +697,7 @@ public class AspectModelJavaUtil {
 
    public static String optionalExpression(
          final String expression,
-         final JavaCodeGenerationConfig codeGenerationConfig
-   ) {
+         final JavaCodeGenerationConfig codeGenerationConfig ) {
       codeGenerationConfig.importTracker().importExplicit( Optional.class );
       codeGenerationConfig.importTracker().importExplicit( DatatypeConstants.class );
 
@@ -732,8 +736,8 @@ public class AspectModelJavaUtil {
 
    private static boolean isNonPrimitiveCharacteristic( final Optional<Characteristic> optionalCharacteristic ) {
 
-      final Characteristic characteristic = optionalCharacteristic.orElseThrow( () ->
-            new CodeGenerationException( "Can not determine type of missing Characteristic" ) );
+      final Characteristic characteristic =
+            optionalCharacteristic.orElseThrow( () -> new CodeGenerationException( "Can not determine type of missing Characteristic" ) );
 
       if ( characteristic.is( Either.class ) ) {
          final boolean isEntityLeft = isNonPrimitiveCharacteristic(

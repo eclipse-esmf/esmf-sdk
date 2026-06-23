@@ -112,8 +112,8 @@ import org.apache.velocity.runtime.RuntimeConstants;
 import org.jboss.forge.roaster.Roaster;
 
 /**
- * A {@link ArtifactGenerator} that generates static meta classes
- * for {@link StructureElement}s in Aspect models
+ * A {@link ArtifactGenerator} that generates static meta classes for {@link StructureElement}s in
+ * Aspect models
  *
  * @param <E> the type to generate code for
  */
@@ -139,7 +139,7 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
       final String modelUrnPrefix = element.urn().getUrnPrefix();
       final String characteristicBaseUrn = matchHash.trimTrailingFrom( SammNs.SAMMC.getNamespace() );
 
-      final Map<String, Object> context = ImmutableMap.<String, Object> builder()
+      final Map<String, Object> context = ImmutableMap.<String, Object>builder()
             .put( "Arrays", java.util.Arrays.class )
             .put( "BoundDefinition", BoundDefinition.class )
             .put( "characteristicBaseUrn", characteristicBaseUrn )

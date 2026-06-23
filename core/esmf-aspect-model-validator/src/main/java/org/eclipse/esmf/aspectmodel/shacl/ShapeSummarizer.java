@@ -57,21 +57,21 @@ public class ShapeSummarizer implements Shape.Visitor<String>, Constraint.Visito
    @Override
    public String visitNodeShape( final Shape.Node nodeShape ) {
       return "%s: %s".formatted( nodeShape.attributes().uri().map( context::shortUri ).orElse( "(anonymous node shape)" ),
-            nodeShape.attributes().constraints().stream().map( constraint ->
-                  constraint.accept( this ) ).collect( Collectors.joining( ", " ) ) );
+            nodeShape.attributes().constraints().stream().map( constraint -> constraint.accept( this ) )
+                  .collect( Collectors.joining( ", " ) ) );
    }
 
    @Override
    public String visitPropertyShape( final Shape.Property propertyShape ) {
       return "%s with path %s: %s".formatted(
             propertyShape.attributes().uri().map( context::shortUri ).orElse( "(anonymous property shape)" ), propertyShape.path(),
-            propertyShape.attributes().constraints().stream().map( constraint ->
-                  constraint.accept( this ) ).collect( Collectors.joining( ", " ) ) );
+            propertyShape.attributes().constraints().stream().map( constraint -> constraint.accept( this ) )
+                  .collect( Collectors.joining( ", " ) ) );
    }
 
    /**
-    * Default implementation for those constraints that either have no args (e.g. sh:closed) or for which the args should be
-    * excluded since they could be too long (e.g. sh:SPARQLConstraint).
+    * Default implementation for those constraints that either have no args (e.g. sh:closed) or for
+    * which the args should be excluded since they could be too long (e.g. sh:SPARQLConstraint).
     *
     * @param constraint the constraint
     * @return a short string representation of the constraint

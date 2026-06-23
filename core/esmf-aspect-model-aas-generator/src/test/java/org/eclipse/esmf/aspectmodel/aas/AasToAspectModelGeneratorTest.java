@@ -22,12 +22,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -39,16 +41,41 @@ import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
 import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectModel;
+import org.eclipse.esmf.metamodel.Characteristic;
+import org.eclipse.esmf.metamodel.Entity;
 import org.eclipse.esmf.metamodel.Operation;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.Unit;
+import org.eclipse.esmf.metamodel.characteristic.Collection;
+import org.eclipse.esmf.metamodel.characteristic.Set;
+import org.eclipse.esmf.metamodel.characteristic.Trait;
+import org.eclipse.esmf.metamodel.datatype.LangString;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.DeserializationException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.json.JsonDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.xml.XmlDeserializer;
+import org.eclipse.digitaltwin.aas4j.v3.model.AasSubmodelElements;
+import org.eclipse.digitaltwin.aas4j.v3.model.DataTypeDefXsd;
 import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
+import org.eclipse.digitaltwin.aas4j.v3.model.KeyTypes;
+import org.eclipse.digitaltwin.aas4j.v3.model.ModellingKind;
+import org.eclipse.digitaltwin.aas4j.v3.model.ReferenceTypes;
+import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
+import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
+import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElementCollection;
+import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElementList;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultConceptDescription;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultEnvironment;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultKey;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultLangStringNameType;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultLangStringTextType;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultProperty;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultReference;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodel;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodelElementCollection;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodelElementList;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
@@ -94,7 +121,7 @@ class AasToAspectModelGeneratorTest {
       } catch ( final IOException exception ) {
          fail( exception );
       } catch ( final AspectModelGenerationException aspectModelGenerationException ) {
-         if ( aspectModelGenerationException.getCause() instanceof final DeserializationException cause ) {
+         if ( aspectModelGenerationException.getCause() instanceof DeserializationException ) {
             System.err.println( "Could not load AASX file: " + aasxFile.getName() + ". Consider reporting to IDTA or AAS4J project." );
          } else {
             fail( aspectModelGenerationException );
@@ -103,22 +130,25 @@ class AasToAspectModelGeneratorTest {
    }
 
    private static final List<String> IGNORED_AASX_FILES = List.of(
-         "IDTA02026-1-0_Template_ProvisionOf3DModels.aasx",
-         "IDTA 02004-1-2_Template_Handover Documentation.aasx",
-         "Sample_ZVEI_Digital_Nameplate_V10.aasx",
-         "SMT_Pure_Technical_Data_V11.aasx",
-         "sample-zvei-techdata-V11.aasx",
-         "SMT_qualified_Technical_Data_V11.aasx",
-         "IDTA 02010-1-0_Template_ServiceRequestNotification.aasx",
-         "IDTA 02011-1-0_Template_HierarchicalStructuresEnablingBoM.aasx",
-         "IDTA 02011-1-1_Template_HSEBoM.aasx"
+         // [Reason]: "kind": "Instance" not "Template"
+         "IDTA 02004-2-0_Example_HandoverDocumentation.aasx",
+         // [Reason]: "kind": "Instance" not "Template"
+         "IDTA 02003_Sample_TechnicalData_forAASMetamodelV3.1.aasx",
+         // [Reason]: "kind": "Instance" not "Template"
+         "IDTA 02003_Sample_TechnicalData.aasx",
+         // [Reason]: "value": "C:\\Windows\\Program Files\\Demo\\Firmware" for type URI.
+         // Illegal character in opaque part at index 2: C:\Windows\Program Files\Demo\Firmware
+         "IDTA 02007-1-0_Template_Software Nameplate.aasx",
+         // [Reason]: Range property with type double. java.lang.NumberFormatException: For input string:
+         // "[0;100]"
+         "IDTA 02019-1-0_Template_PlantAssetManagement.aasx"
    );
 
    protected static Stream<Arguments> idtaSubmodelFiles() throws URISyntaxException, IOException {
       final String submodelTemplatesMissing =
             "IDTA AASX files not found. Please make sure they are available; in the project root run: git submodule update --init "
                   + "--recursive";
-      final URL resource = AasToAspectModelGeneratorTest.class.getResource( "/submodel-templates" );
+      final URL resource = AasToAspectModelGeneratorTest.class.getResource( "/submodel-templates/published" );
       try ( final Stream<Path> stream = Files.walk( Paths.get( resource.toURI() ) ) ) {
          final List<Arguments> list = stream.filter( Files::isRegularFile )
                .filter( file -> file.getFileName().toString().endsWith( ".aasx" ) )
@@ -137,6 +167,55 @@ class AasToAspectModelGeneratorTest {
    }
 
    @Test
+   void testGenerateAspectFromEmptySubmodelElementListDoesNotThrow() {
+      final SubmodelElementList submodelElementList = new DefaultSubmodelElementList.Builder()
+            .idShort( "emptyCollectionList" )
+            .typeValueListElement( AasSubmodelElements.SUBMODEL_ELEMENT_COLLECTION )
+            .value( List.of() )
+            .build();
+      final Submodel submodel = new DefaultSubmodel.Builder()
+            .id( "https://example.com/submodel/empty-list/1.0.0" )
+            .idShort( "EmptyListSubmodel" )
+            .kind( ModellingKind.TEMPLATE )
+            .submodelElements( List.of( submodelElementList ) )
+            .build();
+      final Environment environment = new DefaultEnvironment.Builder()
+            .submodels( List.of( submodel ) )
+            .build();
+      final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( environment );
+
+      assertThatCode( () -> aspectModelGenerator.generate().toList() ).doesNotThrowAnyException();
+   }
+
+   @Test
+   void testOrderRelevantSubmodelElementListIsMappedToSammList() {
+      final SubmodelElementList submodelElementList = buildSubmodelElementList( true );
+      final AasToAspectModelGenerator aspectModelGenerator =
+            AasToAspectModelGenerator.fromEnvironment( buildTemplateEnvironment( submodelElementList ) );
+
+      final Property property = aspectModelGenerator.generate().map( AspectArtifact::getContent ).toList()
+            .getFirst().getProperties().getFirst();
+
+      assertThat( property.getCharacteristic() ).isPresent();
+      assertThat( property.getCharacteristic().get() ).isInstanceOf( org.eclipse.esmf.metamodel.characteristic.List.class );
+      assertThat( property.getCharacteristic().get().urn().getName() ).endsWith( "List" );
+   }
+
+   @Test
+   void testNonOrderRelevantSubmodelElementListIsMappedToSammSet() {
+      final SubmodelElementList submodelElementList = buildSubmodelElementList( false );
+      final AasToAspectModelGenerator aspectModelGenerator =
+            AasToAspectModelGenerator.fromEnvironment( buildTemplateEnvironment( submodelElementList ) );
+
+      final Property property = aspectModelGenerator.generate().map( AspectArtifact::getContent ).toList()
+            .getFirst().getProperties().getFirst();
+
+      assertThat( property.getCharacteristic() ).isPresent();
+      assertThat( property.getCharacteristic().get() ).isInstanceOf( Set.class );
+      assertThat( property.getCharacteristic().get().urn().getName() ).endsWith( "Set" );
+   }
+
+   @Test
    void testSeeReferences() {
       final InputStream inputStream = AasToAspectModelGeneratorTest.class.getClassLoader().getResourceAsStream(
             "submodel-templates/published/Wireless Communication/1/0/IDTA 02022-1-0_Template_Wireless Communication.aasx" );
@@ -151,17 +230,270 @@ class AasToAspectModelGeneratorTest {
             .forEach( see -> assertThat( see ).doesNotContain( "/ " ) );
    }
 
+   @Test
+   void testDoNotGenerateSeeReferencesForCharacteristics() {
+      final InputStream inputStream = AasToAspectModelGeneratorTest.class.getClassLoader().getResourceAsStream(
+            "submodel-templates/published/Handover Documentation/2/0/IDTA 02004-2-0_Template_HandoverDocumentation.aasx" );
+      final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromAasx( inputStream );
+      final List<Aspect> aspects = aspectModelGenerator.generate().map( AspectArtifact::getContent ).toList();
+
+      assertThatCode( aspectModelGenerator::generate ).doesNotThrowAnyException();
+
+      aspects.stream()
+            .flatMap( AasToAspectModelGeneratorTest::allCharacteristics )
+            .forEach( characteristic -> assertThat( characteristic.getSee() ).isEmpty() );
+   }
+
+   @Test
+   void testEntityDescriptionFallsBackToConceptDescriptionDefinition() {
+      final String conceptDescriptionId = "https://example.com/concept-description/document-versions";
+      final SubmodelElementCollection collection = new DefaultSubmodelElementCollection.Builder()
+            .idShort( "DocumentVersions" )
+            .semanticId( new DefaultReference.Builder()
+                  .type( ReferenceTypes.EXTERNAL_REFERENCE )
+                  .keys( List.of( new DefaultKey.Builder()
+                        .type( KeyTypes.CONCEPT_DESCRIPTION )
+                        .value( conceptDescriptionId )
+                        .build() ) )
+                  .build() )
+            .build();
+      final Submodel submodel = new DefaultSubmodel.Builder()
+            .id( "https://example.com/submodel/document-versions/1.0.0" )
+            .idShort( "DocumentVersionsSubmodel" )
+            .kind( ModellingKind.TEMPLATE )
+            .submodelElements( List.of( collection ) )
+            .build();
+      final DefaultConceptDescription conceptDescription = new DefaultConceptDescription.Builder()
+            .id( conceptDescriptionId )
+            .idShort( "DocumentVersions" )
+            .description( new DefaultLangStringTextType.Builder()
+                  .language( "en" )
+                  .text( "Information elements of individual Document Version entities" )
+                  .build()
+            )
+            .build();
+      final Environment environment = new DefaultEnvironment.Builder()
+            .submodels( List.of( submodel ) )
+            .conceptDescriptions( List.of( conceptDescription ) )
+            .build();
+
+      final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( environment );
+      final List<Aspect> aspects = aspectModelGenerator.generate().map( AspectArtifact::getContent ).toList();
+
+      assertThatCode( aspectModelGenerator::generate ).doesNotThrowAnyException();
+
+      final List<String> entityDescriptions = aspects.stream()
+            .flatMap( AasToAspectModelGeneratorTest::allCharacteristics )
+            .map( Characteristic::getDataType )
+            .flatMap( Optional::stream )
+            .filter( Entity.class::isInstance )
+            .map( Entity.class::cast )
+            .flatMap( entity -> entity.getDescriptions().stream() )
+            .map( LangString::getValue )
+            .toList();
+
+      assertThat( entityDescriptions )
+            .contains( "Information elements of individual Document Version entities" );
+   }
+
+   @Test
+   void testEntityPreferredNamesFallBackToConceptDescriptionDisplayName() {
+      final String conceptDescriptionId = "https://example.com/concept-description/document-versions-display-name";
+      final SubmodelElementCollection collection = new DefaultSubmodelElementCollection.Builder()
+            .idShort( "DocumentVersions" )
+            .semanticId( new DefaultReference.Builder()
+                  .type( ReferenceTypes.EXTERNAL_REFERENCE )
+                  .keys( List.of( new DefaultKey.Builder()
+                        .type( KeyTypes.CONCEPT_DESCRIPTION )
+                        .value( conceptDescriptionId )
+                        .build() ) )
+                  .build() )
+            .build();
+      final Submodel submodel = new DefaultSubmodel.Builder()
+            .id( "https://example.com/submodel/document-versions-display-name/1.0.0" )
+            .idShort( "DocumentVersionsSubmodelDisplayName" )
+            .kind( ModellingKind.TEMPLATE )
+            .submodelElements( List.of( collection ) )
+            .build();
+      final DefaultConceptDescription conceptDescription = new DefaultConceptDescription.Builder()
+            .id( conceptDescriptionId )
+            .idShort( "DocumentVersions" )
+            .displayName( List.of( new DefaultLangStringNameType.Builder()
+                  .language( "en" )
+                  .text( "Document versions from concept description" )
+                  .build() ) )
+            .build();
+      final Environment environment = new DefaultEnvironment.Builder()
+            .submodels( List.of( submodel ) )
+            .conceptDescriptions( List.of( conceptDescription ) )
+            .build();
+
+      final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( environment );
+      final List<Aspect> aspects = aspectModelGenerator.generate().map( AspectArtifact::getContent ).toList();
+
+      assertThatCode( aspectModelGenerator::generate ).doesNotThrowAnyException();
+
+      final List<String> entityPreferredNames = aspects.stream()
+            .flatMap( AasToAspectModelGeneratorTest::allCharacteristics )
+            .map( Characteristic::getDataType )
+            .flatMap( Optional::stream )
+            .filter( Entity.class::isInstance )
+            .map( Entity.class::cast )
+            .flatMap( entity -> entity.getPreferredNames().stream() )
+            .map( LangString::getValue )
+            .toList();
+
+      assertThat( entityPreferredNames )
+            .contains( "Document versions from concept description" );
+   }
+
+   @Test
+   void testSubmodelElementCollectionSemanticIdIsUsedAsEntityTypeNotPropertyIdentifier() {
+      final String entitySemanticId = "urn:samm:org.eclipse.esmf.test:1.0.0#TestEntity";
+      final SubmodelElementCollection collection = new DefaultSubmodelElementCollection.Builder()
+            .idShort( "testProperty" )
+            .semanticId( new DefaultReference.Builder()
+                  .type( ReferenceTypes.EXTERNAL_REFERENCE )
+                  .keys( List.of( new DefaultKey.Builder()
+                        .type( KeyTypes.GLOBAL_REFERENCE )
+                        .value( entitySemanticId )
+                        .build() ) )
+                  .build() )
+            .value( List.of( new DefaultProperty.Builder()
+                  .idShort( "entityProperty" )
+                  .valueType( DataTypeDefXsd.STRING )
+                  .build() ) )
+            .build();
+      final Submodel submodel = new DefaultSubmodel.Builder()
+            .id( "urn:samm:org.eclipse.esmf.test:1.0.0#TestAspect" )
+            .idShort( "TestAspect" )
+            .kind( ModellingKind.TEMPLATE )
+            .submodelElements( List.of( collection ) )
+            .build();
+      final Environment environment = new DefaultEnvironment.Builder()
+            .submodels( List.of( submodel ) )
+            .build();
+
+      final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( environment );
+      final Aspect aspect = aspectModelGenerator.generate().map( AspectArtifact::getContent ).findFirst().orElseThrow();
+
+      final Property property = aspect.getProperties().getFirst();
+      assertThat( property.getName() ).isEqualTo( "testProperty" );
+      assertThat( property.urn().toString() ).isEqualTo( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty" );
+
+      final Entity entity = property.getCharacteristic()
+            .flatMap( Characteristic::getDataType )
+            .map( Entity.class::cast )
+            .orElseThrow();
+      assertThat( entity.getName() ).isEqualTo( "TestEntity" );
+      assertThat( entity.urn().toString() ).isEqualTo( entitySemanticId );
+
+      final String result = AspectSerializer.INSTANCE.aspectToString( aspect );
+      final AspectModel aspectModel = new AspectModelLoader().load( new ByteArrayInputStream( result.getBytes() ), URI.create(
+            "urn:samm:org.eclipse.esmf.test:1.0.0#TestAspect" ) );
+      assertThat( new AspectModelValidator().validateModel( aspectModel ) ).isEmpty();
+   }
+
+   private static Environment buildTemplateEnvironment( final SubmodelElement submodelElement ) {
+      final Submodel submodel = new DefaultSubmodel.Builder()
+            .id( "https://example.com/submodel/list-or-set/1.0.0" )
+            .idShort( "ListOrSetSubmodel" )
+            .kind( ModellingKind.TEMPLATE )
+            .submodelElements( List.of( submodelElement ) )
+            .build();
+      return new DefaultEnvironment.Builder()
+            .submodels( List.of( submodel ) )
+            .build();
+   }
+
+   private static SubmodelElementList buildSubmodelElementList( final boolean orderRelevant ) {
+      final org.eclipse.digitaltwin.aas4j.v3.model.Property valueElement = new DefaultProperty.Builder()
+            .idShort( "sampleValue" )
+            .valueType( DataTypeDefXsd.STRING )
+            .build();
+      return new DefaultSubmodelElementList.Builder()
+            .idShort( "testCollection" )
+            .orderRelevant( orderRelevant )
+            .typeValueListElement( AasSubmodelElements.PROPERTY )
+            .value( List.of( valueElement ) )
+            .build();
+   }
+
+   private static Stream<Characteristic> allCharacteristics( final Aspect aspect ) {
+      return aspect.getProperties().stream()
+            .flatMap( property -> property.getCharacteristic().stream() )
+            .flatMap( AasToAspectModelGeneratorTest::allCharacteristics );
+   }
+
+   private static Stream<Characteristic> allCharacteristics( final Characteristic characteristic ) {
+      final Stream<Characteristic> collectionCharacteristics = characteristic instanceof Collection collection
+            ? collection.getElementCharacteristic().stream().flatMap( AasToAspectModelGeneratorTest::allCharacteristics )
+            : Stream.empty();
+      final Stream<Characteristic> traitCharacteristics = characteristic instanceof Trait trait
+            ? allCharacteristics( trait.getBaseCharacteristic() )
+            : Stream.empty();
+      return Stream.concat( Stream.of( characteristic ), Stream.concat( collectionCharacteristics, traitCharacteristics ) );
+   }
+
+   @Test
+   void testGenerateSeeReferencesBasedOnSematicIdAndSupplementalSemanticIds() {
+      final InputStream inputStream = AasToAspectModelGeneratorTest.class.getClassLoader().getResourceAsStream(
+            "submodel-templates/published/Handover Documentation/2/0/IDTA 02004-2-0_Template_HandoverDocumentation.aasx" );
+      final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromAasx( inputStream );
+      final List<Aspect> aspects = aspectModelGenerator.generate().map( AspectArtifact::getContent ).toList();
+
+      assertThatCode( aspectModelGenerator::generate ).doesNotThrowAnyException();
+
+      // Check for 'entities' property
+      aspects.stream()
+            .flatMap( aspect -> aspect.getProperties().stream() )
+            .filter( property -> property.getName().equals( "entities" ) )
+            .findFirst()
+            .ifPresentOrElse( property -> assertThat( property.getSee() )
+                  .containsExactly( "https://admin-shell.io/vdi/2770/1/0/EntitiesForDocumentation" ),
+                  () -> fail( "Property 'entities' not found" ) );
+
+      // Check for 'documents' property
+      aspects.stream()
+            .flatMap( aspect -> aspect.getProperties().stream() )
+            .filter( property -> property.getName().equals( "documents" ) )
+            .findFirst()
+            .ifPresentOrElse( property -> assertThat( property.getSee() )
+                  .containsExactly(
+                        "https://api.eclass-cdp.com/0173-1-02-ABI500-003",
+                        "urn:irdi:0173-1#02-ABI500#003"
+                  ),
+                  () -> fail( "Property 'documents' not found" ) );
+   }
+
+   @Test
+   void testGenerateAspectWithOptionalProperty() {
+      final InputStream inputStream = AasToAspectModelGeneratorTest.class.getClassLoader().getResourceAsStream(
+            "submodel-templates/published/Handover Documentation/2/0/IDTA 02004-2-0_Template_HandoverDocumentation.aasx" );
+      final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromAasx( inputStream );
+      final List<Aspect> aspects = aspectModelGenerator.generate().map( AspectArtifact::getContent ).toList();
+
+      assertThatCode( aspectModelGenerator::generate ).doesNotThrowAnyException();
+
+      // Check for 'entities' property
+      aspects.stream()
+            .flatMap( aspect -> aspect.getProperties().stream() )
+            .filter( property -> property.getName().equals( "entities" ) )
+            .findFirst()
+            .ifPresentOrElse( property -> assertThat( property.isOptional() ).isTrue(),
+                  () -> fail( "Property 'entities' not found" ) );
+   }
+
    @ParameterizedTest
    @Execution( ExecutionMode.CONCURRENT )
    @EnumSource( TestAspect.class )
    void testRoundtripConversion( final TestAspect testAspect ) throws DeserializationException {
       final Aspect aspect = TestResources.load( testAspect ).aspect();
-      final Consumer<AasToAspectModelGenerator> assertForValidator = aspectModelGenerator ->
-            assertThatCode( () -> {
-               final List<Aspect> aspects = aspectModelGenerator.generate().map( AspectArtifact::getContent ).toList();
-               assertThat( aspects ).singleElement().satisfies( generatedAspect ->
-                     assertThat( generatedAspect.urn() ).isEqualTo( aspect.urn() ) );
-            } ).doesNotThrowAnyException();
+      final Consumer<AasToAspectModelGenerator> assertForValidator = aspectModelGenerator -> assertThatCode( () -> {
+         final List<Aspect> aspects = aspectModelGenerator.generate().map( AspectArtifact::getContent ).toList();
+         assertThat( aspects ).singleElement()
+               .satisfies( generatedAspect -> assertThat( generatedAspect.urn() ).isEqualTo( aspect.urn() ) );
+      } ).doesNotThrowAnyException();
 
       final byte[] content = new AspectModelAasGenerator( aspect,
             AasGenerationConfigBuilder.builder().format( AasFileFormat.XML ).build() ).getContent();
@@ -182,8 +514,8 @@ class AasToAspectModelGeneratorTest {
       // Submodel has an Aspect Model URN as identifier
       final Environment aasEnvironment = loadEnvironment( "SMTWithAspectModelUrnId.aas.xml" );
       final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( aasEnvironment );
-      assertThat( aspectModelGenerator.generate() ).map( AspectArtifact::getContent ).singleElement().satisfies( aspect ->
-            assertThat( aspect.urn().toString() ).isEqualTo( "urn:samm:com.example:1.0.0#Submodel1" ) );
+      assertThat( aspectModelGenerator.generate() ).map( AspectArtifact::getContent ).singleElement()
+            .satisfies( aspect -> assertThat( aspect.urn().toString() ).isEqualTo( "urn:samm:com.example:1.0.0#Submodel1" ) );
    }
 
    @Test
@@ -191,8 +523,8 @@ class AasToAspectModelGeneratorTest {
       // Submodel has a Concept Description that points to an Aspect Model URN
       final Environment aasEnvironment = loadEnvironment( "SMTWithAspectModelUrnInConceptDescription.aas.xml" );
       final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( aasEnvironment );
-      assertThat( aspectModelGenerator.generate() ).map( AspectArtifact::getContent ).singleElement().satisfies( aspect ->
-            assertThat( aspect.urn().toString() ).isEqualTo( "urn:samm:com.example:1.0.0#Submodel1" ) );
+      assertThat( aspectModelGenerator.generate() ).map( AspectArtifact::getContent ).singleElement()
+            .satisfies( aspect -> assertThat( aspect.urn().toString() ).isEqualTo( "urn:samm:com.example:1.0.0#Submodel1" ) );
    }
 
    @Test
@@ -201,8 +533,8 @@ class AasToAspectModelGeneratorTest {
       // It has a version and an IRI identifier and an idShort
       final Environment aasEnvironment = loadEnvironment( "SMTAspectModelUrnInConstruction1.aas.xml" );
       final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( aasEnvironment );
-      assertThat( aspectModelGenerator.generate() ).map( AspectArtifact::getContent ).singleElement().satisfies( aspect ->
-            assertThat( aspect.urn().toString() ).isEqualTo( "urn:samm:com.example.www:1.2.3#Submodel1" ) );
+      assertThat( aspectModelGenerator.generate() ).map( AspectArtifact::getContent ).singleElement()
+            .satisfies( aspect -> assertThat( aspect.urn().toString() ).isEqualTo( "urn:samm:com.example.www:1.2.3#Submodel1" ) );
    }
 
    @Test
@@ -211,8 +543,8 @@ class AasToAspectModelGeneratorTest {
       // It has a version and an IRDI identifier and an idShort
       final Environment aasEnvironment = loadEnvironment( "SMTAspectModelUrnInConstruction2.aas.xml" );
       final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( aasEnvironment );
-      assertThat( aspectModelGenerator.generate() ).map( AspectArtifact::getContent ).singleElement().satisfies( aspect ->
-            assertThat( aspect.urn().toString() ).isEqualTo( "urn:samm:com.example:1.2.3#Submodel1" ) );
+      assertThat( aspectModelGenerator.generate() ).map( AspectArtifact::getContent ).singleElement()
+            .satisfies( aspect -> assertThat( aspect.urn().toString() ).isEqualTo( "urn:samm:com.example:1.2.3#Submodel1" ) );
    }
 
    @Test
@@ -221,8 +553,8 @@ class AasToAspectModelGeneratorTest {
       // It has an IRDI identifier and an idShort, but no version
       final Environment aasEnvironment = loadEnvironment( "SMTAspectModelUrnInConstruction3.aas.xml" );
       final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( aasEnvironment );
-      assertThat( aspectModelGenerator.generate() ).map( AspectArtifact::getContent ).singleElement().satisfies( aspect ->
-            assertThat( aspect.urn().toString() ).isEqualTo( "urn:samm:com.example:1.0.0#Submodel1" ) );
+      assertThat( aspectModelGenerator.generate() ).map( AspectArtifact::getContent ).singleElement()
+            .satisfies( aspect -> assertThat( aspect.urn().toString() ).isEqualTo( "urn:samm:com.example:1.0.0#Submodel1" ) );
    }
 
    @Test
@@ -231,8 +563,8 @@ class AasToAspectModelGeneratorTest {
       // It has an IRDI identifier, but no idShort and no version
       final Environment aasEnvironment = loadEnvironment( "SMTAspectModelUrnInConstruction4.aas.xml" );
       final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( aasEnvironment );
-      assertThat( aspectModelGenerator.generate() ).map( AspectArtifact::getContent ).singleElement().satisfies( aspect ->
-            assertThat( aspect.urn().toString() ).isEqualTo( "urn:samm:com.example:1.0.0#AAAAAA000abf2fd07" ) );
+      assertThat( aspectModelGenerator.generate() ).map( AspectArtifact::getContent ).singleElement()
+            .satisfies( aspect -> assertThat( aspect.urn().toString() ).isEqualTo( "urn:samm:com.example:1.0.0#AAAAAA000abf2fd07" ) );
    }
 
    private Environment loadEnvironment( final String name ) {

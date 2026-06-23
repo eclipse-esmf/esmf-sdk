@@ -25,6 +25,7 @@
 :SomeEvent a samm:Event ;
    samm:preferredName "Some Event"@en ;
    samm:description "This is some event"@en ;
+   samm:see <http://example.com/event> ;
    samm:parameters ( :testProperty ) .
 
 :testProperty a samm:Property ;

@@ -34,35 +34,36 @@ import org.junit.jupiter.params.provider.EnumSource;
 
 class RdfModelCreatorVisitorTest {
    /*
-    * Exclude the test models that contain unused elements; the resulting serialized models can
-    * never be identical to the original because the unused elements are ignored when loading the
-    * model and can therefore not be serialized.
-    * Furthermore, exclude the test model of an Aspect without samm:properties and samm:operations,
-    * since the serialization will always write "samm:properties ()" (i.e., add the attribute with
-    * an empty list as value) for now, so here the serialization will differ from the source model
-    * as well.
+    * Exclude the test models that contain unused elements; the resulting serialized models can never
+    * be identical to the original because the unused elements are ignored when loading the model and
+    * can therefore not be serialized. Furthermore, exclude the test model of an Aspect without
+    * samm:properties and samm:operations, since the serialization will always write
+    * "samm:properties ()" (i.e., add the attribute with an empty list as value) for now, so here the
+    * serialization will differ from the source model as well.
     */
    @ParameterizedTest
    @Execution( ExecutionMode.CONCURRENT )
-   @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
-         "ASPECT_WITH_USED_AND_UNUSED_CHARACTERISTIC",
-         "ASPECT_WITH_USED_AND_UNUSED_COLLECTION",
-         "ASPECT_WITH_USED_AND_UNUSED_CONSTRAINT",
-         "ASPECT_WITH_USED_AND_UNUSED_EITHER",
-         "ASPECT_WITH_USED_AND_UNUSED_ENUMERATION",
-         "ASPECT_WITHOUT_PROPERTIES_AND_OPERATIONS",
-         "ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY",
-         "ASPECT_WITH_ABSTRACT_SINGLE_ENTITY",
-         "ASPECT_WITH_ABSTRACT_PROPERTY",
-         "MODEL_WITH_BROKEN_CYCLES",
-         "MODEL_WITH_BLANK_AND_ADDITIONAL_NODES",
-         "ASPECT_WITH_TIME_SERIES",
-         "ASPECT_WITH_QUANTITY",
-         "ASPECT_WITH_NAMESPACE_DESCRIPTION",
-         "ASPECT_WITH_ANY_VALUE_DECLARATIONS",
-         "ASPECT_WITH_OPTIONAL_PROPERTIES_AND_ENTITY_WITH_SEPARATE_FILES",
-         "ASPECT_WITH_VALID_ANNOTATION_TEST"
-   } )
+   @EnumSource( value = TestAspect.class,
+      mode = EnumSource.Mode.EXCLUDE,
+      names = {
+            "ASPECT_WITH_USED_AND_UNUSED_CHARACTERISTIC",
+            "ASPECT_WITH_USED_AND_UNUSED_COLLECTION",
+            "ASPECT_WITH_USED_AND_UNUSED_CONSTRAINT",
+            "ASPECT_WITH_USED_AND_UNUSED_EITHER",
+            "ASPECT_WITH_USED_AND_UNUSED_ENUMERATION",
+            "ASPECT_WITHOUT_PROPERTIES_AND_OPERATIONS",
+            "ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY",
+            "ASPECT_WITH_ABSTRACT_SINGLE_ENTITY",
+            "ASPECT_WITH_ABSTRACT_PROPERTY",
+            "MODEL_WITH_BROKEN_CYCLES",
+            "MODEL_WITH_BLANK_AND_ADDITIONAL_NODES",
+            "ASPECT_WITH_TIME_SERIES",
+            "ASPECT_WITH_QUANTITY",
+            "ASPECT_WITH_NAMESPACE_DESCRIPTION",
+            "ASPECT_WITH_ANY_VALUE_DECLARATIONS",
+            "ASPECT_WITH_OPTIONAL_PROPERTIES_AND_ENTITY_WITH_SEPARATE_FILES",
+            "ASPECT_WITH_VALID_ANNOTATION_TEST"
+      } )
    void testRdfModelCreatorVisitor( final TestAspect testAspect ) {
       final AspectModel aspectModel = TestResources.load( testAspect );
       final Aspect aspect = aspectModel.aspect();

@@ -42,7 +42,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 
-@EnabledIfSystemProperty( named = Flags.RUN_PERFORMANCE_TEST, matches = "true" )
+@EnabledIfSystemProperty( named = Flags.RUN_PERFORMANCE_TEST,
+   matches = "true" )
 class EsmfPerformanceTest {
    private static final int ITERATIONS = 10;
    private static final List<AspectModelFile> INPUT_FILES_2_1_0 = InlineModel.getModel( KnownVersion.SAMM_2_2_0.toVersionString() );
@@ -75,7 +76,7 @@ class EsmfPerformanceTest {
    }
 
    static class InlineModel {
-      //just copied from performance tests - it is not mandatory to be in sync
+      // just copied from performance tests - it is not mandatory to be in sync
       private static final int ASPECTS = 10;
       private static final int ENTITIES = 10;
       private static final int PROPERTIES = 30;
@@ -91,96 +92,96 @@ class EsmfPerformanceTest {
          StringBuilder result = new StringBuilder();
 
          String header = """
-               @prefix :  <urn:samm:com.bosch.performance.catalog.test.0:1.1.0#> .
-               @prefix samm:   <urn:samm:org.eclipse.esmf.samm:meta-model:%samm#> .
-               @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:%samm#> .
-               @prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
-               """.replace( "%samm", samm );
+            @prefix :  <urn:samm:com.bosch.performance.catalog.test.0:1.1.0#> .
+            @prefix samm:   <urn:samm:org.eclipse.esmf.samm:meta-model:%samm#> .
+            @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:%samm#> .
+            @prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+            """.replace( "%samm", samm );
          result.append( header );
 
          result.append(
                """
-                     :TestAspect0 a samm:Aspect ;
-                        samm:description "A test Aspect en"@en ;
-                        samm:description "A test Aspect de"@de ;
-                        samm:preferredName  "TestAspect en"@en ;
-                        samm:preferredName  "TestAspect de"@de ;
-                        samm:properties  ( :testInteger0 ) ;
-                        samm:operations  ( :move0 ) ;
-                        samm:events      ( :event0 ) .
-                     """ );
+                  :TestAspect0 a samm:Aspect ;
+                     samm:description "A test Aspect en"@en ;
+                     samm:description "A test Aspect de"@de ;
+                     samm:preferredName  "TestAspect en"@en ;
+                     samm:preferredName  "TestAspect de"@de ;
+                     samm:properties  ( :testInteger0 ) ;
+                     samm:operations  ( :move0 ) ;
+                     samm:events      ( :event0 ) .
+                  """ );
 
          for ( int i = 0; i < PROPERTIES; i++ ) {
             result.append(
                   """
-                        :testInteger%index
-                           a samm:Property ;
-                           samm:preferredName  "testInteger en"@en ;
-                           samm:preferredName  "testInteger de"@de ;
-                           samm:characteristic :IntegerTestCharacteristic0 .
-                        """
+                     :testInteger%index
+                        a samm:Property ;
+                        samm:preferredName  "testInteger en"@en ;
+                        samm:preferredName  "testInteger de"@de ;
+                        samm:characteristic :IntegerTestCharacteristic0 .
+                     """
                         .replace( "%index", String.valueOf( i ) ) );
          }
 
          for ( int i = 0; i < ENTITIES; i++ ) {
             result.append(
                   """
-                        :Entity%index a samm:Entity ;
-                           samm:preferredName "Entity de"@en ;
-                           samm:preferredName "Entity en"@de ;
-                           samm:description "Entity that describes a result state from production of a processed part. en"@en ;
-                           samm:description "Entity that describes a result state from production of a processed part. de"@de ;
-                           samm:properties ( :testInteger0 ).
-                        """
+                     :Entity%index a samm:Entity ;
+                        samm:preferredName "Entity de"@en ;
+                        samm:preferredName "Entity en"@de ;
+                        samm:description "Entity that describes a result state from production of a processed part. en"@en ;
+                        samm:description "Entity that describes a result state from production of a processed part. de"@de ;
+                        samm:properties ( :testInteger0 ).
+                     """
                         .replace( "%index", String.valueOf( i ) ) );
          }
 
          for ( int i = 0; i < CHARACTERISTICS; i++ ) {
             result.append( """
-                  :IntegerTestCharacteristic%index
-                     a samm:Characteristic ;
-                     samm:preferredName "IntegerTestCharacteristic en"@en ;
-                     samm:preferredName "IntegerTestCharacteristic de"@de ;
-                     samm:dataType xsd:nonNegativeInteger ;
-                     samm-c:constraint :RangeConstraint0.
-                  """
+               :IntegerTestCharacteristic%index
+                  a samm:Characteristic ;
+                  samm:preferredName "IntegerTestCharacteristic en"@en ;
+                  samm:preferredName "IntegerTestCharacteristic de"@de ;
+                  samm:dataType xsd:nonNegativeInteger ;
+                  samm-c:constraint :RangeConstraint0.
+               """
                   .replace( "%index", String.valueOf( i ) ) );
          }
 
          for ( int i = 0; i < CONSTRAINTS; i++ ) {
             result.append(
                   """
-                        :RangeConstraint%index a samm-c:RangeConstraint ;
-                           samm:description "Limits the range of the individual numbers in the list from 5 to 10. en"@en ;
-                           samm:description "Limits the range of the individual numbers in the list from 5 to 10. de"@de ;
-                           samm-c:minValue  "5"^^xsd:nonNegativeInteger ;
-                           samm-c:maxValue  "10"^^xsd:nonNegativeInteger .
-                        """
+                     :RangeConstraint%index a samm-c:RangeConstraint ;
+                        samm:description "Limits the range of the individual numbers in the list from 5 to 10. en"@en ;
+                        samm:description "Limits the range of the individual numbers in the list from 5 to 10. de"@de ;
+                        samm-c:minValue  "5"^^xsd:nonNegativeInteger ;
+                        samm-c:maxValue  "10"^^xsd:nonNegativeInteger .
+                     """
                         .replace( "%index", String.valueOf( i ) ) );
          }
 
          for ( int i = 0; i < OPERATIONS; i++ ) {
             result.append(
                   """
-                         :move%index
-                           a samm:Operation ;
-                           samm:description "moves around en"@en ;
-                           samm:description "moves around de"@de ;
-                           samm:input () ;
-                           samm:output :testInteger0 .
-                        """
+                      :move%index
+                        a samm:Operation ;
+                        samm:description "moves around en"@en ;
+                        samm:description "moves around de"@de ;
+                        samm:input () ;
+                        samm:output :testInteger0 .
+                     """
                         .replace( "%index", String.valueOf( i ) ) );
          }
 
          for ( int i = 0; i < EVENTS; i++ ) {
             result.append(
                   """
-                        :event%index
-                            a samm:Event ;
-                            samm:preferredName "event en"@en ;
-                            samm:preferredName "event de"@de ;
-                            samm:parameters    ( :testInteger0 ) .
-                        """
+                     :event%index
+                         a samm:Event ;
+                         samm:preferredName "event en"@en ;
+                         samm:preferredName "event de"@de ;
+                         samm:parameters    ( :testInteger0 ) .
+                     """
                         .replace( "%index", String.valueOf( i ) ) );
          }
 
@@ -196,24 +197,24 @@ class EsmfPerformanceTest {
             result = new StringBuilder();
 
             header = """
-                  @prefix :       <urn:samm:com.bosch.performance.catalog.test.0:1.1.0#> .
-                  @prefix samm:   <urn:samm:org.eclipse.esmf.samm:meta-model:%samm#> .
-                  @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:%samm#> .
-                  @prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
-                  """.replace( "%samm", samm );
+               @prefix :       <urn:samm:com.bosch.performance.catalog.test.0:1.1.0#> .
+               @prefix samm:   <urn:samm:org.eclipse.esmf.samm:meta-model:%samm#> .
+               @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:%samm#> .
+               @prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+               """.replace( "%samm", samm );
             result.append( header );
 
             result.append(
                   """
-                        :TestAspect%index a samm:Aspect ;
-                           samm:description "A test Aspect en"@en ;
-                           samm:description "A test Aspect de"@de ;
-                           samm:preferredName  "TestAspect en"@en ;
-                           samm:preferredName  "TestAspect de"@de ;
-                           samm:properties  ( :testInteger0 ) ;
-                           samm:operations  ( :move0 ) ;
-                           samm:events      ( :event0 ) .
-                        """
+                     :TestAspect%index a samm:Aspect ;
+                        samm:description "A test Aspect en"@en ;
+                        samm:description "A test Aspect de"@de ;
+                        samm:preferredName  "TestAspect en"@en ;
+                        samm:preferredName  "TestAspect de"@de ;
+                        samm:properties  ( :testInteger0 ) ;
+                        samm:operations  ( :move0 ) ;
+                        samm:events      ( :event0 ) .
+                     """
                         .replace( "%index", String.valueOf( aspect ) ) );
 
             models.add(

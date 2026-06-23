@@ -19,7 +19,6 @@ import org.apache.jena.riot.system.StreamRDF;
 import org.apache.jena.riot.tokens.Tokenizer;
 
 public class TurtleParser extends LangTurtle {
-
    private TurtleParser( final Tokenizer tokenizer, final ParserProfile parserProfile, final StreamRDF output ) {
       super( tokenizer, parserProfile, output );
    }

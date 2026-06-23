@@ -26,19 +26,19 @@ import org.eclipse.esmf.exception.CommandException;
 import picocli.CommandLine;
 
 /**
- * Command to export a Namespace Package from a given Namespace or an Aspect Model with its transitive dependencies
+ * Command to export a Namespace Package from a given Namespace or an Aspect Model with its
+ * transitive dependencies
  */
 @CommandLine.Command(
-      name = PackageExportCommand.COMMAND_NAME,
-      description = "Export a Namespace or an Aspect Model with its dependencies into a Namespace Package",
-      subcommands = {
-            CommandLine.HelpCommand.class
-      },
-      headerHeading = "@|bold Usage|@:%n%n",
-      descriptionHeading = "%n@|bold Description|@:%n%n",
-      parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n"
-)
+   name = PackageExportCommand.COMMAND_NAME,
+   description = "Export a Namespace or an Aspect Model with its dependencies into a Namespace Package",
+   subcommands = {
+         CommandLine.HelpCommand.class
+   },
+   headerHeading = "@|bold Usage|@:%n%n",
+   descriptionHeading = "%n@|bold Description|@:%n%n",
+   parameterListHeading = "%n@|bold Parameters|@:%n",
+   optionListHeading = "%n@|bold Options|@:%n" )
 public class PackageExportCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "export";
 
@@ -52,14 +52,14 @@ public class PackageExportCommand extends AbstractCommand {
    private ResolverConfigurationMixin resolverConfiguration;
 
    @CommandLine.Option(
-         names = { "--output", "-o" },
-         description = "Output file path (default: stdout; as ZIP is a binary format, it is strongly recommended to output the result to "
-               + "a file by using the -o option or the console redirection operator '>')" )
+      names = { "--output", "-o" },
+      description = "Output file path (default: stdout; as ZIP is a binary format, it is strongly recommended to output the result to "
+            + "a file by using the -o option or the console redirection operator '>')" )
    private String outputFilePath = "-";
 
    @CommandLine.Option(
-         names = { "--details" },
-         description = "Print detailed reports on errors" )
+      names = { "--details" },
+      description = "Print detailed reports on errors" )
    private boolean details = false;
 
    @Override

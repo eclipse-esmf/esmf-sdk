@@ -22,7 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A JUnit Jupiter Log Extension that logs the names of the executed tests and the detailed stack traces on failure
+ * A JUnit Jupiter Log Extension that logs the names of the executed tests and the detailed stack
+ * traces on failure
  */
 public class LogExtension implements BeforeTestExecutionCallback, AfterTestExecutionCallback {
    private static final Logger LOG = LoggerFactory.getLogger( LogExtension.class );

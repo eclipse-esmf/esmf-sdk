@@ -32,7 +32,7 @@ name of branch | description
 ----| ----
 `main` | Contains the latest state of the repository
 `v{version_number}-RC{rc_number}` | A "release candidate": A version that freezes major features and
-can be considered a pre-release of the next full release. 
+can be considered a pre-release of the next full release.
 `v{version_number}` | A full release of the respective version.
 `feature/#{issue_number}-{feature_name}` | Contains the development on a specific feature and is
 intended to be merged back into the `main` branch as soon as possible. Note, that it is recommended
@@ -52,18 +52,18 @@ Issue Types        |   Description
 `Bug Report`         | This `Issue` is dedicated to reporting a problem.
  `Task` | This `Issue` is used for describing and proposing a new work item (e.g., a new feature)
 
- If there are issues that link to the same topic, the creator of the issue shall mention those other tasks in the 
+ If there are issues that link to the same topic, the creator of the issue shall mention those other tasks in the
  description. To group tasks that can belong together, one could further create an issue mentioning and describing
  the overall user story for the referenced tasks.
- 
+
 ## Pull Requests
-Proposals for changes to the content of the repository are managed through Pull Requests (`PRs`). 
+Proposals for changes to the content of the repository are managed through Pull Requests (`PRs`).
 
 ### Opening Pull Requests
-To open such a `PR`, implement the changes in a new `feature branch`. Each `PR` must reference an issue and follows the 
-naming schema: `<issue-number>-<feature-name>`. For a new `PR` the target branch is the `main` branch while the source 
-branch is your `feature branch` The `feature branch` branch should be developed in a fork of the upstream repository. 
-So before working on your first feature, you need to create such a fork (e.g., by pressing the `Fork` button in the top 
+To open such a `PR`, implement the changes in a new `feature branch`. Each `PR` must reference an issue and follows the
+naming schema: `<issue-number>-<feature-name>`. For a new `PR` the target branch is the `main` branch while the source
+branch is your `feature branch` The `feature branch` branch should be developed in a fork of the upstream repository.
+So before working on your first feature, you need to create such a fork (e.g., by pressing the `Fork` button in the top
 right corner of the GitHub page)
 
 When opening a `PR` please consider the following topics:
@@ -71,11 +71,11 @@ When opening a `PR` please consider the following topics:
 * optional: Rebase your development on the branch to which you plan to create the `PR`.
 * Each `PR` must be linked to an `Issue`:
     - Reference the `Issue` number in the name of your `feature branch` and the description of the `PR`.
-    - Mention the `Issue` in one of the commit messages associated to the `PR` together with a GitHub keyword like 
+    - Mention the `Issue` in one of the commit messages associated to the `PR` together with a GitHub keyword like
     `closes #IssueNumber` or `fixes #IssuesNumber`. For more details visit the
      [GitHub documentation on linking PR with Issues](https://docs.github.com/en/github/managing-your-work-on-github/linking-a-pull-request-to-an-issue#linking-a-pull-request-to-an-issue-using-a-keyword)
-* Each `PR` should only contain changes related to a single work item. If the changes cover more than one work item or 
-  feature, then create one `PR` per work item. You may need to create new more specific `Issues` to reference if you 
+* Each `PR` should only contain changes related to a single work item. If the changes cover more than one work item or
+  feature, then create one `PR` per work item. You may need to create new more specific `Issues` to reference if you
   split up the work into multiple `feature branches`.
 * Commit changes often. A `PR` may contain one or more commits.
 
@@ -102,7 +102,7 @@ contribution's Git commits fulfills the DCO's requirement that you sign-off on y
 For more information, please see the Eclipse Committer Handbook:
 https://www.eclipse.org/projects/handbook/#resources-commit
 
-## Commit Messages 
+## Commit Messages
 Separate the subject from the body with a blank line because the subject line is shown in the Git
 history and should summarize the commit body. Use the body to explain what and why with less focus
 on the details of the how. This [blog post](https://chris.beams.io/posts/git-commit/#seven-rules)
@@ -117,8 +117,8 @@ following template:
 
 ```
 /*
- * Copyright (c) {YEAR} {NAME OF COMPANY X} 
- * Copyright (c) {YEAR} {NAME OF COMPANY Y} 
+ * Copyright (c) {YEAR} {NAME OF COMPANY X}
+ * Copyright (c) {YEAR} {NAME OF COMPANY Y}
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -159,9 +159,9 @@ Given a version number MAJOR.MINOR.PATCH, increment the:
 - PATCH version when you make backwards compatible bug fixes.
 Additional labels for pre-release and build metadata are available as extensions to the MAJOR.MINOR.PATCH format.
 ````
- 
-Whereas the Major version must be incremented if the API has backward-incompatible changes (e.g., has breaking changes), 
-the Minor version must be changed if new backward-compatible features are introduced and, 
+
+Whereas the Major version must be incremented if the API has backward-incompatible changes (e.g., has breaking changes),
+the Minor version must be changed if new backward-compatible features are introduced and,
 the Patch version must be incremented if backward-compatible bugfixes are introduced.
 
 ### Breaking Changes
@@ -170,7 +170,7 @@ Guidelines](https://github.com/Microsoft/api-guidelines/blob/vNext/Guidelines.md
 which are licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0). This definition
 states:
 ````
-Changes to the contract of an API are considered a breaking change. Changes that impact the backwards compatibility 
+Changes to the contract of an API are considered a breaking change. Changes that impact the backwards compatibility
 of an API are a breaking change.
 `````
 
@@ -189,5 +189,3 @@ v1.0.0-RC1, v1.0.0
 * [For a Repo](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request-from-a-fork)
 * [Issue Creation](https://help.github.com/en/github/managing-your-work-on-github/creating-an-issue)
 * [PR Creation](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request)
-
-

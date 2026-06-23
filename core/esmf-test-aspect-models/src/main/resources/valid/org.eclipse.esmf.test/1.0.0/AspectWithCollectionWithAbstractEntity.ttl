@@ -24,7 +24,7 @@
    samm:description "This is a test property"@en .
 
 :EntityCollectionCharacteristic a samm-c:Collection ;
-   samm:dataType :AbstractTestEntity ;
+   samm:dataType :ExtendingTestEntity ;
    samm:description "This is an entity collection characteristic"@en .
 
 :ExtendingTestEntity a samm:Entity ;

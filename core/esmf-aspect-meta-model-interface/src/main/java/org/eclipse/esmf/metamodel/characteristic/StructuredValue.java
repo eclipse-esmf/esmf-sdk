@@ -22,7 +22,8 @@ import org.eclipse.esmf.metamodel.Characteristic;
  */
 public interface StructuredValue extends Characteristic {
    /**
-    * @return the regular expression to deconstruct the value into the Properties given in {@link #getElements()}.
+    * @return the regular expression to deconstruct the value into the Properties given in
+    *         {@link #getElements()}.
     */
    String getDeconstructionRule();
 
@@ -31,4 +32,3 @@ public interface StructuredValue extends Characteristic {
     */
    List<Object> getElements();
 }
-

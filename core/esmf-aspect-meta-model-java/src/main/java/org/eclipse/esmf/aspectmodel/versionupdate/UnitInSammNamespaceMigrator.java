@@ -21,8 +21,11 @@ import org.eclipse.esmf.metamodel.vocabulary.SAMM;
 import org.eclipse.esmf.metamodel.vocabulary.UNIT;
 import org.eclipse.esmf.samm.KnownVersion;
 
+import org.apache.jena.rdf.model.Resource;
+
 /**
- * Migrates references to meta model elements and attributes in the unit: namespace to use the samm: namespace instead.
+ * Migrates references to meta model elements and attributes in the unit: namespace to use the samm:
+ * namespace instead.
  */
 public class UnitInSammNamespaceMigrator extends AbstractUriRewriter {
    private static final KnownVersion OLD = KnownVersion.SAMM_1_0_0;
@@ -38,7 +41,12 @@ public class UnitInSammNamespaceMigrator extends AbstractUriRewriter {
    }
 
    @Override
-   protected Optional<String> rewriteUri( final String oldUri, final Map<String, String> oldToNewNamespaces ) {
+   protected Optional<String> rewriteUri( final Resource resource, final Map<String, String> oldToNewNamespaces ) {
+      final String oldUri = resource.getURI();
+      if ( oldUri == null ) {
+         return Optional.empty();
+      }
+
       if ( oldUri.startsWith( UNIT.getUri() ) ) {
          return movedElements.stream().filter( oldUri::endsWith ).findFirst().map( movedElement -> SAMM.getNamespace() + movedElement );
       }

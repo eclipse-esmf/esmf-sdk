@@ -29,10 +29,11 @@ import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 @SuppressWarnings( { "NewClassNamingConvention", "checkstyle:TypeName", "checkstyle:ConstantName" } )
 public class Elements {
    /**
-    * All model elements defined in the scope of SAMM (i.e., samm-c:, samm-e: and unit:), indexed by URN
+    * All model elements defined in the scope of SAMM (i.e., samm-c:, samm-e: and unit:), indexed by
+    * URN
     */
    private static final Map<String, ModelElement> ELEMENTS = new AspectModelLoader()
-         .loadAspectModelFiles( MetaModelFile.getElementDefinitionsFiles().stream().<AspectModelFile> map( Function.identity() ).toList() )
+         .loadAspectModelFiles( MetaModelFile.getElementDefinitionsFiles().stream().<AspectModelFile>map( Function.identity() ).toList() )
          .elements().stream()
          .collect( Collectors.toMap( element -> element.urn().toString(), Function.identity() ) );
 

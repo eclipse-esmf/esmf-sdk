@@ -20,7 +20,9 @@ import org.apache.jena.rdf.model.Resource;
  *
  * @param path the path that can be repeated zero or one times
  */
-public record ZeroOrOnePath( Path path ) implements Path {
+public record ZeroOrOnePath(
+      Path path
+) implements Path {
    @Override
    public <T> T accept( final Resource resource, final Visitor<T> visitor ) {
       return visitor.visitZeroOrOnePath( resource, this );

@@ -27,8 +27,8 @@ import org.eclipse.esmf.metamodel.Value;
 public interface Enumeration extends Characteristic {
 
    /**
-    * @return a {@link List} of values defined in this Enumeration. The type of the values is determined by the
-    *       {@link Type} returned by {@link Enumeration#getDataType()}.
+    * @return a {@link List} of values defined in this Enumeration. The type of the values is
+    *         determined by the {@link Type} returned by {@link Enumeration#getDataType()}.
     */
    List<Value> getValues();
 }

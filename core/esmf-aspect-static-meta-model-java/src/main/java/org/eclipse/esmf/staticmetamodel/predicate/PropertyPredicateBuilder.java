@@ -1,3 +1,15 @@
+/*
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
+ *
+ * See the AUTHORS file(s) distributed with this work for additional
+ * information regarding authorship.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * SPDX-License-Identifier: MPL-2.0
+ */
 package org.eclipse.esmf.staticmetamodel.predicate;
 
 import java.util.Collection;
@@ -31,7 +43,7 @@ public class PropertyPredicateBuilder<P extends PropertyAccessor<?, T>, T> {
        * @param referenceValue the reference value
        * @return the predicate
        */
-      public Predicate<C> isEqualTo( T referenceValue ) {
+      public Predicate<C> isEqualTo( final T referenceValue ) {
          return object -> referenceValue.equals( property.getValue( object ) );
       }
 
@@ -56,7 +68,7 @@ public class PropertyPredicateBuilder<P extends PropertyAccessor<?, T>, T> {
        * @param regex the regex to check against
        * @return the predicate
        */
-      public Predicate<C> matches( String regex ) {
+      public Predicate<C> matches( final String regex ) {
          return object -> Pattern.matches( regex, property.getValue( object ) );
       }
 
@@ -66,7 +78,7 @@ public class PropertyPredicateBuilder<P extends PropertyAccessor<?, T>, T> {
        * @param substring the substring to check for
        * @return the predicate
        */
-      public Predicate<C> contains( String substring ) {
+      public Predicate<C> contains( final String substring ) {
          return object -> property.getValue( object ).toString().contains( substring );
       }
    }
@@ -107,7 +119,8 @@ public class PropertyPredicateBuilder<P extends PropertyAccessor<?, T>, T> {
       }
 
       /**
-       * Builds a predicate checking whether the property value is greater than or equal to the given value.
+       * Builds a predicate checking whether the property value is greater than or equal to the given
+       * value.
        *
        * @param referenceValue the reference value
        * @return the predicate
@@ -117,7 +130,8 @@ public class PropertyPredicateBuilder<P extends PropertyAccessor<?, T>, T> {
       }
 
       /**
-       * Builds a predicate checking whether the property value is within the closed range {@code [lower, upper]}.
+       * Builds a predicate checking whether the property value is within the closed range
+       * {@code [lower, upper]}.
        *
        * @param lower the lower end of the range
        * @param upper the upper end of the range
@@ -132,7 +146,8 @@ public class PropertyPredicateBuilder<P extends PropertyAccessor<?, T>, T> {
       }
 
       /**
-       * Builds a predicate checking whether the property value is within the closed-open range {@code [lower, upper)}.
+       * Builds a predicate checking whether the property value is within the closed-open range
+       * {@code [lower, upper)}.
        *
        * @param lower the lower end of the range
        * @param upper the upper end of the range
@@ -147,7 +162,8 @@ public class PropertyPredicateBuilder<P extends PropertyAccessor<?, T>, T> {
       }
 
       /**
-       * Builds a predicate checking whether the property value is within the open range {@code (lower, upper)}.
+       * Builds a predicate checking whether the property value is within the open range
+       * {@code (lower, upper)}.
        *
        * @param lower the lower end of the range
        * @param upper the upper end of the range
@@ -162,7 +178,8 @@ public class PropertyPredicateBuilder<P extends PropertyAccessor<?, T>, T> {
       }
 
       /**
-       * Builds a predicate checking whether the property value is within the open-closed range {@code (lower, upper]}.
+       * Builds a predicate checking whether the property value is within the open-closed range
+       * {@code (lower, upper]}.
        *
        * @param lower the lower end of the range
        * @param upper the upper end of the range
@@ -194,7 +211,8 @@ public class PropertyPredicateBuilder<P extends PropertyAccessor<?, T>, T> {
       }
 
       /**
-       * Builds a predicate checking whether the collection property value contains any of the given elements.
+       * Builds a predicate checking whether the collection property value contains any of the given
+       * elements.
        *
        * @param elements the elements
        * @return the predicate
@@ -204,7 +222,8 @@ public class PropertyPredicateBuilder<P extends PropertyAccessor<?, T>, T> {
       }
 
       /**
-       * Builds a predicate checking whether the collection property value contains all of the given elements.
+       * Builds a predicate checking whether the collection property value contains all of the given
+       * elements.
        *
        * @param elements the elements
        * @return the predicate

@@ -34,13 +34,15 @@ import org.apache.jena.rdf.model.Statement;
  *
  * @param ignoredProperties allowed ignored properties
  */
-public record ClosedConstraint( Set<Property> ignoredProperties ) implements Constraint {
+public record ClosedConstraint(
+      Set<Property> ignoredProperties
+) implements Constraint {
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
       if ( !rdfNode.isResource() ) {
          return List.of( new NodeKindViolation( context, Shape.NodeKind.BlankNodeOrIRI, Shape.NodeKind.forNode( rdfNode ) ) );
       }
-      if ( !(context.shape() instanceof final Shape.Node shapeNode) ) {
+      if ( !( context.shape() instanceof final Shape.Node shapeNode ) ) {
          return List.of();
       }
 
@@ -54,7 +56,7 @@ public record ClosedConstraint( Set<Property> ignoredProperties ) implements Con
       return resource.getModel().listStatements( resource, null, (RDFNode) null )
             .mapWith( Statement::getPredicate )
             .filterKeep( predicate -> !allowedProperties.contains( predicate ) && !ignoredProperties.contains( predicate ) )
-            .<Violation> mapWith( predicate -> new ClosedViolation( context, allowedProperties, ignoredProperties(), predicate ) )
+            .<Violation>mapWith( predicate -> new ClosedViolation( context, allowedProperties, ignoredProperties(), predicate ) )
             .toList();
    }
 

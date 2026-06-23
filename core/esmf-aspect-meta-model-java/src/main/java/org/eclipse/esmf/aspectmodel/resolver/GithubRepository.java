@@ -37,7 +37,9 @@ public record GithubRepository(
       String refTypeName();
    }
 
-   public record Branch( String name ) implements Ref {
+   public record Branch(
+         String name
+   ) implements Ref {
       @Override
       public String refType() {
          return "heads";
@@ -49,7 +51,9 @@ public record GithubRepository(
       }
    }
 
-   public record Tag( String name ) implements Ref {
+   public record Tag(
+         String name
+   ) implements Ref {
       @Override
       public String refType() {
          return "tags";
@@ -62,7 +66,8 @@ public record GithubRepository(
    }
 
    public URL zipLocation() {
-      // See https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#download-a-repository-archive-zip
+      // See
+      // https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#download-a-repository-archive-zip
       // General URL structure: https://api.github.com/repos/OWNER/REPO/zipball/REF
       final String theHost = host().equals( "github.com" ) ? "api.github.com" : host();
       final String url = "https://%s/repos/%s/%s/zipball/%s".formatted( theHost, owner(), repository(), branchOrTag().name() );

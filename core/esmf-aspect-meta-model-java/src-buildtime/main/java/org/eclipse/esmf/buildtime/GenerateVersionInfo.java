@@ -50,7 +50,7 @@ public class GenerateVersionInfo extends BuildtimeCodeGenerator {
    protected String interpolateVariable( final String variableName ) {
       return switch ( variableName ) {
          case "esmfSdkVersion" -> appProperties.getProperty( "project-version" );
-         case "aspectMetaModelVersion" -> appProperties.getProperty( "aspect-meta-model-version" );
+         case "aspectMetaModelVersion" -> appProperties.getProperty( "aspect-meta-model.version" );
          case "buildDate" -> new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format( new Date() );
          case "commitId" -> gitProperties.getProperty( "git.commit.id" );
          case "generator" -> getClass().getCanonicalName();

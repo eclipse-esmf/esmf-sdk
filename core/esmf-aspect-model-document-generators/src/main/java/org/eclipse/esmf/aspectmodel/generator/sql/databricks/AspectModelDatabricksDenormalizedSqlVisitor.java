@@ -84,11 +84,11 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
 
    public AspectModelDatabricksDenormalizedSqlVisitor( final DatabricksSqlGenerationConfig config ) {
       this.config = config;
-      databricksTypeMap = ImmutableMap.<String, DatabricksType> builder()
+      databricksTypeMap = ImmutableMap.<String, DatabricksType>builder()
             .put( XSD.xstring.getURI(), DatabricksType.STRING )
             .put( XSD.xboolean.getURI(), DatabricksType.BOOLEAN )
             .put( XSD.decimal.getURI(), new DatabricksType.DatabricksDecimal( Optional.of( config.decimalPrecision() ),
-                    Optional.of( config.decimalScale() ) ) )
+                  Optional.of( config.decimalScale() ) ) )
             .put( XSD.integer.getURI(), new DatabricksType.DatabricksDecimal( Optional.of( config.decimalPrecision() ) ) )
             .put( XSD.xdouble.getURI(), DatabricksType.DOUBLE )
             .put( XSD.xfloat.getURI(), DatabricksType.FLOAT )
@@ -175,8 +175,8 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
          columnDeclarations = columnDeclarations.substring( 0, columnDeclarations.length() - 4 );
       }
       final String comment = config.includeTableComment()
-            ? Optional.ofNullable( aspect.getDescription( config.commentLanguage() ) ).map( description ->
-            new DatabricksCommentDefinition( description ) + "\n" ).orElse( "" )
+            ? Optional.ofNullable( aspect.getDescription( config.commentLanguage() ) )
+                  .map( description -> new DatabricksCommentDefinition( description ) + "\n" ).orElse( "" )
             : "";
       return "%s %s (\n%s%s)\n%sTBLPROPERTIES ('%s'='%s');\n".formatted(
             config.createTableCommandPrefix(),
@@ -226,7 +226,8 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
          if ( context.recursionDepth().getOrDefault( property, 0 ) >= MAX_RECURSION_DEPTH ) {
             return "";
          }
-         // If the property is optional but points to an Entity with mandatory properties, the columns for those
+         // If the property is optional but points to an Entity with mandatory properties, the columns for
+         // those
          // properties still need to be optional (i.e. nullable), so we force optionality here.
          final Context contextForComplexType = property.isOptional()
                ? context.copy().forceOptional( true ).build()
@@ -236,7 +237,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
 
       final Optional<String> comment = config.includeColumnComments()
             ? Optional.ofNullable( Optional.ofNullable( context.forceDescriptionFromElement() ).orElse( property )
-            .getDescription( config.commentLanguage() ) )
+                  .getDescription( config.commentLanguage() ) )
             : Optional.empty();
       return column( context.prefix(), type.accept( this, context ), property.isOptional() || context.forceOptional(), comment );
    }
@@ -257,7 +258,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
       final Type type = collection.getDataType().orElseThrow();
       final Optional<String> comment = config.includeColumnComments()
             ? Optional.ofNullable( Optional.ofNullable( context.forceDescriptionFromElement() ).orElse( property )
-            .getDescription( config.commentLanguage() ) )
+                  .getDescription( config.commentLanguage() ) )
             : Optional.empty();
 
       if ( type.isComplexType() ) {
@@ -304,9 +305,9 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
          if ( type instanceof Scalar ) {
             final String typeDef = type.accept( this, context );
             final Optional<String> comment = config.includeColumnComments()
-                    ? Optional.ofNullable( Optional.ofNullable( context.forceDescriptionFromElement() ).orElse( property )
-                    .getDescription( config.commentLanguage() ) )
-                    : Optional.empty();
+                  ? Optional.ofNullable( Optional.ofNullable( context.forceDescriptionFromElement() ).orElse( property )
+                        .getDescription( config.commentLanguage() ) )
+                  : Optional.empty();
             columns.append( column( columnPrefix, typeDef, property.isOptional(), comment ) )
                   .append( lineDelimiter );
          } else if ( type instanceof ComplexType ) {

@@ -33,6 +33,7 @@
                </includes>
                <tableCommandPrefix>CREATE TABLE</tableCommandPrefix>
                <decimalPrecision>23</decimalPrecision>
+               <decimalScale>14</decimalScale>
                <customColumns>
                   <column>custom_column ARRAY&lt;STRING&gt; NOT NULL COMMENT 'Custom column'</column>
                </customColumns>

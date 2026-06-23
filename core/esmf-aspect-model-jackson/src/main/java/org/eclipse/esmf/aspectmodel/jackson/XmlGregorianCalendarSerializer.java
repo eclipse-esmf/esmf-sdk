@@ -13,27 +13,22 @@
 
 package org.eclipse.esmf.aspectmodel.jackson;
 
-import java.io.IOException;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
 
 /**
  * Jackson serializer for {@see XMLGregorianCalendar}
  */
-class XmlGregorianCalendarSerializer extends StdSerializer<XMLGregorianCalendar> {
-   private static final long serialVersionUID = -7121579663349330794L;
+public class XmlGregorianCalendarSerializer extends ValueSerializer<XMLGregorianCalendar> {
    public static final XmlGregorianCalendarSerializer INSTANCE = new XmlGregorianCalendarSerializer();
 
-   private XmlGregorianCalendarSerializer() {
-      super( XMLGregorianCalendar.class );
-   }
-
    @Override
-   public void serialize( final XMLGregorianCalendar value, final JsonGenerator generator,
-         final SerializerProvider serializers ) throws IOException {
+   public void serialize( final XMLGregorianCalendar value, final JsonGenerator generator, final SerializationContext context )
+         throws JacksonException {
       generator.writeString( value.toXMLFormat() );
    }
 }

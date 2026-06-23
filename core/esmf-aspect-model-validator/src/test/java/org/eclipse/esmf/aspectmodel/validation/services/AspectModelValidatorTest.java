@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -23,6 +23,7 @@ import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.MetaModelFile;
 import org.eclipse.esmf.aspectmodel.shacl.fix.Fix;
 import org.eclipse.esmf.aspectmodel.shacl.violation.DatatypeViolation;
+import org.eclipse.esmf.aspectmodel.shacl.violation.MinCountViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.SparqlConstraintViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.validation.CycleViolation;
@@ -62,6 +63,13 @@ class AspectModelValidatorTest {
       final AspectModel aspectModel = TestResources.load( testProperty );
       final List<Violation> violations = validator.validateModel( aspectModel );
       assertThat( violations ).isEmpty();
+   }
+
+   @Test
+   void testValidateBlankStructuredValueWithInvalidElementsProperty() {
+      final AspectModel aspectModel = TestResources.load( InvalidTestAspect.ASPECT_WITH_INVALID_BLANK_STRUCTURED_VALUE );
+      final List<Violation> violations = new AspectModelValidator().validateModel( aspectModel );
+      assertThat( violations ).hasExactlyElementsOfTypes( MinCountViolation.class, ProcessingViolation.class );
    }
 
    @ParameterizedTest
@@ -107,9 +115,9 @@ class AspectModelValidatorTest {
       assertThat( violations )
             .hasSize( 1 )
             .first()
-            .satisfies( violation ->
-                  assertThat( violation ).isInstanceOfSatisfying( CycleViolation.class, cycleViolation ->
-                        assertThat( cycleViolation.violationSpecificMessage() ).contains( ":testProperty -> :testProperty" ) ) );
+            .satisfies( violation -> assertThat( violation ).isInstanceOfSatisfying( CycleViolation.class,
+                  cycleViolation -> assertThat( cycleViolation.violationSpecificMessage() )
+                        .contains( ":testProperty -> :testProperty" ) ) );
    }
 
    @ParameterizedTest
@@ -173,6 +181,14 @@ class AspectModelValidatorTest {
    }
 
    @Test
+   void testDocumentationLinkInDetailedMessage() {
+      final Supplier<AspectModel> invalidTurtleSyntax = () -> TestResources.load( InvalidTestAspect.INVALID_SYNTAX );
+      final List<Violation> violations = validator.validateModel( invalidTurtleSyntax );
+      final String report = new DetailedViolationFormatter().apply( violations );
+      assertThat( report.contains( "documentation: " + ViolationFormatter.ERROR_CODES_DOC_LINK + "ERR-SYNTAX" ) ).isTrue();
+   }
+
+   @Test
    void testNonTurtleFile() {
       final Supplier<AspectModel> invalidTurtleSyntax = () -> TestResources.load( InvalidTestAspect.ACTUALLY_JSON );
       final List<Violation> violations = validator.validateModel( invalidTurtleSyntax );
@@ -190,9 +206,8 @@ class AspectModelValidatorTest {
       assertThat( violations )
             .hasSize( 1 )
             .first()
-            .satisfies( violation ->
-                  assertThat( violation ).isInstanceOfSatisfying( ProcessingViolation.class, processingViolation ->
-                        assertThat( processingViolation.message() ).contains( "is not supported" ) ) );
+            .satisfies( violation -> assertThat( violation ).isInstanceOfSatisfying( ProcessingViolation.class,
+                  processingViolation -> assertThat( processingViolation.message() ).contains( "is not supported" ) ) );
    }
 
    @Test
@@ -255,5 +270,27 @@ class AspectModelValidatorTest {
       final List<Violation> violations = result.getLeft();
       assertThat( violations ).hasSize( 1 );
       assertThat( violations.getFirst().violationSpecificMessage() ).contains( "is no valid value for type" );
+   }
+
+   @Test
+   void testValidateRegularExpressionExampleValueValidator() {
+      final Either<List<Violation>, AspectModel> result = TestResources.loadWithValidation(
+            InvalidTestAspect.ASPECT_WITH_INVALID_REGEX_CONSTRAINT, validator );
+      assertThat( result.isLeft() ).isTrue();
+      final List<Violation> violations = result.getLeft();
+      assertThat( violations ).hasSize( 1 );
+      assertThat( violations.getFirst().violationSpecificMessage() ).contains(
+            "Regular expression on :TestRegularExpressionConstraint is invalid" );
+   }
+
+   @Test
+   void testValidateAnonymousRegularExpressionExampleValueValidator() {
+      final Either<List<Violation>, AspectModel> result = TestResources.loadWithValidation(
+            InvalidTestAspect.ASPECT_WITH_INVALID_ANONYMOUS_REGEX_CONSTRAINT, validator );
+      assertThat( result.isLeft() ).isTrue();
+      final List<Violation> violations = result.getLeft();
+      assertThat( violations ).hasSize( 1 );
+      assertThat( violations.getFirst().violationSpecificMessage() ).contains(
+            "Regular expression on anonymous element is invalid" );
    }
 }

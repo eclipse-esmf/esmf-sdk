@@ -24,7 +24,9 @@ import org.apache.jena.rdf.model.RDFNode;
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#NotConstraintComponent">sh:not</a>
  */
-public record NotConstraint( Constraint constraint ) implements Constraint {
+public record NotConstraint(
+      Constraint constraint
+) implements Constraint {
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
       final List<Violation> violations = constraint.apply( rdfNode, context );

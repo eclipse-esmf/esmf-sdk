@@ -20,7 +20,8 @@ import org.apache.jena.rdf.model.Resource;
 /**
  * The RDF jena vocabulary of the aspect meta model.
  */
-// Since the class is an RDF vocabulary, naming rules for the class and for several methods (which should be named identically
+// Since the class is an RDF vocabulary, naming rules for the class and for several methods (which
+// should be named identically
 // to the corresponding model elements) are suppressed.
 @SuppressWarnings( { "checkstyle:AbbreviationAsWordInName", "NewMethodNamingConvention" } )
 public class SAMM implements RdfNamespace {

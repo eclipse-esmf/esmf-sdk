@@ -13,50 +13,48 @@
 
 package org.eclipse.esmf;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.List;
-import java.util.Optional;
 
-import org.eclipse.esmf.aspectmodel.resolver.exceptions.ProcessExecutionException;
-import org.eclipse.esmf.aspectmodel.resolver.process.BinaryLauncher;
-import org.eclipse.esmf.aspectmodel.resolver.process.ExecutableJarLauncher;
+import org.eclipse.esmf.util.process.ProcessExecutionException;
+import org.eclipse.esmf.util.process.ExecutableJarLauncher;
+import org.eclipse.esmf.util.process.ProcessLauncher;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * The CLI integration tests that are executed by Maven Failsafe.
- * The tests either execute the CLI's executable jar (using the {@link ExecutableJarLauncher}) or the CLI's native binary (using the
- * {@link BinaryLauncher}). Which one is executed is determined using the system property "packaging-type" which can be "jar" or "native".
- * See the documentation of the respective launchers on how they are configured.
+ * The tests execute the CLI's executable jar (using the {@link ExecutableJarLauncher}).
  */
 @ExtendWith( LogExtension.class )
 @TestInstance( TestInstance.Lifecycle.PER_CLASS )
-public class SammCliIntegrationTest extends SammCliTest {
-   @BeforeEach
+public class SammCliIntegrationTest extends SammCliAbstractTest {
    @Override
-   public void beforeEach() throws IOException {
-      if ( Optional.ofNullable( System.getProperty( "packaging-type" ) ).orElse( "jar" ).equals( "jar" ) ) {
-         final String jarFile = System.getProperty( "executableJar" );
-         if ( jarFile == null || !new File( jarFile ).exists() ) {
-            throw new ProcessExecutionException( "Executable jar " + jarFile + " not found" );
-         }
-         sammCli = new ExecutableJarLauncher( new File( jarFile ), List.of( "-Djava.awt.headless=true" ) );
-      } else {
-         String binary = System.getProperty( "binary" );
-         if ( System.getProperty( "os.name" ).startsWith( "Windows" ) ) {
-            binary = binary.replace( "/", "\\" );
-            binary = binary + ".exe";
-         }
-         final File binaryFile = new File( binary );
-         if ( binary == null || !binaryFile.exists() ) {
-            throw new ProcessExecutionException( "Binary " + binary + " not found" );
-         }
-         sammCli = new BinaryLauncher( binaryFile );
+   protected ProcessLauncher<?> getCli() {
+      final String jarFile = System.getProperty( "executableJar" );
+      if ( jarFile == null || !new File( jarFile ).exists() ) {
+         throw new ProcessExecutionException( "Executable jar " + jarFile + " not found" );
       }
-      outputDirectory = Files.createTempDirectory( "junit" );
+      return new ExecutableJarLauncher( new File( jarFile ), List.of( "-Djava.awt.headless=true" ), true );
+   }
+
+   @Test
+   void testAspectValidateValidModel() {
+      final ProcessLauncher.ExecutionResult result =
+            sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "validate" );
+      assertThat( result.stdout() ).contains( "Input model is valid" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testDiagramGeneration() {
+      final ProcessLauncher.ExecutionResult result =
+            sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "svg" );
+      assertThat( result.stdout() ).contains( "<svg" );
+      assertThat( result.stderr() ).isEmpty();
    }
 }

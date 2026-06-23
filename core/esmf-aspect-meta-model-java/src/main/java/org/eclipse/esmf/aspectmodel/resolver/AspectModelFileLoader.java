@@ -32,20 +32,24 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.jena.rdf.model.Model;
+
 import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
+import org.eclipse.esmf.treesitterturtle.ParserTokenType;
+import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
+import org.eclipse.esmf.util.download.Download;
 
 import io.vavr.control.Try;
-import org.apache.jena.rdf.model.Model;
 
 /**
- * Loads an input source into a {@link RawAspectModelFile}, i.e., an Aspect Model file that does not yet provide information
- * about its model elements. This class should normally not be directly used as it is part of the regular Aspect Model loader.
- * Use {@link AspectModelLoader} instead.
+ * Loads an input source into a {@link RawAspectModelFile}, i.e., an Aspect Model file that does not
+ * yet provide information about its model elements. This class should normally not be directly used
+ * as it is part of the regular Aspect Model loader. Use {@link AspectModelLoader} instead.
  */
 public class AspectModelFileLoader {
    /**
@@ -75,18 +79,6 @@ public class AspectModelFileLoader {
     * Loads the content of an AspectModelFile from an RDF/Turtle string
     *
     * @param rdfTurtle the model in RDF/Turtle syntax
-    * @return the loaded file content
-    * @deprecated Use {@link #load(String, URI)} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static RawAspectModelFile load( final String rdfTurtle ) {
-      return load( rdfTurtle, buildArtificialUri( rdfTurtle, "rdfturtle" ) );
-   }
-
-   /**
-    * Loads the content of an AspectModelFile from an RDF/Turtle string
-    *
-    * @param rdfTurtle the model in RDF/Turtle syntax
     * @param sourceLocation the logical location of the file source
     * @return the loaded file content
     */
@@ -101,16 +93,16 @@ public class AspectModelFileLoader {
       return new RawAspectModelFile( rdfTurtle, model, headerComment, Optional.of( sourceLocation ) );
    }
 
-   /**
-    * Loads the content of an AspectModelFile from an input stream
-    *
-    * @param inputStream the input stream
-    * @return the loaded file content
-    * @deprecated Use {@link #load(InputStream, URI)}  instead
-    */
-   @Deprecated( forRemoval = true )
-   public static RawAspectModelFile load( final InputStream inputStream ) {
-      return load( inputStream, buildArtificialUri( inputStream, "inputstream" ) );
+   public static RawAspectModelFile load( final TurtleSyntaxTree syntaxTree, final URI sourceLocation ) {
+      final String sourceRepresentation = syntaxTree.sourceRepresentationSupplier().get();
+      final List<String> headerComment = headerComment( syntaxTree );
+      final Try<Model> tryModel = TurtleLoader.loadTurtle( syntaxTree, sourceLocation );
+      if ( tryModel.isFailure() && tryModel.getCause() instanceof final ParserException parserException ) {
+         throw parserException;
+      }
+      final Model model = tryModel.getOrElseThrow(
+            () -> new ModelResolutionException( "Can not load model", tryModel.getCause() ) );
+      return new RawAspectModelFile( sourceRepresentation, model, headerComment, Optional.of( sourceLocation ) );
    }
 
    /**
@@ -125,35 +117,10 @@ public class AspectModelFileLoader {
    }
 
    /**
-    * Loads the content of an AspectModelFile from an input stream
+    * Loads the content of an AspectModelFile from an RDF model
     *
-    * @param inputStream the input stream
+    * @param model the input model
     * @param sourceLocation the logical location of the file source
-    * @return the loaded file content
-    * @deprecated Use {@link #load(InputStream, URI)}  instead
-    */
-   @Deprecated( forRemoval = true )
-   public static RawAspectModelFile load( final InputStream inputStream, final Optional<URI> sourceLocation ) {
-      return load( inputStream, sourceLocation.orElse( buildArtificialUri( inputStream, "inputstream" ) ) );
-   }
-
-   /**
-    * Loads the content of an AspectModelFile from an RDF model
-    *
-    * @param model the input model
-    * @return the loaded file content
-    * @deprecated Use {@link #load(Model, URI)} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static RawAspectModelFile load( final Model model ) {
-      return load( model, buildArtificialUri( model, "model" ) );
-   }
-
-   /**
-    * Loads the content of an AspectModelFile from an RDF model
-    *
-    * @param model the input model
-    * @param sourceLocation the logical location of the file file source
     * @return the loaded file content
     */
    public static RawAspectModelFile load( final Model model, final URI sourceLocation ) {
@@ -172,31 +139,6 @@ public class AspectModelFileLoader {
    }
 
    /**
-    * Loads the content of an AspectModelFile from raw bytes
-    *
-    * @param content the file content
-    * @param sourceLocation the logical location of the source file
-    * @return the loaded file content
-    * @deprecated Use {@link #load(byte[], URI)} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static RawAspectModelFile load( final byte[] content, final Optional<URI> sourceLocation ) {
-      return load( new ByteArrayInputStream( content ), sourceLocation );
-   }
-
-   /**
-    * Loads the content of an AspectModelFile from raw bytes
-    *
-    * @param content the file content
-    * @return the loaded file content
-    * @deprecated Use {@link #load(byte[], URI)} instead
-    */
-   @Deprecated( forRemoval = true )
-   public static RawAspectModelFile load( final byte[] content ) {
-      return load( new ByteArrayInputStream( content ), buildArtificialUri( content, "bytes" ) );
-   }
-
-   /**
     * Loads the content of an AspectModelFile from a URL
     *
     * @param url the source location of the file
@@ -210,13 +152,18 @@ public class AspectModelFileLoader {
             throw new ModelResolutionException( "Can not load model from file URL", exception );
          }
       } else if ( url.getProtocol().equals( "http" ) || url.getProtocol().equals( "https" ) ) {
-         // Downloading from http(s) should take proxy settings into consideration, so we don't just .openStream() here
+         // Downloading from http(s) should take proxy settings into consideration, so we don't just
+         // .openStream() here
          final byte[] fileContent = new Download().downloadFile( url );
-         return load( fileContent );
+         try {
+            return load( fileContent, url.toURI() );
+         } catch ( final URISyntaxException exception ) {
+            throw new ModelResolutionException( "Can not load model from URL", exception );
+         }
       }
       try {
          // Other URLs (e.g. resource://) we just load using openStream()
-         return load( url.openStream(), Optional.of( url.toURI() ) );
+         return load( url.openStream(), url.toURI() );
       } catch ( final IOException | URISyntaxException exception ) {
          throw new ModelResolutionException( "Can not load model from URL", exception );
       }
@@ -256,6 +203,16 @@ public class AspectModelFileLoader {
       return content.lines()
             .dropWhile( String::isBlank )
             .takeWhile( line -> line.startsWith( "#" ) )
+            .map( line -> line.substring( 1 ).trim() )
+            .toList();
+   }
+
+   private static List<String> headerComment( final TurtleSyntaxTree turtleSyntaxTree ) {
+      return turtleSyntaxTree.tokens()
+            .filter( token -> !token.type().equals( ParserTokenType.DOCUMENT ) )
+            .takeWhile( token -> token.type().equals( ParserTokenType.COMMENT ) )
+            .map( TurtleSyntaxTree.Token::content )
+            .dropWhile( String::isBlank )
             .map( line -> line.substring( 1 ).trim() )
             .toList();
    }

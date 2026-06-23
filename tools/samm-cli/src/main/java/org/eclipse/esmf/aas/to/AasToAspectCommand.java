@@ -39,12 +39,12 @@ import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
 @CommandLine.Command(
-      name = AasToAspectCommand.COMMAND_NAME,
-      description = "Generate an Aspect Model from an Asset Administration Shell (AAS)",
-      descriptionHeading = "%n@|bold Description|@:%n%n",
-      parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n",
-      mixinStandardHelpOptions = true )
+   name = AasToAspectCommand.COMMAND_NAME,
+   description = "Generate an Aspect Model from an Asset Administration Shell (AAS)",
+   descriptionHeading = "%n@|bold Description|@:%n%n",
+   parameterListHeading = "%n@|bold Parameters|@:%n",
+   optionListHeading = "%n@|bold Options|@:%n",
+   mixinStandardHelpOptions = true )
 public class AasToAspectCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "aspect";
    private static final Logger LOG = LoggerFactory.getLogger( AasToAspectCommand.class );
@@ -53,15 +53,13 @@ public class AasToAspectCommand extends AbstractCommand {
    private AasToCommand parentCommand;
 
    @CommandLine.Option(
-         names = { "--output-directory", "-d" },
-         description = "Output directory to write files to"
-   )
+      names = { "--output-directory", "-d" },
+      description = "Output directory to write files to" )
    private String outputPath = ".";
 
    @CommandLine.Option(
-         names = { "--submodel-template", "-s" },
-         description = "Select the submodel template(s) to include, as returned by the aas list command"
-   )
+      names = { "--submodel-template", "-s" },
+      description = "Select the submodel template(s) to include, as returned by the aas list command" )
    private List<Integer> selectedOptions = new ArrayList<>();
 
    @CommandLine.Mixin
@@ -81,8 +79,8 @@ public class AasToAspectCommand extends AbstractCommand {
       final StructuredModelsRoot modelsRoot = new StructuredModelsRoot( Path.of( outputPath ) );
       final List<Aspect> generatedAspects = generator.generate().map( AspectArtifact::getContent ).toList();
 
-      final List<Aspect> filteredAspects = selectedOptions.isEmpty() ? generatedAspects :
-            IntStream.range( 0, generatedAspects.size() )
+      final List<Aspect> filteredAspects = selectedOptions.isEmpty() ? generatedAspects
+            : IntStream.range( 0, generatedAspects.size() )
                   .filter( index -> selectedOptions.contains( index + 1 ) )
                   .mapToObj( generatedAspects::get )
                   .toList();

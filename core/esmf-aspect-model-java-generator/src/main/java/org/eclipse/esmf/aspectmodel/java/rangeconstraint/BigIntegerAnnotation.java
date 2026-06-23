@@ -25,8 +25,8 @@ public class BigIntegerAnnotation extends ConstraintAnnotation implements Annota
    public String apply( final Object value, final BoundDefinition boundDefinition ) {
       return buildConstraintAnnotation( targetAnnotation,
             new AnnotationFieldBuilder().setValueWithQuotesForAnnotation( value )
-                                        .setNoBoundDefinitionTag( boundDefinition )
-                                        .build() );
+                  .setNoBoundDefinitionTag( boundDefinition )
+                  .build() );
    }
 
    @Override

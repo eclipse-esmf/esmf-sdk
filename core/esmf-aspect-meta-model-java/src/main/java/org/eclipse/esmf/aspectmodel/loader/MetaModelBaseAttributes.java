@@ -14,7 +14,7 @@
 package org.eclipse.esmf.aspectmodel.loader;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -32,8 +32,8 @@ import org.eclipse.esmf.metamodel.datatype.LangString;
  */
 public class MetaModelBaseAttributes implements HasDescription {
    private final AspectModelUrn urn;
-   private final Set<LangString> preferredNames;
-   private final Set<LangString> descriptions;
+   private final Set<LangString> preferredNames = new LinkedHashSet<>();
+   private final Set<LangString> descriptions = new LinkedHashSet<>();
    private final List<String> see;
    private final boolean isAnonymous;
    private final AspectModelFile sourceFile;
@@ -44,11 +44,10 @@ public class MetaModelBaseAttributes implements HasDescription {
          final Set<LangString> descriptions,
          final List<String> see,
          final boolean isAnonymous,
-         final AspectModelFile sourceFile
-   ) {
+         final AspectModelFile sourceFile ) {
       this.urn = urn;
-      this.preferredNames = preferredNames;
-      this.descriptions = descriptions;
+      this.preferredNames.addAll( preferredNames );
+      this.descriptions.addAll( descriptions );
       this.see = see;
       this.isAnonymous = isAnonymous;
       this.sourceFile = sourceFile;
@@ -109,7 +108,8 @@ public class MetaModelBaseAttributes implements HasDescription {
    }
 
    /**
-    * Returns a new "empty" base attributes object, implying an anonymous model element with no base attributes.
+    * Returns a new "empty" base attributes object, implying an anonymous model element with no base
+    * attributes.
     *
     * @return a new empty base attributes object
     */
@@ -130,8 +130,8 @@ public class MetaModelBaseAttributes implements HasDescription {
 
    public static class Builder {
       private AspectModelUrn urn;
-      private final Set<LangString> preferredNames = new HashSet<>();
-      private final Set<LangString> descriptions = new HashSet<>();
+      private final Set<LangString> preferredNames = new LinkedHashSet<>();
+      private final Set<LangString> descriptions = new LinkedHashSet<>();
       private final List<String> see = new ArrayList<>();
       private boolean isAnonymous = true;
       private AspectModelFile sourceFile;

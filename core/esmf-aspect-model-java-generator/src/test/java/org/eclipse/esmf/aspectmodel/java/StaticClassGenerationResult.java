@@ -44,15 +44,15 @@ public class StaticClassGenerationResult extends GenerationResult {
    }
 
    /**
-    * Allows asserting the instantiation of the {@link MetaModelBaseAttributes}
-    * with only the required attributes for the fields of a generated class. The expected attribute values have to be
-    * given as a {@code Map} where the key is the field name and the value is a {@code Set} with the expected attribute
-    * values.
-    * Note, that ALL fields have to be passed for assertion, you can't assert only a subset.
+    * Allows asserting the instantiation of the {@link MetaModelBaseAttributes} with only the required
+    * attributes for the fields of a generated class. The expected attribute values have to be given as
+    * a {@code Map} where the key is the field name and the value is a {@code Set} with the expected
+    * attribute values. Note, that ALL fields have to be passed for assertion, you can't assert only a
+    * subset.
     *
     * @param className the name of the generated Java class analyze
-    * @param expectedBaseAttributeArguments the expected fields and the expected values for their {@link
-    * MetaModelBaseAttributes}
+    * @param expectedBaseAttributeArguments the expected fields and the expected values for their
+    *        {@link MetaModelBaseAttributes}
     */
    public void assertMetaModelBaseAttributesForProperties( final String className,
          final Map<String, Set<String>> expectedBaseAttributeArguments ) {
@@ -79,15 +79,15 @@ public class StaticClassGenerationResult extends GenerationResult {
    }
 
    /**
-    * Allows asserting a constructor argument for a {@link StaticProperty},
-    * e.g. the instantiation of the {@link MetaModelBaseAttributes},
-    * for the
-    * fields of a generated class. The expected attribute values have to be given as a {@code Map} where the key is the
-    * field name and the value is a {@code Set} with the expected attribute values.
-    * Note, that ALL fields have to be passed for assertion, you can't assert only a subset.
+    * Allows asserting a constructor argument for a {@link StaticProperty}, e.g. the instantiation of
+    * the {@link MetaModelBaseAttributes}, for the fields of a generated class. The expected attribute
+    * values have to be given as a {@code Map} where the key is the field name and the value is a
+    * {@code Set} with the expected attribute values. Note, that ALL fields have to be passed for
+    * assertion, you can't assert only a subset.
     *
     * @param className the name of the generated Java class analyze
-    * @param expectedConstructorArgument the expected fields and the expected values for their {@link MetaModelBaseAttributes}
+    * @param expectedConstructorArgument the expected fields and the expected values for their
+    *        {@link MetaModelBaseAttributes}
     * @param constructorArgumentIndex the index of the constructor argument to be asserted
     */
    public void assertConstructorArgumentForProperties( final String className,
@@ -119,9 +119,9 @@ public class StaticClassGenerationResult extends GenerationResult {
    }
 
    /**
-    * Allows the assertion of the methods implemented in the {@link StaticMetaClass}.
-    * The expected methods and their corresponding bodies are given in a {@code Map} where the key is the name
-    * of the expected method and the value is a {@code String} representation of its body.
+    * Allows the assertion of the methods implemented in the {@link StaticMetaClass}. The expected
+    * methods and their corresponding bodies are given in a {@code Map} where the key is the name of
+    * the expected method and the value is a {@code String} representation of its body.
     *
     * @param className the name of the generated Java class analyze
     * @param expectedMethodBodies the expected methods and their corresponding bodies
@@ -151,14 +151,16 @@ public class StaticClassGenerationResult extends GenerationResult {
     * <p>
     * Method bodies are asserted in a relaxed way:
     * <ul>
-    *    <li>all whitespace is trimmed before comparing</li>
-    *    <li>the given method body may also be just a part of the full method body, i.e. the check is performed using .contains()</li>
+    * <li>all whitespace is trimmed before comparing</li>
+    * <li>the given method body may also be just a part of the full method body, i.e. the check is
+    * performed using .contains()</li>
     * </ul>
     * </p>
     *
     * @param className the name of the meta class
     * @param propertyName the name of the property (given in CONSTANT_CASE)
-    * @param expectedMethodBodies the expected (partial) contents of the static meta property methods, where the key is the method name
+    * @param expectedMethodBodies the expected (partial) contents of the static meta property methods,
+    *        where the key is the method name
     */
    public void assertStaticMetaPropertyMethods( final String className, final String propertyName,
          final Map<String, String> expectedMethodBodies ) {

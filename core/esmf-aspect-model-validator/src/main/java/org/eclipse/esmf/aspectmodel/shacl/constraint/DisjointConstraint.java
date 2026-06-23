@@ -27,7 +27,9 @@ import org.apache.jena.rdf.model.RDFNode;
  *
  * @param otherProperty the property of which the value must not match the given property value
  */
-public record DisjointConstraint( Property otherProperty ) implements Constraint {
+public record DisjointConstraint(
+      Property otherProperty
+) implements Constraint {
    @Override
    public boolean canBeUsedOnNodeShapes() {
       return false;

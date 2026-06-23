@@ -17,8 +17,8 @@ import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.Entity;
 
 /**
- * Assert for {@link AbstractEntity}. Note that this class is not abstract, because it's an Assert for "{@link AbstractEntity}",
- * not an abstract  Assert for "{@link Entity}".
+ * Assert for {@link AbstractEntity}. Note that this class is not abstract, because it's an Assert
+ * for "{@link AbstractEntity}", not an abstract Assert for "{@link Entity}".
  *
  * @param <SELF> the self type
  * @param <ACTUAL> the element type.

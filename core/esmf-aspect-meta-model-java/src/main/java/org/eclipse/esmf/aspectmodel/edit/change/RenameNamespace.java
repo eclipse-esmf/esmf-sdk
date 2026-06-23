@@ -29,7 +29,8 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 
 /**
- * RDF-level refactoring operation: Renames all occurences of a namespace in model element URNs to something else.
+ * RDF-level refactoring operation: Renames all occurences of a namespace in model element URNs to
+ * something else.
  */
 public class RenameNamespace extends EditAspectModel {
    private final AspectModelUrn from;
@@ -128,8 +129,10 @@ public class RenameNamespace extends EditAspectModel {
          if ( statement.getObject().isURIResource() ) {
             final String objectUri = statement.getObject().asResource().getURI();
             if ( objectUri.startsWith( from + "#" ) ) {
-               addObject = addModel.createResource( to.toString() + objectUri.substring( from.toString().length() ) );
-               removeObject = addModel.createResource( objectUri );
+               addObject = addModel.createResource(
+                     to.toString() + objectUri.substring( from.toString().length() ) );
+               removeObject = removeModel.createResource( objectUri );
+               updateTriple = true;
             } else {
                addObject = statement.getObject();
                removeObject = statement.getObject();

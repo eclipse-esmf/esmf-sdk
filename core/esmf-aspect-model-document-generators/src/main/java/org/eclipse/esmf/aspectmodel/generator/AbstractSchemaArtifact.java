@@ -15,7 +15,6 @@ package org.eclipse.esmf.aspectmodel.generator;
 
 import java.io.Serial;
 import java.nio.file.Path;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -24,18 +23,16 @@ import java.util.stream.Collectors;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
-import com.fasterxml.jackson.dataformat.yaml.util.StringQuotingChecker;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Streams;
+
 import io.vavr.control.Try;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.StringNode;
+import tools.jackson.dataformat.yaml.util.StringQuotingChecker;
 
 /**
  * The result of a schema generation where the schema is represented as a JSON document.
@@ -43,25 +40,23 @@ import org.slf4j.LoggerFactory;
  * @param <T> the concrete type of node of this artifact
  */
 public abstract class AbstractSchemaArtifact<T extends JsonNode> extends JsonArtifact<T> {
-   private static final Logger LOG = LoggerFactory.getLogger( AbstractSchemaArtifact.class );
-
    public AbstractSchemaArtifact( final String id, final T content ) {
       super( id, content );
    }
 
    /**
-    * Returns the OpenAPI schema with separate files for schemas. In the resulting map, the key is the path
-    * that names a schema and the value is the corresponding JSON structure. The root schema will be called
-    * like the originating Aspect with a ".oai.json" suffix.
+    * Returns the OpenAPI schema with separate files for schemas. In the resulting map, the key is the
+    * path that names a schema and the value is the corresponding JSON structure. The root schema will
+    * be called like the originating Aspect with a ".oai.json" suffix.
     *
     * @return the OpenAPI schema definition as separate files
     */
    public abstract Map<Path, JsonNode> getContentWithSeparateSchemasAsJson();
 
    /**
-    * Returns the OpenAPI schema with separate files for schemas. In the resulting map, the key is the path
-    * that names a schema and the value is the corresponding YAML structure. The root schema will be called
-    * like the originating Aspect with a ".oai.yaml" suffix.
+    * Returns the OpenAPI schema with separate files for schemas. In the resulting map, the key is the
+    * path that names a schema and the value is the corresponding YAML structure. The root schema will
+    * be called like the originating Aspect with a ".oai.yaml" suffix.
     *
     * @return the OpenAPI schema definition as separate files
     */
@@ -71,8 +66,7 @@ public abstract class AbstractSchemaArtifact<T extends JsonNode> extends JsonArt
          final Optional<String> mainSpec ) {
       final ObjectMapper objectMapper = new ObjectMapper();
       // Create a copy of the content, because we change the root node in-place
-      final JsonNode json = Try.of( () ->
-                  objectMapper.readTree( objectMapper.writer().writeValueAsString( getContent() ) ) )
+      final JsonNode json = Try.of( () -> objectMapper.readTree( objectMapper.writer().writeValueAsString( getContent() ) ) )
             .getOrElseThrow( DocumentGenerationException::new );
       final ImmutableMap.Builder<Path, JsonNode> builder = ImmutableMap.builder();
 
@@ -80,13 +74,12 @@ public abstract class AbstractSchemaArtifact<T extends JsonNode> extends JsonArt
       final Function<String, String> newSchemaReference = schemaName -> schemaName + "." + fileExtension;
 
       // Add separate entry in result map for each schema
-      for ( final Iterator<Map.Entry<String, JsonNode>> it = schemas.fields(); it.hasNext(); ) {
-         final Map.Entry<String, JsonNode> schema = it.next();
+      for ( final Map.Entry<String, JsonNode> schema : schemas.properties() ) {
          builder.put( Path.of( newSchemaReference.apply( schema.getKey() ) ), schema.getValue() );
       }
 
       // Update each $ref in root schema
-      final Map<String, String> oldToNew = Streams.stream( schemas.fieldNames() ).collect(
+      final Map<String, String> oldToNew = schemas.propertyNames().stream().collect(
             Collectors.toMap( schemaName -> "#/components/schemas/" + schemaName, newSchemaReference ) );
       final JsonNode updatedRoot = updateRefValues( json, oldToNew );
       builder.put( Path.of( aspectName + mainSpec.map( s -> "." + s ).orElse( "" ) + "." + fileExtension ), updatedRoot );
@@ -106,23 +99,29 @@ public abstract class AbstractSchemaArtifact<T extends JsonNode> extends JsonArt
     * @return the original node with the updated values
     */
    private JsonNode updateRefValues( final JsonNode node, final Map<String, String> oldToNew ) {
-      if ( node == null ) {
-         return null;
-      } else if ( node instanceof ArrayNode ) {
-         for ( final JsonNode child : node ) {
-            updateRefValues( child, oldToNew );
+      switch ( node ) {
+         case null -> {
+            return null;
          }
-      } else if ( node instanceof final ObjectNode objectNode ) {
-         for ( final Iterator<String> it = node.fieldNames(); it.hasNext(); ) {
-            final String fieldName = it.next();
-            final JsonNode updatedChild = updateRefValues( node.get( fieldName ), oldToNew );
-            if ( fieldName.equals( "$ref" ) && updatedChild instanceof final TextNode updatedTextNode ) {
-               objectNode.replace( "$ref", updatedTextNode );
+         case final ArrayNode _ -> {
+            for ( final JsonNode child : node ) {
+               updateRefValues( child, oldToNew );
             }
          }
-      } else if ( node instanceof final TextNode textNode ) {
-         return JsonNodeFactory.instance.textNode(
-               Optional.ofNullable( oldToNew.get( textNode.textValue() ) ).orElse( textNode.textValue() ) );
+         case final ObjectNode objectNode -> {
+            for ( final String fieldName : node.propertyNames() ) {
+               final JsonNode updatedChild = updateRefValues( node.get( fieldName ), oldToNew );
+               if ( fieldName.equals( "$ref" ) && updatedChild instanceof final StringNode updatedTextNode ) {
+                  objectNode.replace( "$ref", updatedTextNode );
+               }
+            }
+         }
+         case final StringNode stringNode -> {
+            return JsonNodeFactory.instance.stringNode(
+                  Optional.ofNullable( oldToNew.get( stringNode.stringValue() ) ).orElse( stringNode.stringValue() ) );
+         }
+         default -> {
+         }
       }
       return node;
    }
@@ -130,14 +129,14 @@ public abstract class AbstractSchemaArtifact<T extends JsonNode> extends JsonArt
    protected Map<Path, JsonNode> getContentWithSeparateSchemasAsJson( final Optional<String> mainSpec ) {
       final JsonNode jsonContent = getContent();
       final String aspectName = AspectModelUrn.fromUrn(
-            jsonContent.get( "info" ).get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION ).asText() ).getName();
+            jsonContent.get( "info" ).get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION ).asString() ).getName();
       return getSeparateSchemas( aspectName, "json", mainSpec );
    }
 
    protected Map<Path, String> getContentWithSeparateSchemasAsYaml( final Optional<String> mainSpec ) {
       final JsonNode jsonContent = getContent();
       final String aspectName = AspectModelUrn.fromUrn(
-            jsonContent.get( "info" ).get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION ).asText() ).getName();
+            jsonContent.get( "info" ).get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION ).asString() ).getName();
       return getSeparateSchemas( aspectName, "yaml", mainSpec ).entrySet().stream().collect( Collectors.toMap(
             Map.Entry::getKey, entry -> jsonToYaml( entry.getValue() ) ) );
    }

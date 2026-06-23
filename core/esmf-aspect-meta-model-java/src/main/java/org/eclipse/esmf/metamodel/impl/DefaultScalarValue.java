@@ -43,7 +43,8 @@ public class DefaultScalarValue implements ScalarValue {
    }
 
    /**
-    * Standard constructor for scalar values that provides context information such as the value's descriptions
+    * Standard constructor for scalar values that provides context information such as the value's
+    * descriptions
     *
     * @param metaModelBaseAttributes the base attributes
     * @param value the value
@@ -92,7 +93,10 @@ public class DefaultScalarValue implements ScalarValue {
 
    @Override
    public AspectModelUrn urn() {
-      return metaModelBaseAttributes != null ? metaModelBaseAttributes.urn() : ScalarValue.super.urn();
+      if ( metaModelBaseAttributes != null && metaModelBaseAttributes.urn() != null ) {
+         return metaModelBaseAttributes.urn();
+      }
+      return ScalarValue.super.urn();
    }
 
    @Override
@@ -120,7 +124,7 @@ public class DefaultScalarValue implements ScalarValue {
    public String toString() {
       return new StringJoiner( ", ", DefaultScalarValue.class.getSimpleName() + "[", "]" )
             .add( "value=" + value )
-            .add( "typeUri='" + type + "'" )
+            .add( "type='" + type + "'" )
             .toString();
    }
 

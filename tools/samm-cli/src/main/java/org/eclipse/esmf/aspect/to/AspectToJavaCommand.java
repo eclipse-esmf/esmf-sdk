@@ -31,89 +31,86 @@ import org.eclipse.esmf.metamodel.Aspect;
 import picocli.CommandLine;
 
 @CommandLine.Command(
-      name = AspectToJavaCommand.COMMAND_NAME,
-      description = "Generate Java domain classes for an Aspect Model",
-      descriptionHeading = "%n@|bold Description|@:%n%n",
-      parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n"
-)
+   name = AspectToJavaCommand.COMMAND_NAME,
+   description = "Generate Java domain classes for an Aspect Model",
+   descriptionHeading = "%n@|bold Description|@:%n%n",
+   parameterListHeading = "%n@|bold Parameters|@:%n",
+   optionListHeading = "%n@|bold Options|@:%n" )
 public class AspectToJavaCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "java";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--no-jackson", "-nj" },
-         description = "Disable Jackson annotation generation in generated Java classes." )
+      names = { "--no-jackson", "-nj" },
+      description = "Disable Jackson annotation generation in generated Java classes." )
    private boolean disableJacksonAnnotations = false;
 
    @CommandLine.Option(
-         names = { "--no-jackson-jsonformat-shape", "-njjs" },
-         description = "Disable Jackson annotation JsonFormat.Shape object generation in generated Java classes." )
+      names = { "--no-jackson-jsonformat-shape", "-njjs" },
+      description = "Disable Jackson annotation JsonFormat.Shape object generation in generated Java classes." )
    private boolean disableJacksonAnnotationJsonFormatShapeObject = false;
 
    @CommandLine.Option(
-         names = { "--json-type-info", "-jti" },
-         description = "If Jackson annotations are enabled, determines the value of JsonTypeInfo.Id. Default: DEDUCTION",
-         converter = JsonTypeInfoConverter.class
-   )
+      names = { "--json-type-info", "-jti" },
+      description = "If Jackson annotations are enabled, determines the value of JsonTypeInfo.Id. Default: DEDUCTION",
+      converter = JsonTypeInfoConverter.class )
    private JavaCodeGenerationConfig.JsonTypeInfoType jsonTypeInfo;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--template-library-file", "-tlf" },
-         description = "The path and name of the Velocity template file containing the macro library." )
+      names = { "--template-library-file", "-tlf" },
+      description = "The path and name of the Velocity template file containing the macro library." )
    private String templateLib = "";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--package-name", "-pn" },
-         description = "Package to use for generated Java classes" )
+      names = { "--package-name", "-pn" },
+      description = "Package to use for generated Java classes" )
    private String packageName = "";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--execute-library-macros", "-elm" },
-         description = "Execute the macros provided in the Velocity macro library." )
+      names = { "--execute-library-macros", "-elm" },
+      description = "Execute the macros provided in the Velocity macro library." )
    private boolean executeLibraryMacros = false;
 
    @CommandLine.Option(
-         names = { "--output-directory", "-d" },
-         description = "Output directory to write files to" )
+      names = { "--output-directory", "-d" },
+      description = "Output directory to write files to" )
    private String outputPath = ".";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--static", "-s" },
-         description = "Generate Java domain classes for a Static Meta Model" )
+      names = { "--static", "-s" },
+      description = "Generate Java domain classes for a Static Meta Model" )
    private boolean generateStaticMetaModelJavaClasses = false;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option( names = { "--name-prefix", "-namePrefix" },
-         description = "Name prefix for generated Aspect, Entity Java classes" )
+      description = "Name prefix for generated Aspect, Entity Java classes" )
    private String namePrefix = "";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option( names = { "--name-postfix", "-namePostfix" },
-         description = "Name postfix for generated Aspect, Entity Java classes" )
+      description = "Name postfix for generated Aspect, Entity Java classes" )
    private String namePostfix = "";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--details" },
-         description = "Print detailed reports on errors" )
+      names = { "--details" },
+      description = "Print detailed reports on errors" )
    private boolean details = false;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--enable-setters", "-enableSetters" },
-         description = "Generate setter methods in Aspect, Entity Java classes" )
+      names = { "--enable-setters", "-enableSetters" },
+      description = "Generate setter methods in Aspect, Entity Java classes" )
    private boolean enableSetters = false;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option( names = { "--setter-style", "-setterStyle" },
-         description = "The style of setters to generate, one of STANDARD, FLUENT, FLUENT_COMPACT. Default: STANDARD",
-         converter = SetterStyleConverter.class
-   )
+      description = "The style of setters to generate, one of STANDARD, FLUENT, FLUENT_COMPACT. Default: STANDARD",
+      converter = SetterStyleConverter.class )
    private JavaCodeGenerationConfig.SetterStyle setterStyle;
 
    @CommandLine.ParentCommand

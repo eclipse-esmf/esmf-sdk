@@ -22,24 +22,23 @@ import org.eclipse.esmf.aspectmodel.generator.jsonld.AspectModelToJsonLdGenerato
 import picocli.CommandLine;
 
 @CommandLine.Command(
-      name = AspectToJsonLdCommand.COMMAND_NAME,
-      description = "Generate JSON-LD representation of an Aspect Model",
-      descriptionHeading = "%n@|bold Description|@:%n%n",
-      parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n"
-)
+   name = AspectToJsonLdCommand.COMMAND_NAME,
+   description = "Generate JSON-LD representation of an Aspect Model",
+   descriptionHeading = "%n@|bold Description|@:%n%n",
+   parameterListHeading = "%n@|bold Parameters|@:%n",
+   optionListHeading = "%n@|bold Options|@:%n" )
 public class AspectToJsonLdCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "jsonld";
 
    @CommandLine.Option(
-         names = { "--output", "-o" },
-         description = "Output file path" )
+      names = { "--output", "-o" },
+      description = "Output file path" )
    private String outputFilePath = "-";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--details" },
-         description = "Print detailed reports on errors" )
+      names = { "--details" },
+      description = "Print detailed reports on errors" )
    private boolean details = false;
 
    @CommandLine.ParentCommand
@@ -58,7 +57,8 @@ public class AspectToJsonLdCommand extends AbstractCommand {
 
       final AspectModelToJsonLdGenerator generator = new AspectModelToJsonLdGenerator(
             getInputHandler( parentCommand.parentCommand.getInput() ).loadAspect() );
-      // we intentionally override the name of the generated artifact here to the name explicitly desired by the user (outputFilePath),
+      // we intentionally override the name of the generated artifact here to the name explicitly desired
+      // by the user (outputFilePath),
       // as opposed to what the model thinks it should be called (name)
       generator.generate( name -> getStreamForFile( outputFilePath ) );
    }

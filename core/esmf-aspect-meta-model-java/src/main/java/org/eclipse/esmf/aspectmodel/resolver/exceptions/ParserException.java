@@ -21,12 +21,12 @@ import java.util.regex.Pattern;
 import org.apache.jena.riot.RiotException;
 
 /**
- * Represents the context information of a parser (syntax) error: The location, source document and description
+ * Represents the context information of a parser (syntax) error: The location, source document and
+ * description
  */
 public class ParserException extends RuntimeException {
    /**
-    * The pattern to parse {@link RiotException}'s messages.
-    * RiotException's message looks like this:
+    * The pattern to parse {@link RiotException}'s messages. RiotException's message looks like this:
     * [line: 17, col: 2 ] Triples not terminated by DOT
     */
    private static final Pattern PATTERN = Pattern.compile( "\\[ *line: *(\\d+), *col: *(\\d+) *] *(.*)" );

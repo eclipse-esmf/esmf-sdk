@@ -26,8 +26,8 @@ import org.eclipse.esmf.metamodel.Namespace;
 import org.apache.jena.rdf.model.Model;
 
 /**
- * Default implementation of an AspectModelFile that not only provides access to the underlying RDF graph but also the object representation
- * of the model elements in this file
+ * Default implementation of an AspectModelFile that not only provides access to the underlying RDF
+ * graph but also the object representation of the model elements in this file
  */
 public final class DefaultAspectModelFile implements AspectModelFile {
    private final Model sourceModel;

@@ -46,7 +46,7 @@ public class RdfTypes {
          return List.of();
       }
       final Resource type = typeAssertion.getResource();
-      return ImmutableList.<Resource> builder()
+      return ImmutableList.<Resource>builder()
             .add( type )
             .addAll( superTypesOfType( type, resolvedModel ) )
             .build();

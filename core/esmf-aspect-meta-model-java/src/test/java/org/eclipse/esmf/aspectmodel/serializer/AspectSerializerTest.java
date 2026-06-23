@@ -80,8 +80,8 @@ class AspectSerializerTest {
    @ParameterizedTest
    @Execution( ExecutionMode.CONCURRENT )
    @EnumSource( value = TestAspect.class,
-         mode = EnumSource.Mode.EXCLUDE,
-         names = { "MODEL_WITH_BLANK_AND_ADDITIONAL_NODES" } )
+      mode = EnumSource.Mode.EXCLUDE,
+      names = { "MODEL_WITH_BLANK_AND_ADDITIONAL_NODES" } )
    void testSerializeAspectModelFile( final TestAspect testAspect ) {
       final AspectModel aspectModel = TestResources.load( testAspect );
       for ( final AspectModelFile file : aspectModel.files() ) {
@@ -124,30 +124,30 @@ class AspectSerializerTest {
       final AspectModelFile file1 = RawAspectModelFileBuilder.builder()
             .sourceLocation( Optional.of( file1Path.toUri() ) )
             .sourceModel( createModel( """
-                  @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> .
-                  @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-                  @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
+               @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> .
+               @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+               @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
 
-                  :Aspect1 a samm:Aspect ;
-                     samm:description "This is a test description"@en ;
-                     samm:properties ( ) ;
-                     samm:operations ( ) .
-                  """.formatted( KnownVersion.getLatest().toVersionString() )
+               :Aspect1 a samm:Aspect ;
+                  samm:description "This is a test description"@en ;
+                  samm:properties ( ) ;
+                  samm:operations ( ) .
+               """.formatted( KnownVersion.getLatest().toVersionString() )
             ) )
             .build();
       final Path file2Path = outputDirectory.resolve( "Aspect2.ttl" );
       final AspectModelFile file2 = RawAspectModelFileBuilder.builder()
             .sourceLocation( Optional.of( file2Path.toUri() ) )
             .sourceModel( createModel( """
-                  @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> .
-                  @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-                  @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
+               @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> .
+               @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+               @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
 
-                  :Aspect2 a samm:Aspect ;
-                     samm:description "This is a test description"@en ;
-                     samm:properties ( ) ;
-                     samm:operations ( ) .
-                  """.formatted( KnownVersion.getLatest().toVersionString() )
+               :Aspect2 a samm:Aspect ;
+                  samm:description "This is a test description"@en ;
+                  samm:properties ( ) ;
+                  samm:operations ( ) .
+               """.formatted( KnownVersion.getLatest().toVersionString() )
             ) )
             .build();
       final AspectChangeManager changeContext = new AspectChangeManager( aspectModel );

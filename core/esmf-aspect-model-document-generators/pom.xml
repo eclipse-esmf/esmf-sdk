@@ -47,10 +47,6 @@
          <artifactId>esmf-aspect-model-generator</artifactId>
       </dependency>
       <dependency>
-         <groupId>com.fasterxml.jackson.datatype</groupId>
-         <artifactId>jackson-datatype-jsr310</artifactId>
-      </dependency>
-      <dependency>
          <groupId>org.jeasy</groupId>
          <artifactId>easy-random-core</artifactId>
       </dependency>
@@ -83,7 +79,7 @@
          <artifactId>vavr</artifactId>
       </dependency>
       <dependency>
-         <groupId>com.fasterxml.jackson.dataformat</groupId>
+         <groupId>tools.jackson.dataformat</groupId>
          <artifactId>jackson-dataformat-yaml</artifactId>
       </dependency>
       <dependency>
@@ -94,6 +90,46 @@
       <dependency>
          <groupId>com.google.guava</groupId>
          <artifactId>guava</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.parquet</groupId>
+         <artifactId>parquet-hadoop</artifactId>
+         <exclusions>
+            <exclusion>
+               <groupId>org.slf4j</groupId>
+               <artifactId>slf4j-reload4j</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.parquet</groupId>
+         <artifactId>parquet-avro</artifactId>
+         <exclusions>
+            <exclusion>
+               <groupId>org.slf4j</groupId>
+               <artifactId>slf4j-reload4j</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.hadoop</groupId>
+         <artifactId>hadoop-client</artifactId>
+         <exclusions>
+            <exclusion>
+               <groupId>org.slf4j</groupId>
+               <artifactId>slf4j-reload4j</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.avro</groupId>
+         <artifactId>avro</artifactId>
+         <exclusions>
+            <exclusion>
+               <groupId>org.slf4j</groupId>
+               <artifactId>slf4j-reload4j</artifactId>
+            </exclusion>
+         </exclusions>
       </dependency>
 
       <!-- Test dependencies -->
@@ -185,7 +221,7 @@
                   <path>
                      <groupId>io.soabase.record-builder</groupId>
                      <artifactId>record-builder-processor</artifactId>
-                     <version>${record-builder-version}</version>
+                     <version>${record-builder.version}</version>
                   </path>
                </annotationProcessorPaths>
             </configuration>

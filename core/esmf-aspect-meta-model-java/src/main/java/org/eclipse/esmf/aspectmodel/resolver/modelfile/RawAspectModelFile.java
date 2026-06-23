@@ -26,9 +26,10 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 
 /**
- * An implementation of an {@link AspectModelFile} that knows about the RDF model content and source location, but has not
- * instantiated the model elements yet. Calling {@link #elements()} on this file will throw an exception. It is intended
- * to represent the intermediary result of loading an Aspect Model file, possibly from a remote location.
+ * An implementation of an {@link AspectModelFile} that knows about the RDF model content and source
+ * location, but has not instantiated the model elements yet. Calling {@link #elements()} on this
+ * file will throw an exception. It is intended to represent the intermediary result of loading an
+ * Aspect Model file, possibly from a remote location.
  *
  * @param sourceModel the source RDF model
  * @param headerComment the header comment
@@ -40,7 +41,8 @@ public record RawAspectModelFile(
       String sourceRepresentation,
       Model sourceModel,
       List<String> headerComment,
-      Optional<URI> sourceLocation )
+      Optional<URI> sourceLocation
+)
       implements AspectModelFile {
    public RawAspectModelFile {
       if ( sourceModel == null ) {

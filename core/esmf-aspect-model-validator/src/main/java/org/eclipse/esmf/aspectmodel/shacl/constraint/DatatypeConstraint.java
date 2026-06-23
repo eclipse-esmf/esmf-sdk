@@ -29,7 +29,9 @@ import org.apache.jena.rdf.model.RDFNode;
  *
  * @param allowedTypeUri the allowed data type URI
  */
-public record DatatypeConstraint( String allowedTypeUri ) implements Constraint {
+public record DatatypeConstraint(
+      String allowedTypeUri
+) implements Constraint {
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
       if ( !rdfNode.isLiteral() ) {

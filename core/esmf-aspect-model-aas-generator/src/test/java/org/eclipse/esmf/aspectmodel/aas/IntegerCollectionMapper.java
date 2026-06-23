@@ -1,3 +1,15 @@
+/*
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
+ *
+ * See the AUTHORS file(s) distributed with this work for additional
+ * information regarding authorship.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * SPDX-License-Identifier: MPL-2.0
+ */
 package org.eclipse.esmf.aspectmodel.aas;
 
 import java.util.List;
@@ -7,8 +19,8 @@ import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.Type;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
 import org.eclipse.digitaltwin.aas4j.v3.model.AasSubmodelElements;
 import org.eclipse.digitaltwin.aas4j.v3.model.DataTypeDefXsd;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;

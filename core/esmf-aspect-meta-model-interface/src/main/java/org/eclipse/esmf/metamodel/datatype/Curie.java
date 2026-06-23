@@ -13,9 +13,12 @@
 package org.eclipse.esmf.metamodel.datatype;
 
 /**
- * Represents a value of the samm:curie data type. For the class that represents the type itself, see {@link CurieType}.
+ * Represents a value of the samm:curie data type. For the class that represents the type itself,
+ * see {@link CurieType}.
  */
-public record Curie( String value ) implements Comparable<Curie> {
+public record Curie(
+      String value
+) implements Comparable<Curie> {
    @Override
    public String toString() {
       return value;

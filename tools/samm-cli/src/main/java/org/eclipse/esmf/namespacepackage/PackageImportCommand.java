@@ -30,7 +30,7 @@ import org.eclipse.esmf.aspectmodel.edit.AspectChangeManager;
 import org.eclipse.esmf.aspectmodel.edit.AspectChangeManagerConfig;
 import org.eclipse.esmf.aspectmodel.edit.AspectChangeManagerConfigBuilder;
 import org.eclipse.esmf.aspectmodel.edit.Change;
-import org.eclipse.esmf.aspectmodel.resolver.Download;
+import org.eclipse.esmf.util.download.Download;
 import org.eclipse.esmf.aspectmodel.resolver.NamespacePackage;
 import org.eclipse.esmf.aspectmodel.resolver.fs.ModelsRoot;
 import org.eclipse.esmf.exception.SubCommandException;
@@ -44,16 +44,15 @@ import picocli.CommandLine;
  * Command to import a Namespace Package (remote or local) into a models root directory
  */
 @CommandLine.Command(
-      name = PackageImportCommand.COMMAND_NAME,
-      description = "Import Namespace Packages",
-      subcommands = {
-            CommandLine.HelpCommand.class
-      },
-      headerHeading = "@|bold Usage|@:%n%n",
-      descriptionHeading = "%n@|bold Description|@:%n%n",
-      parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n"
-)
+   name = PackageImportCommand.COMMAND_NAME,
+   description = "Import Namespace Packages",
+   subcommands = {
+         CommandLine.HelpCommand.class
+   },
+   headerHeading = "@|bold Usage|@:%n%n",
+   descriptionHeading = "%n@|bold Description|@:%n%n",
+   parameterListHeading = "%n@|bold Parameters|@:%n",
+   optionListHeading = "%n@|bold Options|@:%n" )
 public class PackageImportCommand extends AbstractCommand {
    private static final Logger LOG = LoggerFactory.getLogger( PackageImportCommand.class );
    public static final String COMMAND_NAME = "import";
@@ -68,21 +67,18 @@ public class PackageImportCommand extends AbstractCommand {
    private ResolverConfigurationMixin resolverConfiguration;
 
    @CommandLine.Option(
-         names = { "--dry-run" },
-         description = "Emulate import operation and print a report of changes that would be performed"
-   )
+      names = { "--dry-run" },
+      description = "Emulate import operation and print a report of changes that would be performed" )
    private boolean dryRun;
 
    @CommandLine.Option(
-         names = { "--details" },
-         description = "When using --dry-run, print details about files that are added"
-   )
+      names = { "--details" },
+      description = "When using --dry-run, print details about files that are added" )
    private boolean details;
 
    @CommandLine.Option(
-         names = { "--force" },
-         description = "Force creation/overwriting of existing files"
-   )
+      names = { "--force" },
+      description = "Force creation/overwriting of existing files" )
    private boolean force;
 
    @Override

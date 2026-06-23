@@ -25,8 +25,9 @@ import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
  */
 public interface ModelElement extends HasDescription {
    /**
-    * Returns the URN identifiying this element. If {@link #isAnonymous()} is true, the returned URN is synthetic. In this case, the URN can
-    * be used to identify the object, but it may not be used for display purposes.
+    * Returns the URN identifiying this element. If {@link #isAnonymous()} is true, the returned URN is
+    * synthetic. In this case, the URN can be used to identify the object, but it may not be used for
+    * display purposes.
     *
     * @return the element's URN or an anonymous URN
     */

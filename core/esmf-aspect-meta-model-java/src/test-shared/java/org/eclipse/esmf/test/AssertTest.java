@@ -79,7 +79,7 @@ public class AssertTest {
             .see().hasSize( 2 ).allMatch( see -> see.contains( "example" ) );
       final Property property = aspect.getProperties().get( 0 );
       assertThat( property ).characteristic().hasDataType( XSDDatatype.XSDstring ); // Apache Jena RDF type
-      assertThat( property ).characteristic().hasDataType( xsd.string );            // SAMM Java API type
+      assertThat( property ).characteristic().hasDataType( xsd.string ); // SAMM Java API type
 
       assertThat( property ).characteristic().dataType().isScalarThat().canBeCastTo( xsd.string );
 

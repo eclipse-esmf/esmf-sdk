@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -37,7 +37,8 @@ import org.apache.commons.io.FilenameUtils;
 public class FileInputHandler extends AbstractInputHandler {
    private final File inputFile;
 
-   FileInputHandler( final String input, final ResolverConfigurationMixin resolverConfig, final boolean details, final boolean validate ) {
+   FileInputHandler( final String input, final ResolverConfigurationMixin resolverConfig, final boolean details,
+         final boolean validate ) {
       super( input, resolverConfig, details, validate );
       inputFile = absoluteFile( new File( input ) );
    }
@@ -45,8 +46,8 @@ public class FileInputHandler extends AbstractInputHandler {
    @Override
    public AspectModel loadAspectModel() {
       final Function<AspectModelLoader, AspectModel> loaderFunction = validate
-            ? ( (Function<AspectModelLoader, Either<List<Violation>, AspectModel>>) loader ->
-            loader.withValidation( validator ).load( inputFile ) ).andThen( this::getAspectModelOrPrintValidationReport )
+            ? ( (Function<AspectModelLoader, Either<List<Violation>, AspectModel>>) loader -> loader.withValidation( validator )
+                  .load( inputFile ) ).andThen( this::getAspectModelOrPrintValidationReport )
             : ( aspectModelLoader -> aspectModelLoader.load( inputFile ) );
       return applyAspectModelLoader( loaderFunction );
    }
@@ -84,7 +85,8 @@ public class FileInputHandler extends AbstractInputHandler {
       try {
          return absoluteFile( new File( input ) ).exists();
       } catch ( final Exception exception ) {
-         // This could fail with e.g. a InvalidPathException or with platform-specific exceptions when the input is indeed not a valid file
+         // This could fail with e.g. a InvalidPathException or with platform-specific exceptions when the
+         // input is indeed not a valid file
          return false;
       }
    }

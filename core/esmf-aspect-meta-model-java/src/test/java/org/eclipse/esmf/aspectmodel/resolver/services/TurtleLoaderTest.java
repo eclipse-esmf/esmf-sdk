@@ -20,22 +20,32 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
-import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
-
-import io.vavr.control.Try;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.riot.RiotException;
+
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
+import org.eclipse.esmf.test.InvalidTestAspect;
+import org.eclipse.esmf.test.TestAspect;
+import org.eclipse.esmf.test.TestResources;
+import org.eclipse.esmf.treesitterturtle.TreeSitterTurtle;
+import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
+
 import org.junit.jupiter.api.Test;
+import org.treesitter.TSParser;
+import org.treesitter.TSTree;
+
+import io.vavr.control.Try;
 
 public class TurtleLoaderTest {
    private static final String MODEL = """
-           @prefix : <urn:samm:com.example:1.2.0#> .
-           :x a ([ a aPrefix:c]) .
-         """;
+        @prefix : <urn:samm:com.example:1.2.0#> .
+        :x a ([ a aPrefix:c]) .
+      """;
 
    @Test
    void turtleLoaderFailsWithNullPointerIfPrefixIsNotDefined() {
@@ -56,5 +66,41 @@ public class TurtleLoaderTest {
                .isInstanceOf( RiotException.class )
                .hasMessageContaining( "[line: 2, col: 13] Undefined prefix: aPrefix" );
       }
+   }
+
+   @Test
+   void loadModelUsingTreeSitter() throws IOException {
+      final String turtle =
+            new String( TestResources.testModelSource( TestAspect.ASPECT_WITH_BINARY ).readAllBytes(), StandardCharsets.UTF_8 );
+      try ( final TSParser parser = new TSParser() ) {
+         parser.setLanguage( new TreeSitterTurtle() );
+         final TSTree tsTree = parser.parseString( null, turtle );
+         final TurtleSyntaxTree turtleSyntaxTree = TurtleSyntaxTree.fromConcreteSyntaxTree( tsTree, () -> turtle,
+               new TurtleSyntaxTree.StringTokenProvider( turtle ) );
+         assertThatCode( () -> {
+            final Try<Model> tryModel = TurtleLoader.loadTurtle( turtleSyntaxTree, buildArtificialUri( turtle, "model" ) );
+            assertThat( tryModel.isFailure() ).isFalse();
+            final Model model = tryModel.get();
+            assertThat( model.listStatements().toList() ).isNotEmpty();
+         } ).doesNotThrowAnyException();
+      }
+   }
+
+   @Test
+   void loadModelWithSyntaxErrorUsingTreeSitter() throws IOException {
+      final String turtle =
+            new String( TestResources.testModelSource( InvalidTestAspect.INVALID_SYNTAX ).readAllBytes(), StandardCharsets.UTF_8 );
+      try ( final TSParser parser = new TSParser() ) {
+         parser.setLanguage( new TreeSitterTurtle() );
+         final TSTree tsTree = parser.parseString( null, turtle );
+         final TurtleSyntaxTree turtleSyntaxTree = TurtleSyntaxTree.fromConcreteSyntaxTree( tsTree, () -> turtle,
+               new TurtleSyntaxTree.StringTokenProvider( turtle ) );
+         final Try<Model> tryModel = TurtleLoader.loadTurtle( turtleSyntaxTree, buildArtificialUri( turtle, "model" ) );
+         assertThat( tryModel.isFailure() ).isTrue();
+      }
+   }
+
+   private static URI buildArtificialUri( final Object object, final String objectType ) {
+      return URI.create( "inmemory:%s:%s".formatted( objectType, object.hashCode() ) );
    }
 }

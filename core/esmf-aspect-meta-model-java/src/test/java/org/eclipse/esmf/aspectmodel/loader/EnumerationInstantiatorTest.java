@@ -186,8 +186,8 @@ class EnumerationInstantiatorTest extends AbstractAspectModelInstantiatorTest {
 
       final EntityInstance nestedEntityInstance = nestedEntityListValue.getValues().iterator().next().as( EntityInstance.class );
       final Entity nestedEntity = nestedEntityInstance.getEntityType();
-      final Property nestedEntityProperty = nestedEntity.getProperties().stream().filter( property ->
-            property.getName().equals( "notInPayloadProperty" ) ).findAny().get();
+      final Property nestedEntityProperty =
+            nestedEntity.getProperties().stream().filter( property -> property.getName().equals( "notInPayloadProperty" ) ).findAny().get();
       assertThat( nestedEntityInstance.getAssertions().get( nestedEntityProperty ).as( ScalarValue.class ).getValue() ).isEqualTo( "foo" );
    }
 

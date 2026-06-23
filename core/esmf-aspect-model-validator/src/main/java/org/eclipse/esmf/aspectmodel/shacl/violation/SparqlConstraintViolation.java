@@ -30,7 +30,9 @@ import org.apache.jena.rdf.model.RDFNode;
  * @param constraintMessage the message as given by the SPARQL constraint
  * @param bindings the variable bindings produced by the SPARQL query
  */
-public record SparqlConstraintViolation( EvaluationContext context, String constraintMessage, Map<String, RDFNode> bindings )
+public record SparqlConstraintViolation(
+      EvaluationContext context, String constraintMessage, Map<String, RDFNode> bindings
+)
       implements Violation {
    public static final String ERROR_CODE = "ERR_UNSPECIFIED_SPARQL_CONSTRAINT_VIOLATION";
 

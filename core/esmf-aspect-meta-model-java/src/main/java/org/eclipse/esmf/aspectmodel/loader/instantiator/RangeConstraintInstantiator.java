@@ -60,15 +60,16 @@ public class RangeConstraintInstantiator extends Instantiator<RangeConstraint> {
     * Retrieves the bound definition value for a given upper or lower bound.
     *
     * @param rangeValue the value given for either the lower or upper bound
-    * @param boundDefinitionProperty the bound definition property for which the value will be retrieved
+    * @param boundDefinitionProperty the bound definition property for which the value will be
+    *        retrieved
     * @param rangeConstraint the characteristic being processed
     * @param defaultBoundDefinitionValue the default value for the bound definition property
-    * @return in case no value was given for the provided upper or lower bound, the default {@link BoundDefinition#OPEN}
-    * is returned.
-    * In case a value is given for the provided upper or lower bound and the model does not contain a value for
-    * the bound definition property, the provided default {@link BoundDefinition} is returned.
-    * In case a value is given for the provided upper or lower bound and the model does provide a value for the
-    * bound definition property, provided bound definition value is returned.
+    * @return in case no value was given for the provided upper or lower bound, the default
+    *         {@link BoundDefinition#OPEN} is returned. In case a value is given for the provided upper
+    *         or lower bound and the model does not contain a value for the bound definition property,
+    *         the provided default {@link BoundDefinition} is returned. In case a value is given for
+    *         the provided upper or lower bound and the model does provide a value for the bound
+    *         definition property, provided bound definition value is returned.
     */
    private BoundDefinition getBoundDefinitionForRangeValue( final Optional<ScalarValue> rangeValue,
          final Property boundDefinitionProperty, final Resource rangeConstraint,

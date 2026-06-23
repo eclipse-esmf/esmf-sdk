@@ -56,8 +56,7 @@ public class MoveElementToExistingFile extends StructuralChange {
    }
 
    public MoveElementToExistingFile( final AspectModelUrn elementUrn, final AspectModelFile targetFile ) {
-      this( elementUrn, targetFile.sourceLocation().orElseThrow( () ->
-            new ModelChangeException( "Can move element only to named file" )
+      this( elementUrn, targetFile.sourceLocation().orElseThrow( () -> new ModelChangeException( "Can move element only to named file" )
       ) );
    }
 

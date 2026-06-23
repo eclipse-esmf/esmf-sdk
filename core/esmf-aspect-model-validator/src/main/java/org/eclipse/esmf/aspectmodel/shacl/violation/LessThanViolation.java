@@ -27,7 +27,9 @@ import org.apache.jena.rdf.model.RDFNode;
  * @param otherValue the other value the value is compared to
  * @param actualValue the encountered value
  */
-public record LessThanViolation( EvaluationContext context, Property otherProperty, Literal otherValue, Literal actualValue )
+public record LessThanViolation(
+      EvaluationContext context, Property otherProperty, Literal otherValue, Literal actualValue
+)
       implements Violation {
    public static final String ERROR_CODE = "ERR_LESS_THAN";
 

@@ -27,8 +27,8 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.XSD;
 
 /**
- * Provides the code needed in code generation to create an instance of the Java type corresponding to
- * a Property's effective scalar dataType and the respective serialized value.
+ * Provides the code needed in code generation to create an instance of the Java type corresponding
+ * to a Property's effective scalar dataType and the respective serialized value.
  */
 public class ValueInitializer {
    private static final Map<Resource, BiFunction<Class<?>, String, String>> INITIALIZERS;
@@ -43,8 +43,8 @@ public class ValueInitializer {
             type.getSimpleName(), type.getSimpleName(), valueExpression );
       final BiFunction<Class<?>, String, String> valueOf = ( type, valueExpression ) -> String.format( "%s.valueOf( %s )",
             type.getSimpleName(), valueExpression );
-      final BiFunction<Class<?>, String, String> gregorianCalendar = ( type, valueExpression ) ->
-            "_datatypeFactory.newXMLGregorianCalendar( " + valueExpression + " )";
+      final BiFunction<Class<?>, String, String> gregorianCalendar =
+            ( type, valueExpression ) -> "_datatypeFactory.newXMLGregorianCalendar( " + valueExpression + " )";
       final BiFunction<Class<?>, String, String> duration = ( type, valueExpression ) -> "_datatypeFactory.newDuration( " + valueExpression
             + " )";
 
@@ -62,8 +62,9 @@ public class ValueInitializer {
             ( type, valueExpression ) -> "_datatypeFactory.newXMLGregorianCalendarDate( Integer.valueOf( " + valueExpression + " )"
                   + ", DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED )" );
       INITIALIZERS.put( XSD.gMonth,
-            ( type, valueExpression ) ->
-                  "_datatypeFactory.newXMLGregorianCalendarDate( DatatypeConstants.FIELD_UNDEFINED, Integer.valueOf( " + valueExpression
+            ( type,
+                  valueExpression ) -> "_datatypeFactory.newXMLGregorianCalendarDate( DatatypeConstants.FIELD_UNDEFINED, Integer.valueOf( "
+                        + valueExpression
                         + " )" + ", DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED )" );
       INITIALIZERS.put( XSD.gYearMonth, gregorianCalendar );
       INITIALIZERS.put( XSD.gMonthDay,
@@ -99,23 +100,27 @@ public class ValueInitializer {
    }
 
    /**
-    * Creates and initializes an instance of the given type with the value from an expression as String. For example,
-    * apply(XSD.xint, "\"3\"") returns "3", and apply(XSD.xstring, "\"foo\"") returns "\"foo\"".
+    * Creates and initializes an instance of the given type with the value from an expression as
+    * String. For example, apply(XSD.xint, "\"3\"") returns "3", and apply(XSD.xstring, "\"foo\"")
+    * returns "\"foo\"".
     *
     * @param rdfType the type for which an instance should be created
-    * @param valueExpression an expression that, when evaluated, will return the input value <b>as a string</b>.
+    * @param valueExpression an expression that, when evaluated, will return the input value <b>as a
+    *        string</b>.
     */
    public String apply( final Resource rdfType, final String valueExpression ) {
       return apply( rdfType, SammXsdType.getJavaTypeForMetaModelType( rdfType ), valueExpression );
    }
 
    /**
-    * Creates and initializes an instance of the given type with the value from an expression as String. For example,
-    * apply(XSD.xint, "\"3\"") returns "3", and apply(XSD.xstring, "\"foo\"") returns "\"foo\"".
+    * Creates and initializes an instance of the given type with the value from an expression as
+    * String. For example, apply(XSD.xint, "\"3\"") returns "3", and apply(XSD.xstring, "\"foo\"")
+    * returns "\"foo\"".
     *
     * @param rdfType the type for which an instance should be created
     * @param javaType the corresponding Java type
-    * @param valueExpression an expression that, when evaluated, will return the input value <b>as a string</b>.
+    * @param valueExpression an expression that, when evaluated, will return the input value <b>as a
+    *        string</b>.
     */
    public String apply( final Resource rdfType, final Class<?> javaType, final String valueExpression ) {
       if ( rdfType.equals( SammNs.SAMM.curie() ) ) {

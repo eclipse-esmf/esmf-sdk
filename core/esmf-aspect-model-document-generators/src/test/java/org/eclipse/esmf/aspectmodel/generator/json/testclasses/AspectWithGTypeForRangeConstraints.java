@@ -28,28 +28,38 @@ import jakarta.validation.constraints.NotNull;
 public class AspectWithGTypeForRangeConstraints {
 
    @NotNull
-   @GregorianCalendarMin( value = "2000", boundDefinition = BoundDefinition.AT_LEAST )
-   @GregorianCalendarMax( value = "2001", boundDefinition = BoundDefinition.AT_MOST )
+   @GregorianCalendarMin( value = "2000",
+      boundDefinition = BoundDefinition.AT_LEAST )
+   @GregorianCalendarMax( value = "2001",
+      boundDefinition = BoundDefinition.AT_MOST )
    private XMLGregorianCalendar testPropertyWithGYear;
 
    @NotNull
-   @GregorianCalendarMin( value = "--04", boundDefinition = BoundDefinition.AT_LEAST )
-   @GregorianCalendarMax( value = "--05", boundDefinition = BoundDefinition.AT_MOST )
+   @GregorianCalendarMin( value = "--04",
+      boundDefinition = BoundDefinition.AT_LEAST )
+   @GregorianCalendarMax( value = "--05",
+      boundDefinition = BoundDefinition.AT_MOST )
    private XMLGregorianCalendar testPropertyWithGMonth;
 
    @NotNull
-   @GregorianCalendarMin( value = "---04", boundDefinition = BoundDefinition.AT_LEAST )
-   @GregorianCalendarMax( value = "---05", boundDefinition = BoundDefinition.AT_MOST )
+   @GregorianCalendarMin( value = "---04",
+      boundDefinition = BoundDefinition.AT_LEAST )
+   @GregorianCalendarMax( value = "---05",
+      boundDefinition = BoundDefinition.AT_MOST )
    private XMLGregorianCalendar testPropertyWithGDay;
 
    @NotNull
-   @GregorianCalendarMin( value = "2000-01", boundDefinition = BoundDefinition.AT_LEAST )
-   @GregorianCalendarMax( value = "2000-02", boundDefinition = BoundDefinition.AT_MOST )
+   @GregorianCalendarMin( value = "2000-01",
+      boundDefinition = BoundDefinition.AT_LEAST )
+   @GregorianCalendarMax( value = "2000-02",
+      boundDefinition = BoundDefinition.AT_MOST )
    private XMLGregorianCalendar testPropertyWithGYearMonth;
 
    @NotNull
-   @GregorianCalendarMin( value = "--01-01", boundDefinition = BoundDefinition.AT_LEAST )
-   @GregorianCalendarMax( value = "--01-02", boundDefinition = BoundDefinition.AT_MOST )
+   @GregorianCalendarMin( value = "--01-01",
+      boundDefinition = BoundDefinition.AT_LEAST )
+   @GregorianCalendarMax( value = "--01-02",
+      boundDefinition = BoundDefinition.AT_MOST )
    private XMLGregorianCalendar testPropertyWithGMonthYear;
 
    @JsonCreator

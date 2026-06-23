@@ -25,8 +25,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Validates assigned values of type {@link Duration}, which must be below or equal to this limit depending on the
- * provided {@link BoundDefinition}.
+ * Validates assigned values of type {@link Duration}, which must be below or equal to this limit
+ * depending on the provided {@link BoundDefinition}.
  */
 public class DurationMaxValidator implements ConstraintValidator<DurationMax, Duration> {
 

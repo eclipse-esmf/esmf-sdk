@@ -11,4 +11,3 @@ of this module.
 ## Usage
 
 The model can be instantiated as follows using the provided `AspectModelLoader`.
-

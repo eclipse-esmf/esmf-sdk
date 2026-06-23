@@ -13,7 +13,6 @@
 
 package org.eclipse.esmf.metamodel.builder;
 
-import static org.eclipse.esmf.metamodel.DataTypes.dataTypeByUri;
 import static org.eclipse.esmf.metamodel.DataTypes.xsd;
 import static org.eclipse.esmf.metamodel.Elements.samm_e;
 
@@ -29,6 +28,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
 
 import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.loader.ValueInstantiator;
@@ -102,9 +104,6 @@ import org.eclipse.esmf.metamodel.impl.DefaultEntity;
 import org.eclipse.esmf.metamodel.impl.DefaultEntityInstance;
 import org.eclipse.esmf.metamodel.impl.DefaultProperty;
 import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
-
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.vocabulary.RDF;
 
 /**
  * Builder for SAMM elements.
@@ -190,7 +189,8 @@ public class SammBuilder {
    }
 
    /**
-    * Base class for all model elements that are optionally name, e.g., Characteristics and Constraints.
+    * Base class for all model elements that are optionally name, e.g., Characteristics and
+    * Constraints.
     *
     * @param <SELF> the self type
     * @param <ACTUAL> the element type
@@ -228,8 +228,8 @@ public class SammBuilder {
     * @param <SELF> the self type
     * @param <ACTUAL> the element type
     */
-   public abstract static class NamedElementBuilder<SELF extends NamedElementBuilder<SELF, ACTUAL>,
-         ACTUAL extends ModelElement> extends Builder<SELF, ACTUAL> {
+   public abstract static class NamedElementBuilder<SELF extends NamedElementBuilder<SELF, ACTUAL>, ACTUAL extends ModelElement>
+         extends Builder<SELF, ACTUAL> {
       protected final AspectModelUrn urn;
 
       public NamedElementBuilder( final Class<?> selfType, final AspectModelUrn urn ) {
@@ -475,8 +475,8 @@ public class SammBuilder {
          if ( characteristic == null ) {
             throw new AspectModelBuildingException( "Property is missing a characteristic" );
          }
-         final Type type = characteristic.getDataType().orElseThrow( () ->
-               new AspectModelBuildingException( "Property's characteristic is missing a dataType" ) );
+         final Type type = characteristic.getDataType()
+               .orElseThrow( () -> new AspectModelBuildingException( "Property's characteristic is missing a dataType" ) );
          if ( !exampleValue.getType().isTypeOrSubtypeOf( type ) ) {
             throw new AspectModelBuildingException( "Property's example value's type is not and no subtype of " + type );
          }
@@ -1446,11 +1446,19 @@ public class SammBuilder {
          return myself;
       }
 
+      public SELF minValue( final long minValue ) {
+         return minValue( BigInteger.valueOf( minValue ) );
+      }
+
       public SELF maxValue( final BigInteger maxValue ) {
          if ( maxValue != null ) {
             this.maxValue = maxValue;
          }
          return myself;
+      }
+
+      public SELF maxValue( final long maxValue ) {
+         return maxValue( BigInteger.valueOf( maxValue ) );
       }
 
       @Override
@@ -1653,8 +1661,7 @@ public class SammBuilder {
          }
 
          if ( modelElement instanceof final ScalarValue scalarValue ) {
-            builder
-                  .withPreferredNames( scalarValue.getPreferredNames() )
+            builder.withPreferredNames( scalarValue.getPreferredNames() )
                   .withDescriptions( scalarValue.getDescriptions() )
                   .withSee( scalarValue.getSee() )
                   .withSourceFile( scalarValue.getSourceFile() );
@@ -1667,7 +1674,7 @@ public class SammBuilder {
                .build();
       }
 
-      return new DefaultScalarValue( metaModelBaseAttributes, value, dataTypeByUri( type.getUrn() ) );
+      return new DefaultScalarValue( metaModelBaseAttributes, value, type );
    }
 
    @SafeVarargs

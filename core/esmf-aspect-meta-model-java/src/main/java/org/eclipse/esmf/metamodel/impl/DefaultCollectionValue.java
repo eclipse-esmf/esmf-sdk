@@ -31,8 +31,7 @@ public class DefaultCollectionValue implements CollectionValue {
    public DefaultCollectionValue(
          final Collection<Value> values,
          final CollectionType collectionType,
-         final Type elementType
-   ) {
+         final Type elementType ) {
       this.values = values;
       this.collectionType = collectionType;
       this.elementType = elementType;
@@ -54,7 +53,8 @@ public class DefaultCollectionValue implements CollectionValue {
    }
 
    /**
-    * Similar to {@link DefaultScalarValue#getSourceFile()}, collection values are not defined in Aspect Model files, so this returns null.
+    * Similar to {@link DefaultScalarValue#getSourceFile()}, collection values are not defined in
+    * Aspect Model files, so this returns null.
     *
     * @return null
     */

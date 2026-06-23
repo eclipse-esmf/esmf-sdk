@@ -125,18 +125,14 @@ public interface XsdArbitraries {
 
    @Provide
    default Arbitrary<Tuple.Tuple3<Integer, Integer, Integer>> anyYearMonthDay() {
-      return anyYear().flatMap( year ->
-            anyMonth().flatMap( month ->
-                  anyDay( year, month ).map( day ->
-                        Tuple.of( year, month, day ) ) ) );
+      return anyYear().flatMap( year -> anyMonth().flatMap( month -> anyDay( year, month ).map( day -> Tuple.of( year, month, day ) ) ) );
    }
 
    @Provide
    default Arbitrary<XMLGregorianCalendar> anyDate() {
       return Combinators.combine( anyYearMonthDay(), anyTimezone() )
-            .as( ( yearMonthDay, timezone ) ->
-                  getDatatypeFactory().newXMLGregorianCalendarDate(
-                        yearMonthDay.get1(), yearMonthDay.get2(), yearMonthDay.get3(), timezone ) );
+            .as( ( yearMonthDay, timezone ) -> getDatatypeFactory().newXMLGregorianCalendarDate(
+                  yearMonthDay.get1(), yearMonthDay.get2(), yearMonthDay.get3(), timezone ) );
    }
 
    @Provide
@@ -149,9 +145,9 @@ public interface XsdArbitraries {
    default Arbitrary<XMLGregorianCalendar> anyDateTime() {
       return Combinators
             .combine( anyYearMonthDay(), anyHour(), anyMinute(), anySecond(), anyMillisecond(), anyTimezone() )
-            .as( ( yearMonthDay, hour, minute, second, millisecond, timezone ) ->
-                  getDatatypeFactory().newXMLGregorianCalendar( yearMonthDay.get1(), yearMonthDay.get2(),
-                        yearMonthDay.get3(), hour, minute, second, millisecond, timezone ) );
+            .as( ( yearMonthDay, hour, minute, second, millisecond, timezone ) -> getDatatypeFactory().newXMLGregorianCalendar(
+                  yearMonthDay.get1(), yearMonthDay.get2(),
+                  yearMonthDay.get3(), hour, minute, second, millisecond, timezone ) );
    }
 
    @Provide
@@ -212,7 +208,8 @@ public interface XsdArbitraries {
    default Arbitrary<Tuple.Tuple2<Integer, Integer>> anyMonthDay() {
       return Combinators.combine( anyMonth(), anyDayInMonth() ).as( Tuple::of ).filter( tuple -> {
          // See https://www.w3.org/TR/xmlschema11-2/#gMonthDay:
-         // The ·day· value must be no more than 30 if ·month· is one of 4, 6, 9, or 11, and no more than 29 if ·month· is 2.
+         // The ·day· value must be no more than 30 if ·month· is one of 4, 6, 9, or 11, and no more than 29
+         // if ·month· is 2.
          final int month = tuple.get1();
          final int day = tuple.get2();
          if ( month == Month.FEBRUARY.getValue() ) {

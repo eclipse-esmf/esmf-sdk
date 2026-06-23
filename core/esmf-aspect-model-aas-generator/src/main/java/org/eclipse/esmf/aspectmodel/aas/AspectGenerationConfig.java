@@ -18,6 +18,4 @@ import org.eclipse.esmf.aspectmodel.generator.GenerationConfig;
 import io.soabase.recordbuilder.core.RecordBuilder;
 
 @RecordBuilder
-public record AspectGenerationConfig(
-) implements GenerationConfig {
-}
+public record AspectGenerationConfig() implements GenerationConfig {}

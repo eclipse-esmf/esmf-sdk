@@ -18,8 +18,8 @@ import java.util.function.BiFunction;
 import org.eclipse.esmf.metamodel.ModelElement;
 
 /**
- * A generator that can take an Aspect model element (e.g. an Aspect or an Enumeration) as input and generate an {@link
- * Artifact} for it.
+ * A generator that can take an Aspect model element (e.g. an Aspect or an Enumeration) as input and
+ * generate an {@link Artifact} for it.
  *
  * @param <I> the type that uniquely identifies the artifact in the scope of the generation process
  * @param <T> the content type of the artifact, e.g. String or byte[]

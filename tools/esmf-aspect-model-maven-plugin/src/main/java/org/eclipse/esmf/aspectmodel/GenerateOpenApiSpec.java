@@ -30,7 +30,7 @@ import org.eclipse.esmf.aspectmodel.generator.openapi.OpenApiSchemaGenerationCon
 import org.eclipse.esmf.aspectmodel.generator.openapi.PagingOption;
 import org.eclipse.esmf.metamodel.Aspect;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import io.vavr.control.Try;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -40,13 +40,23 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Mojo( name = GenerateOpenApiSpec.MAVEN_GOAL, defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
+@Mojo( name = GenerateOpenApiSpec.MAVEN_GOAL,
+   defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateOpenApiSpec extends AspectModelMojo {
    public static final String MAVEN_GOAL = "generateOpenApiSpec";
    private static final Logger LOG = LoggerFactory.getLogger( GenerateOpenApiSpec.class );
 
    @Parameter( required = true )
    private String aspectApiBaseUrl = "";
+
+   @Parameter
+   private String readApiPath;
+
+   @Parameter
+   private String queryApiPath;
+
+   @Parameter
+   private String operationsApiPath;
 
    @Parameter
    private String aspectParameterFile;
@@ -107,6 +117,9 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( useSemanticApiVersion )
             .baseUrl( aspectApiBaseUrl )
+            .readApiPath( readApiPath )
+            .queryApiPath( queryApiPath )
+            .operationsApiPath( operationsApiPath )
             .resourcePath( aspectResourcePath )
             .properties( readFile( aspectParameterFile ) )
             .template( readFile( templateFilePath ) )

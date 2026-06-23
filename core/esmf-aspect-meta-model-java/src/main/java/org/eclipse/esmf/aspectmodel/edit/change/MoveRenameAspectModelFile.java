@@ -38,8 +38,7 @@ public class MoveRenameAspectModelFile extends StructuralChange {
    }
 
    public MoveRenameAspectModelFile( final AspectModelFile file, final URI newLocation ) {
-      this( file.sourceLocation().orElseThrow( () ->
-            new ModelChangeException( "Can rename only a named file" ) ), newLocation );
+      this( file.sourceLocation().orElseThrow( () -> new ModelChangeException( "Can rename only a named file" ) ), newLocation );
    }
 
    @Override

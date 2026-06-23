@@ -24,7 +24,8 @@ import io.soabase.recordbuilder.core.RecordBuilder;
  * A {@link GenerationConfig} for AsyncAPI schema.
  *
  * @param locale the locale for choosing the preferred language for description and preferred name.
- * @param useSemanticVersion if set to true, the complete semantic version of the Aspect Model will be used as the version of the API.
+ * @param useSemanticVersion if set to true, the complete semantic version of the Aspect Model will
+ *        be used as the version of the API.
  * @param applicationId for setup id parameter in the spec.
  * @param channelAddress the channel address for providing channel address.
  */

@@ -23,28 +23,25 @@ import org.eclipse.digitaltwin.aas4j.v3.model.AbstractLangString;
 import org.eclipse.digitaltwin.aas4j.v3.model.LangStringDefinitionTypeIec61360;
 import org.eclipse.digitaltwin.aas4j.v3.model.LangStringNameType;
 import org.eclipse.digitaltwin.aas4j.v3.model.LangStringPreferredNameTypeIec61360;
-import org.eclipse.digitaltwin.aas4j.v3.model.LangStringShortNameTypeIec61360;
 import org.eclipse.digitaltwin.aas4j.v3.model.LangStringTextType;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultLangStringDefinitionTypeIec61360;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultLangStringNameType;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultLangStringPreferredNameTypeIec61360;
-import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultLangStringShortNameTypeIec61360;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultLangStringTextType;
 
 /**
- * Default implementation of multiple ways to map Aspect Model {@link LangString}s to AAS4J {@link LangStringTextType}s.
+ * Default implementation of multiple ways to map Aspect Model {@link LangString}s to AAS4J
+ * {@link LangStringTextType}s.
  */
 public final class LangStringMapper {
-   public static final Mapper<LangStringTextType> TEXT = ( text, locale ) ->
-         new DefaultLangStringTextType.Builder().text( text ).language( locale ).build();
-   public static final Mapper<LangStringNameType> NAME = ( text, locale ) ->
-         new DefaultLangStringNameType.Builder().text( text ).language( locale ).build();
-   public static final Mapper<LangStringShortNameTypeIec61360> SHORT_NAME = ( text, locale ) ->
-         new DefaultLangStringShortNameTypeIec61360.Builder().text( text ).language( locale ).build();
-   public static final Mapper<LangStringPreferredNameTypeIec61360> PREFERRED_NAME = ( text, locale ) ->
-         new DefaultLangStringPreferredNameTypeIec61360.Builder().text( text ).language( locale ).build();
-   public static final Mapper<LangStringDefinitionTypeIec61360> DEFINITION = ( text, locale ) ->
-         new DefaultLangStringDefinitionTypeIec61360.Builder().text( text ).language( locale ).build();
+   public static final Mapper<LangStringTextType> TEXT =
+         ( text, locale ) -> new DefaultLangStringTextType.Builder().text( text ).language( locale ).build();
+   public static final Mapper<LangStringNameType> NAME =
+         ( text, locale ) -> new DefaultLangStringNameType.Builder().text( text ).language( locale ).build();
+   public static final Mapper<LangStringPreferredNameTypeIec61360> PREFERRED_NAME =
+         ( text, locale ) -> new DefaultLangStringPreferredNameTypeIec61360.Builder().text( text ).language( locale ).build();
+   public static final Mapper<LangStringDefinitionTypeIec61360> DEFINITION =
+         ( text, locale ) -> new DefaultLangStringDefinitionTypeIec61360.Builder().text( text ).language( locale ).build();
 
    public interface Mapper<T extends AbstractLangString> {
       default List<T> map( final Set<LangString> langStrings ) {

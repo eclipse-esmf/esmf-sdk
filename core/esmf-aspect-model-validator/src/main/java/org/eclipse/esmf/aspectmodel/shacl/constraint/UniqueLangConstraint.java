@@ -30,7 +30,7 @@ import org.apache.jena.rdf.model.Statement;
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#UniqueLangConstraintComponent">sh:uniqueLang</a>
  */
-public record UniqueLangConstraint( ) implements Constraint {
+public record UniqueLangConstraint() implements Constraint {
    @Override
    public boolean canBeUsedOnNodeShapes() {
       return false;

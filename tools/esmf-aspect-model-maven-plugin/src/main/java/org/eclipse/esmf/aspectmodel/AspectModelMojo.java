@@ -33,28 +33,6 @@ import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.Set;
 
-import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
-import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
-import org.eclipse.esmf.aspectmodel.resolver.GithubRepository;
-import org.eclipse.esmf.aspectmodel.resolver.ProxyConfig;
-import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
-import org.eclipse.esmf.aspectmodel.resolver.github.GitHubStrategy;
-import org.eclipse.esmf.aspectmodel.resolver.github.GithubModelSourceConfig;
-import org.eclipse.esmf.aspectmodel.resolver.github.GithubModelSourceConfigBuilder;
-import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
-import org.eclipse.esmf.aspectmodel.validation.services.DetailedViolationFormatter;
-import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
-import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.AspectModel;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import io.vavr.control.Either;
-import io.vavr.control.Try;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -67,14 +45,40 @@ import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Server;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
+import org.eclipse.esmf.aspectmodel.resolver.GithubRepository;
+import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
+import org.eclipse.esmf.aspectmodel.resolver.github.GitHubStrategy;
+import org.eclipse.esmf.aspectmodel.resolver.github.GithubModelSourceConfig;
+import org.eclipse.esmf.aspectmodel.resolver.github.GithubModelSourceConfigBuilder;
+import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
+import org.eclipse.esmf.aspectmodel.validation.services.DetailedViolationFormatter;
+import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
+import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.AspectModel;
+import org.eclipse.esmf.util.download.ProxyConfig;
+
+import io.vavr.control.Either;
+import io.vavr.control.Try;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.dataformat.yaml.YAMLFactory;
+import tools.jackson.dataformat.yaml.YAMLMapper;
+import tools.jackson.dataformat.yaml.YAMLWriteFeature;
+
 public abstract class AspectModelMojo extends AbstractMojo {
-   protected static final ObjectMapper YAML_MAPPER = new YAMLMapper().enable( YAMLGenerator.Feature.MINIMIZE_QUOTES );
+   protected static final ObjectMapper YAML_MAPPER =
+         new YAMLMapper( YAMLFactory.builder().enable( YAMLWriteFeature.MINIMIZE_QUOTES ).build() );
    protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
    @Parameter
    protected String modelsRootDirectory;
 
-   @Parameter( required = true, property = "include" )
+   @Parameter( required = true,
+      property = "include" )
    protected Set<String> includes;
 
    @Parameter
@@ -89,7 +93,8 @@ public abstract class AspectModelMojo extends AbstractMojo {
    @Parameter
    protected List<String> githubServerIds;
 
-   @Parameter( defaultValue = "${session}", readonly = true )
+   @Parameter( defaultValue = "${session}",
+      readonly = true )
    protected MavenSession mavenSession;
 
    @Parameter
@@ -99,8 +104,7 @@ public abstract class AspectModelMojo extends AbstractMojo {
 
    private Map<AspectModel, Aspect> aspects;
 
-   public AspectModelMojo() {
-   }
+   public AspectModelMojo() {}
 
    protected AspectModelMojo( final Map<AspectModel, Aspect> aspects ) {
       this.aspects = aspects;
@@ -109,7 +113,9 @@ public abstract class AspectModelMojo extends AbstractMojo {
    /**
     * Skip the execution.
     */
-   @Parameter( name = "skip", property = "gen.skip", defaultValue = "false" )
+   @Parameter( name = "skip",
+      property = "gen.skip",
+      defaultValue = "false" )
    private Boolean skip;
 
    protected void validateParameters() throws MojoExecutionException {
@@ -142,7 +148,7 @@ public abstract class AspectModelMojo extends AbstractMojo {
          strategies.add( new FileSystemStrategy( modelsRoot ) );
       }
       if ( !gitHubConfigs.isEmpty() ) {
-         for ( GithubModelSourceConfig gitHubConfig : gitHubConfigs ) {
+         for ( final GithubModelSourceConfig gitHubConfig : gitHubConfigs ) {
             strategies.add( new GitHubStrategy( gitHubConfig ) );
          }
       }
@@ -163,8 +169,8 @@ public abstract class AspectModelMojo extends AbstractMojo {
       final AspectModelLoader aspectModelLoader = createAspectModelLoader();
       for ( final String inputUrn : includes ) {
          final AspectModelUrn urn = AspectModelUrn.fromUrn( inputUrn );
-         final Either<List<Violation>, AspectModel> loadingResult = new AspectModelValidator().loadModel( () ->
-               aspectModelLoader.load( urn ) );
+         final Either<List<Violation>, AspectModel> loadingResult =
+               new AspectModelValidator().loadModel( () -> aspectModelLoader.load( urn ) );
          if ( loadingResult.isLeft() ) {
             final List<Violation> violations = loadingResult.getLeft();
             final String errorMessage = detailedValidationMessages
@@ -212,7 +218,7 @@ public abstract class AspectModelMojo extends AbstractMojo {
          if ( mavenSession == null ) {
             getLog().warn( "Could not read Maven session, ignoring GitHub server configuration." );
          } else {
-            for ( String serverId : githubServerIds ) {
+            for ( final String serverId : githubServerIds ) {
                final Server server = mavenSession.getSettings().getServer( serverId );
                if ( server != null ) {
                   final Xpp3Dom dom = (Xpp3Dom) server.getConfiguration();
@@ -228,8 +234,7 @@ public abstract class AspectModelMojo extends AbstractMojo {
                         .orElse( null );
 
                   final GithubRepository.Ref ref = Optional.ofNullable( dom.getChild( "branch" ) )
-                        .map( Xpp3Dom::getValue )
-                        .<GithubRepository.Ref> map( GithubRepository.Branch::new )
+                        .map( Xpp3Dom::getValue ).<GithubRepository.Ref>map( GithubRepository.Branch::new )
                         .or( () -> Optional.ofNullable( dom.getChild( "tag" ) )
                               .map( Xpp3Dom::getValue )
                               .map( GithubRepository.Tag::new ) )
@@ -247,7 +252,7 @@ public abstract class AspectModelMojo extends AbstractMojo {
                         .orElse( ProxyConfig.detectProxySettings() );
 
                   final GithubRepository repository = new GithubRepository( repositoryParts[0], repositoryParts[1], ref );
-                  GithubModelSourceConfig gitHubConfig = GithubModelSourceConfigBuilder.builder()
+                  final GithubModelSourceConfig gitHubConfig = GithubModelSourceConfigBuilder.builder()
                         .proxyConfig( proxyConfig )
                         .repository( repository )
                         .directory( directory )

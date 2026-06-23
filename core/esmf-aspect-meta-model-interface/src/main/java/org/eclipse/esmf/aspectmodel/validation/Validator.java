@@ -20,44 +20,30 @@ import org.eclipse.esmf.metamodel.AspectModel;
 
 import io.vavr.control.Either;
 import io.vavr.control.Try;
-import org.apache.jena.rdf.model.Model;
 
 /**
- * Generic validator for Aspect Models, either on the raw RDF input or on the already loaded Aspect Model
+ * Generic validator for Aspect Models, either on the raw RDF input or on the already loaded Aspect
+ * Model
  *
  * @param <P> the "problem" type that describes loading or validation failures
  * @param <C> the "collection of problem" type that constitutes a validation report
  */
-public interface Validator<P, C extends Collection<? super P>> {
+public interface Validator<P, C extends Collection<? super P>> extends RdfBasedValidator<P, C>, AspectModelBasedValidator<P, C> {
    /**
-    * Validates a complete RDF input (i.e., this model is expected to contain all necessary definitions, including meta model definitions)
-    *
-    * @param model the input model
-    * @return the validation report
-    */
-   C validateModel( Model model );
-
-   /**
-    * Validates a loaded Aspect Model
-    *
-    * @param aspectModel the Aspect Model
-    * @return the validation report
-    */
-   C validateModel( AspectModel aspectModel );
-
-   /**
-    * Convenience function that takes an Aspect Model loading function as an input and returns the resulting Aspect Model on success,
-    * or a validation report describing the loading failures on failure
+    * Convenience function that takes an Aspect Model loading function as an input and returns the
+    * resulting Aspect Model on success, or a validation report describing the loading failures on
+    * failure
     *
     * @param aspectModelLoader the Aspect Model loading function
-    * @return the validation report on failure ({@link Try.Failure}) or the Aspect Model on success ({@link Try.Success})
+    * @return the validation report on failure ({@link Try.Failure}) or the Aspect Model on success
+    *         ({@link Try.Success})
     */
    Either<C, AspectModel> loadModel( Supplier<AspectModel> aspectModelLoader );
 
    /**
-    * If {@link #loadModel(Supplier)} is called with a loading function that itself makes use of the Validator, the loading function can
-    * short-circuit the loading-and-validation process and directly return validation results by throwing the exception returned by this
-    * method.
+    * If {@link #loadModel(Supplier)} is called with a loading function that itself makes use of the
+    * Validator, the loading function can short-circuit the loading-and-validation process and directly
+    * return validation results by throwing the exception returned by this method.
     *
     * @param violations the results to return from the loading-and-validation process
     * @param <E> the type of exception that is thrown

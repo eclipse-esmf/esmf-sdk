@@ -1,0 +1,52 @@
+# Copyright (c) 2026 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+@prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:AspectWithEventAndEntityProperty a samm:Aspect ;
+   samm:preferredName "Test Aspect"@en ;
+   samm:description "This is a test description"@en ;
+   samm:properties ( ) ;
+   samm:operations ( ) ;
+   samm:events ( :EntityEvent ) .
+
+:EntityEvent a samm:Event ;
+   samm:preferredName "Entity Event"@en ;
+   samm:description "This is an event with entity properties"@en ;
+   samm:parameters ( :entityProperty :testString ) .
+
+:entityProperty a samm:Property ;
+   samm:preferredName "Entity Property"@en ;
+   samm:description "This is a property with an entity type."@en ;
+   samm:characteristic :EntityCharacteristic .
+
+:EntityCharacteristic a samm-c:SingleEntity ;
+   samm:preferredName "Entity Characteristic"@en ;
+   samm:description "A characteristic with entity data type"@en ;
+   samm:dataType :TestEntity .
+
+:TestEntity a samm:Entity ;
+   samm:preferredName "Test Entity"@en ;
+   samm:description "This is a test entity"@en ;
+   samm:properties ( :innerProperty ) .
+
+:innerProperty a samm:Property ;
+   samm:preferredName "Inner Property"@en ;
+   samm:description "An inner property of the entity."@en ;
+   samm:characteristic samm-c:Text .
+
+:testString a samm:Property ;
+   samm:preferredName "Test String"@en ;
+   samm:description "A scalar test property."@en ;
+   samm:characteristic samm-c:Text .

@@ -37,12 +37,11 @@ import org.eclipse.esmf.metamodel.Namespace;
 import picocli.CommandLine;
 
 @CommandLine.Command(
-      name = AspectEditNewVersionCommand.COMMAND_NAME,
-      description = "Create a new version of a file or namespace",
-      descriptionHeading = "%n@|bold Description|@:%n%n",
-      parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n"
-)
+   name = AspectEditNewVersionCommand.COMMAND_NAME,
+   description = "Create a new version of a file or namespace",
+   descriptionHeading = "%n@|bold Description|@:%n%n",
+   parameterListHeading = "%n@|bold Parameters|@:%n",
+   optionListHeading = "%n@|bold Options|@:%n" )
 public class AspectEditNewVersionCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "newversion";
 
@@ -56,15 +55,13 @@ public class AspectEditNewVersionCommand extends AbstractCommand {
    private ResolverConfigurationMixin resolverConfiguration;
 
    @CommandLine.Option(
-         names = { "--dry-run" },
-         description = "Emulate edit operation and print a report of changes that would be performed"
-   )
+      names = { "--dry-run" },
+      description = "Emulate edit operation and print a report of changes that would be performed" )
    private boolean dryRun;
 
    @CommandLine.Option(
-         names = { "--details" },
-         description = "When using --dry-run, print details about RDF statements that are added and removed"
-   )
+      names = { "--details" },
+      description = "When using --dry-run, print details about RDF statements that are added and removed" )
    private boolean details;
 
    @CommandLine.ArgGroup( multiplicity = "1" )
@@ -72,31 +69,27 @@ public class AspectEditNewVersionCommand extends AbstractCommand {
 
    static class VersionPart {
       @CommandLine.Option(
-            names = "--major",
-            required = true,
-            description = "Increase the major version"
-      )
+         names = "--major",
+         required = true,
+         description = "Increase the major version" )
       boolean increaseMajor;
 
       @CommandLine.Option(
-            names = "--minor",
-            required = true,
-            description = "Increase the minor version"
-      )
+         names = "--minor",
+         required = true,
+         description = "Increase the minor version" )
       boolean increaseMinor;
 
       @CommandLine.Option(
-            names = "--micro",
-            required = true,
-            description = "Increase the micro version"
-      )
+         names = "--micro",
+         required = true,
+         description = "Increase the micro version" )
       boolean increaseMicro;
    }
 
    @CommandLine.Option(
-         names = { "--force" },
-         description = "Force creation/overwriting of existing files"
-   )
+      names = { "--force" },
+      description = "Force creation/overwriting of existing files" )
    private boolean force;
 
    @Override
@@ -118,8 +111,8 @@ public class AspectEditNewVersionCommand extends AbstractCommand {
       final AspectModelLoader aspectModelLoader = getInputHandler( input ).aspectModelLoader();
 
       final AspectModel aspectModel = inputFile.map( aspectModelLoader::load ).orElseGet( () -> {
-         final AspectModelUrn urn = AspectModelUrn.from( input ).getOrElseThrow( () ->
-               new CommandException( "Target is no valid namespace URN: " + input ) );
+         final AspectModelUrn urn =
+               AspectModelUrn.from( input ).getOrElseThrow( () -> new CommandException( "Target is no valid namespace URN: " + input ) );
          return aspectModelLoader.loadAspectModelFiles( aspectModelLoader.loadContentsForNamespace( urn ).toList() );
       } );
 

@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.validation.CycleViolation;
+import org.eclipse.esmf.aspectmodel.validation.RdfBasedValidator;
 import org.eclipse.esmf.metamodel.vocabulary.SAMM;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
@@ -44,18 +45,15 @@ import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.vocabulary.RDF;
 
 /**
- * Cycle detector for SAMM models.
- * <br/>
- * Because of the limitations of the property paths in SPARQL queries, it is impossible to realize the cycle detection together with
- * other validations via SHACL shapes.
- * <br/>
- * According to graph theory:
- * A directed graph G is acyclic if and only if a depth-first search of G yields no back edges.
- * <br/>
- * So a depth-first traversal of the "resolved" (via Characteristics/Entities etc.) property references is able to deliver all cycles
- * present in the model.
+ * Cycle detector for SAMM models. <br/>
+ * Because of the limitations of the property paths in SPARQL queries, it is impossible to realize
+ * the cycle detection together with other validations via SHACL shapes. <br/>
+ * According to graph theory: A directed graph G is acyclic if and only if a depth-first search of G
+ * yields no back edges. <br/>
+ * So a depth-first traversal of the "resolved" (via Characteristics/Entities etc.) property
+ * references is able to deliver all cycles present in the model.
  */
-public class ModelCycleDetector {
+public class ModelCycleDetector implements RdfBasedValidator<Violation, List<Violation>> {
    final Set<Resource> discovered = new LinkedHashSet<>();
    final Set<Resource> discoveredOptionals = new HashSet<>();
    final Set<Resource> finished = new HashSet<>();
@@ -67,6 +65,7 @@ public class ModelCycleDetector {
 
    final List<Violation> cycleDetectionReport = new ArrayList<>();
 
+   @Override
    public List<Violation> validateModel( final Model rawModel ) {
       discovered.clear();
       discoveredOptionals.clear();
@@ -114,7 +113,8 @@ public class ModelCycleDetector {
          final List<NextHopProperty> nextHopProperties = getDirectlyReachableProperties( model,
                isOptional ? resolvedProperty : currentProperty );
 
-         // samm-c:Either makes the task somewhat more complicated - we need to know the status of both branches (left/right)
+         // samm-c:Either makes the task somewhat more complicated - we need to know the status of both
+         // branches (left/right)
          // to be able to decide whether there really is a cycle or not
          if ( reachedViaEither( nextHopProperties ) ) {
             final EitherCycleDetector leftBranch = new EitherCycleDetector( resolvedProperty, this::reportCycle );
@@ -124,7 +124,8 @@ public class ModelCycleDetector {
             nextHopProperties.stream().filter( property -> property.eitherStatus == 2 )
                   .forEach( property -> depthFirstTraversal( property.propertyNode, rightBranch::collectCycles ) );
             if ( leftBranch.hasBreakableCycles() && rightBranch.hasBreakableCycles() ) {
-               // the cycles found are breakable, but they are present in both branches, resulting in an overall unbreakable cycle
+               // the cycles found are breakable, but they are present in both branches, resulting in an overall
+               // unbreakable cycle
                leftBranch.reportCycles( this::reportCycle );
                rightBranch.reportCycles( this::reportCycle );
             }
@@ -196,26 +197,27 @@ public class ModelCycleDetector {
             .map( ns -> "prefix %s: <%s>".formatted( ns.getShortForm(), ns.getNamespace() ) )
             .collect( Collectors.joining( "\n" ) );
 
-      //noinspection LongLine
-      final String queryString = String.format( """
-                  %s select ?reachableProperty ?viaEither
-                      where {
-                        {
-                          ?currentProperty samm:characteristic/samm-c:baseCharacteristic*/samm-c:left/samm:dataType/samm:properties/rdf:rest*/rdf:first ?reachableProperty
-                          bind (1 as ?viaEither)
-                        }
-                        union
-                        {
-                          ?currentProperty samm:characteristic/samm-c:baseCharacteristic*/samm-c:right/samm:dataType/samm:properties/rdf:rest*/rdf:first ?reachableProperty
-                          bind (2 as ?viaEither)
-                        }
-                        union
-                        {
-                          ?currentProperty samm:characteristic/samm-c:baseCharacteristic*/samm:dataType/samm:properties/rdf:rest*/rdf:first ?reachableProperty
-                          bind (0 as ?viaEither)
-                        }
-                  }
-                  """,
+      // noinspection LongLine
+      final String queryString = String.format(
+            """
+               %s select ?reachableProperty ?viaEither
+                   where {
+                     {
+                       ?currentProperty samm:characteristic/samm-c:baseCharacteristic*/samm-c:left/samm:dataType/samm:properties/rdf:rest*/rdf:first ?reachableProperty
+                       bind (1 as ?viaEither)
+                     }
+                     union
+                     {
+                       ?currentProperty samm:characteristic/samm-c:baseCharacteristic*/samm-c:right/samm:dataType/samm:properties/rdf:rest*/rdf:first ?reachableProperty
+                       bind (2 as ?viaEither)
+                     }
+                     union
+                     {
+                       ?currentProperty samm:characteristic/samm-c:baseCharacteristic*/samm:dataType/samm:properties/rdf:rest*/rdf:first ?reachableProperty
+                       bind (0 as ?viaEither)
+                     }
+               }
+               """,
             currentVersionPrefixes );
       query = QueryFactory.create( queryString );
    }
@@ -264,12 +266,13 @@ public class ModelCycleDetector {
       private void collectCycles( final Resource backEdgeProperty, final Set<Resource> currentPath ) {
          if ( cycleIsBreakable( backEdgeProperty, currentPath ) ) {
             breakableCycles.addAll( formatCurrentCycle( backEdgeProperty, currentPath ) );
-         } else {  // unbreakable cycles are simply immediately reported and not retained for later evaluation
+         } else { // unbreakable cycles are simply immediately reported and not retained for later evaluation
             cycleHandler.accept( backEdgeProperty, currentPath );
          }
       }
 
-      // Cycles involving samm-c:Either can be considered breakable only if they "encompass" the property characterized by the Either
+      // Cycles involving samm-c:Either can be considered breakable only if they "encompass" the property
+      // characterized by the Either
       // construct.
       // Consider these two examples: ( E is the Either property )
       // a -> E -> b -> c -> a : this cycle can be broken by the other branch of the Either construct

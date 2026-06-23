@@ -25,7 +25,9 @@ import org.apache.jena.rdf.model.RDFNode;
  * @param otherProperty the property the context.property()'s value must be disjunct with
  * @param otherValue the corresponding other value
  */
-public record DisjointViolation( EvaluationContext context, Property otherProperty, RDFNode otherValue ) implements Violation {
+public record DisjointViolation(
+      EvaluationContext context, Property otherProperty, RDFNode otherValue
+) implements Violation {
    public static final String ERROR_CODE = "ERR_DISJOINT";
 
    @Override

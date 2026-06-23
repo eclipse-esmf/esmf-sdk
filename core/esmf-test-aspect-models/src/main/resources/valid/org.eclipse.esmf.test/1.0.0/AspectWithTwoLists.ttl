@@ -27,7 +27,6 @@
    samm:description "This is a test property."@en ;
    samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
-   samm:exampleValue "Example Value" ;
    samm:characteristic :TestList .
 
 :testPropertyTwo a samm:Property ;
@@ -35,7 +34,6 @@
    samm:description "This is a test property."@en ;
    samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
-   samm:exampleValue "Example Value" ;
    samm:characteristic :TestList .
 
 :TestList a samm-c:List ;

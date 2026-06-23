@@ -77,7 +77,7 @@ public class GitHubStrategy extends GitHubModelSource implements ResolutionStrat
             return file;
          }
          file.sourceLocation().map( sourceLocation -> new ModelResolutionException.LoadingFailure( aspectModelUrn,
-                     sourceLocation.toString(), "File does not contain the element definition" ) )
+               sourceLocation.toString(), "File does not contain the element definition" ) )
                .ifPresent( checkedLocations::add );
       }
 

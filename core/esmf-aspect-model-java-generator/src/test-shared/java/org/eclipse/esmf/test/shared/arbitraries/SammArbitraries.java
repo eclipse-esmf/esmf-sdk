@@ -172,8 +172,8 @@ public interface SammArbitraries extends AspectModelUrnArbitraries, UriArbitrari
    @Provide
    default Arbitrary<Aspect> anyAspect() {
       return Combinators.combine( anyMetaModelVersion(), anyAspectUrn(), anyPreferredNames(), anyDescriptions(),
-                  anySee(), anyProperty().list().ofMinSize( 1 ).ofMaxSize( 3 ), anyOperation().list().ofMaxSize( 3 ),
-                  anyEvent().list().ofMaxSize( 3 ) )
+            anySee(), anyProperty().list().ofMinSize( 1 ).ofMaxSize( 3 ), anyOperation().list().ofMaxSize( 3 ),
+            anyEvent().list().ofMaxSize( 3 ) )
             .as( ( metaModelVersion, aspectUrn, preferredNames, descriptions, see, properties, operations, events ) -> {
                final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.builder()
                      .withUrn( aspectUrn )
@@ -189,7 +189,7 @@ public interface SammArbitraries extends AspectModelUrnArbitraries, UriArbitrari
    @Provide
    default Arbitrary<Operation> anyOperation() {
       return Combinators.combine( anyMetaModelVersion(), anyOperationUrn(), anyPreferredNames(), anyDescriptions(),
-                  anySee(), anyProperty().list().ofMinSize( 1 ).ofMaxSize( 3 ), anyProperty().optional() )
+            anySee(), anyProperty().list().ofMinSize( 1 ).ofMaxSize( 3 ), anyProperty().optional() )
             .as( ( metaModelVersion, operationUrn, preferredNames, descriptions, see, inputs, output ) -> {
                final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.builder()
                      .withUrn( operationUrn )
@@ -204,7 +204,7 @@ public interface SammArbitraries extends AspectModelUrnArbitraries, UriArbitrari
    @Provide
    default Arbitrary<Event> anyEvent() {
       return Combinators.combine( anyMetaModelVersion(), anyEventUrn(), anyPreferredNames(), anyDescriptions(),
-                  anySee(), anyProperty().list().ofMinSize( 1 ).ofMaxSize( 3 ) )
+            anySee(), anyProperty().list().ofMinSize( 1 ).ofMaxSize( 3 ) )
             .as( ( metaModelVersion, eventUrn, preferredNames, descriptions, see, properties ) -> {
                final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.builder()
                      .withUrn( eventUrn )
@@ -219,7 +219,7 @@ public interface SammArbitraries extends AspectModelUrnArbitraries, UriArbitrari
    @Provide
    default Arbitrary<Property> anyProperty() {
       return Combinators.combine( anyMetaModelVersion(), anyPropertyUrn(), anyPreferredNames(), anyDescriptions(), anySee(),
-                  anyCharacteristic(), anyPayloadName() )
+            anyCharacteristic(), anyPayloadName() )
             .as( ( metaModelVersion, propertyUrn, preferredNames, descriptions, see, characteristic, payloadName ) -> {
                final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.builder()
                      .withUrn( propertyUrn )
@@ -236,7 +236,7 @@ public interface SammArbitraries extends AspectModelUrnArbitraries, UriArbitrari
    @Provide
    default Arbitrary<Entity> anyEntity() {
       return Combinators.combine( anyMetaModelVersion(), anyEntityUrn(), anyPreferredNames(), anyDescriptions(), anySee(),
-                  anyProperty().list().ofMinSize( 1 ).ofMaxSize( 3 ) )
+            anyProperty().list().ofMinSize( 1 ).ofMaxSize( 3 ) )
             .as( ( metaModelVersion, entityUrn, preferredNames, descriptions, see, properties ) -> {
                final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.builder()
                      .withUrn( entityUrn )
@@ -306,7 +306,7 @@ public interface SammArbitraries extends AspectModelUrnArbitraries, UriArbitrari
          return Arbitraries.maps( key, value );
       } );
       return Combinators.combine( anyMetaModelVersion(), anyAspectUrn(), anyPreferredNames(), anyDescriptions(), anySee(),
-                  entityAssertions )
+            entityAssertions )
             .as( ( metaModelVersion, aspectUrn, preferredNames, descriptions, see, assertions ) -> {
                final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.builder()
                      .withUrn( aspectUrn )
@@ -328,8 +328,7 @@ public interface SammArbitraries extends AspectModelUrnArbitraries, UriArbitrari
 
    @Provide
    default Arbitrary<Value> anyValueForScalarType( final Scalar type ) {
-      return SammXsdType
-            .ALL_TYPES.stream()
+      return SammXsdType.ALL_TYPES.stream()
             .filter( dataType -> dataType.getURI().equals( type.getUrn() ) )
             .map( rdfDatatype -> anyValueForRdfType( rdfDatatype, type ) )
             .findFirst()

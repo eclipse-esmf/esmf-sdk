@@ -25,6 +25,7 @@ import org.eclipse.esmf.aspectmodel.visitor.AspectStreamTraversalVisitor;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Constraint;
+import org.eclipse.esmf.metamodel.Event;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Operation;
 import org.eclipse.esmf.metamodel.Property;
@@ -116,12 +117,31 @@ public class AspectModelHelper {
       if ( modelElement.is( Property.class ) ) {
          final Property property = modelElement.as( Property.class );
          if ( property.getExtends().isPresent() ) {
-            // The Property actually extends another (possibly Abstract) Property, so it won't have an Aspect Model URN on its own.
+            // The Property actually extends another (possibly Abstract) Property, so it won't have an Aspect
+            // Model URN on its own.
             // Use the parent element's namespace for the anchor.
             return parentPart + parentNamespaceAnchorPart + "-" + property.getName() + "-" + suffix;
          }
       }
 
       return parentPart + namespaceAnchorPart( modelElement ) + "-" + modelElement.getName() + "-" + suffix;
+   }
+
+   public List<Event> sortEventsByPreferredName( final List<Event> events, final Locale locale ) {
+      if ( events != null ) {
+         events.sort( Comparator.comparing(
+               event -> eventSortKey( event, locale ),
+               String.CASE_INSENSITIVE_ORDER
+         ) );
+      }
+      return events;
+   }
+
+   private static String eventSortKey( final Event e, final Locale l ) {
+      return Optional.ofNullable( e )
+            .map( x -> Optional.ofNullable( x.getPreferredName( l ) ).filter( s -> !s.isBlank() ).orElse( x.getName() ) )
+            .map( String::trim )
+            .filter( s -> !s.isBlank() )
+            .orElse( "" );
    }
 }

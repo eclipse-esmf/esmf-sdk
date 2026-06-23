@@ -13,7 +13,6 @@
 
 package org.eclipse.esmf.aspect.to;
 
-import java.io.IOException;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -27,36 +26,35 @@ import org.eclipse.esmf.aspectmodel.generator.jsonschema.JsonSchemaGenerationCon
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.Aspect;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import picocli.CommandLine;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 @CommandLine.Command(
-      name = AspectToJsonSchemaCommand.COMMAND_NAME,
-      description = "Generate JSON schema for an Aspect Model",
-      descriptionHeading = "%n@|bold Description|@:%n%n",
-      parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n"
-)
+   name = AspectToJsonSchemaCommand.COMMAND_NAME,
+   description = "Generate JSON schema for an Aspect Model",
+   descriptionHeading = "%n@|bold Description|@:%n%n",
+   parameterListHeading = "%n@|bold Parameters|@:%n",
+   optionListHeading = "%n@|bold Options|@:%n" )
 public class AspectToJsonSchemaCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "schema";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--output", "-o" },
-         description = "Output file path (default: stdout)" )
+      names = { "--output", "-o" },
+      description = "Output file path (default: stdout)" )
    private String outputFilePath = "-";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--language", "-l" },
-         description = "The language from the model for which the OpenAPI specification should be generated (default: en)" )
+      names = { "--language", "-l" },
+      description = "The language from the model for which the OpenAPI specification should be generated (default: en)" )
    private String language = "en";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--details" },
-         description = "Print detailed reports on errors" )
+      names = { "--details" },
+      description = "Print detailed reports on errors" )
    private boolean details = false;
 
    @CommandLine.ParentCommand
@@ -84,7 +82,7 @@ public class AspectToJsonSchemaCommand extends AbstractCommand {
          final ObjectMapper objectMapper = new ObjectMapper();
          try {
             objectMapper.writerWithDefaultPrettyPrinter().writeValue( outputStream, schema );
-         } catch ( final IOException exception ) {
+         } catch ( final Exception exception ) {
             throw new CommandException( "Could not format JSON Schema", exception );
          }
       } );

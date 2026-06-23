@@ -20,7 +20,7 @@ import picocli.CommandLine;
 public class AspectModelUrnConverter implements CommandLine.ITypeConverter<AspectModelUrn> {
    @Override
    public AspectModelUrn convert( final String value ) {
-      return AspectModelUrn.from( value ).getOrElseThrow( () ->
-            new CommandLine.TypeConversionException( "Input '" + value + "' is not a valid Aspect Model URN" ) );
+      return AspectModelUrn.from( value )
+            .getOrElseThrow( () -> new CommandLine.TypeConversionException( "Input '" + value + "' is not a valid Aspect Model URN" ) );
    }
 }

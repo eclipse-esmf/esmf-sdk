@@ -34,7 +34,8 @@ public class AndConstraint extends AbstractLogicalConstraint {
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
       final List<List<Violation>> violationsPerConstraint = violationsPerShape( rdfNode, context );
       final long numberOfEmptyViolationLists = numberOfEmptyViolationLists( violationsPerConstraint );
-      // The 'and' constraint is evaluated successfully if all of the provided constraints evaluate successfully
+      // The 'and' constraint is evaluated successfully if all of the provided constraints evaluate
+      // successfully
       if ( numberOfEmptyViolationLists == 0 ) {
          return List.of();
       }

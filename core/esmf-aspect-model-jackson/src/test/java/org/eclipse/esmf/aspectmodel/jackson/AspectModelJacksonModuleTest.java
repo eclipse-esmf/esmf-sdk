@@ -32,6 +32,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfig;
@@ -46,19 +47,22 @@ import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 import org.eclipse.esmf.test.shared.compiler.JavaCompiler;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.junit.jupiter.api.Test;
+
 import com.google.common.io.Resources;
 import com.google.common.reflect.TypeToken;
+
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
-import org.junit.jupiter.api.Test;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 class AspectModelJacksonModuleTest {
    private static final String PACKAGE = "org.eclipse.esmf.test";
+   final ObjectMapper mapper = JsonMapper.builder()
+         .addModule( new AspectModelJacksonModule() )
+         .build();
 
    @Test
    void testAspectWithMultiLanguageText() throws Exception {
@@ -98,13 +102,11 @@ class AspectModelJacksonModuleTest {
       final Class<?> clazz = instance.getClass();
 
       final List<Integer> listProperty = getValue( clazz, instance, "listProperty",
-            new TypeToken<List<Integer>>() {
-            }.getType() );
+            new TypeToken<List<Integer>>() {}.getType() );
       assertThat( listProperty ).contains( 1, 2, 3 );
 
       final Set<String> setProperty = getValue( clazz, instance, "setProperty",
-            new TypeToken<Set<String>>() {
-            }.getType() );
+            new TypeToken<Set<String>>() {}.getType() );
       assertThat( setProperty ).containsExactlyInAnyOrder( "foo", "bar" );
    }
 
@@ -131,8 +133,7 @@ class AspectModelJacksonModuleTest {
       assertThat( timestamp.toXMLFormat() ).isEqualTo( "2018-08-08T12:00:00.0000+01:00" );
 
       final Optional<BigInteger> number = getValue( clazz, instance, "numberProperty",
-            new TypeToken<Optional<BigInteger>>() {
-            }.getType() );
+            new TypeToken<Optional<BigInteger>>() {}.getType() );
       assertThat( number ).isEmpty();
    }
 
@@ -195,8 +196,8 @@ class AspectModelJacksonModuleTest {
 
    @Test
    void testAspectWithEntityEnumerationWithNotExistingEnum() {
-      assertThatExceptionOfType( EnumAttributeNotFoundException.class ).isThrownBy( () ->
-                  generateInstance( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_WITH_NOT_EXISTING_ENUM ) )
+      assertThatExceptionOfType( EnumAttributeNotFoundException.class )
+            .isThrownBy( () -> generateInstance( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_WITH_NOT_EXISTING_ENUM ) )
             .withMessageContainingAll( "Tried to parse value", "but there is no enum field like that" );
    }
 
@@ -228,7 +229,8 @@ class AspectModelJacksonModuleTest {
       assertThat( testPropertyType ).isEqualTo( Either.class );
 
       // It's an Either<LeftEntity, RightEntity> with LeftEntity and RightEntity being classes that are
-      // generated from the Entities in the Aspect Model, and compiled in-memory, so we can only refer to them
+      // generated from the Entities in the Aspect Model, and compiled in-memory, so we can only refer to
+      // them
       // as ? here
       final Either<?, ?> eitherValue = (Either<?, ?>) testProperty.get( instance );
       assertThat( eitherValue.getRight() ).isEmpty();
@@ -265,7 +267,7 @@ class AspectModelJacksonModuleTest {
             .build();
       final AspectModelJavaGenerator codeGenerator = new AspectModelJavaGenerator( aspect, config );
       final Map<QualifiedName, ByteArrayOutputStream> outputs = new LinkedHashMap<>();
-      codeGenerator.generate( name -> outputs.computeIfAbsent( name, name2 -> new ByteArrayOutputStream() ) );
+      codeGenerator.generate( name -> outputs.computeIfAbsent( name, _ -> new ByteArrayOutputStream() ) );
 
       final Map<QualifiedName, String> sources = new LinkedHashMap<>();
       final List<QualifiedName> loadOrder = new ArrayList<>();
@@ -283,14 +285,9 @@ class AspectModelJacksonModuleTest {
    }
 
    private <T> T parseJson( final String json, final Class<T> targetClass ) {
-      final ObjectMapper mapper = new ObjectMapper();
-      mapper.registerModule( new JavaTimeModule() );
-      mapper.registerModule( new Jdk8Module() );
-      mapper.registerModule( new AspectModelJacksonModule() );
-      mapper.configure( SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false );
       try {
          return mapper.readValue( json, targetClass );
-      } catch ( final JsonProcessingException exception ) {
+      } catch ( final JacksonException exception ) {
          throw new EnumAttributeNotFoundException( exception );
       }
    }

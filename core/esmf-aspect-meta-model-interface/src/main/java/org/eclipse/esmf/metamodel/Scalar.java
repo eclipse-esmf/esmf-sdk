@@ -35,7 +35,7 @@ public interface Scalar extends Type {
       if ( from.equals( to ) ) {
          return true;
       }
-      final Map<String, String> castable = ImmutableMap.<String, String> builder()
+      final Map<String, String> castable = ImmutableMap.<String, String>builder()
             .put( XSD.xbyte.getURI(), XSD.xshort.getURI() )
             .put( XSD.xshort.getURI(), XSD.xint.getURI() )
             .put( XSD.xint.getURI(), XSD.xlong.getURI() )
@@ -69,7 +69,7 @@ public interface Scalar extends Type {
    }
 
    default boolean hasStringLikeValueSpace() {
-      return ImmutableList.<String> builder()
+      return ImmutableList.<String>builder()
             .add( XSD.xstring.getURI() )
             .add( XSD.date.getURI() )
             .add( XSD.time.getURI() )

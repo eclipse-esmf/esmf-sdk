@@ -19,8 +19,8 @@ import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.characteristic.StructuredValue;
 
 /**
- * Encapsulates a {@link Property} and, if it uses a {@link StructuredValue} characteristic, the corresponding
- * deconstruction rule and the referenced Properties
+ * Encapsulates a {@link Property} and, if it uses a {@link StructuredValue} characteristic, the
+ * corresponding deconstruction rule and the referenced Properties
  */
 public record DeconstructionSet(
       Property originalProperty,

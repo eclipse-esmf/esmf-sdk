@@ -1,3 +1,15 @@
+/*
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
+ *
+ * See the AUTHORS file(s) distributed with this work for additional
+ * information regarding authorship.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * SPDX-License-Identifier: MPL-2.0
+ */
 package org.eclipse.esmf.aspectmodel.utils;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -75,22 +87,6 @@ class DescriptionsUtilsTest {
 
    @Test
    void testToHtmlWithAllBlockTypes() {
-      final String description = """
-            > NOTE: This is a note.
-            > With multiple lines.
-                
-            > EXAMPLE 1: First example.
-            > Additional example content.
-                
-            > EXAMPLE 2: Second example.
-                
-            > SOURCE: Source information here.
-                
-            Some **markdown** content here.
-            1. Ordered
-            2. List
-            """;
-
       final String html = DescriptionsUtils.toHtml( testDescription );
 
       assertThat( html ).contains( "<div class=\"note\">" );
@@ -105,7 +101,7 @@ class DescriptionsUtilsTest {
 
    @Test
    void testMarkdownRenderingBulletList() {
-      String html = DescriptionsUtils.toHtml( testDescription );
+      final String html = DescriptionsUtils.toHtml( testDescription );
       assertThat( html ).contains( "<ul>" );
       assertThat( html ).contains( "<li>Item A</li>" );
       assertThat( html ).contains( "<li>Item B</li>" );
@@ -114,7 +110,7 @@ class DescriptionsUtilsTest {
 
    @Test
    void testMarkdownRenderingOrderedList() {
-      String html = DescriptionsUtils.toHtml( testDescription );
+      final String html = DescriptionsUtils.toHtml( testDescription );
       assertThat( html ).contains( "<ol>" );
       assertThat( html ).contains( "<li>First</li>" );
       assertThat( html ).contains( "<li>Second</li>" );
@@ -123,21 +119,21 @@ class DescriptionsUtilsTest {
 
    @Test
    void testMarkdownRenderingWithLink() {
-      String html = DescriptionsUtils.toHtml( testDescription );
+      final String html = DescriptionsUtils.toHtml( testDescription );
       assertThat( html ).contains( "<a href=\"https://example.com\">Visit Example</a>" );
    }
 
    @Test
    void testHtmlOutputDoesNotContainMarkdownSyntax() {
-      String html = DescriptionsUtils.toHtml( testDescription );
+      final String html = DescriptionsUtils.toHtml( testDescription );
       assertThat( html ).doesNotContain( "[Visit Example](https://example.com)" );
    }
 
    @Test
    void testStripIndentSingleLine() {
-      String input = "    only one line";
-      String expected = "only one line";
-      String result = DescriptionsUtils.stripIndent( input );
+      final String input = "    only one line";
+      final String expected = "only one line";
+      final String result = DescriptionsUtils.stripIndent( input );
       assertEquals( expected, result );
    }
 }

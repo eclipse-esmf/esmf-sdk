@@ -45,8 +45,7 @@ public class AspectWithSimpleProperties {
          @JsonProperty( value = "testInt" ) final Integer testInt,
          @JsonProperty( value = "testFloat" ) final Float testFloat,
          @JsonProperty( value = "testLocalDateTime" ) final XMLGregorianCalendar testLocalDateTime,
-         @JsonProperty( value = "testLocalDateTimeWithoutExample" ) final
-         XMLGregorianCalendar testLocalDateTimeWithoutExample,
+         @JsonProperty( value = "testLocalDateTimeWithoutExample" ) final XMLGregorianCalendar testLocalDateTimeWithoutExample,
          @JsonProperty( value = "testDurationWithoutExample" ) final Duration testDurationWithoutExample,
          @JsonProperty( value = "randomValue" ) final String randomValue ) {
       this.testString = testString;

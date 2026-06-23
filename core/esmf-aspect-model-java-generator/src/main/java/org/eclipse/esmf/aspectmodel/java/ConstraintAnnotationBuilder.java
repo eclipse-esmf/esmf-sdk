@@ -33,7 +33,8 @@ import jakarta.validation.constraints.Size;
 import org.apache.commons.text.StringEscapeUtils;
 
 /**
- * Provides functionality to create jakarta.validation.constraints that are displayed in the generated java class
+ * Provides functionality to create jakarta.validation.constraints that are displayed in the
+ * generated java class
  */
 public class ConstraintAnnotationBuilder {
 
@@ -69,7 +70,7 @@ public class ConstraintAnnotationBuilder {
    }
 
    private void createRegularExpressionConstraint() {
-      if ( !(constraintClass instanceof RegularExpressionConstraint) ) {
+      if ( !( constraintClass instanceof RegularExpressionConstraint ) ) {
          return;
       }
       final RegularExpressionConstraint regularExpressionConstraint = (RegularExpressionConstraint) constraintClass;
@@ -79,7 +80,7 @@ public class ConstraintAnnotationBuilder {
    }
 
    private void createRangeConstraint() {
-      if ( !(constraintClass instanceof RangeConstraint) ) {
+      if ( !( constraintClass instanceof RangeConstraint ) ) {
          return;
       }
       final RangeConstraint rangeConstraint = (RangeConstraint) constraintClass;
@@ -111,7 +112,7 @@ public class ConstraintAnnotationBuilder {
    }
 
    private void createLengthConstraint() {
-      if ( !(constraintClass instanceof LengthConstraint) ) {
+      if ( !( constraintClass instanceof LengthConstraint ) ) {
          return;
       }
       final LengthConstraint lengthConstraint = (LengthConstraint) constraintClass;
@@ -130,7 +131,7 @@ public class ConstraintAnnotationBuilder {
    }
 
    private void createFixedPointConstraint() {
-      if ( !(constraintClass instanceof FixedPointConstraint) ) {
+      if ( !( constraintClass instanceof FixedPointConstraint ) ) {
          return;
       }
       final FixedPointConstraint fixedPointConstraint = (FixedPointConstraint) constraintClass;

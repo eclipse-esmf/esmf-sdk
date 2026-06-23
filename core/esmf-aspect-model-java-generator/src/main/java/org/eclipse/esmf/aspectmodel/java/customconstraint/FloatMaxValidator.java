@@ -19,8 +19,8 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 /**
- * Validates assigned values of type {@link Float}, which must be below or equal to this limit depending on the
- * provided {@link BoundDefinition}.
+ * Validates assigned values of type {@link Float}, which must be below or equal to this limit
+ * depending on the provided {@link BoundDefinition}.
  */
 public class FloatMaxValidator implements ConstraintValidator<FloatMax, Float> {
 

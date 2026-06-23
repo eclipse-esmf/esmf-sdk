@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -49,7 +49,7 @@ public abstract class AbstractInputHandler implements InputHandler {
    protected final ResolverConfigurationMixin resolverConfig;
    protected final boolean details;
    protected final boolean validate;
-   protected final AspectModelValidator validator = new AspectModelValidator();
+   protected final AspectModelValidator validator;
    protected final ViolationFormatter violationFormatter;
 
    public AbstractInputHandler( final String input, final ResolverConfigurationMixin resolverConfig, final boolean details,
@@ -58,6 +58,7 @@ public abstract class AbstractInputHandler implements InputHandler {
       this.resolverConfig = resolverConfig;
       this.details = details;
       this.validate = validate;
+      validator = new AspectModelValidator();
 
       violationFormatter = details
             ? new DetailedViolationFormatter()
@@ -83,19 +84,19 @@ public abstract class AbstractInputHandler implements InputHandler {
          return List.of();
       }
       return Stream.of(
-                  Optional.ofNullable( resolverConfig.modelsRoots ).orElse( List.of() )
-                        .stream()
-                        .map( modelsRoot -> new FileSystemStrategy( new StructuredModelsRoot( Path.of( modelsRoot ) ) ) ),
-                  Optional.ofNullable( resolverConfig.commandLine )
-                        .orElse( List.of() )
-                        .stream()
-                        .map( ExternalResolverStrategy::new ),
-                  Optional.ofNullable( resolverConfig.gitHubResolverOptions ).orElse( List.of() )
-                        .stream()
-                        .map( options -> buildGithubModelSourceConfig( options, resolverConfig.gitHubToken ) )
-                        .flatMap( Optional::stream )
-                        .map( GitHubStrategy::new ) )
-            .<ResolutionStrategy> flatMap( Function.identity() )
+            Optional.ofNullable( resolverConfig.modelsRoots ).orElse( List.of() )
+                  .stream()
+                  .map( modelsRoot -> new FileSystemStrategy( new StructuredModelsRoot( Path.of( modelsRoot ) ) ) ),
+            Optional.ofNullable( resolverConfig.commandLine )
+                  .orElse( List.of() )
+                  .stream()
+                  .map( ExternalResolverStrategy::new ),
+            Optional.ofNullable( resolverConfig.gitHubResolverOptions ).orElse( List.of() )
+                  .stream()
+                  .map( options -> buildGithubModelSourceConfig( options, resolverConfig.gitHubToken ) )
+                  .flatMap( Optional::stream )
+                  .map( GitHubStrategy::new ) )
+            .<ResolutionStrategy>flatMap( Function.identity() )
             .toList();
    }
 
@@ -133,8 +134,7 @@ public abstract class AbstractInputHandler implements InputHandler {
    }
 
    protected AspectModel applyAspectModelLoader( final Function<AspectModelLoader, AspectModel> loader ) {
-      final Either<List<Violation>, AspectModel> validModelOrViolations = validator.loadModel( () ->
-            loader.apply( aspectModelLoader() ) );
+      final Either<List<Violation>, AspectModel> validModelOrViolations = validator.loadModel( () -> loader.apply( aspectModelLoader() ) );
       return getAspectModelOrPrintValidationReport( validModelOrViolations );
    }
 
@@ -155,7 +155,7 @@ public abstract class AbstractInputHandler implements InputHandler {
             .orElseThrow( () -> new ModelResolutionException(
                   "Found multiple Aspects in the input " + input + ", but none is called '"
                         + expectedAspectName + "': " + aspectModel.aspects().stream().map( Aspect::getName )
-                        .collect( Collectors.joining( ", " ) ) ) );
+                              .collect( Collectors.joining( ", " ) ) ) );
    }
 
    @Override

@@ -1,3 +1,15 @@
+/*
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
+ *
+ * See the AUTHORS file(s) distributed with this work for additional
+ * information regarding authorship.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * SPDX-License-Identifier: MPL-2.0
+ */
 package org.eclipse.esmf.staticmetamodel.predicate;
 
 import java.util.Collection;
@@ -9,7 +21,8 @@ import org.eclipse.esmf.staticmetamodel.propertychain.PropertyChain;
 
 /**
  * Provides type safe {@link Predicate}s on properties allowing convenient and expressive filtering.
- * Property predicates can also be used with {@link PropertyChain}s in order to filter on parent elements using nested properties.
+ * Property predicates can also be used with {@link PropertyChain}s in order to filter on parent
+ * elements using nested properties.
  *
  * @see PropertyPredicateBuilder
  */
@@ -79,4 +92,3 @@ public final class PropertyPredicates {
       return new PropertyPredicateBuilder.CollectionBuilder<>( property );
    }
 }
-

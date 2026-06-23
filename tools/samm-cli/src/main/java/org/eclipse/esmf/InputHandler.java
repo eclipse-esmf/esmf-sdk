@@ -23,7 +23,8 @@ import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectModel;
 
 /**
- * An InputHandler knows how to load Aspect Models, Aspects etc. depending on a certain type of given input.
+ * An InputHandler knows how to load Aspect Models, Aspects etc. depending on a certain type of
+ * given input.
  */
 public interface InputHandler {
    /**
@@ -41,7 +42,8 @@ public interface InputHandler {
    String validateAspectModel();
 
    /**
-    * Loads the single Aspect given in the input if there is one, otherwise will return a {@link NoSuchElementException}.
+    * Loads the single Aspect given in the input if there is one, otherwise will return a
+    * {@link NoSuchElementException}.
     *
     * @return the Aspect
     */
@@ -55,7 +57,8 @@ public interface InputHandler {
    AspectModelFile loadAspectModelFile();
 
    /**
-    * Returns the AspectModelLoader initialized with the {@link ResolutionStrategy}s according to the input
+    * Returns the AspectModelLoader initialized with the {@link ResolutionStrategy}s according to the
+    * input
     *
     * @return the AspectModelLoader
     */
