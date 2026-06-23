@@ -71,23 +71,27 @@ public class ValueInitializer {
    }
 
    /**
-    * Creates and initializes an instance of the given type with the value from an expression as String. For example,
+    * Creates and initializes an instance of the given type with the value from an expression as
+    * String. For example,
     * apply(XSD.xint, "\"3\"") returns "3", and apply(XSD.xstring, "\"foo\"") returns "\"foo\"".
     *
     * @param rdfType the type for which an instance should be created
-    * @param valueExpression an expression that, when evaluated, will return the input value <b>as a string</b>.
+    * @param valueExpression an expression that, when evaluated, will return the input value <b>as a
+    *        string</b>.
     */
    public String apply( final Resource rdfType, final String valueExpression ) {
       return apply( rdfType, SammXsdType.getJavaTypeForMetaModelType( rdfType ), valueExpression );
    }
 
    /**
-    * Creates and initializes an instance of the given type with the value from an expression as String. For example,
+    * Creates and initializes an instance of the given type with the value from an expression as
+    * String. For example,
     * apply(XSD.xint, "\"3\"") returns "3", and apply(XSD.xstring, "\"foo\"") returns "\"foo\"".
     *
     * @param rdfType the type for which an instance should be created
     * @param javaType the corresponding Ts type
-    * @param valueExpression an expression that, when evaluated, will return the input value <b>as a string</b>.
+    * @param valueExpression an expression that, when evaluated, will return the input value <b>as a
+    *        string</b>.
     */
    public String apply( final Resource rdfType, final Class<?> javaType, final String valueExpression ) {
       if ( rdfType.equals( SammNs.SAMM.curie() ) ) {

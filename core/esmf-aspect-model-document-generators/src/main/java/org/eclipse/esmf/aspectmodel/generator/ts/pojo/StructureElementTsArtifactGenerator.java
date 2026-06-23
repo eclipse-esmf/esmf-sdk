@@ -27,7 +27,7 @@ import org.eclipse.esmf.aspectmodel.generator.ts.StructuredValuePropertiesDecons
 import org.eclipse.esmf.aspectmodel.generator.ts.TsArtifact;
 import org.eclipse.esmf.aspectmodel.generator.ts.TsArtifactGenerator;
 import org.eclipse.esmf.aspectmodel.generator.ts.TsCodeGenerationConfig;
-import org.eclipse.esmf.aspectmodel.generator.ts.TsFormatPretter;
+import org.eclipse.esmf.aspectmodel.generator.ts.TsFormatPrettier;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.StructureElement;
 
@@ -58,7 +58,7 @@ public class StructureElementTsArtifactGenerator<E extends StructureElement> imp
 
       config.importTracker().clear();
 
-      final Map<String, Object> context = ImmutableMap.<String, Object> builder()
+      final Map<String, Object> context = ImmutableMap.<String, Object>builder()
             .put( "codeGenerationConfig", config )
             .put( "currentYear", Year.now() )
             .put( "codeGeneratorName", AspectModelTsUtil.codeGeneratorName() )
@@ -80,7 +80,7 @@ public class StructureElementTsArtifactGenerator<E extends StructureElement> imp
       String generatedSource = new TemplateEngine( context, engineConfiguration ).apply( "/ts/ts-pojo" );
 
       if ( !config.disablePrettierFormatter() ) {
-         generatedSource = TsFormatPretter.applyFormatter( generatedSource, config.prettierConfigPath() );
+         generatedSource = TsFormatPrettier.applyFormatter( generatedSource, config.prettierConfigPath() );
       }
 
       try {

@@ -15,5 +15,6 @@ package org.eclipse.esmf.aspectmodel.generator.ts;
 
 import java.util.Map;
 
-public record GenerationResult( Map<QualifiedName, String> sources ) {
-}
+public record GenerationResult(
+      Map<QualifiedName, String> sources
+) {}

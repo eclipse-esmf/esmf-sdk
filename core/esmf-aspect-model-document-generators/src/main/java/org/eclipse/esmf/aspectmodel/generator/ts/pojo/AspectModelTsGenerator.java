@@ -39,12 +39,12 @@ public class AspectModelTsGenerator extends TsGenerator {
             .filter( element -> element.getExtends().isPresent() )
             .collect( Collectors.toSet() );
       return Stream.of(
-                  applyArtifactGenerator( Aspect.class, new StructureElementTsArtifactGenerator<>(), config ),
-                  applyArtifactGenerator( ComplexType.class, new StructureElementTsArtifactGenerator<>( structureElements ), config ),
-                  applyArtifactGenerator( Event.class, new StructureElementTsArtifactGenerator<>(), config )
-                  // Phase 2: Enums is not yet supported
-                  // ,applyArtifactGenerator( Enumeration.class, new EnumerationTsArtifactGenerator<>(), config )
-            )
+            applyArtifactGenerator( Aspect.class, new StructureElementTsArtifactGenerator<>(), config ),
+            applyArtifactGenerator( ComplexType.class, new StructureElementTsArtifactGenerator<>( structureElements ), config ),
+            applyArtifactGenerator( Event.class, new StructureElementTsArtifactGenerator<>(), config )
+      // Phase 2: Enums is not yet supported
+      // ,applyArtifactGenerator( Enumeration.class, new EnumerationTsArtifactGenerator<>(), config )
+      )
 
             .flatMap( Function.identity() )
             .collect( Collectors.toSet() )

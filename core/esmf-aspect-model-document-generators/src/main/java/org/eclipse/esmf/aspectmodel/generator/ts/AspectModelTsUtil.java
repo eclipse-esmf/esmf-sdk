@@ -24,6 +24,14 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
+import org.apache.commons.text.translate.UnicodeUnescaper;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.XSD;
+
 import org.eclipse.esmf.aspectmodel.VersionInfo;
 import org.eclipse.esmf.aspectmodel.generator.exception.CodeGenerationException;
 import org.eclipse.esmf.aspectmodel.generator.ts.metamodel.StaticCodeGenerationContext;
@@ -46,24 +54,13 @@ import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Converter;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.StringEscapeUtils;
-import org.apache.commons.text.translate.UnicodeUnescaper;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.XSD;
 
 public class AspectModelTsUtil {
-
    public static final Converter<String, String> TO_CONSTANT = CaseFormat.UPPER_CAMEL.converterTo( CaseFormat.UPPER_UNDERSCORE );
-
    public static final UnicodeUnescaper UNESCAPER = new UnicodeUnescaper();
-
    public static final String CURRENT_DATE_ISO_8601 = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSSX" ).format( new Date() );
 
-   private AspectModelTsUtil() {
-   }
+   private AspectModelTsUtil() {}
 
    public static String elementUrn( final ModelElement element, final StaticCodeGenerationContext context ) {
       if ( element.urn().toString().startsWith( context.modelUrnPrefix() ) ) {
@@ -74,9 +71,10 @@ public class AspectModelTsUtil {
       }
       return "'" + element.urn() + "'";
    }
+
    /**
-    * Determines whether the property has a container type, i.e. it will result in an Optional, Collection or
-    * something similar.
+    * Determines whether the property has a container type, i.e. it will result in an Optional,
+    * Collection or something similar.
     *
     * @param property the property to check
     * @return {@code true} if the property has a container type, {@code false} else
@@ -87,7 +85,8 @@ public class AspectModelTsUtil {
    }
 
    /**
-    * Determines whether the property has a Quantifiable characteristic that actually has a Unit assigned.
+    * Determines whether the property has a Quantifiable characteristic that actually has a Unit
+    * assigned.
     *
     * @param characteristic the characteristic to check
     * @return {@code true} if the property carries a Unit, {@code false} else
@@ -140,15 +139,16 @@ public class AspectModelTsUtil {
    /**
     * Determines the type of property
     *
-    * @param optionalCharacteristic the {@link Characteristic} which describes the data type for a property
+    * @param optionalCharacteristic the {@link Characteristic} which describes the data type for a
+    *        property
     * @return {@link String} containing the definition of the Ts Data Type for the property
     */
    public static String determinePropertyType( final Optional<Characteristic> optionalCharacteristic,
          final TsCodeGenerationConfig codeGenerationConfig ) {
 
       final Optional<Type> dataType = optionalCharacteristic.flatMap( Characteristic::getDataType );
-      final Characteristic characteristic = optionalCharacteristic.orElseThrow( () ->
-            new CodeGenerationException( "Can not determine type of missing Characteristic" ) );
+      final Characteristic characteristic =
+            optionalCharacteristic.orElseThrow( () -> new CodeGenerationException( "Can not determine type of missing Characteristic" ) );
 
       if ( characteristic.is( Collection.class ) ) {
          return determineCollectionType( characteristic.as( Collection.class ), codeGenerationConfig );
@@ -225,7 +225,8 @@ public class AspectModelTsUtil {
    }
 
    /**
-    * Convert a string given as upper or lower camel case into a constant format. For example {@code someVariable} would become
+    * Convert a string given as upper or lower camel case into a constant format. For example
+    * {@code someVariable} would become
     * {@code SOME_VARIABLE}.
     *
     * @param upperOrLowerCamel the string to convert
@@ -254,8 +255,10 @@ public class AspectModelTsUtil {
    }
 
    /**
-    * Escapes a string properly to be used as a literal. Performs escaping according to Ts String rules and afterwards additionally
-    * translates escaped Unicode characters back to Unicode. The latter step is necessary to avoid Unicode escape sequences within the
+    * Escapes a string properly to be used as a literal. Performs escaping according to Ts String rules
+    * and afterwards additionally
+    * translates escaped Unicode characters back to Unicode. The latter step is necessary to avoid
+    * Unicode escape sequences within the
     * String literal.
     *
     * @param value the string to be escaped
@@ -369,7 +372,7 @@ public class AspectModelTsUtil {
       codeGenerationConfig.importTracker().importLibExplicit( "CollectionAspect", "aspect-meta-model/collectionAspect" );
       for ( final Property property : element.getProperties() ) {
          final Characteristic characteristic = property.getEffectiveCharacteristic().orElseThrow( error );
-         if ( characteristic instanceof Collection characteristicCollection ) {
+         if ( characteristic instanceof final Collection characteristicCollection ) {
             final String collectionType = determineCollectionType( characteristicCollection, codeGenerationConfig );
             final String dataType = getDataType( characteristicCollection.getDataType(), codeGenerationConfig.importTracker(),
                   codeGenerationConfig );

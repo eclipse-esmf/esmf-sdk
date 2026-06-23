@@ -28,9 +28,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 class PojoModelTsGeneratorTest extends TsGeneratorTestBase {
-
    @ParameterizedTest
-   @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = { "ASPECT_WITH_NAMESPACE_DESCRIPTION" } )
+   @EnumSource( value = TestAspect.class,
+      mode = EnumSource.Mode.EXCLUDE,
+      names = { "ASPECT_WITH_NAMESPACE_DESCRIPTION" } )
    void testCodeGeneration( final TestAspect testAspect ) throws IOException {
       final String className = testAspect.getName();
       final String fileName = "ts/snapshots/" + className + ".ts";
@@ -38,8 +39,8 @@ class PojoModelTsGeneratorTest extends TsGeneratorTestBase {
 
       assertThat( resource ).withFailMessage( "File: " + fileName + " not found" ).isNotNull();
 
-      Path snapshotPath = Paths.get( resource.getPath() );
-      String snapshotContent = Files.readString( snapshotPath );
+      final Path snapshotPath = Paths.get( resource.getPath() );
+      final String snapshotContent = Files.readString( snapshotPath );
       final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( testAspect ) );
       final String resultTs = result.sources().entrySet().stream()
             .filter( entry -> entry.getKey().fileName().equals( className ) )
@@ -52,21 +53,25 @@ class PojoModelTsGeneratorTest extends TsGeneratorTestBase {
 
    /**
     * This test overwrites snapshot files with newly generated content and is intended for bulk updates
-    * when non-critical changes (e.g., formatting, refactoring) are introduced. It is commented out by default
-    * and should only be uncommented when snapshots need to be updated. Use this cautiously and ensure changes
+    * when non-critical changes (e.g., formatting, refactoring) are introduced. It is commented out by
+    * default
+    * and should only be uncommented when snapshots need to be updated. Use this cautiously and ensure
+    * changes
     * are reviewed (e.g., using version control) after running this test.
     *
     * @param testAspect The {@code TestAspect} enum value representing the aspect being tested.
     * @throws IOException If an I/O error occurs while reading or writing the snapshot files.
     */
    // Uncomment ONLY for snapshot updates
-   //         @ParameterizedTest
-   @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = { "ASPECT_WITH_NAMESPACE_DESCRIPTION" } )
+   // @ParameterizedTest
+   @EnumSource( value = TestAspect.class,
+      mode = EnumSource.Mode.EXCLUDE,
+      names = { "ASPECT_WITH_NAMESPACE_DESCRIPTION" } )
    void overwriteSnapshotsPojo( final TestAspect testAspect ) throws IOException {
       final String className = testAspect.getName();
       final String fileName = "ts/snapshots/" + className + ".ts";
 
-      Path snapshotPath = Paths.get( "src/test/resources", fileName );
+      final Path snapshotPath = Paths.get( "src/test/resources", fileName );
       if ( !Files.exists( snapshotPath ) ) {
          throw new IOException( "Snapshot file not found: " + snapshotPath );
       }

@@ -34,12 +34,13 @@ import org.apache.jena.vocabulary.RDF;
 /**
  * Builds an initializer expression for a {@link Value}. For example:
  * <ul>
- *    <li>If the value is (int) 3, it will return "3"</li>
- *    <li>If the value is (String) "hi", it will return "\"hi\""</li>
- *    <li>If the value is (LangString) "hi"@en, it will return "{ value: 'hi', language: '@en' }"</li>
- *    <li>If the value is a collection, it will return the corresponding collection, not implemented"
- *    </li>
- *    <li>If the value is an Entity, it will return the corresponding constructor call, e.g. "new MyEntity(\"foo\", 2, 3)"</li>
+ * <li>If the value is (int) 3, it will return "3"</li>
+ * <li>If the value is (String) "hi", it will return "\"hi\""</li>
+ * <li>If the value is (LangString) "hi"@en, it will return "{ value: 'hi', language: '@en' }"</li>
+ * <li>If the value is a collection, it will return the corresponding collection, not implemented"
+ * </li>
+ * <li>If the value is an Entity, it will return the corresponding constructor call, e.g. "new
+ * MyEntity(\"foo\", 2, 3)"</li>
  * </ul>
  */
 public class ValueExpressionVisitor implements AspectVisitor<String, ValueExpressionVisitor.Context> {
@@ -78,19 +79,18 @@ public class ValueExpressionVisitor implements AspectVisitor<String, ValueExpres
 
    @Override
    public String visitCollectionValue( final CollectionValue collection, final Context context ) {
-      final Class<?> collectionClass = collection.getValues().getClass();
       // Phase 2: Implement collection initializers
       final StringBuilder result = new StringBuilder();
       result.append( "undefined" );
-//      result.append( "new " );
-//      result.append( collectionClass.getSimpleName() );
-//      result.append( "<>() {{" );
-//      collection.getValues().forEach( value -> {
-//         result.append( "add(" );
-//         result.append( value.accept( this, context ) );
-//         result.append( ");" );
-//      } );
-//      result.append( "}}" );
+      // result.append( "new " );
+      // result.append( collectionClass.getSimpleName() );
+      // result.append( "<>() {{" );
+      // collection.getValues().forEach( value -> {
+      // result.append( "add(" );
+      // result.append( value.accept( this, context ) );
+      // result.append( ");" );
+      // } );
+      // result.append( "}}" );
       return result.toString();
    }
 

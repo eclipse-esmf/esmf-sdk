@@ -27,9 +27,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.esmf.functions.ThrowingFunction;
-
 import org.apache.commons.io.IOUtils;
+
+import org.eclipse.esmf.functions.ThrowingFunction;
 
 public class TestContext {
    private static final String SYNTHETIC_URN_PATTERN = "x[0-9A-F]{8}";
@@ -54,7 +54,9 @@ public class TestContext {
       };
    }
 
-   private record GeneratedCodeAndClasses( Map<QualifiedName, String> sources ) {}
+   private record GeneratedCodeAndClasses(
+         Map<QualifiedName, String> sources
+   ) {}
 
    private static GeneratedCodeAndClasses generateTsCode( final File tempDirectory, final Collection<TsGenerator> generators )
          throws IOException {
@@ -66,8 +68,8 @@ public class TestContext {
       }
 
       final Map<QualifiedName, ByteArrayOutputStream> outputs = new LinkedHashMap<>();
-      generators.forEach( generator ->
-            generator.generate( name -> outputs.computeIfAbsent( name, name2 -> new ByteArrayOutputStream() ) ) );
+      generators
+            .forEach( generator -> generator.generate( name -> outputs.computeIfAbsent( name, name2 -> new ByteArrayOutputStream() ) ) );
 
       final Map<QualifiedName, String> sources = new LinkedHashMap<>();
 
@@ -87,16 +89,16 @@ public class TestContext {
             .replaceAll( SYNTHETIC_URN_PATTERN, "GenericEnum" );
 
       // Step 2. Replace test artifact names with generic placeholder
-      for ( String replacedArtifact : REPLACED_TEST_ARTIFACTS ) {
+      for ( final String replacedArtifact : REPLACED_TEST_ARTIFACTS ) {
          replaced = replaced.replaceAll( replacedArtifact, "ReplacedAspectArtifact" );
       }
 
       // Step 3. Remove duplicate import statements for replaced artifacts and keep only one
-      List<String> artifacts = List.of( "ReplacedAspectArtifact", "MetaReplacedAspectArtifact" );
+      final List<String> artifacts = List.of( "ReplacedAspectArtifact", "MetaReplacedAspectArtifact" );
 
-      for ( String artifact : artifacts ) {
+      for ( final String artifact : artifacts ) {
          final String regex = "(import \\{ " + artifact + ",} from '\\./" + artifact + "';)";
-         Matcher matcher = Pattern.compile( regex ).matcher( replaced );
+         final Matcher matcher = Pattern.compile( regex ).matcher( replaced );
          if ( matcher.find() ) {
             replaced = replaced.replaceAll( regex, "" );
             replaced = "import { " + artifact + ",} from './" + artifact + "';\n" + replaced;

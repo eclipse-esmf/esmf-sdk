@@ -34,7 +34,6 @@ import org.eclipse.esmf.aspectmodel.generator.exception.CodeGenerationException;
 import org.eclipse.esmf.metamodel.characteristic.Duration;
 
 public class TsDataTypeMapping {
-
    private static final Map<Class<?>, TsType> MAPPING = new HashMap<>();
 
    public enum TsType {
@@ -48,7 +47,7 @@ public class TsDataTypeMapping {
 
       private final String typeName;
 
-      TsType( String typeName ) {
+      TsType( final String typeName ) {
          this.typeName = typeName;
       }
 
@@ -101,7 +100,7 @@ public class TsDataTypeMapping {
       MAPPING.put( Set.class, TsType.ARRAY );
    }
 
-   public static String resolveType( Class<?> type ) {
+   public static String resolveType( final Class<?> type ) {
       // direct match
       if ( MAPPING.containsKey( type ) ) {
          return MAPPING.get( type ).getTypeName();
@@ -114,7 +113,7 @@ public class TsDataTypeMapping {
             .orElseThrow( () -> new CodeGenerationException( "Can't resolve mapping for type %s".formatted( type.getName() ) ) );
    }
 
-   public static boolean isTsType( String tsType ) {
+   public static boolean isTsType( final String tsType ) {
       return Arrays.stream( TsType.values() ).anyMatch( type -> type.getTypeName().equals( tsType ) );
    }
 }

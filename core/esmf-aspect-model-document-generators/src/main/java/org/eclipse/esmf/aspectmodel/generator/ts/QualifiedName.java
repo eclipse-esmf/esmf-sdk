@@ -16,7 +16,8 @@ package org.eclipse.esmf.aspectmodel.generator.ts;
 /**
  * Wraps the fully qualified name of a TS artifact
  */
-public record QualifiedName( String fileName, String modulePath ) {
+public record QualifiedName(
+      String fileName, String modulePath
+) {
 
 }
-

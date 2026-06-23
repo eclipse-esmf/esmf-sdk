@@ -26,7 +26,7 @@ import org.eclipse.esmf.aspectmodel.generator.ts.StructuredValuePropertiesDecons
 import org.eclipse.esmf.aspectmodel.generator.ts.TsArtifact;
 import org.eclipse.esmf.aspectmodel.generator.ts.TsArtifactGenerator;
 import org.eclipse.esmf.aspectmodel.generator.ts.TsCodeGenerationConfig;
-import org.eclipse.esmf.aspectmodel.generator.ts.TsFormatPretter;
+import org.eclipse.esmf.aspectmodel.generator.ts.TsFormatPrettier;
 import org.eclipse.esmf.metamodel.StructureElement;
 import org.eclipse.esmf.metamodel.impl.DefaultScalar;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
@@ -52,7 +52,7 @@ public class StaticMetaModelTsArtifactGenerator<E extends StructureElement> impl
       final String modelUrnPrefix = element.urn().getUrnPrefix();
       final String characteristicBaseUrn = matchHash.trimTrailingFrom( SammNs.SAMMC.getNamespace() );
 
-      final Map<String, Object> context = ImmutableMap.<String, Object> builder()
+      final Map<String, Object> context = ImmutableMap.<String, Object>builder()
             .put( "characteristicBaseUrn", characteristicBaseUrn )
             .put( "codeGenerationConfig", config )
             .put( "deconstructor", new StructuredValuePropertiesDeconstructor( element ) )
@@ -77,7 +77,7 @@ public class StaticMetaModelTsArtifactGenerator<E extends StructureElement> impl
       String generatedSource = new TemplateEngine( context, engineConfiguration ).apply( "/ts/ts-static-class" );
 
       if ( !config.disablePrettierFormatter() ) {
-         generatedSource = TsFormatPretter.applyFormatter( generatedSource, config.prettierConfigPath() );
+         generatedSource = TsFormatPrettier.applyFormatter( generatedSource, config.prettierConfigPath() );
       }
 
       try {

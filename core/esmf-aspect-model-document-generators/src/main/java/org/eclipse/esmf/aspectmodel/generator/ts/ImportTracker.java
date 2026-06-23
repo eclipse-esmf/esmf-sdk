@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 
 public class ImportTracker {
-
    private static final String GENERICS_START = "<";
    private static final String ARRAY = "[]";
    private static final String EMPTY_STRING = "";
@@ -37,10 +36,10 @@ public class ImportTracker {
 
    public ImportTracker() {
       usedImports = new HashMap<>();
-      this.defaultDependencyPath = DEFAULT_DEPENDENCY_PATH;
+      defaultDependencyPath = DEFAULT_DEPENDENCY_PATH;
    }
 
-   public ImportTracker( String defaultDependencyPath ) {
+   public ImportTracker( final String defaultDependencyPath ) {
       usedImports = new HashMap<>();
       this.defaultDependencyPath = Optional.ofNullable( defaultDependencyPath )
             .filter( StringUtils::isNotBlank )
@@ -89,8 +88,8 @@ public class ImportTracker {
             .collect( Collectors.groupingBy( QualifiedName::modulePath ) )
             .entrySet().stream()
             .map( entry -> {
-               String modulePath = entry.getKey();
-               String imports = entry.getValue().stream()
+               final String modulePath = entry.getKey();
+               final String imports = entry.getValue().stream()
                      .map( QualifiedName::fileName )
                      .sorted()
                      .collect( Collectors.joining( "," ) );

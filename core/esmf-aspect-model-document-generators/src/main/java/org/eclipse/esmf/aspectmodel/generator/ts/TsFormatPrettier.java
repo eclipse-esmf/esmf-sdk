@@ -16,14 +16,17 @@ package org.eclipse.esmf.aspectmodel.generator.ts;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
+import org.apache.commons.io.IOUtils;
+
 import org.eclipse.esmf.aspectmodel.generator.exception.CodeGenerationException;
 
-public class TsFormatPretter {
+public class TsFormatPrettier {
    /**
     * Formats TypeScript code using Prettier with an optional custom configuration file.
     *
@@ -33,37 +36,28 @@ public class TsFormatPretter {
     * @return The formatted TypeScript code as a string.
     */
    public static String applyFormatter( final String code, final String prettierConfigPath ) {
-
       if ( !isNpxInstalled() ) {
          throw new CodeGenerationException(
                "`npx` is not installed or not available in PATH. Please install Node.js and ensure `npx` is accessible." );
       }
 
       try {
-         Path tempFile = Files.createTempFile( "typescriptTempFile", ".ts" );
+         final Path tempFile = Files.createTempFile( "typescriptTempFile", ".ts" );
          Files.writeString( tempFile, code, StandardCharsets.UTF_8, StandardOpenOption.TRUNCATE_EXISTING );
+         final ProcessBuilder processBuilder = getProcessBuilder( prettierConfigPath, tempFile );
+         final Process process = processBuilder.start();
 
-         ProcessBuilder processBuilder = getProcessBuilder( prettierConfigPath, tempFile );
+         final StringWriter writer = new StringWriter();
+         IOUtils.copy( process.getInputStream(), writer, StandardCharsets.UTF_8 );
 
-         Process process = processBuilder.start();
-
-         StringBuilder formattedCode = new StringBuilder();
-         try ( BufferedReader reader = new BufferedReader( new InputStreamReader( process.getInputStream(), StandardCharsets.UTF_8 ) ) ) {
-            String line;
-            while ( ( line = reader.readLine() ) != null ) {
-               formattedCode.append( line ).append( "\n" );
-            }
-         }
-
-         int exitCode = process.waitFor();
+         final int exitCode = process.waitFor();
          if ( exitCode != 0 ) {
             throw new CodeGenerationException( "Prettier formatting failed with exit code: %s".formatted( exitCode ) );
          }
 
          Files.deleteIfExists( tempFile );
-
-         return formattedCode.toString().trim();
-      } catch ( IOException | InterruptedException e ) {
+         return writer.toString().trim();
+      } catch ( final IOException | InterruptedException e ) {
          throw new CodeGenerationException( "Failed to format TypeScript code", e );
       }
    }
@@ -75,26 +69,27 @@ public class TsFormatPretter {
     */
    private static boolean isNpxInstalled() {
       try {
-         ProcessBuilder processBuilder = new ProcessBuilder( "npx", "--version" );
+         final ProcessBuilder processBuilder = new ProcessBuilder( "npx", "--version" );
          processBuilder.redirectErrorStream( true );
-         Process process = processBuilder.start();
+         final Process process = processBuilder.start();
 
-         try ( BufferedReader reader = new BufferedReader( new InputStreamReader( process.getInputStream(), StandardCharsets.UTF_8 ) ) ) {
-            String line = reader.readLine();
+         try ( final BufferedReader reader =
+               new BufferedReader( new InputStreamReader( process.getInputStream(), StandardCharsets.UTF_8 ) ) ) {
+            final String line = reader.readLine();
             if ( line != null && !line.isEmpty() ) {
                return true;
             }
          }
 
-         int exitCode = process.waitFor();
+         final int exitCode = process.waitFor();
          return exitCode == 0;
-      } catch ( IOException | InterruptedException e ) {
+      } catch ( final IOException | InterruptedException e ) {
          return false;
       }
    }
 
    private static ProcessBuilder getProcessBuilder( final String prettierConfig, final Path tempFile ) {
-      ProcessBuilder processBuilder;
+      final ProcessBuilder processBuilder;
       if ( prettierConfig != null && !prettierConfig.isEmpty() ) {
          processBuilder = new ProcessBuilder(
                "npx", "prettier",

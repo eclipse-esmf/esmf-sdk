@@ -31,80 +31,78 @@ import org.eclipse.esmf.metamodel.Aspect;
 import picocli.CommandLine;
 
 @CommandLine.Command(
-      name = AspectToTsCommand.COMMAND_NAME,
-      description = "Generate Ts domain classes for an Aspect Model",
-      descriptionHeading = "%n@|bold Description|@:%n%n",
-      parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n"
-)
+   name = AspectToTsCommand.COMMAND_NAME,
+   description = "Generate Ts domain classes for an Aspect Model",
+   descriptionHeading = "%n@|bold Description|@:%n%n",
+   parameterListHeading = "%n@|bold Parameters|@:%n",
+   optionListHeading = "%n@|bold Options|@:%n" )
 public class AspectToTsCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "ts";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--template-library-file", "-tlf" },
-         description = "The path and name of the Velocity template file containing the macro library." )
+      names = { "--template-library-file", "-tlf" },
+      description = "The path and name of the Velocity template file containing the macro library." )
    private String templateLib = "";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--package-name", "-pn" },
-         description = "Package to use for generated TS classes" )
+      names = { "--package-name", "-pn" },
+      description = "Package to use for generated TS classes" )
    private String packageName = "";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--execute-library-macros", "-elm" },
-         description = "Execute the macros provided in the Velocity macro library." )
+      names = { "--execute-library-macros", "-elm" },
+      description = "Execute the macros provided in the Velocity macro library." )
    private boolean executeLibraryMacros = false;
 
    @CommandLine.Option(
-         names = { "--output-directory", "-d" },
-         description = "Output directory to write files to" )
+      names = { "--output-directory", "-d" },
+      description = "Output directory to write files to" )
    private String outputPath = ".";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--static", "-s" },
-         description = "Generate TS domain classes for a Static Meta Model" )
+      names = { "--static", "-s" },
+      description = "Generate TS domain classes for a Static Meta Model" )
    private boolean generateStaticMetaModelClasses = false;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option( names = { "--name-prefix", "-namePrefix" },
-         description = "Name prefix for generated Aspect, Entity TS classes" )
+      description = "Name prefix for generated Aspect, Entity TS classes" )
    private String namePrefix = "";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option( names = { "--name-postfix", "-namePostfix" },
-         description = "Name postfix for generated Aspect, Entity TS classes" )
+      description = "Name postfix for generated Aspect, Entity TS classes" )
    private String namePostfix = "";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--details" },
-         description = "Print detailed reports on errors" )
+      names = { "--details" },
+      description = "Print detailed reports on errors" )
    private boolean details = false;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--disable-prettier" },
-         description = "Disables Prettier formatting. The generated script will be created without applying Prettier formatting." )
+      names = { "--disable-prettier" },
+      description = "Disables Prettier formatting. The generated script will be created without applying Prettier formatting." )
    private boolean disablePrettierFormatter = false;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--prettier-config" },
-         description = "Specifies the path to a custom Prettier configuration file."
-               + " If provided, this configuration will be used during the formatting step instead of the default setting" )
+      names = { "--prettier-config" },
+      description = "Specifies the path to a custom Prettier configuration file."
+            + " If provided, this configuration will be used during the formatting step instead of the default setting" )
    private String prettierConfigPath = "";
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-         names = { "--meta-model-package" },
-         description =
-               "Specifies the root package path for meta model generation, used to resolve imports for generated meta model classes."
-                     + " For local development, use a relative path (e.g., --meta-model-package=./esmf/)."
-                     + " For build environments, use the library path (e.g., --meta-model-package=@esmf/)." )
+      names = { "--meta-model-package" },
+      description = "Specifies the root package path for meta model generation, used to resolve imports for generated meta model classes."
+            + " For local development, use a relative path (e.g., --meta-model-package=./esmf/)."
+            + " For build environments, use the library path (e.g., --meta-model-package=@esmf/)." )
    private String metaModelPackageName = "@esmf/";
 
    @CommandLine.ParentCommand

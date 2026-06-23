@@ -25,7 +25,7 @@ import org.eclipse.esmf.aspectmodel.generator.ts.AspectModelTsUtil;
 import org.eclipse.esmf.aspectmodel.generator.ts.TsArtifact;
 import org.eclipse.esmf.aspectmodel.generator.ts.TsArtifactGenerator;
 import org.eclipse.esmf.aspectmodel.generator.ts.TsCodeGenerationConfig;
-import org.eclipse.esmf.aspectmodel.generator.ts.TsFormatPretter;
+import org.eclipse.esmf.aspectmodel.generator.ts.TsFormatPrettier;
 import org.eclipse.esmf.metamodel.characteristic.Enumeration;
 import org.eclipse.esmf.metamodel.characteristic.State;
 
@@ -43,7 +43,7 @@ public class EnumerationTsArtifactGenerator<E extends Enumeration> implements Ts
    public TsArtifact apply( final E element, final TsCodeGenerationConfig config ) {
       config.importTracker().clear();
 
-      final Map<String, Object> context = ImmutableMap.<String, Object> builder()
+      final Map<String, Object> context = ImmutableMap.<String, Object>builder()
             .put( "className", element.getName() )
             .put( "codeGenerationConfig", config )
             .put( "codeGeneratorName", AspectModelTsUtil.codeGeneratorName() )
@@ -68,7 +68,7 @@ public class EnumerationTsArtifactGenerator<E extends Enumeration> implements Ts
          String generatedSource = new TemplateEngine( context, engineConfiguration ).apply( "/ts/ts-enumeration" );
 
          if ( !config.disablePrettierFormatter() ) {
-            generatedSource = TsFormatPretter.applyFormatter( generatedSource, config.prettierConfigPath() );
+            generatedSource = TsFormatPrettier.applyFormatter( generatedSource, config.prettierConfigPath() );
          }
 
          return new TsArtifact( generatedSource, element.getName(),
