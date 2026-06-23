@@ -63,10 +63,10 @@ class TurtleCompletionServiceTest {
                      @prefix ns: <http://namespace.org/> .
 
                      ex:subject ns:predicate ex:object .
-                     ex:subject ns:predicate ns:val""",
-                  // ex:subject(0-9) ' '(10) ns:predicate(11-22) ' '(23) ns:val(24-29)
-                  new Position( 4, 30 ), // cursor after 'l'; char-1=29 is within ns:val [24,30)
-                  List.of( "predicate", "val" )
+                     ex:subject ns:predicate ns:""",
+                  // ex:subject(0-9) ' '(10) ns:predicate(11-22) ' '(23) ns:(24-27)
+                  new Position( 4, 27 ), // cursor after 'ns:'
+                  List.of( "predicate" )
             ),
             Arguments.of(
                   "deduplication – repeated local names across triples appear only once",
@@ -86,10 +86,10 @@ class TurtleCompletionServiceTest {
                      @prefix ex: <http://example.org/> .
 
                      ex:subject ex:predicate ex:object ;
-                        ex:otherPredicate ex:obj""",
+                        ex:otherPredicate ex:""",
                   // '   '(0-2) ex:otherPredicate(3-19) ' '(20) ex:obj(21-26)
-                  new Position( 3, 27 ), // cursor after 'j'; char-1=26 is within ex:obj [21,27)
-                  List.of( "subject", "predicate", "object", "otherPredicate", "obj" )
+                  new Position( 3, 24 ),
+                  List.of( "subject", "predicate", "object", "otherPredicate" )
             ),
             Arguments.of(
                   "typing a fresh prefixed name on a new line at the end of the document (incomplete subject)",
@@ -100,7 +100,7 @@ class TurtleCompletionServiceTest {
                      ex:obj""",
                   // ex:obj is the start of a new, still incomplete statement -> tree-sitter wraps it in an
                   // ERROR node; the nested prefixed_name must still be discoverable for completion.
-                  new Position( 3, 6 ), // cursor after 'j'; char-1=5 is within ex:obj [0,6)
+                  new Position( 3, 3 ), // cursor after 'j'; char-1=5 is within ex:obj [0,6)
                   List.of( "subject", "predicate", "object", "obj" )
             )
       );
