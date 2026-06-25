@@ -101,7 +101,7 @@ public class SAMME implements RdfNamespace {
    }
 
    public Stream<Resource> allEntities() {
-      return Stream.of( TimeSeriesEntity(), Point3d(), FileResource(), Quantity() );
+      return allResources().stream();
    }
 
    @Override

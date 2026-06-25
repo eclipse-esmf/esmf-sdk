@@ -51,6 +51,10 @@ public class TurtleSyntaxTree {
          return !isError();
       }
 
+      default String content() {
+         throw new TurtleSyntaxTreeTraversalError();
+      }
+
       default List<Node> children() {
          return List.of();
       }
@@ -86,6 +90,11 @@ public class TurtleSyntaxTree {
       public Token asToken() {
          return this;
       }
+
+      @Override
+      public String content() {
+         return content;
+      }
    }
 
    public record Error(
@@ -107,6 +116,11 @@ public class TurtleSyntaxTree {
       @Override
       public Error asError() {
          return this;
+      }
+
+      @Override
+      public String content() {
+         return "ERROR";
       }
    }
 

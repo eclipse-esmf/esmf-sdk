@@ -28,7 +28,7 @@ import org.eclipse.lsp4j.Range;
 public class TurtleDefinitionService extends TurtleService {
    public Optional<Location> findDefinition( final ParsedDocument parsedDocument, final Position position ) {
       final TurtleSyntaxTree turtleSyntaxTree = parsedDocument.turtleSyntaxTree();
-      final TurtleSyntaxTree.Token highlightedToken = turtleSyntaxTree.findMatchingTreeSitterToken( position.getLine(),
+      final TurtleSyntaxTree.Node highlightedToken = turtleSyntaxTree.findMatchingTreeSitterToken( position.getLine(),
             position.getCharacter() );
       if ( highlightedToken == null ) {
          return Optional.empty();
@@ -58,7 +58,7 @@ public class TurtleDefinitionService extends TurtleService {
 
    private Optional<Location> findElementDefinition( final Position position, final ParsedDocument parsedDocument,
          final TurtleSyntaxTree turtleSyntaxTree ) {
-      final TurtleSyntaxTree.Token prefixedName = turtleSyntaxTree
+      final TurtleSyntaxTree.Node prefixedName = turtleSyntaxTree
             .findMatchingTreeSitterToken( List.of( ParserTokenType.PREFIXED_NAME ), position.getLine(), position.getCharacter() );
 
       if ( prefixedName == null ) {
@@ -72,8 +72,8 @@ public class TurtleDefinitionService extends TurtleService {
             .filter( n -> ParserTokenType.SUBJECT.equals( n.type() ) )
             .flatMap( n -> n.children().stream() )
             .filter( n -> {
-               if ( n instanceof final TurtleSyntaxTree.Token t ) {
-                  return ParserTokenType.PREFIXED_NAME.equals( t.type() ) && prefixedName.content().equals( t.content() );
+               if ( n.isToken() ) {
+                  return ParserTokenType.PREFIXED_NAME.equals( n.type() ) && prefixedName.content().equals( n.content() );
                }
                return false;
             } )
