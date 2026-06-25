@@ -14,6 +14,7 @@
 package org.eclipse.esmf.aspectmodel.resolver.parser;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.graph.Graph;
@@ -27,8 +28,11 @@ import org.apache.jena.riot.system.PrefixMap;
 import org.apache.jena.riot.tokens.Token;
 import org.apache.jena.riot.tokens.TokenType;
 import org.apache.jena.sparql.core.Quad;
+import org.apache.jena.vocabulary.XSD;
 
 import org.eclipse.esmf.aspectmodel.ValueParsingException;
+import org.eclipse.esmf.metamodel.datatype.SammType;
+import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 import org.eclipse.esmf.treesitterturtle.ParserTokenType;
 import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
 
@@ -112,21 +116,46 @@ public class TurtleParserProfile implements ParserProfile {
       return findMatchingTreeSitterToken( token.getLine(), token.getColumn() );
    }
 
+   private void validateLiteral( final Token token ) {
+      if ( token.getType() == TokenType.LITERAL_DT ) {
+         final String lexicalValue = token.getSubToken1().getImage();
+         final Token typeToken = token.getSubToken2();
+         if ( typeToken.getType() == TokenType.PREFIXED_NAME ) {
+            final String prefix = typeToken.getImage();
+            final String type = typeToken.getImage2();
+            final String datatypeUri;
+            if ( prefix.equals( "xsd" ) ) {
+               datatypeUri = XSD.getURI() + type;
+            } else if ( prefix.equals( "samm" ) && type.equals( "curie" ) ) {
+               datatypeUri = SammType.CURIE.getURI();
+            } else {
+               datatypeUri = null;
+            }
+            Optional.ofNullable( datatypeUri )
+                  .flatMap( SammXsdType::typeByUri )
+                  .ifPresent( sammType -> {
+                     try {
+                        sammType.parseTyped( lexicalValue );
+                     } catch ( final ValueParsingException exception ) {
+                        exception.setLine( token.getLine() );
+                        exception.setColumn( token.getColumn() );
+                        throw exception;
+                     }
+                  } );
+         }
+      }
+   }
+
    @Override
    public Node create( final Node currentGraph, final Token token ) {
-      try {
-         final Node node = parserProfile.create( currentGraph, token );
-         final TurtleSyntaxTree.@Nullable Token treeSitterToken = findMatchingTreeSitterToken( token );
-         final SmartToken smartToken = treeSitterToken == null
-               ? new SmartToken( token )
-               : new SmartToken( treeSitterToken );
-         TokenRegistry.put( node, smartToken );
-         return node;
-      } catch ( final ValueParsingException exception ) {
-         exception.setLine( token.getLine() );
-         exception.setColumn( token.getColumn() );
-         throw exception;
-      }
+      validateLiteral( token );
+      final Node node = parserProfile.create( currentGraph, token );
+      final TurtleSyntaxTree.@Nullable Token treeSitterToken = findMatchingTreeSitterToken( token );
+      final SmartToken smartToken = treeSitterToken == null
+            ? new SmartToken( token )
+            : new SmartToken( treeSitterToken );
+      TokenRegistry.put( node, smartToken );
+      return node;
    }
 
    @Override

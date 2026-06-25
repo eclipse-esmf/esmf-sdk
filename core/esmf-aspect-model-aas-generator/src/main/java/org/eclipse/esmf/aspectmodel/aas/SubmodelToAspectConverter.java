@@ -28,8 +28,9 @@ import java.util.stream.Stream;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.jena.iri.IRI;
-import org.apache.jena.iri.IRIFactory;
+import org.apache.jena.rfc3986.IRI;
+import org.apache.jena.rfc3986.IRI3986;
+import org.apache.jena.rfc3986.RFC3986;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
 import org.eclipse.digitaltwin.aas4j.v3.model.AasSubmodelElements;
@@ -162,8 +163,8 @@ class SubmodelToAspectConverter {
    }
 
    private Optional<IRI> iri( final String lexicalRepresentation ) {
-      final IRI iri = IRIFactory.iriImplementation().create( lexicalRepresentation );
-      return iri.hasViolation( true ) ? Optional.empty() : Optional.of( iri );
+      final IRI3986 iri = RFC3986.create( lexicalRepresentation );
+      return iri.hasViolations() ? Optional.empty() : Optional.of( iri );
    }
 
    private VersionNumber determineAspectModelUrnVersion( final Submodel submodel ) {

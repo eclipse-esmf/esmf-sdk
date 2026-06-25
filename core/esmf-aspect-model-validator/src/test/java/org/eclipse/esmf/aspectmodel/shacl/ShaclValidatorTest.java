@@ -19,6 +19,15 @@ import static org.eclipse.esmf.aspectmodel.RdfUtil.createModel;
 import java.math.BigInteger;
 import java.util.List;
 
+import org.apache.jena.graph.Node_URI;
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.XSD;
+
+import org.eclipse.esmf.aspectmodel.resolver.parser.TokenRegistry;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.DatatypeConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.MinCountConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.NodeKindConstraint;
@@ -54,13 +63,7 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.XoneViolation;
 import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
 
-import org.apache.jena.graph.Node_URI;
-import org.apache.jena.rdf.model.Literal;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.vocabulary.XSD;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -69,7 +72,13 @@ import org.junit.jupiter.api.Test;
 public class ShaclValidatorTest {
    private final String namespace = "http://example.com#";
 
-   final ViolationFormatter formatter = new ViolationFormatter();
+   private ViolationFormatter formatter;
+
+   @BeforeEach
+   void beforeEach() {
+      formatter = new ViolationFormatter();
+//      TokenRegistry.clear();
+   }
 
    @Test
    public void testLoadingCustomShape() {
