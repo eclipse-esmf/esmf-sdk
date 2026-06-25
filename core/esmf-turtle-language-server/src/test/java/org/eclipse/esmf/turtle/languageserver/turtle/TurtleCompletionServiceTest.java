@@ -89,6 +89,57 @@ class TurtleCompletionServiceTest {
       assertThat( labels ).containsExactlyInAnyOrder( expectedLabels.toArray( String[]::new ) );
    }
 
+   static Stream<Arguments> nonEmptyKnownPrefixScenarios() {
+      return Stream.of(
+            Arguments.of(
+                  "samm prefix returns at least one completion",
+                  """
+                     @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+
+                     samm:""",
+                  new Position( 2, 5 )
+            ),
+            Arguments.of(
+                  "samm-c prefix returns at least one completion",
+                  """
+                     @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#> .
+
+                     samm-c:""",
+                  new Position( 2, 7 )
+            ),
+            Arguments.of(
+                  "unit prefix returns at least one completion",
+                  """
+                     @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.2.0#> .
+
+                     unit:""",
+                  new Position( 2, 5 )
+            ),
+            Arguments.of(
+                  "sh prefix returns at least one completion",
+                  """
+                     @prefix sh: <http://www.w3.org/ns/shacl#> .
+
+                     sh:""",
+                  new Position( 2, 3 )
+            )
+      );
+   }
+
+   @ParameterizedTest( name = "{0}" )
+   @MethodSource( "nonEmptyKnownPrefixScenarios" )
+   void testCompletionIsNotEmptyForKnownPrefixes( final String scenarioName,
+         final String content,
+         final Position position ) {
+      final Document document = new Document( "test.ttl", content );
+      final ParsedDocument parsedDocument = parserService.apply( document );
+      final CompletionParams params = new CompletionParams( new TextDocumentIdentifier( "test.ttl" ), position );
+
+      final List<CompletionItem> completions = completionService.complete( parsedDocument, params );
+
+      assertThat( completions ).isNotEmpty();
+   }
+
    static Stream<Arguments> noCompletionScenarios() {
       return Stream.of(
             Arguments.of(

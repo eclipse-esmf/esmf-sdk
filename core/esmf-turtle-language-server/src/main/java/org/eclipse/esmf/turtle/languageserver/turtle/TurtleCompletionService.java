@@ -4,12 +4,17 @@
 
 package org.eclipse.esmf.turtle.languageserver.turtle;
 
+import static org.eclipse.esmf.metamodel.vocabulary.SammNs.UNIT;
+
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.esmf.aspectmodel.shacl.SHACL;
+import org.eclipse.esmf.metamodel.Units;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.treesitterturtle.ParserTokenType;
 import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
@@ -20,13 +25,7 @@ import org.eclipse.lsp4j.CompletionParams;
 import org.eclipse.lsp4j.Position;
 
 public class TurtleCompletionService extends TurtleService {
-   static final Map<String, List<CompletionItem>> SAMM_PREFIXES_COMPLETION_MAP = SammNs.sammNamespaces().map( n -> {
-      final String prefix = n.getShortForm() + ":";
-      final List<CompletionItem> elements = Stream.of( n.allResources(), n.allProperties() )
-            .flatMap( Collection::stream )
-            .map( r -> new CompletionItem( r.getLocalName() ) ).toList();
-      return Map.entry( prefix, elements );
-   } ).collect( Collectors.toMap( Map.Entry::getKey, Map.Entry::getValue ) );
+   static final Map<String, List<CompletionItem>> SAMM_PREFIXES_COMPLETION_MAP = initSammPrefixesCompletionMap();
 
    public List<CompletionItem> complete( final ParsedDocument parsedDocument, final CompletionParams completionParams ) {
       final Position position = completionParams.getPosition();
@@ -73,5 +72,25 @@ public class TurtleCompletionService extends TurtleService {
       }
 
       return SAMM_PREFIXES_COMPLETION_MAP.getOrDefault( prefix, List.of() );
+   }
+
+   private static HashMap<String, List<CompletionItem>> initSammPrefixesCompletionMap() {
+      final SHACL shacl = new SHACL();
+      final HashMap<String, List<CompletionItem>> result = new HashMap<>( SammNs.sammNamespaces().map( n -> {
+         final String prefix = n.getShortForm() + ":";
+         final List<CompletionItem> elements = Stream.of( n.allResources(), n.allProperties() )
+               .flatMap( Collection::stream )
+               .map( r -> new CompletionItem( r.getLocalName() ) ).toList();
+         return Map.entry( prefix, elements );
+      } ).collect( Collectors.toMap( Map.Entry::getKey, Map.Entry::getValue ) ) );
+
+      result.put( UNIT.getShortForm() + ":", Units.getUnits().stream()
+            .map( u -> new CompletionItem( u.getName() ) ).toList() );
+
+      result.put( shacl.getShortForm() + ":", Stream.of( shacl.allProperties(), shacl.allResources() )
+            .flatMap( Collection::stream )
+            .map( r -> new CompletionItem( r.getLocalName() ) ).toList() );
+
+      return result;
    }
 }
