@@ -71,12 +71,7 @@ public class TurtleDefinitionService extends TurtleService {
             .flatMap( t -> t.children().stream() )
             .filter( n -> ParserTokenType.SUBJECT.equals( n.type() ) )
             .flatMap( n -> n.children().stream() )
-            .filter( n -> {
-               if ( n.isToken() ) {
-                  return ParserTokenType.PREFIXED_NAME.equals( n.type() ) && prefixedName.content().equals( n.content() );
-               }
-               return false;
-            } )
+            .filter( n -> n.isToken() && ParserTokenType.PREFIXED_NAME.equals( n.type() ) && prefixedName.content().equals( n.content() ) )
             .flatMap( node -> node.children().stream() )
             .filter( node -> ParserTokenType.PN_LOCAL.equals( node.type() ) )
             .findFirst();

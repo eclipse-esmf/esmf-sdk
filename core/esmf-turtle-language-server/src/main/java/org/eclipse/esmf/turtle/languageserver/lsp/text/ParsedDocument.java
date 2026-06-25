@@ -46,13 +46,7 @@ public record ParsedDocument(
 
    public boolean isAspectModel() {
       return this.turtleSyntaxTree().nodes().anyMatch(
-            node -> {
-               if ( node.isToken() ) {
-                  return ParserTokenType.PN_PREFIX.equals( node.type() )
-                        && SAMM_PREFIXES.contains( node.content() );
-               }
-               return false;
-            }
+            node -> node.isToken() && ParserTokenType.PN_PREFIX.equals( node.type() ) && SAMM_PREFIXES.contains( node.content() )
       );
    }
 }
