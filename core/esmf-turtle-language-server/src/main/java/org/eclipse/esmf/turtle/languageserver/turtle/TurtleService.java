@@ -17,6 +17,7 @@ import static org.eclipse.esmf.aspectmodel.StreamUtil.asSortedMap;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.eclipse.esmf.treesitterturtle.ParserTokenType;
 import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
@@ -34,22 +35,39 @@ public abstract class TurtleService {
     * @return true if 'rdf:type' or 'a' is used as predictate
     */
    protected boolean hasTypeDefinitionPredicate( final TurtleSyntaxTree.Token triple ) {
-      final Map<TurtleSyntaxTree.Token, TurtleSyntaxTree.Token> predicateObjectMap = predicateObjectMapForTriple( triple );
-      return predicateObjectMap.keySet().stream().map( TurtleSyntaxTree.Token::content )
+      final Map<TurtleSyntaxTree.Node, TurtleSyntaxTree.Node> predicateObjectMap = predicateObjectMapForTriple( triple );
+      return predicateObjectMap.keySet().stream().map( TurtleSyntaxTree.Node::content )
             .anyMatch( TYPE_DEFINITION_PREDICATES::contains );
    }
 
-   protected Map<TurtleSyntaxTree.Token, TurtleSyntaxTree.Token> predicateObjectMapForTriple( final TurtleSyntaxTree.Token triple ) {
+   protected boolean isPrefixedBy( final TurtleSyntaxTree.Node prefixedName, final String prefix ) {
+      return prefixedName.children().stream()
+            .filter( TurtleSyntaxTree.Node::isToken )
+            .filter( n -> ParserTokenType.NAMESPACE.equals( n.type() ) )
+            .anyMatch( n -> n.content().equals( prefix ) );
+   }
+
+   protected Map<TurtleSyntaxTree.Node, TurtleSyntaxTree.Node> predicateObjectMapForTriple( final TurtleSyntaxTree.Token triple ) {
       return triple.childWithType( ParserTokenType.PROPERTY_LIST ).stream()
             .flatMap( propertyList -> propertyList.children().stream()
                   .filter( node -> ParserTokenType.PROPERTY.equals( node.type() ) ) )
             .flatMap( property -> property.childWithType( ParserTokenType.PREDICATE )
                   .filter( TurtleSyntaxTree.Node::isToken )
-                  .map( TurtleSyntaxTree.Node::asToken ).stream()
+                  .stream()
                   .flatMap( predicate -> property.childWithType( ParserTokenType.OBJECT_LIST )
-                        .filter( TurtleSyntaxTree.Node::isToken )
-                        .map( TurtleSyntaxTree.Node::asToken ).stream()
+                        .filter( TurtleSyntaxTree.Node::isToken ).stream()
                         .map( objectToken -> Map.entry( predicate, objectToken ) ) ) )
             .collect( asSortedMap() );
+   }
+
+   protected Stream<TurtleSyntaxTree.Node> getPrefixDefinitionTokens( final TurtleSyntaxTree turtleSyntaxTree ) {
+      return turtleSyntaxTree.nodes()
+            .filter( node -> ParserTokenType.DIRECTIVE.equals( node.type() ) )
+            .flatMap( node -> node.children().stream() )
+            .filter( node -> ParserTokenType.PREFIX_ID.equals( node.type() ) )
+            .flatMap( node -> node.children().stream() )
+            .filter( node -> ParserTokenType.NAMESPACE.equals( node.type() ) )
+            .flatMap( node -> node.children().stream() )
+            .filter( TurtleSyntaxTree.Node::isToken );
    }
 }

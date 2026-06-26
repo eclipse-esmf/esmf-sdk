@@ -51,6 +51,8 @@ public class TurtleSyntaxTree {
          return !isError();
       }
 
+      String content();
+
       default List<Node> children() {
          return List.of();
       }
@@ -91,7 +93,8 @@ public class TurtleSyntaxTree {
    public record Error(
          String type,
          Diagnostic.Code errorType,
-         Location location
+         Location location,
+         List<Node> children
    ) implements Node {
       @Override
       public boolean isError() {
@@ -99,8 +102,18 @@ public class TurtleSyntaxTree {
       }
 
       @Override
+      public List<Node> children() {
+         return children;
+      }
+
+      @Override
       public Error asError() {
          return this;
+      }
+
+      @Override
+      public String content() {
+         return "ERROR";
       }
    }
 
@@ -195,17 +208,17 @@ public class TurtleSyntaxTree {
             inputNode.getStartPoint().getColumn(),
             inputNode.getEndPoint().getRow(),
             inputNode.getEndPoint().getColumn() );
-      if ( inputNode.isError() ) {
-         return new Error( inputNode.getType(), TurtleDiagnostic.TurtleCode.E0003, location );
-      } else if ( inputNode.isMissing() ) {
-         return new Error( inputNode.getType(), TurtleDiagnostic.TurtleCode.E0004, location );
-      }
-      final String token = tokenProvider.apply( location );
       final List<Node> children = IntStream.range( 0, inputNode.getChildCount() )
             .mapToObj( inputNode::getChild )
             .filter( Objects::nonNull )
             .map( child -> nodeForTsNode( child, tokenProvider ) )
             .toList();
+      if ( inputNode.isError() ) {
+         return new Error( inputNode.getType(), TurtleDiagnostic.TurtleCode.E0003, location, children );
+      } else if ( inputNode.isMissing() ) {
+         return new Error( inputNode.getType(), TurtleDiagnostic.TurtleCode.E0004, location, children );
+      }
+      final String token = tokenProvider.apply( location );
       return new Token( inputNode.getType(), token, location, children );
    }
 
