@@ -28,7 +28,7 @@ import org.eclipse.lsp4j.Range;
 public class TurtleDefinitionService extends TurtleService {
    public Optional<Location> findDefinition( final ParsedDocument parsedDocument, final Position position ) {
       final TurtleSyntaxTree turtleSyntaxTree = parsedDocument.turtleSyntaxTree();
-      final TurtleSyntaxTree.Token highlightedToken = turtleSyntaxTree.findMatchingTreeSitterToken( position.getLine(),
+      final TurtleSyntaxTree.Node highlightedToken = turtleSyntaxTree.findMatchingTreeSitterToken( position.getLine(),
             position.getCharacter() );
       if ( highlightedToken == null ) {
          return Optional.empty();
@@ -48,27 +48,17 @@ public class TurtleDefinitionService extends TurtleService {
 
    private Optional<Location> findPrefixDefinition( final String prefixName, final ParsedDocument parsedDocument,
          final TurtleSyntaxTree turtleSyntaxTree ) {
-      final Optional<TurtleSyntaxTree.Node> prefixDefinitionNode = turtleSyntaxTree.nodes()
-            .filter( node -> ParserTokenType.DIRECTIVE.equals( node.type() ) )
-            .flatMap( node -> node.children().stream() )
-            .filter( node -> ParserTokenType.PREFIX_ID.equals( node.type() ) )
-            .flatMap( node -> node.children().stream() )
-            .filter( node -> ParserTokenType.NAMESPACE.equals( node.type() ) )
-            .flatMap( node -> node.children().stream() )
-            .filter( node -> {
-               if ( node instanceof final TurtleSyntaxTree.Token token ) {
-                  return ParserTokenType.PN_PREFIX.equals( token.type() )
-                        && token.content().equals( prefixName );
-               }
-               return false;
-            } )
-            .findFirst();
+      final Optional<TurtleSyntaxTree.Node> prefixDefinitionNode = this.getPrefixDefinitionTokens( turtleSyntaxTree )
+            .filter( token -> ParserTokenType.PN_PREFIX.equals( token.type() )
+                  && token.content().equals( prefixName ) )
+            .findFirst()
+            .map( TurtleSyntaxTree.Node.class::cast );
       return prefixDefinitionNode.map( definition -> getLocationForLsp( parsedDocument, definition ) );
    }
 
    private Optional<Location> findElementDefinition( final Position position, final ParsedDocument parsedDocument,
          final TurtleSyntaxTree turtleSyntaxTree ) {
-      final TurtleSyntaxTree.Token prefixedName = turtleSyntaxTree
+      final TurtleSyntaxTree.Node prefixedName = turtleSyntaxTree
             .findMatchingTreeSitterToken( List.of( ParserTokenType.PREFIXED_NAME ), position.getLine(), position.getCharacter() );
 
       if ( prefixedName == null ) {
@@ -81,12 +71,7 @@ public class TurtleDefinitionService extends TurtleService {
             .flatMap( t -> t.children().stream() )
             .filter( n -> ParserTokenType.SUBJECT.equals( n.type() ) )
             .flatMap( n -> n.children().stream() )
-            .filter( n -> {
-               if ( n instanceof final TurtleSyntaxTree.Token t ) {
-                  return ParserTokenType.PREFIXED_NAME.equals( t.type() ) && prefixedName.content().equals( t.content() );
-               }
-               return false;
-            } )
+            .filter( n -> n.isToken() && ParserTokenType.PREFIXED_NAME.equals( n.type() ) && prefixedName.content().equals( n.content() ) )
             .flatMap( node -> node.children().stream() )
             .filter( node -> ParserTokenType.PN_LOCAL.equals( node.type() ) )
             .findFirst();

@@ -26,9 +26,13 @@ import org.eclipse.esmf.turtle.languageserver.aspect.service.AspectValidationCoo
 import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
 import org.eclipse.esmf.turtle.languageserver.structure.DocumentSymbolService;
 import org.eclipse.esmf.turtle.languageserver.structure.TurtleTokenService;
+import org.eclipse.esmf.turtle.languageserver.turtle.TurtleCompletionService;
 import org.eclipse.esmf.turtle.languageserver.turtle.TurtleSyntaxDiagnosticsService;
 import org.eclipse.esmf.turtle.languageserver.turtle.navigation.TurtleDefinitionService;
 
+import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.CompletionList;
+import org.eclipse.lsp4j.CompletionParams;
 import org.eclipse.lsp4j.DefinitionParams;
 import org.eclipse.lsp4j.DidChangeTextDocumentParams;
 import org.eclipse.lsp4j.DidCloseTextDocumentParams;
@@ -53,6 +57,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
 
    private final TextDocumentClientNotifier clientNotifier;
    private final TurtleDefinitionService turtleDefinitionService;
+   private final TurtleCompletionService turtleCompletionService;
    private final AspectValidationCoordinator aspectValidationCoordinator;
    private final TreeSitterTurtleParserService turtleParserService;
    private final TurtleTokenService tokenService;
@@ -64,6 +69,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
    public TurtleTextDocumentService() {
       clientNotifier = new TextDocumentClientNotifier( new AspectDiagnosticMapper() );
       turtleDefinitionService = new TurtleDefinitionService();
+      turtleCompletionService = new TurtleCompletionService();
       turtleParserService = new TreeSitterTurtleParserService();
       tokenService = new TurtleTokenService( turtleParserService );
       syntaxDiagnostics = new TurtleSyntaxDiagnosticsService();
@@ -208,4 +214,12 @@ public class TurtleTextDocumentService implements TextDocumentService {
       return CompletableFuture.completedFuture( symbols );
    }
 
+   @Override
+   public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion( final CompletionParams position ) {
+      final String uri = position.getTextDocument().getUri();
+      final Document document = documents.get( uri );
+      final ParsedDocument parsedDocument = turtleParserService.apply( document );
+      return CompletableFuture.completedFuture(
+            Either.forLeft( turtleCompletionService.complete( parsedDocument, position ) ) );
+   }
 }
