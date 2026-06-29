@@ -27,7 +27,6 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.XSD;
 
-import org.eclipse.esmf.aspectmodel.resolver.parser.TokenRegistry;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.DatatypeConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.MinCountConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.NodeKindConstraint;
@@ -77,7 +76,6 @@ public class ShaclValidatorTest {
    @BeforeEach
    void beforeEach() {
       formatter = new ViolationFormatter();
-//      TokenRegistry.clear();
    }
 
    @Test
@@ -1306,31 +1304,31 @@ public class ShaclValidatorTest {
       final Model dataModel = createModel( """
          @prefix : <http://example.com#> .
          @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-         :Foo a :TestClass ;
-           :testProperty "foo" .
+         :FooX a :TestClass ;
+           :testProperty "foox" .
 
-         :Bar a :TestClass ;
+         :BarX a :TestClass ;
            :testProperty "secret valid value" .
          """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
-      final Resource element = dataModel.createResource( namespace + "Foo" );
+      final Resource element = dataModel.createResource( namespace + "FooX" );
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( SparqlConstraintViolation.class );
       final SparqlConstraintViolation violation = (SparqlConstraintViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
       assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
-      assertThat( violation.context().elementName() ).isEqualTo( ":Foo" );
-      assertThat( violation.message() ).isEqualTo( "Constraint was violated on :Foo, value was foo." );
+      assertThat( violation.context().elementName() ).isEqualTo( ":FooX" );
+      assertThat( violation.message() ).isEqualTo( "Constraint was violated on :FooX, value was foox." );
       assertThat( violation.errorCode() ).isEqualTo( "ERR_CUSTOM" );
 
       final String formattedMessage = formatter.visit( finding );
       assertThat( formattedMessage ).contains( "Error at line 4" );
-      assertThat( formattedMessage ).contains( ":testProperty \"foo\" ." );
-      assertThat( formattedMessage ).contains( " " + "^".repeat( "\"foo\"".length() ) );
+      assertThat( formattedMessage ).contains( ":testProperty \"foox\" ." );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( "\"foox\"".length() ) );
    }
 
    @Test

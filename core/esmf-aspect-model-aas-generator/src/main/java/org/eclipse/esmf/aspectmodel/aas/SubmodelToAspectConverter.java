@@ -29,7 +29,6 @@ import java.util.stream.Stream;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rfc3986.IRI;
-import org.apache.jena.rfc3986.IRI3986;
 import org.apache.jena.rfc3986.RFC3986;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
@@ -85,6 +84,8 @@ import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.vavr.control.Try;
 
 class SubmodelToAspectConverter {
    private static final String EXAMPLE_NAMESPACE = "com.example";
@@ -163,8 +164,10 @@ class SubmodelToAspectConverter {
    }
 
    private Optional<IRI> iri( final String lexicalRepresentation ) {
-      final IRI3986 iri = RFC3986.create( lexicalRepresentation );
-      return iri.hasViolations() ? Optional.empty() : Optional.of( iri );
+      return Try.of( () -> RFC3986.create( lexicalRepresentation ) )
+            .toJavaOptional()
+            .filter( iri -> !iri.hasViolations() )
+            .map( IRI.class::cast );
    }
 
    private VersionNumber determineAspectModelUrnVersion( final Submodel submodel ) {
