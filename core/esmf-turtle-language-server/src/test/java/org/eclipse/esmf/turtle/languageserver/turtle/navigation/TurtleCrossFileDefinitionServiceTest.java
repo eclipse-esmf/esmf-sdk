@@ -35,6 +35,7 @@ import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.Position;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 
 @SuppressWarnings( { "HttpUrlsUsage" } )
@@ -66,8 +67,9 @@ class TurtleCrossFileDefinitionServiceTest {
             new FileSystemStrategy( new FlatModelsRoot( realRoot ) ) );
    }
 
+   // Do not clean tempDir to work around file locking issues on windows
    @Test
-   void testGoToDefinitionInSeparateFile_structuredLayout( @TempDir final Path tmpDir ) throws IOException {
+   void testGoToDefinitionInSeparateFile_structuredLayout( @TempDir( cleanup = CleanupMode.NEVER ) final Path tmpDir ) throws IOException {
       final Path sourceModel = modelFromTestAspectModels( "valid/org.eclipse.esmf.test/1.0.0/Aspect.ttl" );
       final Path targetModel = tmpDir.resolve( "org.eclipse.esmf.test" ).resolve( "1.0.0" ).resolve( "Aspect.ttl" );
       Files.createDirectories( targetModel.getParent() );
@@ -98,8 +100,9 @@ class TurtleCrossFileDefinitionServiceTest {
       assertThat( location.getRange().getStart() ).isEqualTo( new Position( 17, 1 ) );
    }
 
+   // Do not clean tempDir to work around file locking issues on windows
    @Test
-   void testGoToDefinitionInSeparateFile_flatLayout( @TempDir final Path tmpDir ) throws IOException {
+   void testGoToDefinitionInSeparateFile_flatLayout( @TempDir( cleanup = CleanupMode.NEVER ) final Path tmpDir ) throws IOException {
       final String definingContent = """
          @prefix : <urn:samm:com.example:1.0.0#> .
          @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#> .
@@ -130,8 +133,9 @@ class TurtleCrossFileDefinitionServiceTest {
       assertThat( result.get().getRange().getStart() ).isEqualTo( new Position( 3, 1 ) );
    }
 
+   // Do not clean tempDir to work around file locking issues on windows
    @Test
-   void testReturnsEmptyWhenElementNotFound( @TempDir final Path tmpDir ) throws IOException {
+   void testReturnsEmptyWhenElementNotFound( @TempDir( cleanup = CleanupMode.NEVER ) final Path tmpDir ) throws IOException {
       final Path nsDir = tmpDir.resolve( "com.example" ).resolve( "1.0.0" );
       Files.createDirectories( nsDir );
       Files.writeString( nsDir.resolve( "ExistingType.ttl" ), """
