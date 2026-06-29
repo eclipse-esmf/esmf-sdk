@@ -13,13 +13,19 @@
 
 package org.eclipse.esmf.turtle.languageserver.lsp.text;
 
-import java.util.HashMap;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 
+import org.eclipse.esmf.aspectmodel.resolver.EitherStrategy;
+import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
+import org.eclipse.esmf.aspectmodel.resolver.fs.FlatModelsRoot;
+import org.eclipse.esmf.aspectmodel.resolver.fs.StructuredModelsRoot;
 import org.eclipse.esmf.turtle.languageserver.aspect.diagnostic.AspectDiagnosticMapper;
 import org.eclipse.esmf.turtle.languageserver.aspect.service.AspectModelValidationService;
 import org.eclipse.esmf.turtle.languageserver.aspect.service.AspectValidationCoordinator;
@@ -28,6 +34,8 @@ import org.eclipse.esmf.turtle.languageserver.structure.DocumentSymbolService;
 import org.eclipse.esmf.turtle.languageserver.structure.TurtleTokenService;
 import org.eclipse.esmf.turtle.languageserver.turtle.TurtleCompletionService;
 import org.eclipse.esmf.turtle.languageserver.turtle.TurtleSyntaxDiagnosticsService;
+import org.eclipse.esmf.turtle.languageserver.turtle.navigation.MetaModelStrategy;
+import org.eclipse.esmf.turtle.languageserver.turtle.navigation.TurtleCrossFileDefinitionService;
 import org.eclipse.esmf.turtle.languageserver.turtle.navigation.TurtleDefinitionService;
 
 import org.eclipse.lsp4j.CompletionItem;
@@ -57,6 +65,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
 
    private final TextDocumentClientNotifier clientNotifier;
    private final TurtleDefinitionService turtleDefinitionService;
+   private TurtleCrossFileDefinitionService turtleCrossFileDefinitionService;
    private final TurtleCompletionService turtleCompletionService;
    private final AspectValidationCoordinator aspectValidationCoordinator;
    private final TreeSitterTurtleParserService turtleParserService;
@@ -64,7 +73,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
    private final DocumentSymbolService documentSymbolService;
    private final TurtleSyntaxDiagnosticsService syntaxDiagnostics;
    private final AspectModelValidationService aspectModelValidation;
-   private final Map<String, Document> documents = new HashMap<>();
+   private final Map<String, Document> documents = new ConcurrentHashMap<>();
 
    public TurtleTextDocumentService() {
       clientNotifier = new TextDocumentClientNotifier( new AspectDiagnosticMapper() );
@@ -88,6 +97,21 @@ public class TurtleTextDocumentService implements TextDocumentService {
 
    public void connect( final LanguageClient client ) {
       clientNotifier.connect( client );
+   }
+
+   public void initCrossFileDefinitionService( final Path workspaceRoot ) {
+      final Path realRoot;
+      try {
+         realRoot = workspaceRoot.toRealPath();
+      } catch ( final IllegalStateException | IOException e ) {
+         LOG.warn( "[init] could not resolve real path of workspace root {}: {}", workspaceRoot, e.getMessage() );
+         return;
+      }
+      final FileSystemStrategy structuredStrategy = new FileSystemStrategy( new StructuredModelsRoot( realRoot ) );
+      final FileSystemStrategy flatStrategy = new FileSystemStrategy( new FlatModelsRoot( realRoot ) );
+      final EitherStrategy eitherStrategy = new EitherStrategy( structuredStrategy, flatStrategy, new MetaModelStrategy() );
+
+      turtleCrossFileDefinitionService = new TurtleCrossFileDefinitionService( turtleParserService, documents, eitherStrategy );
    }
 
    public void shutdown() {
@@ -132,7 +156,11 @@ public class TurtleTextDocumentService implements TextDocumentService {
    @Override
    public void didChange( final DidChangeTextDocumentParams params ) {
       final String uri = params.getTextDocument().getUri();
-      final Document document = documents.get( params.getTextDocument().getUri() );
+      final Document document = documents.get( uri );
+      if ( document == null ) {
+         LOG.warn( "[didChange] received change for unknown document: {}", uri );
+         return;
+      }
       for ( final TextDocumentContentChangeEvent change : params.getContentChanges() ) {
          document.update( change.getRange(), change.getText() );
          turtleParserService.onChange( document, change );
@@ -153,9 +181,10 @@ public class TurtleTextDocumentService implements TextDocumentService {
    public void didClose( final DidCloseTextDocumentParams params ) {
       final String uri = params.getTextDocument().getUri();
       LOG.info( "[didClose] uri={}", uri );
-      final Document document = documents.get( uri );
-      aspectValidationCoordinator.onDocumentClosed( document );
-      documents.remove( uri );
+      final Document document = documents.remove( uri );
+      if ( document != null ) {
+         aspectValidationCoordinator.onDocumentClosed( document );
+      }
    }
 
    @Override
@@ -163,6 +192,10 @@ public class TurtleTextDocumentService implements TextDocumentService {
       final String uri = params.getTextDocument().getUri();
       final Document document = documents.get( uri );
       LOG.info( "[didSave] uri={}", uri );
+      if ( document == null ) {
+         LOG.warn( "[didSave] received save for unknown document: {}", uri );
+         return;
+      }
       document.getRope().rebalance();
       turtleParserService.onOpen( document );
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
@@ -181,6 +214,9 @@ public class TurtleTextDocumentService implements TextDocumentService {
       final String uri = params.getTextDocument().getUri();
       final Document document = documents.get( uri );
       LOG.info( "[semanticTokensFull] uri={}", uri );
+      if ( document == null ) {
+         return CompletableFuture.completedFuture( new SemanticTokens( List.of() ) );
+      }
       final SemanticTokens semanticTokens = tokenService.buildSemanticTokens( document );
       return CompletableFuture.completedFuture( semanticTokens );
    }
@@ -194,8 +230,12 @@ public class TurtleTextDocumentService implements TextDocumentService {
       }
 
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
-      final Optional<Location> declaration =
-            turtleDefinitionService.findDefinition( parsedDocument, params.getPosition() );
+      Optional<Location> declaration = turtleDefinitionService.findDefinition( parsedDocument, params.getPosition() );
+
+      if ( declaration.isEmpty() && turtleCrossFileDefinitionService != null ) {
+         declaration = turtleCrossFileDefinitionService.findDefinition( parsedDocument, params.getPosition() );
+      }
+
       return declaration.<CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>>>map(
             location -> CompletableFuture.completedFuture( Either.forLeft( List.of( location ) ) ) )
             .orElseGet( () -> CompletableFuture.completedFuture( Either.forLeft( List.of() ) ) );
@@ -218,6 +258,9 @@ public class TurtleTextDocumentService implements TextDocumentService {
    public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion( final CompletionParams position ) {
       final String uri = position.getTextDocument().getUri();
       final Document document = documents.get( uri );
+      if ( document == null ) {
+         return CompletableFuture.completedFuture( Either.forLeft( List.of() ) );
+      }
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
       return CompletableFuture.completedFuture(
             Either.forLeft( turtleCompletionService.complete( parsedDocument, position ) ) );
