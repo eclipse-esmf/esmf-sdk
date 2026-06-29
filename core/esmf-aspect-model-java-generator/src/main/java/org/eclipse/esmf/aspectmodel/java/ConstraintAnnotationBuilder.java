@@ -70,20 +70,18 @@ public class ConstraintAnnotationBuilder {
    }
 
    private void createRegularExpressionConstraint() {
-      if ( !( constraintClass instanceof RegularExpressionConstraint ) ) {
+      if ( !( constraintClass instanceof final RegularExpressionConstraint regularExpressionConstraint ) ) {
          return;
       }
-      final RegularExpressionConstraint regularExpressionConstraint = (RegularExpressionConstraint) constraintClass;
       final String value = regularExpressionConstraint.getValue();
       final String escapedValue = StringEscapeUtils.escapeJava( value );
       appendStringBuilder( Pattern.class, "regexp = \"" + escapedValue + "\"" );
    }
 
    private void createRangeConstraint() {
-      if ( !( constraintClass instanceof RangeConstraint ) ) {
+      if ( !( constraintClass instanceof final RangeConstraint rangeConstraint ) ) {
          return;
       }
-      final RangeConstraint rangeConstraint = (RangeConstraint) constraintClass;
       final Optional<Object> minValue = rangeConstraint.getMinValue().map( ScalarValue::getValue );
       final Optional<Object> maxValue = rangeConstraint.getMaxValue().map( ScalarValue::getValue );
       final BoundDefinition lowerBoundDefinition = rangeConstraint.getLowerBoundDefinition();
@@ -112,10 +110,9 @@ public class ConstraintAnnotationBuilder {
    }
 
    private void createLengthConstraint() {
-      if ( !( constraintClass instanceof LengthConstraint ) ) {
+      if ( !( constraintClass instanceof final LengthConstraint lengthConstraint ) ) {
          return;
       }
-      final LengthConstraint lengthConstraint = (LengthConstraint) constraintClass;
       final Optional<BigInteger> minValue = lengthConstraint.getMinValue();
       final Optional<BigInteger> maxValue = lengthConstraint.getMaxValue();
 
@@ -131,10 +128,9 @@ public class ConstraintAnnotationBuilder {
    }
 
    private void createFixedPointConstraint() {
-      if ( !( constraintClass instanceof FixedPointConstraint ) ) {
+      if ( !( constraintClass instanceof final FixedPointConstraint fixedPointConstraint ) ) {
          return;
       }
-      final FixedPointConstraint fixedPointConstraint = (FixedPointConstraint) constraintClass;
       final Integer scale = fixedPointConstraint.getScale();
       final Integer integer = fixedPointConstraint.getInteger();
 

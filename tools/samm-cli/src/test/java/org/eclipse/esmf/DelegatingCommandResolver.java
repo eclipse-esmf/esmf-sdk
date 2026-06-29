@@ -33,6 +33,6 @@ public class DelegatingCommandResolver {
       final Path modelsRoot = Paths.get( target.toString(), "classes", "valid" );
       final AspectModelUrn urn = AspectModelUrn.fromUrn( args[0] );
       final AspectModel aspectModel = new AspectModelLoader( new FileSystemStrategy( modelsRoot ) ).load( urn );
-      aspectModel.mergedModel().write( System.out );
+      aspectModel.mergedModel().write( System.out, "RDF/XML" );
    }
 }

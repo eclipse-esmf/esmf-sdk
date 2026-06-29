@@ -752,7 +752,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
             .map( dataType -> {
                if ( Scalar.class.isAssignableFrom( dataType.getClass() ) ) {
                   return List.of( (SubmodelElement) new DefaultBlob.Builder().value( StreamSupport.stream( arrayNode.spliterator(), false )
-                        .map( node -> node.isValueNode() ? node.asText() : node.toString() )
+                        .map( node -> node.isValueNode() ? node.asString() : node.toString() )
                         .collect( Collectors.joining( "," ) )
                         .getBytes( StandardCharsets.UTF_8 ) )
                         .contentType( "text/plain" ).build() );

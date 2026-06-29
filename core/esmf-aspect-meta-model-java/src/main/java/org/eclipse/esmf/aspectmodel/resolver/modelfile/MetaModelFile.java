@@ -224,7 +224,7 @@ public enum MetaModelFile implements AspectModelFile {
       try {
          final List<URL> urls = ImmutableList.copyOf( MetaModelFile.class.getClassLoader().getResources( spec ).asIterator() );
          if ( urls.size() == 1 ) {
-            return urls.get( 0 );
+            return urls.getFirst();
          }
          if ( urls.isEmpty() ) {
             throw new AspectLoadingException( "Could not resolve meta model file: " + filename );
@@ -243,7 +243,7 @@ public enum MetaModelFile implements AspectModelFile {
                jarUrl = url;
             }
          }
-         return jarUrl == null ? urls.get( 0 ) : jarUrl;
+         return jarUrl == null ? urls.getFirst() : jarUrl;
       } catch ( final IOException exception ) {
          throw new AspectLoadingException( "Could not resolve meta model file: " + filename );
       }

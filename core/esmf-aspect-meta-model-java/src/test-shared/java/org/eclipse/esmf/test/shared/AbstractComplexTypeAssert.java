@@ -41,7 +41,7 @@ public abstract class AbstractComplexTypeAssert<SELF extends AbstractComplexType
    @SuppressWarnings( "unchecked" )
    public <S extends PropertyAssert<S, A>, A extends Property> PropertyAssert<S, A> hasSinglePropertyThat() {
       assertThat( actual.getProperties() ).hasSize( 1 );
-      return new PropertyAssert<>( (A) actual.getProperties().get( 0 ) );
+      return new PropertyAssert<>( (A) actual.getProperties().getFirst() );
    }
 
    public ListAssert<Property> properties() {

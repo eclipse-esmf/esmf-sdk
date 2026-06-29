@@ -683,12 +683,10 @@ public class AspectModelJavaUtil {
    }
 
    public static String setterName( final Property property, final JavaCodeGenerationConfig codeGenerationConfig ) {
-      switch ( codeGenerationConfig.setterStyle() ) {
-         case FLUENT_COMPACT:
-            return StringUtils.uncapitalize( property.getPayloadName() );
-         default:
-            return "set" + StringUtils.capitalize( property.getPayloadName() );
-      }
+      return switch ( codeGenerationConfig.setterStyle() ) {
+         case FLUENT_COMPACT -> StringUtils.uncapitalize( property.getPayloadName() );
+         default -> "set" + StringUtils.capitalize( property.getPayloadName() );
+      };
    }
 
    public static String codeGeneratorName() {

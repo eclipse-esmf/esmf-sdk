@@ -20,6 +20,10 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.ResourceFactory;
+
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFileBuilder;
@@ -32,14 +36,12 @@ import org.eclipse.esmf.test.InvalidTestAspect;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
-import io.vavr.control.Either;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.ResourceFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
+
+import io.vavr.control.Either;
 
 public class RustLikeFormatterTest {
    private final String namespace = "http://example.com#";
@@ -293,13 +295,13 @@ public class RustLikeFormatterTest {
 
    @Test
    void testFormattingForDuplicateDefinition() {
-      final AspectModelFile rawFile1 = TestResources.load( TestAspect.ASPECT_WITH_PROPERTY ).files().iterator().next();
+      final AspectModelFile rawFile1 = TestResources.load( TestAspect.ASPECT_WITH_PROPERTY ).files().getFirst();
       final AspectModelFile file1 = RawAspectModelFileBuilder.builder()
             .sourceLocation( Optional.of( URI.create( rawFile1.sourceLocation().get() + "-first-instance" ) ) )
             .sourceModel( rawFile1.sourceModel() )
             .headerComment( rawFile1.headerComment() )
             .build();
-      final AspectModelFile rawFile2 = TestResources.load( TestAspect.ASPECT_WITH_PROPERTY ).files().iterator().next();
+      final AspectModelFile rawFile2 = TestResources.load( TestAspect.ASPECT_WITH_PROPERTY ).files().getFirst();
       final AspectModelFile file2 = RawAspectModelFileBuilder.builder()
             .sourceLocation( Optional.of( URI.create( rawFile2.sourceLocation().get() + "-second-instance" ) ) )
             .sourceModel( rawFile2.sourceModel() )

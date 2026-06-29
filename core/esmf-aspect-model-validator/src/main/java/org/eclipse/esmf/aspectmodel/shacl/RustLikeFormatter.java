@@ -143,7 +143,7 @@ public class RustLikeFormatter {
          builder.append( String.format( "%" + ( prefixWidth - 1 ) + "d", currentLine ) ).append( " | " ).append( entry.getValue() )
                .append( System.lineSeparator() );
          if ( currentLine == lineNumber ) {
-            builder.append( prefix ).append( " ".repeat( columnNumber ) )
+            builder.append( prefix ).repeat( " ", columnNumber )
                   .append( textFormatter.formatError( "^".repeat( tokenLength ) + " " + errorMessage ) ).append( System.lineSeparator() );
          }
       } );

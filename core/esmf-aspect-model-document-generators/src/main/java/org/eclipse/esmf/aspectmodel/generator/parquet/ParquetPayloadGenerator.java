@@ -137,7 +137,7 @@ class ParquetPayloadGenerator implements AspectVisitor<Map<String, Object>, Parq
 
    @Override
    public Map<String, Object> visitAbstractEntity( final AbstractEntity abstractEntity, final Context context ) {
-      final ComplexType extendingComplexType = abstractEntity.getExtendingElements().get( 0 );
+      final ComplexType extendingComplexType = abstractEntity.getExtendingElements().getFirst();
       final Map<String, Object> generatedProperties = transformProperties( extendingComplexType.getAllProperties(),
             !context.ignoreExampleValue() );
       if ( addTypeAttributeForEntityInheritance ) {
@@ -269,7 +269,7 @@ class ParquetPayloadGenerator implements AspectVisitor<Map<String, Object>, Parq
                .toList();
          return !constraints.isEmpty()
                ? toMap( property.getPayloadName(), getCollectionValues( property, collection,
-                     (LengthConstraint) characteristic.as( Trait.class ).getConstraints().get( 0 ) ) )
+                     (LengthConstraint) characteristic.as( Trait.class ).getConstraints().getFirst() ) )
                : toMap( property.getPayloadName(), getCollectionValues( property, collection ) );
       }
 
@@ -344,7 +344,7 @@ class ParquetPayloadGenerator implements AspectVisitor<Map<String, Object>, Parq
          return characteristic.as( State.class ).getDefaultValue();
       }
       if ( characteristic.is( Enumeration.class ) ) {
-         return characteristic.as( Enumeration.class ).getValues().get( 0 );
+         return characteristic.as( Enumeration.class ).getValues().getFirst();
       }
 
       Optional<Characteristic> elementCharacteristics = Optional.empty();

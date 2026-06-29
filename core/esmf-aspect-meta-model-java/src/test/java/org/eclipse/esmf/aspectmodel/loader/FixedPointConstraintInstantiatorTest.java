@@ -26,8 +26,8 @@ class FixedPointConstraintInstantiatorTest extends AbstractAspectModelInstantiat
    @Test
    void testFixedPointConstraintInstantiationExpectSuccess() {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_FIXED_POINT );
-      final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic().get();
-      final FixedPointConstraint fixedPointConstraint = (FixedPointConstraint) trait.getConstraints().get( 0 );
+      final Trait trait = (Trait) aspect.getProperties().getFirst().getCharacteristic().get();
+      final FixedPointConstraint fixedPointConstraint = (FixedPointConstraint) trait.getConstraints().getFirst();
 
       assertBaseAttributes( fixedPointConstraint,
             "Test Fixed Point",

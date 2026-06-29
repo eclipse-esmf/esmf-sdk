@@ -54,7 +54,7 @@ public class OsProcessLauncher extends ProcessLauncher<Process> {
          commandWithAllArguments.addAll( commandWithArguments );
          commandWithAllArguments.addAll( context.arguments() );
          LOG.info( "Launch process in working dir {} with args: {} {}",
-               context.workingDirectory(), commandWithAllArguments.get( 0 ), commandWithAllArguments.stream()
+               context.workingDirectory(), commandWithAllArguments.getFirst(), commandWithAllArguments.stream()
                      .skip( 1 )
                      .map( argument -> String.format( "\"%s\"", argument ) )
                      .collect( Collectors.joining( " " ) ) );

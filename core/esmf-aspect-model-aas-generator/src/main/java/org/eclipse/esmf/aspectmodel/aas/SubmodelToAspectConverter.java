@@ -28,8 +28,8 @@ import java.util.stream.Stream;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.jena.iri.IRI;
-import org.apache.jena.iri.IRIFactory;
+import org.apache.jena.rfc3986.IRI;
+import org.apache.jena.rfc3986.RFC3986;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
 import org.eclipse.digitaltwin.aas4j.v3.model.AasSubmodelElements;
@@ -84,6 +84,8 @@ import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.vavr.control.Try;
 
 class SubmodelToAspectConverter {
    private static final String EXAMPLE_NAMESPACE = "com.example";
@@ -162,8 +164,10 @@ class SubmodelToAspectConverter {
    }
 
    private Optional<IRI> iri( final String lexicalRepresentation ) {
-      final IRI iri = IRIFactory.iriImplementation().create( lexicalRepresentation );
-      return iri.hasViolation( true ) ? Optional.empty() : Optional.of( iri );
+      return Try.of( () -> RFC3986.create( lexicalRepresentation ) )
+            .toJavaOptional()
+            .filter( iri -> !iri.hasViolations() )
+            .map( IRI.class::cast );
    }
 
    private VersionNumber determineAspectModelUrnVersion( final Submodel submodel ) {
@@ -421,17 +425,17 @@ class SubmodelToAspectConverter {
          final boolean upperCase, final boolean includeSee, final boolean useSemanticIdUrnForAutomaticNames ) {
       final ElementName elementName;
       final AspectModelUrn urn;
-      if ( elementNamingStrategy instanceof final DetermineAutomatically automatically ) {
-         elementName = determineSubmodelElementName( element, automatically.namePrefix(), upperCase, automatically.appendElementIdShort() );
+      if ( elementNamingStrategy instanceof DetermineAutomatically( String namePrefix, boolean appendElementIdShort ) ) {
+         elementName = determineSubmodelElementName( element, namePrefix, upperCase, appendElementIdShort );
          final String uniqueName = nextUniqueName( elementName.name() );
          final boolean useSemanticIdUrn =
-               useSemanticIdUrnForAutomaticNames && automatically.namePrefix().isEmpty() && automatically.appendElementIdShort();
+               useSemanticIdUrnForAutomaticNames && namePrefix.isEmpty() && appendElementIdShort;
          urn = useSemanticIdUrn
                ? aspectModelUrnFromSemanticId( element ).orElseGet( () -> aspectUrn.withName( uniqueName ) )
                : aspectUrn.withName( uniqueName );
-      } else if ( elementNamingStrategy instanceof final UseGivenUrn givenUrn ) {
+      } else if ( elementNamingStrategy instanceof UseGivenUrn( AspectModelUrn aspectModelUrn ) ) {
          elementName = determineSubmodelElementName( element, "", upperCase, true );
-         urn = givenUrn.aspectModelUrn();
+         urn = aspectModelUrn;
       } else {
          throw new AspectModelGenerationException( "Unknown ElementNamingStrategy" );
       }

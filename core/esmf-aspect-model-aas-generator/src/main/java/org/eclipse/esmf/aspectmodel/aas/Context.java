@@ -122,7 +122,7 @@ public class Context {
    }
 
    public SubmodelElement getPropertyResult() {
-      propertyPath.remove( propertyPath.size() - 1 );
+      propertyPath.removeLast();
       return propertyResult;
    }
 
@@ -191,7 +191,7 @@ public class Context {
     */
    public String getPropertyValue( final String defaultValue ) {
       return getRawPropertyValue()
-            .flatMap( valueNode -> Optional.ofNullable( valueNode.asText() ) )
+            .flatMap( valueNode -> Optional.ofNullable( valueNode.asString() ) )
             .or( this::getExampleValue )
             .orElse( defaultValue );
    }

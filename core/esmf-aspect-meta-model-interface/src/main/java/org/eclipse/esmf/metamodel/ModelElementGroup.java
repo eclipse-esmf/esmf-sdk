@@ -45,6 +45,6 @@ public interface ModelElementGroup {
       if ( aspects.isEmpty() ) {
          throw new NoSuchElementException();
       }
-      return aspects().get( 0 );
+      return aspects().getFirst();
    }
 }

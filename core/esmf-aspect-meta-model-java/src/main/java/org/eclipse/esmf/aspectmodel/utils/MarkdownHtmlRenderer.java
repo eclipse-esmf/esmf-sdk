@@ -182,7 +182,7 @@ public class MarkdownHtmlRenderer {
 
          case "EXAMPLE" -> {
             if ( items.size() == 1 ) {
-               yield "<div class=\"example\">" + renderMarkdownInline( items.get( 0 ).strip() ) + CLOSE_DIV_TAG + "\n";
+               yield "<div class=\"example\">" + renderMarkdownInline( items.getFirst().strip() ) + CLOSE_DIV_TAG + "\n";
             } else {
                final StringBuilder sb = new StringBuilder( "<ul class=\"example-list\">\n" );
                for ( final String item : items ) {

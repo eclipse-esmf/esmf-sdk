@@ -15,10 +15,10 @@ package org.eclipse.esmf.test.shared;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.assertj.core.api.ListAssert;
+
 import org.eclipse.esmf.metamodel.Event;
 import org.eclipse.esmf.metamodel.Property;
-
-import org.assertj.core.api.ListAssert;
 
 /**
  * Assert for {@link Event}.
@@ -37,7 +37,7 @@ public class EventAssert<SELF extends EventAssert<SELF, ACTUAL>, ACTUAL extends 
    @SuppressWarnings( "unchecked" )
    public <S extends PropertyAssert<S, A>, A extends Property> PropertyAssert<S, A> hasSinglePropertyThat() {
       assertThat( actual.getProperties() ).hasSize( 1 );
-      return new PropertyAssert<>( (A) actual.getProperties().get( 0 ) );
+      return new PropertyAssert<>( (A) actual.getProperties().getFirst() );
    }
 
    public ListAssert<Property> properties() {

@@ -55,7 +55,7 @@ public record ClosedViolation(
             .toList();
       final String allowedText = switch ( allowed.size() ) {
          case 0 -> "no properties are allowed";
-         case 1 -> "only " + allowed.iterator().next() + " is allowed";
+         case 1 -> "only " + allowed.getFirst() + " is allowed";
          default -> "allowed are only " + allowed;
       };
 

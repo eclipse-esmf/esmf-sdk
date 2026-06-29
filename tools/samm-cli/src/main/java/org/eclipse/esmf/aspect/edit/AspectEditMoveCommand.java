@@ -270,6 +270,6 @@ public class AspectEditMoveCommand extends AbstractCommand {
                + "\nPlease use the element's full URN." );
          System.exit( 1 );
       }
-      return potentialElements.get( 0 );
+      return potentialElements.getFirst();
    }
 }

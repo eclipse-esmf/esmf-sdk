@@ -25,6 +25,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.assertj.core.api.Assertions;
+
 import org.eclipse.esmf.aspectmodel.AspectLoadingException;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.ValueParsingException;
@@ -39,7 +41,6 @@ import org.eclipse.esmf.test.OrderingTestAspect;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
@@ -118,13 +119,13 @@ class AspectModelLoaderTest {
 
    @Test
    void testLoadMultipleFilesWithOverlappingRdfStatements() {
-      final AspectModelFile rawFile1 = TestResources.load( TestAspect.ASPECT_WITH_PROPERTY ).files().iterator().next();
+      final AspectModelFile rawFile1 = TestResources.load( TestAspect.ASPECT_WITH_PROPERTY ).files().getFirst();
       final AspectModelFile file1 = RawAspectModelFileBuilder.builder()
             .sourceLocation( Optional.of( URI.create( rawFile1.sourceLocation().get() + "-first-instance" ) ) )
             .sourceModel( rawFile1.sourceModel() )
             .headerComment( rawFile1.headerComment() )
             .build();
-      final AspectModelFile rawFile2 = TestResources.load( TestAspect.ASPECT_WITH_PROPERTY ).files().iterator().next();
+      final AspectModelFile rawFile2 = TestResources.load( TestAspect.ASPECT_WITH_PROPERTY ).files().getFirst();
       final AspectModelFile file2 = RawAspectModelFileBuilder.builder()
             .sourceLocation( Optional.of( URI.create( rawFile2.sourceLocation().get() + "-second-instance" ) ) )
             .sourceModel( rawFile2.sourceModel() )

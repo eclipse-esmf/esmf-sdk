@@ -38,7 +38,7 @@ public class IntegerCollectionMapper implements PropertyMapper<SubmodelElementLi
             .flatMap( arrayNode -> StreamSupport.stream( arrayNode.spliterator(), false )
                   .map( value -> new DefaultProperty.Builder().idShort( "intValue" )
                         .valueType( DataTypeDefXsd.INT )
-                        .value( value.asText() )
+                        .value( value.asString() )
                         .build() ) )
             .toList();
 

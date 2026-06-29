@@ -397,7 +397,7 @@ class AspectModelOpenApiGeneratorTest {
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
       assertThat( openApi.getPaths() ).containsKey( "/{tenant-id}/aspect-with-collection" );
-      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 0 ).getName() ).isEqualTo(
+      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().getFirst().getName() ).isEqualTo(
             "tenant-id" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 1 ).getName() ).isEqualTo(
             "start" );
@@ -424,7 +424,7 @@ class AspectModelOpenApiGeneratorTest {
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
       assertThat( openApi.getPaths() ).containsKey( "/{tenant-id}/aspect-with-time-series" );
-      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 0 ).getName() ).isEqualTo(
+      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().getFirst().getName() ).isEqualTo(
             "tenant-id" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 1 ).getName() ).isEqualTo(
             "since" );
@@ -450,7 +450,7 @@ class AspectModelOpenApiGeneratorTest {
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
       assertThat( openApi.getPaths() ).containsKey( "/{tenant-id}/aspect-with-collection" );
-      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 0 ).getName() ).isEqualTo(
+      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().getFirst().getName() ).isEqualTo(
             "tenant-id" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 1 ).getName() ).isEqualTo(
             "before" );
@@ -487,7 +487,7 @@ class AspectModelOpenApiGeneratorTest {
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
       assertThat( openApi.getPaths() ).containsKey( "/{tenant-id}/aspect-with-collection" );
-      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 0 ).getName() ).isEqualTo(
+      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().getFirst().getName() ).isEqualTo(
             "tenant-id" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 1 ).getName() ).isEqualTo(
             "start" );
@@ -754,7 +754,7 @@ class AspectModelOpenApiGeneratorTest {
       final Schema<?> pagingSchema = openApi.getComponents().getSchemas().get( "PagingSchema" );
       assertThat( pagingSchema ).isNotNull();
 
-      final String propertyName = aspect.getProperties().get( 0 ).getName();
+      final String propertyName = aspect.getProperties().getFirst().getName();
 
       final Schema<?> property = (Schema<?>) pagingSchema.getProperties().get( propertyName );
       assertThat( property ).isNotNull();
@@ -801,7 +801,7 @@ class AspectModelOpenApiGeneratorTest {
 
       final List<Schema> allOfSchemas = property.getAllOf();
       assertThat( allOfSchemas ).isNotNull().hasSize( 1 );
-      assertThat( allOfSchemas.get( 0 ).get$ref() ).isEqualTo( "#/components/schemas/TestCollection" );
+      assertThat( allOfSchemas.getFirst().get$ref() ).isEqualTo( "#/components/schemas/TestCollection" );
 
       if ( property.getExtensions() != null && property.getExtensions().containsKey( "x-comment" ) ) {
          assertThat( property.getExtensions().get( "x-comment" ).toString() ).contains( "http://example.com/" );
@@ -950,7 +950,7 @@ class AspectModelOpenApiGeneratorTest {
       assertThat( node.get( "info" ).get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION ).asString() ).isEqualTo( aspect.urn().toString() );
 
       assertThat( openApi.getServers() ).hasSize( 1 );
-      assertThat( openApi.getServers().get( 0 ).getUrl() ).isEqualTo( TEST_BASE_URL + "/api/" + expectedApiVersion );
+      assertThat( openApi.getServers().getFirst().getUrl() ).isEqualTo( TEST_BASE_URL + "/api/" + expectedApiVersion );
 
       assertThat( openApi.getPaths().keySet() ).noneMatch( path -> path.contains( "/query-api" ) );
       openApi.getPaths().entrySet().stream().filter( item -> !item.getKey().contains( "/operations" ) )

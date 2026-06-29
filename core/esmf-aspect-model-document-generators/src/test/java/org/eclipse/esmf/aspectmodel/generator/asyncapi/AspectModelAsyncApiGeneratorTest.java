@@ -165,8 +165,8 @@ class AspectModelAsyncApiGeneratorTest {
                                  }
                               """ );
 
-      assertThat( json.get( "info" ).get( "title" ).asText() ).isEqualTo( "Test Aspect MQTT API" );
-      assertThat( json.get( "info" ).get( "description" ).asText() ).isEqualTo( "This is a test description" );
+      assertThat( json.get( "info" ).get( "title" ).asString() ).isEqualTo( "Test Aspect MQTT API" );
+      assertThat( json.get( "info" ).get( "description" ).asString() ).isEqualTo( "This is a test description" );
       assertThat( json.get( "channels" ) ).isEqualTo( expectedChannels );
       assertThat( json.get( "components" ).get( "messages" ) ).isEqualTo( expectedComponentsMessages );
       assertThat( json.get( "components" ).get( "schemas" ) ).isEqualTo(
@@ -309,8 +309,8 @@ class AspectModelAsyncApiGeneratorTest {
                               """
       );
 
-      assertThat( json.get( "info" ).get( "title" ).asText() ).isEqualTo( "AspectWithOperation MQTT API" );
-      assertThat( json.get( "info" ).get( "description" ).asText() ).isEmpty();
+      assertThat( json.get( "info" ).get( "title" ).asString() ).isEqualTo( "AspectWithOperation MQTT API" );
+      assertThat( json.get( "info" ).get( "description" ).asString() ).isEmpty();
       assertThat( json.get( "channels" ) ).isEqualTo( expectedChannels );
       assertThat( json.get( "components" ).get( "messages" ) ).isEqualTo( expectedComponentsMessages );
       assertThat( json.get( "components" ).get( "schemas" ) ).isEqualTo( expectedComponentsSchemas );
@@ -420,8 +420,8 @@ class AspectModelAsyncApiGeneratorTest {
                               """
       );
 
-      assertThat( json.get( "info" ).get( "title" ).asText() ).isEqualTo( "Test Aspect MQTT API" );
-      assertThat( json.get( "info" ).get( "description" ).asText() ).isEqualTo( "This is a test description" );
+      assertThat( json.get( "info" ).get( "title" ).asString() ).isEqualTo( "Test Aspect MQTT API" );
+      assertThat( json.get( "info" ).get( "description" ).asString() ).isEqualTo( "This is a test description" );
       assertThat( json.get( "channels" ) ).isEqualTo( expectedChannels );
       assertThat( json.get( "components" ).get( "messages" ) ).isEqualTo( expectedComponentsMessages );
       assertThat( json.get( "components" ).get( "schemas" ) ).isEqualTo( expectedComponentsSchemas );

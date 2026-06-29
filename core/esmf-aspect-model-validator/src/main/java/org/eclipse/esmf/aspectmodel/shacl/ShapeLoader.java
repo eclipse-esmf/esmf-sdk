@@ -24,6 +24,18 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.jena.query.ParameterizedSparqlString;
+import org.apache.jena.query.Query;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFList;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.util.PrintUtil;
+import org.apache.jena.vocabulary.RDF;
+
 import org.eclipse.esmf.aspectmodel.shacl.constraint.AllowedLanguagesConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.AllowedValuesConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.AndConstraint;
@@ -64,17 +76,6 @@ import org.eclipse.esmf.aspectmodel.shacl.path.ZeroOrOnePath;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Streams;
-import org.apache.jena.query.ParameterizedSparqlString;
-import org.apache.jena.query.Query;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.RDFList;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.rdf.model.StmtIterator;
-import org.apache.jena.util.PrintUtil;
-import org.apache.jena.vocabulary.RDF;
 
 /**
  * Takes an RDF model describing one or more SHACL shapes as input and parses them into
@@ -135,7 +136,8 @@ public class ShapeLoader implements Function<Model, List<Shape.Node>> {
                .put( SHACL.lessThanOrEquals(), context -> new LessThanOrEqualsConstraint(
                      context.statement().getModel().createProperty( context.statement().getResource().getURI() ) ) )
                .put( SHACL.not(),
-                     context -> new NotConstraint( constraints( context.statement().getObject().asResource(), context.path() ).get( 0 ) ) )
+                     context -> new NotConstraint(
+                           constraints( context.statement().getObject().asResource(), context.path() ).getFirst() ) )
                .put( SHACL.and(), context -> new AndConstraint( nestedShapesList( context.statement() ) ) )
                .put( SHACL.or(), context -> new OrConstraint( nestedShapesList( context.statement() ) ) )
                .put( SHACL.xone(), context -> new XoneConstraint( nestedShapesList( context.statement() ) ) )

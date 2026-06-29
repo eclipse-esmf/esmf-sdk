@@ -19,6 +19,14 @@ import static org.eclipse.esmf.aspectmodel.RdfUtil.createModel;
 import java.math.BigInteger;
 import java.util.List;
 
+import org.apache.jena.graph.Node_URI;
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.XSD;
+
 import org.eclipse.esmf.aspectmodel.shacl.constraint.DatatypeConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.MinCountConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.NodeKindConstraint;
@@ -54,13 +62,7 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.XoneViolation;
 import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
 
-import org.apache.jena.graph.Node_URI;
-import org.apache.jena.rdf.model.Literal;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.vocabulary.XSD;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -69,7 +71,12 @@ import org.junit.jupiter.api.Test;
 public class ShaclValidatorTest {
    private final String namespace = "http://example.com#";
 
-   final ViolationFormatter formatter = new ViolationFormatter();
+   private ViolationFormatter formatter;
+
+   @BeforeEach
+   void beforeEach() {
+      formatter = new ViolationFormatter();
+   }
 
    @Test
    public void testLoadingCustomShape() {
@@ -96,14 +103,14 @@ public class ShaclValidatorTest {
       final ShaclValidator validator = new ShaclValidator( shapesModel );
       assertThat( validator.getShapes().size() ).isEqualTo( 1 );
 
-      final Shape.Node shape = validator.getShapes().get( 0 );
+      final Shape.Node shape = validator.getShapes().getFirst();
       assertThat( shape.attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( shape.attributes().name() ).hasValue( "Test shape" );
       assertThat( shape.attributes().description() ).hasValue( "Test shape description" );
       assertThat( shape.attributes().targetClass() ).hasValue( ResourceFactory.createResource( namespace + "TestClass" ) );
 
       assertThat( shape.properties().size() ).isEqualTo( 1 );
-      final Shape.Property property = shape.properties().get( 0 );
+      final Shape.Property property = shape.properties().getFirst();
       assertThat( property.attributes().name() ).hasValue( "Test property" );
       assertThat( property.attributes().description() ).hasValue( "Test description" );
       assertThat( property.attributes().constraints() ).hasOnlyElementsOfTypes( DatatypeConstraint.class, MinCountConstraint.class );
@@ -151,7 +158,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( ClassTypeViolation.class );
       final ClassTypeViolation violation = (ClassTypeViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
@@ -200,7 +207,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( DatatypeViolation.class );
       final DatatypeViolation violation = (DatatypeViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
@@ -249,7 +256,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( NodeKindViolation.class );
       final NodeKindViolation violation = (NodeKindViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
@@ -294,7 +301,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( MinCountViolation.class );
       final MinCountViolation violation = (MinCountViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
@@ -339,7 +346,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 2 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( MaxCountViolation.class );
       final MaxCountViolation violation = (MaxCountViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
@@ -383,7 +390,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( MinExclusiveViolation.class );
       final MinExclusiveViolation violation = (MinExclusiveViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
@@ -429,7 +436,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( MinInclusiveViolation.class );
       final MinInclusiveViolation violation = (MinInclusiveViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
@@ -476,7 +483,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( MaxExclusiveViolation.class );
       final MaxExclusiveViolation violation = (MaxExclusiveViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
@@ -522,7 +529,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( MaxInclusiveViolation.class );
       final MaxInclusiveViolation violation = (MaxInclusiveViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
@@ -569,7 +576,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( MinLengthViolation.class );
       final MinLengthViolation violation = (MinLengthViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
@@ -616,7 +623,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( MaxLengthViolation.class );
       final MaxLengthViolation violation = (MaxLengthViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
@@ -667,7 +674,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( PatternViolation.class );
       final PatternViolation violation = (PatternViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
@@ -717,7 +724,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( LanguageFromListViolation.class );
       final LanguageFromListViolation violation = (LanguageFromListViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
@@ -769,7 +776,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( EqualsViolation.class );
       final EqualsViolation violation = (EqualsViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
@@ -822,7 +829,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( DisjointViolation.class );
       final DisjointViolation violation = (DisjointViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
@@ -873,7 +880,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( LessThanViolation.class );
       final LessThanViolation violation = (LessThanViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
@@ -925,7 +932,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( LessThanOrEqualsViolation.class );
       final LessThanOrEqualsViolation violation = (LessThanOrEqualsViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
@@ -978,7 +985,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 2 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( UniqueLanguageViolation.class );
       final UniqueLanguageViolation violation = (UniqueLanguageViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
@@ -1026,7 +1033,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( InvalidValueViolation.class );
       final InvalidValueViolation violation = (InvalidValueViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
@@ -1072,7 +1079,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( ValueFromListViolation.class );
       final ValueFromListViolation violation = (ValueFromListViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
@@ -1129,7 +1136,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( InvalidValueViolation.class );
       final InvalidValueViolation violation = (InvalidValueViolation) finding;
       final Resource nestedElement = dataModel.createResource( namespace + "Bar" );
@@ -1236,7 +1243,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( ClosedViolation.class );
       final ClosedViolation violation = (ClosedViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
@@ -1297,31 +1304,31 @@ public class ShaclValidatorTest {
       final Model dataModel = createModel( """
          @prefix : <http://example.com#> .
          @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-         :Foo a :TestClass ;
-           :testProperty "foo" .
+         :FooX a :TestClass ;
+           :testProperty "foox" .
 
-         :Bar a :TestClass ;
+         :BarX a :TestClass ;
            :testProperty "secret valid value" .
          """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
-      final Resource element = dataModel.createResource( namespace + "Foo" );
+      final Resource element = dataModel.createResource( namespace + "FooX" );
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( SparqlConstraintViolation.class );
       final SparqlConstraintViolation violation = (SparqlConstraintViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
       assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
-      assertThat( violation.context().elementName() ).isEqualTo( ":Foo" );
-      assertThat( violation.message() ).isEqualTo( "Constraint was violated on :Foo, value was foo." );
+      assertThat( violation.context().elementName() ).isEqualTo( ":FooX" );
+      assertThat( violation.message() ).isEqualTo( "Constraint was violated on :FooX, value was foox." );
       assertThat( violation.errorCode() ).isEqualTo( "ERR_CUSTOM" );
 
       final String formattedMessage = formatter.visit( finding );
       assertThat( formattedMessage ).contains( "Error at line 4" );
-      assertThat( formattedMessage ).contains( ":testProperty \"foo\" ." );
-      assertThat( formattedMessage ).contains( " " + "^".repeat( "\"foo\"".length() ) );
+      assertThat( formattedMessage ).contains( ":testProperty \"foox\" ." );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( "\"foox\"".length() ) );
    }
 
    @Test
@@ -1365,7 +1372,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( JsConstraintViolation.class );
       final JsConstraintViolation violation = (JsConstraintViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
@@ -1421,7 +1428,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( JsConstraintViolation.class );
       final JsConstraintViolation violation = (JsConstraintViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
@@ -1470,7 +1477,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( InvalidValueViolation.class );
       final InvalidValueViolation violation = (InvalidValueViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
@@ -1517,7 +1524,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( InvalidValueViolation.class );
       final InvalidValueViolation violation = (InvalidValueViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
@@ -1564,7 +1571,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( InvalidValueViolation.class );
       final InvalidValueViolation violation = (InvalidValueViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
@@ -1614,7 +1621,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( NodeKindViolation.class );
       final NodeKindViolation violation = (NodeKindViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
@@ -1664,7 +1671,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( NodeKindViolation.class );
       final NodeKindViolation violation = (NodeKindViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
@@ -1712,7 +1719,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( NodeKindViolation.class );
       final NodeKindViolation violation = (NodeKindViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
@@ -1762,7 +1769,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( NotViolation.class );
       final NotViolation violation = (NotViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
@@ -1815,7 +1822,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( NodeKindViolation.class );
       final NodeKindViolation violation = (NodeKindViolation) finding;
       assertThat( violation.context().parentContext().map( EvaluationContext::element ) ).contains( element );
@@ -1923,7 +1930,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( XoneViolation.class );
       final XoneViolation violation = (XoneViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
@@ -1931,8 +1938,8 @@ public class ShaclValidatorTest {
       assertThat( violation.context().propertyName() ).isEqualTo( ":testProperty" );
       assertThat( violation.context().elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.violations() ).hasSize( 1 );
-      assertThat( violation.violations().get( 0 ) ).isInstanceOf( NodeKindViolation.class );
-      final NodeKindViolation nestedViolation = (NodeKindViolation) violation.violations().get( 0 );
+      assertThat( violation.violations().getFirst() ).isInstanceOf( NodeKindViolation.class );
+      final NodeKindViolation nestedViolation = (NodeKindViolation) violation.violations().getFirst();
       assertThat( nestedViolation.allowedNodeKind() ).isEqualTo( Shape.NodeKind.IRI );
       assertThat( nestedViolation.actualNodeKind() ).isEqualTo( Shape.NodeKind.Literal );
       assertThat( nestedViolation.message() ).isEqualTo( "Property :testProperty on :Foo is a value, but it must be a named element." );
@@ -1984,7 +1991,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( XoneViolation.class );
       final XoneViolation violation = (XoneViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
@@ -2078,7 +2085,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( XoneViolation.class );
       assertThat( finding.message() ).startsWith( "Exactly one of the following violations must be fixed:" );
       assertThat( finding.message() ).contains( "Mandatory property :foo is missing on :Foo" );
@@ -2146,7 +2153,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( MaxLengthViolation.class );
    }
 
@@ -2212,7 +2219,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( SparqlConstraintViolation.class );
    }
 
@@ -2277,7 +2284,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElement( element );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
+      final Violation finding = violations.getFirst();
       assertThat( finding ).isInstanceOf( SparqlConstraintViolation.class );
    }
 
@@ -2344,7 +2351,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElements( List.of( foo, bar ) );
 
       assertThat( violations.size() ).isEqualTo( 2 );
-      assertThat( violations.get( 0 ) ).isInstanceOf( SparqlConstraintViolation.class );
+      assertThat( violations.getFirst() ).isInstanceOf( SparqlConstraintViolation.class );
       assertThat( violations.get( 1 ) ).isInstanceOf( SparqlConstraintViolation.class );
    }
 
@@ -2383,7 +2390,7 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElements( List.of( foo, bar ) );
 
       assertThat( violations.size() ).isEqualTo( 2 );
-      assertThat( violations.get( 0 ) ).isInstanceOf( DatatypeViolation.class );
+      assertThat( violations.getFirst() ).isInstanceOf( DatatypeViolation.class );
       assertThat( violations.get( 1 ) ).isInstanceOf( DatatypeViolation.class );
    }
 
@@ -2422,6 +2429,6 @@ public class ShaclValidatorTest {
       final List<Violation> violations = validator.validateElements( List.of( foo, bar ) );
 
       assertThat( violations.size() ).isEqualTo( 1 );
-      assertThat( violations.get( 0 ) ).isInstanceOf( DatatypeViolation.class );
+      assertThat( violations.getFirst() ).isInstanceOf( DatatypeViolation.class );
    }
 }

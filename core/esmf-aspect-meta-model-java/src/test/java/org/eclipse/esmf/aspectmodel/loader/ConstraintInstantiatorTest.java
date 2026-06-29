@@ -37,8 +37,8 @@ public class ConstraintInstantiatorTest extends AbstractAspectModelInstantiatorT
 
       assertThat( aspect ).properties().hasSize( 1 );
 
-      final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic().get();
-      final LanguageConstraint languageConstraint = (LanguageConstraint) trait.getConstraints().get( 0 );
+      final Trait trait = (Trait) aspect.getProperties().getFirst().getCharacteristic().get();
+      final LanguageConstraint languageConstraint = (LanguageConstraint) trait.getConstraints().getFirst();
 
       assertBaseAttributes( languageConstraint,
             "Test Language Constraint",
@@ -54,8 +54,8 @@ public class ConstraintInstantiatorTest extends AbstractAspectModelInstantiatorT
 
       assertThat( aspect ).properties().hasSize( 1 );
 
-      final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic().get();
-      final EncodingConstraint encodingConstraint = (EncodingConstraint) trait.getConstraints().get( 0 );
+      final Trait trait = (Trait) aspect.getProperties().getFirst().getCharacteristic().get();
+      final EncodingConstraint encodingConstraint = (EncodingConstraint) trait.getConstraints().getFirst();
 
       assertBaseAttributes( encodingConstraint,
             "Test Encoding Constraint",
@@ -71,8 +71,8 @@ public class ConstraintInstantiatorTest extends AbstractAspectModelInstantiatorT
 
       assertThat( aspect ).properties().hasSize( 1 );
 
-      final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic().get();
-      final LengthConstraint lengthConstraint = (LengthConstraint) trait.getConstraints().get( 0 );
+      final Trait trait = (Trait) aspect.getProperties().getFirst().getCharacteristic().get();
+      final LengthConstraint lengthConstraint = (LengthConstraint) trait.getConstraints().getFirst();
 
       assertBaseAttributes( lengthConstraint,
             "Test Length Constraint",
@@ -89,9 +89,9 @@ public class ConstraintInstantiatorTest extends AbstractAspectModelInstantiatorT
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic().get();
+      final Trait trait = (Trait) aspect.getProperties().getFirst().getCharacteristic().get();
       final RegularExpressionConstraint regularExpressionConstraint = (RegularExpressionConstraint) trait
-            .getConstraints().get( 0 );
+            .getConstraints().getFirst();
 
       assertBaseAttributes( regularExpressionConstraint,
             "Test Regular Expression Constraint",

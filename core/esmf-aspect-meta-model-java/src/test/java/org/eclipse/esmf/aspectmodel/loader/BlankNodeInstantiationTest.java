@@ -27,7 +27,7 @@ public class BlankNodeInstantiationTest extends AbstractAspectModelInstantiatorT
    void testBlankNodeInstantiation() {
       final Aspect aspect = loadAspect( TestAspect.MODEL_WITH_BLANK_AND_ADDITIONAL_NODES );
       assertThat( aspect ).properties().hasSize( 1 );
-      final List list = (List) aspect.getProperties().get( 0 ).getCharacteristic().get();
+      final List list = (List) aspect.getProperties().getFirst().getCharacteristic().get();
       final Characteristic characteristic = list.getElementCharacteristic().get();
       assertThat( characteristic ).isAnonymous();
       assertThat( characteristic ).name().startsWith( "x" );

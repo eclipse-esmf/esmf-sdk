@@ -58,4 +58,11 @@ public class TokenRegistry {
          TOKENS.put( newNode, token );
       }
    }
+
+   /**
+    * Delete all token location information from the registry
+    */
+   public static synchronized void clear() {
+      TOKENS.clear();
+   }
 }

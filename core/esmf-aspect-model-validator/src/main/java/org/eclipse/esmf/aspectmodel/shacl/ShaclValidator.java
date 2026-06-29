@@ -22,16 +22,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.eclipse.esmf.aspectmodel.shacl.constraint.Constraint;
-import org.eclipse.esmf.aspectmodel.shacl.constraint.MinCountConstraint;
-import org.eclipse.esmf.aspectmodel.shacl.constraint.SparqlConstraint;
-import org.eclipse.esmf.aspectmodel.shacl.path.PathNodeRetriever;
-import org.eclipse.esmf.aspectmodel.shacl.path.PredicatePath;
-import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
-import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
-import org.eclipse.esmf.aspectmodel.validation.RdfBasedValidator;
-
-import com.google.common.collect.Streams;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
@@ -44,6 +34,17 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
+
+import org.eclipse.esmf.aspectmodel.shacl.constraint.Constraint;
+import org.eclipse.esmf.aspectmodel.shacl.constraint.MinCountConstraint;
+import org.eclipse.esmf.aspectmodel.shacl.constraint.SparqlConstraint;
+import org.eclipse.esmf.aspectmodel.shacl.path.PathNodeRetriever;
+import org.eclipse.esmf.aspectmodel.shacl.path.PredicatePath;
+import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
+import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+import org.eclipse.esmf.aspectmodel.validation.RdfBasedValidator;
+
+import com.google.common.collect.Streams;
 
 /**
  * Implementation of a SHACL engine that allows validation on a per-element basis:
@@ -167,7 +168,7 @@ public class ShaclValidator implements RdfBasedValidator<Violation, List<Violati
 
    public List<Violation> validateElements( final List<Resource> elements ) {
       final Map<Resource, List<Shape.Node>> sparqlTargets = !elements.isEmpty()
-            ? findSparqlTargets( elements.get( 0 ).getModel() )
+            ? findSparqlTargets( elements.getFirst().getModel() )
             : Map.of();
       return elements.stream().flatMap( element -> validateElement( element, sparqlTargets, element.getModel() ).stream() ).toList();
    }

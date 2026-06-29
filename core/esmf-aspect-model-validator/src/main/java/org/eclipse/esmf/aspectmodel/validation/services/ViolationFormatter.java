@@ -187,7 +187,7 @@ public class ViolationFormatter implements Function<List<Violation>, String>, Vi
     *
     * @param sourceDocument the source document
     * @param line the line to focus on
-    * @return the lines in in the context of the focus line
+    * @return the lines in the context of the focus line
     */
    protected Map<Integer, String> sourceContext( final String sourceDocument, final long line ) {
       final List<String> listOfLines = sourceDocument.lines().toList();
