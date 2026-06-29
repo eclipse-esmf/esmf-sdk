@@ -261,7 +261,7 @@ public class PrettyPrinter {
          if ( isValueList ) {
             builder.append( INDENT );
          }
-         builder.append( INDENT.repeat( nestedIndendationLevel ) );
+         builder.repeat( INDENT, nestedIndendationLevel );
          builder.append( serialize( listNode, nestedIndendationLevel ) );
          i++;
          if ( i < listContent.size() ) {
@@ -269,7 +269,7 @@ public class PrettyPrinter {
          }
       }
       builder.append( "\n" );
-      builder.append( INDENT.repeat( indentationLevel + 1 ) );
+      builder.repeat( INDENT, indentationLevel + 1 );
       builder.append( ")" );
       return builder.toString();
    }

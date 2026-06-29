@@ -130,7 +130,7 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
    public AspectModelLoader( final List<ResolutionStrategy> resolutionStrategies ) {
       TurtleLoader.init();
       if ( 1 == resolutionStrategies.size() ) {
-         resolutionStrategy = resolutionStrategies.get( 0 );
+         resolutionStrategy = resolutionStrategies.getFirst();
       } else if ( resolutionStrategies.isEmpty() ) {
          resolutionStrategy = DEFAULT_STRATEGY.get();
       } else {

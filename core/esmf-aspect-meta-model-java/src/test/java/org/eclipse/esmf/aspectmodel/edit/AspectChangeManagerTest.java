@@ -68,7 +68,7 @@ class AspectChangeManagerTest {
       final Change renameAspect = new RenameElement( aspect, newName );
       changeManager.applyChange( renameAspect );
       assertThat( aspectModel ).hasSingleAspectThat().hasName( newName );
-      assertThat( aspectModel.files().get( 0 ).sourceModel().listStatements( null, RDF.type, SammNs.SAMM.Aspect() )
+      assertThat( aspectModel.files().getFirst().sourceModel().listStatements( null, RDF.type, SammNs.SAMM.Aspect() )
             .nextStatement().getSubject().getURI() ).endsWith( newName );
       assertThat( changeManager.modifiedFiles() ).hasSize( 1 );
 
@@ -106,7 +106,7 @@ class AspectChangeManagerTest {
       final Aspect aspect = aspectModel.aspect();
 
       final AspectModelUrn aspectUrn = aspect.urn();
-      final Property property = aspect.getProperties().get( 0 );
+      final Property property = aspect.getProperties().getFirst();
 
       final String newAspectName = "RenamedAspect";
       final String newPropertyName = "renamedProperty";
@@ -151,7 +151,7 @@ class AspectChangeManagerTest {
       assertThat( aspectModel ).files().hasSize( 1 );
       assertThat( aspectModel ).elements().isEmpty();
       final AspectChangeManager changeManager = new AspectChangeManager( aspectModel );
-      changeManager.applyChange( new RemoveAspectModelFile( aspectModel.files().get( 0 ) ) );
+      changeManager.applyChange( new RemoveAspectModelFile( aspectModel.files().getFirst() ) );
       assertThat( changeManager.removedFiles() ).hasSize( 1 );
       assertThat( aspectModel ).files().isEmpty();
       changeManager.undoChange();
@@ -438,18 +438,18 @@ class AspectChangeManagerTest {
    @Test
    void testCopyNamespaceWithIncreasedVersion() {
       final AspectModel aspectModel = TestResources.load( TestAspect.ASPECT );
-      final Namespace namespace = aspectModel.files().get( 0 ).namespace();
+      final Namespace namespace = aspectModel.files().getFirst().namespace();
       final Change copyNamespaceWithIncreasedVersion = new CopyNamespaceWithIncreasedVersion( namespace,
             IncreaseVersion.MAJOR );
 
       final AspectChangeManager changeManager = new AspectChangeManager( aspectModel );
 
       assertThat( aspectModel.namespaces() ).hasSize( 1 );
-      assertThat( aspectModel.namespaces().get( 0 ).version().getMajor() ).isEqualTo( 1 );
+      assertThat( aspectModel.namespaces().getFirst().version().getMajor() ).isEqualTo( 1 );
       assertThat( aspectModel.aspects() ).hasSize( 1 );
       assertThat( aspectModel.aspect().urn().getVersion() ).isEqualTo( "1.0.0" );
       assertThat( aspectModel ).files().hasSize( 1 );
-      assertThat( aspectModel.files().get( 0 ).sourceLocation().get().toString() ).contains( "1.0.0" );
+      assertThat( aspectModel.files().getFirst().sourceLocation().get().toString() ).contains( "1.0.0" );
 
       changeManager.applyChange( copyNamespaceWithIncreasedVersion );
       assertThat( aspectModel.namespaces() ).hasSize( 2 );
@@ -465,17 +465,17 @@ class AspectChangeManagerTest {
    @Test
    void testCopyFileWithIncreasedVersion() {
       final AspectModel aspectModel = TestResources.load( TestAspect.ASPECT );
-      final Change copyFileWithIncreasedNamespaceVersion = new CopyFileWithIncreasedNamespaceVersion( aspectModel.files().get( 0 ),
+      final Change copyFileWithIncreasedNamespaceVersion = new CopyFileWithIncreasedNamespaceVersion( aspectModel.files().getFirst(),
             IncreaseVersion.MAJOR );
 
       final AspectChangeManager changeManager = new AspectChangeManager( aspectModel );
 
       assertThat( aspectModel.namespaces() ).hasSize( 1 );
-      assertThat( aspectModel.namespaces().get( 0 ).version().getMajor() ).isEqualTo( 1 );
+      assertThat( aspectModel.namespaces().getFirst().version().getMajor() ).isEqualTo( 1 );
       assertThat( aspectModel.aspects() ).hasSize( 1 );
       assertThat( aspectModel.aspect().urn().getVersion() ).isEqualTo( "1.0.0" );
       assertThat( aspectModel ).files().hasSize( 1 );
-      assertThat( aspectModel.files().get( 0 ).sourceLocation().get().toString() ).contains( "1.0.0" );
+      assertThat( aspectModel.files().getFirst().sourceLocation().get().toString() ).contains( "1.0.0" );
 
       changeManager.applyChange( copyFileWithIncreasedNamespaceVersion );
       assertThat( aspectModel.namespaces() ).hasSize( 2 );
@@ -493,7 +493,7 @@ class AspectChangeManagerTest {
       // Arrange
       final AspectModel aspectModel = TestResources.load( TestAspect.ASPECT_WITH_PROPERTY );
 
-      final AspectModelFile originalFile = aspectModel.files().get( 0 );
+      final AspectModelFile originalFile = aspectModel.files().getFirst();
       final String oldNsPrefix = originalFile.namespace().urn().toString() + "#";
       final String propertyLocalName = "testProperty";
 

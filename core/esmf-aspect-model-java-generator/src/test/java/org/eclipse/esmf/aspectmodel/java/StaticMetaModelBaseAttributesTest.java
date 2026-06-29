@@ -18,12 +18,12 @@ import java.util.Set;
 
 import org.eclipse.esmf.test.TestAspect;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.Test;
 
-class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorTest {
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 
+class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorTest {
    @Test
    void testMetaModelBaseAttributesOfGeneratedProperty() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_BOOLEAN;
@@ -141,21 +141,23 @@ class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorTest {
             .apply( getGenerators( aspect, false, JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
       result.assertNumberOfFiles( 2 );
 
-      final String getPreferredNamesBody = "return new HashSet<>() {\n"
-            + "\n"
-            + "    {\n"
-            + "        add(new LangString(\"Aspect With Boolean\", Locale.forLanguageTag(\"en\")));\n"
-            + "        add(new LangString(\"Aspekt Mit Boolean\", Locale.forLanguageTag(\"de\")));\n"
-            + "    }\n"
-            + "};";
+      final String getPreferredNamesBody = """
+         return new HashSet<>() {
 
-      final String getDescriptionsBody = "return new HashSet<>() {\n"
-            + "\n"
-            + "    {\n"
-            + "        add(new LangString(\"Test Description\", Locale.forLanguageTag(\"en\")));\n"
-            + "        add(new LangString(\"Test Beschreibung\", Locale.forLanguageTag(\"de\")));\n"
-            + "    }\n"
-            + "};";
+             {
+                 add(new LangString("Aspect With Boolean", Locale.forLanguageTag("en")));
+                 add(new LangString("Aspekt Mit Boolean", Locale.forLanguageTag("de")));
+             }
+         };""";
+
+      final String getDescriptionsBody = """
+         return new HashSet<>() {
+
+             {
+                 add(new LangString("Test Description", Locale.forLanguageTag("en")));
+                 add(new LangString("Test Beschreibung", Locale.forLanguageTag("de")));
+             }
+         };""";
 
       final ImmutableMap<String, String> expectedMethodBodies = ImmutableMap.<String, String>builder()
             .put( "getModelClass", "return AspectWithAllBaseAttributes.class;" )
@@ -182,13 +184,14 @@ class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorTest {
             .apply( getGenerators( aspect, false, JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
       result.assertNumberOfFiles( 2 );
 
-      final String getPreferredNamesBody = "return new HashSet<>() {\n"
-            + "\n"
-            + "    {\n"
-            + "        add(new LangString(\"Aspect With Boolean\", Locale.forLanguageTag(\"en\")));\n"
-            + "        add(new LangString(\"Aspekt Mit Boolean\", Locale.forLanguageTag(\"de\")));\n"
-            + "    }\n"
-            + "};";
+      final String getPreferredNamesBody = """
+         return new HashSet<>() {
+
+             {
+                 add(new LangString("Aspect With Boolean", Locale.forLanguageTag("en")));
+                 add(new LangString("Aspekt Mit Boolean", Locale.forLanguageTag("de")));
+             }
+         };""";
 
       final ImmutableMap<String, String> expectedMethodBodies = ImmutableMap.<String, String>builder()
             .put( "getModelClass", "return AspectWithPreferredNames.class;" )
@@ -213,13 +216,14 @@ class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorTest {
             .apply( getGenerators( aspect, false, JavaCodeGenerationConfig.SetterStyle.STANDARD ) );
       result.assertNumberOfFiles( 2 );
 
-      final String getDescriptionsBody = "return new HashSet<>() {\n"
-            + "\n"
-            + "    {\n"
-            + "        add(new LangString(\"Test Description\", Locale.forLanguageTag(\"en\")));\n"
-            + "        add(new LangString(\"Test Beschreibung\", Locale.forLanguageTag(\"de\")));\n"
-            + "    }\n"
-            + "};";
+      final String getDescriptionsBody = """
+         return new HashSet<>() {
+
+             {
+                 add(new LangString("Test Description", Locale.forLanguageTag("en")));
+                 add(new LangString("Test Beschreibung", Locale.forLanguageTag("de")));
+             }
+         };""";
 
       final ImmutableMap<String, String> expectedMethodBodies = ImmutableMap.<String, String>builder()
             .put( "getModelClass", "return AspectWithDescriptions.class;" )

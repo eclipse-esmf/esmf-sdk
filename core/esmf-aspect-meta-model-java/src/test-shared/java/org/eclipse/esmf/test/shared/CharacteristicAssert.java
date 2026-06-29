@@ -80,7 +80,7 @@ public class CharacteristicAssert<SELF extends CharacteristicAssert<SELF, ACTUAL
          if ( actual.getConstraints().size() != 1 ) {
             failWithMessage( "Expected %s to have exactly one Constraint, but it didn't", modelElementType );
          }
-         return new ConstraintAssert<>( (A) actual.getConstraints().get( 0 ) );
+         return new ConstraintAssert<>( (A) actual.getConstraints().getFirst() );
       }
 
       public SELF hasNoConstraints() {

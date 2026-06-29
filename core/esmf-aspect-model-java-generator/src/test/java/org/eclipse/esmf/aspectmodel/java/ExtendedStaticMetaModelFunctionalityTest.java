@@ -64,10 +64,8 @@ public class ExtendedStaticMetaModelFunctionalityTest extends StaticMetaModelGen
       final ComputedProperty<Object, Object> unwrapEnumValue = ComputedProperty.of( resultProperty, results -> {
          try {
             return getValueOfEvaluationResults.invoke( results );
-         } catch ( final IllegalAccessException e ) {
-            throw new RuntimeException( e );
-         } catch ( final InvocationTargetException e ) {
-            throw new RuntimeException( e );
+         } catch ( final IllegalAccessException | InvocationTargetException exception ) {
+            throw new RuntimeException( exception );
          }
       } );
 

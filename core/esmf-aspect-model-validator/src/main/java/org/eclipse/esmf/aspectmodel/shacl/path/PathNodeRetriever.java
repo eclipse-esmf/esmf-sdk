@@ -48,7 +48,7 @@ public class PathNodeRetriever implements Path.Visitor<List<Statement>> {
       if ( path.subPaths().isEmpty() ) {
          return List.of();
       }
-      final Path firstPath = path.subPaths().get( 0 );
+      final Path firstPath = path.subPaths().getFirst();
       final List<Statement> pathResult = firstPath.accept( resource, this );
       final List<Path> restPaths = path.subPaths().subList( 1, path.subPaths().size() );
       if ( restPaths.isEmpty() ) {
@@ -71,8 +71,8 @@ public class PathNodeRetriever implements Path.Visitor<List<Statement>> {
 
    @Override
    public List<Statement> visitInversePath( final Resource resource, final InversePath path ) {
-      if ( path.path() instanceof final PredicatePath predicatePath ) {
-         return resource.getModel().listStatements( null, predicatePath.predicate(), resource )
+      if ( path.path() instanceof PredicatePath( final org.apache.jena.rdf.model.Property predicate ) ) {
+         return resource.getModel().listStatements( null, predicate, resource )
                .filterKeep( statement -> statement.getObject().isResource() )
                .mapWith( statement -> resource.getModel()
                      .createStatement( statement.getObject().asResource(), statement.getPredicate(), statement.getSubject() ) )

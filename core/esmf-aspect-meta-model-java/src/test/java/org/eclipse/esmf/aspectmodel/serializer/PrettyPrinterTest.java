@@ -21,6 +21,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+import org.apache.jena.rdf.model.Model;
+
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.metamodel.AspectModel;
@@ -29,7 +31,6 @@ import org.eclipse.esmf.test.TestModel;
 import org.eclipse.esmf.test.TestProperty;
 import org.eclipse.esmf.test.TestResources;
 
-import org.apache.jena.rdf.model.Model;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -40,7 +41,7 @@ class PrettyPrinterTest {
    @MethodSource( value = "testModels" )
    void testPrettyPrinter( final TestModel testModel ) {
       final AspectModel aspectModel = TestResources.load( testModel );
-      final AspectModelFile originalFile = aspectModel.files().iterator().next();
+      final AspectModelFile originalFile = aspectModel.files().getFirst();
       final String formattedModel = formatAspectModelFile( originalFile );
       final Model prettyPrintedModel = TurtleLoader.loadTurtle( formattedModel ).get();
       assertThat( RdfComparison.hash( originalFile.sourceModel() ).equals( RdfComparison.hash( prettyPrintedModel ) ) ).isTrue();
@@ -49,7 +50,7 @@ class PrettyPrinterTest {
    @Test
    void testPrintMultiLineDescription() {
       final AspectModel aspectModel = TestResources.load( TestAspect.ASPECT_WITH_MULTI_LINE_DESCRIPTION );
-      final AspectModelFile originalFile = aspectModel.files().iterator().next();
+      final AspectModelFile originalFile = aspectModel.files().getFirst();
       final String formattedModel = formatAspectModelFile( originalFile );
       assertThat( formattedModel ).contains( "\"\"\"" );
       final Model prettyPrintedModel = TurtleLoader.loadTurtle( formattedModel ).get();
@@ -75,7 +76,7 @@ class PrettyPrinterTest {
    @Test
    void testPrintAspectWithAnyValueDeclarations() {
       final AspectModel aspectModel = TestResources.load( TestAspect.ASPECT_WITH_ANY_VALUE_DECLARATIONS );
-      final AspectModelFile originalFile = aspectModel.files().iterator().next();
+      final AspectModelFile originalFile = aspectModel.files().getFirst();
       final String formattedModel = formatAspectModelFile( originalFile );
       final Model prettyPrintedModel = TurtleLoader.loadTurtle( formattedModel ).get();
       assertThat( RdfComparison.hash( originalFile.sourceModel() ) ).isEqualTo( RdfComparison.hash( prettyPrintedModel ) );
@@ -84,7 +85,7 @@ class PrettyPrinterTest {
    @Test
    void testPrintPropertyWithValue() {
       final AspectModel aspectModel = TestResources.load( TestProperty.PROPERTY_WITH_VALUE );
-      final AspectModelFile originalFile = aspectModel.files().iterator().next();
+      final AspectModelFile originalFile = aspectModel.files().getFirst();
       final String formattedModel = formatAspectModelFile( originalFile );
       final Model prettyPrintedModel = TurtleLoader.loadTurtle( formattedModel ).get();
       assertThat( RdfComparison.hash( originalFile.sourceModel() ) ).isEqualTo( RdfComparison.hash( prettyPrintedModel ) );

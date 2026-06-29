@@ -19,6 +19,8 @@ import static org.eclipse.esmf.aspectmodel.serializer.RdfComparison.modelToStrin
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.jena.rdf.model.Model;
+
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
@@ -26,7 +28,6 @@ import org.eclipse.esmf.metamodel.vocabulary.SimpleRdfNamespace;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
-import org.apache.jena.rdf.model.Model;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -75,7 +76,7 @@ class RdfModelCreatorVisitorTest {
       prefixMap.put( "", namespace.getNamespace() );
       serializedModel.setNsPrefixes( prefixMap );
 
-      final Model originalModel = aspectModel.files().iterator().next().sourceModel();
+      final Model originalModel = aspectModel.files().getFirst().sourceModel();
 
       serializedModel.clearNsPrefixMap();
       originalModel.getNsPrefixMap().forEach( serializedModel::setNsPrefix );

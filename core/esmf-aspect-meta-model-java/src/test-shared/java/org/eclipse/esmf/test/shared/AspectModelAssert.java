@@ -18,16 +18,16 @@ import static org.assertj.core.api.Fail.fail;
 
 import java.util.NoSuchElementException;
 
+import org.apache.jena.rdf.model.Model;
+import org.assertj.core.api.AbstractAssert;
+import org.assertj.core.api.ListAssert;
+
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Namespace;
-
-import org.apache.jena.rdf.model.Model;
-import org.assertj.core.api.AbstractAssert;
-import org.assertj.core.api.ListAssert;
 
 /**
  * Assert for {@link AspectModel}.
@@ -70,7 +70,7 @@ public class AspectModelAssert<SELF extends AspectModelAssert<SELF, ACTUAL>, ACT
       if ( actual.files().size() != 1 ) {
          failWithMessage( "Expected AspectModel to contain exactly one AspectModelFile, but it contained %d", actual.files().size() );
       }
-      return new AspectModelFileAssert<>( (A) actual.files().get( 0 ) );
+      return new AspectModelFileAssert<>( (A) actual.files().getFirst() );
    }
 
    public SELF hasAtLeastOneFile() {
@@ -125,7 +125,7 @@ public class AspectModelAssert<SELF extends AspectModelAssert<SELF, ACTUAL>, ACT
       if ( actual.namespaces().size() != 1 ) {
          failWithMessage( "Expected AspectModel to contain exactly one Namespace, but it contained %d", actual.namespaces().size() );
       }
-      return new NamespaceAssert<>( (A) actual.namespaces().get( 0 ) );
+      return new NamespaceAssert<>( (A) actual.namespaces().getFirst() );
    }
 
    public SELF hasAtLeastOneNamespace() {

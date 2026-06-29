@@ -119,13 +119,13 @@ class AspectModelLoaderTest {
 
    @Test
    void testLoadMultipleFilesWithOverlappingRdfStatements() {
-      final AspectModelFile rawFile1 = TestResources.load( TestAspect.ASPECT_WITH_PROPERTY ).files().iterator().next();
+      final AspectModelFile rawFile1 = TestResources.load( TestAspect.ASPECT_WITH_PROPERTY ).files().getFirst();
       final AspectModelFile file1 = RawAspectModelFileBuilder.builder()
             .sourceLocation( Optional.of( URI.create( rawFile1.sourceLocation().get() + "-first-instance" ) ) )
             .sourceModel( rawFile1.sourceModel() )
             .headerComment( rawFile1.headerComment() )
             .build();
-      final AspectModelFile rawFile2 = TestResources.load( TestAspect.ASPECT_WITH_PROPERTY ).files().iterator().next();
+      final AspectModelFile rawFile2 = TestResources.load( TestAspect.ASPECT_WITH_PROPERTY ).files().getFirst();
       final AspectModelFile file2 = RawAspectModelFileBuilder.builder()
             .sourceLocation( Optional.of( URI.create( rawFile2.sourceLocation().get() + "-second-instance" ) ) )
             .sourceModel( rawFile2.sourceModel() )

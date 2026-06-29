@@ -425,17 +425,17 @@ class SubmodelToAspectConverter {
          final boolean upperCase, final boolean includeSee, final boolean useSemanticIdUrnForAutomaticNames ) {
       final ElementName elementName;
       final AspectModelUrn urn;
-      if ( elementNamingStrategy instanceof final DetermineAutomatically automatically ) {
-         elementName = determineSubmodelElementName( element, automatically.namePrefix(), upperCase, automatically.appendElementIdShort() );
+      if ( elementNamingStrategy instanceof DetermineAutomatically( String namePrefix, boolean appendElementIdShort ) ) {
+         elementName = determineSubmodelElementName( element, namePrefix, upperCase, appendElementIdShort );
          final String uniqueName = nextUniqueName( elementName.name() );
          final boolean useSemanticIdUrn =
-               useSemanticIdUrnForAutomaticNames && automatically.namePrefix().isEmpty() && automatically.appendElementIdShort();
+               useSemanticIdUrnForAutomaticNames && namePrefix.isEmpty() && appendElementIdShort;
          urn = useSemanticIdUrn
                ? aspectModelUrnFromSemanticId( element ).orElseGet( () -> aspectUrn.withName( uniqueName ) )
                : aspectUrn.withName( uniqueName );
-      } else if ( elementNamingStrategy instanceof final UseGivenUrn givenUrn ) {
+      } else if ( elementNamingStrategy instanceof UseGivenUrn( AspectModelUrn aspectModelUrn ) ) {
          elementName = determineSubmodelElementName( element, "", upperCase, true );
-         urn = givenUrn.aspectModelUrn();
+         urn = aspectModelUrn;
       } else {
          throw new AspectModelGenerationException( "Unknown ElementNamingStrategy" );
       }

@@ -33,26 +33,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import org.eclipse.esmf.aspectmodel.generator.AspectArtifact;
-import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
-import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
-import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
-import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
-import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
-import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.AspectModel;
-import org.eclipse.esmf.metamodel.Characteristic;
-import org.eclipse.esmf.metamodel.Entity;
-import org.eclipse.esmf.metamodel.Operation;
-import org.eclipse.esmf.metamodel.Property;
-import org.eclipse.esmf.metamodel.Unit;
-import org.eclipse.esmf.metamodel.characteristic.Collection;
-import org.eclipse.esmf.metamodel.characteristic.Set;
-import org.eclipse.esmf.metamodel.characteristic.Trait;
-import org.eclipse.esmf.metamodel.datatype.LangString;
-import org.eclipse.esmf.test.TestAspect;
-import org.eclipse.esmf.test.TestResources;
-
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.DeserializationException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.json.JsonDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.xml.XmlDeserializer;
@@ -76,6 +56,27 @@ import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultReference;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodel;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodelElementCollection;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodelElementList;
+
+import org.eclipse.esmf.aspectmodel.generator.AspectArtifact;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
+import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
+import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
+import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.AspectModel;
+import org.eclipse.esmf.metamodel.Characteristic;
+import org.eclipse.esmf.metamodel.Entity;
+import org.eclipse.esmf.metamodel.Operation;
+import org.eclipse.esmf.metamodel.Property;
+import org.eclipse.esmf.metamodel.Unit;
+import org.eclipse.esmf.metamodel.characteristic.Collection;
+import org.eclipse.esmf.metamodel.characteristic.Set;
+import org.eclipse.esmf.metamodel.characteristic.Trait;
+import org.eclipse.esmf.metamodel.datatype.LangString;
+import org.eclipse.esmf.test.TestAspect;
+import org.eclipse.esmf.test.TestResources;
+
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
@@ -95,7 +96,7 @@ class AasToAspectModelGeneratorTest {
          if ( aspects.isEmpty() ) {
             fail( "Translation of " + aasxFile.getName() + " yielded no Aspects" );
          }
-         final String result = AspectSerializer.INSTANCE.aspectToString( aspects.iterator().next() );
+         final String result = AspectSerializer.INSTANCE.aspectToString( aspects.getFirst() );
          final AspectModel aspectModel = new AspectModelLoader().load( new ByteArrayInputStream( result.getBytes() ), aasxFile.toURI() );
 
          aspectModel.elements().forEach( element -> {
@@ -426,10 +427,10 @@ class AasToAspectModelGeneratorTest {
    }
 
    private static Stream<Characteristic> allCharacteristics( final Characteristic characteristic ) {
-      final Stream<Characteristic> collectionCharacteristics = characteristic instanceof Collection collection
+      final Stream<Characteristic> collectionCharacteristics = characteristic instanceof final Collection collection
             ? collection.getElementCharacteristic().stream().flatMap( AasToAspectModelGeneratorTest::allCharacteristics )
             : Stream.empty();
-      final Stream<Characteristic> traitCharacteristics = characteristic instanceof Trait trait
+      final Stream<Characteristic> traitCharacteristics = characteristic instanceof final Trait trait
             ? allCharacteristics( trait.getBaseCharacteristic() )
             : Stream.empty();
       return Stream.concat( Stream.of( characteristic ), Stream.concat( collectionCharacteristics, traitCharacteristics ) );

@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.XSD;
+
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.CollectionValue;
@@ -38,8 +41,6 @@ import org.eclipse.esmf.metamodel.datatype.LangString;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
 
-import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.XSD;
 import org.junit.jupiter.api.Test;
 
 class EnumerationInstantiatorTest extends AbstractAspectModelInstantiatorTest {
@@ -49,7 +50,7 @@ class EnumerationInstantiatorTest extends AbstractAspectModelInstantiatorTest {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ENUMERATION );
 
       assertThat( aspect ).properties().hasSize( 1 );
-      final Enumeration enumeration = (Enumeration) aspect.getProperties().get( 0 ).getCharacteristic().get();
+      final Enumeration enumeration = (Enumeration) aspect.getProperties().getFirst().getCharacteristic().get();
       assertBaseAttributes( enumeration, expectedAspectModelUrn, "TestEnumeration",
             "Test Enumeration", "This is a test for enumeration.", "http://example.com/" );
 
@@ -65,14 +66,14 @@ class EnumerationInstantiatorTest extends AbstractAspectModelInstantiatorTest {
 
       assertThat( aspect ).properties().hasSize( 1 );
 
-      final Enumeration enumeration = aspect.getProperties().get( 0 ).getCharacteristic().get().as( Enumeration.class );
+      final Enumeration enumeration = aspect.getProperties().getFirst().getCharacteristic().get().as( Enumeration.class );
 
       assertBaseAttributes( enumeration, expectedAspectModelUrn, "TestEnumeration",
             "Test Enumeration", "This is a test for enumeration.", "http://example.com/" );
 
       assertThat( enumeration ).dataType().isEntity();
 
-      final EntityInstance entityInstance = enumeration.getValues().get( 0 ).as( EntityInstance.class );
+      final EntityInstance entityInstance = enumeration.getValues().getFirst().as( EntityInstance.class );
       final Property property = entityInstance.getEntityType().getPropertyByName( "entityProperty" ).get();
       final String entityValue = entityInstance.getAssertions().get( property ).as( ScalarValue.class ).getValue().toString();
       assertThat( entityValue ).isEqualTo( "This is a test." );
@@ -81,7 +82,7 @@ class EnumerationInstantiatorTest extends AbstractAspectModelInstantiatorTest {
    @Test
    void testEnumerationCharacteristicWithEntityDataTypeWithOptionalAndNotInPayloadPropertiesExpectSuccess() {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_WITH_OPTIONAL_AND_NOT_IN_PAYLOAD_PROPERTIES );
-      final Enumeration enumeration = (Enumeration) aspect.getProperties().get( 0 ).getCharacteristic().get();
+      final Enumeration enumeration = (Enumeration) aspect.getProperties().getFirst().getCharacteristic().get();
 
       final Type dataType = enumeration.getDataType().get();
       assertThat( dataType ).isInstanceOf( Entity.class );
@@ -90,7 +91,7 @@ class EnumerationInstantiatorTest extends AbstractAspectModelInstantiatorTest {
       final List<Property> entityProperties = entity.getProperties();
       assertThat( entityProperties ).hasSize( 3 );
 
-      final Property entityProperty = entityProperties.get( 0 );
+      final Property entityProperty = entityProperties.getFirst();
       assertThat( entityProperty ).hasName( "entityProperty" );
       assertThat( entityProperty ).isNotOptional();
       assertThat( entityProperty ).isInPayload();
@@ -114,14 +115,14 @@ class EnumerationInstantiatorTest extends AbstractAspectModelInstantiatorTest {
 
       assertThat( aspect ).properties().hasSize( 1 );
 
-      final Enumeration enumeration = (Enumeration) aspect.getProperties().get( 0 ).getCharacteristic().get();
+      final Enumeration enumeration = (Enumeration) aspect.getProperties().getFirst().getCharacteristic().get();
 
       assertBaseAttributes( enumeration, expectedAspectModelUrn, "TestEnumeration",
             "Test Enumeration", "This is a test for enumeration.", "http://example.com/" );
 
       assertThat( enumeration ).dataType().isEntity();
 
-      final EntityInstance entityInstance = enumeration.getValues().get( 0 ).as( EntityInstance.class );
+      final EntityInstance entityInstance = enumeration.getValues().getFirst().as( EntityInstance.class );
       final Entity entity = entityInstance.getEntityType();
       final Property property = entity.getPropertyByName( "entityProperty" ).get();
       final Collection<Value> values = entityInstance.getAssertions().get( property ).as( CollectionValue.class ).getValues();
@@ -135,7 +136,7 @@ class EnumerationInstantiatorTest extends AbstractAspectModelInstantiatorTest {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_NESTED_ENTITY_ENUMERATION_WITH_NOT_IN_PAYLOAD );
       assertThat( aspect ).properties().hasSize( 1 );
 
-      final Enumeration enumeration = (Enumeration) aspect.getProperties().get( 0 ).getCharacteristic().get();
+      final Enumeration enumeration = (Enumeration) aspect.getProperties().getFirst().getCharacteristic().get();
       assertThat( enumeration ).dataType().isEntity();
 
       final Entity dataType = enumeration.getDataType().get().as( Entity.class );
@@ -145,7 +146,7 @@ class EnumerationInstantiatorTest extends AbstractAspectModelInstantiatorTest {
       assertThat( nestedEntityProperty ).isNotInPayload();
       assertThat( nestedEntityProperty ).characteristic().isInstanceOf( DefaultSingleEntity.class );
 
-      final EntityInstance entityInstance = enumeration.getValues().get( 0 ).as( EntityInstance.class );
+      final EntityInstance entityInstance = enumeration.getValues().getFirst().as( EntityInstance.class );
       final Entity entity = entityInstance.getEntityType();
       final Property property = entity.getPropertyByName( "entityProperty" ).get();
       assertThat( entityInstance.getAssertions().get( property ).as( ScalarValue.class ).getValue() ).isEqualTo( "This is a test." );
@@ -164,7 +165,7 @@ class EnumerationInstantiatorTest extends AbstractAspectModelInstantiatorTest {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_NESTED_ENTITY_LIST_ENUMERATION_WITH_NOT_IN_PAYLOAD );
       assertThat( aspect ).properties().hasSize( 1 );
 
-      final Enumeration enumeration = aspect.getProperties().get( 0 ).getCharacteristic().get().as( Enumeration.class );
+      final Enumeration enumeration = aspect.getProperties().getFirst().getCharacteristic().get().as( Enumeration.class );
       assertThat( enumeration ).dataType().isEntity();
 
       final Entity dataType = enumeration.getDataType().get().as( Entity.class );
@@ -174,7 +175,7 @@ class EnumerationInstantiatorTest extends AbstractAspectModelInstantiatorTest {
       assertThat( nestedEntityListProperty ).isNotInPayload();
       assertThat( nestedEntityListProperty ).characteristic().isInstanceOf( DefaultSet.class );
 
-      final EntityInstance entityInstance = enumeration.getValues().get( 0 ).as( EntityInstance.class );
+      final EntityInstance entityInstance = enumeration.getValues().getFirst().as( EntityInstance.class );
       final Entity entity = entityInstance.getEntityType();
       final Property entityProperty = entity.getProperties().stream().filter( property -> property.getName().equals( "entityProperty" ) )
             .findAny().get();
@@ -196,8 +197,8 @@ class EnumerationInstantiatorTest extends AbstractAspectModelInstantiatorTest {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_AND_LANG_STRING );
       assertThat( aspect ).properties().hasSize( 1 );
 
-      final Enumeration enumeration = aspect.getProperties().get( 0 ).getCharacteristic().get().as( Enumeration.class );
-      final EntityInstance entityInstance = enumeration.getValues().get( 0 ).as( EntityInstance.class );
+      final Enumeration enumeration = aspect.getProperties().getFirst().getCharacteristic().get().as( Enumeration.class );
+      final EntityInstance entityInstance = enumeration.getValues().getFirst().as( EntityInstance.class );
       final Property property = entityInstance.getEntityType().getPropertyByName( "entityProperty" ).get();
       final ScalarValue scalarValue = entityInstance.getAssertions().get( property ).as( ScalarValue.class );
       assertThat( scalarValue ).type().hasUrn( RDF.langString.getURI() );

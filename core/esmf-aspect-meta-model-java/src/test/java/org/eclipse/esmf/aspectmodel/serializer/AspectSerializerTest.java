@@ -107,7 +107,7 @@ class AspectSerializerTest {
       // Change the loaded test model's source location to a file system location
       final AspectChangeManager changeContext = new AspectChangeManager( aspectModel );
       final Path filePath = outputDirectory.resolve( "Aspect.ttl" );
-      changeContext.applyChange( new MoveRenameAspectModelFile( aspectModel.files().iterator().next(), filePath.toUri() ) );
+      changeContext.applyChange( new MoveRenameAspectModelFile( aspectModel.files().getFirst(), filePath.toUri() ) );
 
       // Serialize the model file content to the file system
       AspectSerializer.INSTANCE.write( aspectModel.files().iterator().next() );

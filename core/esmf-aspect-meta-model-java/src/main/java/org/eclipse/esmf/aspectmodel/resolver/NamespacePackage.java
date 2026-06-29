@@ -33,6 +33,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.io.IOUtils;
+
 import org.eclipse.esmf.aspectmodel.AspectLoadingException;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.Change;
@@ -50,10 +52,10 @@ import org.eclipse.esmf.aspectmodel.versionupdate.MetaModelVersionMigrator;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.Namespace;
 
-import com.google.common.collect.ImmutableList;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.ImmutableList;
 
 /**
  * Represents a namespace package as described in <a href=
@@ -126,8 +128,7 @@ public class NamespacePackage implements ResolutionStrategy, Artifact<URI, byte[
 
    /**
     * Determines the location of the models root inside the package zip, as described in <a href=
-    * "https://github.com/eclipse-esmf/esmf-semantic-aspect-meta-model/blob/main/documentation/decisions/0009-namespace-packages
-    * .md#namespace-package-specification">ADR-0009</a>.
+    * "https://github.com/eclipse-esmf/esmf-semantic-aspect-meta-model/blob/main/documentation/decisions/0009-namespace-packages.md#namespace-package-specification">ADR-0009</a>.
     *
     * @return The location of the models root, e.g., "", "aspect-models" or "something/aspect-models"
     */

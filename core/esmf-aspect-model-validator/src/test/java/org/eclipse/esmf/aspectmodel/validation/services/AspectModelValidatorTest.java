@@ -137,9 +137,9 @@ class AspectModelValidatorTest {
       final Supplier<AspectModel> invalidAspectModel = () -> TestResources.load( InvalidTestAspect.INVALID_PREFERRED_NAME_DATATYPE );
       final List<Violation> violations = validator.validateModel( invalidAspectModel );
       assertThat( violations ).isNotEmpty();
-      final DatatypeViolation violation = (DatatypeViolation) violations.get( 0 );
+      final DatatypeViolation violation = (DatatypeViolation) violations.getFirst();
       assertThat( violation.fixes() ).isNotEmpty();
-      final Fix fix = violation.fixes().get( 0 );
+      final Fix fix = violation.fixes().getFirst();
       assertThat( fix.description() ).isEqualTo( "Add default @en language tag to value" );
    }
 
@@ -157,7 +157,7 @@ class AspectModelValidatorTest {
       final Resource element = testModel.mergedModel().createResource( TestAspect.TEST_NAMESPACE + "stringProperty" );
       final List<Violation> violations = validator.validateElement( element );
       assertThat( violations ).hasSize( 1 );
-      final SparqlConstraintViolation violation = (SparqlConstraintViolation) violations.get( 0 );
+      final SparqlConstraintViolation violation = (SparqlConstraintViolation) violations.getFirst();
       assertThat( violation.context().element() ).isEqualTo( element );
       assertThat( violation.context().property() ).contains( SammNs.SAMM.exampleValue() );
 
@@ -174,7 +174,7 @@ class AspectModelValidatorTest {
       final Supplier<AspectModel> invalidTurtleSyntax = () -> TestResources.load( InvalidTestAspect.INVALID_SYNTAX );
       final List<Violation> violations = validator.validateModel( invalidTurtleSyntax );
       assertThat( violations ).hasSize( 1 );
-      final InvalidSyntaxViolation violation = (InvalidSyntaxViolation) violations.get( 0 );
+      final InvalidSyntaxViolation violation = (InvalidSyntaxViolation) violations.getFirst();
       assertThat( violation.line() ).isEqualTo( 17 );
       assertThat( violation.column() ).isEqualTo( 4 );
       assertThat( violation.violationSpecificMessage() ).contains( "Triples not terminated by DOT" );
@@ -193,7 +193,7 @@ class AspectModelValidatorTest {
       final Supplier<AspectModel> invalidTurtleSyntax = () -> TestResources.load( InvalidTestAspect.ACTUALLY_JSON );
       final List<Violation> violations = validator.validateModel( invalidTurtleSyntax );
       assertThat( violations ).hasSize( 1 );
-      final InvalidSyntaxViolation violation = (InvalidSyntaxViolation) violations.get( 0 );
+      final InvalidSyntaxViolation violation = (InvalidSyntaxViolation) violations.getFirst();
       assertThat( violation.line() ).isEqualTo( 12 );
       assertThat( violation.column() ).isEqualTo( 1 );
       assertThat( violation.violationSpecificMessage() ).contains( "Not implemented (formulae, graph literals)" );

@@ -503,16 +503,16 @@ class AspectModelJsonSchemaGeneratorTest {
       final JsonNode schemaEnglish = new AspectModelJsonSchemaGenerator( aspect,
             JsonSchemaGenerationConfigBuilder.builder().locale( Locale.ENGLISH ).build() ).getContent();
 
-      assertThat( schemaEnglish.get( "description" ).asText() )
+      assertThat( schemaEnglish.get( "description" ).asString() )
             .isEqualTo( "Aspect With Multilingual Descriptions" );
-      assertThat( schemaEnglish.at( "/properties/testString/description" ).asText() )
+      assertThat( schemaEnglish.at( "/properties/testString/description" ).asString() )
             .isEqualTo( "This is a test string" );
 
       final JsonNode schemaGerman = new AspectModelJsonSchemaGenerator( aspect,
             JsonSchemaGenerationConfigBuilder.builder().locale( Locale.GERMAN ).build() ).getContent();
-      assertThat( schemaGerman.get( "description" ).asText() )
+      assertThat( schemaGerman.get( "description" ).asString() )
             .isEqualTo( "Aspekt mit mehrsprachigen Beschreibungen" );
-      assertThat( schemaGerman.at( "/properties/testString/description" ).asText() )
+      assertThat( schemaGerman.at( "/properties/testString/description" ).asString() )
             .isEqualTo( "Es ist ein Test-String" );
    }
 
@@ -1015,11 +1015,11 @@ class AspectModelJsonSchemaGeneratorTest {
       final JsonNode schema = buildJsonSchema( aspect );
       final String text = SammNs.SAMMC.Text().getLocalName();
 
-      assertThat( schema.at( "/components/schemas/ExtendingTestEntity/description" ).asText() )
+      assertThat( schema.at( "/components/schemas/ExtendingTestEntity/description" ).asString() )
             .isEqualTo( "This is a test entity" );
-      assertThat( schema.at( "/components/schemas/ExtendingTestEntity/properties/abstractTestProperty/description" ).asText() )
+      assertThat( schema.at( "/components/schemas/ExtendingTestEntity/properties/abstractTestProperty/description" ).asString() )
             .isEqualTo( "This is an abstract test property" );
-      assertThat( schema.at( "/components/schemas/ExtendingTestEntity/properties/abstractTestProperty/allOf/0/$ref" ).asText() )
+      assertThat( schema.at( "/components/schemas/ExtendingTestEntity/properties/abstractTestProperty/allOf/0/$ref" ).asString() )
             .isEqualTo( "#/components/schemas/" + text );
    }
 
