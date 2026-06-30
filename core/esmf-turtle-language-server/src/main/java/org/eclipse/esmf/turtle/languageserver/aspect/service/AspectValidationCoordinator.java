@@ -16,6 +16,7 @@ package org.eclipse.esmf.turtle.languageserver.aspect.service;
 import java.util.Map;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -25,8 +26,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiConsumer;
 
+import org.eclipse.esmf.turtle.languageserver.aspect.diagnostic.AspectViolationDiagnosticMapper;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
-import org.eclipse.esmf.treesitterturtle.TurtleDiagnostic;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 
@@ -37,7 +38,7 @@ public class AspectValidationCoordinator implements AutoCloseable {
    private static final Logger LOG = LoggerFactory.getLogger( AspectValidationCoordinator.class );
    private static final long IDLE_VALIDATION_DELAY_SECONDS = 4L;
 
-   private final AspectModelValidationService aspectModelValidationService;
+   private final AspectDocumentValidationService aspectDocumentValidationService;
    private final BiConsumer<Document, DiagnosticReport> onValidationComplete;
    private final ExecutorService executorService;
    private final ScheduledExecutorService scheduler;
@@ -50,10 +51,29 @@ public class AspectValidationCoordinator implements AutoCloseable {
    public AspectValidationCoordinator(
          final AspectModelValidationService aspectModelValidationService,
          final BiConsumer<Document, DiagnosticReport> onValidationComplete ) {
-      this.aspectModelValidationService = aspectModelValidationService;
+      this( new AspectDocumentValidationService(
+            new ParsedAspectModelFileLoader(),
+            aspectModelValidationService,
+            new AspectViolationDiagnosticMapper() ), onValidationComplete );
+   }
+
+   AspectValidationCoordinator(
+         final AspectModelValidationService aspectModelValidationService,
+         final ParsedAspectModelFileLoader aspectModelFileLoader,
+         final AspectViolationDiagnosticMapper diagnosticMapper,
+         final BiConsumer<Document, DiagnosticReport> onValidationComplete ) {
+      this( new AspectDocumentValidationService( aspectModelFileLoader, aspectModelValidationService, diagnosticMapper ),
+            onValidationComplete );
+   }
+
+   public AspectValidationCoordinator(
+         final AspectDocumentValidationService aspectDocumentValidationService,
+         final BiConsumer<Document, DiagnosticReport> onValidationComplete ) {
+      this.aspectDocumentValidationService = aspectDocumentValidationService;
       this.onValidationComplete = onValidationComplete;
       this.executorService = Executors.newSingleThreadExecutor( Thread.ofPlatform().name( "aspect-validation-", 0 ).factory() );
-      this.scheduler = Executors.newSingleThreadScheduledExecutor( Thread.ofPlatform().name( "aspect-validation-debounce-", 0 ).factory() );
+      this.scheduler =
+            Executors.newSingleThreadScheduledExecutor( Thread.ofPlatform().name( "aspect-validation-debounce-", 0 ).factory() );
    }
 
    public DiagnosticReport getCachedDiagnostics( final Document document ) {
@@ -62,6 +82,11 @@ public class AspectValidationCoordinator implements AutoCloseable {
 
    public void seedCache( final Document document, final DiagnosticReport report ) {
       cache.put( document, report );
+   }
+
+   public void onDocumentOpened( final ParsedDocument parsedDocument ) {
+      cancelRunningValidation( parsedDocument.sourceDocument() );
+      submit( parsedDocument );
    }
 
    public void onDocumentChanged( final ParsedDocument parsedDocument ) {
@@ -75,6 +100,9 @@ public class AspectValidationCoordinator implements AutoCloseable {
    }
 
    public void onDocumentClosed( final Document document ) {
+      if ( document == null ) {
+         return;
+      }
       cancelScheduledValidation( document );
       cancelRunningValidation( document );
       cache.remove( document );
@@ -126,13 +154,14 @@ public class AspectValidationCoordinator implements AutoCloseable {
       cancelRunningValidation( document );
       final long generation = generations.computeIfAbsent( document, ignored -> new AtomicLong() ).incrementAndGet();
       final CompletableFuture<DiagnosticReport> future = CompletableFuture.supplyAsync(
-            () -> aspectModelValidationService.defaultValidate( parsedDocument ),
+            () -> validate( parsedDocument ),
             executorService
       );
       runningValidations.put( document, future );
       future.whenComplete( ( result, throwable ) -> {
          runningValidations.remove( document, future );
-         if ( throwable instanceof CancellationException || future.isCancelled() ) {
+         final Throwable failure = unwrap( throwable );
+         if ( failure instanceof CancellationException || future.isCancelled() ) {
             LOG.debug( "[cancel] aspect validation cancelled for uri={}", document.getUri() );
             return;
          }
@@ -142,9 +171,9 @@ public class AspectValidationCoordinator implements AutoCloseable {
                   currentGeneration );
             return;
          }
-         if ( throwable != null ) {
-            LOG.error( "[error] aspect validation failed for uri={}", document.getUri(), throwable );
-            final DiagnosticReport errorReport = new DiagnosticReport( throwable.getMessage(), TurtleDiagnostic.TurtleCode.E0002 );
+         if ( failure != null ) {
+            LOG.error( "[error] aspect validation failed for uri={}", document.getUri(), failure );
+            final DiagnosticReport errorReport = aspectDocumentValidationService.processingFailureReport();
             cache.put( document, errorReport );
             onValidationComplete.accept( document, errorReport );
             return;
@@ -152,5 +181,16 @@ public class AspectValidationCoordinator implements AutoCloseable {
          cache.put( document, result );
          onValidationComplete.accept( document, result );
       } );
+   }
+
+   private DiagnosticReport validate( final ParsedDocument parsedDocument ) {
+      return aspectDocumentValidationService.validate( parsedDocument );
+   }
+
+   private Throwable unwrap( final Throwable throwable ) {
+      if ( throwable instanceof CompletionException && throwable.getCause() != null ) {
+         return throwable.getCause();
+      }
+      return throwable;
    }
 }
