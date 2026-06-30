@@ -203,7 +203,9 @@ class AspectViolationDiagnosticMapperTest {
             .isEqualTo( new Range( new Position( 0, 0 ), new Position( 0, 1 ) ) );
    }
 
-   private record TestViolation( String errorCode, String message ) implements Violation {
+   private record TestViolation(
+         String errorCode, String message
+   ) implements Violation {
       @Override
       public EvaluationContext context() {
          return null;

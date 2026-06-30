@@ -62,7 +62,8 @@ public class AspectValidationCoordinator implements AutoCloseable {
          final ParsedAspectModelFileLoader aspectModelFileLoader,
          final AspectViolationDiagnosticMapper diagnosticMapper,
          final BiConsumer<Document, DiagnosticReport> onValidationComplete ) {
-      this( new AspectDocumentValidationService( aspectModelFileLoader, aspectModelValidationService, diagnosticMapper ), onValidationComplete );
+      this( new AspectDocumentValidationService( aspectModelFileLoader, aspectModelValidationService, diagnosticMapper ),
+            onValidationComplete );
    }
 
    public AspectValidationCoordinator(
@@ -71,7 +72,8 @@ public class AspectValidationCoordinator implements AutoCloseable {
       this.aspectDocumentValidationService = aspectDocumentValidationService;
       this.onValidationComplete = onValidationComplete;
       this.executorService = Executors.newSingleThreadExecutor( Thread.ofPlatform().name( "aspect-validation-", 0 ).factory() );
-      this.scheduler = Executors.newSingleThreadScheduledExecutor( Thread.ofPlatform().name( "aspect-validation-debounce-", 0 ).factory() );
+      this.scheduler =
+            Executors.newSingleThreadScheduledExecutor( Thread.ofPlatform().name( "aspect-validation-debounce-", 0 ).factory() );
    }
 
    public DiagnosticReport getCachedDiagnostics( final Document document ) {

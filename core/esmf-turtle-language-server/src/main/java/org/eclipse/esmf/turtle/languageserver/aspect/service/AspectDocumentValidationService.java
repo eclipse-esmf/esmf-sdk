@@ -56,7 +56,8 @@ public class AspectDocumentValidationService {
          logProcessingViolations( violations );
          return diagnosticMapper.mapValidationViolations( violations );
       } catch ( final RiotException _ ) {
-         // Tree-sitter owns ordinary syntax diagnostics. ParserException below keeps Jena-only syntax fallback visible.
+         // Tree-sitter owns ordinary syntax diagnostics. ParserException below keeps Jena-only syntax
+         // fallback visible.
          return DiagnosticReport.EMPTY;
       } catch ( final ParserException exception ) {
          return diagnosticMapper.mapParserException( exception, parsedDocument.getUri() );

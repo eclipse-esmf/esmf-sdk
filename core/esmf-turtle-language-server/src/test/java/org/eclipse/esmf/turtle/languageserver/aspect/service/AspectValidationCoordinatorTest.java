@@ -115,7 +115,8 @@ class AspectValidationCoordinatorTest {
       final ParsedDocument parsedDocument = new TreeSitterTurtleParserService().apply( document );
       final CountDownLatch callbackCalled = new CountDownLatch( 1 );
       final AtomicReference<ParsedDocument> validatedDocument = new AtomicReference<>();
-      final DiagnosticReport expectedReport = new DiagnosticReport( "validation result", org.eclipse.esmf.treesitterturtle.TurtleDiagnostic.TurtleCode.E0000 );
+      final DiagnosticReport expectedReport =
+            new DiagnosticReport( "validation result", org.eclipse.esmf.treesitterturtle.TurtleDiagnostic.TurtleCode.E0000 );
       final AspectValidationCoordinator coordinator = new AspectValidationCoordinator(
             new StubAspectDocumentValidationService( validatedDocument, expectedReport ),
             ( changedDocument, report ) -> {

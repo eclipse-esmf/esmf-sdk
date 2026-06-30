@@ -245,7 +245,9 @@ class AspectDocumentValidationServiceTest {
       }
    }
 
-   private record TestViolation( String errorCode, String message ) implements Violation {
+   private record TestViolation(
+         String errorCode, String message
+   ) implements Violation {
       @Override
       public EvaluationContext context() {
          return null;
