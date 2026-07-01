@@ -13,6 +13,7 @@
 
 package org.eclipse.esmf.treesitterturtle;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -32,8 +33,8 @@ import org.treesitter.TSTree;
  * Represents the concrete syntax tree of a turtle document
  */
 public class TurtleSyntaxTree {
-   private final Supplier<String> sourceRepresentationSupplier;
    private final Node rootNode;
+   private final String content;
 
    public static class TurtleSyntaxTreeTraversalError extends RuntimeException {
    }
@@ -80,13 +81,18 @@ public class TurtleSyntaxTree {
     */
    public record Token(
          String type,
-         String content,
+         Supplier<String> contentSupplier,
          Location location,
          List<Node> children
    ) implements Node {
       @Override
       public Token asToken() {
          return this;
+      }
+
+      @Override
+      public String content() {
+         return contentSupplier.get();
       }
    }
 
@@ -184,25 +190,24 @@ public class TurtleSyntaxTree {
       }
    }
 
-   private TurtleSyntaxTree( final Node rootNode, final Supplier<String> sourceRepresentationSupplier ) {
+   private TurtleSyntaxTree( final Node rootNode, final String content ) {
       this.rootNode = rootNode;
-      this.sourceRepresentationSupplier = sourceRepresentationSupplier;
+      this.content = content;
    }
 
    public Node rootNode() {
       return rootNode;
    }
 
-   public Supplier<String> sourceRepresentationSupplier() {
-      return sourceRepresentationSupplier;
+   public String content() {
+      return content;
    }
 
-   public static TurtleSyntaxTree fromConcreteSyntaxTree( final TSTree syntaxTree, final Supplier<String> sourceRepresentationSupplier,
-         final TokenProvider tokenProvider ) {
-      return new TurtleSyntaxTree( nodeForTsNode( syntaxTree.getRootNode(), tokenProvider ), sourceRepresentationSupplier );
+   public static TurtleSyntaxTree fromConcreteSyntaxTree( final TSTree syntaxTree, final String content ) {
+      return new TurtleSyntaxTree( nodeForTsNode( syntaxTree.getRootNode(), content ), content );
    }
 
-   private static Node nodeForTsNode( final TSNode inputNode, final TokenProvider tokenProvider ) {
+   private static Node nodeForTsNode( final TSNode inputNode, final String content ) {
       final Location location = new Location(
             inputNode.getStartPoint().getRow(),
             inputNode.getStartPoint().getColumn(),
@@ -211,14 +216,15 @@ public class TurtleSyntaxTree {
       final List<Node> children = IntStream.range( 0, inputNode.getChildCount() )
             .mapToObj( inputNode::getChild )
             .filter( Objects::nonNull )
-            .map( child -> nodeForTsNode( child, tokenProvider ) )
+            .map( child -> nodeForTsNode( child, content ) )
             .toList();
       if ( inputNode.isError() ) {
          return new Error( inputNode.getType(), TurtleDiagnostic.TurtleCode.E0003, location, children );
       } else if ( inputNode.isMissing() ) {
          return new Error( inputNode.getType(), TurtleDiagnostic.TurtleCode.E0004, location, children );
       }
-      final String token = tokenProvider.apply( location );
+      final Supplier<String> token = () -> new String(
+            Arrays.copyOfRange( content.getBytes(), inputNode.getStartByte(), inputNode.getEndByte() ) );
       return new Token( inputNode.getType(), token, location, children );
    }
 

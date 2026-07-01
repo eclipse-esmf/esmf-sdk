@@ -13,6 +13,9 @@
 
 package org.eclipse.esmf.turtle.languageserver.lsp.text;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.util.List;
 
 import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
@@ -38,15 +41,23 @@ public record ParsedDocument(
     * @return the turtle syntax tree
     */
    public TurtleSyntaxTree turtleSyntaxTree() {
-      return TurtleSyntaxTree.fromConcreteSyntaxTree( concreteSyntaxTree(),
-            () -> sourceDocument().getContent(),
-            location -> sourceDocument().subSequence( location.fromLine(), location.fromColumn(),
-                  location.toLine(), location.toColumn() ) );
+      return TurtleSyntaxTree.fromConcreteSyntaxTree( concreteSyntaxTree(), sourceDocument().getContent() );
+   }
+
+   public boolean storedIn( final Path path ) {
+      try {
+         return Path.of( new URI( this.sourceDocument().getUri() ) ).getParent().toAbsolutePath().equals( path.toAbsolutePath() );
+      } catch ( URISyntaxException e ) {
+         return false;
+      }
    }
 
    public boolean isAspectModel() {
-      return this.turtleSyntaxTree().nodes().anyMatch(
-            node -> node.isToken() && ParserTokenType.PN_PREFIX.equals( node.type() ) && SAMM_PREFIXES.contains( node.content() )
-      );
+      return this.turtleSyntaxTree().rootNode().children().stream()
+            .filter( n -> ParserTokenType.DIRECTIVE.equals( n.type() ) ).flatMap( n -> n.children().stream() )
+            .filter( n -> ParserTokenType.PREFIX_ID.equals( n.type() ) ).flatMap( n -> n.children().stream() )
+            .filter( n -> ParserTokenType.NAMESPACE.equals( n.type() ) ).flatMap( n -> n.children().stream() )
+            .filter( n -> ParserTokenType.PN_PREFIX.equals( n.type() ) )
+            .anyMatch( n -> SAMM_PREFIXES.contains( n.content() ) );
    }
 }

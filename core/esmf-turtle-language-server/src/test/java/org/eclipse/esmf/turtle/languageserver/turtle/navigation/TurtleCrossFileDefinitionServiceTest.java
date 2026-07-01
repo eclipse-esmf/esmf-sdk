@@ -165,6 +165,7 @@ class TurtleCrossFileDefinitionServiceTest {
       assertThat( result ).isEmpty();
    }
 
+
    @Test
    void testReturnsEmptyWhenStrategyFails() {
       final String content = """
@@ -185,5 +186,36 @@ class TurtleCrossFileDefinitionServiceTest {
       final Optional<Location> result = resolver.findDefinition( parsedDocument, new Position( 4, 19 ) );
 
       assertThat( result ).isEmpty();
+   }
+
+   @Test
+   void testGoToDefinitionForUnitNamespace() {
+      final String content = """
+            @prefix : <urn:samm:com.example:1.0.0#> .
+            @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#> .
+            @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#> .
+            @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.1.0#> .
+            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+            
+            :Quantity a samm-c:Quantifiable ;
+               samm:dataType xsd:float ;
+               samm-c:unit unit:piece .
+            """;
+
+      final ParsedDocument parsedDocument = parserService.apply(
+            new Document( "file:///workspace/Quantity.ttl", content ) );
+
+      final TurtleCrossFileDefinitionService resolver = new TurtleCrossFileDefinitionService(
+            parserService,
+            Map.of(),
+            new MetaModelStrategy() );
+
+      final Optional<Location> result = resolver.findDefinition( parsedDocument, new Position( 8, 20 ) );
+
+      assertThat( result ).isPresent();
+      final Location location = result.get();
+      assertThat( location.getUri() ).contains( "unit" );
+      assertThat( location.getUri() ).endsWith( ".ttl" );
+      assertThat( location.getRange().getStart() ).isEqualTo( new Position( 11712, 5 ) );
    }
 }
