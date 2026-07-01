@@ -47,7 +47,7 @@ public record ParsedDocument(
    public boolean storedIn( final Path path ) {
       try {
          return Path.of( new URI( this.sourceDocument().getUri() ) ).getParent().toAbsolutePath().equals( path.toAbsolutePath() );
-      } catch ( URISyntaxException e ) {
+      } catch ( final URISyntaxException e ) {
          return false;
       }
    }

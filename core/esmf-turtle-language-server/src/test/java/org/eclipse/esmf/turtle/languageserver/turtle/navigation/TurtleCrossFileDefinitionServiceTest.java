@@ -191,16 +191,16 @@ class TurtleCrossFileDefinitionServiceTest {
    @Test
    void testGoToDefinitionForUnitNamespace() {
       final String content = """
-            @prefix : <urn:samm:com.example:1.0.0#> .
-            @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#> .
-            @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#> .
-            @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.1.0#> .
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-            
-            :Quantity a samm-c:Quantifiable ;
-               samm:dataType xsd:float ;
-               samm-c:unit unit:piece .
-            """;
+         @prefix : <urn:samm:com.example:1.0.0#> .
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#> .
+         @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#> .
+         @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.1.0#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+         :Quantity a samm-c:Quantifiable ;
+            samm:dataType xsd:float ;
+            samm-c:unit unit:piece .
+         """;
 
       final ParsedDocument parsedDocument = parserService.apply(
             new Document( "file:///workspace/Quantity.ttl", content ) );
