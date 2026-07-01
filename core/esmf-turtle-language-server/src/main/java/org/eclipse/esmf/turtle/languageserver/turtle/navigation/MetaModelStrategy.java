@@ -74,6 +74,10 @@ public class MetaModelStrategy implements ResolutionStrategy {
       }
    }
 
+   public Path getTempDir() {
+      return tempDir;
+   }
+
    @Override
    public AspectModelFile apply( final AspectModelUrn urn, final ResolutionStrategySupport support ) {
       if ( ElementType.NONE.equals( urn.getElementType() ) ) {
@@ -144,11 +148,21 @@ public class MetaModelStrategy implements ResolutionStrategy {
    private static Map<String, List<String>> buildElementTypeFilenames() {
       final Map<String, List<String>> result = new HashMap<>();
       for ( final MetaModelFile entry : MetaModelFile.values() ) {
-         final String namespace = entry.getRdfNamespace().getUri();
-         final String elementType = AspectModelUrn.fromUrn( namespace ).getElementType().getValue();
+         final String elementType = elementTypeFromNamespaceShortForm( entry );
          entry.filename().ifPresent( filename -> result.computeIfAbsent( elementType, s -> new ArrayList<>() ).add( filename ) );
       }
       return result;
+   }
+
+   private static String elementTypeFromNamespaceShortForm( final MetaModelFile entry ) {
+      final String shortForm = entry.getRdfNamespace().getShortForm();
+      return switch ( shortForm ) {
+         case "samm" -> ElementType.META_MODEL.getValue();
+         case "samm-c" -> ElementType.CHARACTERISTIC.getValue();
+         case "samm-e" -> ElementType.ENTITY.getValue();
+         case "unit" -> ElementType.UNIT.getValue();
+         default -> throw new IllegalStateException( "Unsupported SAMM namespace short form: " + shortForm );
+      };
    }
 
    @Override

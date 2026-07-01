@@ -66,6 +66,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
    private final TextDocumentClientNotifier clientNotifier;
    private final TurtleDefinitionService turtleDefinitionService;
    private TurtleCrossFileDefinitionService turtleCrossFileDefinitionService;
+   private Path sammInternalModelsTempDir = Path.of( "" );
    private final TurtleCompletionService turtleCompletionService;
    private final AspectValidationCoordinator aspectValidationCoordinator;
    private final TreeSitterTurtleParserService turtleParserService;
@@ -109,7 +110,9 @@ public class TurtleTextDocumentService implements TextDocumentService {
       }
       final FileSystemStrategy structuredStrategy = new FileSystemStrategy( new StructuredModelsRoot( realRoot ) );
       final FileSystemStrategy flatStrategy = new FileSystemStrategy( new FlatModelsRoot( realRoot ) );
-      final EitherStrategy eitherStrategy = new EitherStrategy( structuredStrategy, flatStrategy, new MetaModelStrategy() );
+      final MetaModelStrategy metaModelStrategy = new MetaModelStrategy();
+      sammInternalModelsTempDir = metaModelStrategy.getTempDir();
+      final EitherStrategy eitherStrategy = new EitherStrategy( structuredStrategy, flatStrategy, metaModelStrategy );
 
       turtleCrossFileDefinitionService = new TurtleCrossFileDefinitionService( turtleParserService, documents, eitherStrategy );
    }
@@ -125,7 +128,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
       }
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
       DiagnosticReport diagnosticReport = syntaxDiagnostics.defaultValidate( parsedDocument );
-      if ( parsedDocument.isAspectModel() ) {
+      if ( !parsedDocument.storedIn( sammInternalModelsTempDir ) && parsedDocument.isAspectModel() ) {
          final DiagnosticReport aspectReport = aspectModelValidation.defaultValidate( parsedDocument );
          aspectValidationCoordinator.seedCache( document, aspectReport );
          diagnosticReport = diagnosticReport.merge( aspectReport );
@@ -143,11 +146,14 @@ public class TurtleTextDocumentService implements TextDocumentService {
       turtleParserService.onOpen( document );
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
 
-      DiagnosticReport diagnosticReport = syntaxDiagnostics.defaultValidate( parsedDocument );
-      if ( parsedDocument.isAspectModel() ) {
-         final DiagnosticReport aspectReport = aspectModelValidation.onOpen( parsedDocument );
-         diagnosticReport = diagnosticReport.merge( aspectReport );
-         aspectValidationCoordinator.seedCache( document, aspectReport );
+      DiagnosticReport diagnosticReport = DiagnosticReport.EMPTY;
+      if ( !parsedDocument.storedIn( sammInternalModelsTempDir ) ) {
+         diagnosticReport = syntaxDiagnostics.defaultValidate( parsedDocument );
+         if ( parsedDocument.isAspectModel() ) {
+            final DiagnosticReport aspectReport = aspectModelValidation.onOpen( parsedDocument );
+            diagnosticReport = diagnosticReport.merge( aspectReport );
+            aspectValidationCoordinator.seedCache( document, aspectReport );
+         }
       }
 
       clientNotifier.publishDiagnostics( document, diagnosticReport );
@@ -168,10 +174,13 @@ public class TurtleTextDocumentService implements TextDocumentService {
       LOG.debug( "[didChange] uri={}, changes={}", uri, params.getContentChanges().size() );
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
 
-      DiagnosticReport diagnosticReport = syntaxDiagnostics.onChange( parsedDocument );
-      if ( parsedDocument.isAspectModel() ) {
-         diagnosticReport = diagnosticReport.merge( aspectValidationCoordinator.getCachedDiagnostics( document ) );
-         aspectValidationCoordinator.onDocumentChanged( parsedDocument );
+      DiagnosticReport diagnosticReport = DiagnosticReport.EMPTY;
+      if ( !parsedDocument.storedIn( sammInternalModelsTempDir ) ) {
+         diagnosticReport = syntaxDiagnostics.defaultValidate( parsedDocument );
+         if ( parsedDocument.isAspectModel() ) {
+            diagnosticReport = diagnosticReport.merge( aspectValidationCoordinator.getCachedDiagnostics( document ) );
+            aspectValidationCoordinator.onDocumentChanged( parsedDocument );
+         }
       }
 
       clientNotifier.publishDiagnostics( document, diagnosticReport );
@@ -200,10 +209,13 @@ public class TurtleTextDocumentService implements TextDocumentService {
       turtleParserService.onOpen( document );
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
 
-      DiagnosticReport diagnosticReport = syntaxDiagnostics.onSave( parsedDocument );
-      if ( parsedDocument.isAspectModel() ) {
-         diagnosticReport = diagnosticReport.merge( aspectValidationCoordinator.getCachedDiagnostics( document ) );
-         aspectValidationCoordinator.onDocumentSaved( parsedDocument );
+      DiagnosticReport diagnosticReport = DiagnosticReport.EMPTY;
+      if ( !parsedDocument.storedIn( sammInternalModelsTempDir ) ) {
+         diagnosticReport = syntaxDiagnostics.defaultValidate( parsedDocument );
+         if ( parsedDocument.isAspectModel() ) {
+            diagnosticReport = diagnosticReport.merge( aspectValidationCoordinator.getCachedDiagnostics( document ) );
+            aspectValidationCoordinator.onDocumentSaved( parsedDocument );
+         }
       }
 
       clientNotifier.publishDiagnostics( document, diagnosticReport );
