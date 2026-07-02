@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.BiConsumer;
 
 import org.eclipse.esmf.turtle.languageserver.aspect.diagnostic.AspectDiagnosticMapper;
@@ -68,6 +70,12 @@ public class TurtleTextDocumentService implements TextDocumentService {
    private final TurtleSyntaxDiagnosticsService syntaxDiagnostics;
    private final AspectModelValidationService aspectModelValidation;
    private final Map<String, Document> documents = new ConcurrentHashMap<>();
+   private final ExecutorService asyncExecutor = Executors.newCachedThreadPool(
+         r -> {
+            final Thread t = new Thread( r, "lsp-async-worker" );
+            t.setDaemon( true );
+            return t;
+         } );
 
    public TurtleTextDocumentService() {
       clientNotifier = new TextDocumentClientNotifier( new AspectDiagnosticMapper() );
@@ -96,6 +104,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
 
    public void shutdown() {
       aspectValidationCoordinator.close();
+      asyncExecutor.shutdown();
    }
 
    public DiagnosticReport validateDocument( final String uri ) {
@@ -206,8 +215,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
       if ( document == null ) {
          return CompletableFuture.completedFuture( new SemanticTokens( List.of() ) );
       }
-      final SemanticTokens semanticTokens = tokenService.buildSemanticTokens( document );
-      return CompletableFuture.completedFuture( semanticTokens );
+      return CompletableFuture.supplyAsync( () -> tokenService.buildSemanticTokens( document ), asyncExecutor );
    }
 
    @Override
@@ -218,16 +226,19 @@ public class TurtleTextDocumentService implements TextDocumentService {
          return CompletableFuture.completedFuture( Either.forLeft( List.of() ) );
       }
 
-      final ParsedDocument parsedDocument = turtleParserService.apply( document );
-      Optional<Location> declaration = turtleDefinitionService.findDefinition( parsedDocument, params.getPosition() );
+      return CompletableFuture.supplyAsync( () -> {
+         final ParsedDocument parsedDocument = turtleParserService.apply( document );
+         Optional<Location> declaration = turtleDefinitionService.findDefinition( parsedDocument, params.getPosition() );
 
-      if ( declaration.isEmpty() && turtleCrossFileDefinitionService != null ) {
-         declaration = turtleCrossFileDefinitionService.findDefinition( parsedDocument, params.getPosition() );
-      }
+         if ( declaration.isEmpty() && turtleCrossFileDefinitionService != null ) {
+            declaration = turtleCrossFileDefinitionService.findDefinition( parsedDocument, params.getPosition() );
+         }
 
-      return declaration.<CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>>>map(
-            location -> CompletableFuture.completedFuture( Either.forLeft( List.of( location ) ) ) )
-            .orElseGet( () -> CompletableFuture.completedFuture( Either.forLeft( List.of() ) ) );
+         return declaration
+               .<Either<List<? extends Location>, List<? extends LocationLink>>>map(
+                     location -> Either.forLeft( List.of( location ) ) )
+               .orElseGet( () -> Either.forLeft( List.of() ) );
+      }, asyncExecutor );
    }
 
    @Override
@@ -238,9 +249,11 @@ public class TurtleTextDocumentService implements TextDocumentService {
       if ( document == null ) {
          return CompletableFuture.completedFuture( List.of() );
       }
-      final List<Either<SymbolInformation, DocumentSymbol>> symbols = documentSymbolService.symbols( document ).stream()
-            .map( Either::<SymbolInformation, DocumentSymbol>forRight ).toList();
-      return CompletableFuture.completedFuture( symbols );
+      return CompletableFuture.supplyAsync( () ->
+            documentSymbolService.symbols( document ).stream()
+                  .map( Either::<SymbolInformation, DocumentSymbol>forRight )
+                  .toList(),
+            asyncExecutor );
    }
 
    @Override
@@ -250,8 +263,10 @@ public class TurtleTextDocumentService implements TextDocumentService {
       if ( document == null ) {
          return CompletableFuture.completedFuture( Either.forLeft( List.of() ) );
       }
-      final ParsedDocument parsedDocument = turtleParserService.apply( document );
-      return CompletableFuture.completedFuture(
-            Either.forLeft( turtleCompletionService.complete( parsedDocument, position ) ) );
+      return CompletableFuture.supplyAsync( () -> {
+         final ParsedDocument parsedDocument = turtleParserService.apply( document );
+         return Either.<List<CompletionItem>, CompletionList>forLeft(
+               turtleCompletionService.complete( parsedDocument, position ) );
+      }, asyncExecutor );
    }
 }
