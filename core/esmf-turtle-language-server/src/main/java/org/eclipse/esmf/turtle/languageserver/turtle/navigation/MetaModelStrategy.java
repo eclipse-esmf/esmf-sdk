@@ -15,6 +15,7 @@ package org.eclipse.esmf.turtle.languageserver.turtle.navigation;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,6 +37,7 @@ import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFileBuilder
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.urn.ElementType;
 
+import net.harawata.appdirs.AppDirsFactory;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
 import org.slf4j.Logger;
@@ -63,19 +65,17 @@ public class MetaModelStrategy implements ResolutionStrategy {
 
    private static final Map<String, List<String>> ELEMENT_TYPE_FILENAMES = buildElementTypeFilenames();
 
-   private final Path tempDir;
+   private static final Path META_MODEL_TURTLE_PATH = Path.of( AppDirsFactory.getInstance().getUserCacheDir( "esmf", "1", "esmf" ) );
    private final Map<String, Path> extractedFiles = new ConcurrentHashMap<>();
 
    public MetaModelStrategy() {
-      try {
-         tempDir = Files.createTempDirectory( "samm-meta-model-" );
-      } catch ( final IOException e ) {
-         throw new IllegalStateException( "Could not create temp directory for SAMM meta model files", e );
+      if ( !Files.exists( META_MODEL_TURTLE_PATH ) ) {
+         try {
+            Files.createDirectories( META_MODEL_TURTLE_PATH );
+         } catch ( final IOException exception ) {
+            throw new ModelResolutionException( "Unable to create model cache directory at " + META_MODEL_TURTLE_PATH, exception );
+         }
       }
-   }
-
-   public Path getTempDir() {
-      return tempDir;
    }
 
    @Override
@@ -129,7 +129,7 @@ public class MetaModelStrategy implements ResolutionStrategy {
       final String cacheKey = elementType + "/" + version + "/" + filename;
       return extractedFiles.computeIfAbsent( cacheKey, key -> {
          final String uniqueName = elementType + "-" + version + "-" + filename;
-         final Path target = tempDir.resolve( uniqueName );
+         final Path target = META_MODEL_TURTLE_PATH.resolve( uniqueName );
          try {
             Files.writeString( target, content );
             LOG.debug( "[meta-model-strategy] extracted {} to {}", cacheKey, target );
@@ -183,5 +183,13 @@ public class MetaModelStrategy implements ResolutionStrategy {
    @Override
    public Stream<AspectModelFile> loadContentsForNamespace( final AspectModelUrn namespace ) {
       return Stream.empty();
+   }
+
+   public static boolean isMetaModelUri( final String uri ) {
+      try {
+         return Path.of( new URI( uri ) ).getParent().toAbsolutePath().equals( META_MODEL_TURTLE_PATH.toAbsolutePath() );
+      } catch ( final URISyntaxException e ) {
+         return false;
+      }
    }
 }

@@ -60,18 +60,12 @@ class TurtleCrossFileDefinitionServiceTest {
       throw new IllegalStateException( "Could not locate model resource in esmf-test-aspect-models: " + relativePath );
    }
 
-   private static ResolutionStrategy strategyFor( final Path root ) throws IOException {
-      final Path realRoot = root.toRealPath();
-      return new EitherStrategy(
-            new FileSystemStrategy( new StructuredModelsRoot( realRoot ) ),
-            new FileSystemStrategy( new FlatModelsRoot( realRoot ) ) );
-   }
-
    // Do not clean tempDir to work around file locking issues on windows
    @Test
    void testGoToDefinitionInSeparateFile_structuredLayout( @TempDir( cleanup = CleanupMode.NEVER ) final Path tmpDir ) throws IOException {
+      final Path modelsRoot = tmpDir.resolve( "org.eclipse.esmf.test" ).resolve( "1.0.0" );
       final Path sourceModel = modelFromTestAspectModels( "valid/org.eclipse.esmf.test/1.0.0/Aspect.ttl" );
-      final Path targetModel = tmpDir.resolve( "org.eclipse.esmf.test" ).resolve( "1.0.0" ).resolve( "Aspect.ttl" );
+      final Path targetModel = modelsRoot.resolve( "Aspect.ttl" );
       Files.createDirectories( targetModel.getParent() );
       Files.copy( sourceModel, targetModel );
 
@@ -83,13 +77,13 @@ class TurtleCrossFileDefinitionServiceTest {
             samm:properties () ;
             samm:extends ext:Aspect .
          """;
-      final Document document = new Document( "file:///workspace/MyAspect.ttl", referencingContent );
+      final Path aspectPath = Files.writeString( modelsRoot.resolve( "MyAspect.ttl" ), referencingContent );
+      final Document document = new Document( aspectPath.toUri().toString(), referencingContent );
       final ParsedDocument parsedDocument = parserService.apply( document );
 
       final TurtleCrossFileDefinitionService resolver = new TurtleCrossFileDefinitionService(
             parserService,
-            Map.of(),
-            strategyFor( tmpDir ) );
+            Map.of() );
 
       // Position inside "ext:Aspect" (line 5 in the text block).
       final Optional<Location> result = resolver.findDefinition( parsedDocument, new Position( 5, 22 ) );
@@ -118,13 +112,13 @@ class TurtleCrossFileDefinitionServiceTest {
          :MyAspect a samm:Aspect ;
             samm:extends ext:SharedType .
          """;
-      final Document document = new Document( "file:///workspace/MyAspect.ttl", referencingContent );
+      final Path aspectPath = Files.writeString( tmpDir.resolve( "MyAspect.ttl" ), referencingContent );
+      final Document document = new Document( aspectPath.toUri().toString(), referencingContent );
       final ParsedDocument parsedDocument = parserService.apply( document );
 
       final TurtleCrossFileDefinitionService resolver = new TurtleCrossFileDefinitionService(
             parserService,
-            Map.of(),
-            strategyFor( tmpDir ) );
+            Map.of() );
 
       final Optional<Location> result = resolver.findDefinition( parsedDocument, new Position( 4, 19 ) );
 
@@ -157,31 +151,7 @@ class TurtleCrossFileDefinitionServiceTest {
 
       final TurtleCrossFileDefinitionService resolver = new TurtleCrossFileDefinitionService(
             parserService,
-            Map.of(),
-            strategyFor( tmpDir ) );
-
-      final Optional<Location> result = resolver.findDefinition( parsedDocument, new Position( 4, 19 ) );
-
-      assertThat( result ).isEmpty();
-   }
-
-
-   @Test
-   void testReturnsEmptyWhenStrategyFails() {
-      final String content = """
-         @prefix ext: <urn:samm:com.example:1.0.0#> .
-         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#> .
-
-         :MyAspect a samm:Aspect ;
-            samm:extends ext:MyClass .
-         """;
-      final ParsedDocument parsedDocument = parserService.apply(
-            new Document( "file:///workspace/MyAspect.ttl", content ) );
-
-      final TurtleCrossFileDefinitionService resolver = new TurtleCrossFileDefinitionService(
-            parserService,
-            Map.of(),
-            new EitherStrategy( List.of() ) );
+            Map.of() );
 
       final Optional<Location> result = resolver.findDefinition( parsedDocument, new Position( 4, 19 ) );
 
@@ -207,8 +177,7 @@ class TurtleCrossFileDefinitionServiceTest {
 
       final TurtleCrossFileDefinitionService resolver = new TurtleCrossFileDefinitionService(
             parserService,
-            Map.of(),
-            new MetaModelStrategy() );
+            Map.of() );
 
       final Optional<Location> result = resolver.findDefinition( parsedDocument, new Position( 8, 20 ) );
 

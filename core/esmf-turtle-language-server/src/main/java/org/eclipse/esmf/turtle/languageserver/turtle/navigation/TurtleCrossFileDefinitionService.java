@@ -30,6 +30,7 @@ import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.treesitterturtle.ParserTokenType;
 import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
+import org.eclipse.esmf.turtle.languageserver.lsp.LspUtil;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TreeSitterTurtleParserService;
@@ -66,15 +67,12 @@ public class TurtleCrossFileDefinitionService extends TurtleService {
 
    private final TreeSitterTurtleParserService parserService;
    private final Map<String, Document> openDocuments;
-   private final ResolutionStrategy resolutionStrategy;
 
    public TurtleCrossFileDefinitionService(
          final TreeSitterTurtleParserService parserService,
-         final Map<String, Document> openDocuments,
-         final ResolutionStrategy resolutionStrategy ) {
+         final Map<String, Document> openDocuments ) {
       this.parserService = parserService;
       this.openDocuments = openDocuments;
-      this.resolutionStrategy = resolutionStrategy;
    }
 
    public Optional<Location> findDefinition( final ParsedDocument parsedDocument, final Position position ) {
@@ -115,7 +113,7 @@ public class TurtleCrossFileDefinitionService extends TurtleService {
          return Optional.empty();
       }
 
-      final Optional<Path> targetFile = resolveFilePath( urn.get() );
+      final Optional<Path> targetFile = resolveFilePath( parsedDocument, urn.get() );
       if ( targetFile.isEmpty() ) {
          return Optional.empty();
       }
@@ -161,9 +159,9 @@ public class TurtleCrossFileDefinitionService extends TurtleService {
       return AspectModelUrn.from( fullUrn ).toJavaOptional();
    }
 
-   Optional<Path> resolveFilePath( final AspectModelUrn urn ) {
+   Optional<Path> resolveFilePath( final ParsedDocument parsedDocument, final AspectModelUrn urn ) {
       try {
-         final URI sourceUri = resolutionStrategy.apply( urn, RESOLUTION_SUPPORT )
+         final URI sourceUri = LspUtil.buildResolutionStrategyForDocument( parsedDocument ).apply( urn, RESOLUTION_SUPPORT )
                .sourceLocation()
                .orElseThrow( () -> new ModelResolutionException( "No source location in resolved file for " + urn ) );
          return Optional.of( Paths.get( sourceUri ) );

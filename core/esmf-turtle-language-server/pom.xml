@@ -62,6 +62,10 @@
          <groupId>ch.qos.logback</groupId>
          <artifactId>logback-classic</artifactId>
       </dependency>
+      <dependency>
+         <groupId>net.harawata</groupId>
+         <artifactId>appdirs</artifactId>
+      </dependency>
 
       <dependency>
          <groupId>org.junit.jupiter</groupId>

@@ -80,14 +80,6 @@ public class TurtleLanguageServer implements LanguageServer, LanguageClientAware
             new SemanticTokensWithRegistrationOptions( TurtleTokenService.SUPPORTED_TOKEN_TYPES, true, false ) );
       capabilities.setDocumentSymbolProvider( new DocumentSymbolOptions( "Turtle Document Symbols" ) );
 
-      if ( params.getWorkspaceFolders() != null && !params.getWorkspaceFolders().isEmpty() ) {
-         final String folderUri = params.getWorkspaceFolders().get( 0 ).getUri();
-         final Path workspaceRoot = DocumentUriResolver.toPath( folderUri );
-         if ( workspaceRoot != null ) {
-            textDocumentService.initCrossFileDefinitionService( workspaceRoot );
-         }
-      }
-
       return CompletableFuture.completedFuture( new InitializeResult( capabilities ) );
    }
 

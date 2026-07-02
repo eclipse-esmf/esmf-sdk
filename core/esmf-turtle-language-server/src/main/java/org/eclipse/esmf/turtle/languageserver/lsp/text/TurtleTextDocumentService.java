@@ -13,8 +13,6 @@
 
 package org.eclipse.esmf.turtle.languageserver.lsp.text;
 
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -22,10 +20,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 
-import org.eclipse.esmf.aspectmodel.resolver.EitherStrategy;
-import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
-import org.eclipse.esmf.aspectmodel.resolver.fs.FlatModelsRoot;
-import org.eclipse.esmf.aspectmodel.resolver.fs.StructuredModelsRoot;
 import org.eclipse.esmf.turtle.languageserver.aspect.diagnostic.AspectDiagnosticMapper;
 import org.eclipse.esmf.turtle.languageserver.aspect.service.AspectModelValidationService;
 import org.eclipse.esmf.turtle.languageserver.aspect.service.AspectValidationCoordinator;
@@ -65,8 +59,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
 
    private final TextDocumentClientNotifier clientNotifier;
    private final TurtleDefinitionService turtleDefinitionService;
-   private TurtleCrossFileDefinitionService turtleCrossFileDefinitionService;
-   private Path sammInternalModelsTempDir = Path.of( "" );
+   private final TurtleCrossFileDefinitionService turtleCrossFileDefinitionService;
    private final TurtleCompletionService turtleCompletionService;
    private final AspectValidationCoordinator aspectValidationCoordinator;
    private final TreeSitterTurtleParserService turtleParserService;
@@ -82,6 +75,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
       turtleCompletionService = new TurtleCompletionService();
       turtleParserService = new TreeSitterTurtleParserService();
       tokenService = new TurtleTokenService( turtleParserService );
+      turtleCrossFileDefinitionService = new TurtleCrossFileDefinitionService( turtleParserService, documents );
       syntaxDiagnostics = new TurtleSyntaxDiagnosticsService();
       aspectModelValidation = new AspectModelValidationService();
       documentSymbolService = new DocumentSymbolService( turtleParserService );
@@ -100,23 +94,6 @@ public class TurtleTextDocumentService implements TextDocumentService {
       clientNotifier.connect( client );
    }
 
-   public void initCrossFileDefinitionService( final Path workspaceRoot ) {
-      final Path realRoot;
-      try {
-         realRoot = workspaceRoot.toRealPath();
-      } catch ( final IllegalStateException | IOException e ) {
-         LOG.warn( "[init] could not resolve real path of workspace root {}: {}", workspaceRoot, e.getMessage() );
-         return;
-      }
-      final FileSystemStrategy structuredStrategy = new FileSystemStrategy( new StructuredModelsRoot( realRoot ) );
-      final FileSystemStrategy flatStrategy = new FileSystemStrategy( new FlatModelsRoot( realRoot ) );
-      final MetaModelStrategy metaModelStrategy = new MetaModelStrategy();
-      sammInternalModelsTempDir = metaModelStrategy.getTempDir();
-      final EitherStrategy eitherStrategy = new EitherStrategy( structuredStrategy, flatStrategy, metaModelStrategy );
-
-      turtleCrossFileDefinitionService = new TurtleCrossFileDefinitionService( turtleParserService, documents, eitherStrategy );
-   }
-
    public void shutdown() {
       aspectValidationCoordinator.close();
    }
@@ -128,7 +105,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
       }
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
       DiagnosticReport diagnosticReport = syntaxDiagnostics.defaultValidate( parsedDocument );
-      if ( !parsedDocument.storedIn( sammInternalModelsTempDir ) && parsedDocument.isAspectModel() ) {
+      if ( !MetaModelStrategy.isMetaModelUri( parsedDocument.getUri() ) && parsedDocument.isAspectModel() ) {
          final DiagnosticReport aspectReport = aspectModelValidation.defaultValidate( parsedDocument );
          aspectValidationCoordinator.seedCache( document, aspectReport );
          diagnosticReport = diagnosticReport.merge( aspectReport );
@@ -147,7 +124,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
 
       DiagnosticReport diagnosticReport = DiagnosticReport.EMPTY;
-      if ( !parsedDocument.storedIn( sammInternalModelsTempDir ) ) {
+      if ( !MetaModelStrategy.isMetaModelUri( parsedDocument.getUri() ) ) {
          diagnosticReport = syntaxDiagnostics.defaultValidate( parsedDocument );
          if ( parsedDocument.isAspectModel() ) {
             final DiagnosticReport aspectReport = aspectModelValidation.onOpen( parsedDocument );
@@ -175,7 +152,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
 
       DiagnosticReport diagnosticReport = DiagnosticReport.EMPTY;
-      if ( !parsedDocument.storedIn( sammInternalModelsTempDir ) ) {
+      if ( !MetaModelStrategy.isMetaModelUri( parsedDocument.getUri() ) ) {
          diagnosticReport = syntaxDiagnostics.defaultValidate( parsedDocument );
          if ( parsedDocument.isAspectModel() ) {
             diagnosticReport = diagnosticReport.merge( aspectValidationCoordinator.getCachedDiagnostics( document ) );
@@ -210,7 +187,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
 
       DiagnosticReport diagnosticReport = DiagnosticReport.EMPTY;
-      if ( !parsedDocument.storedIn( sammInternalModelsTempDir ) ) {
+      if ( !MetaModelStrategy.isMetaModelUri( parsedDocument.getUri() ) ) {
          diagnosticReport = syntaxDiagnostics.defaultValidate( parsedDocument );
          if ( parsedDocument.isAspectModel() ) {
             diagnosticReport = diagnosticReport.merge( aspectValidationCoordinator.getCachedDiagnostics( document ) );
