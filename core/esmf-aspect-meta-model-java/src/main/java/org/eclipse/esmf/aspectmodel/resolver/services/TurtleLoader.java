@@ -128,7 +128,7 @@ public final class TurtleLoader {
 
    public static Try<Model> loadTurtle( final TurtleSyntaxTree syntaxTree, final URI location ) {
       init();
-      final String sourceRepresentation = syntaxTree.sourceRepresentationSupplier().get();
+      final String sourceRepresentation = syntaxTree.content();
       try ( final InputStream input = IOUtils.toInputStream( sourceRepresentation, StandardCharsets.UTF_8 ) ) {
          final Context context = Context.create();
          context.put( new TreeSitterTurtleSyntaxTreeSymbol(), syntaxTree );

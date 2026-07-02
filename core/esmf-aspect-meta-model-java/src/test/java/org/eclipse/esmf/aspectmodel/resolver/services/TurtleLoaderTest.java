@@ -75,8 +75,7 @@ public class TurtleLoaderTest {
       try ( final TSParser parser = new TSParser() ) {
          parser.setLanguage( new TreeSitterTurtle() );
          final TSTree tsTree = parser.parseString( null, turtle );
-         final TurtleSyntaxTree turtleSyntaxTree = TurtleSyntaxTree.fromConcreteSyntaxTree( tsTree, () -> turtle,
-               new TurtleSyntaxTree.StringTokenProvider( turtle ) );
+         final TurtleSyntaxTree turtleSyntaxTree = TurtleSyntaxTree.fromConcreteSyntaxTree( tsTree, turtle );
          assertThatCode( () -> {
             final Try<Model> tryModel = TurtleLoader.loadTurtle( turtleSyntaxTree, buildArtificialUri( turtle, "model" ) );
             assertThat( tryModel.isFailure() ).isFalse();
@@ -93,8 +92,7 @@ public class TurtleLoaderTest {
       try ( final TSParser parser = new TSParser() ) {
          parser.setLanguage( new TreeSitterTurtle() );
          final TSTree tsTree = parser.parseString( null, turtle );
-         final TurtleSyntaxTree turtleSyntaxTree = TurtleSyntaxTree.fromConcreteSyntaxTree( tsTree, () -> turtle,
-               new TurtleSyntaxTree.StringTokenProvider( turtle ) );
+         final TurtleSyntaxTree turtleSyntaxTree = TurtleSyntaxTree.fromConcreteSyntaxTree( tsTree, turtle );
          final Try<Model> tryModel = TurtleLoader.loadTurtle( turtleSyntaxTree, buildArtificialUri( turtle, "model" ) );
          assertThat( tryModel.isFailure() ).isTrue();
       }

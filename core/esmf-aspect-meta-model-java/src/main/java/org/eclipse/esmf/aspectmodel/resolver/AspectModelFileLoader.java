@@ -94,7 +94,7 @@ public class AspectModelFileLoader {
    }
 
    public static RawAspectModelFile load( final TurtleSyntaxTree syntaxTree, final URI sourceLocation ) {
-      final String sourceRepresentation = syntaxTree.sourceRepresentationSupplier().get();
+      final String sourceRepresentation = syntaxTree.content();
       final List<String> headerComment = headerComment( syntaxTree );
       final Try<Model> tryModel = TurtleLoader.loadTurtle( syntaxTree, sourceLocation );
       if ( tryModel.isFailure() && tryModel.getCause() instanceof final ParserException parserException ) {

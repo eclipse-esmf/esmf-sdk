@@ -364,7 +364,7 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
          return false;
       }
 
-      final String regex = ".*\\b" + elementType.getValue() + ":\\b.*\\b#\\b.*";
+      final String regex = ".*\\b" + elementType.getValue() + ":\\b.*\\b";
       return urn.toString().matches( regex );
    }
 
