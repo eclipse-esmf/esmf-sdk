@@ -305,6 +305,31 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
    }
 
    /**
+    * Load an Aspect Model from a given RawAspectModelFile
+    *
+    * @param file the file
+    * @return the Aspect Model
+    */
+   public AspectModel loadRawAspectModelFile( final RawAspectModelFile file ) {
+      return loadRawAspectModelFile( List.of( file ) );
+   }
+
+   /**
+    * Load a set of RawAspectModelFiles into a single Aspect Model
+    *
+    * @param files the files
+    * @return the Aspect Model
+    */
+   public AspectModel loadRawAspectModelFile( final Collection<RawAspectModelFile> files ) {
+      final List<AspectModelFile> migratedFiles = files.stream()
+            .map( this::migrate )
+            .toList();
+      final LoaderContext loaderContext = new LoaderContext();
+      resolve( migratedFiles, loaderContext );
+      return loadAspectModelFiles( loaderContext.loadedFiles() );
+   }
+
+   /**
     * Load an Aspect Model by transitively resolving a given input URN
     *
     * @param urn the Aspect Model URN
