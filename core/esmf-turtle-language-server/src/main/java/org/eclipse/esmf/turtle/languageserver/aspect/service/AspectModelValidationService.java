@@ -67,8 +67,7 @@ public class AspectModelValidationService implements TurtleDiagnosticsService {
       final Document document = parsedDocument.sourceDocument();
       try ( final InputStream inputStream = document.getInputStream() ) {
          LOG.debug( "[load] loading aspect model from {}", document.getUri() );
-         final TurtleSyntaxTree syntaxTree = TurtleSyntaxTree.fromConcreteSyntaxTree( parsedDocument.concreteSyntaxTree(),
-               document.getContent() );
+         final TurtleSyntaxTree syntaxTree = parsedDocument.turtleSyntaxTree();
          final RawAspectModelFile file = AspectModelFileLoader.load( syntaxTree, URI.create( document.getUri() ) );
          final List<Violation> violations =
                validator.validateModel( () -> loader.loadAspectModelFiles( List.of( file ) ) );
