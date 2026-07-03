@@ -13,13 +13,9 @@
 
 package org.eclipse.esmf.turtle.languageserver.aspect.service;
 
-import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
-
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.riot.RiotException;
 
 import org.eclipse.esmf.Diagnostic;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
@@ -30,30 +26,31 @@ import org.eclipse.esmf.aspectmodel.resolver.parser.TokenRegistry;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
 import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
+import org.eclipse.esmf.treesitterturtle.TurtleDiagnostic;
 import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleBaseDiagnostic;
-import org.eclipse.esmf.treesitterturtle.TurtleDiagnostic;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDiagnosticsService;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDocumentDiagnostic;
+import org.eclipse.esmf.turtle.languageserver.lsp.LspUtil;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.riot.RiotException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class AspectModelValidationService implements TurtleDiagnosticsService {
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelValidationService.class );
 
-   private final AspectModelLoader loader;
    private final AspectModelValidator validator;
 
    public AspectModelValidationService() {
-      this( new AspectModelLoader(), new AspectModelValidator() );
+      this( new AspectModelValidator() );
    }
 
-   AspectModelValidationService( final AspectModelLoader loader, final AspectModelValidator validator ) {
-      this.loader = loader;
+   AspectModelValidationService( final AspectModelValidator validator ) {
       this.validator = validator;
    }
 
@@ -64,16 +61,13 @@ public class AspectModelValidationService implements TurtleDiagnosticsService {
 
    @Override
    public DiagnosticReport defaultValidate( final ParsedDocument parsedDocument ) {
+      final AspectModelLoader loader = new AspectModelLoader( LspUtil.buildResolutionStrategyForDocument( parsedDocument ) );
       final Document document = parsedDocument.sourceDocument();
-      try ( final InputStream inputStream = document.getInputStream() ) {
+      try {
          LOG.debug( "[load] loading aspect model from {}", document.getUri() );
-         final TurtleSyntaxTree syntaxTree = TurtleSyntaxTree.fromConcreteSyntaxTree( parsedDocument.concreteSyntaxTree(),
-               () -> parsedDocument.sourceDocument().getContent(),
-               location -> parsedDocument.sourceDocument().subSequence( location.fromLine(), location.fromColumn(),
-                     location.toLine(), location.toColumn() ) );
+         final TurtleSyntaxTree syntaxTree = parsedDocument.turtleSyntaxTree();
          final RawAspectModelFile file = AspectModelFileLoader.load( syntaxTree, URI.create( document.getUri() ) );
-         final List<Violation> violations =
-               validator.validateModel( () -> loader.loadAspectModelFiles( List.of( file ) ) );
+         final List<Violation> violations = validator.validateModel( () -> loader.loadRawAspectModelFile( file ) );
          LOG.debug( "[validate] validation finished for {} with {} violation(s)", document.getUri(), violations.size() );
          return new DiagnosticReport( violations.stream().flatMap( violation -> toViolationInfo( violation ).stream() ).toList() );
       } catch ( final RiotException exception ) {

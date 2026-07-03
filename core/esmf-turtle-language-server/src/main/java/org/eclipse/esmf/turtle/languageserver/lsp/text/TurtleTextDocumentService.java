@@ -13,11 +13,13 @@
 
 package org.eclipse.esmf.turtle.languageserver.lsp.text;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.BiConsumer;
 
 import org.eclipse.esmf.turtle.languageserver.aspect.diagnostic.AspectDiagnosticMapper;
@@ -28,6 +30,8 @@ import org.eclipse.esmf.turtle.languageserver.structure.DocumentSymbolService;
 import org.eclipse.esmf.turtle.languageserver.structure.TurtleTokenService;
 import org.eclipse.esmf.turtle.languageserver.turtle.TurtleCompletionService;
 import org.eclipse.esmf.turtle.languageserver.turtle.TurtleSyntaxDiagnosticsService;
+import org.eclipse.esmf.turtle.languageserver.turtle.navigation.MetaModelStrategy;
+import org.eclipse.esmf.turtle.languageserver.turtle.navigation.TurtleCrossFileDefinitionService;
 import org.eclipse.esmf.turtle.languageserver.turtle.navigation.TurtleDefinitionService;
 
 import org.eclipse.lsp4j.CompletionItem;
@@ -57,6 +61,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
 
    private final TextDocumentClientNotifier clientNotifier;
    private final TurtleDefinitionService turtleDefinitionService;
+   private final TurtleCrossFileDefinitionService turtleCrossFileDefinitionService;
    private final TurtleCompletionService turtleCompletionService;
    private final AspectValidationCoordinator aspectValidationCoordinator;
    private final TreeSitterTurtleParserService turtleParserService;
@@ -64,7 +69,13 @@ public class TurtleTextDocumentService implements TextDocumentService {
    private final DocumentSymbolService documentSymbolService;
    private final TurtleSyntaxDiagnosticsService syntaxDiagnostics;
    private final AspectModelValidationService aspectModelValidation;
-   private final Map<String, Document> documents = new HashMap<>();
+   private final Map<String, Document> documents = new ConcurrentHashMap<>();
+   private final ExecutorService asyncExecutor = Executors.newCachedThreadPool(
+         r -> {
+            final Thread t = new Thread( r, "lsp-async-worker" );
+            t.setDaemon( true );
+            return t;
+         } );
 
    public TurtleTextDocumentService() {
       clientNotifier = new TextDocumentClientNotifier( new AspectDiagnosticMapper() );
@@ -72,6 +83,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
       turtleCompletionService = new TurtleCompletionService();
       turtleParserService = new TreeSitterTurtleParserService();
       tokenService = new TurtleTokenService( turtleParserService );
+      turtleCrossFileDefinitionService = new TurtleCrossFileDefinitionService( turtleParserService, documents );
       syntaxDiagnostics = new TurtleSyntaxDiagnosticsService();
       aspectModelValidation = new AspectModelValidationService();
       documentSymbolService = new DocumentSymbolService( turtleParserService );
@@ -92,6 +104,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
 
    public void shutdown() {
       aspectValidationCoordinator.close();
+      asyncExecutor.shutdown();
    }
 
    public DiagnosticReport validateDocument( final String uri ) {
@@ -101,7 +114,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
       }
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
       DiagnosticReport diagnosticReport = syntaxDiagnostics.defaultValidate( parsedDocument );
-      if ( parsedDocument.isAspectModel() ) {
+      if ( !MetaModelStrategy.isMetaModelUri( parsedDocument.getUri() ) && parsedDocument.isAspectModel() ) {
          final DiagnosticReport aspectReport = aspectModelValidation.defaultValidate( parsedDocument );
          aspectValidationCoordinator.seedCache( document, aspectReport );
          diagnosticReport = diagnosticReport.merge( aspectReport );
@@ -119,11 +132,14 @@ public class TurtleTextDocumentService implements TextDocumentService {
       turtleParserService.onOpen( document );
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
 
-      DiagnosticReport diagnosticReport = syntaxDiagnostics.defaultValidate( parsedDocument );
-      if ( parsedDocument.isAspectModel() ) {
-         final DiagnosticReport aspectReport = aspectModelValidation.onOpen( parsedDocument );
-         diagnosticReport = diagnosticReport.merge( aspectReport );
-         aspectValidationCoordinator.seedCache( document, aspectReport );
+      DiagnosticReport diagnosticReport = DiagnosticReport.EMPTY;
+      if ( !MetaModelStrategy.isMetaModelUri( parsedDocument.getUri() ) ) {
+         diagnosticReport = syntaxDiagnostics.defaultValidate( parsedDocument );
+         if ( parsedDocument.isAspectModel() ) {
+            final DiagnosticReport aspectReport = aspectModelValidation.onOpen( parsedDocument );
+            diagnosticReport = diagnosticReport.merge( aspectReport );
+            aspectValidationCoordinator.seedCache( document, aspectReport );
+         }
       }
 
       clientNotifier.publishDiagnostics( document, diagnosticReport );
@@ -132,7 +148,11 @@ public class TurtleTextDocumentService implements TextDocumentService {
    @Override
    public void didChange( final DidChangeTextDocumentParams params ) {
       final String uri = params.getTextDocument().getUri();
-      final Document document = documents.get( params.getTextDocument().getUri() );
+      final Document document = documents.get( uri );
+      if ( document == null ) {
+         LOG.warn( "[didChange] received change for unknown document: {}", uri );
+         return;
+      }
       for ( final TextDocumentContentChangeEvent change : params.getContentChanges() ) {
          document.update( change.getRange(), change.getText() );
          turtleParserService.onChange( document, change );
@@ -140,10 +160,13 @@ public class TurtleTextDocumentService implements TextDocumentService {
       LOG.debug( "[didChange] uri={}, changes={}", uri, params.getContentChanges().size() );
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
 
-      DiagnosticReport diagnosticReport = syntaxDiagnostics.onChange( parsedDocument );
-      if ( parsedDocument.isAspectModel() ) {
-         diagnosticReport = diagnosticReport.merge( aspectValidationCoordinator.getCachedDiagnostics( document ) );
-         aspectValidationCoordinator.onDocumentChanged( parsedDocument );
+      DiagnosticReport diagnosticReport = DiagnosticReport.EMPTY;
+      if ( !MetaModelStrategy.isMetaModelUri( parsedDocument.getUri() ) ) {
+         diagnosticReport = syntaxDiagnostics.defaultValidate( parsedDocument );
+         if ( parsedDocument.isAspectModel() ) {
+            diagnosticReport = diagnosticReport.merge( aspectValidationCoordinator.getCachedDiagnostics( document ) );
+            aspectValidationCoordinator.onDocumentChanged( parsedDocument );
+         }
       }
 
       clientNotifier.publishDiagnostics( document, diagnosticReport );
@@ -153,9 +176,10 @@ public class TurtleTextDocumentService implements TextDocumentService {
    public void didClose( final DidCloseTextDocumentParams params ) {
       final String uri = params.getTextDocument().getUri();
       LOG.info( "[didClose] uri={}", uri );
-      final Document document = documents.get( uri );
-      aspectValidationCoordinator.onDocumentClosed( document );
-      documents.remove( uri );
+      final Document document = documents.remove( uri );
+      if ( document != null ) {
+         aspectValidationCoordinator.onDocumentClosed( document );
+      }
    }
 
    @Override
@@ -163,14 +187,21 @@ public class TurtleTextDocumentService implements TextDocumentService {
       final String uri = params.getTextDocument().getUri();
       final Document document = documents.get( uri );
       LOG.info( "[didSave] uri={}", uri );
+      if ( document == null ) {
+         LOG.warn( "[didSave] received save for unknown document: {}", uri );
+         return;
+      }
       document.getRope().rebalance();
       turtleParserService.onOpen( document );
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
 
-      DiagnosticReport diagnosticReport = syntaxDiagnostics.onSave( parsedDocument );
-      if ( parsedDocument.isAspectModel() ) {
-         diagnosticReport = diagnosticReport.merge( aspectValidationCoordinator.getCachedDiagnostics( document ) );
-         aspectValidationCoordinator.onDocumentSaved( parsedDocument );
+      DiagnosticReport diagnosticReport = DiagnosticReport.EMPTY;
+      if ( !MetaModelStrategy.isMetaModelUri( parsedDocument.getUri() ) ) {
+         diagnosticReport = syntaxDiagnostics.defaultValidate( parsedDocument );
+         if ( parsedDocument.isAspectModel() ) {
+            diagnosticReport = diagnosticReport.merge( aspectValidationCoordinator.getCachedDiagnostics( document ) );
+            aspectValidationCoordinator.onDocumentSaved( parsedDocument );
+         }
       }
 
       clientNotifier.publishDiagnostics( document, diagnosticReport );
@@ -181,8 +212,10 @@ public class TurtleTextDocumentService implements TextDocumentService {
       final String uri = params.getTextDocument().getUri();
       final Document document = documents.get( uri );
       LOG.info( "[semanticTokensFull] uri={}", uri );
-      final SemanticTokens semanticTokens = tokenService.buildSemanticTokens( document );
-      return CompletableFuture.completedFuture( semanticTokens );
+      if ( document == null ) {
+         return CompletableFuture.completedFuture( new SemanticTokens( List.of() ) );
+      }
+      return CompletableFuture.supplyAsync( () -> tokenService.buildSemanticTokens( document ), asyncExecutor );
    }
 
    @Override
@@ -193,12 +226,19 @@ public class TurtleTextDocumentService implements TextDocumentService {
          return CompletableFuture.completedFuture( Either.forLeft( List.of() ) );
       }
 
-      final ParsedDocument parsedDocument = turtleParserService.apply( document );
-      final Optional<Location> declaration =
-            turtleDefinitionService.findDefinition( parsedDocument, params.getPosition() );
-      return declaration.<CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>>>map(
-            location -> CompletableFuture.completedFuture( Either.forLeft( List.of( location ) ) ) )
-            .orElseGet( () -> CompletableFuture.completedFuture( Either.forLeft( List.of() ) ) );
+      return CompletableFuture.supplyAsync( () -> {
+         final ParsedDocument parsedDocument = turtleParserService.apply( document );
+         Optional<Location> declaration = turtleDefinitionService.findDefinition( parsedDocument, params.getPosition() );
+
+         if ( declaration.isEmpty() && turtleCrossFileDefinitionService != null ) {
+            declaration = turtleCrossFileDefinitionService.findDefinition( parsedDocument, params.getPosition() );
+         }
+
+         return declaration
+               .<Either<List<? extends Location>, List<? extends LocationLink>>>map(
+                     location -> Either.forLeft( List.of( location ) ) )
+               .orElseGet( () -> Either.forLeft( List.of() ) );
+      }, asyncExecutor );
    }
 
    @Override
@@ -209,17 +249,23 @@ public class TurtleTextDocumentService implements TextDocumentService {
       if ( document == null ) {
          return CompletableFuture.completedFuture( List.of() );
       }
-      final List<Either<SymbolInformation, DocumentSymbol>> symbols = documentSymbolService.symbols( document ).stream()
-            .map( Either::<SymbolInformation, DocumentSymbol>forRight ).toList();
-      return CompletableFuture.completedFuture( symbols );
+      return CompletableFuture.supplyAsync( () -> documentSymbolService.symbols( document ).stream()
+            .map( Either::<SymbolInformation, DocumentSymbol>forRight )
+            .toList(),
+            asyncExecutor );
    }
 
    @Override
    public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion( final CompletionParams position ) {
       final String uri = position.getTextDocument().getUri();
       final Document document = documents.get( uri );
-      final ParsedDocument parsedDocument = turtleParserService.apply( document );
-      return CompletableFuture.completedFuture(
-            Either.forLeft( turtleCompletionService.complete( parsedDocument, position ) ) );
+      if ( document == null ) {
+         return CompletableFuture.completedFuture( Either.forLeft( List.of() ) );
+      }
+      return CompletableFuture.supplyAsync( () -> {
+         final ParsedDocument parsedDocument = turtleParserService.apply( document );
+         return Either.<List<CompletionItem>, CompletionList>forLeft(
+               turtleCompletionService.complete( parsedDocument, position ) );
+      }, asyncExecutor );
    }
 }
