@@ -18,7 +18,6 @@ import java.net.InetSocketAddress;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.Channels;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -26,7 +25,6 @@ import java.util.concurrent.Executors;
 import java.util.function.Function;
 
 import org.eclipse.esmf.turtle.languageserver.aspect.request.ValidateDocumentParams;
-import org.eclipse.esmf.turtle.languageserver.common.uri.DocumentUriResolver;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TurtleTextDocumentService;
 import org.eclipse.esmf.turtle.languageserver.lsp.workspace.TurtleWorkspaceService;
