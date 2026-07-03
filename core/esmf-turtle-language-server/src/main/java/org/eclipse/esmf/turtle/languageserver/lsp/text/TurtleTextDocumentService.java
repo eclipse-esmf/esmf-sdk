@@ -249,10 +249,9 @@ public class TurtleTextDocumentService implements TextDocumentService {
       if ( document == null ) {
          return CompletableFuture.completedFuture( List.of() );
       }
-      return CompletableFuture.supplyAsync( () ->
-            documentSymbolService.symbols( document ).stream()
-                  .map( Either::<SymbolInformation, DocumentSymbol>forRight )
-                  .toList(),
+      return CompletableFuture.supplyAsync( () -> documentSymbolService.symbols( document ).stream()
+            .map( Either::<SymbolInformation, DocumentSymbol>forRight )
+            .toList(),
             asyncExecutor );
    }
 

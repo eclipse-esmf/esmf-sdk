@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import org.eclipse.esmf.aspectmodel.resolver.EitherStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.resolver.fs.FlatModelsRoot;
 import org.eclipse.esmf.aspectmodel.resolver.fs.StructuredModelsRoot;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
@@ -18,15 +19,14 @@ import org.eclipse.esmf.turtle.languageserver.turtle.navigation.MetaModelStrateg
 
 public class LspUtil {
 
-   private LspUtil() {
-   }
+   private LspUtil() {}
 
    public static ResolutionStrategy buildResolutionStrategyForDocument( final ParsedDocument parsedDocument ) {
       final Path openFilePath;
       try {
          openFilePath = Path.of( new URI( parsedDocument.getUri() ) );
-      } catch ( URISyntaxException e ) {
-         throw new RuntimeException( e );
+      } catch ( final URISyntaxException e ) {
+         throw new ModelResolutionException( "Failed to parse URI: " + parsedDocument.getUri(), e );
       }
       final FileSystemStrategy structuredStrategy = new FileSystemStrategy(
             new StructuredModelsRoot( openFilePath.getParent().getParent().getParent() ) );

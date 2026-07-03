@@ -13,7 +13,7 @@
 
 package org.eclipse.esmf.treesitterturtle;
 
-import java.util.Arrays;
+import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -224,7 +224,15 @@ public class TurtleSyntaxTree {
          return new Error( inputNode.getType(), TurtleDiagnostic.TurtleCode.E0004, location, children );
       }
       final Supplier<String> token = () -> new String(
-            Arrays.copyOfRange( content.getBytes(), inputNode.getStartByte(), inputNode.getEndByte() ) );
+            // bytes
+            content.getBytes( StandardCharsets.UTF_8 ),
+            // offset
+            inputNode.getStartByte(),
+            // length
+            inputNode.getEndByte() - inputNode.getStartByte(),
+            // charset
+            StandardCharsets.UTF_8
+      );
       return new Token( inputNode.getType(), token, location, children );
    }
 
