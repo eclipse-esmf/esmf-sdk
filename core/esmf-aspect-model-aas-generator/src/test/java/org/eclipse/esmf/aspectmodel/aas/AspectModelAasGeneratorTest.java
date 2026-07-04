@@ -469,7 +469,7 @@ class AspectModelAasGeneratorTest {
       assertThat( sml.getIdShort() ).isEqualTo( "PartSources" );
 
       final SubmodelElementCollection smc = (SubmodelElementCollection) sml.getValue().getFirst();
-      assertThat( smc.getIdShort() ).isEqualTo( "PartSupplierEntity" );
+      assertThat( smc.getIdShort() ).isNull();
       assertThat( smc.getValue() )
             .extracting( SubmodelElement::getIdShort )
             .containsExactly( "NameOfSupplier", "EmailAddressOfSupplier" );
@@ -506,6 +506,7 @@ class AspectModelAasGeneratorTest {
 
       final SubmodelElementCollection smc = (SubmodelElementCollection) values.getFirst();
 
+      assertThat( smc.getIdShort() ).isNull();
       assertThat( smc.getSemanticId() ).isNotNull();
       assertThat( smc.getSemanticId().getKeys().getFirst().getValue() )
             .isEqualTo( "urn:samm:org.eclipse.esmf.test:1.0.0#TestEntity" );
@@ -590,10 +591,30 @@ class AspectModelAasGeneratorTest {
       assertThat( sml.getValue().getFirst() ).isInstanceOf( SubmodelElementCollection.class );
       final SubmodelElementCollection smc = (SubmodelElementCollection) sml.getValue().getFirst();
 
-      assertThat( smc.getIdShort() ).isEqualTo( "TestEntity" );
+      assertThat( smc.getIdShort() ).isNull();
       assertThat( smc.getSemanticId() ).isNotNull();
       assertThat( smc.getSemanticId().getKeys().getFirst().getValue() )
             .isEqualTo( "urn:samm:org.eclipse.esmf.test:1.0.0#TestEntity" );
+   }
+
+   @Test
+   void testSubmodelElementListDirectEntityChildHasNoIdShort() throws DeserializationException {
+      final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_ENTITY_COLLECTION );
+      final SubmodelElementList sml = (SubmodelElementList) env.getSubmodels().getFirst().getSubmodelElements().getFirst();
+
+      assertThat( sml.getValue() )
+            .singleElement()
+            .satisfies( child -> assertThat( child.getIdShort() ).isNull() );
+   }
+
+   @Test
+   void testSubmodelElementListDirectScalarChildHasNoIdShort() throws DeserializationException {
+      final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_COLLECTION_OF_SIMPLE_TYPE );
+      final SubmodelElementList sml = (SubmodelElementList) env.getSubmodels().getFirst().getSubmodelElements().getFirst();
+
+      assertThat( sml.getValue() )
+            .singleElement()
+            .satisfies( child -> assertThat( child.getIdShort() ).isNull() );
    }
 
    @Test
