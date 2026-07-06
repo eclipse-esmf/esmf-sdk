@@ -47,6 +47,7 @@ import org.eclipse.digitaltwin.aas4j.v3.model.MultiLanguageProperty;
 import org.eclipse.digitaltwin.aas4j.v3.model.Property;
 import org.eclipse.digitaltwin.aas4j.v3.model.Qualifier;
 import org.eclipse.digitaltwin.aas4j.v3.model.Reference;
+import org.eclipse.digitaltwin.aas4j.v3.model.ReferenceElement;
 import org.eclipse.digitaltwin.aas4j.v3.model.ReferenceTypes;
 import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
@@ -449,6 +450,26 @@ class AspectModelAasGeneratorTest {
       assertThat( environment.getConceptDescriptions().get( 1 ).getEmbeddedDataSpecifications() ).hasSize( 1 );
       assertThat( property.getDescription() ).isEmpty();
       assertThat( property.getSemanticId().getKeys().getFirst().getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
+   }
+
+   @Test
+   void testReferenceCharacteristicGeneratesReferenceElement() throws DeserializationException {
+      final Environment environment = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_REFERENCE );
+
+      assertThat( environment.getSubmodels().getFirst().getSubmodelElements() )
+            .singleElement( type( ReferenceElement.class ) )
+            .satisfies( referenceElement -> {
+               assertThat( referenceElement.getIdShort() ).isEqualTo( "myRef" );
+               assertThat( referenceElement.getSemanticId().getKeys().getFirst().getValue() )
+                     .isEqualTo( "urn:samm:org.eclipse.esmf.test:1.0.0#myRef" );
+               assertThat( referenceElement.getValue().getType() ).isEqualTo( ReferenceTypes.EXTERNAL_REFERENCE );
+               assertThat( referenceElement.getValue().getKeys() )
+                     .singleElement()
+                     .satisfies( key -> {
+                        assertThat( key.getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
+                        assertThat( key.getValue() ).isEqualTo( "urn:example:target-element" );
+                     } );
+            } );
    }
 
    @Test
