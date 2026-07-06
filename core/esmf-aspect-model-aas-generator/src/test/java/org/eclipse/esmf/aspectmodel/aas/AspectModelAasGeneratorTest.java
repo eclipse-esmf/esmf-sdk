@@ -47,6 +47,7 @@ import org.eclipse.digitaltwin.aas4j.v3.model.MultiLanguageProperty;
 import org.eclipse.digitaltwin.aas4j.v3.model.Property;
 import org.eclipse.digitaltwin.aas4j.v3.model.Qualifier;
 import org.eclipse.digitaltwin.aas4j.v3.model.Reference;
+import org.eclipse.digitaltwin.aas4j.v3.model.ReferenceElement;
 import org.eclipse.digitaltwin.aas4j.v3.model.ReferenceTypes;
 import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
@@ -452,6 +453,26 @@ class AspectModelAasGeneratorTest {
    }
 
    @Test
+   void testReferenceCharacteristicGeneratesReferenceElement() throws DeserializationException {
+      final Environment environment = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_REFERENCE );
+
+      assertThat( environment.getSubmodels().getFirst().getSubmodelElements() )
+            .singleElement( type( ReferenceElement.class ) )
+            .satisfies( referenceElement -> {
+               assertThat( referenceElement.getIdShort() ).isEqualTo( "myRef" );
+               assertThat( referenceElement.getSemanticId().getKeys().getFirst().getValue() )
+                     .isEqualTo( "urn:samm:org.eclipse.esmf.test:1.0.0#myRef" );
+               assertThat( referenceElement.getValue().getType() ).isEqualTo( ReferenceTypes.EXTERNAL_REFERENCE );
+               assertThat( referenceElement.getValue().getKeys() )
+                     .singleElement()
+                     .satisfies( key -> {
+                        assertThat( key.getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
+                        assertThat( key.getValue() ).isEqualTo( "urn:example:target-element" );
+                     } );
+            } );
+   }
+
+   @Test
    void testAspectWithPayloadName() throws DeserializationException {
       final Environment environment = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_PROPERTY_WITH_PAYLOAD_NAME );
 
@@ -469,7 +490,7 @@ class AspectModelAasGeneratorTest {
       assertThat( sml.getIdShort() ).isEqualTo( "PartSources" );
 
       final SubmodelElementCollection smc = (SubmodelElementCollection) sml.getValue().getFirst();
-      assertThat( smc.getIdShort() ).isEqualTo( "PartSupplierEntity" );
+      assertThat( smc.getIdShort() ).isNull();
       assertThat( smc.getValue() )
             .extracting( SubmodelElement::getIdShort )
             .containsExactly( "NameOfSupplier", "EmailAddressOfSupplier" );
@@ -506,6 +527,7 @@ class AspectModelAasGeneratorTest {
 
       final SubmodelElementCollection smc = (SubmodelElementCollection) values.getFirst();
 
+      assertThat( smc.getIdShort() ).isNull();
       assertThat( smc.getSemanticId() ).isNotNull();
       assertThat( smc.getSemanticId().getKeys().getFirst().getValue() )
             .isEqualTo( "urn:samm:org.eclipse.esmf.test:1.0.0#TestEntity" );
@@ -590,10 +612,30 @@ class AspectModelAasGeneratorTest {
       assertThat( sml.getValue().getFirst() ).isInstanceOf( SubmodelElementCollection.class );
       final SubmodelElementCollection smc = (SubmodelElementCollection) sml.getValue().getFirst();
 
-      assertThat( smc.getIdShort() ).isEqualTo( "TestEntity" );
+      assertThat( smc.getIdShort() ).isNull();
       assertThat( smc.getSemanticId() ).isNotNull();
       assertThat( smc.getSemanticId().getKeys().getFirst().getValue() )
             .isEqualTo( "urn:samm:org.eclipse.esmf.test:1.0.0#TestEntity" );
+   }
+
+   @Test
+   void testSubmodelElementListDirectEntityChildHasNoIdShort() throws DeserializationException {
+      final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_ENTITY_COLLECTION );
+      final SubmodelElementList sml = (SubmodelElementList) env.getSubmodels().getFirst().getSubmodelElements().getFirst();
+
+      assertThat( sml.getValue() )
+            .singleElement()
+            .satisfies( child -> assertThat( child.getIdShort() ).isNull() );
+   }
+
+   @Test
+   void testSubmodelElementListDirectScalarChildHasNoIdShort() throws DeserializationException {
+      final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_COLLECTION_OF_SIMPLE_TYPE );
+      final SubmodelElementList sml = (SubmodelElementList) env.getSubmodels().getFirst().getSubmodelElements().getFirst();
+
+      assertThat( sml.getValue() )
+            .singleElement()
+            .satisfies( child -> assertThat( child.getIdShort() ).isNull() );
    }
 
    @Test
