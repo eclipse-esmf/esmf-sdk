@@ -352,8 +352,9 @@ The template is a document in the OpenAPI format, with one crucial difference - 
 Values not defined by the generator will be taken from the template.
 For selected generator-defined Aspect Model operations, the values can be taken from the corresponding _Operation Object_ template
 `paths.$$__DEFAULT_QUERIES_TEMPLATE__$$`.
+
 This operation template is currently applied to generated read endpoints, query endpoints and operations endpoints.
-`paths.$$__DEFAULT_QUERIES_TEMPLATE__$$`.
+
 Most fields in these Operation Object templates are merged with the generated operations they apply to.
 
 The `responses` field is an exception for those generated operations:
