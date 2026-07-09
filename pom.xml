@@ -18,7 +18,7 @@
    <parent>
       <groupId>org.eclipse.esmf</groupId>
       <artifactId>esmf-parent</artifactId>
-      <version>28</version>
+      <version>29</version>
    </parent>
 
    <artifactId>esmf-sdk-parent</artifactId>
@@ -193,16 +193,6 @@
             <groupId>org.eclipse.esmf</groupId>
             <artifactId>samm-cli</artifactId>
             <version>${project.version}</version>
-         </dependency>
-
-         <!-- Third party dependencies -->
-         <!-- This meta dependency imports sane versions for many dependencies -->
-         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-dependencies</artifactId>
-            <version>${spring-boot.version}</version>
-            <type>pom</type>
-            <scope>import</scope>
          </dependency>
 
          <!-- Overrides due to CVEs -->

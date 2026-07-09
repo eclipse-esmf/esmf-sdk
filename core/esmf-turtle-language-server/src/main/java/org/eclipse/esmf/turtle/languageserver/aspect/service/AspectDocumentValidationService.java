@@ -52,7 +52,7 @@ public class AspectDocumentValidationService {
       try {
          LOG.debug( "[load] loading aspect model from {}", parsedDocument.getUri() );
          final RawAspectModelFile file = aspectModelFileLoader.load( parsedDocument );
-         final List<Violation> violations = aspectModelValidationService.validate( file );
+         final List<Violation> violations = aspectModelValidationService.validate( file, parsedDocument );
          logProcessingViolations( violations );
          return diagnosticMapper.mapValidationViolations( violations );
       } catch ( final RiotException _ ) {

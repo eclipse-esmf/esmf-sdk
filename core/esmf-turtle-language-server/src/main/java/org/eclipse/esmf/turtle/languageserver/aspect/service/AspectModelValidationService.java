@@ -13,12 +13,15 @@
 
 package org.eclipse.esmf.turtle.languageserver.aspect.service;
 
+import java.net.URI;
 import java.util.List;
 
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFile;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
+import org.eclipse.esmf.turtle.languageserver.lsp.LspUtil;
+import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +42,27 @@ public class AspectModelValidationService {
    }
 
    public List<Violation> validate( final RawAspectModelFile file ) {
-      final List<Violation> violations = validator.validateModel( () -> loader.loadAspectModelFiles( List.of( file ) ) );
+      final List<Violation> violations = validate( file, loader );
       LOG.debug( "[validate] validation finished with {} violation(s)", violations.size() );
       return violations;
+   }
+
+   public List<Violation> validate( final RawAspectModelFile file, final ParsedDocument parsedDocument ) {
+      final AspectModelLoader documentLoader = loaderFor( parsedDocument );
+      final List<Violation> violations = validate( file, documentLoader );
+      LOG.debug( "[validate] validation finished for {} with {} violation(s)", parsedDocument.getUri(), violations.size() );
+      return violations;
+   }
+
+   private AspectModelLoader loaderFor( final ParsedDocument parsedDocument ) {
+      final URI documentUri = URI.create( parsedDocument.getUri() );
+      if ( documentUri.getScheme() == null ) {
+         return new AspectModelLoader();
+      }
+      return new AspectModelLoader( LspUtil.buildResolutionStrategyForDocument( parsedDocument ) );
+   }
+
+   private List<Violation> validate( final RawAspectModelFile file, final AspectModelLoader modelLoader ) {
+      return validator.validateModel( () -> modelLoader.loadRawAspectModelFile( file ) );
    }
 }

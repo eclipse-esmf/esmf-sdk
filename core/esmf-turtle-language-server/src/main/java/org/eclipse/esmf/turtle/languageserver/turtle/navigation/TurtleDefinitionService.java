@@ -23,7 +23,6 @@ import org.eclipse.esmf.turtle.languageserver.turtle.TurtleService;
 
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.Position;
-import org.eclipse.lsp4j.Range;
 
 public class TurtleDefinitionService extends TurtleService {
    public Optional<Location> findDefinition( final ParsedDocument parsedDocument, final Position position ) {
@@ -65,23 +64,11 @@ public class TurtleDefinitionService extends TurtleService {
          return Optional.empty();
       }
 
-      final Optional<TurtleSyntaxTree.Node> elementDefinition = turtleSyntaxTree.tokens()
-            .filter( t -> ParserTokenType.TRIPLE.equals( t.type() ) )
-            .filter( this::hasTypeDefinitionPredicate )
-            .flatMap( t -> t.children().stream() )
-            .filter( n -> ParserTokenType.SUBJECT.equals( n.type() ) )
-            .flatMap( n -> n.children().stream() )
-            .filter( n -> n.isToken() && ParserTokenType.PREFIXED_NAME.equals( n.type() ) && prefixedName.content().equals( n.content() ) )
+      final Optional<TurtleSyntaxTree.Node> elementDefinition = typeDefinitionSubjectPrefixedNames( turtleSyntaxTree )
+            .filter( n -> n.isToken() && prefixedName.content().equals( n.content() ) )
             .flatMap( node -> node.children().stream() )
             .filter( node -> ParserTokenType.PN_LOCAL.equals( node.type() ) )
             .findFirst();
       return elementDefinition.map( definition -> getLocationForLsp( parsedDocument, definition ) );
-   }
-
-   private Location getLocationForLsp( final ParsedDocument parsedDocument, final TurtleSyntaxTree.Node node ) {
-      final Range range = new Range(
-            new Position( node.location().fromLine(), node.location().fromColumn() ),
-            new Position( node.location().toLine(), node.location().toColumn() ) );
-      return new Location( parsedDocument.getUri(), range );
    }
 }

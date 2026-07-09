@@ -168,6 +168,11 @@ class AspectValidationCoordinatorTest {
       public List<Violation> validate( final RawAspectModelFile file ) {
          return violations;
       }
+
+      @Override
+      public List<Violation> validate( final RawAspectModelFile file, final ParsedDocument parsedDocument ) {
+         return violations;
+      }
    }
 
    private static class StubParsedAspectModelFileLoader extends ParsedAspectModelFileLoader {

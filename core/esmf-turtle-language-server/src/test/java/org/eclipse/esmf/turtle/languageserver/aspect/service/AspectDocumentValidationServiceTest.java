@@ -193,7 +193,7 @@ class AspectDocumentValidationServiceTest {
             .satisfies( diagnostic -> {
                assertThat( diagnostic.code().code() ).isEqualTo( ProcessingViolation.ERROR_CODE );
                assertThat( diagnostic.message() )
-                     .contains( "Resource urn:samm:org.eclipse.esmf.test:1.0.0#notExistingProperty has no type" );
+                     .contains( "notExistingProperty.ttl" );
                assertThat( diagnostic.message() )
                      .doesNotContain( "AspectLoadingException" )
                      .doesNotContain( "\tat" );
@@ -220,6 +220,11 @@ class AspectDocumentValidationServiceTest {
 
       @Override
       public List<Violation> validate( final RawAspectModelFile file ) {
+         return violations;
+      }
+
+      @Override
+      public List<Violation> validate( final RawAspectModelFile file, final ParsedDocument parsedDocument ) {
          return violations;
       }
    }

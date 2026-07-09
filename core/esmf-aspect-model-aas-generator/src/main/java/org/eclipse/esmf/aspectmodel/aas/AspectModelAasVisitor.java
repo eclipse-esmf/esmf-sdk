@@ -703,7 +703,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
                .idShort( AasIdShort.from( listIdShort != null ? listIdShort : property.getName() ) )
                .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
                .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
-               .value( List.of( decideOnMapping( property, context ) ) )
+               .value( List.of( clearDirectListChildIdShort( decideOnMapping( property, context ) ) ) )
                .typeValueListElement( AasSubmodelElements.SUBMODEL_ELEMENT_COLLECTION )
                .supplementalSemanticIds( buildGlobalReferenceForSeeReferences( collection ) )
                .orderRelevant( false );
@@ -726,7 +726,8 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
                         .filter( ArrayNode.class::isInstance )
                         .map( ArrayNode.class::cast )
                         .map( arrayNode -> ( final Property property ) -> {
-                           final List<SubmodelElement> values = getValues( collection, property, context, arrayNode );
+                           final List<SubmodelElement> values =
+                                 clearDirectListChildIdShorts( getValues( collection, property, context, arrayNode ) );
                            final String propertyUrn = DEFAULT_MAPPER.determineIdentifierFor( property );
                            return new DefaultSubmodelElementList.Builder()
                                  .idShort( AasIdShort.from( listIdShort != null ? listIdShort : property.getName() ) )
@@ -744,6 +745,16 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       createSubmodelElement( listBuilder, context );
 
       return context.getEnvironment();
+   }
+
+   private SubmodelElement clearDirectListChildIdShort( final SubmodelElement submodelElement ) {
+      submodelElement.setIdShort( null );
+      return submodelElement;
+   }
+
+   private List<SubmodelElement> clearDirectListChildIdShorts( final List<SubmodelElement> submodelElements ) {
+      submodelElements.forEach( this::clearDirectListChildIdShort );
+      return submodelElements;
    }
 
    private <T extends Collection> List<SubmodelElement> getValues( final T collection, final Property property, final Context context,

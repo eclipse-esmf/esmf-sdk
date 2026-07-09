@@ -13,6 +13,9 @@
 
 package org.eclipse.esmf.turtle.languageserver.lsp.text;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.util.List;
 
 import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
@@ -22,31 +25,48 @@ import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
 
 import org.treesitter.TSTree;
 
-public record ParsedDocument(
-      Document sourceDocument,
-      TSTree concreteSyntaxTree
-) {
+public class ParsedDocument {
    private static final List<String> SAMM_PREFIXES = SammNs.sammNamespaces().map( RdfNamespace::getShortForm ).toList();
+   private final Document sourceDocument;
+   private final TSTree concreteSyntaxTree;
+   private final TurtleSyntaxTree turtleSyntaxTree;
 
-   public String getUri() {
-      return sourceDocument().getUri();
+   public ParsedDocument( final Document document, final TSTree concreteSyntaxTree ) {
+      this.sourceDocument = document;
+      this.concreteSyntaxTree = concreteSyntaxTree;
+      this.turtleSyntaxTree = TurtleSyntaxTree.fromConcreteSyntaxTree( concreteSyntaxTree, sourceDocument.getContent() );
    }
 
-   /**
-    * Retrieve the {@link TurtleSyntaxTree} for this parsed document
-    *
-    * @return the turtle syntax tree
-    */
+   public Document sourceDocument() {
+      return sourceDocument;
+   }
+
+   public TSTree concreteSyntaxTree() {
+      return concreteSyntaxTree;
+   }
+
    public TurtleSyntaxTree turtleSyntaxTree() {
-      return TurtleSyntaxTree.fromConcreteSyntaxTree( concreteSyntaxTree(),
-            () -> sourceDocument().getContent(),
-            location -> sourceDocument().subSequence( location.fromLine(), location.fromColumn(),
-                  location.toLine(), location.toColumn() ) );
+      return turtleSyntaxTree;
+   }
+
+   public String getUri() {
+      return this.sourceDocument.getUri();
+   }
+
+   public boolean storedIn( final Path path ) {
+      try {
+         return Path.of( new URI( this.sourceDocument.getUri() ) ).getParent().toAbsolutePath().equals( path.toAbsolutePath() );
+      } catch ( final URISyntaxException e ) {
+         return false;
+      }
    }
 
    public boolean isAspectModel() {
-      return this.turtleSyntaxTree().nodes().anyMatch(
-            node -> node.isToken() && ParserTokenType.PN_PREFIX.equals( node.type() ) && SAMM_PREFIXES.contains( node.content() )
-      );
+      return this.turtleSyntaxTree.rootNode().children().stream()
+            .filter( n -> ParserTokenType.DIRECTIVE.equals( n.type() ) ).flatMap( n -> n.children().stream() )
+            .filter( n -> ParserTokenType.PREFIX_ID.equals( n.type() ) ).flatMap( n -> n.children().stream() )
+            .filter( n -> ParserTokenType.NAMESPACE.equals( n.type() ) ).flatMap( n -> n.children().stream() )
+            .filter( n -> ParserTokenType.PN_PREFIX.equals( n.type() ) )
+            .anyMatch( n -> SAMM_PREFIXES.contains( n.content() ) );
    }
 }

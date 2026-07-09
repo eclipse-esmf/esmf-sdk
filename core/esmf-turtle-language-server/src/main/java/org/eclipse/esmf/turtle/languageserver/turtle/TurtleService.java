@@ -21,6 +21,11 @@ import java.util.stream.Stream;
 
 import org.eclipse.esmf.treesitterturtle.ParserTokenType;
 import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
+import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
+
+import org.eclipse.lsp4j.Location;
+import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
 
 /**
  * Base class for services that operate on a {@link TurtleSyntaxTree}
@@ -69,5 +74,31 @@ public abstract class TurtleService {
             .filter( node -> ParserTokenType.NAMESPACE.equals( node.type() ) )
             .flatMap( node -> node.children().stream() )
             .filter( TurtleSyntaxTree.Node::isToken );
+   }
+
+   protected Stream<TurtleSyntaxTree.Node> typeDefinitionSubjectPrefixedNames( final TurtleSyntaxTree tree ) {
+      return tree.tokens()
+            .filter( t -> ParserTokenType.TRIPLE.equals( t.type() ) )
+            .filter( this::hasTypeDefinitionPredicate )
+            .flatMap( t -> t.children().stream() )
+            .filter( n -> ParserTokenType.SUBJECT.equals( n.type() ) )
+            .flatMap( n -> n.children().stream() )
+            .filter( n -> ParserTokenType.PREFIXED_NAME.equals( n.type() ) );
+   }
+
+   protected Stream<TurtleSyntaxTree.Node> allSubjectPrefixedNames( final TurtleSyntaxTree tree ) {
+      return tree.tokens()
+            .filter( t -> ParserTokenType.TRIPLE.equals( t.type() ) )
+            .flatMap( t -> t.children().stream() )
+            .filter( n -> ParserTokenType.SUBJECT.equals( n.type() ) )
+            .flatMap( n -> n.children().stream() )
+            .filter( n -> ParserTokenType.PREFIXED_NAME.equals( n.type() ) );
+   }
+
+   protected Location getLocationForLsp( final ParsedDocument parsedDocument, final TurtleSyntaxTree.Node node ) {
+      final Range range = new Range(
+            new Position( node.location().fromLine(), node.location().fromColumn() ),
+            new Position( node.location().toLine(), node.location().toColumn() ) );
+      return new Location( parsedDocument.getUri(), range );
    }
 }
