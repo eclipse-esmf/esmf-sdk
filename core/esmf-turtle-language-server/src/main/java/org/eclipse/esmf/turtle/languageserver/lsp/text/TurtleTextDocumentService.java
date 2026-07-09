@@ -135,9 +135,8 @@ public class TurtleTextDocumentService implements TextDocumentService {
       turtleParserService.onOpen( document );
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
 
-      DiagnosticReport diagnosticReport = syntaxDiagnostics.validate( parsedDocument );
+      final DiagnosticReport diagnosticReport = diagnosticsForDocumentEvent( document, parsedDocument );
       if ( shouldValidateAspectModel( parsedDocument ) ) {
-         diagnosticReport = diagnosticReport.merge( aspectValidationCoordinator.getCachedDiagnostics( document ) );
          aspectValidationCoordinator.onDocumentOpened( parsedDocument );
       }
 
@@ -159,9 +158,8 @@ public class TurtleTextDocumentService implements TextDocumentService {
       LOG.debug( "[didChange] uri={}, changes={}", uri, params.getContentChanges().size() );
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
 
-      DiagnosticReport diagnosticReport = syntaxDiagnostics.validate( parsedDocument );
+      final DiagnosticReport diagnosticReport = diagnosticsForDocumentEvent( document, parsedDocument );
       if ( shouldValidateAspectModel( parsedDocument ) ) {
-         diagnosticReport = diagnosticReport.merge( aspectValidationCoordinator.getCachedDiagnostics( document ) );
          aspectValidationCoordinator.onDocumentChanged( parsedDocument );
       }
 
@@ -191,9 +189,8 @@ public class TurtleTextDocumentService implements TextDocumentService {
       turtleParserService.onOpen( document );
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
 
-      DiagnosticReport diagnosticReport = syntaxDiagnostics.validate( parsedDocument );
+      final DiagnosticReport diagnosticReport = diagnosticsForDocumentEvent( document, parsedDocument );
       if ( shouldValidateAspectModel( parsedDocument ) ) {
-         diagnosticReport = diagnosticReport.merge( aspectValidationCoordinator.getCachedDiagnostics( document ) );
          aspectValidationCoordinator.onDocumentSaved( parsedDocument );
       }
 
@@ -264,5 +261,16 @@ public class TurtleTextDocumentService implements TextDocumentService {
 
    private boolean shouldValidateAspectModel( final ParsedDocument parsedDocument ) {
       return !MetaModelStrategy.isMetaModelUri( parsedDocument.getUri() ) && aspectModelFileLoader.supports( parsedDocument );
+   }
+
+   private DiagnosticReport diagnosticsForDocumentEvent( final Document document, final ParsedDocument parsedDocument ) {
+      if ( MetaModelStrategy.isMetaModelUri( parsedDocument.getUri() ) ) {
+         return DiagnosticReport.EMPTY;
+      }
+      DiagnosticReport diagnosticReport = syntaxDiagnostics.validate( parsedDocument );
+      if ( aspectModelFileLoader.supports( parsedDocument ) ) {
+         diagnosticReport = diagnosticReport.merge( aspectValidationCoordinator.getCachedDiagnostics( document ) );
+      }
+      return diagnosticReport;
    }
 }

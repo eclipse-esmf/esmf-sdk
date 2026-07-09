@@ -29,22 +29,14 @@ import org.slf4j.LoggerFactory;
 public class AspectModelValidationService {
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelValidationService.class );
 
-   private final AspectModelLoader loader;
    private final AspectModelValidator validator;
 
    public AspectModelValidationService() {
-      this( new AspectModelLoader(), new AspectModelValidator() );
+      this( new AspectModelValidator() );
    }
 
-   AspectModelValidationService( final AspectModelLoader loader, final AspectModelValidator validator ) {
-      this.loader = loader;
+   AspectModelValidationService( final AspectModelValidator validator ) {
       this.validator = validator;
-   }
-
-   public List<Violation> validate( final RawAspectModelFile file ) {
-      final List<Violation> violations = validate( file, loader );
-      LOG.debug( "[validate] validation finished with {} violation(s)", violations.size() );
-      return violations;
    }
 
    public List<Violation> validate( final RawAspectModelFile file, final ParsedDocument parsedDocument ) {

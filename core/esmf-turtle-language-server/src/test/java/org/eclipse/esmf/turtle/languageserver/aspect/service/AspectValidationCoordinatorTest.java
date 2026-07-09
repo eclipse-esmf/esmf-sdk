@@ -165,11 +165,6 @@ class AspectValidationCoordinatorTest {
       }
 
       @Override
-      public List<Violation> validate( final RawAspectModelFile file ) {
-         return violations;
-      }
-
-      @Override
       public List<Violation> validate( final RawAspectModelFile file, final ParsedDocument parsedDocument ) {
          return violations;
       }
