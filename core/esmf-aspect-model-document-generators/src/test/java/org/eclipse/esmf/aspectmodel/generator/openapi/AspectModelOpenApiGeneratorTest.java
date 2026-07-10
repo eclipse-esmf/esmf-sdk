@@ -283,11 +283,11 @@ class AspectModelOpenApiGeneratorTest {
             .baseUrl( TEST_BASE_URL )
             .resourcePath( TEST_RESOURCE_PATH )
             .template( getTemplateParameter( """
-                  paths:
-                    __DEFAULT_QUERIES_TEMPLATE__:
-                      get:
-                        summary: Custom summary
-                  """ ) )
+               paths:
+                 __DEFAULT_QUERIES_TEMPLATE__:
+                   get:
+                     summary: Custom summary
+               """ ) )
             .build();
       final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
@@ -307,15 +307,15 @@ class AspectModelOpenApiGeneratorTest {
             .baseUrl( TEST_BASE_URL )
             .resourcePath( TEST_RESOURCE_PATH )
             .template( getTemplateParameter( """
-                  paths:
-                    __DEFAULT_QUERIES_TEMPLATE__:
-                      get:
-                        responses:
-                          "400":
-                            description: Custom bad request response.
-                          "404":
-                            description: Custom not found response.
-                  """ ) )
+               paths:
+                 __DEFAULT_QUERIES_TEMPLATE__:
+                   get:
+                     responses:
+                       "400":
+                         description: Custom bad request response.
+                       "404":
+                         description: Custom not found response.
+               """ ) )
             .build();
       final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
@@ -336,13 +336,13 @@ class AspectModelOpenApiGeneratorTest {
             .baseUrl( TEST_BASE_URL )
             .resourcePath( TEST_RESOURCE_PATH )
             .template( getTemplateParameter( """
-                  paths:
-                    __DEFAULT_QUERIES_TEMPLATE__:
-                      get:
-                        responses:
-                          "201":
-                            description: Created by custom template.
-                  """ ) )
+               paths:
+                 __DEFAULT_QUERIES_TEMPLATE__:
+                   get:
+                     responses:
+                       "201":
+                         description: Created by custom template.
+               """ ) )
             .build();
       final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
