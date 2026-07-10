@@ -13,6 +13,8 @@
 
 package org.eclipse.esmf.turtle.languageserver.aspect.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
