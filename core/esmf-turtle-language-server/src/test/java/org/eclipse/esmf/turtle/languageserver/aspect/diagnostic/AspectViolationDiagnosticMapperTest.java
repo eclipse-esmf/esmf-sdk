@@ -25,10 +25,10 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.validation.InvalidLexicalValueViolation;
 import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
 import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
-import org.eclipse.esmf.treesitterturtle.TurtleDiagnostic;
+import org.eclipse.esmf.treesitterturtle.TurtleDiagnosticCode;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
-import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleBaseDiagnostic;
-import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDocumentDiagnostic;
+import org.eclipse.esmf.treesitterturtle.TurtleDiagnostic;
+import org.eclipse.esmf.treesitterturtle.TurtleDocumentDiagnostic;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 
 import org.eclipse.lsp4j.DiagnosticSeverity;
@@ -76,7 +76,7 @@ class AspectViolationDiagnosticMapperTest {
             .satisfies( diagnostic -> {
                assertThat( diagnostic.code().code() ).isEqualTo( InvalidLexicalValueViolation.ERROR_CODE );
                assertThat( diagnostic.message() ).isEqualTo( "Invalid value" );
-               assertThat( diagnostic ).isExactlyInstanceOf( TurtleBaseDiagnostic.class );
+               assertThat( diagnostic ).isExactlyInstanceOf( TurtleDiagnostic.class );
             } );
    }
 
@@ -156,7 +156,7 @@ class AspectViolationDiagnosticMapperTest {
 
       assertThat( report.diagnostics() ).singleElement()
             .satisfies( diagnostic -> {
-               assertThat( diagnostic.code().code() ).isEqualTo( TurtleDiagnostic.TurtleCode.E0003.code() );
+               assertThat( diagnostic.code().code() ).isEqualTo( TurtleDiagnosticCode.E0003.code() );
                assertThat( diagnostic.message() ).isEqualTo( "Triples not terminated by DOT" );
             } );
    }
@@ -179,8 +179,8 @@ class AspectViolationDiagnosticMapperTest {
    void mapsDiagnosticSeverityToLspSeverity() {
       final AspectDiagnosticMapper mapper = new AspectDiagnosticMapper();
       final Document document = new Document( "test.ttl", "" );
-      final DiagnosticReport report = new DiagnosticReport( new TurtleBaseDiagnostic(
-            "warning", TurtleDiagnostic.TurtleCode.E0000, Diagnostic.Severity.WARNING ) );
+      final DiagnosticReport report = new DiagnosticReport( new TurtleDiagnostic(
+            "warning", TurtleDiagnosticCode.E0000, Diagnostic.Severity.WARNING ) );
 
       final List<org.eclipse.lsp4j.Diagnostic> diagnostics = mapper.toDiagnostics( document, report );
 
@@ -193,8 +193,8 @@ class AspectViolationDiagnosticMapperTest {
    void mapsDiagnosticWithoutLocationToFallbackRange() {
       final AspectDiagnosticMapper mapper = new AspectDiagnosticMapper();
       final Document document = new Document( "test.ttl", "" );
-      final DiagnosticReport report = new DiagnosticReport( new TurtleBaseDiagnostic(
-            "warning", TurtleDiagnostic.TurtleCode.E0000, Diagnostic.Severity.WARNING ) );
+      final DiagnosticReport report = new DiagnosticReport( new TurtleDiagnostic(
+            "warning", TurtleDiagnosticCode.E0000, Diagnostic.Severity.WARNING ) );
 
       final List<org.eclipse.lsp4j.Diagnostic> diagnostics = mapper.toDiagnostics( document, report );
 

@@ -15,6 +15,7 @@ package org.eclipse.esmf.turtle.languageserver.lsp.text;
 
 import java.io.InputStream;
 
+import org.eclipse.esmf.Location;
 import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
 
 import org.eclipse.lsp4j.Position;
@@ -68,7 +69,7 @@ public class Document implements TurtleSyntaxTree.TokenProvider {
    }
 
    @Override
-   public String apply( final TurtleSyntaxTree.Location location ) {
+   public String apply( final Location location ) {
       return subSequence( location.fromLine(), location.fromColumn(), location.toLine(), location.toColumn() );
    }
 }

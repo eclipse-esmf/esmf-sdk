@@ -13,6 +13,8 @@
 
 package org.eclipse.esmf.treesitterturtle;
 
+import org.eclipse.esmf.Location;
+
 import org.jspecify.annotations.Nullable;
 import org.treesitter.TSNode;
 import org.treesitter.TSTree;
@@ -49,7 +51,7 @@ public class TreeSitterUtil {
       if ( node.hasError() ) {
          builder.append( " (ERROR)" );
       } else if ( tokenProvider != null && node.getStartPoint().getRow() == node.getEndPoint().getRow() ) {
-         final TurtleSyntaxTree.Location location = new TurtleSyntaxTree.Location(
+         final Location location = new Location(
                node.getStartPoint().getRow(),
                node.getStartPoint().getColumn(),
                node.getEndPoint().getRow(),

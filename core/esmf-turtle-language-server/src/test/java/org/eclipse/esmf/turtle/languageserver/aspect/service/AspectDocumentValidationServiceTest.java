@@ -25,10 +25,10 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.validation.InvalidLexicalValueViolation;
 import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
-import org.eclipse.esmf.treesitterturtle.TurtleDiagnostic;
+import org.eclipse.esmf.treesitterturtle.TurtleDiagnosticCode;
 import org.eclipse.esmf.turtle.languageserver.aspect.diagnostic.AspectViolationDiagnosticMapper;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
-import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDocumentDiagnostic;
+import org.eclipse.esmf.treesitterturtle.TurtleDocumentDiagnostic;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TreeSitterTurtleParserService;
@@ -85,7 +85,7 @@ class AspectDocumentValidationServiceTest {
 
       assertThat( report.diagnostics() ).singleElement()
             .satisfies( diagnostic -> {
-               assertThat( diagnostic.code().code() ).isEqualTo( TurtleDiagnostic.TurtleCode.E0003.code() );
+               assertThat( diagnostic.code().code() ).isEqualTo( TurtleDiagnosticCode.E0003.code() );
                assertThat( diagnostic.message() ).isEqualTo( "Triples not terminated by DOT" );
             } );
    }

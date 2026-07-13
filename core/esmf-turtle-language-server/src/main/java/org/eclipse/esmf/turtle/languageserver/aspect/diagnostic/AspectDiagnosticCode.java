@@ -15,18 +15,9 @@ package org.eclipse.esmf.turtle.languageserver.aspect.diagnostic;
 
 import org.eclipse.esmf.Diagnostic;
 
-final class AspectViolationCode implements Diagnostic.Code {
-   private final String code;
-
-   AspectViolationCode( final String code ) {
-      this.code = code;
-   }
-
-   @Override
-   public String code() {
-      return code;
-   }
-
+public record AspectDiagnosticCode(
+      String code
+) implements Diagnostic.Code {
    @Override
    public String description() {
       return code;

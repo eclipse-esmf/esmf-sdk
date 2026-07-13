@@ -16,9 +16,9 @@ package org.eclipse.esmf.turtle.languageserver.aspect.diagnostic;
 import java.util.List;
 
 import org.eclipse.esmf.Diagnostic.Severity;
-import org.eclipse.esmf.treesitterturtle.TurtleDiagnostic;
+import org.eclipse.esmf.DocumentDiagnostic;
+import org.eclipse.esmf.treesitterturtle.TurtleDocumentDiagnostic;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
-import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDocumentDiagnostic;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 
 import org.eclipse.lsp4j.Diagnostic;
@@ -34,14 +34,14 @@ public final class AspectDiagnosticMapper {
             .toList();
    }
 
-   private boolean appliesToDocument( final Document document, final TurtleDiagnostic turtleDiagnostic ) {
-      if ( turtleDiagnostic instanceof final TurtleDocumentDiagnostic turtleDocumentDiagnostic ) {
-         return document.getUri().equals( turtleDocumentDiagnostic.sourceLocation() );
+   private boolean appliesToDocument( final Document document, final org.eclipse.esmf.Diagnostic<?> diagnostic ) {
+      if ( diagnostic instanceof final DocumentDiagnostic<?> documentDiagnostic ) {
+         return document.getUri().equals( documentDiagnostic.sourceLocation() );
       }
       return true;
    }
 
-   private Diagnostic toDiagnostic( final TurtleDiagnostic turtleDiagnostic ) {
+   private Diagnostic toDiagnostic( final org.eclipse.esmf.Diagnostic<?> turtleDiagnostic ) {
       final Diagnostic diagnostic = new Diagnostic();
       diagnostic.setSeverity( toDiagnosticSeverity( turtleDiagnostic.severity() ) );
       diagnostic.setMessage( turtleDiagnostic.message() );
@@ -63,9 +63,9 @@ public final class AspectDiagnosticMapper {
       };
    }
 
-   private Range toRange( final TurtleDocumentDiagnostic violation ) {
-      return new Range( new Position( violation.fromLine(), violation.fromColumn() ),
-            new Position( violation.toLine(), violation.toColumn() ) );
+   private Range toRange( final DocumentDiagnostic<?> diagnostic ) {
+      return new Range( new Position( diagnostic.location().fromLine(), diagnostic.location().fromColumn() ),
+            new Position( diagnostic.location().toLine(), diagnostic.location().toColumn() ) );
    }
 
    private Range fallbackRange() {

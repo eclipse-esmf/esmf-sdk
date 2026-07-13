@@ -11,16 +11,19 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.treesitterturtle;
+package org.eclipse.esmf;
 
-import org.eclipse.esmf.Diagnostic;
-
-public record TurtleDiagnostic(
-      String message,
-      TurtleDiagnosticCode code,
-      Diagnostic.Severity severity
-) implements Diagnostic<TurtleDiagnosticCode> {
-   public TurtleDiagnostic( final String message, final TurtleDiagnosticCode code ) {
-      this( message, code, Severity.ERROR );
-   }
-}
+/**
+ * Zero-based section of a document
+ *
+ * @param fromLine starting line
+ * @param fromColumn starting column
+ * @param toLine ending line
+ * @param toColumn ending column
+ */
+public record Location(
+      int fromLine,
+      int fromColumn,
+      int toLine,
+      int toColumn
+) {}

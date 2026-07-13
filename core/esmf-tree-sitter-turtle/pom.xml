@@ -57,6 +57,10 @@
          <scope>compile</scope>
       </dependency>
       <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-meta-model-interface</artifactId>
+      </dependency>
+      <dependency>
          <groupId>io.github.bonede</groupId>
          <artifactId>tree-sitter</artifactId>
          <version>${tree-sitter.version}</version>
