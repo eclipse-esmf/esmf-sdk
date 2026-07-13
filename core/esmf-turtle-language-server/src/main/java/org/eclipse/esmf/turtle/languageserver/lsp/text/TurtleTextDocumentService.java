@@ -23,8 +23,9 @@ import java.util.concurrent.Executors;
 import java.util.function.BiConsumer;
 
 import org.eclipse.esmf.turtle.languageserver.aspect.diagnostic.AspectDiagnosticMapper;
-import org.eclipse.esmf.turtle.languageserver.aspect.service.AspectModelValidationService;
+import org.eclipse.esmf.turtle.languageserver.aspect.service.AspectDocumentValidationService;
 import org.eclipse.esmf.turtle.languageserver.aspect.service.AspectValidationCoordinator;
+import org.eclipse.esmf.turtle.languageserver.aspect.service.ParsedAspectModelFileLoader;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
 import org.eclipse.esmf.turtle.languageserver.structure.DocumentSymbolService;
 import org.eclipse.esmf.turtle.languageserver.structure.TurtleTokenService;
@@ -68,7 +69,8 @@ public class TurtleTextDocumentService implements TextDocumentService {
    private final TurtleTokenService tokenService;
    private final DocumentSymbolService documentSymbolService;
    private final TurtleSyntaxDiagnosticsService syntaxDiagnostics;
-   private final AspectModelValidationService aspectModelValidation;
+   private final ParsedAspectModelFileLoader aspectModelFileLoader;
+   private final AspectDocumentValidationService aspectDocumentValidationService;
    private final Map<String, Document> documents = new ConcurrentHashMap<>();
    private final ExecutorService asyncExecutor = Executors.newCachedThreadPool(
          r -> {
@@ -85,17 +87,18 @@ public class TurtleTextDocumentService implements TextDocumentService {
       tokenService = new TurtleTokenService( turtleParserService );
       turtleCrossFileDefinitionService = new TurtleCrossFileDefinitionService( turtleParserService, documents );
       syntaxDiagnostics = new TurtleSyntaxDiagnosticsService();
-      aspectModelValidation = new AspectModelValidationService();
+      aspectModelFileLoader = new ParsedAspectModelFileLoader();
+      aspectDocumentValidationService = new AspectDocumentValidationService();
       documentSymbolService = new DocumentSymbolService( turtleParserService );
       // When the coordinator completes an async aspect validation it calls back here.
       // We merge the fresh aspect report with a fresh syntax report and publish once,
       // ensuring neither layer can overwrite the other.
       final BiConsumer<Document, DiagnosticReport> validationCallback = ( document, aspectReport ) -> {
          final ParsedDocument parsedDocument = turtleParserService.apply( document );
-         final DiagnosticReport syntaxReport = syntaxDiagnostics.defaultValidate( parsedDocument );
+         final DiagnosticReport syntaxReport = syntaxDiagnostics.validate( parsedDocument );
          clientNotifier.publishDiagnostics( document, syntaxReport.merge( aspectReport ) );
       };
-      aspectValidationCoordinator = new AspectValidationCoordinator( aspectModelValidation, validationCallback );
+      aspectValidationCoordinator = new AspectValidationCoordinator( aspectDocumentValidationService, validationCallback );
    }
 
    public void connect( final LanguageClient client ) {
@@ -113,9 +116,9 @@ public class TurtleTextDocumentService implements TextDocumentService {
          return DiagnosticReport.EMPTY;
       }
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
-      DiagnosticReport diagnosticReport = syntaxDiagnostics.defaultValidate( parsedDocument );
-      if ( !MetaModelStrategy.isMetaModelUri( parsedDocument.getUri() ) && parsedDocument.isAspectModel() ) {
-         final DiagnosticReport aspectReport = aspectModelValidation.defaultValidate( parsedDocument );
+      DiagnosticReport diagnosticReport = syntaxDiagnostics.validate( parsedDocument );
+      if ( shouldValidateAspectModel( parsedDocument ) ) {
+         final DiagnosticReport aspectReport = aspectDocumentValidationService.validate( parsedDocument );
          aspectValidationCoordinator.seedCache( document, aspectReport );
          diagnosticReport = diagnosticReport.merge( aspectReport );
       }
@@ -132,14 +135,9 @@ public class TurtleTextDocumentService implements TextDocumentService {
       turtleParserService.onOpen( document );
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
 
-      DiagnosticReport diagnosticReport = DiagnosticReport.EMPTY;
-      if ( !MetaModelStrategy.isMetaModelUri( parsedDocument.getUri() ) ) {
-         diagnosticReport = syntaxDiagnostics.defaultValidate( parsedDocument );
-         if ( parsedDocument.isAspectModel() ) {
-            final DiagnosticReport aspectReport = aspectModelValidation.onOpen( parsedDocument );
-            diagnosticReport = diagnosticReport.merge( aspectReport );
-            aspectValidationCoordinator.seedCache( document, aspectReport );
-         }
+      final DiagnosticReport diagnosticReport = diagnosticsForDocumentEvent( document, parsedDocument );
+      if ( shouldValidateAspectModel( parsedDocument ) ) {
+         aspectValidationCoordinator.onDocumentOpened( parsedDocument );
       }
 
       clientNotifier.publishDiagnostics( document, diagnosticReport );
@@ -160,13 +158,9 @@ public class TurtleTextDocumentService implements TextDocumentService {
       LOG.debug( "[didChange] uri={}, changes={}", uri, params.getContentChanges().size() );
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
 
-      DiagnosticReport diagnosticReport = DiagnosticReport.EMPTY;
-      if ( !MetaModelStrategy.isMetaModelUri( parsedDocument.getUri() ) ) {
-         diagnosticReport = syntaxDiagnostics.defaultValidate( parsedDocument );
-         if ( parsedDocument.isAspectModel() ) {
-            diagnosticReport = diagnosticReport.merge( aspectValidationCoordinator.getCachedDiagnostics( document ) );
-            aspectValidationCoordinator.onDocumentChanged( parsedDocument );
-         }
+      final DiagnosticReport diagnosticReport = diagnosticsForDocumentEvent( document, parsedDocument );
+      if ( shouldValidateAspectModel( parsedDocument ) ) {
+         aspectValidationCoordinator.onDocumentChanged( parsedDocument );
       }
 
       clientNotifier.publishDiagnostics( document, diagnosticReport );
@@ -195,13 +189,9 @@ public class TurtleTextDocumentService implements TextDocumentService {
       turtleParserService.onOpen( document );
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
 
-      DiagnosticReport diagnosticReport = DiagnosticReport.EMPTY;
-      if ( !MetaModelStrategy.isMetaModelUri( parsedDocument.getUri() ) ) {
-         diagnosticReport = syntaxDiagnostics.defaultValidate( parsedDocument );
-         if ( parsedDocument.isAspectModel() ) {
-            diagnosticReport = diagnosticReport.merge( aspectValidationCoordinator.getCachedDiagnostics( document ) );
-            aspectValidationCoordinator.onDocumentSaved( parsedDocument );
-         }
+      final DiagnosticReport diagnosticReport = diagnosticsForDocumentEvent( document, parsedDocument );
+      if ( shouldValidateAspectModel( parsedDocument ) ) {
+         aspectValidationCoordinator.onDocumentSaved( parsedDocument );
       }
 
       clientNotifier.publishDiagnostics( document, diagnosticReport );
@@ -267,5 +257,20 @@ public class TurtleTextDocumentService implements TextDocumentService {
          return Either.<List<CompletionItem>, CompletionList>forLeft(
                turtleCompletionService.complete( parsedDocument, position ) );
       }, asyncExecutor );
+   }
+
+   private boolean shouldValidateAspectModel( final ParsedDocument parsedDocument ) {
+      return !MetaModelStrategy.isMetaModelUri( parsedDocument.getUri() ) && aspectModelFileLoader.supports( parsedDocument );
+   }
+
+   private DiagnosticReport diagnosticsForDocumentEvent( final Document document, final ParsedDocument parsedDocument ) {
+      if ( MetaModelStrategy.isMetaModelUri( parsedDocument.getUri() ) ) {
+         return DiagnosticReport.EMPTY;
+      }
+      DiagnosticReport diagnosticReport = syntaxDiagnostics.validate( parsedDocument );
+      if ( aspectModelFileLoader.supports( parsedDocument ) ) {
+         diagnosticReport = diagnosticReport.merge( aspectValidationCoordinator.getCachedDiagnostics( document ) );
+      }
+      return diagnosticReport;
    }
 }

@@ -15,33 +15,18 @@ package org.eclipse.esmf.turtle.languageserver.aspect.service;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
-import org.eclipse.esmf.Diagnostic;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
-import org.eclipse.esmf.aspectmodel.resolver.AspectModelFileLoader;
-import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFile;
-import org.eclipse.esmf.aspectmodel.resolver.parser.TokenRegistry;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
-import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
 import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
-import org.eclipse.esmf.treesitterturtle.TurtleDiagnostic;
-import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
-import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
-import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleBaseDiagnostic;
-import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDiagnosticsService;
-import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDocumentDiagnostic;
 import org.eclipse.esmf.turtle.languageserver.lsp.LspUtil;
-import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.riot.RiotException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AspectModelValidationService implements TurtleDiagnosticsService {
+public class AspectModelValidationService {
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelValidationService.class );
 
    private final AspectModelValidator validator;
@@ -54,70 +39,22 @@ public class AspectModelValidationService implements TurtleDiagnosticsService {
       this.validator = validator;
    }
 
-   @Override
-   public DiagnosticReport onChange( final ParsedDocument document ) {
-      return DiagnosticReport.EMPTY;
+   public List<Violation> validate( final RawAspectModelFile file, final ParsedDocument parsedDocument ) {
+      final AspectModelLoader documentLoader = loaderFor( parsedDocument );
+      final List<Violation> violations = validate( file, documentLoader );
+      LOG.debug( "[validate] validation finished for {} with {} violation(s)", parsedDocument.getUri(), violations.size() );
+      return violations;
    }
 
-   @Override
-   public DiagnosticReport defaultValidate( final ParsedDocument parsedDocument ) {
-      final AspectModelLoader loader = new AspectModelLoader( LspUtil.buildResolutionStrategyForDocument( parsedDocument ) );
-      final Document document = parsedDocument.sourceDocument();
-      try {
-         LOG.debug( "[load] loading aspect model from {}", document.getUri() );
-         final TurtleSyntaxTree syntaxTree = parsedDocument.turtleSyntaxTree();
-         final RawAspectModelFile file = AspectModelFileLoader.load( syntaxTree, URI.create( document.getUri() ) );
-         final List<Violation> violations = validator.validateModel( () -> loader.loadRawAspectModelFile( file ) );
-         LOG.debug( "[validate] validation finished for {} with {} violation(s)", document.getUri(), violations.size() );
-         return new DiagnosticReport( violations.stream().flatMap( violation -> toViolationInfo( violation ).stream() ).toList() );
-      } catch ( final RiotException exception ) {
-         // Ignore. Syntax errors are handled by the TurtleSyntaxDiagnosticsService
-         return DiagnosticReport.EMPTY;
-      } catch ( final ParserException exception ) {
-         // Can happen for cases where Jena complains but TreeSitter doesn't
-         return new DiagnosticReport( diagnosticFromParserException( exception, parsedDocument.getUri() ) );
-      } catch ( final Exception exception ) {
-         LOG.error( "[validate] unexpected runtime failure for {}", document.getUri(), exception );
-         return new DiagnosticReport( exception.getMessage(), TurtleDiagnostic.TurtleCode.E0000 );
+   private AspectModelLoader loaderFor( final ParsedDocument parsedDocument ) {
+      final URI documentUri = URI.create( parsedDocument.getUri() );
+      if ( documentUri.getScheme() == null ) {
+         return new AspectModelLoader();
       }
+      return new AspectModelLoader( LspUtil.buildResolutionStrategyForDocument( parsedDocument ) );
    }
 
-   private TurtleDiagnostic diagnosticFromParserException( final ParserException exception, final String sourceLocation ) {
-      return new TurtleDocumentDiagnostic( exception.getMessage(), TurtleDiagnostic.TurtleCode.E0003, sourceLocation,
-            (int) exception.getLine() - 1, (int) exception.getColumn() - 1,
-            (int) exception.getLine() - 1, (int) exception.getColumn() );
-   }
-
-   private Diagnostic.Code classifyViolation( final Violation violation ) {
-      // TODO
-      return TurtleDiagnostic.TurtleCode.E0000;
-   }
-
-   private Optional<TurtleDiagnostic> toViolationInfo( final Violation violation ) {
-      return switch ( violation ) {
-         // Syntax violation diagnostics are provided by TurtleSyntaxDiagnosticsService
-         case final InvalidSyntaxViolation _ -> Optional.empty();
-         // TODO Add other specific violations here
-         default -> {
-            final TurtleSyntaxTree.Location location = Optional.ofNullable( violation.highlight() )
-                  .map( RDFNode::asNode )
-                  .flatMap( TokenRegistry::getToken )
-                  .flatMap( smartToken -> Optional.ofNullable( smartToken.getTreesitterToken() ) )
-                  .map( TurtleSyntaxTree.Token::location )
-                  .orElse( null );
-            yield location == null
-                  ? Optional.of( new TurtleBaseDiagnostic(
-                        violation.message(),
-                        classifyViolation( violation ) ) )
-                  : Optional.of( new TurtleDocumentDiagnostic(
-                        violation.message(),
-                        classifyViolation( violation ),
-                        violation.sourceLocation().map( URI::toString ).orElseThrow(),
-                        location.fromLine(),
-                        location.fromColumn(),
-                        location.toLine(),
-                        location.toColumn() ) );
-         }
-      };
+   private List<Violation> validate( final RawAspectModelFile file, final AspectModelLoader modelLoader ) {
+      return validator.validateModel( () -> modelLoader.loadRawAspectModelFile( file ) );
    }
 }
