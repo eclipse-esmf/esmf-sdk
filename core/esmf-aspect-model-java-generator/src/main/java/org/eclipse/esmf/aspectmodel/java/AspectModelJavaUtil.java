@@ -58,6 +58,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Converter;
+import jakarta.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.text.translate.UnicodeUnescaper;
@@ -305,9 +306,18 @@ public class AspectModelJavaUtil {
 
    private static Optional<String> buildConstraintForCollectionElements( final Collection collection,
          final JavaCodeGenerationConfig codeGenerationConfig ) {
-      return collection.getElementCharacteristic()
+      final Set<String> constraints = new LinkedHashSet<>();
+      collection.getElementCharacteristic()
             .filter( elementCharacteristic -> elementCharacteristic.is( Trait.class ) )
-            .map( elementCharacteristic -> buildConstraintsForCharacteristic( (Trait) elementCharacteristic, codeGenerationConfig ) );
+            .map( elementCharacteristic -> buildConstraintsForCharacteristic( (Trait) elementCharacteristic, codeGenerationConfig ) )
+            .ifPresent( constraints::add );
+
+      if ( collection.getDataType().filter( type -> type.is( Entity.class ) ).isPresent() ) {
+         codeGenerationConfig.importTracker().importExplicit( Valid.class );
+         constraints.add( "@Valid " );
+      }
+
+      return constraints.isEmpty() ? Optional.empty() : Optional.of( String.join( "", constraints ) );
    }
 
    public static String containerType( final Class<?> containerClass, final String elementType, final Optional<String> elementConstraint ) {

@@ -16,17 +16,15 @@ package org.eclipse.esmf.turtle.languageserver.turtle;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
 import org.eclipse.esmf.treesitterturtle.TurtleDiagnostic;
-import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDiagnosticsService;
+import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
 import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDocumentDiagnostic;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 
 import org.treesitter.TSNode;
 
-public class TurtleSyntaxDiagnosticsService implements TurtleDiagnosticsService {
-   @Override
-   public DiagnosticReport defaultValidate( final ParsedDocument parsedDocument ) {
+public class TurtleSyntaxDiagnosticsService {
+   public DiagnosticReport validate( final ParsedDocument parsedDocument ) {
       return new DiagnosticReport( checkNode( parsedDocument.concreteSyntaxTree().getRootNode(),
             parsedDocument.sourceDocument().getUri() ).toList() );
    }

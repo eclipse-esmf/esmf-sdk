@@ -62,6 +62,11 @@ jobs:
           echo "RELEASE_VERSION=$version" >> "$GITHUB_ENV"
           echo "RELEASE_VERSION=$version"
 
+      - name: Setup Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 #v6.3.0
+        with:
+          python-version: '3.13'
+      - run: pip install pefile
 
       - name: Cache Maven packages
         uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb #v5.0.1
@@ -131,6 +136,7 @@ jobs:
           fi
 
           ./warp-packer.exe pack --arch windows-x64 --input-dir ${bundle} --exec run.bat --output samm.exe --prefix samm-cli-${RELEASE_VERSION}
+          python3 tools/samm-cli/scripts/windows/set_cui_flag.py samm.exe
         shell: bash
 
       - name: Build native image (Mac)
