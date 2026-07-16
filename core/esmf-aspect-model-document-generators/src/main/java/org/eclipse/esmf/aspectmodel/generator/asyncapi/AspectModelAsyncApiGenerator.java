@@ -66,6 +66,12 @@ public class AspectModelAsyncApiGenerator extends JsonGenerator<Aspect, AsyncApi
    private static final String DESCRIPTION_FIELD = "description";
    private static final String CONTENT_TYPE_FIELD = "contentType";
    private static final String PAYLOAD_FIELD = "payload";
+   private static final String DEFAULT_FIELD = "default";
+
+   private static final String TENANT_ID_PLACEHOLDER = "{tenant-id}";
+   private static final String TENANT_ID_PATH_SEGMENT = "/" + TENANT_ID_PLACEHOLDER;
+   private static final String TENANT_ID_PARAMETER = "tenant-id";
+   private static final String TENANT_ID_DESCRIPTION = "The ID of the tenant owning the requested Twin.";
 
    private static final JsonNodeFactory FACTORY = JsonNodeFactory.instance;
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelAsyncApiGenerator.class );
@@ -131,21 +137,55 @@ public class AspectModelAsyncApiGenerator extends JsonGenerator<Aspect, AsyncApi
       final ObjectNode pathNode = FACTORY.objectNode();
 
       final AspectModelUrn urn = aspect.urn();
-      pathNode.put( "address", config.channelAddress() != null && !config.channelAddress().isBlank()
-            ? config.channelAddress()
-            : String.format( "/%s/%s/%s", urn.getNamespaceMainPart(), urn.getVersion(), aspect.getName() ) );
+      final String address = buildChannelAddress( aspect, urn );
+      pathNode.put( "address", address );
       pathNode.put( DESCRIPTION_FIELD, "Channel for updating " + aspect.getName() + " Aspect." );
-
-      final ObjectNode parametersNode = FACTORY.objectNode();
-      parametersNode.put( "namespace", urn.getNamespaceMainPart() );
-      parametersNode.put( "version", urn.getVersion() );
-      parametersNode.put( "aspect-name", aspect.getName() );
-      pathNode.set( "parameters", parametersNode );
-
+      pathNode.set( "parameters", buildChannelParameters( aspect, urn, address ) );
       pathNode.set( MESSAGES_FIELD, buildChannelMessages( aspect ) );
 
       channelsNode.set( aspect.getName(), pathNode );
       return channelsNode;
+   }
+
+   private String buildChannelAddress( final Aspect aspect, final AspectModelUrn urn ) {
+      if ( config.channelAddress() != null && !config.channelAddress().isBlank() ) {
+         return config.channelAddress();
+      }
+      final String derivedAddress = String.format( "/%s/%s/%s", urn.getNamespaceMainPart(), urn.getVersion(), aspect.getName() );
+      return config.hasFeature( AsyncApiGenerationFeature.ADD_TENANT_ID_IN_CHANNEL_PARAMETERS )
+            ? TENANT_ID_PATH_SEGMENT + derivedAddress
+            : derivedAddress;
+   }
+
+   private ObjectNode buildChannelParameters( final Aspect aspect, final AspectModelUrn urn, final String address ) {
+      final boolean expand = config.hasFeature( AsyncApiGenerationFeature.EXPAND_CHANNEL_PARAMETERS );
+      final ObjectNode parametersNode = FACTORY.objectNode();
+      setParameter( parametersNode, "namespace", "The namespace of the Aspect Model.", urn.getNamespaceMainPart(), expand );
+      setParameter( parametersNode, "version", "The version of the Aspect Model.", urn.getVersion(), expand );
+      setParameter( parametersNode, "aspect-name", "The name of the Aspect.", aspect.getName(), expand );
+
+      if ( config.hasFeature( AsyncApiGenerationFeature.ADD_TENANT_ID_IN_CHANNEL_PARAMETERS ) && address.contains( TENANT_ID_PLACEHOLDER ) ) {
+         parametersNode.set( TENANT_ID_PARAMETER, buildParameterObject( TENANT_ID_DESCRIPTION, null ) );
+      }
+      return parametersNode;
+   }
+
+   private void setParameter( final ObjectNode parametersNode, final String name, final String description,
+         final String value, final boolean asObject ) {
+      if ( asObject ) {
+         parametersNode.set( name, buildParameterObject( description, value ) );
+      } else {
+         parametersNode.put( name, value );
+      }
+   }
+
+   private ObjectNode buildParameterObject( final String description, final String defaultValue ) {
+      final ObjectNode parameterNode = FACTORY.objectNode();
+      parameterNode.put( DESCRIPTION_FIELD, description );
+      if ( defaultValue != null ) {
+         parameterNode.put( DEFAULT_FIELD, defaultValue );
+      }
+      return parameterNode;
    }
 
    private ObjectNode buildChannelMessages( final Aspect aspect ) {

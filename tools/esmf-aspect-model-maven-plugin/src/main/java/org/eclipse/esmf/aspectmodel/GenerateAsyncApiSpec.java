@@ -17,10 +17,14 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -29,6 +33,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import org.eclipse.esmf.aspectmodel.generator.asyncapi.AspectModelAsyncApiGenerator;
+import org.eclipse.esmf.aspectmodel.generator.asyncapi.AsyncApiGenerationFeature;
 import org.eclipse.esmf.aspectmodel.generator.asyncapi.AsyncApiSchemaArtifact;
 import org.eclipse.esmf.aspectmodel.generator.asyncapi.AsyncApiSchemaGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.asyncapi.AsyncApiSchemaGenerationConfigBuilder;
@@ -71,17 +76,22 @@ public class GenerateAsyncApiSpec extends AspectModelMojo {
    @Parameter( defaultValue = "en" )
    private String language;
 
+   @Parameter
+   private List<String> featureFlags;
+
    @Override
    public void executeGeneration() throws MojoExecutionException, MojoFailureException {
       final Set<Aspect> aspects = loadAspects();
       final Locale locale = Optional.ofNullable( language ).map( Locale::forLanguageTag ).orElse( Locale.ENGLISH );
       final ApiFormat format = Try.of( () -> ApiFormat.valueOf( outputFormat.toUpperCase() ) )
             .getOrElseThrow( () -> new MojoExecutionException( "Invalid output format." ) );
+      final Set<AsyncApiGenerationFeature> features = parseFeatureFlags();
       for ( final Aspect aspect : aspects ) {
          final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
                .useSemanticVersion( useSemanticApiVersion )
                .applicationId( applicationId )
                .channelAddress( channelAddress )
+               .features( features )
                .locale( locale )
                .build();
 
@@ -127,6 +137,21 @@ public class GenerateAsyncApiSpec extends AspectModelMojo {
                out.write( entry.getValue().getBytes( StandardCharsets.UTF_8 ) );
             }
          }
+      }
+   }
+
+   private Set<AsyncApiGenerationFeature> parseFeatureFlags() throws MojoExecutionException {
+      if ( featureFlags == null || featureFlags.isEmpty() ) {
+         return Set.of();
+      }
+      try {
+         return featureFlags.stream()
+               .map( String::trim )
+               .map( AsyncApiGenerationFeature::fromValue )
+               .collect( Collectors.toCollection( () -> EnumSet.noneOf( AsyncApiGenerationFeature.class ) ) );
+      } catch ( final IllegalArgumentException exception ) {
+         throw new MojoExecutionException(
+               "Invalid feature flag. Valid values: " + Arrays.toString( AsyncApiGenerationFeature.values() ), exception );
       }
    }
 

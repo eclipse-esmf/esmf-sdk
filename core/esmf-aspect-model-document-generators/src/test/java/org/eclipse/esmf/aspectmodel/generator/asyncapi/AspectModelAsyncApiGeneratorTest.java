@@ -15,7 +15,9 @@ package org.eclipse.esmf.aspectmodel.generator.asyncapi;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
+import java.util.EnumSet;
 import java.util.Locale;
+import java.util.Set;
 
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.test.TestAspect;
@@ -425,5 +427,214 @@ class AspectModelAsyncApiGeneratorTest {
       assertThat( json.get( "channels" ) ).isEqualTo( expectedChannels );
       assertThat( json.get( "components" ).get( "messages" ) ).isEqualTo( expectedComponentsMessages );
       assertThat( json.get( "components" ).get( "schemas" ) ).isEqualTo( expectedComponentsSchemas );
+   }
+
+   @Test
+   void testAsyncApiGeneratorDefaultChannelAddressWithoutFeatureFlags() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT ).aspect();
+      final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( false )
+            .locale( Locale.ENGLISH )
+            .build();
+      final AsyncApiSchemaArtifact asyncSpec = new AspectModelAsyncApiGenerator( aspect, config ).singleResult();
+      final JsonNode json = asyncSpec.getContent();
+
+      final JsonNode expectedChannels = OBJECT_MAPPER.readTree(
+            """
+                  {
+                     "Aspect": {
+                        "address": "/org.eclipse.esmf.test/1.0.0/Aspect",
+                        "description": "Channel for updating Aspect Aspect.",
+                        "parameters": {
+                           "namespace": "org.eclipse.esmf.test",
+                           "version": "1.0.0",
+                           "aspect-name": "Aspect"
+                        },
+                        "messages": {}
+                     }
+                  }
+               """ );
+
+      assertThat( json.get( "channels" ) ).isEqualTo( expectedChannels );
+   }
+
+   @Test
+   void testAsyncApiGeneratorAddTenantIdInParametersPrefixesDerivedAddress() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT ).aspect();
+      final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( false )
+            .features( Set.of( AsyncApiGenerationFeature.ADD_TENANT_ID_IN_CHANNEL_PARAMETERS ) )
+            .locale( Locale.ENGLISH )
+            .build();
+      final AsyncApiSchemaArtifact asyncSpec = new AspectModelAsyncApiGenerator( aspect, config ).singleResult();
+      final JsonNode json = asyncSpec.getContent();
+
+      final JsonNode expectedChannels = OBJECT_MAPPER.readTree(
+            """
+                  {
+                     "Aspect": {
+                        "address": "/{tenant-id}/org.eclipse.esmf.test/1.0.0/Aspect",
+                        "description": "Channel for updating Aspect Aspect.",
+                        "parameters": {
+                           "namespace": "org.eclipse.esmf.test",
+                           "version": "1.0.0",
+                           "aspect-name": "Aspect",
+                           "tenant-id": {
+                              "description": "The ID of the tenant owning the requested Twin."
+                           }
+                        },
+                        "messages": {}
+                     }
+                  }
+               """ );
+
+      assertThat( json.get( "channels" ) ).isEqualTo( expectedChannels );
+   }
+
+   @Test
+   void testAsyncApiGeneratorAddTenantIdInParametersWithExplicitAddressContainingPlaceholder() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT ).aspect();
+      final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( false )
+            .channelAddress( "/{tenant-id}/custom/path" )
+            .features( Set.of( AsyncApiGenerationFeature.ADD_TENANT_ID_IN_CHANNEL_PARAMETERS ) )
+            .locale( Locale.ENGLISH )
+            .build();
+      final AsyncApiSchemaArtifact asyncSpec = new AspectModelAsyncApiGenerator( aspect, config ).singleResult();
+      final JsonNode json = asyncSpec.getContent();
+
+      final JsonNode expectedChannels = OBJECT_MAPPER.readTree(
+            """
+                  {
+                     "Aspect": {
+                        "address": "/{tenant-id}/custom/path",
+                        "description": "Channel for updating Aspect Aspect.",
+                        "parameters": {
+                           "namespace": "org.eclipse.esmf.test",
+                           "version": "1.0.0",
+                           "aspect-name": "Aspect",
+                           "tenant-id": {
+                              "description": "The ID of the tenant owning the requested Twin."
+                           }
+                        },
+                        "messages": {}
+                     }
+                  }
+               """ );
+
+      assertThat( json.get( "channels" ) ).isEqualTo( expectedChannels );
+   }
+
+   @Test
+   void testAsyncApiGeneratorAddTenantIdInParametersIgnoredWhenExplicitAddressHasNoPlaceholder() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT ).aspect();
+      final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( false )
+            .channelAddress( CHANNEL_ADDRESS )
+            .features( Set.of( AsyncApiGenerationFeature.ADD_TENANT_ID_IN_CHANNEL_PARAMETERS ) )
+            .locale( Locale.ENGLISH )
+            .build();
+      final AsyncApiSchemaArtifact asyncSpec = new AspectModelAsyncApiGenerator( aspect, config ).singleResult();
+      final JsonNode json = asyncSpec.getContent();
+
+      final JsonNode expectedChannels = OBJECT_MAPPER.readTree(
+            """
+                  {
+                     "Aspect": {
+                        "address": "123/456/test/1.0.0/TestAspect",
+                        "description": "Channel for updating Aspect Aspect.",
+                        "parameters": {
+                           "namespace": "org.eclipse.esmf.test",
+                           "version": "1.0.0",
+                           "aspect-name": "Aspect"
+                        },
+                        "messages": {}
+                     }
+                  }
+               """ );
+
+      assertThat( json.get( "channels" ) ).isEqualTo( expectedChannels );
+   }
+
+   @Test
+   void testAsyncApiGeneratorExpandChannelAddressParameters() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT ).aspect();
+      final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( false )
+            .channelAddress( CHANNEL_ADDRESS )
+            .features( Set.of( AsyncApiGenerationFeature.EXPAND_CHANNEL_PARAMETERS ) )
+            .locale( Locale.ENGLISH )
+            .build();
+      final AsyncApiSchemaArtifact asyncSpec = new AspectModelAsyncApiGenerator( aspect, config ).singleResult();
+      final JsonNode json = asyncSpec.getContent();
+
+      final JsonNode expectedChannels = OBJECT_MAPPER.readTree(
+            """
+                  {
+                     "Aspect": {
+                        "address": "123/456/test/1.0.0/TestAspect",
+                        "description": "Channel for updating Aspect Aspect.",
+                        "parameters": {
+                           "namespace": {
+                              "description": "The namespace of the Aspect Model.",
+                              "default": "org.eclipse.esmf.test"
+                           },
+                           "version": {
+                              "description": "The version of the Aspect Model.",
+                              "default": "1.0.0"
+                           },
+                           "aspect-name": {
+                              "description": "The name of the Aspect.",
+                              "default": "Aspect"
+                           }
+                        },
+                        "messages": {}
+                     }
+                  }
+               """ );
+
+      assertThat( json.get( "channels" ) ).isEqualTo( expectedChannels );
+   }
+
+   @Test
+   void testAsyncApiGeneratorBothFeatureFlagsCombined() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT ).aspect();
+      final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( false )
+            .features( EnumSet.of( AsyncApiGenerationFeature.ADD_TENANT_ID_IN_CHANNEL_PARAMETERS, AsyncApiGenerationFeature.EXPAND_CHANNEL_PARAMETERS ) )
+            .locale( Locale.ENGLISH )
+            .build();
+      final AsyncApiSchemaArtifact asyncSpec = new AspectModelAsyncApiGenerator( aspect, config ).singleResult();
+      final JsonNode json = asyncSpec.getContent();
+
+      final JsonNode expectedChannels = OBJECT_MAPPER.readTree(
+            """
+                  {
+                     "Aspect": {
+                        "address": "/{tenant-id}/org.eclipse.esmf.test/1.0.0/Aspect",
+                        "description": "Channel for updating Aspect Aspect.",
+                        "parameters": {
+                           "namespace": {
+                              "description": "The namespace of the Aspect Model.",
+                              "default": "org.eclipse.esmf.test"
+                           },
+                           "version": {
+                              "description": "The version of the Aspect Model.",
+                              "default": "1.0.0"
+                           },
+                           "aspect-name": {
+                              "description": "The name of the Aspect.",
+                              "default": "Aspect"
+                           },
+                           "tenant-id": {
+                              "description": "The ID of the tenant owning the requested Twin."
+                           }
+                        },
+                        "messages": {}
+                     }
+                  }
+               """ );
+
+      assertThat( json.get( "channels" ) ).isEqualTo( expectedChannels );
    }
 }
