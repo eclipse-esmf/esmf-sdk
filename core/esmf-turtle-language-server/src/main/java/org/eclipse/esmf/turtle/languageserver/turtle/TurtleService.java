@@ -15,12 +15,22 @@ package org.eclipse.esmf.turtle.languageserver.turtle;
 
 import static org.eclipse.esmf.aspectmodel.StreamUtil.asSortedMap;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.eclipse.esmf.aspectmodel.resolver.EitherStrategy;
+import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
+import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
+import org.eclipse.esmf.aspectmodel.resolver.fs.FlatModelsRoot;
+import org.eclipse.esmf.aspectmodel.resolver.fs.StructuredModelsRoot;
 import org.eclipse.esmf.treesitterturtle.ParserTokenType;
 import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
+import org.eclipse.esmf.turtle.languageserver.aspect.MetaModelStrategy;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 
 import org.eclipse.lsp4j.Location;
@@ -100,5 +110,18 @@ public abstract class TurtleService {
             new Position( node.location().fromLine(), node.location().fromColumn() ),
             new Position( node.location().toLine(), node.location().toColumn() ) );
       return new Location( parsedDocument.getUri(), range );
+   }
+
+   protected ResolutionStrategy buildResolutionStrategyForDocument( final ParsedDocument parsedDocument ) {
+      final Path openFilePath;
+      try {
+         openFilePath = Path.of( new URI( parsedDocument.getUri() ) );
+      } catch ( final URISyntaxException | IllegalArgumentException exception ) {
+         throw new ModelResolutionException( "Failed to parse URI: " + parsedDocument.getUri(), exception );
+      }
+      return new EitherStrategy(
+            new FileSystemStrategy( new StructuredModelsRoot( openFilePath.getParent().getParent().getParent() ) ),
+            new FileSystemStrategy( new FlatModelsRoot( openFilePath.getParent() ) ),
+            new MetaModelStrategy() );
    }
 }

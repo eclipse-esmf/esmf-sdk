@@ -30,7 +30,6 @@ import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.treesitterturtle.ParserTokenType;
 import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
-import org.eclipse.esmf.turtle.languageserver.aspect.AspectLspUtil;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TreeSitterTurtleParserService;
@@ -161,7 +160,7 @@ public class TurtleCrossFileDefinitionService extends TurtleService {
 
    Optional<Path> resolveFilePath( final ParsedDocument parsedDocument, final AspectModelUrn urn ) {
       try {
-         final URI sourceUri = AspectLspUtil.buildResolutionStrategyForDocument( parsedDocument ).apply( urn, RESOLUTION_SUPPORT )
+         final URI sourceUri = buildResolutionStrategyForDocument( parsedDocument ).apply( urn, RESOLUTION_SUPPORT )
                .sourceLocation()
                .orElseThrow( () -> new ModelResolutionException( "No source location in resolved file for " + urn ) );
          return Optional.of( Paths.get( sourceUri ) );

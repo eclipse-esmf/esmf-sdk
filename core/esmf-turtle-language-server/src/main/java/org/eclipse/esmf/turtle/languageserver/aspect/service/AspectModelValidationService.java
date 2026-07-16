@@ -20,24 +20,30 @@ import org.apache.jena.riot.RiotException;
 
 import org.eclipse.esmf.aspectmodel.ValueParsingException;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.resolver.AspectModelFileLoader;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFile;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
 import org.eclipse.esmf.aspectmodel.validation.Validator;
 import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
-import org.eclipse.esmf.turtle.languageserver.aspect.AspectLspUtil;
+import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
+import org.eclipse.esmf.treesitterturtle.ParserTokenType;
+import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
 import org.eclipse.esmf.turtle.languageserver.aspect.MetaModelStrategy;
 import org.eclipse.esmf.turtle.languageserver.aspect.diagnostic.AspectViolationDiagnosticMapper;
 import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.DiagnosticReport;
 import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.DiagnosticsProvider;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
+import org.eclipse.esmf.turtle.languageserver.turtle.TurtleService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AspectModelValidationService implements DiagnosticsProvider {
+public class AspectModelValidationService extends TurtleService implements DiagnosticsProvider {
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelValidationService.class );
+   private static final List<String> SAMM_PREFIXES = SammNs.sammNamespaces().map( RdfNamespace::getShortForm ).toList();
    private final Validator<Violation, List<Violation>> validator;
    private final AspectViolationDiagnosticMapper diagnosticMapper = new AspectViolationDiagnosticMapper();
 
@@ -49,9 +55,18 @@ public class AspectModelValidationService implements DiagnosticsProvider {
       this.validator = validator;
    }
 
+   private boolean documentIsAspectModel( final ParsedDocument parsedDocument ) {
+      final TurtleSyntaxTree syntaxTree = parsedDocument.turtleSyntaxTree();
+      return syntaxTree.rootNode().children().stream()
+            .filter( n -> ParserTokenType.DIRECTIVE.equals( n.type() ) ).flatMap( n -> n.children().stream() )
+            .filter( n -> ParserTokenType.PREFIX_ID.equals( n.type() ) ).flatMap( n -> n.children().stream() )
+            .filter( n -> ParserTokenType.NAMESPACE.equals( n.type() ) ).flatMap( n -> n.children().stream() )
+            .filter( n -> ParserTokenType.PN_PREFIX.equals( n.type() ) )
+            .anyMatch( n -> SAMM_PREFIXES.contains( n.content() ) );
+   }
+
    private boolean shouldValidateDocument( final ParsedDocument parsedDocument ) {
-      return AspectLspUtil.isAspectModel( parsedDocument.turtleSyntaxTree() )
-            && !MetaModelStrategy.isMetaModelUri( parsedDocument.getUri() );
+      return documentIsAspectModel( parsedDocument ) && !MetaModelStrategy.isMetaModelUri( parsedDocument.getUri() );
    }
 
    @Override
@@ -61,7 +76,8 @@ public class AspectModelValidationService implements DiagnosticsProvider {
       }
       try {
          LOG.debug( "[load] loading aspect model from {}", parsedDocument.getUri() );
-         final RawAspectModelFile file = AspectLspUtil.documentToAspectModelFile( parsedDocument );
+         final RawAspectModelFile file =
+               AspectModelFileLoader.load( parsedDocument.turtleSyntaxTree(), URI.create( parsedDocument.getUri() ) );
          final List<Violation> violations = validate( file, parsedDocument );
          logProcessingViolations( violations );
          return diagnosticMapper.mapValidationViolations( violations );
@@ -100,10 +116,9 @@ public class AspectModelValidationService implements DiagnosticsProvider {
 
    private AspectModelLoader loaderFor( final ParsedDocument parsedDocument ) {
       final URI documentUri = URI.create( parsedDocument.getUri() );
-      if ( documentUri.getScheme() == null ) {
-         return new AspectModelLoader();
-      }
-      return new AspectModelLoader( AspectLspUtil.buildResolutionStrategyForDocument( parsedDocument ) );
+      return documentUri.getScheme() == null
+            ? new AspectModelLoader()
+            : new AspectModelLoader( buildResolutionStrategyForDocument( parsedDocument ) );
    }
 
    private List<Violation> validate( final RawAspectModelFile file, final AspectModelLoader modelLoader ) {

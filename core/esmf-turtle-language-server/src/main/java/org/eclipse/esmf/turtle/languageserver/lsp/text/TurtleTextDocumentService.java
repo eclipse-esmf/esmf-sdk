@@ -16,12 +16,12 @@ package org.eclipse.esmf.turtle.languageserver.lsp.text;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.ServiceLoader;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.eclipse.esmf.turtle.languageserver.lsp.LspUtil;
 import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.DiagnosticMapper;
 import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.DiagnosticReport;
 import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.DiagnosticsProvider;
@@ -54,6 +54,8 @@ import org.eclipse.lsp4j.services.TextDocumentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Streams;
+
 public class TurtleTextDocumentService implements TextDocumentService {
    private static final Logger LOG = LoggerFactory.getLogger( TurtleTextDocumentService.class );
 
@@ -81,8 +83,9 @@ public class TurtleTextDocumentService implements TextDocumentService {
       tokenService = new TurtleTokenService( turtleParserService );
       turtleCrossFileDefinitionService = new TurtleCrossFileDefinitionService( turtleParserService, documents );
       documentSymbolService = new DocumentSymbolService( turtleParserService );
-      validationCoordinator =
-            new ValidationCoordinator( LspUtil.loadServicesForInterface( DiagnosticsProvider.class ), clientNotifier::publishDiagnostics );
+      final List<DiagnosticsProvider> diagnosticsProviders =
+            Streams.stream( ServiceLoader.load( DiagnosticsProvider.class ).iterator() ).toList();
+      validationCoordinator = new ValidationCoordinator( diagnosticsProviders, clientNotifier::publishDiagnostics );
    }
 
    public void connect( final LanguageClient client ) {
