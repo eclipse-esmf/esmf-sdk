@@ -57,7 +57,7 @@ public class Document implements TurtleSyntaxTree.TokenProvider {
       return content.subSequence( fromIndex, toIndex ).toString();
    }
 
-   public void update( final @Nullable Range range, final String newContent ) {
+   public synchronized void update( final @Nullable Range range, final String newContent ) {
       if ( range == null ) {
          content = new Rope( newContent );
          return;

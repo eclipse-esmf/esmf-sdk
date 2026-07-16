@@ -11,14 +11,13 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.turtle.languageserver.aspect.diagnostic;
+package org.eclipse.esmf.turtle.languageserver.lsp.diagnostic;
 
 import java.util.List;
 
 import org.eclipse.esmf.Diagnostic.Severity;
 import org.eclipse.esmf.DocumentDiagnostic;
 import org.eclipse.esmf.treesitterturtle.TurtleDocumentDiagnostic;
-import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 
 import org.eclipse.lsp4j.Diagnostic;
@@ -26,7 +25,10 @@ import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 
-public final class AspectDiagnosticMapper {
+/**
+ * Translates server internal diagnostics representations into LSP conformant objects
+ */
+public final class DiagnosticMapper {
    public List<Diagnostic> toDiagnostics( final Document document, final DiagnosticReport result ) {
       return result.diagnostics().stream()
             .filter( violation -> appliesToDocument( document, violation ) )

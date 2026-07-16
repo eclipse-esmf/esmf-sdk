@@ -4,34 +4,15 @@
 
 package org.eclipse.esmf.turtle.languageserver.lsp;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
+import java.util.List;
+import java.util.ServiceLoader;
 
-import org.eclipse.esmf.aspectmodel.resolver.EitherStrategy;
-import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
-import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
-import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
-import org.eclipse.esmf.aspectmodel.resolver.fs.FlatModelsRoot;
-import org.eclipse.esmf.aspectmodel.resolver.fs.StructuredModelsRoot;
-import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
-import org.eclipse.esmf.turtle.languageserver.turtle.navigation.MetaModelStrategy;
+import org.apache.commons.collections4.IteratorUtils;
 
 public class LspUtil {
-
    private LspUtil() {}
 
-   public static ResolutionStrategy buildResolutionStrategyForDocument( final ParsedDocument parsedDocument ) {
-      final Path openFilePath;
-      try {
-         openFilePath = Path.of( new URI( parsedDocument.getUri() ) );
-      } catch ( final URISyntaxException e ) {
-         throw new ModelResolutionException( "Failed to parse URI: " + parsedDocument.getUri(), e );
-      }
-      final FileSystemStrategy structuredStrategy = new FileSystemStrategy(
-            new StructuredModelsRoot( openFilePath.getParent().getParent().getParent() ) );
-      final FileSystemStrategy flatStrategy = new FileSystemStrategy( new FlatModelsRoot( openFilePath.getParent() ) );
-      final MetaModelStrategy metaModelStrategy = new MetaModelStrategy();
-      return new EitherStrategy( structuredStrategy, flatStrategy, metaModelStrategy );
+   public static <T> List<T> loadServicesForInterface( final Class<T> serviceInterface ) {
+      return IteratorUtils.toList( ServiceLoader.load( serviceInterface ).iterator() );
    }
 }

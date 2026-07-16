@@ -16,6 +16,7 @@ package org.eclipse.esmf.turtle.languageserver.aspect.diagnostic;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 import org.apache.jena.rdf.model.RDFNode;
 
@@ -31,10 +32,15 @@ import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
 import org.eclipse.esmf.treesitterturtle.TurtleDiagnosticCode;
 import org.eclipse.esmf.treesitterturtle.TurtleDocumentDiagnostic;
 import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
-import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
+import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.DiagnosticReport;
 
-public class AspectViolationDiagnosticMapper {
+public class AspectViolationDiagnosticMapper implements Function<List<Violation>, DiagnosticReport> {
    public static final String PROCESSING_ERROR_MESSAGE = "Model validation failed. See language server logs for details.";
+
+   @Override
+   public DiagnosticReport apply( final List<Violation> violations ) {
+      return mapValidationViolations( violations );
+   }
 
    public DiagnosticReport mapValidationViolations( final List<Violation> violations ) {
       return new DiagnosticReport( violations.stream()

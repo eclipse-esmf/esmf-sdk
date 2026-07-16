@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.turtle.languageserver.diagnostic;
+package org.eclipse.esmf.turtle.languageserver.lsp.diagnostic;
 
 import java.util.List;
 

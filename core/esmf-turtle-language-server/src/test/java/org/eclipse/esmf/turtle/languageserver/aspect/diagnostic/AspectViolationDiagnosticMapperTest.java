@@ -20,15 +20,14 @@ import java.util.List;
 
 import org.eclipse.esmf.Diagnostic;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
-import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.validation.InvalidLexicalValueViolation;
 import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
 import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
-import org.eclipse.esmf.treesitterturtle.TurtleDiagnosticCode;
-import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
 import org.eclipse.esmf.treesitterturtle.TurtleDiagnostic;
-import org.eclipse.esmf.treesitterturtle.TurtleDocumentDiagnostic;
+import org.eclipse.esmf.treesitterturtle.TurtleDiagnosticCode;
+import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.DiagnosticMapper;
+import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.DiagnosticReport;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 
 import org.eclipse.lsp4j.DiagnosticSeverity;
@@ -60,7 +59,7 @@ class AspectViolationDiagnosticMapperTest {
             .satisfies( diagnostic -> {
                assertThat( diagnostic.code().code() ).isEqualTo( InvalidLexicalValueViolation.ERROR_CODE );
                assertThat( diagnostic.message() ).isEqualTo( "Invalid value" );
-               assertThat( diagnostic ).isInstanceOf( TurtleDocumentDiagnostic.class );
+               assertThat( diagnostic ).isInstanceOf( AspectDocumentDiagnostic.class );
             } );
    }
 
@@ -76,7 +75,7 @@ class AspectViolationDiagnosticMapperTest {
             .satisfies( diagnostic -> {
                assertThat( diagnostic.code().code() ).isEqualTo( InvalidLexicalValueViolation.ERROR_CODE );
                assertThat( diagnostic.message() ).isEqualTo( "Invalid value" );
-               assertThat( diagnostic ).isExactlyInstanceOf( TurtleDiagnostic.class );
+               assertThat( diagnostic ).isExactlyInstanceOf( AspectDiagnostic.class );
             } );
    }
 
@@ -118,7 +117,7 @@ class AspectViolationDiagnosticMapperTest {
    @Test
    void mapsProcessingViolationWithoutLocationToFallbackRange() {
       final AspectViolationDiagnosticMapper violationMapper = new AspectViolationDiagnosticMapper();
-      final AspectDiagnosticMapper diagnosticMapper = new AspectDiagnosticMapper();
+      final DiagnosticMapper diagnosticMapper = new DiagnosticMapper();
       final Document document = new Document( "test.ttl", "" );
       final ProcessingViolation violation = new ProcessingViolation( "processing violation", new RuntimeException() );
 
@@ -177,7 +176,7 @@ class AspectViolationDiagnosticMapperTest {
 
    @Test
    void mapsDiagnosticSeverityToLspSeverity() {
-      final AspectDiagnosticMapper mapper = new AspectDiagnosticMapper();
+      final DiagnosticMapper mapper = new DiagnosticMapper();
       final Document document = new Document( "test.ttl", "" );
       final DiagnosticReport report = new DiagnosticReport( new TurtleDiagnostic(
             "warning", TurtleDiagnosticCode.E0000, Diagnostic.Severity.WARNING ) );
@@ -191,7 +190,7 @@ class AspectViolationDiagnosticMapperTest {
 
    @Test
    void mapsDiagnosticWithoutLocationToFallbackRange() {
-      final AspectDiagnosticMapper mapper = new AspectDiagnosticMapper();
+      final DiagnosticMapper mapper = new DiagnosticMapper();
       final Document document = new Document( "test.ttl", "" );
       final DiagnosticReport report = new DiagnosticReport( new TurtleDiagnostic(
             "warning", TurtleDiagnosticCode.E0000, Diagnostic.Severity.WARNING ) );
@@ -201,24 +200,5 @@ class AspectViolationDiagnosticMapperTest {
       assertThat( diagnostics ).singleElement()
             .extracting( org.eclipse.lsp4j.Diagnostic::getRange )
             .isEqualTo( new Range( new Position( 0, 0 ), new Position( 0, 1 ) ) );
-   }
-
-   private record TestViolation(
-         String errorCode, String message
-   ) implements Violation {
-      @Override
-      public EvaluationContext context() {
-         return null;
-      }
-
-      @Override
-      public String violationSpecificMessage() {
-         return message;
-      }
-
-      @Override
-      public <T> T accept( final Visitor<T> visitor ) {
-         return visitor.visit( this );
-      }
    }
 }

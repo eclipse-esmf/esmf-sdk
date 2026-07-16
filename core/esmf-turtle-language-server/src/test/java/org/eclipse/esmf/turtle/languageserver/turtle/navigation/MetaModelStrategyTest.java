@@ -24,6 +24,7 @@ import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategySupport;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
+import org.eclipse.esmf.turtle.languageserver.aspect.MetaModelStrategy;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TreeSitterTurtleParserService;
 
 import org.junit.jupiter.api.BeforeEach;

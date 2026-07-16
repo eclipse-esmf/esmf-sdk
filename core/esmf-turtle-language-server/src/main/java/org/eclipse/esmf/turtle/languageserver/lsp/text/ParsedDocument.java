@@ -16,25 +16,20 @@ package org.eclipse.esmf.turtle.languageserver.lsp.text;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
-import java.util.List;
 
-import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
-import org.eclipse.esmf.metamodel.vocabulary.SammNs;
-import org.eclipse.esmf.treesitterturtle.ParserTokenType;
 import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
 
 import org.treesitter.TSTree;
 
 public class ParsedDocument {
-   private static final List<String> SAMM_PREFIXES = SammNs.sammNamespaces().map( RdfNamespace::getShortForm ).toList();
    private final Document sourceDocument;
    private final TSTree concreteSyntaxTree;
    private final TurtleSyntaxTree turtleSyntaxTree;
 
    public ParsedDocument( final Document document, final TSTree concreteSyntaxTree ) {
-      this.sourceDocument = document;
+      sourceDocument = document;
       this.concreteSyntaxTree = concreteSyntaxTree;
-      this.turtleSyntaxTree = TurtleSyntaxTree.fromConcreteSyntaxTree( concreteSyntaxTree, sourceDocument.getContent() );
+      turtleSyntaxTree = TurtleSyntaxTree.fromConcreteSyntaxTree( concreteSyntaxTree, sourceDocument.getContent() );
    }
 
    public Document sourceDocument() {
@@ -50,23 +45,14 @@ public class ParsedDocument {
    }
 
    public String getUri() {
-      return this.sourceDocument.getUri();
+      return sourceDocument.getUri();
    }
 
    public boolean storedIn( final Path path ) {
       try {
-         return Path.of( new URI( this.sourceDocument.getUri() ) ).getParent().toAbsolutePath().equals( path.toAbsolutePath() );
+         return Path.of( new URI( sourceDocument.getUri() ) ).getParent().toAbsolutePath().equals( path.toAbsolutePath() );
       } catch ( final URISyntaxException e ) {
          return false;
       }
-   }
-
-   public boolean isAspectModel() {
-      return this.turtleSyntaxTree.rootNode().children().stream()
-            .filter( n -> ParserTokenType.DIRECTIVE.equals( n.type() ) ).flatMap( n -> n.children().stream() )
-            .filter( n -> ParserTokenType.PREFIX_ID.equals( n.type() ) ).flatMap( n -> n.children().stream() )
-            .filter( n -> ParserTokenType.NAMESPACE.equals( n.type() ) ).flatMap( n -> n.children().stream() )
-            .filter( n -> ParserTokenType.PN_PREFIX.equals( n.type() ) )
-            .anyMatch( n -> SAMM_PREFIXES.contains( n.content() ) );
    }
 }

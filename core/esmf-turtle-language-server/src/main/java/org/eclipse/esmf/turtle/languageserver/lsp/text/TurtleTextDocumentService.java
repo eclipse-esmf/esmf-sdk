@@ -20,18 +20,15 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.BiConsumer;
 
-import org.eclipse.esmf.turtle.languageserver.aspect.diagnostic.AspectDiagnosticMapper;
-import org.eclipse.esmf.turtle.languageserver.aspect.service.AspectDocumentValidationService;
-import org.eclipse.esmf.turtle.languageserver.aspect.service.AspectValidationCoordinator;
-import org.eclipse.esmf.turtle.languageserver.aspect.service.ParsedAspectModelFileLoader;
-import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
+import org.eclipse.esmf.turtle.languageserver.lsp.LspUtil;
+import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.DiagnosticMapper;
+import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.DiagnosticReport;
+import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.DiagnosticsProvider;
 import org.eclipse.esmf.turtle.languageserver.structure.DocumentSymbolService;
 import org.eclipse.esmf.turtle.languageserver.structure.TurtleTokenService;
 import org.eclipse.esmf.turtle.languageserver.turtle.TurtleCompletionService;
-import org.eclipse.esmf.turtle.languageserver.turtle.TurtleSyntaxDiagnosticsService;
-import org.eclipse.esmf.turtle.languageserver.turtle.navigation.MetaModelStrategy;
+import org.eclipse.esmf.turtle.languageserver.turtle.ValidationCoordinator;
 import org.eclipse.esmf.turtle.languageserver.turtle.navigation.TurtleCrossFileDefinitionService;
 import org.eclipse.esmf.turtle.languageserver.turtle.navigation.TurtleDefinitionService;
 
@@ -64,41 +61,28 @@ public class TurtleTextDocumentService implements TextDocumentService {
    private final TurtleDefinitionService turtleDefinitionService;
    private final TurtleCrossFileDefinitionService turtleCrossFileDefinitionService;
    private final TurtleCompletionService turtleCompletionService;
-   private final AspectValidationCoordinator aspectValidationCoordinator;
+   private final ValidationCoordinator validationCoordinator;
    private final TreeSitterTurtleParserService turtleParserService;
    private final TurtleTokenService tokenService;
    private final DocumentSymbolService documentSymbolService;
-   private final TurtleSyntaxDiagnosticsService syntaxDiagnostics;
-   private final ParsedAspectModelFileLoader aspectModelFileLoader;
-   private final AspectDocumentValidationService aspectDocumentValidationService;
    private final Map<String, Document> documents = new ConcurrentHashMap<>();
    private final ExecutorService asyncExecutor = Executors.newCachedThreadPool(
          r -> {
-            final Thread t = new Thread( r, "lsp-async-worker" );
+            final Thread t = new Thread( r, "semantic-models-async-worker" );
             t.setDaemon( true );
             return t;
          } );
 
    public TurtleTextDocumentService() {
-      clientNotifier = new TextDocumentClientNotifier( new AspectDiagnosticMapper() );
+      clientNotifier = new TextDocumentClientNotifier( new DiagnosticMapper() );
       turtleDefinitionService = new TurtleDefinitionService();
       turtleCompletionService = new TurtleCompletionService();
       turtleParserService = new TreeSitterTurtleParserService();
       tokenService = new TurtleTokenService( turtleParserService );
       turtleCrossFileDefinitionService = new TurtleCrossFileDefinitionService( turtleParserService, documents );
-      syntaxDiagnostics = new TurtleSyntaxDiagnosticsService();
-      aspectModelFileLoader = new ParsedAspectModelFileLoader();
-      aspectDocumentValidationService = new AspectDocumentValidationService();
       documentSymbolService = new DocumentSymbolService( turtleParserService );
-      // When the coordinator completes an async aspect validation it calls back here.
-      // We merge the fresh aspect report with a fresh syntax report and publish once,
-      // ensuring neither layer can overwrite the other.
-      final BiConsumer<Document, DiagnosticReport> validationCallback = ( document, aspectReport ) -> {
-         final ParsedDocument parsedDocument = turtleParserService.apply( document );
-         final DiagnosticReport syntaxReport = syntaxDiagnostics.validate( parsedDocument );
-         clientNotifier.publishDiagnostics( document, syntaxReport.merge( aspectReport ) );
-      };
-      aspectValidationCoordinator = new AspectValidationCoordinator( aspectDocumentValidationService, validationCallback );
+      validationCoordinator =
+            new ValidationCoordinator( LspUtil.loadServicesForInterface( DiagnosticsProvider.class ), clientNotifier::publishDiagnostics );
    }
 
    public void connect( final LanguageClient client ) {
@@ -106,23 +90,17 @@ public class TurtleTextDocumentService implements TextDocumentService {
    }
 
    public void shutdown() {
-      aspectValidationCoordinator.close();
+      validationCoordinator.close();
       asyncExecutor.shutdown();
    }
 
-   public DiagnosticReport validateDocument( final String uri ) {
+   public CompletableFuture<DiagnosticReport> validateDocument( final String uri ) {
       final Document document = documents.get( uri );
       if ( document == null ) {
-         return DiagnosticReport.EMPTY;
+         return CompletableFuture.completedFuture( DiagnosticReport.EMPTY );
       }
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
-      DiagnosticReport diagnosticReport = syntaxDiagnostics.validate( parsedDocument );
-      if ( shouldValidateAspectModel( parsedDocument ) ) {
-         final DiagnosticReport aspectReport = aspectDocumentValidationService.validate( parsedDocument );
-         aspectValidationCoordinator.seedCache( document, aspectReport );
-         diagnosticReport = diagnosticReport.merge( aspectReport );
-      }
-      return diagnosticReport;
+      return validationCoordinator.validateAsync( parsedDocument );
    }
 
    @Override
@@ -134,13 +112,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
       documents.put( uri, document );
       turtleParserService.onOpen( document );
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
-
-      final DiagnosticReport diagnosticReport = diagnosticsForDocumentEvent( document, parsedDocument );
-      if ( shouldValidateAspectModel( parsedDocument ) ) {
-         aspectValidationCoordinator.onDocumentOpened( parsedDocument );
-      }
-
-      clientNotifier.publishDiagnostics( document, diagnosticReport );
+      validationCoordinator.onDocumentOpened( parsedDocument );
    }
 
    @Override
@@ -155,15 +127,9 @@ public class TurtleTextDocumentService implements TextDocumentService {
          document.update( change.getRange(), change.getText() );
          turtleParserService.onChange( document, change );
       }
-      LOG.debug( "[didChange] uri={}, changes={}", uri, params.getContentChanges().size() );
+      LOG.debug( "[didChange] URI={}, changes={}", uri, params.getContentChanges().size() );
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
-
-      final DiagnosticReport diagnosticReport = diagnosticsForDocumentEvent( document, parsedDocument );
-      if ( shouldValidateAspectModel( parsedDocument ) ) {
-         aspectValidationCoordinator.onDocumentChanged( parsedDocument );
-      }
-
-      clientNotifier.publishDiagnostics( document, diagnosticReport );
+      validationCoordinator.onDocumentChanged( parsedDocument );
    }
 
    @Override
@@ -172,7 +138,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
       LOG.info( "[didClose] uri={}", uri );
       final Document document = documents.remove( uri );
       if ( document != null ) {
-         aspectValidationCoordinator.onDocumentClosed( document );
+         validationCoordinator.onDocumentClosed( document );
       }
    }
 
@@ -180,7 +146,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
    public void didSave( final DidSaveTextDocumentParams params ) {
       final String uri = params.getTextDocument().getUri();
       final Document document = documents.get( uri );
-      LOG.info( "[didSave] uri={}", uri );
+      LOG.info( "[didSave] URI={}", uri );
       if ( document == null ) {
          LOG.warn( "[didSave] received save for unknown document: {}", uri );
          return;
@@ -188,20 +154,14 @@ public class TurtleTextDocumentService implements TextDocumentService {
       document.getRope().rebalance();
       turtleParserService.onOpen( document );
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
-
-      final DiagnosticReport diagnosticReport = diagnosticsForDocumentEvent( document, parsedDocument );
-      if ( shouldValidateAspectModel( parsedDocument ) ) {
-         aspectValidationCoordinator.onDocumentSaved( parsedDocument );
-      }
-
-      clientNotifier.publishDiagnostics( document, diagnosticReport );
+      validationCoordinator.onDocumentSaved( parsedDocument );
    }
 
    @Override
    public CompletableFuture<SemanticTokens> semanticTokensFull( final SemanticTokensParams params ) {
       final String uri = params.getTextDocument().getUri();
       final Document document = documents.get( uri );
-      LOG.info( "[semanticTokensFull] uri={}", uri );
+      LOG.info( "[semanticTokensFull] URI={}", uri );
       if ( document == null ) {
          return CompletableFuture.completedFuture( new SemanticTokens( List.of() ) );
       }
@@ -235,13 +195,12 @@ public class TurtleTextDocumentService implements TextDocumentService {
    public CompletableFuture<List<Either<SymbolInformation, DocumentSymbol>>> documentSymbol( final DocumentSymbolParams params ) {
       final String uri = params.getTextDocument().getUri();
       final Document document = documents.get( uri );
-      LOG.debug( "[documentSymbol] uri={}", uri );
+      LOG.debug( "[documentSymbol] URI={}", uri );
       if ( document == null ) {
          return CompletableFuture.completedFuture( List.of() );
       }
       return CompletableFuture.supplyAsync( () -> documentSymbolService.symbols( document ).stream()
-            .map( Either::<SymbolInformation, DocumentSymbol>forRight )
-            .toList(),
+            .map( Either::<SymbolInformation, DocumentSymbol>forRight ).toList(),
             asyncExecutor );
    }
 
@@ -254,23 +213,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
       }
       return CompletableFuture.supplyAsync( () -> {
          final ParsedDocument parsedDocument = turtleParserService.apply( document );
-         return Either.<List<CompletionItem>, CompletionList>forLeft(
-               turtleCompletionService.complete( parsedDocument, position ) );
+         return Either.forLeft( turtleCompletionService.complete( parsedDocument, position ) );
       }, asyncExecutor );
-   }
-
-   private boolean shouldValidateAspectModel( final ParsedDocument parsedDocument ) {
-      return !MetaModelStrategy.isMetaModelUri( parsedDocument.getUri() ) && aspectModelFileLoader.supports( parsedDocument );
-   }
-
-   private DiagnosticReport diagnosticsForDocumentEvent( final Document document, final ParsedDocument parsedDocument ) {
-      if ( MetaModelStrategy.isMetaModelUri( parsedDocument.getUri() ) ) {
-         return DiagnosticReport.EMPTY;
-      }
-      DiagnosticReport diagnosticReport = syntaxDiagnostics.validate( parsedDocument );
-      if ( aspectModelFileLoader.supports( parsedDocument ) ) {
-         diagnosticReport = diagnosticReport.merge( aspectValidationCoordinator.getCachedDiagnostics( document ) );
-      }
-      return diagnosticReport;
    }
 }

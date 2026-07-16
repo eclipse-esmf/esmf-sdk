@@ -20,12 +20,14 @@ import org.eclipse.esmf.Diagnostic;
 import org.eclipse.esmf.Location;
 import org.eclipse.esmf.treesitterturtle.TurtleDiagnosticCode;
 import org.eclipse.esmf.treesitterturtle.TurtleDocumentDiagnostic;
-import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
+import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.DiagnosticReport;
+import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.DiagnosticsProvider;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 
 import org.treesitter.TSNode;
 
-public class TurtleSyntaxDiagnosticsService {
+public class TurtleSyntaxDiagnosticsService implements DiagnosticsProvider {
+   @Override
    public DiagnosticReport validate( final ParsedDocument parsedDocument ) {
       return new DiagnosticReport( checkNode( parsedDocument.concreteSyntaxTree().getRootNode(),
             parsedDocument.sourceDocument().getUri() ).toList() );
@@ -46,7 +48,6 @@ public class TurtleSyntaxDiagnosticsService {
       }
       final Location location = new Location( node.getStartPoint().getRow(), node.getStartPoint().getColumn(), node.getEndPoint().getRow(),
             node.getEndPoint().getColumn() );
-      return new TurtleDocumentDiagnostic( message,
-            TurtleDiagnosticCode.E0003, sourceLocation, location );
+      return new TurtleDocumentDiagnostic( message, TurtleDiagnosticCode.E0003, sourceLocation, location );
    }
 }

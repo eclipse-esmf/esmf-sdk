@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.turtle.languageserver.aspect.request;
+package org.eclipse.esmf.turtle.languageserver.lsp.request;
 
 public record ValidateDocumentParams(
       String uri,

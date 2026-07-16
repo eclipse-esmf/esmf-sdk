@@ -50,4 +50,14 @@ public interface Validator<P, C extends Collection<? super P>> extends RdfBasedV
     * @return the exception
     */
    <E extends RuntimeException> E cancelValidation( C violations );
+
+   /**
+    * Validates an Aspect Model provided by a Supplier. This can be used to make the validator also
+    * catch and handle loading and resolution errors, such as RDF/Turtle syntax errors or missing
+    * references. In those cases, corresponding violations are created.
+    *
+    * @param aspectModelSupplier the Aspect Model supplier
+    * @return a collection of problems. An empty collection indicates that the model is valid.
+    */
+   C validateModel( Supplier<AspectModel> aspectModelSupplier );
 }

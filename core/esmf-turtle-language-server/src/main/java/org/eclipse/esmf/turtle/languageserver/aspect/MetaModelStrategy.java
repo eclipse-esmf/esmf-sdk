@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.turtle.languageserver.turtle.navigation;
+package org.eclipse.esmf.turtle.languageserver.aspect;
 
 import java.io.IOException;
 import java.net.URI;
@@ -27,6 +27,9 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.RDFNode;
+
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelFileLoader;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
@@ -37,11 +40,10 @@ import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFileBuilder
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.urn.ElementType;
 
-import net.harawata.appdirs.AppDirsFactory;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.RDFNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import net.harawata.appdirs.AppDirsFactory;
 
 /**
  * A {@link ResolutionStrategy} that resolves Aspect Model URNs referring to elements defined in the
@@ -188,7 +190,7 @@ public class MetaModelStrategy implements ResolutionStrategy {
    public static boolean isMetaModelUri( final String uri ) {
       try {
          return Path.of( new URI( uri ) ).getParent().toAbsolutePath().equals( META_MODEL_TURTLE_PATH.toAbsolutePath() );
-      } catch ( final URISyntaxException e ) {
+      } catch ( final URISyntaxException | IllegalArgumentException exception ) {
          return false;
       }
    }

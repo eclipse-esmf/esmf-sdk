@@ -16,34 +16,86 @@ package org.eclipse.esmf.turtle.languageserver.aspect.service;
 import java.net.URI;
 import java.util.List;
 
+import org.apache.jena.riot.RiotException;
+
+import org.eclipse.esmf.aspectmodel.ValueParsingException;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFile;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
+import org.eclipse.esmf.aspectmodel.validation.Validator;
 import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
-import org.eclipse.esmf.turtle.languageserver.lsp.LspUtil;
+import org.eclipse.esmf.turtle.languageserver.aspect.AspectLspUtil;
+import org.eclipse.esmf.turtle.languageserver.aspect.MetaModelStrategy;
+import org.eclipse.esmf.turtle.languageserver.aspect.diagnostic.AspectViolationDiagnosticMapper;
+import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.DiagnosticReport;
+import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.DiagnosticsProvider;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AspectModelValidationService {
+public class AspectModelValidationService implements DiagnosticsProvider {
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelValidationService.class );
-
-   private final AspectModelValidator validator;
+   private final Validator<Violation, List<Violation>> validator;
+   private final AspectViolationDiagnosticMapper diagnosticMapper = new AspectViolationDiagnosticMapper();
 
    public AspectModelValidationService() {
       this( new AspectModelValidator() );
    }
 
-   AspectModelValidationService( final AspectModelValidator validator ) {
+   public AspectModelValidationService( final Validator<Violation, List<Violation>> validator ) {
       this.validator = validator;
    }
 
-   public List<Violation> validate( final RawAspectModelFile file, final ParsedDocument parsedDocument ) {
+   private boolean shouldValidateDocument( final ParsedDocument parsedDocument ) {
+      return AspectLspUtil.isAspectModel( parsedDocument.turtleSyntaxTree() )
+            && !MetaModelStrategy.isMetaModelUri( parsedDocument.getUri() );
+   }
+
+   @Override
+   public DiagnosticReport validate( final ParsedDocument parsedDocument ) {
+      if ( !shouldValidateDocument( parsedDocument ) ) {
+         return DiagnosticReport.EMPTY;
+      }
+      try {
+         LOG.debug( "[load] loading aspect model from {}", parsedDocument.getUri() );
+         final RawAspectModelFile file = AspectLspUtil.documentToAspectModelFile( parsedDocument );
+         final List<Violation> violations = validate( file, parsedDocument );
+         logProcessingViolations( violations );
+         return diagnosticMapper.mapValidationViolations( violations );
+      } catch ( final RiotException _ ) {
+         // Tree-sitter owns ordinary syntax diagnostics. ParserException below keeps Jena-only syntax
+         // fallback visible.
+         return DiagnosticReport.EMPTY;
+      } catch ( final ParserException exception ) {
+         return diagnosticMapper.mapParserException( exception, parsedDocument.getUri() );
+      } catch ( final ValueParsingException exception ) {
+         return diagnosticMapper.mapValueParsingException( exception );
+      } catch ( final Exception exception ) {
+         LOG.error( "[validate] unexpected runtime failure for {}", parsedDocument.getUri(), exception );
+         return diagnosticMapper.processingFailureReport();
+      }
+   }
+
+   private void logProcessingViolations( final List<Violation> violations ) {
+      violations.stream()
+            .filter( ProcessingViolation.class::isInstance )
+            .map( ProcessingViolation.class::cast )
+            .forEach( violation -> LOG.warn( "[validation] aspect model processing failed: {}", violation.message(), violation.cause() ) );
+   }
+
+   private List<Violation> validate( final RawAspectModelFile file, final ParsedDocument parsedDocument ) {
       final AspectModelLoader documentLoader = loaderFor( parsedDocument );
       final List<Violation> violations = validate( file, documentLoader );
       LOG.debug( "[validate] validation finished for {} with {} violation(s)", parsedDocument.getUri(), violations.size() );
       return violations;
+   }
+
+   @Override
+   public Type type() {
+      return Type.DELAYED;
    }
 
    private AspectModelLoader loaderFor( final ParsedDocument parsedDocument ) {
@@ -51,7 +103,7 @@ public class AspectModelValidationService {
       if ( documentUri.getScheme() == null ) {
          return new AspectModelLoader();
       }
-      return new AspectModelLoader( LspUtil.buildResolutionStrategyForDocument( parsedDocument ) );
+      return new AspectModelLoader( AspectLspUtil.buildResolutionStrategyForDocument( parsedDocument ) );
    }
 
    private List<Violation> validate( final RawAspectModelFile file, final AspectModelLoader modelLoader ) {
