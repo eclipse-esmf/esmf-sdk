@@ -15,11 +15,13 @@ package examples;
 
 // tag::imports[]
 import org.eclipse.esmf.aspectmodel.generator.asyncapi.AspectModelAsyncApiGenerator;
+import org.eclipse.esmf.aspectmodel.generator.asyncapi.AsyncApiGenerationFeature;
 import org.eclipse.esmf.aspectmodel.generator.asyncapi.AsyncApiSchemaGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.asyncapi.AsyncApiSchemaGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.metamodel.AspectModel;
 
+import java.util.Set;
 import tools.jackson.databind.JsonNode;
 // end::imports[]
 
@@ -76,5 +78,27 @@ public class GenerateAsyncApi {
       // Or as pretty-printed JSON String:
       final String json = generator.generateJson();
       // end::generateJson[]
+   }
+
+   @Test
+   public void generateWithFeatures() {
+      // tag::generateWithFeatures[]
+      // AspectModel as returned by the AspectModelLoader
+      final AspectModel aspectModel = // ...
+            // end::generateWithFeatures[]
+            new AspectModelLoader().load(
+                  new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) );
+      // tag::generateWithFeatures[]
+
+      final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( false )
+            .applicationId( "test:serve" )
+            // Enable opt-in generation behaviors; see AsyncApiGenerationFeature for the full list
+            .features( Set.of( AsyncApiGenerationFeature.ADD_TENANT_ID_IN_CHANNEL_PARAMETERS ) )
+            .build();
+
+      final AspectModelAsyncApiGenerator generator = new AspectModelAsyncApiGenerator( aspectModel.aspect(), config );
+      final String json = generator.generateJson();
+      // end::generateWithFeatures[]
    }
 }
