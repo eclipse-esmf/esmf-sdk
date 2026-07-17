@@ -39,13 +39,14 @@ public class TextDocumentClientNotifier {
 
    public void publishDiagnostics( final Document document, final DiagnosticReport diagnostics ) {
       if ( client == null ) {
-         LOG.warn( "[publishDiagnostics] client is null, skipping for URI={}", document.getUri() );
+         LOG.warn( "[publishDiagnostics] client is null, skipping for URI={}", document.uri() );
          return;
       }
 
-      LOG.debug( "[publish diagnostics] publishing {} diagnostic(s) for URI={}", diagnostics.diagnostics().size(), document.getUri() );
-      client.publishDiagnostics(
-            new PublishDiagnosticsParams( document.getUri(), diagnosticMapper.toDiagnostics( document, diagnostics ) ) );
+      LOG.debug( "[publish diagnostics] publishing {} diagnostic(s) for URI={}", diagnostics.diagnostics().size(), document.uri() );
+      diagnosticMapper.apply( document, diagnostics ).forEach( ( uri, diags ) -> {
+         client.publishDiagnostics( new PublishDiagnosticsParams( uri.toString(), diags ) );
+      } );
    }
 
    public void publishEmptyDiagnostics( final String uri ) {

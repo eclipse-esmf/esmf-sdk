@@ -24,8 +24,8 @@ public record TurtleDocumentDiagnostic(
       Location location,
       Diagnostic.Severity severity
 ) implements DocumentDiagnostic<TurtleDiagnosticCode> {
-   public TurtleDocumentDiagnostic( final String message, final TurtleDiagnosticCode code, final String sourceLocation,
-         final Location location ) {
+   public TurtleDocumentDiagnostic( final String message, final TurtleDiagnosticCode code,
+         final String sourceLocation, final Location location ) {
       this( message, code, sourceLocation, location, Severity.ERROR );
    }
 }

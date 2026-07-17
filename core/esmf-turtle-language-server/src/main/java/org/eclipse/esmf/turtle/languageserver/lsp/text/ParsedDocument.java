@@ -29,7 +29,7 @@ public class ParsedDocument {
    public ParsedDocument( final Document document, final TSTree concreteSyntaxTree ) {
       sourceDocument = document;
       this.concreteSyntaxTree = concreteSyntaxTree;
-      turtleSyntaxTree = TurtleSyntaxTree.fromConcreteSyntaxTree( concreteSyntaxTree, sourceDocument.getContent() );
+      turtleSyntaxTree = TurtleSyntaxTree.fromConcreteSyntaxTree( concreteSyntaxTree, sourceDocument.content() );
    }
 
    public Document sourceDocument() {
@@ -45,12 +45,12 @@ public class ParsedDocument {
    }
 
    public String getUri() {
-      return sourceDocument.getUri();
+      return sourceDocument.uri();
    }
 
    public boolean storedIn( final Path path ) {
       try {
-         return Path.of( new URI( sourceDocument.getUri() ) ).getParent().toAbsolutePath().equals( path.toAbsolutePath() );
+         return Path.of( new URI( sourceDocument.uri() ) ).getParent().toAbsolutePath().equals( path.toAbsolutePath() );
       } catch ( final URISyntaxException e ) {
          return false;
       }

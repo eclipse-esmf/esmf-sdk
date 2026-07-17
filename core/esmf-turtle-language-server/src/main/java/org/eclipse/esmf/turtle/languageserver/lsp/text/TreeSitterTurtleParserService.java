@@ -52,8 +52,8 @@ public class TreeSitterTurtleParserService implements Function<Document, ParsedD
    }
 
    private TSTree parseDocument( final Document document ) {
-      previousDocumentStates.put( document, document.getRope() );
-      return parser.parseString( null, document.getContent() );
+      previousDocumentStates.put( document, document.rope() );
+      return parser.parseString( null, document.content() );
    }
 
    /**
@@ -134,8 +134,8 @@ public class TreeSitterTurtleParserService implements Function<Document, ParsedD
       }
 
       oldTree.edit( edit );
-      final TSTree newTree = parser.parseString( oldTree, document.getContent() );
+      final TSTree newTree = parser.parseString( oldTree, document.content() );
       syntaxTrees.put( document, newTree );
-      previousDocumentStates.put( document, document.getRope() );
+      previousDocumentStates.put( document, document.rope() );
    }
 }

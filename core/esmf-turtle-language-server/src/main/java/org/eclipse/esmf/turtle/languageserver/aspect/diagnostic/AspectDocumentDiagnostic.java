@@ -24,8 +24,8 @@ public record AspectDocumentDiagnostic(
       Location location,
       Diagnostic.Severity severity
 ) implements DocumentDiagnostic<AspectDiagnosticCode> {
-   public AspectDocumentDiagnostic( final String message, final AspectDiagnosticCode code, final String sourceLocation,
-         final Location location ) {
+   public AspectDocumentDiagnostic( final String message, final AspectDiagnosticCode code,
+         final String sourceLocation, final Location location ) {
       this( message, code, sourceLocation, location, Diagnostic.Severity.ERROR );
    }
 }

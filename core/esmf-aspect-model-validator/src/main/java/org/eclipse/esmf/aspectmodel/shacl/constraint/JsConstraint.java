@@ -18,12 +18,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
 import javax.script.Bindings;
 import javax.script.Invocable;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+
+import org.apache.jena.rdf.model.RDFNode;
 
 import org.eclipse.esmf.aspectmodel.shacl.JsLibrary;
 import org.eclipse.esmf.aspectmodel.shacl.ShaclValidationException;
@@ -36,7 +39,6 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.JsConstraintViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
 
-import org.apache.jena.rdf.model.RDFNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,33 +124,32 @@ public class JsConstraint implements Constraint {
          final Object this_ = JsFactory.asJsTerm( context.element().asNode() );
          final Object value = JsFactory.asJsTerm( rdfNode.asNode() );
          final Object result = ( (Invocable) engine ).invokeFunction( jsFunctionName, this_, value );
-         if ( result == null ) {
-            return List.of( new JsConstraintViolation( context, "JavaScript evaluation of " + jsFunctionName() + " returned null",
+         return switch ( result ) {
+            case null -> List.of( new JsConstraintViolation( context, "JavaScript evaluation of " + jsFunctionName() + " returned null",
                   jsLibrary(), jsFunctionName(), Collections.emptyMap() ) );
-         }
-         if ( result instanceof final Boolean booleanResult ) {
-            if ( booleanResult ) {
-               return List.of();
+            case final Boolean booleanResult -> booleanResult
+                  ? List.of()
+                  : List.of( new JsConstraintViolation( context, message(), jsLibrary(), jsFunctionName(), Collections.emptyMap() ) );
+            case final Map<?, ?> map -> {
+               final Map<String, Object> resultMap = map.entrySet().stream()
+                     .filter( entry -> entry.getKey() instanceof String )
+                     .collect( Collectors.toMap(
+                           entry -> (String) entry.getKey(),
+                           entry -> entry.getValue() instanceof final JsTerm term ? term.getNode() : entry.getValue() ) );
+               yield List.of( new JsConstraintViolation( context, message(), jsLibrary(), jsFunctionName(), resultMap ) );
             }
-            return List.of( new JsConstraintViolation( context, message(), jsLibrary(), jsFunctionName(), Collections.emptyMap() ) );
-         }
-         if ( result instanceof final Map<?, ?> map ) {
-            final Map<String, Object> resultMap = map.entrySet().stream()
-                  .filter( entry -> entry.getKey() instanceof String )
-                  .collect( Collectors.toMap(
-                        entry -> (String) entry.getKey(),
-                        entry -> entry.getValue() instanceof final JsTerm term ? term.getNode() : entry.getValue() ) );
-            return List.of( new JsConstraintViolation( context, message(), jsLibrary(), jsFunctionName(), resultMap ) );
-         }
-
-         LOG.debug( "JavaScript evaluation of {} returned invalid result: {}", jsFunctionName(), result );
-         return List.of( new ProcessingViolation( "JavaScript evaluation of " + jsFunctionName() + " returned an invalid result",
-               new IllegalArgumentException() ) );
+            default -> {
+               LOG.debug( "JavaScript evaluation of {} returned invalid result: {}", jsFunctionName(), result );
+               yield List.of( new ProcessingViolation( "JavaScript evaluation of " + jsFunctionName() + " returned an invalid result",
+                     new IllegalArgumentException() ) );
+            }
+         };
       } catch ( final ScriptException exception ) {
-         LOG.debug( "JavaScript evaluation of {} failed", jsFunctionName(), exception );
-         return List.of( new ProcessingViolation( "JavaScript evaluation of " + jsFunctionName() + " failed", exception ) );
+         LOG.debug( "JavaScript evaluation of {} failed", jsFunctionName() );
+         return List.of();
       } catch ( final NoSuchMethodException exception ) {
-         return List.of( new ProcessingViolation( "JavaScript function " + jsFunctionName() + " was not found", exception ) );
+         LOG.debug( "JavaScript function {} was not found", jsFunctionName(), exception );
+         return List.of();
       }
    }
 

@@ -13,15 +13,20 @@
 
 package org.eclipse.esmf.turtle.languageserver.lsp.diagnostic;
 
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.esmf.Diagnostic.Severity;
 import org.eclipse.esmf.DocumentDiagnostic;
-import org.eclipse.esmf.treesitterturtle.TurtleDocumentDiagnostic;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 
 import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.DiagnosticRelatedInformation;
 import org.eclipse.lsp4j.DiagnosticSeverity;
+import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 
@@ -29,31 +34,34 @@ import org.eclipse.lsp4j.Range;
  * Translates server internal diagnostics representations into LSP conformant objects
  */
 public final class DiagnosticMapper {
-   public List<Diagnostic> toDiagnostics( final Document document, final DiagnosticReport result ) {
-      return result.diagnostics().stream()
-            .filter( violation -> appliesToDocument( document, violation ) )
-            .map( this::toDiagnostic )
-            .toList();
-   }
+   private static final Range FALLBACK = new Range( new Position( 0, 0 ), new Position( 0, 0 ) );
 
-   private boolean appliesToDocument( final Document document, final org.eclipse.esmf.Diagnostic<?> diagnostic ) {
-      if ( diagnostic instanceof final DocumentDiagnostic<?> documentDiagnostic ) {
-         return document.getUri().equals( documentDiagnostic.sourceLocation() );
+   public Map<URI, List<Diagnostic>> apply( final Document sourceDocument, final DiagnosticReport report ) {
+      final Map<URI, List<Diagnostic>> result = new HashMap<>();
+      for ( final org.eclipse.esmf.Diagnostic<?> lspDiagnostic : report.diagnostics() ) {
+         final Diagnostic diagnostic = new Diagnostic();
+         diagnostic.setSeverity( toDiagnosticSeverity( lspDiagnostic.severity() ) );
+         diagnostic.setMessage( lspDiagnostic.message() );
+         diagnostic.setCode( lspDiagnostic.code().code() );
+         if ( lspDiagnostic instanceof final DocumentDiagnostic<?> documentDiagnostic ) {
+            if ( documentDiagnostic.sourceLocation().equals( sourceDocument.uri() ) ) {
+               diagnostic.setRange( toRange( documentDiagnostic ) );
+            } else {
+               final DiagnosticRelatedInformation relatedInformation = new DiagnosticRelatedInformation();
+               relatedInformation.setMessage( "Root cause of the problem is here" );
+               final Location relatedLocation = new Location();
+               relatedLocation.setUri( documentDiagnostic.sourceLocation() );
+               relatedLocation.setRange( toRange( documentDiagnostic ) );
+               relatedInformation.setLocation( relatedLocation );
+               diagnostic.setRelatedInformation( List.of( relatedInformation ) );
+               diagnostic.setRange( FALLBACK );
+            }
+         } else {
+            diagnostic.setRange( FALLBACK );
+         }
+         result.computeIfAbsent( URI.create( sourceDocument.uri() ), _ -> new ArrayList<>() ).add( diagnostic );
       }
-      return true;
-   }
-
-   private Diagnostic toDiagnostic( final org.eclipse.esmf.Diagnostic<?> turtleDiagnostic ) {
-      final Diagnostic diagnostic = new Diagnostic();
-      diagnostic.setSeverity( toDiagnosticSeverity( turtleDiagnostic.severity() ) );
-      diagnostic.setMessage( turtleDiagnostic.message() );
-      diagnostic.setCode( turtleDiagnostic.code().code() );
-      if ( turtleDiagnostic instanceof final TurtleDocumentDiagnostic turtleDocumentDiagnostic ) {
-         diagnostic.setRange( toRange( turtleDocumentDiagnostic ) );
-      } else {
-         diagnostic.setRange( fallbackRange() );
-      }
-      return diagnostic;
+      return result;
    }
 
    private DiagnosticSeverity toDiagnosticSeverity( final Severity severity ) {
@@ -68,9 +76,5 @@ public final class DiagnosticMapper {
    private Range toRange( final DocumentDiagnostic<?> diagnostic ) {
       return new Range( new Position( diagnostic.location().fromLine(), diagnostic.location().fromColumn() ),
             new Position( diagnostic.location().toLine(), diagnostic.location().toColumn() ) );
-   }
-
-   private Range fallbackRange() {
-      return new Range( new Position( 0, 0 ), new Position( 0, 1 ) );
    }
 }

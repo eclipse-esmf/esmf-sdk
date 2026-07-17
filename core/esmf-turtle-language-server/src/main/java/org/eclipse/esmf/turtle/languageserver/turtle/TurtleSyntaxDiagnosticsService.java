@@ -30,7 +30,7 @@ public class TurtleSyntaxDiagnosticsService implements DiagnosticsProvider {
    @Override
    public DiagnosticReport validate( final ParsedDocument parsedDocument ) {
       return new DiagnosticReport( checkNode( parsedDocument.concreteSyntaxTree().getRootNode(),
-            parsedDocument.sourceDocument().getUri() ).toList() );
+            parsedDocument.sourceDocument().uri() ).toList() );
    }
 
    private Stream<Diagnostic<?>> checkNode( final TSNode node, final String sourceLocation ) {

@@ -112,7 +112,7 @@ public class ValidationCoordinator implements AutoCloseable {
       final ScheduledFuture<?> task = scheduler.schedule(
             () -> {
                scheduledValidations.remove( document );
-               LOG.debug( "[debounce] idle timeout reached, submitting document validation for URI={}", document.getUri() );
+               LOG.debug( "[debounce] idle timeout reached, submitting document validation for URI={}", document.uri() );
                validateAsync( parsedDocument );
             },
             IDLE_VALIDATION_DELAY_SECONDS,
@@ -131,7 +131,7 @@ public class ValidationCoordinator implements AutoCloseable {
    private void cancelRunningValidation( final Document document ) {
       final CompletableFuture<?> previous = runningValidations.remove( document );
       if ( previous != null ) {
-         LOG.debug( "[cancel] cancelling in-flight document validation for URI={}", document.getUri() );
+         LOG.debug( "[cancel] cancelling in-flight document validation for URI={}", document.uri() );
          previous.cancel( true );
       }
    }
@@ -149,17 +149,17 @@ public class ValidationCoordinator implements AutoCloseable {
          runningValidations.remove( document, future );
          final Throwable failure = unwrap( throwable );
          if ( failure instanceof CancellationException || future.isCancelled() ) {
-            LOG.debug( "[cancel] document validation cancelled for URI={}", document.getUri() );
+            LOG.debug( "[cancel] document validation cancelled for URI={}", document.uri() );
             return;
          }
          final long currentGeneration = generations.getOrDefault( document, new AtomicLong() ).get();
          if ( generation != currentGeneration ) {
-            LOG.debug( "[stale] ignoring stale result for URI={}, generation={}, current={}", document.getUri(), generation,
+            LOG.debug( "[stale] ignoring stale result for URI={}, generation={}, current={}", document.uri(), generation,
                   currentGeneration );
             return;
          }
          if ( failure != null ) {
-            LOG.error( "[error] document validation failed for URI={}", document.getUri(), failure );
+            LOG.error( "[error] document validation failed for URI={}", document.uri(), failure );
             return;
          }
          onValidationComplete.accept( document, result );

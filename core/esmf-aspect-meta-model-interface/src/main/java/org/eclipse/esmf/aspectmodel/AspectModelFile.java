@@ -17,12 +17,12 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.jena.rdf.model.Model;
+
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.ModelElementGroup;
 import org.eclipse.esmf.metamodel.Namespace;
-
-import org.apache.jena.rdf.model.Model;
 
 /**
  * An AspectModelFile is the abstraction of one "code unit". When its source location is in a file

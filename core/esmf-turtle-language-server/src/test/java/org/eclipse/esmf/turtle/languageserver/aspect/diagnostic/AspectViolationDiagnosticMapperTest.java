@@ -121,8 +121,8 @@ class AspectViolationDiagnosticMapperTest {
       final Document document = new Document( "test.ttl", "" );
       final ProcessingViolation violation = new ProcessingViolation( "processing violation", new RuntimeException() );
 
-      final List<org.eclipse.lsp4j.Diagnostic> diagnostics = diagnosticMapper.toDiagnostics( document,
-            violationMapper.mapValidationViolations( List.of( violation ) ) );
+      final List<org.eclipse.lsp4j.Diagnostic> diagnostics = diagnosticMapper.apply( document,
+            violationMapper.mapValidationViolations( List.of( violation ) ) ).entrySet().iterator().next().getValue();
 
       assertThat( diagnostics ).singleElement()
             .satisfies( diagnostic -> {
@@ -181,7 +181,7 @@ class AspectViolationDiagnosticMapperTest {
       final DiagnosticReport report = new DiagnosticReport( new TurtleDiagnostic(
             "warning", TurtleDiagnosticCode.E0000, Diagnostic.Severity.WARNING ) );
 
-      final List<org.eclipse.lsp4j.Diagnostic> diagnostics = mapper.toDiagnostics( document, report );
+      final List<org.eclipse.lsp4j.Diagnostic> diagnostics = mapper.apply( document, report ).entrySet().iterator().next().getValue();
 
       assertThat( diagnostics ).singleElement()
             .extracting( org.eclipse.lsp4j.Diagnostic::getSeverity )
@@ -195,7 +195,7 @@ class AspectViolationDiagnosticMapperTest {
       final DiagnosticReport report = new DiagnosticReport( new TurtleDiagnostic(
             "warning", TurtleDiagnosticCode.E0000, Diagnostic.Severity.WARNING ) );
 
-      final List<org.eclipse.lsp4j.Diagnostic> diagnostics = mapper.toDiagnostics( document, report );
+      final List<org.eclipse.lsp4j.Diagnostic> diagnostics = mapper.apply( document, report ).entrySet().iterator().next().getValue();
 
       assertThat( diagnostics ).singleElement()
             .extracting( org.eclipse.lsp4j.Diagnostic::getRange )

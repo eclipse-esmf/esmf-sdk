@@ -154,7 +154,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
          LOG.warn( "[didSave] received save for unknown document: {}", uri );
          return;
       }
-      document.getRope().rebalance();
+      document.rope().rebalance();
       turtleParserService.onOpen( document );
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
       validationCoordinator.onDocumentSaved( parsedDocument );

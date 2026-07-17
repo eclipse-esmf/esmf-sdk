@@ -19,6 +19,7 @@ import java.util.Optional;
 import org.apache.jena.riot.tokens.Token;
 import org.apache.jena.riot.tokens.TokenType;
 
+import org.eclipse.esmf.Location;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
 
@@ -88,16 +89,22 @@ public final class SmartToken {
       return null;
    }
 
+   @SuppressWarnings( "DataFlowIssue" )
+   public Location location() {
+      if ( treesitterToken != null ) {
+         return treesitterToken.location();
+      }
+      return new Location( (int) jenaToken.getLine() - 1, (int) jenaToken.getColumn() - 1, (int) jenaToken.getLine() - 1,
+            (int) jenaToken.getColumn() - 1 + content().length() );
+   }
+
    /**
     * The line of the token, 1-based.
     *
     * @return the line
     */
    public int line() {
-      if ( jenaToken != null ) {
-         return (int) jenaToken.getLine();
-      }
-      return treesitterToken.location().fromLine() + 1;
+      return location().fromLine() + 1;
    }
 
    /**
@@ -106,34 +113,7 @@ public final class SmartToken {
     * @return the column
     */
    public int column() {
-      if ( jenaToken != null ) {
-         return (int) jenaToken.getColumn();
-      }
-      return treesitterToken.location().fromColumn() + 1;
-   }
-
-   /**
-    * The line where the token ends, 1-based.
-    *
-    * @return the line
-    */
-   public int toLine() {
-      if ( jenaToken != null ) {
-         return line();
-      }
-      return treesitterToken.location().toLine() + 1;
-   }
-
-   /**
-    * The column where the token ends, 1-based.
-    *
-    * @return the colum
-    */
-   public int toColumn() {
-      if ( jenaToken != null ) {
-         return column() + content().length();
-      }
-      return treesitterToken.location().toColumn() + 1;
+      return location().fromColumn() + 1;
    }
 
    /**

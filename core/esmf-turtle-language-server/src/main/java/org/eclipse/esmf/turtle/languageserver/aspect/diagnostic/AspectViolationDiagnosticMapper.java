@@ -24,6 +24,7 @@ import org.eclipse.esmf.Diagnostic;
 import org.eclipse.esmf.Location;
 import org.eclipse.esmf.aspectmodel.ValueParsingException;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
+import org.eclipse.esmf.aspectmodel.resolver.parser.SmartToken;
 import org.eclipse.esmf.aspectmodel.resolver.parser.TokenRegistry;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.validation.InvalidLexicalValueViolation;
@@ -31,7 +32,6 @@ import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
 import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
 import org.eclipse.esmf.treesitterturtle.TurtleDiagnosticCode;
 import org.eclipse.esmf.treesitterturtle.TurtleDocumentDiagnostic;
-import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
 import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.DiagnosticReport;
 
 public class AspectViolationDiagnosticMapper implements Function<List<Violation>, DiagnosticReport> {
@@ -103,8 +103,7 @@ public class AspectViolationDiagnosticMapper implements Function<List<Violation>
       final Location location = Optional.ofNullable( violation.highlight() )
             .map( RDFNode::asNode )
             .flatMap( TokenRegistry::getToken )
-            .flatMap( smartToken -> Optional.ofNullable( smartToken.getTreesitterToken() ) )
-            .map( TurtleSyntaxTree.Token::location )
+            .map( SmartToken::location )
             .orElse( null );
       if ( location == null ) {
          return new AspectDiagnostic( violation.message(), code );
