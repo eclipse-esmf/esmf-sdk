@@ -175,6 +175,30 @@ class AspectViolationDiagnosticMapperTest {
    }
 
    @Test
+   void mapsViolationWithDifferentSourceLocationAsRelatedInformation() {
+      final AspectViolationDiagnosticMapper violationMapper = new AspectViolationDiagnosticMapper();
+      final DiagnosticMapper diagnosticMapper = new DiagnosticMapper();
+      final Document document = new Document( "test.ttl", "" );
+      final InvalidLexicalValueViolation violation = new InvalidLexicalValueViolation(
+            null, "999", 3, 5, "", URI.create( "other.ttl" ) );
+
+      final List<org.eclipse.lsp4j.Diagnostic> diagnostics = diagnosticMapper.apply( document,
+            violationMapper.mapValidationViolations( List.of( violation ) ) ).entrySet().iterator().next().getValue();
+
+      assertThat( diagnostics ).singleElement()
+            .satisfies( diagnostic -> {
+               assertThat( diagnostic.getCode().getLeft() ).isEqualTo( InvalidLexicalValueViolation.ERROR_CODE );
+               assertThat( diagnostic.getMessage().getLeft() ).isEqualTo( "Invalid value" );
+               assertThat( diagnostic.getRange() ).isEqualTo( new Range( new Position( 0, 0 ), new Position( 0, 0 ) ) );
+               assertThat( diagnostic.getRelatedInformation() ).isNotEmpty();
+               assertThat( diagnostic.getRelatedInformation().getFirst().getLocation().getUri() )
+                     .isEqualTo( "other.ttl" );
+               assertThat( diagnostic.getRelatedInformation().getFirst().getMessage() )
+                     .isEqualTo( "Root cause of the problem is here" );
+            } );
+   }
+
+   @Test
    void mapsDiagnosticSeverityToLspSeverity() {
       final DiagnosticMapper mapper = new DiagnosticMapper();
       final Document document = new Document( "test.ttl", "" );
