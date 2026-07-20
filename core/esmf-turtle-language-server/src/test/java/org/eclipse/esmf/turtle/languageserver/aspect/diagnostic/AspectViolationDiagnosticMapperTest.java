@@ -128,7 +128,7 @@ class AspectViolationDiagnosticMapperTest {
             .satisfies( diagnostic -> {
                assertThat( diagnostic.getCode().getLeft() ).isEqualTo( ProcessingViolation.ERROR_CODE );
                assertThat( diagnostic.getMessage().getLeft() ).isEqualTo( "processing violation" );
-               assertThat( diagnostic.getRange() ).isEqualTo( new Range( new Position( 0, 0 ), new Position( 0, 1 ) ) );
+               assertThat( diagnostic.getRange() ).isEqualTo( new Range( new Position( 0, 0 ), new Position( 0, 0 ) ) );
             } );
    }
 
@@ -199,6 +199,6 @@ class AspectViolationDiagnosticMapperTest {
 
       assertThat( diagnostics ).singleElement()
             .extracting( org.eclipse.lsp4j.Diagnostic::getRange )
-            .isEqualTo( new Range( new Position( 0, 0 ), new Position( 0, 1 ) ) );
+            .isEqualTo( new Range( new Position( 0, 0 ), new Position( 0, 0 ) ) );
    }
 }

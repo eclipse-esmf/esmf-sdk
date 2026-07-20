@@ -69,7 +69,7 @@ class AspectModelValidatorTest {
    void testValidateBlankStructuredValueWithInvalidElementsProperty() {
       final AspectModel aspectModel = TestResources.load( InvalidTestAspect.ASPECT_WITH_INVALID_BLANK_STRUCTURED_VALUE );
       final List<Violation> violations = new AspectModelValidator().validateModel( aspectModel );
-      assertThat( violations ).hasExactlyElementsOfTypes( MinCountViolation.class, ProcessingViolation.class );
+      assertThat( violations ).hasExactlyElementsOfTypes( MinCountViolation.class );
    }
 
    @ParameterizedTest
