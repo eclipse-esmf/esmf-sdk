@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.turtle.languageserver.turtle.navigation;
+package org.eclipse.esmf.turtle.languageserver.aspect;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -19,35 +19,32 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategySupport;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.metamodel.vocabulary.SAMM;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
-import org.eclipse.esmf.turtle.languageserver.lsp.text.TreeSitterTurtleParserService;
+import org.eclipse.esmf.samm.KnownVersion;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class MetaModelStrategyTest {
-
    private static final ResolutionStrategySupport RESOLUTION_SUPPORT = new AspectModelLoader();
-
    private MetaModelStrategy strategy;
-   private TreeSitterTurtleParserService parserService;
 
    @BeforeEach
    void setUp() {
       strategy = new MetaModelStrategy();
-      parserService = new TreeSitterTurtleParserService();
    }
 
    @Test
    void testResolvesAspectDefinition() {
-      final AspectModelUrn urn = AspectModelUrn.fromUrn(
-            SammNs.SAMM.getNamespace() + "Aspect" );
+      final AspectModelUrn urn = AspectModelUrn.fromUrn( SammNs.SAMM.Aspect().getURI() );
 
-      final var result = strategy.apply( urn, RESOLUTION_SUPPORT );
+      final AspectModelFile result = strategy.apply( urn, RESOLUTION_SUPPORT );
 
       assertThat( result ).isNotNull();
       assertThat( result.sourceLocation() ).isPresent();
@@ -59,9 +56,8 @@ class MetaModelStrategyTest {
 
    @Test
    void testExtractedFileIsReadableFromDisk() throws Exception {
-      final AspectModelUrn urn = AspectModelUrn.fromUrn( SammNs.SAMM.getNamespace() + "Property" );
-
-      final var result = strategy.apply( urn, RESOLUTION_SUPPORT );
+      final AspectModelUrn urn = AspectModelUrn.fromUrn( SammNs.SAMM.Property().getURI() );
+      final AspectModelFile result = strategy.apply( urn, RESOLUTION_SUPPORT );
 
       final Path tempFile = Path.of( result.sourceLocation().get() );
       assertThat( tempFile ).exists();
@@ -71,22 +67,19 @@ class MetaModelStrategyTest {
 
    @Test
    void testSameFileReturnedForMultipleCallsOnSameNamespace() {
-      final String namespace = SammNs.SAMM.getNamespace();
-      final AspectModelUrn urnAspect = AspectModelUrn.fromUrn( namespace + "Aspect" );
-      final AspectModelUrn urnProperty = AspectModelUrn.fromUrn( namespace + "Property" );
+      final AspectModelUrn urnAspect = AspectModelUrn.fromUrn( SammNs.SAMM.Aspect().getURI() );
+      final AspectModelUrn urnProperty = AspectModelUrn.fromUrn( SammNs.SAMM.Property().getURI() );
 
-      final var result1 = strategy.apply( urnAspect, RESOLUTION_SUPPORT );
-      final var result2 = strategy.apply( urnProperty, RESOLUTION_SUPPORT );
+      final AspectModelFile result1 = strategy.apply( urnAspect, RESOLUTION_SUPPORT );
+      final AspectModelFile result2 = strategy.apply( urnProperty, RESOLUTION_SUPPORT );
 
       assertThat( result1.sourceLocation() ).isEqualTo( result2.sourceLocation() );
    }
 
    @Test
    void testResolvesCharacteristicDefinition() {
-      final AspectModelUrn urn = AspectModelUrn.fromUrn(
-            SammNs.SAMMC.getNamespace() + "SingleEntity" );
-
-      final var result = strategy.apply( urn, RESOLUTION_SUPPORT );
+      final AspectModelUrn urn = AspectModelUrn.fromUrn( SammNs.SAMMC.SingleEntity().getURI() );
+      final AspectModelFile result = strategy.apply( urn, RESOLUTION_SUPPORT );
 
       assertThat( result.sourceLocation() ).isPresent();
       assertThat( result.sourceRepresentation() ).contains( "samm-c:SingleEntity rdfs:subClassOf samm:Characteristic ;" );
@@ -95,15 +88,13 @@ class MetaModelStrategyTest {
    @Test
    void testThrowsForNonSammUrn() {
       final AspectModelUrn urn = AspectModelUrn.fromUrn( "urn:samm:com.example:1.0.0#MyClass" );
-
       assertThatThrownBy( () -> strategy.apply( urn, RESOLUTION_SUPPORT ) )
             .isInstanceOf( ModelResolutionException.class );
    }
 
    @Test
    void testThrowsForUnknownSammElement() {
-      final AspectModelUrn urn = AspectModelUrn.fromUrn( SammNs.SAMM.getNamespace() + "NonExistentElement99" );
-
+      final AspectModelUrn urn = AspectModelUrn.fromUrn( SammNs.SAMM.resource( "NonExistentElement99" ).getURI() );
       assertThatThrownBy( () -> strategy.apply( urn, RESOLUTION_SUPPORT ) )
             .isInstanceOf( ModelResolutionException.class );
    }
@@ -115,10 +106,8 @@ class MetaModelStrategyTest {
 
    @Test
    void testResolvesOlderSammVersion() {
-      final AspectModelUrn urn = AspectModelUrn.fromUrn(
-            "urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#Aspect" );
-
-      final var result = strategy.apply( urn, RESOLUTION_SUPPORT );
+      final AspectModelUrn urn = AspectModelUrn.fromUrn( new SAMM( KnownVersion.SAMM_2_1_0 ).Aspect().getURI() );
+      final AspectModelFile result = strategy.apply( urn, RESOLUTION_SUPPORT );
 
       assertThat( result.sourceLocation() ).isPresent();
       final Path resultPath = Path.of( result.sourceLocation().get() );
@@ -130,13 +119,11 @@ class MetaModelStrategyTest {
 
    @Test
    void testDifferentVersionsGetDifferentTempFiles() {
-      final AspectModelUrn urn210 = AspectModelUrn.fromUrn(
-            "urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#Aspect" );
-      final AspectModelUrn urn220 = AspectModelUrn.fromUrn(
-            SammNs.SAMM.getNamespace() + "Aspect" );
+      final AspectModelUrn urn210 = AspectModelUrn.fromUrn( new SAMM( KnownVersion.SAMM_2_1_0 ).Aspect().getURI() );
+      final AspectModelUrn urn220 = AspectModelUrn.fromUrn( SammNs.SAMM.Aspect().getURI() );
 
-      final var result210 = strategy.apply( urn210, RESOLUTION_SUPPORT );
-      final var result220 = strategy.apply( urn220, RESOLUTION_SUPPORT );
+      final AspectModelFile result210 = strategy.apply( urn210, RESOLUTION_SUPPORT );
+      final AspectModelFile result220 = strategy.apply( urn220, RESOLUTION_SUPPORT );
 
       assertThat( result210.sourceLocation() ).isNotEqualTo( result220.sourceLocation() );
    }

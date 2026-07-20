@@ -24,8 +24,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
 
-import org.eclipse.esmf.turtle.languageserver.aspect.request.ValidateDocumentParams;
-import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
+import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.DiagnosticReport;
+import org.eclipse.esmf.turtle.languageserver.lsp.request.ValidateDocumentParams;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TurtleTextDocumentService;
 import org.eclipse.esmf.turtle.languageserver.lsp.workspace.TurtleWorkspaceService;
 import org.eclipse.esmf.turtle.languageserver.structure.TurtleTokenService;
@@ -112,7 +112,7 @@ public class TurtleLanguageServer implements LanguageServer, LanguageClientAware
       if ( params == null || params.uri() == null ) {
          return CompletableFuture.completedFuture( DiagnosticReport.EMPTY );
       }
-      return CompletableFuture.completedFuture( textDocumentService.validateDocument( params.uri() ) );
+      return textDocumentService.validateDocument( params.uri() );
    }
 
    /**

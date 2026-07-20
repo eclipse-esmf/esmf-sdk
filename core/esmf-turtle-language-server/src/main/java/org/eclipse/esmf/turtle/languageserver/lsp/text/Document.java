@@ -15,12 +15,16 @@ package org.eclipse.esmf.turtle.languageserver.lsp.text;
 
 import java.io.InputStream;
 
+import org.eclipse.esmf.Location;
 import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
 
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.jspecify.annotations.Nullable;
 
+/**
+ * Implementation of a document based on a {@link Rope}.
+ */
 public class Document implements TurtleSyntaxTree.TokenProvider {
    private final String uri;
    private Rope content;
@@ -30,33 +34,33 @@ public class Document implements TurtleSyntaxTree.TokenProvider {
       content = new Rope( initialContent );
    }
 
-   public String getUri() {
+   public String uri() {
       return uri;
    }
 
-   public String getContent() {
+   public String content() {
       return content.toString();
    }
 
-   public Rope getRope() {
+   public Rope rope() {
       return content;
    }
 
-   public InputStream getInputStream() {
+   public InputStream inputStream() {
       return content.inputStream();
    }
 
-   public int getIndex( final int targetLine, final int targetColumn ) {
+   public int index( final int targetLine, final int targetColumn ) {
       return content.getIndex( targetLine, targetColumn );
    }
 
    public String subSequence( final int fromLine, final int fromColumn, final int toLine, final int toColumn ) {
-      final int fromIndex = getIndex( fromLine, fromColumn );
-      final int toIndex = getIndex( toLine, toColumn );
+      final int fromIndex = index( fromLine, fromColumn );
+      final int toIndex = index( toLine, toColumn );
       return content.subSequence( fromIndex, toIndex ).toString();
    }
 
-   public void update( final @Nullable Range range, final String newContent ) {
+   public synchronized void update( final @Nullable Range range, final String newContent ) {
       if ( range == null ) {
          content = new Rope( newContent );
          return;
@@ -68,7 +72,7 @@ public class Document implements TurtleSyntaxTree.TokenProvider {
    }
 
    @Override
-   public String apply( final TurtleSyntaxTree.Location location ) {
+   public String apply( final Location location ) {
       return subSequence( location.fromLine(), location.fromColumn(), location.toLine(), location.toColumn() );
    }
 }

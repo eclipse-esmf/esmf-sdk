@@ -76,6 +76,7 @@ public class AspectModelValidator implements Validator<Violation, List<Violation
     * @param aspectModelSupplier the Aspect Model supplier
     * @return a list of {@link Violation}s. An empty list indicates that the model is valid.
     */
+   @Override
    public List<Violation> validateModel( final Supplier<AspectModel> aspectModelSupplier ) {
       final Either<List<Violation>, AspectModel> result = loadModel( aspectModelSupplier );
       if ( result.isLeft() ) {

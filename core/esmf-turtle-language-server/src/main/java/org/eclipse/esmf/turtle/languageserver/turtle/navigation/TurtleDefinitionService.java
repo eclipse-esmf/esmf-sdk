@@ -32,17 +32,11 @@ public class TurtleDefinitionService extends TurtleService {
       if ( highlightedToken == null ) {
          return Optional.empty();
       }
-      switch ( highlightedToken.type() ) {
-         case ParserTokenType.PN_PREFIX -> {
-            return findPrefixDefinition( highlightedToken.content(), parsedDocument, turtleSyntaxTree );
-         }
-         case ParserTokenType.PN_LOCAL -> {
-            return findElementDefinition( position, parsedDocument, turtleSyntaxTree );
-         }
-         default -> {
-            return Optional.empty();
-         }
-      }
+      return switch ( highlightedToken.type() ) {
+         case ParserTokenType.PN_PREFIX -> findPrefixDefinition( highlightedToken.content(), parsedDocument, turtleSyntaxTree );
+         case ParserTokenType.PN_LOCAL -> findElementDefinition( position, parsedDocument, turtleSyntaxTree );
+         default -> Optional.empty();
+      };
    }
 
    private Optional<Location> findPrefixDefinition( final String prefixName, final ParsedDocument parsedDocument,

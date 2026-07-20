@@ -24,6 +24,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.Diagnostic;
+import org.eclipse.esmf.Location;
 
 import org.jspecify.annotations.Nullable;
 import org.treesitter.TSNode;
@@ -124,21 +125,6 @@ public class TurtleSyntaxTree {
    }
 
    /**
-    * Zero-based section of a document
-    *
-    * @param fromLine starting line
-    * @param fromColumn starting column
-    * @param toLine ending line
-    * @param toColumn ending column
-    */
-   public record Location(
-         int fromLine,
-         int fromColumn,
-         int toLine,
-         int toColumn
-   ) {}
-
-   /**
     * Provides the token (substring) for a given location
     */
    public interface TokenProvider extends Function<Location, String> {
@@ -219,9 +205,9 @@ public class TurtleSyntaxTree {
             .map( child -> nodeForTsNode( child, content ) )
             .toList();
       if ( inputNode.isError() ) {
-         return new Error( inputNode.getType(), TurtleDiagnostic.TurtleCode.E0003, location, children );
+         return new Error( inputNode.getType(), TurtleDiagnosticCode.E0003, location, children );
       } else if ( inputNode.isMissing() ) {
-         return new Error( inputNode.getType(), TurtleDiagnostic.TurtleCode.E0004, location, children );
+         return new Error( inputNode.getType(), TurtleDiagnosticCode.E0004, location, children );
       }
       final Supplier<String> token = () -> new String(
             // bytes

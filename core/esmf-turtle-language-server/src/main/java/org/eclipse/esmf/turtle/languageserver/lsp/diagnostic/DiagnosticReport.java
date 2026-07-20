@@ -11,31 +11,21 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.turtle.languageserver.diagnostic;
+package org.eclipse.esmf.turtle.languageserver.lsp.diagnostic;
 
 import java.util.List;
 
-import org.eclipse.esmf.treesitterturtle.TurtleDiagnostic;
+import org.eclipse.esmf.Diagnostic;
 
 import com.google.common.collect.Streams;
 
 public record DiagnosticReport(
-      List<TurtleDiagnostic> diagnostics
+      List<Diagnostic<?>> diagnostics
 ) {
    public static final DiagnosticReport EMPTY = new DiagnosticReport( List.of() );
 
-   public DiagnosticReport( final TurtleDiagnostic diagnostic ) {
+   public DiagnosticReport( final Diagnostic<?> diagnostic ) {
       this( List.of( diagnostic ) );
-   }
-
-   /**
-    * Convenience constructor to create are report for one {@link TurtleBaseDiagnostic}
-    *
-    * @param message the message
-    * @param code the code
-    */
-   public DiagnosticReport( final String message, final TurtleDiagnostic.TurtleCode code ) {
-      this( new TurtleBaseDiagnostic( message, code ) );
    }
 
    /**

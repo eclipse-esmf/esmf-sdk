@@ -25,16 +25,6 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.eclipse.esmf.aspectmodel.AspectModelFile;
-import org.eclipse.esmf.aspectmodel.RdfUtil;
-import org.eclipse.esmf.aspectmodel.resolver.parser.SmartToken;
-import org.eclipse.esmf.aspectmodel.resolver.parser.TokenRegistry;
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.buildtime.template.VersionInfo;
-import org.eclipse.esmf.metamodel.ModelElement;
-import org.eclipse.esmf.metamodel.vocabulary.SammNs;
-
-import com.google.common.collect.ImmutableList;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.graph.Graph;
@@ -60,6 +50,16 @@ import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.rdf.model.impl.Util;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
+
+import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.RdfUtil;
+import org.eclipse.esmf.aspectmodel.resolver.parser.TokenRegistry;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.buildtime.template.VersionInfo;
+import org.eclipse.esmf.metamodel.ModelElement;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
+
+import com.google.common.collect.ImmutableList;
 
 /**
  * Serializes an {@link AspectModelFile} to RDF/Turtle while following the formatting rules for
@@ -108,7 +108,7 @@ public class PrettyPrinter {
          if ( iterator.hasNext() ) {
             final Statement statement = iterator.next();
             return TokenRegistry.getToken( statement.getSubject().asNode() )
-                  .map( SmartToken::line )
+                  .map( token -> token.location().fromLine() )
                   .orElseGet( () -> {
                      // This happens when the model was not loaded using the esmf-sdk customized RDF parser, e.g.
                      // for programmatically created models.

@@ -14,13 +14,18 @@
 package org.eclipse.esmf.treesitterturtle;
 
 import org.eclipse.esmf.Diagnostic;
+import org.eclipse.esmf.DocumentDiagnostic;
+import org.eclipse.esmf.Location;
 
-public record TurtleDiagnostic(
+public record TurtleDocumentDiagnostic(
       String message,
       TurtleDiagnosticCode code,
+      String sourceLocation,
+      Location location,
       Diagnostic.Severity severity
-) implements Diagnostic<TurtleDiagnosticCode> {
-   public TurtleDiagnostic( final String message, final TurtleDiagnosticCode code ) {
-      this( message, code, Severity.ERROR );
+) implements DocumentDiagnostic<TurtleDiagnosticCode> {
+   public TurtleDocumentDiagnostic( final String message, final TurtleDiagnosticCode code,
+         final String sourceLocation, final Location location ) {
+      this( message, code, sourceLocation, location, Severity.ERROR );
    }
 }

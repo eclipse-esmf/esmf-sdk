@@ -95,7 +95,7 @@ class TurtleParserServiceTest {
       assertThat( updatedTree ).isNotNull();
       assertThat( updatedTree.getRootNode().hasError() ).isFalse();
 
-      assertThat( document.getContent() ).contains( "ex:subject ex:predicate ex:object" );
+      assertThat( document.content() ).contains( "ex:subject ex:predicate ex:object" );
    }
 
    @Test
@@ -113,7 +113,7 @@ class TurtleParserServiceTest {
 
       final TSTree tree = parserService.apply( document ).concreteSyntaxTree();
       assertThat( tree.getRootNode().hasError() ).isFalse();
-      assertThat( document.getContent() )
+      assertThat( document.content() )
             .contains( "ex:subject1" )
             .contains( "ex:subject2" )
             .contains( "ex:subject3" );
@@ -135,8 +135,8 @@ class TurtleParserServiceTest {
 
       final TSTree tree = parserService.apply( document ).concreteSyntaxTree();
       assertThat( tree.getRootNode().hasError() ).isFalse();
-      assertThat( document.getContent() ).doesNotContain( "ex:ToDelete" );
-      assertThat( document.getContent() ).contains( "ex:subject ex:predicate ex:object" );
+      assertThat( document.content() ).doesNotContain( "ex:ToDelete" );
+      assertThat( document.content() ).contains( "ex:subject ex:predicate ex:object" );
    }
 
    @Test
@@ -158,8 +158,8 @@ class TurtleParserServiceTest {
          printDocumentAndTree( document, tree );
       }
       assertThat( tree.getRootNode().hasError() ).isFalse();
-      assertThat( document.getContent() ).doesNotContain( "OldObject" );
-      assertThat( document.getContent() ).contains( "NewObject" );
+      assertThat( document.content() ).doesNotContain( "OldObject" );
+      assertThat( document.content() ).contains( "NewObject" );
    }
 
    @Test
@@ -177,22 +177,22 @@ class TurtleParserServiceTest {
 
       tree = parserService.apply( document ).concreteSyntaxTree();
       assertThat( tree.getRootNode().hasError() ).isFalse();
-      assertThat( document.getContent() ).contains( "ex:subject1" );
+      assertThat( document.content() ).contains( "ex:subject1" );
 
       final String text3 = "\nex:subject2 ex:predicate2 ex:object2 .";
       applyChange( document, pos( 2, 38 ), pos( 2, 38 ), text3 );
 
       tree = parserService.apply( document ).concreteSyntaxTree();
       assertThat( tree.getRootNode().hasError() ).isFalse();
-      assertThat( document.getContent() ).contains( "ex:subject1" )
+      assertThat( document.content() ).contains( "ex:subject1" )
             .contains( "ex:subject2" );
 
       applyChange( document, pos( 2, 0 ), pos( 2, 38 ), "" );
 
       tree = parserService.apply( document ).concreteSyntaxTree();
       assertThat( tree.getRootNode().hasError() ).isFalse();
-      assertThat( document.getContent() ).doesNotContain( "ex:subject1" );
-      assertThat( document.getContent() ).contains( "ex:subject2" );
+      assertThat( document.content() ).doesNotContain( "ex:subject1" );
+      assertThat( document.content() ).contains( "ex:subject2" );
    }
 
    @Test
@@ -213,8 +213,8 @@ class TurtleParserServiceTest {
 
       final TSTree tree = parserService.apply( document ).concreteSyntaxTree();
       assertThat( tree.getRootNode().hasError() ).isFalse();
-      assertThat( document.getContent() ).contains( "ex:newPredicate" );
-      assertThat( document.getContent() ).doesNotContain( "ex:predicate1" );
+      assertThat( document.content() ).contains( "ex:newPredicate" );
+      assertThat( document.content() ).doesNotContain( "ex:predicate1" );
    }
 
    @Test
@@ -264,7 +264,7 @@ class TurtleParserServiceTest {
 
       final TSTree tree = parserService.apply( document ).concreteSyntaxTree();
       assertThat( tree.getRootNode().hasError() ).isFalse();
-      assertThat( document.getContent() ).startsWith( "@prefix ex:" );
+      assertThat( document.content() ).startsWith( "@prefix ex:" );
    }
 
    @Test
@@ -287,7 +287,7 @@ class TurtleParserServiceTest {
       tree = parserService.apply( document ).concreteSyntaxTree();
       assertThat( tree.getRootNode().hasError() ).isFalse();
 
-      final String content = document.getContent();
+      final String content = document.content();
       final int predicateStart = content.indexOf( "ex:predicate2" );
       final int line = content.substring( 0, predicateStart ).split( "\n" ).length - 1;
       final int col = predicateStart - content.lastIndexOf( '\n', predicateStart ) - 1;
@@ -295,10 +295,10 @@ class TurtleParserServiceTest {
       applyChange( document, pos( line, col ), pos( line, col + 12 ), "ex:modified" );
       tree = parserService.apply( document ).concreteSyntaxTree();
       assertThat( tree.getRootNode().hasError() ).isFalse();
-      assertThat( document.getContent() ).contains( "ex:modified" );
-      assertThat( document.getContent() ).doesNotContain( "ex:predicate2" );
+      assertThat( document.content() ).contains( "ex:modified" );
+      assertThat( document.content() ).doesNotContain( "ex:predicate2" );
 
-      assertThat( document.getContent() )
+      assertThat( document.content() )
             .contains( "@base" )
             .contains( "@prefix" )
             .contains( "ex:subject" )
@@ -344,7 +344,7 @@ class TurtleParserServiceTest {
 
       final TSTree tree = parserService.apply( newDocument ).concreteSyntaxTree();
       assertThat( tree.getRootNode().hasError() ).isFalse();
-      assertThat( newDocument.getContent() ).contains( "rdfs:" );
+      assertThat( newDocument.content() ).contains( "rdfs:" );
    }
 
    @Test
@@ -359,14 +359,14 @@ class TurtleParserServiceTest {
 
       final TSTree tree = parserService.apply( document ).concreteSyntaxTree();
       assertThat( tree.getRootNode().hasError() ).isFalse();
-      assertThat( document.getContent() ).endsWith( "object ." );
+      assertThat( document.content() ).endsWith( "object ." );
       assertThat( oldTree.getRootNode().toString() ).isEqualTo( tree.getRootNode().toString() );
    }
 
    void printDocumentAndTree( final Document document, final TSTree tree ) {
       System.out.println( "Document" );
       System.out.println( "--------" );
-      System.out.println( document.getContent() );
+      System.out.println( document.content() );
       System.out.println();
       System.out.println( "Tree" );
       System.out.println( "----" );

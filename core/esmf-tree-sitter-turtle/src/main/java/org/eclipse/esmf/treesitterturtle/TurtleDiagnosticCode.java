@@ -15,12 +15,26 @@ package org.eclipse.esmf.treesitterturtle;
 
 import org.eclipse.esmf.Diagnostic;
 
-public record TurtleDiagnostic(
-      String message,
-      TurtleDiagnosticCode code,
-      Diagnostic.Severity severity
-) implements Diagnostic<TurtleDiagnosticCode> {
-   public TurtleDiagnostic( final String message, final TurtleDiagnosticCode code ) {
-      this( message, code, Severity.ERROR );
+public enum TurtleDiagnosticCode implements Diagnostic.Code {
+   E0000( "No more info available" ),
+   E0001( "Could not load document" ),
+   E0002( "Document validation failed" ),
+   E0003( "Syntax error" ),
+   E0004( "Missing token" );
+
+   private final String description;
+
+   TurtleDiagnosticCode( final String description ) {
+      this.description = description;
+   }
+
+   @Override
+   public String code() {
+      return name();
+   }
+
+   @Override
+   public String description() {
+      return description;
    }
 }

@@ -16,20 +16,24 @@ package org.eclipse.esmf.turtle.languageserver.turtle;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import org.eclipse.esmf.treesitterturtle.TurtleDiagnostic;
-import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
-import org.eclipse.esmf.turtle.languageserver.diagnostic.TurtleDocumentDiagnostic;
+import org.eclipse.esmf.Diagnostic;
+import org.eclipse.esmf.Location;
+import org.eclipse.esmf.treesitterturtle.TurtleDiagnosticCode;
+import org.eclipse.esmf.treesitterturtle.TurtleDocumentDiagnostic;
+import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.DiagnosticReport;
+import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.DiagnosticsProvider;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 
 import org.treesitter.TSNode;
 
-public class TurtleSyntaxDiagnosticsService {
+public class TurtleSyntaxDiagnosticsService implements DiagnosticsProvider {
+   @Override
    public DiagnosticReport validate( final ParsedDocument parsedDocument ) {
       return new DiagnosticReport( checkNode( parsedDocument.concreteSyntaxTree().getRootNode(),
-            parsedDocument.sourceDocument().getUri() ).toList() );
+            parsedDocument.sourceDocument().uri() ).toList() );
    }
 
-   private Stream<TurtleDiagnostic> checkNode( final TSNode node, final String sourceLocation ) {
+   private Stream<Diagnostic<?>> checkNode( final TSNode node, final String sourceLocation ) {
       return Stream.concat( node.isError() || node.isMissing() ? Stream.of( diagnosticForNode( node, sourceLocation ) ) : Stream.empty(),
             IntStream.range( 0, node.getChildCount() ).boxed().map( node::getChild )
                   .flatMap( child -> checkNode( child, sourceLocation ) ) );
@@ -42,9 +46,8 @@ public class TurtleSyntaxDiagnosticsService {
       } else {
          message = "Syntax error";
       }
-      return new TurtleDocumentDiagnostic( message,
-            TurtleDiagnostic.TurtleCode.E0003, sourceLocation,
-            node.getStartPoint().getRow(), node.getStartPoint().getColumn(),
-            node.getEndPoint().getRow(), node.getEndPoint().getColumn() );
+      final Location location = new Location( node.getStartPoint().getRow(), node.getStartPoint().getColumn(), node.getEndPoint().getRow(),
+            node.getEndPoint().getColumn() );
+      return new TurtleDocumentDiagnostic( message, TurtleDiagnosticCode.E0003, sourceLocation, location );
    }
 }

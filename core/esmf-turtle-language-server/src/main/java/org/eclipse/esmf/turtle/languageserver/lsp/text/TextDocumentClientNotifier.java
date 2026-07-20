@@ -15,8 +15,8 @@ package org.eclipse.esmf.turtle.languageserver.lsp.text;
 
 import java.util.List;
 
-import org.eclipse.esmf.turtle.languageserver.aspect.diagnostic.AspectDiagnosticMapper;
-import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
+import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.DiagnosticMapper;
+import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.DiagnosticReport;
 
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.services.LanguageClient;
@@ -26,10 +26,10 @@ import org.slf4j.LoggerFactory;
 public class TextDocumentClientNotifier {
    private static final Logger LOG = LoggerFactory.getLogger( TextDocumentClientNotifier.class );
 
-   private final AspectDiagnosticMapper diagnosticMapper;
+   private final DiagnosticMapper diagnosticMapper;
    private LanguageClient client;
 
-   public TextDocumentClientNotifier( final AspectDiagnosticMapper diagnosticMapper ) {
+   public TextDocumentClientNotifier( final DiagnosticMapper diagnosticMapper ) {
       this.diagnosticMapper = diagnosticMapper;
    }
 
@@ -39,13 +39,14 @@ public class TextDocumentClientNotifier {
 
    public void publishDiagnostics( final Document document, final DiagnosticReport diagnostics ) {
       if ( client == null ) {
-         LOG.warn( "[publishDiagnostics] client is null, skipping for uri={}", document.getUri() );
+         LOG.warn( "[publishDiagnostics] client is null, skipping for URI={}", document.uri() );
          return;
       }
 
-      LOG.debug( "[publish diagnostics] publishing {} diagnostic(s) for uri={}", diagnostics.diagnostics().size(), document.getUri() );
-      client.publishDiagnostics(
-            new PublishDiagnosticsParams( document.getUri(), diagnosticMapper.toDiagnostics( document, diagnostics ) ) );
+      LOG.debug( "[publish diagnostics] publishing {} diagnostic(s) for URI={}", diagnostics.diagnostics().size(), document.uri() );
+      diagnosticMapper.apply( document, diagnostics ).forEach( ( uri, diags ) -> {
+         client.publishDiagnostics( new PublishDiagnosticsParams( uri.toString(), diags ) );
+      } );
    }
 
    public void publishEmptyDiagnostics( final String uri ) {
