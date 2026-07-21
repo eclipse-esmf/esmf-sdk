@@ -15,22 +15,14 @@ package org.eclipse.esmf.turtle.languageserver.turtle;
 
 import static org.eclipse.esmf.aspectmodel.StreamUtil.asSortedMap;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import org.eclipse.esmf.aspectmodel.resolver.EitherStrategy;
-import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
-import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
-import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
-import org.eclipse.esmf.aspectmodel.resolver.fs.FlatModelsRoot;
-import org.eclipse.esmf.aspectmodel.resolver.fs.StructuredModelsRoot;
+import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.treesitterturtle.ParserTokenType;
 import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
-import org.eclipse.esmf.turtle.languageserver.aspect.MetaModelStrategy;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 
 import org.eclipse.lsp4j.Location;
@@ -41,6 +33,7 @@ import org.eclipse.lsp4j.Range;
  * Base class for services that operate on a {@link TurtleSyntaxTree}
  */
 public abstract class TurtleService {
+   private static final List<String> SAMM_PREFIXES = SammNs.sammNamespaces().map( RdfNamespace::getShortForm ).toList();
    protected static final List<String> TYPE_DEFINITION_PREDICATES = List.of( "a", "rdf:type" );
 
    /**
@@ -53,6 +46,16 @@ public abstract class TurtleService {
       final Map<TurtleSyntaxTree.Node, TurtleSyntaxTree.Node> predicateObjectMap = predicateObjectMapForTriple( triple );
       return predicateObjectMap.keySet().stream().map( TurtleSyntaxTree.Node::content )
             .anyMatch( TYPE_DEFINITION_PREDICATES::contains );
+   }
+
+   protected boolean documentIsAspectModel( final ParsedDocument parsedDocument ) {
+      final TurtleSyntaxTree syntaxTree = parsedDocument.turtleSyntaxTree();
+      return syntaxTree.rootNode().children().stream()
+            .filter( n -> ParserTokenType.DIRECTIVE.equals( n.type() ) ).flatMap( n -> n.children().stream() )
+            .filter( n -> ParserTokenType.PREFIX_ID.equals( n.type() ) ).flatMap( n -> n.children().stream() )
+            .filter( n -> ParserTokenType.NAMESPACE.equals( n.type() ) ).flatMap( n -> n.children().stream() )
+            .filter( n -> ParserTokenType.PN_PREFIX.equals( n.type() ) )
+            .anyMatch( n -> SAMM_PREFIXES.contains( n.content() ) );
    }
 
    protected boolean isPrefixedBy( final TurtleSyntaxTree.Node prefixedName, final String prefix ) {
@@ -110,18 +113,5 @@ public abstract class TurtleService {
             new Position( node.location().fromLine(), node.location().fromColumn() ),
             new Position( node.location().toLine(), node.location().toColumn() ) );
       return new Location( parsedDocument.getUri(), range );
-   }
-
-   protected ResolutionStrategy buildResolutionStrategyForDocument( final ParsedDocument parsedDocument ) {
-      final Path openFilePath;
-      try {
-         openFilePath = Path.of( new URI( parsedDocument.getUri() ) );
-      } catch ( final URISyntaxException | IllegalArgumentException exception ) {
-         throw new ModelResolutionException( "Failed to parse URI: " + parsedDocument.getUri(), exception );
-      }
-      return new EitherStrategy(
-            new FileSystemStrategy( new StructuredModelsRoot( openFilePath.getParent().getParent().getParent() ) ),
-            new FileSystemStrategy( new FlatModelsRoot( openFilePath.getParent() ) ),
-            new MetaModelStrategy() );
    }
 }

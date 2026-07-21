@@ -1,17 +1,8 @@
 /*
- * Copyright (c) 2026 Robert Bosch Manufacturing Solutions GmbH
- *
- * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship.
- *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at https://mozilla.org/MPL/2.0/.
- *
- * SPDX-License-Identifier: MPL-2.0
+ * Copyright (c) 2026 Robert Bosch Manufacturing Solutions GmbH, Germany. All rights reserved.
  */
 
-package org.eclipse.esmf.turtle.languageserver.turtle.navigation;
+package org.eclipse.esmf.turtle.languageserver.aspect.navigation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,7 +24,7 @@ import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 
 @SuppressWarnings( { "HttpUrlsUsage" } )
-class TurtleCrossFileDefinitionServiceTest {
+class AspectCrossFileDefinitionServiceTest {
 
    private TreeSitterTurtleParserService parserService;
 
@@ -75,7 +66,7 @@ class TurtleCrossFileDefinitionServiceTest {
       final Document document = new Document( aspectPath.toUri().toString(), referencingContent );
       final ParsedDocument parsedDocument = parserService.apply( document );
 
-      final TurtleCrossFileDefinitionService resolver = new TurtleCrossFileDefinitionService(
+      final AspectCrossFileDefinitionService resolver = new AspectCrossFileDefinitionService(
             parserService,
             Map.of() );
 
@@ -110,7 +101,7 @@ class TurtleCrossFileDefinitionServiceTest {
       final Document document = new Document( aspectPath.toUri().toString(), referencingContent );
       final ParsedDocument parsedDocument = parserService.apply( document );
 
-      final TurtleCrossFileDefinitionService resolver = new TurtleCrossFileDefinitionService(
+      final AspectCrossFileDefinitionService resolver = new AspectCrossFileDefinitionService(
             parserService,
             Map.of() );
 
@@ -143,7 +134,7 @@ class TurtleCrossFileDefinitionServiceTest {
       final ParsedDocument parsedDocument = parserService.apply(
             new Document( "file:///workspace/MyAspect.ttl", referencingContent ) );
 
-      final TurtleCrossFileDefinitionService resolver = new TurtleCrossFileDefinitionService(
+      final AspectCrossFileDefinitionService resolver = new AspectCrossFileDefinitionService(
             parserService,
             Map.of() );
 
@@ -169,7 +160,7 @@ class TurtleCrossFileDefinitionServiceTest {
       final ParsedDocument parsedDocument = parserService.apply(
             new Document( "file:///workspace/Quantity.ttl", content ) );
 
-      final TurtleCrossFileDefinitionService resolver = new TurtleCrossFileDefinitionService(
+      final AspectCrossFileDefinitionService resolver = new AspectCrossFileDefinitionService(
             parserService,
             Map.of() );
 
