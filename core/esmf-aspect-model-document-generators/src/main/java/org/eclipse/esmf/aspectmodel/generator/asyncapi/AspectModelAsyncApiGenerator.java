@@ -151,32 +151,20 @@ public class AspectModelAsyncApiGenerator extends JsonGenerator<Aspect, AsyncApi
       if ( config.channelAddress() != null && !config.channelAddress().isBlank() ) {
          return config.channelAddress();
       }
-      final String derivedAddress = String.format( "/%s/%s/%s", urn.getNamespaceMainPart(), urn.getVersion(), aspect.getName() );
-      return config.hasFeature( AsyncApiGenerationFeature.ADD_TENANT_ID_IN_CHANNEL_PARAMETERS )
-            ? TENANT_ID_PATH_SEGMENT + derivedAddress
-            : derivedAddress;
+      return TENANT_ID_PATH_SEGMENT
+            + String.format( "/%s/%s/%s", urn.getNamespaceMainPart(), urn.getVersion(), aspect.getName() );
    }
 
    private ObjectNode buildChannelParameters( final Aspect aspect, final AspectModelUrn urn, final String address ) {
-      final boolean expand = config.hasFeature( AsyncApiGenerationFeature.EXPAND_CHANNEL_PARAMETERS );
       final ObjectNode parametersNode = FACTORY.objectNode();
-      setParameter( parametersNode, "namespace", "The namespace of the Aspect Model.", urn.getNamespaceMainPart(), expand );
-      setParameter( parametersNode, "version", "The version of the Aspect Model.", urn.getVersion(), expand );
-      setParameter( parametersNode, "aspect-name", "The name of the Aspect.", aspect.getName(), expand );
+      parametersNode.set( "namespace", buildParameterObject( "The namespace of the Aspect Model.", urn.getNamespaceMainPart() ) );
+      parametersNode.set( "version", buildParameterObject( "The version of the Aspect Model.", urn.getVersion() ) );
+      parametersNode.set( "aspect-name", buildParameterObject( "The name of the Aspect.", aspect.getName() ) );
 
-      if ( config.hasFeature( AsyncApiGenerationFeature.ADD_TENANT_ID_IN_CHANNEL_PARAMETERS ) && address.contains( TENANT_ID_PLACEHOLDER ) ) {
+      if ( address.contains( TENANT_ID_PLACEHOLDER ) ) {
          parametersNode.set( TENANT_ID_PARAMETER, buildParameterObject( TENANT_ID_DESCRIPTION, null ) );
       }
       return parametersNode;
-   }
-
-   private void setParameter( final ObjectNode parametersNode, final String name, final String description,
-         final String value, final boolean asObject ) {
-      if ( asObject ) {
-         parametersNode.set( name, buildParameterObject( description, value ) );
-      } else {
-         parametersNode.put( name, value );
-      }
    }
 
    private ObjectNode buildParameterObject( final String description, final String defaultValue ) {

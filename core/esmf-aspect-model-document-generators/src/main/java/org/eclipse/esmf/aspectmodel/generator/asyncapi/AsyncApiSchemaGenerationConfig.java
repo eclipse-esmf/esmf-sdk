@@ -14,7 +14,6 @@
 package org.eclipse.esmf.aspectmodel.generator.asyncapi;
 
 import java.util.Locale;
-import java.util.Set;
 
 import org.eclipse.esmf.aspectmodel.generator.GenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.JsonGenerationConfig;
@@ -29,27 +28,17 @@ import io.soabase.recordbuilder.core.RecordBuilder;
  *        be used as the version of the API.
  * @param applicationId for setup id parameter in the spec.
  * @param channelAddress the channel address for providing channel address.
- * @param features the optional generation behaviors to enable, see {@link AsyncApiGenerationFeature}. An empty
- *        set (the default) leaves generator output unchanged.
  */
 @RecordBuilder
 public record AsyncApiSchemaGenerationConfig(
       Locale locale,
       boolean useSemanticVersion,
       String applicationId,
-      String channelAddress,
-      Set<AsyncApiGenerationFeature> features
+      String channelAddress
 ) implements JsonGenerationConfig {
    public AsyncApiSchemaGenerationConfig {
       if ( locale == null ) {
          locale = Locale.ENGLISH;
       }
-      if ( features == null ) {
-         features = Set.of();
-      }
-   }
-
-   public boolean hasFeature( final AsyncApiGenerationFeature feature ) {
-      return features.contains( feature );
    }
 }

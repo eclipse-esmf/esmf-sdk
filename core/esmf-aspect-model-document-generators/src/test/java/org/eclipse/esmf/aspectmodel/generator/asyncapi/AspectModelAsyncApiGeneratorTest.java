@@ -15,9 +15,7 @@ package org.eclipse.esmf.aspectmodel.generator.asyncapi;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
-import java.util.EnumSet;
 import java.util.Locale;
-import java.util.Set;
 
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.test.TestAspect;
@@ -61,9 +59,18 @@ class AspectModelAsyncApiGeneratorTest {
                            "address": "123/456/test/1.0.0/TestAspect",
                            "description": "Channel for updating Aspect Aspect.",
                            "parameters": {
-                              "namespace": "org.eclipse.esmf.test",
-                              "version": "1.0.0",
-                              "aspect-name": "Aspect"
+                              "namespace": {
+                                 "description": "The namespace of the Aspect Model.",
+                                 "default": "org.eclipse.esmf.test"
+                              },
+                              "version": {
+                                 "description": "The version of the Aspect Model.",
+                                 "default": "1.0.0"
+                              },
+                              "aspect-name": {
+                                 "description": "The name of the Aspect.",
+                                 "default": "Aspect"
+                              }
                            },
                            "messages": {}
                         }
@@ -115,9 +122,18 @@ class AspectModelAsyncApiGeneratorTest {
                         "address": "123/456/test/1.0.0/TestAspect",
                         "description": "Channel for updating AspectWithEvent Aspect.",
                         "parameters": {
-                           "namespace": "org.eclipse.esmf.test",
-                           "version": "1.0.0",
-                           "aspect-name": "AspectWithEvent"
+                           "namespace": {
+                              "description": "The namespace of the Aspect Model.",
+                              "default": "org.eclipse.esmf.test"
+                           },
+                           "version": {
+                              "description": "The version of the Aspect Model.",
+                              "default": "1.0.0"
+                           },
+                           "aspect-name": {
+                              "description": "The name of the Aspect.",
+                              "default": "AspectWithEvent"
+                           }
                         },
                         "messages": {
                            "SomeEvent": {
@@ -194,9 +210,18 @@ class AspectModelAsyncApiGeneratorTest {
                          "address" : "123/456/test/1.0.0/TestAspect",
                          "description" : "Channel for updating AspectWithOperation Aspect.",
                          "parameters" : {
-                           "namespace" : "org.eclipse.esmf.test",
-                           "version" : "1.0.0",
-                           "aspect-name" : "AspectWithOperation"
+                           "namespace" : {
+                             "description" : "The namespace of the Aspect Model.",
+                             "default" : "org.eclipse.esmf.test"
+                           },
+                           "version" : {
+                             "description" : "The version of the Aspect Model.",
+                             "default" : "1.0.0"
+                           },
+                           "aspect-name" : {
+                             "description" : "The name of the Aspect.",
+                             "default" : "AspectWithOperation"
+                           }
                          },
                          "messages" : {
                            "testOperationRequest" : {
@@ -337,9 +362,18 @@ class AspectModelAsyncApiGeneratorTest {
                       "address" : "123/456/test/1.0.0/TestAspect",
                       "description" : "Channel for updating AspectWithEventAndEntityProperty Aspect.",
                       "parameters" : {
-                        "namespace" : "org.eclipse.esmf.test",
-                        "version" : "1.0.0",
-                        "aspect-name" : "AspectWithEventAndEntityProperty"
+                        "namespace" : {
+                          "description" : "The namespace of the Aspect Model.",
+                          "default" : "org.eclipse.esmf.test"
+                        },
+                        "version" : {
+                          "description" : "The version of the Aspect Model.",
+                          "default" : "1.0.0"
+                        },
+                        "aspect-name" : {
+                          "description" : "The name of the Aspect.",
+                          "default" : "AspectWithEventAndEntityProperty"
+                        }
                       },
                       "messages" : {
                         "EntityEvent" : {
@@ -430,40 +464,10 @@ class AspectModelAsyncApiGeneratorTest {
    }
 
    @Test
-   void testAsyncApiGeneratorDefaultChannelAddressWithoutFeatureFlags() throws IOException {
+   void testAsyncApiGeneratorDefaultChannelAddressIncludesTenantIdAndExpandedParameters() throws IOException {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT ).aspect();
       final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( false )
-            .locale( Locale.ENGLISH )
-            .build();
-      final AsyncApiSchemaArtifact asyncSpec = new AspectModelAsyncApiGenerator( aspect, config ).singleResult();
-      final JsonNode json = asyncSpec.getContent();
-
-      final JsonNode expectedChannels = OBJECT_MAPPER.readTree(
-            """
-                  {
-                     "Aspect": {
-                        "address": "/org.eclipse.esmf.test/1.0.0/Aspect",
-                        "description": "Channel for updating Aspect Aspect.",
-                        "parameters": {
-                           "namespace": "org.eclipse.esmf.test",
-                           "version": "1.0.0",
-                           "aspect-name": "Aspect"
-                        },
-                        "messages": {}
-                     }
-                  }
-               """ );
-
-      assertThat( json.get( "channels" ) ).isEqualTo( expectedChannels );
-   }
-
-   @Test
-   void testAsyncApiGeneratorAddTenantIdInParametersPrefixesDerivedAddress() throws IOException {
-      final Aspect aspect = TestResources.load( TestAspect.ASPECT ).aspect();
-      final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
-            .useSemanticVersion( false )
-            .features( Set.of( AsyncApiGenerationFeature.ADD_TENANT_ID_IN_CHANNEL_PARAMETERS ) )
             .locale( Locale.ENGLISH )
             .build();
       final AsyncApiSchemaArtifact asyncSpec = new AspectModelAsyncApiGenerator( aspect, config ).singleResult();
@@ -476,9 +480,18 @@ class AspectModelAsyncApiGeneratorTest {
                         "address": "/{tenant-id}/org.eclipse.esmf.test/1.0.0/Aspect",
                         "description": "Channel for updating Aspect Aspect.",
                         "parameters": {
-                           "namespace": "org.eclipse.esmf.test",
-                           "version": "1.0.0",
-                           "aspect-name": "Aspect",
+                           "namespace": {
+                              "description": "The namespace of the Aspect Model.",
+                              "default": "org.eclipse.esmf.test"
+                           },
+                           "version": {
+                              "description": "The version of the Aspect Model.",
+                              "default": "1.0.0"
+                           },
+                           "aspect-name": {
+                              "description": "The name of the Aspect.",
+                              "default": "Aspect"
+                           },
                            "tenant-id": {
                               "description": "The ID of the tenant owning the requested Twin."
                            }
@@ -497,7 +510,6 @@ class AspectModelAsyncApiGeneratorTest {
       final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( false )
             .channelAddress( "/{tenant-id}/custom/path" )
-            .features( Set.of( AsyncApiGenerationFeature.ADD_TENANT_ID_IN_CHANNEL_PARAMETERS ) )
             .locale( Locale.ENGLISH )
             .build();
       final AsyncApiSchemaArtifact asyncSpec = new AspectModelAsyncApiGenerator( aspect, config ).singleResult();
@@ -510,9 +522,18 @@ class AspectModelAsyncApiGeneratorTest {
                         "address": "/{tenant-id}/custom/path",
                         "description": "Channel for updating Aspect Aspect.",
                         "parameters": {
-                           "namespace": "org.eclipse.esmf.test",
-                           "version": "1.0.0",
-                           "aspect-name": "Aspect",
+                           "namespace": {
+                              "description": "The namespace of the Aspect Model.",
+                              "default": "org.eclipse.esmf.test"
+                           },
+                           "version": {
+                              "description": "The version of the Aspect Model.",
+                              "default": "1.0.0"
+                           },
+                           "aspect-name": {
+                              "description": "The name of the Aspect.",
+                              "default": "Aspect"
+                           },
                            "tenant-id": {
                               "description": "The ID of the tenant owning the requested Twin."
                            }
@@ -531,38 +552,6 @@ class AspectModelAsyncApiGeneratorTest {
       final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( false )
             .channelAddress( CHANNEL_ADDRESS )
-            .features( Set.of( AsyncApiGenerationFeature.ADD_TENANT_ID_IN_CHANNEL_PARAMETERS ) )
-            .locale( Locale.ENGLISH )
-            .build();
-      final AsyncApiSchemaArtifact asyncSpec = new AspectModelAsyncApiGenerator( aspect, config ).singleResult();
-      final JsonNode json = asyncSpec.getContent();
-
-      final JsonNode expectedChannels = OBJECT_MAPPER.readTree(
-            """
-                  {
-                     "Aspect": {
-                        "address": "123/456/test/1.0.0/TestAspect",
-                        "description": "Channel for updating Aspect Aspect.",
-                        "parameters": {
-                           "namespace": "org.eclipse.esmf.test",
-                           "version": "1.0.0",
-                           "aspect-name": "Aspect"
-                        },
-                        "messages": {}
-                     }
-                  }
-               """ );
-
-      assertThat( json.get( "channels" ) ).isEqualTo( expectedChannels );
-   }
-
-   @Test
-   void testAsyncApiGeneratorExpandChannelAddressParameters() throws IOException {
-      final Aspect aspect = TestResources.load( TestAspect.ASPECT ).aspect();
-      final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
-            .useSemanticVersion( false )
-            .channelAddress( CHANNEL_ADDRESS )
-            .features( Set.of( AsyncApiGenerationFeature.EXPAND_CHANNEL_PARAMETERS ) )
             .locale( Locale.ENGLISH )
             .build();
       final AsyncApiSchemaArtifact asyncSpec = new AspectModelAsyncApiGenerator( aspect, config ).singleResult();
@@ -586,48 +575,6 @@ class AspectModelAsyncApiGeneratorTest {
                            "aspect-name": {
                               "description": "The name of the Aspect.",
                               "default": "Aspect"
-                           }
-                        },
-                        "messages": {}
-                     }
-                  }
-               """ );
-
-      assertThat( json.get( "channels" ) ).isEqualTo( expectedChannels );
-   }
-
-   @Test
-   void testAsyncApiGeneratorBothFeatureFlagsCombined() throws IOException {
-      final Aspect aspect = TestResources.load( TestAspect.ASPECT ).aspect();
-      final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
-            .useSemanticVersion( false )
-            .features( EnumSet.of( AsyncApiGenerationFeature.ADD_TENANT_ID_IN_CHANNEL_PARAMETERS, AsyncApiGenerationFeature.EXPAND_CHANNEL_PARAMETERS ) )
-            .locale( Locale.ENGLISH )
-            .build();
-      final AsyncApiSchemaArtifact asyncSpec = new AspectModelAsyncApiGenerator( aspect, config ).singleResult();
-      final JsonNode json = asyncSpec.getContent();
-
-      final JsonNode expectedChannels = OBJECT_MAPPER.readTree(
-            """
-                  {
-                     "Aspect": {
-                        "address": "/{tenant-id}/org.eclipse.esmf.test/1.0.0/Aspect",
-                        "description": "Channel for updating Aspect Aspect.",
-                        "parameters": {
-                           "namespace": {
-                              "description": "The namespace of the Aspect Model.",
-                              "default": "org.eclipse.esmf.test"
-                           },
-                           "version": {
-                              "description": "The version of the Aspect Model.",
-                              "default": "1.0.0"
-                           },
-                           "aspect-name": {
-                              "description": "The name of the Aspect.",
-                              "default": "Aspect"
-                           },
-                           "tenant-id": {
-                              "description": "The ID of the tenant owning the requested Twin."
                            }
                         },
                         "messages": {}

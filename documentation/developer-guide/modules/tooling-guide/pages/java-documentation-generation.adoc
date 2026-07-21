@@ -218,12 +218,3 @@ include::example$GenerateAsyncApi.java[tags=generateYaml]
 ----
 include::example$GenerateAsyncApi.java[tags=generateJson]
 ----
-
-.Generate AsyncAPI with optional features
-[source,java,indent=0,subs="+macros,+quotes"]
-----
-include::example$GenerateAsyncApi.java[tags=generateWithFeatures]
-----
-
-See xref:samm-cli.adoc#aspect-to-asyncapi[the SAMM CLI reference] for the full list of available feature
-flags and their effect on the generated specification.

@@ -20,18 +20,15 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.EnumSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.ResolverConfigurationMixin;
 import org.eclipse.esmf.aspect.AspectToCommand;
 import org.eclipse.esmf.aspectmodel.generator.asyncapi.AspectModelAsyncApiGenerator;
-import org.eclipse.esmf.aspectmodel.generator.asyncapi.AsyncApiGenerationFeature;
 import org.eclipse.esmf.aspectmodel.generator.asyncapi.AsyncApiSchemaArtifact;
 import org.eclipse.esmf.aspectmodel.generator.asyncapi.AsyncApiSchemaGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.asyncapi.AsyncApiSchemaGenerationConfigBuilder;
@@ -78,12 +75,6 @@ public class AspectToAsyncapiCommand extends AbstractCommand {
       description = "Use this param make possible provide channel address." )
    private String channelAddress;
 
-   @CommandLine.Option(
-      names = { "--feature-flags", "-ff" },
-      split = ",",
-      description = "Enable optional AsyncAPI generation behaviors. Valid values: ${COMPLETION-CANDIDATES}" )
-   private Set<AsyncApiGenerationFeature> featureFlags = EnumSet.noneOf( AsyncApiGenerationFeature.class );
-
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
       names = { "--semantic-version", "-sv" },
@@ -126,7 +117,6 @@ public class AspectToAsyncapiCommand extends AbstractCommand {
             .useSemanticVersion( useSemanticApiVersion )
             .applicationId( applicationId == null ? null : applicationId.toString() )
             .channelAddress( channelAddress )
-            .features( featureFlags )
             .locale( locale )
             .build();
       final AsyncApiSchemaArtifact asyncApiSpec = new AspectModelAsyncApiGenerator( aspect, config ).singleResult();
