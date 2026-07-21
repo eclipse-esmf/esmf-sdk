@@ -288,13 +288,16 @@ class AspectModelAsyncApiGeneratorTest {
                                  {
                                       "testOperationRequest" : {
                                         "title" : "First Test Operation",
-                                        "allOf" : [ {
-                                          "description" : "Description of a text property that is used for input",
-                                          "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#input",
-                                          "allOf" : [ {
-                                            "$ref" : "#/components/schemas/Text"
-                                          } ]
-                                        } ]
+                                        "type" : "object",
+                                        "properties" : {
+                                          "input" : {
+                                            "description" : "Description of a text property that is used for input",
+                                            "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#input",
+                                            "allOf" : [ {
+                                              "$ref" : "#/components/schemas/Text"
+                                            } ]
+                                          }
+                                        }
                                       },
                                       "testOperationResponse" : {
                                         "description" : "Description of a text property that is used for output",
@@ -305,19 +308,23 @@ class AspectModelAsyncApiGeneratorTest {
                                       },
                                       "testOperationTwoRequest" : {
                                         "title" : "Second Test Operation",
-                                        "allOf" : [ {
-                                          "description" : "Description of a text property that is used for input",
-                                          "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#input",
-                                          "allOf" : [ {
-                                            "$ref" : "#/components/schemas/Text"
-                                          } ]
-                                        }, {
-                                          "description" : "Description of a second text property that is used for input",
-                                          "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#input2",
-                                          "allOf" : [ {
-                                            "$ref" : "#/components/schemas/Text"
-                                          } ]
-                                        } ]
+                                        "type" : "object",
+                                        "properties" : {
+                                          "input" : {
+                                            "description" : "Description of a text property that is used for input",
+                                            "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#input",
+                                            "allOf" : [ {
+                                              "$ref" : "#/components/schemas/Text"
+                                            } ]
+                                          },
+                                          "input2" : {
+                                            "description" : "Description of a second text property that is used for input",
+                                            "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#input2",
+                                            "allOf" : [ {
+                                              "$ref" : "#/components/schemas/Text"
+                                            } ]
+                                          }
+                                        }
                                       },
                                       "testOperationTwoResponse" : {
                                         "description" : "Description of a text property that is used for output",

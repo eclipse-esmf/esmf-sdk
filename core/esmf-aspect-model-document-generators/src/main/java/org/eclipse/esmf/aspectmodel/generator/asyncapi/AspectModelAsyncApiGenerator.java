@@ -12,16 +12,8 @@
  */
 package org.eclipse.esmf.aspectmodel.generator.asyncapi;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.stream.Stream;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-
 import org.eclipse.esmf.aspectmodel.VersionNumber;
 import org.eclipse.esmf.aspectmodel.generator.JsonGenerator;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
@@ -33,14 +25,19 @@ import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Event;
 import org.eclipse.esmf.metamodel.Operation;
 import org.eclipse.esmf.metamodel.Property;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.node.ArrayNode;
 import tools.jackson.databind.node.JsonNodeFactory;
 import tools.jackson.databind.node.ObjectNode;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public class AspectModelAsyncApiGenerator extends JsonGenerator<Aspect, AsyncApiSchemaGenerationConfig, JsonNode, AsyncApiSchemaArtifact> {
    public static final AsyncApiSchemaGenerationConfig DEFAULT_CONFIG = AsyncApiSchemaGenerationConfigBuilder.builder().build();
@@ -67,6 +64,9 @@ public class AspectModelAsyncApiGenerator extends JsonGenerator<Aspect, AsyncApi
    private static final String CONTENT_TYPE_FIELD = "contentType";
    private static final String PAYLOAD_FIELD = "payload";
    private static final String DEFAULT_FIELD = "default";
+   private static final String TYPE_FIELD = "type";
+   private static final String TYPE_OBJECT = "object";
+   private static final String PROPERTIES_FIELD = "properties";
 
    private static final String TENANT_ID_PLACEHOLDER = "{tenant-id}";
    private static final String TENANT_ID_PATH_SEGMENT = "/" + TENANT_ID_PLACEHOLDER;
@@ -327,10 +327,13 @@ public class AspectModelAsyncApiGenerator extends JsonGenerator<Aspect, AsyncApi
 
       final ObjectNode requestComponentSchema = schemasNode.putObject( requestComponentName );
       requestComponentSchema.put( TITLE_FIELD, operation.getPreferredName( locale ) );
-      final ArrayNode messageArrayNode = requestComponentSchema.putArray( "allOf" );
+      requestComponentSchema.put( TYPE_FIELD, TYPE_OBJECT );
+
+      final ObjectNode propertiesNode = FACTORY.objectNode();
       for ( final Property input : operation.getInput() ) {
-         messageArrayNode.add( input.accept( schemaVisitor, null ) );
+         propertiesNode.set( input.getPayloadName(), input.accept( schemaVisitor, null ) );
       }
+      requestComponentSchema.set( PROPERTIES_FIELD, propertiesNode );
    }
 
    private void addOperationResponseComponent( final ObjectNode messagesNode, final ObjectNode schemasNode,
