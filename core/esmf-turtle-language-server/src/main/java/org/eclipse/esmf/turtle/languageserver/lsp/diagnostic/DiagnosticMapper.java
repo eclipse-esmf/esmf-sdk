@@ -38,6 +38,9 @@ public final class DiagnosticMapper {
 
    public Map<URI, List<Diagnostic>> apply( final Document sourceDocument, final DiagnosticReport report ) {
       final Map<URI, List<Diagnostic>> result = new HashMap<>();
+      // Always include empty diagnostics for sourceDocument, otherwise LSP client does not clear old but
+      // fixed findings
+      result.put( URI.create( sourceDocument.uri() ), new ArrayList<>() );
       for ( final org.eclipse.esmf.Diagnostic<?> lspDiagnostic : report.diagnostics() ) {
          final Diagnostic diagnostic = new Diagnostic();
          diagnostic.setSeverity( toDiagnosticSeverity( lspDiagnostic.severity() ) );
@@ -59,7 +62,7 @@ public final class DiagnosticMapper {
          } else {
             diagnostic.setRange( FALLBACK );
          }
-         result.computeIfAbsent( URI.create( sourceDocument.uri() ), _ -> new ArrayList<>() ).add( diagnostic );
+         result.get( URI.create( sourceDocument.uri() ) ).add( diagnostic );
       }
       return result;
    }
