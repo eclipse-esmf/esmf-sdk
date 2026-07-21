@@ -32,7 +32,7 @@ import org.eclipse.esmf.aspectmodel.resolver.modelfile.MetaModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFileBuilder;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.urn.ElementType;
-import org.eclipse.esmf.turtle.languageserver.turtle.navigation.ExternalModelFileCache;
+import org.eclipse.esmf.turtle.languageserver.aspect.navigation.ExternalModelFileCache;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;

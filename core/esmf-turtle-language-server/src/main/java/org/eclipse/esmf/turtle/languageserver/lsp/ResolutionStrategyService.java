@@ -25,7 +25,7 @@ import org.eclipse.esmf.turtle.languageserver.aspect.MetaModelStrategy;
 import org.eclipse.esmf.turtle.languageserver.lsp.config.LspModelResolutionConfigurationParser;
 import org.eclipse.esmf.turtle.languageserver.lsp.config.GithubResolutionConfiguration;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
-import org.eclipse.esmf.turtle.languageserver.turtle.navigation.GithubMaterializingStrategy;
+import org.eclipse.esmf.turtle.languageserver.aspect.navigation.GithubMaterializingStrategy;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

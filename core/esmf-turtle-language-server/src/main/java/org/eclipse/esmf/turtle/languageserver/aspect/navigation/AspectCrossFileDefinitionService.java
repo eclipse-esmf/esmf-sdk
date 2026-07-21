@@ -1,17 +1,8 @@
 /*
- * Copyright (c) 2026 Robert Bosch Manufacturing Solutions GmbH
- *
- * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship.
- *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at https://mozilla.org/MPL/2.0/.
- *
- * SPDX-License-Identifier: MPL-2.0
+ * Copyright (c) 2026 Robert Bosch Manufacturing Solutions GmbH, Germany. All rights reserved.
  */
 
-package org.eclipse.esmf.turtle.languageserver.turtle.navigation;
+package org.eclipse.esmf.turtle.languageserver.aspect.navigation;
 
 import java.io.IOException;
 import java.net.URI;
@@ -61,21 +52,21 @@ import org.slf4j.LoggerFactory;
  * strategies in the future (e.g. a GitHub-based strategy) by wrapping them in an
  * {@link org.eclipse.esmf.aspectmodel.resolver.EitherStrategy}.
  */
-public class TurtleCrossFileDefinitionService extends TurtleService {
-   private static final Logger LOG = LoggerFactory.getLogger( TurtleCrossFileDefinitionService.class );
+public class AspectCrossFileDefinitionService extends TurtleService {
+   private static final Logger LOG = LoggerFactory.getLogger( AspectCrossFileDefinitionService.class );
    private static final ResolutionStrategySupport RESOLUTION_SUPPORT = new AspectModelLoader();
 
    private final TreeSitterTurtleParserService parserService;
    private final Map<String, Document> openDocuments;
    private final ResolutionStrategyService resolutionStrategyService;
 
-   public TurtleCrossFileDefinitionService(
+   public AspectCrossFileDefinitionService(
          final TreeSitterTurtleParserService parserService,
          final Map<String, Document> openDocuments ) {
       this( parserService, openDocuments, new ResolutionStrategyService() );
    }
 
-   public TurtleCrossFileDefinitionService(
+   public AspectCrossFileDefinitionService(
          final TreeSitterTurtleParserService parserService,
          final Map<String, Document> openDocuments,
          final ResolutionStrategyService resolutionStrategyService ) {
@@ -85,6 +76,10 @@ public class TurtleCrossFileDefinitionService extends TurtleService {
    }
 
    public Optional<Location> findDefinition( final ParsedDocument parsedDocument, final Position position ) {
+      if ( !documentIsAspectModel( parsedDocument ) ) {
+         return Optional.empty();
+      }
+
       final TurtleSyntaxTree tree = parsedDocument.turtleSyntaxTree();
       final TurtleSyntaxTree.Node prefixedName = tree.findMatchingTreeSitterToken(
             List.of( ParserTokenType.PREFIXED_NAME ), position.getLine(), position.getCharacter() );
