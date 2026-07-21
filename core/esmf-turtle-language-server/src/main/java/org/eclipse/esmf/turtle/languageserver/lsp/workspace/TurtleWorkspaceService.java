@@ -19,11 +19,23 @@ import org.eclipse.lsp4j.services.WorkspaceService;
 
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TurtleTextDocumentService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class TurtleWorkspaceService implements WorkspaceService {
-   public TurtleWorkspaceService( final TurtleTextDocumentService textDocumentService ) {}
+   private static final Logger LOG = LoggerFactory.getLogger( TurtleWorkspaceService.class );
+
+   private final TurtleTextDocumentService textDocumentService;
+
+   public TurtleWorkspaceService( final TurtleTextDocumentService textDocumentService ) {
+      this.textDocumentService = textDocumentService;
+   }
 
    @Override
-   public void didChangeConfiguration( final DidChangeConfigurationParams params ) {}
+   public void didChangeConfiguration( final DidChangeConfigurationParams params ) {
+      LOG.debug( "[didChangeConfiguration] received configuration change notification" );
+      textDocumentService.resolutionStrategyService().applyConfigurationChange( params.getSettings() );
+   }
 
    @Override
    public void didChangeWatchedFiles( final DidChangeWatchedFilesParams params ) {}

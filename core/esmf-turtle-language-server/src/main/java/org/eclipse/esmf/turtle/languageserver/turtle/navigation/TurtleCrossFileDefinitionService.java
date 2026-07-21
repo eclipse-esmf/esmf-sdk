@@ -30,6 +30,7 @@ import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.treesitterturtle.ParserTokenType;
 import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
+import org.eclipse.esmf.turtle.languageserver.lsp.ResolutionStrategyService;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TreeSitterTurtleParserService;
@@ -66,12 +67,21 @@ public class TurtleCrossFileDefinitionService extends TurtleService {
 
    private final TreeSitterTurtleParserService parserService;
    private final Map<String, Document> openDocuments;
+   private final ResolutionStrategyService resolutionStrategyService;
 
    public TurtleCrossFileDefinitionService(
          final TreeSitterTurtleParserService parserService,
          final Map<String, Document> openDocuments ) {
+      this( parserService, openDocuments, new ResolutionStrategyService() );
+   }
+
+   public TurtleCrossFileDefinitionService(
+         final TreeSitterTurtleParserService parserService,
+         final Map<String, Document> openDocuments,
+         final ResolutionStrategyService resolutionStrategyService ) {
       this.parserService = parserService;
       this.openDocuments = openDocuments;
+      this.resolutionStrategyService = resolutionStrategyService;
    }
 
    public Optional<Location> findDefinition( final ParsedDocument parsedDocument, final Position position ) {
@@ -160,11 +170,13 @@ public class TurtleCrossFileDefinitionService extends TurtleService {
 
    Optional<Path> resolveFilePath( final ParsedDocument parsedDocument, final AspectModelUrn urn ) {
       try {
-         final URI sourceUri = buildResolutionStrategyForDocument( parsedDocument ).apply( urn, RESOLUTION_SUPPORT )
-               .sourceLocation()
-               .orElseThrow( () -> new ModelResolutionException( "No source location in resolved file for " + urn ) );
+         final URI sourceUri =
+               resolutionStrategyService.buildResolutionStrategyForDocument( parsedDocument ).apply( urn, RESOLUTION_SUPPORT )
+                     .sourceLocation()
+                     .orElseThrow( () -> new ModelResolutionException( "No source location in resolved file for " + urn ) );
          return Optional.of( Paths.get( sourceUri ) );
-      } catch ( final ModelResolutionException e ) {
+      } catch ( final ModelResolutionException | IllegalArgumentException e ) {
+         LOG.debug( "[cross-file] could not resolve {} to a local file: {}", urn, e.getMessage() );
          return Optional.empty();
       }
    }

@@ -22,9 +22,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.eclipse.esmf.turtle.languageserver.lsp.ResolutionStrategyService;
 import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.DiagnosticMapper;
 import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.DiagnosticReport;
 import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.DiagnosticsProvider;
+import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.ResolutionStrategyAwareDiagnosticsProvider;
 import org.eclipse.esmf.turtle.languageserver.structure.DocumentSymbolService;
 import org.eclipse.esmf.turtle.languageserver.structure.TurtleTokenService;
 import org.eclipse.esmf.turtle.languageserver.turtle.TurtleCompletionService;
@@ -67,6 +69,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
    private final TreeSitterTurtleParserService turtleParserService;
    private final TurtleTokenService tokenService;
    private final DocumentSymbolService documentSymbolService;
+   private final ResolutionStrategyService resolutionStrategyService = new ResolutionStrategyService();
    private final Map<String, Document> documents = new ConcurrentHashMap<>();
    private final ExecutorService asyncExecutor = Executors.newCachedThreadPool(
          r -> {
@@ -81,15 +84,24 @@ public class TurtleTextDocumentService implements TextDocumentService {
       turtleCompletionService = new TurtleCompletionService();
       turtleParserService = new TreeSitterTurtleParserService();
       tokenService = new TurtleTokenService( turtleParserService );
-      turtleCrossFileDefinitionService = new TurtleCrossFileDefinitionService( turtleParserService, documents );
+      turtleCrossFileDefinitionService = new TurtleCrossFileDefinitionService( turtleParserService, documents, resolutionStrategyService );
       documentSymbolService = new DocumentSymbolService( turtleParserService );
       final List<DiagnosticsProvider> diagnosticsProviders =
             Streams.stream( ServiceLoader.load( DiagnosticsProvider.class ).iterator() ).toList();
+      diagnosticsProviders.forEach( provider -> {
+         if ( provider instanceof ResolutionStrategyAwareDiagnosticsProvider aware ) {
+            aware.setResolutionStrategyService( resolutionStrategyService );
+         }
+      } );
       validationCoordinator = new ValidationCoordinator( diagnosticsProviders, clientNotifier::publishDiagnostics );
    }
 
    public void connect( final LanguageClient client ) {
       clientNotifier.connect( client );
+   }
+
+   public ResolutionStrategyService resolutionStrategyService() {
+      return resolutionStrategyService;
    }
 
    public void shutdown() {

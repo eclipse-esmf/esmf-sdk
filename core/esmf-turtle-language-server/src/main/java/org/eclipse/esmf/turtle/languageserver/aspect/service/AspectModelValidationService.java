@@ -16,8 +16,6 @@ package org.eclipse.esmf.turtle.languageserver.aspect.service;
 import java.net.URI;
 import java.util.List;
 
-import org.apache.jena.riot.RiotException;
-
 import org.eclipse.esmf.aspectmodel.ValueParsingException;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelFileLoader;
@@ -31,28 +29,37 @@ import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.treesitterturtle.ParserTokenType;
 import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
-import org.eclipse.esmf.turtle.languageserver.aspect.MetaModelStrategy;
 import org.eclipse.esmf.turtle.languageserver.aspect.diagnostic.AspectViolationDiagnosticMapper;
+import org.eclipse.esmf.turtle.languageserver.lsp.ResolutionStrategyService;
 import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.DiagnosticReport;
-import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.DiagnosticsProvider;
+import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.ResolutionStrategyAwareDiagnosticsProvider;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 import org.eclipse.esmf.turtle.languageserver.turtle.TurtleService;
+import org.eclipse.esmf.turtle.languageserver.turtle.navigation.ExternalModelFileCache;
 
+import org.apache.jena.riot.RiotException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AspectModelValidationService extends TurtleService implements DiagnosticsProvider {
+public class AspectModelValidationService extends TurtleService implements ResolutionStrategyAwareDiagnosticsProvider {
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelValidationService.class );
    private static final List<String> SAMM_PREFIXES = SammNs.sammNamespaces().map( RdfNamespace::getShortForm ).toList();
    private final Validator<Violation, List<Violation>> validator;
    private final AspectViolationDiagnosticMapper diagnosticMapper = new AspectViolationDiagnosticMapper();
+   private ResolutionStrategyService resolutionStrategyService;
 
    public AspectModelValidationService() {
-      this( new AspectModelValidator() );
+      this( new AspectModelValidator(), new ResolutionStrategyService() );
    }
 
    public AspectModelValidationService( final Validator<Violation, List<Violation>> validator ) {
+      this( validator, new ResolutionStrategyService() );
+   }
+
+   public AspectModelValidationService( final Validator<Violation, List<Violation>> validator,
+         final ResolutionStrategyService resolutionStrategyService ) {
       this.validator = validator;
+      this.resolutionStrategyService = resolutionStrategyService;
    }
 
    private boolean documentIsAspectModel( final ParsedDocument parsedDocument ) {
@@ -66,7 +73,7 @@ public class AspectModelValidationService extends TurtleService implements Diagn
    }
 
    private boolean shouldValidateDocument( final ParsedDocument parsedDocument ) {
-      return documentIsAspectModel( parsedDocument ) && !MetaModelStrategy.isMetaModelUri( parsedDocument.getUri() );
+      return documentIsAspectModel( parsedDocument ) && !ExternalModelFileCache.isCachedModelUri( parsedDocument.getUri() );
    }
 
    @Override
@@ -118,10 +125,15 @@ public class AspectModelValidationService extends TurtleService implements Diagn
       final URI documentUri = URI.create( parsedDocument.getUri() );
       return documentUri.getScheme() == null
             ? new AspectModelLoader()
-            : new AspectModelLoader( buildResolutionStrategyForDocument( parsedDocument ) );
+            : new AspectModelLoader( resolutionStrategyService.buildResolutionStrategyForDocument( parsedDocument ) );
    }
 
    private List<Violation> validate( final RawAspectModelFile file, final AspectModelLoader modelLoader ) {
       return validator.validateModel( () -> modelLoader.loadRawAspectModelFile( file ) );
+   }
+
+   @Override
+   public void setResolutionStrategyService( final ResolutionStrategyService resolutionStrategyService ) {
+      this.resolutionStrategyService = resolutionStrategyService;
    }
 }
