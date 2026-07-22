@@ -12,16 +12,8 @@
  */
 package org.eclipse.esmf.aspectmodel.generator.asyncapi;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.stream.Stream;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-
 import org.eclipse.esmf.aspectmodel.VersionNumber;
 import org.eclipse.esmf.aspectmodel.generator.JsonGenerator;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
@@ -33,14 +25,19 @@ import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Event;
 import org.eclipse.esmf.metamodel.Operation;
 import org.eclipse.esmf.metamodel.Property;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.node.ArrayNode;
 import tools.jackson.databind.node.JsonNodeFactory;
 import tools.jackson.databind.node.ObjectNode;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public class AspectModelAsyncApiGenerator extends JsonGenerator<Aspect, AsyncApiSchemaGenerationConfig, JsonNode, AsyncApiSchemaArtifact> {
    public static final AsyncApiSchemaGenerationConfig DEFAULT_CONFIG = AsyncApiSchemaGenerationConfigBuilder.builder().build();
@@ -66,6 +63,28 @@ public class AspectModelAsyncApiGenerator extends JsonGenerator<Aspect, AsyncApi
    private static final String DESCRIPTION_FIELD = "description";
    private static final String CONTENT_TYPE_FIELD = "contentType";
    private static final String PAYLOAD_FIELD = "payload";
+   private static final String DEFAULT_FIELD = "default";
+   private static final String TYPE_FIELD = "type";
+   private static final String TYPE_OBJECT = "object";
+   private static final String PROPERTIES_FIELD = "properties";
+
+   private static final String TENANT_ID_PLACEHOLDER = "{tenant-id}";
+   private static final String NAMESPACE_PLACEHOLDER = "{namespace}";
+   private static final String VERSION_PLACEHOLDER = "{version}";
+   private static final String ASPECT_NAME_PLACEHOLDER = "{aspect-name}";
+
+   private static final String TENANT_ID_PARAMETER = "tenant-id";
+   private static final String NAMESPACE_PARAMETER = "namespace";
+   private static final String VERSION_PARAMETER = "version";
+   private static final String ASPECT_NAME_PARAMETER = "aspect-name";
+
+   private static final String TENANT_ID_DESCRIPTION = "The ID of the tenant owning the requested Twin.";
+   private static final String NAMESPACE_DESCRIPTION = "The namespace of the Aspect Model.";
+   private static final String VERSION_DESCRIPTION = "The version of the Aspect Model.";
+   private static final String ASPECT_NAME_DESCRIPTION = "The name of the Aspect.";
+
+   private static final String DEFAULT_CHANNEL_ADDRESS =
+         "/" + TENANT_ID_PLACEHOLDER + "/" + NAMESPACE_PLACEHOLDER + "/" + VERSION_PLACEHOLDER + "/" + ASPECT_NAME_PLACEHOLDER;
 
    private static final JsonNodeFactory FACTORY = JsonNodeFactory.instance;
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelAsyncApiGenerator.class );
@@ -131,21 +150,47 @@ public class AspectModelAsyncApiGenerator extends JsonGenerator<Aspect, AsyncApi
       final ObjectNode pathNode = FACTORY.objectNode();
 
       final AspectModelUrn urn = aspect.urn();
-      pathNode.put( "address", config.channelAddress() != null && !config.channelAddress().isBlank()
-            ? config.channelAddress()
-            : String.format( "/%s/%s/%s", urn.getNamespaceMainPart(), urn.getVersion(), aspect.getName() ) );
+      final String address = buildChannelAddress();
+      pathNode.put( "address", address );
       pathNode.put( DESCRIPTION_FIELD, "Channel for updating " + aspect.getName() + " Aspect." );
-
-      final ObjectNode parametersNode = FACTORY.objectNode();
-      parametersNode.put( "namespace", urn.getNamespaceMainPart() );
-      parametersNode.put( "version", urn.getVersion() );
-      parametersNode.put( "aspect-name", aspect.getName() );
-      pathNode.set( "parameters", parametersNode );
-
+      pathNode.set( "parameters", buildChannelParameters( aspect, urn, address ) );
       pathNode.set( MESSAGES_FIELD, buildChannelMessages( aspect ) );
 
       channelsNode.set( aspect.getName(), pathNode );
       return channelsNode;
+   }
+
+   private String buildChannelAddress() {
+      if ( config.channelAddress() != null && !config.channelAddress().isBlank() ) {
+         return config.channelAddress();
+      }
+      return DEFAULT_CHANNEL_ADDRESS;
+   }
+
+   private ObjectNode buildChannelParameters( final Aspect aspect, final AspectModelUrn urn, final String address ) {
+      final ObjectNode parametersNode = FACTORY.objectNode();
+      if ( address.contains( NAMESPACE_PLACEHOLDER ) ) {
+         parametersNode.set( NAMESPACE_PARAMETER, buildParameterObject( NAMESPACE_DESCRIPTION, urn.getNamespaceMainPart() ) );
+      }
+      if ( address.contains( VERSION_PLACEHOLDER ) ) {
+         parametersNode.set( VERSION_PARAMETER, buildParameterObject( VERSION_DESCRIPTION, urn.getVersion() ) );
+      }
+      if ( address.contains( ASPECT_NAME_PLACEHOLDER ) ) {
+         parametersNode.set( ASPECT_NAME_PARAMETER, buildParameterObject( ASPECT_NAME_DESCRIPTION, aspect.getName() ) );
+      }
+      if ( address.contains( TENANT_ID_PLACEHOLDER ) ) {
+         parametersNode.set( TENANT_ID_PARAMETER, buildParameterObject( TENANT_ID_DESCRIPTION, null ) );
+      }
+      return parametersNode;
+   }
+
+   private ObjectNode buildParameterObject( final String description, final String defaultValue ) {
+      final ObjectNode parameterNode = FACTORY.objectNode();
+      parameterNode.put( DESCRIPTION_FIELD, description );
+      if ( defaultValue != null ) {
+         parameterNode.put( DEFAULT_FIELD, defaultValue );
+      }
+      return parameterNode;
    }
 
    private ObjectNode buildChannelMessages( final Aspect aspect ) {
@@ -299,10 +344,13 @@ public class AspectModelAsyncApiGenerator extends JsonGenerator<Aspect, AsyncApi
 
       final ObjectNode requestComponentSchema = schemasNode.putObject( requestComponentName );
       requestComponentSchema.put( TITLE_FIELD, operation.getPreferredName( locale ) );
-      final ArrayNode messageArrayNode = requestComponentSchema.putArray( "allOf" );
+      requestComponentSchema.put( TYPE_FIELD, TYPE_OBJECT );
+
+      final ObjectNode propertiesNode = FACTORY.objectNode();
       for ( final Property input : operation.getInput() ) {
-         messageArrayNode.add( input.accept( schemaVisitor, null ) );
+         propertiesNode.set( input.getPayloadName(), input.accept( schemaVisitor, null ) );
       }
+      requestComponentSchema.set( PROPERTIES_FIELD, propertiesNode );
    }
 
    private void addOperationResponseComponent( final ObjectNode messagesNode, final ObjectNode schemasNode,

@@ -875,7 +875,7 @@ And finally for the time based paging:
 As with xref:using-the-cli-to-create-a-json-openapi-specification[OpenAPI], every AsyncAPI specification is based on one Aspect.
 Each Aspect is associated with one https://www.asyncapi.com/docs/reference/specification/v3.1.0#channelObject[channel address].
 The channel address is set as string using with`--channel-address` or `-ca` option, e.g.: `-ca 123-456/789-012/test/1.0.0/Aspect`. The default channel address
-is derived from the Aspect's URN and is constructed using the pattern `{namespace}/\{version}/{aspectName}`.
+is `/\{tenant-id}/{namespace}/{version}/{aspect-name}`, with each placeholder later resolved to a corresponding channel parameter (see below).
 
 
 The full command for the native executable samm-cli would be:
@@ -942,18 +942,39 @@ The name of the Aspect is used to generate parts of the AsyncAPI specification, 
 {
  "channels" : {
     "Movement" : { // <3>
-      "address" : "movement/0.0.1/Movement", // <3>
+      "address" : "/{tenant-id}/{namespace}/{version}/{aspect-name}", // <3>
       "description" : "This channel for updating Movement Aspect.", // <3>
       "parameters" : {
-        "namespace" : "movement",
-        "version" : "0.0.1",
-        "aspect-name" : "Movement" // <3>
+        "namespace" : {
+          "description" : "The namespace of the Aspect Model.",
+          "default" : "movement"
+        },
+        "version" : {
+          "description" : "The version of the Aspect Model.",
+          "default" : "0.0.1"
+        },
+        "aspect-name" : { // <3>
+          "description" : "The name of the Aspect.",
+          "default" : "Movement"
+        },
+        "tenant-id" : {
+          "description" : "The ID of the tenant owning the requested Twin."
+        }
       },
       "messages" : {}
     }
   }
 }
 ----
+
+Each of the `tenant-id`, `namespace`, `version` and `aspect-name` channel parameters is rendered as a full
+https://www.asyncapi.com/docs/reference/specification/v3.1.0#parameterObject[Parameter Object] only when the
+corresponding placeholder (`\{tenant-id}`, `{namespace}`, `{version}`, `{aspect-name}`) is literally present in the
+channel address, so the `parameters` section always matches what the address actually uses. If no explicit channel
+address is configured via `--channel-address`/`-ca` (Maven: `channelAddress`), the default address
+`/{tenant-id}/{namespace}/{version}/{aspect-name}` is used, so all four parameters are included. If an explicit
+channel address is configured, only the placeholders it contains result in a channel parameter; any placeholder
+missing from the address is omitted.
 
 ==== Mapping of Aspect's operations
 
@@ -1011,12 +1032,24 @@ https://www.asyncapi.com/docs/reference/specification/v3.1.0#schemaObject[schema
 {
   "channels" : {
     "Movement" : {
-      "address" : "movement/0.0.1/Movement",
+      "address" : "/{tenant-id}/{namespace}/{version}/{aspect-name}",
       "description" : "This channel for updating Movement Aspect.",
       "parameters" : {
-        "namespace" : "movement",
-        "version" : "0.0.1",
-        "aspect-name" : "Movement"
+        "namespace" : {
+          "description" : "The namespace of the Aspect Model.",
+          "default" : "movement"
+        },
+        "version" : {
+          "description" : "The version of the Aspect Model.",
+          "default" : "0.0.1"
+        },
+        "aspect-name" : {
+          "description" : "The name of the Aspect.",
+          "default" : "Movement"
+        },
+        "tenant-id" : {
+          "description" : "The ID of the tenant owning the requested Twin."
+        }
       },
       "messages" : {
         "getSpeedInput" : { // <1>
@@ -1130,12 +1163,24 @@ https://www.asyncapi.com/docs/reference/specification/v3.1.0#schemaObject[schema
 {
 "channels" : {
     "Movement" : {
-      "address" : "movement/0.0.1/Movement",
+      "address" : "/{tenant-id}/{namespace}/{version}/{aspect-name}",
       "description" : "This channel for updating Movement Aspect.",
       "parameters" : {
-        "namespace" : "movement",
-        "version" : "0.0.1",
-        "aspect-name" : "Movement"
+        "namespace" : {
+          "description" : "The namespace of the Aspect Model.",
+          "default" : "movement"
+        },
+        "version" : {
+          "description" : "The version of the Aspect Model.",
+          "default" : "0.0.1"
+        },
+        "aspect-name" : {
+          "description" : "The name of the Aspect.",
+          "default" : "Movement"
+        },
+        "tenant-id" : {
+          "description" : "The ID of the tenant owning the requested Twin."
+        }
       },
       "massages" : {
         "SpeedUpdateEvent" : {
