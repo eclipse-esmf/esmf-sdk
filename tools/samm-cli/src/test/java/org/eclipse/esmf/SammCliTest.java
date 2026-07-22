@@ -1070,7 +1070,7 @@ class SammCliTest extends SammCliAbstractTest {
       assertThat( result.exitStatus() ).isZero();
       assertThat( result.stdout() ).isNotEmpty();
       assertThat( result.stdout() ).contains( "asyncapi: 3.1.0" );
-      assertThat( result.stdout() ).contains( "address: /org.eclipse.esmf.test/1.0.0/AspectWithEntity" );
+      assertThat( result.stdout() ).contains( "address: \"/{tenant-id}/{namespace}/{version}/{aspect-name}\"" );
       assertThat( result.stderr() ).isEmpty();
    }
 
