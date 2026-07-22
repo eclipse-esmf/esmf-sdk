@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -23,11 +23,11 @@ import javax.annotation.processing.Generated;
 
 import org.eclipse.esmf.aspectmodel.generator.ArtifactGenerator;
 import org.eclipse.esmf.aspectmodel.generator.TemplateEngine;
+import org.eclipse.esmf.aspectmodel.generator.exception.CodeGenerationException;
 import org.eclipse.esmf.aspectmodel.java.AspectModelJavaUtil;
 import org.eclipse.esmf.aspectmodel.java.ImportTracker;
 import org.eclipse.esmf.aspectmodel.java.JavaArtifact;
 import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfig;
-import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
 import org.eclipse.esmf.aspectmodel.java.exception.EnumAttributeNotFoundException;
 import org.eclipse.esmf.metamodel.Entity;
 import org.eclipse.esmf.metamodel.Scalar;
