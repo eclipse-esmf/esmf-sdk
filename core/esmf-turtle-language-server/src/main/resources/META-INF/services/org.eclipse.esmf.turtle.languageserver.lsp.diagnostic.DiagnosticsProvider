@@ -1,2 +1,3 @@
 org.eclipse.esmf.turtle.languageserver.turtle.TurtleSyntaxDiagnosticsService
 org.eclipse.esmf.turtle.languageserver.aspect.service.AspectModelValidationService
+org.eclipse.esmf.turtle.languageserver.aspect.service.AspectModelNamingConventionValidationService
