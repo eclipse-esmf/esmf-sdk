@@ -34,6 +34,10 @@ class AspectModelNamingConventionValidationServiceTest {
       @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#> .
       @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
       """;
+   private static final String NAMING_CONVENTION_DOCS = "https://eclipse-esmf.github.io/samm-specification/snapshot/modeling-guidelines"
+         + ".html#naming-rules";
+   private static final String BEST_PRACTICES_DOCS = "https://eclipse-esmf.github.io/samm-specification/snapshot/appendix/best-practices"
+         + ".html";
 
    private final AspectModelNamingConventionValidationService service = new AspectModelNamingConventionValidationService();
 
@@ -51,7 +55,8 @@ class AspectModelNamingConventionValidationServiceTest {
                      :myValue a samm:Characteristic ;
                         samm:dataType xsd:string .
                      """,
-                  "Characteristic name 'myValue' should start with an uppercase letter, e.g. 'MyValue'"
+                  "WARN_NAMING_CONVENTION",
+                  "'myValue' should start with an uppercase letter, e.g. 'MyValue'%n%s".formatted( NAMING_CONVENTION_DOCS )
             ),
             Arguments.of(
                   "characteristic subtype starting lowercase produces warning",
@@ -66,7 +71,8 @@ class AspectModelNamingConventionValidationServiceTest {
                         samm:dataType xsd:string ;
                         samm-c:values ( "a" "b" ) .
                      """,
-                  "Characteristic name 'myState' should start with an uppercase letter, e.g. 'MyState'"
+                  "WARN_NAMING_CONVENTION",
+                  "'myState' should start with an uppercase letter, e.g. 'MyState'%n%s".formatted( NAMING_CONVENTION_DOCS )
             ),
             Arguments.of(
                   "property name starting uppercase produces warning",
@@ -80,7 +86,8 @@ class AspectModelNamingConventionValidationServiceTest {
                      :MyState a samm:Characteristic ;
                         samm:dataType xsd:string .
                      """,
-                  "Property name 'MyValue' should start with a lowercase letter, e.g. 'myValue'"
+                  "WARN_NAMING_CONVENTION",
+                  "'MyValue' should start with a lowercase letter, e.g. 'myValue'%n%s".formatted( NAMING_CONVENTION_DOCS )
             ),
             Arguments.of(
                   "abstract property name starting uppercase produces warning",
@@ -97,7 +104,8 @@ class AspectModelNamingConventionValidationServiceTest {
                      :MyState a samm:Characteristic ;
                         samm:dataType xsd:string .
                      """,
-                  "Property name 'MyAbstractValue' should start with a lowercase letter, e.g. 'myAbstractValue'"
+                  "WARN_NAMING_CONVENTION",
+                  "'MyAbstractValue' should start with a lowercase letter, e.g. 'myAbstractValue'%n%s".formatted( NAMING_CONVENTION_DOCS )
             ),
             Arguments.of(
                   "property name with uppercase acronym produces warning",
@@ -111,7 +119,9 @@ class AspectModelNamingConventionValidationServiceTest {
                      :MyValue a samm:Characteristic ;
                         samm:dataType xsd:string .
                      """,
-                  "Name 'documentURL' should use camel case for acronyms instead of all-uppercase, e.g. 'documentUrl'"
+                  "WARN_NAMING_BEST_PRACTICE",
+                  ( "Name 'documentURL' should use camel case for acronyms instead of all-uppercase, e.g. 'documentUrl'%n%s" )
+                        .formatted( BEST_PRACTICES_DOCS )
             ),
             Arguments.of(
                   "name with acronym followed by word keeps last acronym letter uppercase",
@@ -125,7 +135,9 @@ class AspectModelNamingConventionValidationServiceTest {
                      :XMLParserValue a samm:Characteristic ;
                         samm:dataType xsd:string .
                      """,
-                  "Name 'XMLParserValue' should use camel case for acronyms instead of all-uppercase, e.g. 'XmlParserValue'"
+                  "WARN_NAMING_BEST_PRACTICE",
+                  ( "Name 'XMLParserValue' should use camel case for acronyms instead of all-uppercase, e.g. 'XmlParserValue'%n%s" )
+                        .formatted( BEST_PRACTICES_DOCS )
             ),
             Arguments.of(
                   "description starting lowercase produces warning",
@@ -134,7 +146,8 @@ class AspectModelNamingConventionValidationServiceTest {
                         samm:description "this is a test description."@en ;
                         samm:properties ( ) .
                      """,
-                  "Description 'this is a test description.' should start with an uppercase letter, e.g. 'This is a test description.'"
+                  "WARN_NAMING_BEST_PRACTICE",
+                  "Description should start with an uppercase letter%n%s".formatted( BEST_PRACTICES_DOCS )
             ),
             Arguments.of(
                   "description ending without punctuation produces warning",
@@ -143,7 +156,8 @@ class AspectModelNamingConventionValidationServiceTest {
                         samm:description "This is a test description"@en ;
                         samm:properties ( ) .
                      """,
-                  "Description 'This is a test description' should end with a period, e.g. 'This is a test description.'"
+                  "WARN_NAMING_BEST_PRACTICE",
+                  "Description should end with a period%n%s".formatted( BEST_PRACTICES_DOCS )
             ),
             Arguments.of(
                   "aspect name containing meta model type name produces warning",
@@ -151,7 +165,9 @@ class AspectModelNamingConventionValidationServiceTest {
                      :VehicleAspect a samm:Aspect ;
                         samm:properties ( ) .
                      """,
-                  "Name 'VehicleAspect' should not contain the meta model element type 'Aspect', e.g. 'Vehicle'"
+                  "WARN_NAMING_BEST_PRACTICE",
+                  "Name 'VehicleAspect' should not contain the meta model element type 'Aspect', e.g. 'Vehicle'%n%s"
+                        .formatted( BEST_PRACTICES_DOCS )
             ),
             Arguments.of(
                   "property name containing meta model type name produces warning",
@@ -165,15 +181,19 @@ class AspectModelNamingConventionValidationServiceTest {
                      :MyValue a samm:Characteristic ;
                         samm:dataType xsd:string .
                      """,
-                  "Name 'priceProperty' should not contain the meta model element type 'Property', e.g. 'price'"
+                  "WARN_NAMING_BEST_PRACTICE",
+                  "Name 'priceProperty' should not contain the meta model element type 'Property', e.g. 'price'%n%s"
+                        .formatted( BEST_PRACTICES_DOCS )
             ),
             Arguments.of(
                   "aspect name containing meta model type name in the middle produces warning",
                   """
-                     :exampleAspectTest a samm:Aspect ;
+                     :ExampleAspectTest a samm:Aspect ;
                         samm:properties ( ) .
                      """,
-                  "Name 'exampleAspectTest' should not contain the meta model element type 'Aspect', e.g. 'exampleTest'"
+                  "WARN_NAMING_BEST_PRACTICE",
+                  "Name 'ExampleAspectTest' should not contain the meta model element type 'Aspect', e.g. 'ExampleTest'%n%s"
+                        .formatted( BEST_PRACTICES_DOCS )
             ),
             Arguments.of(
                   "characteristic name containing meta model type name produces warning",
@@ -187,7 +207,9 @@ class AspectModelNamingConventionValidationServiceTest {
                      :TemperatureCharacteristic a samm:Characteristic ;
                         samm:dataType xsd:string .
                      """,
-                  "Name 'TemperatureCharacteristic' should not contain the meta model element type 'Characteristic', e.g. 'Temperature'"
+                  "WARN_NAMING_BEST_PRACTICE",
+                  "Name 'TemperatureCharacteristic' should not contain the meta model element type 'Characteristic', e.g. 'Temperature'%n%s"
+                        .formatted( BEST_PRACTICES_DOCS )
             ),
             Arguments.of(
                   "entity name containing meta model type name produces warning",
@@ -204,7 +226,9 @@ class AspectModelNamingConventionValidationServiceTest {
                      :EngineEntity a samm:Entity ;
                         samm:properties ( ) .
                      """,
-                  "Name 'EngineEntity' should not contain the meta model element type 'Entity', e.g. 'Engine'"
+                  "WARN_NAMING_BEST_PRACTICE",
+                  "Name 'EngineEntity' should not contain the meta model element type 'Entity', e.g. 'Engine'%n%s"
+                        .formatted( BEST_PRACTICES_DOCS )
             ),
             Arguments.of(
                   "name equal to meta model type name produces warning without suggestion",
@@ -218,22 +242,23 @@ class AspectModelNamingConventionValidationServiceTest {
                      :Characteristic a samm:Characteristic ;
                         samm:dataType xsd:string .
                      """,
+                  "WARN_NAMING_BEST_PRACTICE",
                   "Name 'Characteristic' should not simply repeat the meta model element type 'Characteristic', "
-                        + "choose a more descriptive name"
+                        + "choose a more descriptive name%n%s".formatted( BEST_PRACTICES_DOCS )
             )
       );
    }
 
    @ParameterizedTest( name = "{0}" )
    @MethodSource( "namingConventionWarningScenarios" )
-   void namingConventionViolationProducesWarning( final String scenarioName, final String content,
+   void namingConventionViolationProducesWarning( final String scenarioName, final String content, final String expectedErrorCode,
          final String expectedMessage ) {
       final ParsedDocument document = parsedDocument( "Aspect.ttl", PREFIXES + content );
 
       final DiagnosticReport report = service.validate( document );
 
       assertThat( report.diagnostics() ).singleElement().isInstanceOfSatisfying( AspectDocumentDiagnostic.class, diagnostic -> {
-         assertThat( diagnostic.code().code() ).isEqualTo( "ERR_NAMING_CONVENTION" );
+         assertThat( diagnostic.code().code() ).isEqualTo( expectedErrorCode );
          assertThat( diagnostic.severity() ).isEqualTo( Diagnostic.Severity.WARNING );
          assertThat( diagnostic.message() ).isEqualTo( expectedMessage );
       } );
