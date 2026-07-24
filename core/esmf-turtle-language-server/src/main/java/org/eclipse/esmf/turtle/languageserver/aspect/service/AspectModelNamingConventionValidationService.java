@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.Diagnostic;
-import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
+import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.treesitterturtle.ParserTokenType;
 import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
@@ -37,12 +37,10 @@ import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.DiagnosticsProvider
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 import org.eclipse.esmf.turtle.languageserver.turtle.TurtleService;
 
-import org.apache.jena.rdf.model.Resource;
-
 public class AspectModelNamingConventionValidationService extends TurtleService implements DiagnosticsProvider {
    private static final AspectDiagnosticCode NAMING_CONVENTION_CODE = new AspectDiagnosticCode( "ERR_NAMING_CONVENTION" );
    private static final Pattern UPPERCASE_ACRONYM = Pattern.compile( "\\p{Upper}{2,}" );
-   private static final String SAMM_DESCRIPTION_PREDICATE = qualifiedName( SammNs.SAMM, SammNs.SAMM.description() );
+   private static final String SAMM_DESCRIPTION_PREDICATE = RdfUtil.curie( SammNs.SAMM.description().getURI() );
    private static final Set<String> CHARACTERISTIC_TYPES = characteristicTypes();
    private static final Set<String> PROPERTY_TYPES = propertyTypes();
 
@@ -181,27 +179,15 @@ public class AspectModelNamingConventionValidationService extends TurtleService 
       return rawContent;
    }
 
-   private static String qualifiedName( final RdfNamespace namespace, final Resource resource ) {
-      return namespace.getShortForm() + ":" + resource.getLocalName();
-   }
-
    private static Set<String> characteristicTypes() {
-      return Stream.concat(
-            Stream.of( SammNs.SAMM.Characteristic() )
-                  .map( resource -> qualifiedName( SammNs.SAMM, resource ) ),
-            Stream.of(
-                  SammNs.SAMMC.StructuredValue(), SammNs.SAMMC.Quantifiable(), SammNs.SAMMC.Measurement(),
-                  SammNs.SAMMC.Duration(), SammNs.SAMMC.State(), SammNs.SAMMC.Enumeration(),
-                  SammNs.SAMMC.Collection(), SammNs.SAMMC.Set(), SammNs.SAMMC.SortedSet(),
-                  SammNs.SAMMC.List(), SammNs.SAMMC.TimeSeries(), SammNs.SAMMC.SingleEntity(),
-                  SammNs.SAMMC.Code(), SammNs.SAMMC.Trait(), SammNs.SAMMC.Either() )
-                  .map( resource -> qualifiedName( SammNs.SAMMC, resource ) ) )
+      return Stream.concat( Stream.of( SammNs.SAMM.Characteristic() ), SammNs.SAMMC.allCharacteristics() )
+            .map( resource -> RdfUtil.curie( resource.getURI() ) )
             .collect( Collectors.toUnmodifiableSet() );
    }
 
    private static Set<String> propertyTypes() {
       return Stream.of( SammNs.SAMM.Property(), SammNs.SAMM.AbstractProperty() )
-            .map( resource -> qualifiedName( SammNs.SAMM, resource ) )
+            .map( resource -> RdfUtil.curie( resource.getURI() ) )
             .collect( Collectors.toUnmodifiableSet() );
    }
 
