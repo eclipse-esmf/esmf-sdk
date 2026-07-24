@@ -39,16 +39,18 @@ import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 import org.eclipse.esmf.turtle.languageserver.turtle.TurtleService;
 
 public class AspectModelNamingConventionValidationService extends TurtleService implements DiagnosticsProvider {
-   private static final AspectDiagnosticCode NAMING_CONVENTION_CODE = new AspectDiagnosticCode( "WARN_NAMING_CONVENTION" );
-   private static final AspectDiagnosticCode NAMING_BEST_PRACTICE_CODE = new AspectDiagnosticCode( "WARN_NAMING_BEST_PRACTICE" );
+   private static final String NAMING_CONVENTION_DOCS_HREF =
+         "https://eclipse-esmf.github.io/samm-specification/snapshot/modeling-guidelines.html#naming-rules";
+   private static final String BEST_PRACTICES_DOCS =
+         "https://eclipse-esmf.github.io/samm-specification/snapshot/appendix/best-practices.html)";
+   private static final AspectDiagnosticCode NAMING_CONVENTION_CODE = new AspectDiagnosticCode( "WARN_NAMING_CONVENTION",
+         NAMING_CONVENTION_DOCS_HREF );
+   private static final AspectDiagnosticCode NAMING_BEST_PRACTICES_CODE = new AspectDiagnosticCode( "WARN_NAMING_BEST_PRACTICES",
+         BEST_PRACTICES_DOCS );
    private static final Pattern UPPERCASE_ACRONYM = Pattern.compile( "\\p{Upper}{2,}" );
    private static final String SAMM_DESCRIPTION_PREDICATE = RdfUtil.curie( SammNs.SAMM.description().getURI() );
    private static final Set<String> UPPERCASE_TYPES;
    private static final Set<String> LOWERCASE_TYPES;
-   private static final String NAMING_CONVENTION_DOCS =
-         "https://eclipse-esmf.github.io/samm-specification/snapshot/modeling-guidelines.html#naming-rules";
-   private static final String BEST_PRACTICES_DOCS =
-         "https://eclipse-esmf.github.io/samm-specification/snapshot/appendix/best-practices.html";
 
    static {
       UPPERCASE_TYPES = Stream.concat(
@@ -97,9 +99,9 @@ public class AspectModelNamingConventionValidationService extends TurtleService 
          redundantTypeNameDiagnostic( node, predicateObjectMap, parsedDocument ).ifPresent( diagnostics::add );
       } );
 
-      descriptionValues( predicateObjectMap ).forEach( description ->
-            descriptionDiagnostic( description, parsedDocument ).forEach( diagnostics::add )
-      );
+      descriptionValues( predicateObjectMap )
+            .forEach( description -> descriptionDiagnostic( description, parsedDocument ).forEach( diagnostics::add )
+            );
 
       return diagnostics.build();
    }
@@ -111,8 +113,7 @@ public class AspectModelNamingConventionValidationService extends TurtleService 
          return Optional.empty();
       }
       final String suggestion = Character.toUpperCase( content.charAt( 0 ) ) + content.substring( 1 );
-      final String message = ( "'%s' should start with an uppercase letter, e.g. '%s'%n%s" ).formatted( content, suggestion,
-            NAMING_CONVENTION_DOCS );
+      final String message = ( "'%s' should start with an uppercase letter, e.g. '%s'" ).formatted( content, suggestion );
       return Optional.of(
             new AspectDocumentDiagnostic( message, NAMING_CONVENTION_CODE, parsedDocument.getUri(), node.location(),
                   Diagnostic.Severity.WARNING ) );
@@ -125,8 +126,7 @@ public class AspectModelNamingConventionValidationService extends TurtleService 
          return Optional.empty();
       }
       final String suggestion = Character.toLowerCase( content.charAt( 0 ) ) + content.substring( 1 );
-      final String message = "'%s' should start with a lowercase letter, e.g. '%s'%n%s".formatted( content, suggestion,
-            NAMING_CONVENTION_DOCS );
+      final String message = "'%s' should start with a lowercase letter, e.g. '%s'".formatted( content, suggestion );
       return Optional.of(
             new AspectDocumentDiagnostic( message, NAMING_CONVENTION_CODE, parsedDocument.getUri(), node.location(),
                   Diagnostic.Severity.WARNING ) );
@@ -138,12 +138,12 @@ public class AspectModelNamingConventionValidationService extends TurtleService 
       final String content = stripQuotes( node.content() );
       if ( !content.isEmpty() && content.charAt( content.length() - 1 ) != '.' ) {
          final String message = "Description should end with a period%n%s".formatted( BEST_PRACTICES_DOCS );
-         diagnostics.add( new AspectDocumentDiagnostic( message, NAMING_BEST_PRACTICE_CODE, parsedDocument.getUri(), node.location(),
+         diagnostics.add( new AspectDocumentDiagnostic( message, NAMING_BEST_PRACTICES_CODE, parsedDocument.getUri(), node.location(),
                Diagnostic.Severity.WARNING ) );
       }
       if ( !content.isEmpty() && Character.isLowerCase( content.charAt( 0 ) ) ) {
          final String message = "Description should start with an uppercase letter%n%s".formatted( BEST_PRACTICES_DOCS );
-         diagnostics.add( new AspectDocumentDiagnostic( message, NAMING_BEST_PRACTICE_CODE, parsedDocument.getUri(), node.location(),
+         diagnostics.add( new AspectDocumentDiagnostic( message, NAMING_BEST_PRACTICES_CODE, parsedDocument.getUri(), node.location(),
                Diagnostic.Severity.WARNING ) );
       }
       return diagnostics;
@@ -153,7 +153,7 @@ public class AspectModelNamingConventionValidationService extends TurtleService 
       return acronymCasingSuggestion( node.content() ).map( suggestion -> {
          final String message = "Name '%s' should use camel case for acronyms instead of all-uppercase, e.g. '%s'%n%s"
                .formatted( node.content(), suggestion, BEST_PRACTICES_DOCS );
-         return new AspectDocumentDiagnostic( message, NAMING_BEST_PRACTICE_CODE, parsedDocument.getUri(), node.location(),
+         return new AspectDocumentDiagnostic( message, NAMING_BEST_PRACTICES_CODE, parsedDocument.getUri(), node.location(),
                Diagnostic.Severity.WARNING );
       } );
    }
@@ -170,11 +170,11 @@ public class AspectModelNamingConventionValidationService extends TurtleService 
                final int matchIndex = name.indexOf( typeName );
                final String remainder = name.substring( 0, matchIndex ) + name.substring( matchIndex + typeName.length() );
                final String message = remainder.isEmpty()
-                     ? "Name '%s' should not simply repeat the meta model element type '%s', choose a more descriptive name%n%s"
-                     .formatted( name, typeName, BEST_PRACTICES_DOCS )
-                     : "Name '%s' should not contain the meta model element type '%s', e.g. '%s'%n%s"
-                     .formatted( name, typeName, remainder, BEST_PRACTICES_DOCS );
-               return new AspectDocumentDiagnostic( message, NAMING_BEST_PRACTICE_CODE, parsedDocument.getUri(), localName.location(),
+                     ? "Name '%s' should not simply repeat the meta model element type '%s', choose a more descriptive name"
+                           .formatted( name, typeName )
+                     : "Name '%s' should not contain the meta model element type '%s', e.g. '%s'"
+                           .formatted( name, typeName, remainder );
+               return new AspectDocumentDiagnostic( message, NAMING_BEST_PRACTICES_CODE, parsedDocument.getUri(), localName.location(),
                      Diagnostic.Severity.WARNING );
             } );
    }
