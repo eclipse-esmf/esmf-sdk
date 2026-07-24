@@ -25,6 +25,15 @@ public interface Diagnostic<C extends Diagnostic.Code> {
    String message();
 
    /**
+    * href to additional information about the diagnostic
+    *
+    * @return the href
+    */
+   default String href() {
+      return "";
+   }
+
+   /**
     * The severity of this diagnostic
     *
     * @return the severity
@@ -47,6 +56,10 @@ public interface Diagnostic<C extends Diagnostic.Code> {
       String code();
 
       String description();
+
+      default String href() {
+         return "";
+      }
    }
 
    enum Severity {

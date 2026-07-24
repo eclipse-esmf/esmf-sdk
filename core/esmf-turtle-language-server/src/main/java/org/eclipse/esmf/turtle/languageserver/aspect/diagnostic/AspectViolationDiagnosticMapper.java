@@ -59,7 +59,7 @@ public class AspectViolationDiagnosticMapper implements Function<List<Violation>
 
    public DiagnosticReport processingFailureReport() {
       return new DiagnosticReport(
-            new AspectDiagnostic( PROCESSING_ERROR_MESSAGE, new AspectDiagnosticCode( ProcessingViolation.ERROR_CODE ) ) );
+            new AspectDiagnostic( PROCESSING_ERROR_MESSAGE, new AspectDiagnosticCode( ProcessingViolation.ERROR_CODE, "" ) ) );
    }
 
    private Optional<Diagnostic<AspectDiagnosticCode>> mapViolation( final Violation violation ) {
@@ -76,7 +76,7 @@ public class AspectViolationDiagnosticMapper implements Function<List<Violation>
    }
 
    private Diagnostic<AspectDiagnosticCode> mapLexicalViolation( final InvalidLexicalValueViolation violation ) {
-      final AspectDiagnosticCode code = new AspectDiagnosticCode( InvalidLexicalValueViolation.ERROR_CODE );
+      final AspectDiagnosticCode code = new AspectDiagnosticCode( InvalidLexicalValueViolation.ERROR_CODE, "" );
       final Location diagnosticsLocation = new Location( Math.max( 0, violation.line() - 1 ),
             Math.max( 0, violation.column() - 1 ),
             Math.max( 0, violation.line() - 1 ),
@@ -92,11 +92,11 @@ public class AspectViolationDiagnosticMapper implements Function<List<Violation>
    }
 
    private Diagnostic<AspectDiagnosticCode> mapProcessingViolation( final ProcessingViolation violation ) {
-      return mapViolationWithOptionalLocation( violation, new AspectDiagnosticCode( ProcessingViolation.ERROR_CODE ) );
+      return mapViolationWithOptionalLocation( violation, new AspectDiagnosticCode( ProcessingViolation.ERROR_CODE, "" ) );
    }
 
    private Diagnostic<AspectDiagnosticCode> mapSemanticViolation( final Violation violation ) {
-      return mapViolationWithOptionalLocation( violation, new AspectDiagnosticCode( violation.errorCode() ) );
+      return mapViolationWithOptionalLocation( violation, new AspectDiagnosticCode( violation.errorCode(), "" ) );
    }
 
    private Diagnostic<AspectDiagnosticCode> mapViolationWithOptionalLocation( final Violation violation, final AspectDiagnosticCode code ) {

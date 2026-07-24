@@ -16,10 +16,16 @@ package org.eclipse.esmf.turtle.languageserver.aspect.diagnostic;
 import org.eclipse.esmf.Diagnostic;
 
 public record AspectDiagnosticCode(
-      String code
+      String code,
+      String href
 ) implements Diagnostic.Code {
    @Override
    public String description() {
       return code;
+   }
+
+   @Override
+   public String href() {
+      return href;
    }
 }

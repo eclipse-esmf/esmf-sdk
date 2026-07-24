@@ -33,7 +33,7 @@ import org.eclipse.lsp4j.Range;
  * Base class for services that operate on a {@link TurtleSyntaxTree}
  */
 public abstract class TurtleService {
-   private static final List<String> SAMM_PREFIXES = SammNs.sammNamespaces().map( RdfNamespace::getShortForm ).toList();
+   protected static final List<String> SAMM_PREFIXES = SammNs.sammNamespaces().map( RdfNamespace::getShortForm ).toList();
    protected static final List<String> TYPE_DEFINITION_PREDICATES = List.of( "a", "rdf:type" );
 
    /**

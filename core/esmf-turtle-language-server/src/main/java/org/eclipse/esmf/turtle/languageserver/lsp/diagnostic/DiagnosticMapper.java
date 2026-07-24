@@ -24,6 +24,7 @@ import org.eclipse.esmf.DocumentDiagnostic;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 
 import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.DiagnosticCodeDescription;
 import org.eclipse.lsp4j.DiagnosticRelatedInformation;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.Location;
@@ -46,6 +47,9 @@ public final class DiagnosticMapper {
          diagnostic.setSeverity( toDiagnosticSeverity( lspDiagnostic.severity() ) );
          diagnostic.setMessage( lspDiagnostic.message() );
          diagnostic.setCode( lspDiagnostic.code().code() );
+         if ( !lspDiagnostic.code().href().isEmpty() ) {
+            diagnostic.setCodeDescription( new DiagnosticCodeDescription( lspDiagnostic.code().href() ) );
+         }
          if ( lspDiagnostic instanceof final DocumentDiagnostic<?> documentDiagnostic ) {
             if ( documentDiagnostic.sourceLocation().equals( sourceDocument.uri() ) ) {
                diagnostic.setRange( toRange( documentDiagnostic ) );
