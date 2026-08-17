@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -27,6 +27,7 @@ import org.eclipse.esmf.aspect.to.AspectToParquetCommand;
 import org.eclipse.esmf.aspect.to.AspectToPngCommand;
 import org.eclipse.esmf.aspect.to.AspectToSqlCommand;
 import org.eclipse.esmf.aspect.to.AspectToSvgCommand;
+import org.eclipse.esmf.aspect.to.AspectToTsCommand;
 import org.eclipse.esmf.exception.SubCommandException;
 
 import picocli.CommandLine;
@@ -38,6 +39,7 @@ import picocli.CommandLine;
          CommandLine.HelpCommand.class,
          AspectToHtmlCommand.class,
          AspectToJavaCommand.class,
+         AspectToTsCommand.class,
          AspectToJsonCommand.class,
          AspectToJsonLdCommand.class,
          AspectToOpenapiCommand.class,
