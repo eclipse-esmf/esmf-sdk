@@ -39,6 +39,9 @@ public class GenerateJsonPayload extends AspectModelMojo {
    @Parameter( defaultValue = "false" )
    private boolean addTypeAttribute;
 
+   @Parameter( defaultValue = "false" )
+   private boolean ignoreExampleValue;
+
    @Override
    public void executeGeneration() throws MojoExecutionException, MojoFailureException {
       validateParameters();
@@ -47,6 +50,7 @@ public class GenerateJsonPayload extends AspectModelMojo {
       for ( final Aspect context : aspects ) {
          final JsonPayloadGenerationConfig config = JsonPayloadGenerationConfigBuilder.builder()
                .addTypeAttributeForEntityInheritance( addTypeAttribute )
+               .ignoreExampleValue( ignoreExampleValue )
                .build();
          final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator( context, config );
          for ( final JsonPayloadArtifact artifact : generator.generate().toList() ) {

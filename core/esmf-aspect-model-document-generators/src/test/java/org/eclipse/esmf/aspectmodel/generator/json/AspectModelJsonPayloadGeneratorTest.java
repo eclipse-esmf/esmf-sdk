@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -231,6 +232,80 @@ class AspectModelJsonPayloadGeneratorTest {
       final TestEntityWithSimpleTypes testEntityWithSimpleTypes = aspectWithEntityCollection.getTestList().getFirst();
       assertThat( generatedJson ).contains( "[" ).contains( "]" );
       assertTestEntityWithSimpleTypes( testEntityWithSimpleTypes );
+   }
+
+   @Test
+   void testIgnoreExampleValuesInSimpleProperties() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
+      final JsonPayloadGenerationConfig config = JsonPayloadGenerationConfigBuilder.builder()
+            .randomStrategy( new Random( 0 ) )
+            .ignoreExampleValue( true )
+            .build();
+
+      final String generatedJson = new AspectModelJsonPayloadGenerator( aspect, config ).generateJson();
+      final AspectWithSimpleProperties generatedAspect = parseJson( generatedJson, AspectWithSimpleProperties.class );
+
+      assertThat( generatedAspect.getTestString() ).isNotEqualTo( "Example Value Test" );
+      assertThat( generatedAspect.getTestInt() ).isNotEqualTo( 3 );
+      assertThat( generatedAspect.getTestFloat() ).isNotEqualTo( 2.25f );
+      assertThat( generatedAspect.getTestLocalDateTime() ).isNotEqualTo(
+            datatypeFactory.newXMLGregorianCalendar( "2018-02-28T14:23:32.918" ) );
+   }
+
+   @Test
+   void testUseExampleValuesInSimpleProperties() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
+      final JsonPayloadGenerationConfig config = JsonPayloadGenerationConfigBuilder.builder()
+            .randomStrategy( new Random( 0 ) )
+            .ignoreExampleValue( false )
+            .build();
+
+      final String generatedJson = new AspectModelJsonPayloadGenerator( aspect, config ).generateJson();
+      final AspectWithSimpleProperties generatedAspect = parseJson( generatedJson, AspectWithSimpleProperties.class );
+
+      assertThat( generatedAspect.getTestString() ).isEqualTo( "Example Value Test" );
+      assertThat( generatedAspect.getTestInt() ).isEqualTo( 3 );
+      assertThat( generatedAspect.getTestFloat() ).isEqualTo( 2.25f );
+      assertThat( generatedAspect.getTestLocalDateTime() ).isEqualTo(
+            datatypeFactory.newXMLGregorianCalendar( "2018-02-28T14:23:32.918" ) );
+   }
+
+   @Test
+   void testIgnoreExampleValuesInNestedEntityCollection() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_ENTITY_LIST ).aspect();
+      final JsonPayloadGenerationConfig config = JsonPayloadGenerationConfigBuilder.builder()
+            .randomStrategy( new Random( 0 ) )
+            .ignoreExampleValue( true )
+            .build();
+
+      final String generatedJson = new AspectModelJsonPayloadGenerator( aspect, config ).generateJson();
+      final AspectWithEntityCollection generatedAspect = parseJson( generatedJson, AspectWithEntityCollection.class );
+      final TestEntityWithSimpleTypes generatedEntity = generatedAspect.getTestList().getFirst();
+
+      assertThat( generatedEntity.getTestString() ).isNotEqualTo( "Example Value Test" );
+      assertThat( generatedEntity.getTestInt() ).isNotEqualTo( 3 );
+      assertThat( generatedEntity.getTestFloat() ).isNotEqualTo( 2.25f );
+      assertThat( generatedEntity.getTestLocalDateTime() ).isNotEqualTo(
+            datatypeFactory.newXMLGregorianCalendar( "2018-02-28T14:23:32.918Z" ) );
+   }
+
+   @Test
+   void testUseExampleValuesInNestedEntityCollection() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_ENTITY_LIST ).aspect();
+      final JsonPayloadGenerationConfig config = JsonPayloadGenerationConfigBuilder.builder()
+            .randomStrategy( new Random( 0 ) )
+            .ignoreExampleValue( false )
+            .build();
+
+      final String generatedJson = new AspectModelJsonPayloadGenerator( aspect, config ).generateJson();
+      final AspectWithEntityCollection generatedAspect = parseJson( generatedJson, AspectWithEntityCollection.class );
+      final TestEntityWithSimpleTypes generatedEntity = generatedAspect.getTestList().getFirst();
+
+      assertThat( generatedEntity.getTestString() ).isEqualTo( "Example Value Test" );
+      assertThat( generatedEntity.getTestInt() ).isEqualTo( 3 );
+      assertThat( generatedEntity.getTestFloat() ).isEqualTo( 2.25f );
+      assertThat( generatedEntity.getTestLocalDateTime() ).isEqualTo(
+            datatypeFactory.newXMLGregorianCalendar( "2018-02-28T14:23:32.918Z" ) );
    }
 
    @Test

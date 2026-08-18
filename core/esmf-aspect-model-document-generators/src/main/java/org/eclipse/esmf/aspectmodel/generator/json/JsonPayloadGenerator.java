@@ -97,7 +97,7 @@ public class JsonPayloadGenerator<S extends StructureElement>
    @Override
    public Stream<JsonPayloadArtifact> generate() {
       final StructureElement element = structureElement();
-      final JsonNode json = element.accept( this, new Context() );
+      final JsonNode json = element.accept( this, new Context().doIgnoreExampleValue( config.ignoreExampleValue() ) );
       return Stream.of( new JsonPayloadArtifact( element.getName() + ".json", json ) );
    }
 
@@ -199,7 +199,7 @@ public class JsonPayloadGenerator<S extends StructureElement>
 
       if ( context.ignoreExampleValue() ) {
          return property.getCharacteristic()
-               .map( c -> c.accept( this, context.doIgnoreExampleValue( false ) ) )
+               .map( c -> c.accept( this, context.doIgnoreExampleValue( config.ignoreExampleValue() ) ) )
                .orElse( null );
       } else {
          return property.getExampleValue()
@@ -245,7 +245,7 @@ public class JsonPayloadGenerator<S extends StructureElement>
       }
       final ArrayNode result = JsonNodeFactory.instance.arrayNode( numberOfElements );
       final Context contextForSubsequentElements = context.withConstraints( List.of() );
-      final Context contextForFirstElement = contextForSubsequentElements.doIgnoreExampleValue( false );
+      final Context contextForFirstElement = contextForSubsequentElements.doIgnoreExampleValue( config.ignoreExampleValue() );
       result.add( collectionElementType.accept( this, contextForFirstElement ) );
       for ( int i = 1; i < numberOfElements; i++ ) {
          result.add( collectionElementType.accept( this, contextForSubsequentElements ) );

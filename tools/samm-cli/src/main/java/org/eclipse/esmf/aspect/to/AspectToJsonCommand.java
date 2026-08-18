@@ -56,6 +56,11 @@ public class AspectToJsonCommand extends AbstractCommand {
             + "instead of returning an empty value." )
    private boolean failOnEmptyExampleValue = false;
 
+   @CommandLine.Option(
+      names = { "--ignore-example-value" },
+      description = "Ignore example values defined in the Aspect Model and always generate random values." )
+   private boolean ignoreExampleValue = false;
+
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
 
@@ -73,6 +78,7 @@ public class AspectToJsonCommand extends AbstractCommand {
       final JsonPayloadGenerationConfig config = JsonPayloadGenerationConfigBuilder.builder()
             .addTypeAttributeForEntityInheritance( addTypeAttribute )
             .failOnInvalidRegularExpressions( failOnEmptyExampleValue )
+            .ignoreExampleValue( ignoreExampleValue )
             .build();
 
       final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator(
