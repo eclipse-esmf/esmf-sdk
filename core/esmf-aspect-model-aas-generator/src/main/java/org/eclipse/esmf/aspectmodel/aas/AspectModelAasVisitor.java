@@ -451,10 +451,10 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
 
    private Reference buildReferenceToOperation( final org.eclipse.esmf.metamodel.Operation operation ) {
       final Key key = new DefaultKey.Builder()
-            .type( KeyTypes.OPERATION )
+            .type( KeyTypes.GLOBAL_REFERENCE )
             .value( DEFAULT_MAPPER.determineIdentifierFor( operation ) )
             .build();
-      return new DefaultReference.Builder().type( ReferenceTypes.MODEL_REFERENCE ).keys( key ).build();
+      return new DefaultReference.Builder().type( ReferenceTypes.EXTERNAL_REFERENCE ).keys( key ).build();
    }
 
    private OperationVariable mapOperationVariable( final Property property, final Context context ) {
