@@ -408,6 +408,11 @@ class AspectModelAasGeneratorTest {
       final List<SubmodelElement> operations = environment.getSubmodels().getFirst().getSubmodelElements();
       final DefaultOperation operation1 = (DefaultOperation) operations.getFirst();
       assertThat( operation1.getSemanticId() ).isNotNull();
+      assertThat( operation1.getSemanticId().getType() ).isEqualTo( ReferenceTypes.EXTERNAL_REFERENCE );
+      assertThat( operation1.getSemanticId().getKeys() ).singleElement().satisfies( key -> {
+         assertThat( key.getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
+         assertThat( key.getValue() ).isEqualTo( "urn:samm:org.eclipse.esmf.test:1.0.0#" + operation1.getIdShort() );
+      } );
       assertThat(
             environment.getConceptDescriptions().stream().filter( cd -> cd.getIdShort().equals( operation1.getIdShort() ) ) ).isNotNull();
 
