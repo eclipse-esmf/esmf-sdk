@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -93,12 +94,21 @@ public class Diagram {
       private String prototype;
       private final Color background;
       private final String title;
+      private final String headerMarkerId;
+      private final String navigationTargetUrn;
       private final List<String> entries = new ArrayList<>();
 
       public Box( final String prototype, final String title, final Color background ) {
+         this( prototype, title, background, null, null );
+      }
+
+      Box( final String prototype, final String title, final Color background, final String headerMarkerId,
+            final String navigationTargetUrn ) {
          this.prototype = prototype;
          this.title = title;
          this.background = background;
+         this.headerMarkerId = headerMarkerId;
+         this.navigationTargetUrn = navigationTargetUrn;
       }
 
       public void addEntry( final List<String> entry ) {
@@ -119,6 +129,14 @@ public class Diagram {
 
       public Color getBackground() {
          return background;
+      }
+
+      public Optional<String> getHeaderMarkerId() {
+         return Optional.ofNullable( headerMarkerId );
+      }
+
+      public Optional<String> getNavigationTargetUrn() {
+         return Optional.ofNullable( navigationTargetUrn );
       }
 
       public List<String> getEntries() {

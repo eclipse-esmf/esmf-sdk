@@ -30,6 +30,7 @@ import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
 import java.util.Base64;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -68,6 +69,16 @@ public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[],
 
    public AspectModelDiagramGenerator( final Aspect aspect, final DiagramGenerationConfig config ) {
       super( aspect, config );
+   }
+
+   /**
+    * Generates an SVG with opaque navigation markers on eligible element header cells and returns
+    * the corresponding marker-to-semantic-URN sidecar.
+    *
+    * @return the generated SVG and its navigation target sidecar
+    */
+   public DiagramNavigationResult generateSvgWithNavigationMetadata() {
+      return generateSvg( DiagramHeaderNavigation.enabled() );
    }
 
    @Override
@@ -113,7 +124,11 @@ public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[],
    }
 
    private String generateSvg() {
-      final DiagramVisitor diagramVisitor = new DiagramVisitor( config.language() );
+      return generateSvg( DiagramHeaderNavigation.disabled() ).svg();
+   }
+
+   private DiagramNavigationResult generateSvg( final DiagramHeaderNavigation headerNavigation ) {
+      final DiagramVisitor diagramVisitor = new DiagramVisitor( config.language(), headerNavigation );
       final Diagram diagram = aspect().accept( diagramVisitor, Optional.empty() );
       final Graphviz graphviz = render( diagram );
 
@@ -132,10 +147,27 @@ public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[],
                + "\");\n"
                + "}\n"
                + "</style>";
-         return svgDocument.replaceFirst( ">", ">" + css );
+         return new DiagramNavigationResult( svgDocument.replaceFirst( ">", ">" + css ), navigationTargets( diagram ) );
       } catch ( final ExecuteException | IOException exception ) {
          throw new DocumentGenerationException( exception );
       }
+   }
+
+   private Map<String, String> navigationTargets( final Diagram diagram ) {
+      final Map<String, String> targets = new LinkedHashMap<>();
+      diagram.getBoxes().forEach( box -> {
+         final Optional<String> markerId = box.getHeaderMarkerId();
+         final Optional<String> targetUrn = box.getNavigationTargetUrn();
+         if ( markerId.isPresent() != targetUrn.isPresent() ) {
+            throw new IllegalStateException( "A diagram header marker and its navigation target must be present together" );
+         }
+         markerId.ifPresent( marker -> {
+            if ( targets.putIfAbsent( marker, targetUrn.orElseThrow() ) != null ) {
+               throw new IllegalStateException( "Duplicate diagram header marker: " + marker );
+            }
+         } );
+      } );
+      return targets;
    }
 
    private byte[] generatePng( final String svg ) {
@@ -176,12 +208,19 @@ public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[],
       final Map<Diagram.Box, Node> boxMap = diagram.getBoxes()
             .stream()
             .map( box -> {
+               final Html.Td prototypeCell = td().text( "«" + box.getPrototype() + "»" ).fontName( fontName )
+                     .align( Labeljust.CENTER );
+               if ( box.getTitle().isEmpty() ) {
+                  box.getHeaderMarkerId().ifPresent( prototypeCell::id );
+               }
                final Html.Table table = table()
                      .color( Color.BLACK ).bgColor( Color.ofRGB( box.getBackground().getColor() ) )
                      .cellBorder( 0 ).border( 1 ).cellSpacing( 0 ).cellPadding( 4 )
-                     .tr( td().text( "«" + box.getPrototype() + "»" ).fontName( fontName ).align( Labeljust.CENTER ) );
+                     .tr( prototypeCell );
                if ( !box.getTitle().isEmpty() ) {
-                  table.tr( td().text( box.getTitle() ).fontName( fontName ).align( Labeljust.CENTER ) );
+                  final Html.Td titleCell = td().text( box.getTitle() ).fontName( fontName ).align( Labeljust.CENTER );
+                  box.getHeaderMarkerId().ifPresent( titleCell::id );
+                  table.tr( titleCell );
                }
                if ( !box.getEntries().isEmpty() ) {
                   table.tr( td().cellPadding( 1 ).bgColor( Color.BLACK ).height( 1 ) );

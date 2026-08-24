@@ -75,10 +75,16 @@ import org.apache.jena.vocabulary.XSD;
  */
 public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>> {
    private final Locale locale;
+   private final DiagramHeaderNavigation headerNavigation;
    private final Map<ModelElement, Diagram.Box> seenElements = new HashMap<>();
 
    public DiagramVisitor( final Locale locale ) {
+      this( locale, DiagramHeaderNavigation.disabled() );
+   }
+
+   DiagramVisitor( final Locale locale, final DiagramHeaderNavigation headerNavigation ) {
       this.locale = locale;
+      this.headerNavigation = headerNavigation;
    }
 
    @Override
@@ -590,7 +596,10 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
 
    private Diagram defaultBox( final ModelElement element, final String prototype, final Diagram.Color background ) {
       final String name = element.isAnonymous() ? "" : element.urn().getName();
-      final Diagram.Box box = new Diagram.Box( prototype, name, background );
+      final Optional<DiagramHeaderNavigation.Header> header = headerNavigation.headerFor( element );
+      final Diagram.Box box = header
+            .map( value -> new Diagram.Box( prototype, name, background, value.markerId(), value.targetUrn() ) )
+            .orElseGet( () -> new Diagram.Box( prototype, name, background ) );
       final ImmutableList.Builder<String> standardAttributes = ImmutableList.builder();
       element.getPreferredNames().stream()
             .filter( preferredName -> preferredName.getLanguageTag().equals( locale ) )
