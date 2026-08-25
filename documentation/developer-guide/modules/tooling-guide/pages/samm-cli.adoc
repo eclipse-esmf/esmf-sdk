@@ -317,7 +317,13 @@ to load. You can configure where such lookup should be done:
 NOTE: When using an Aspect Model URN as input to a command (such as
 `urn:samm:org.eclipse.esmf.example:1.0.0#Aspect`), you must also provide at least one of the
 switches mentioned above (`--models-root`, `--custom-resolver` or `--github`), otherwise samm-cli
-will not know where to find the corresonding file(s).
+will not know where to find the corresponding file(s).
+
+NOTE: The `--models-root`, `--custom-resolver` and `--github` switches (and their related options)
+are options of the respective subcommand, not of the top-level `samm` command. They must therefore
+be placed after the command and subcommand name, e.g., `samm aspect AspectModel.ttl validate
+--custom-resolver myresolver.sh`, not before it (`samm --custom-resolver myresolver.sh aspect
+AspectModel.ttl validate` will not work).
 
 [[using-the-cli-to-create-a-json-openapi-specification]]
 == Using the CLI to create a JSON OpenAPI Specification
