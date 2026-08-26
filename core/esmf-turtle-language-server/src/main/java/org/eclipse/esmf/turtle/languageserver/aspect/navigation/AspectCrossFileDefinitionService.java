@@ -126,6 +126,19 @@ public class AspectCrossFileDefinitionService extends TurtleService {
       return targetDocument.flatMap( doc -> findByLocalName( localName.get(), doc ) );
    }
 
+   /** Resolves a full semantic URN to the current location of its named subject. */
+   public UrnResolution findDefinition( final ParsedDocument sourceDocument, final AspectModelUrn urn ) {
+      if ( !documentIsAspectModel( sourceDocument ) ) return UrnResolution.temporarilyUnresolvable();
+      final UrnResolution local = findByUrn( urn, sourceDocument );
+      if ( local.outcome() != UrnResolution.Outcome.NOT_FOUND ) return local;
+      try {
+         final URI target = resolutionStrategyService.buildResolutionStrategyForDocument( sourceDocument ).apply( urn, RESOLUTION_SUPPORT ).sourceUri();
+         if ( !"file".equalsIgnoreCase( target.getScheme() ) ) return UrnResolution.unsupportedUri();
+         return getOrLoadDocument( Paths.get( target ) ).map( document -> findByUrn( urn, document ) ).orElseGet( UrnResolution::temporarilyUnresolvable );
+      } catch ( final ModelResolutionException e ) { return UrnResolution.notFound();
+      } catch ( final IllegalArgumentException e ) { return UrnResolution.unsupportedUri(); }
+   }
+
    Optional<String> getPrefixIri( final String prefixName, final TurtleSyntaxTree tree ) {
       return tree.nodes()
             .filter( n -> ParserTokenType.DIRECTIVE.equals( n.type() ) )
@@ -201,6 +214,31 @@ public class AspectCrossFileDefinitionService extends TurtleService {
                         .findFirst() );
 
       return definitionNode.map( n -> super.getLocationForLsp( targetDocument, n ) );
+   }
+
+   private UrnResolution findByUrn( final AspectModelUrn urn, final ParsedDocument document ) {
+      final TurtleSyntaxTree tree = document.turtleSyntaxTree();
+      final List<TurtleSyntaxTree.Node> matches = allSubjectPrefixedNames( tree ).filter( n -> subjectUrn( n, tree ).map( urn.toString()::equals ).orElse( false ) ).toList();
+      if ( matches.isEmpty() ) return UrnResolution.notFound();
+      if ( matches.size() > 1 ) return UrnResolution.ambiguous();
+      return matches.getFirst().children().stream().filter( n -> n.isToken() && ParserTokenType.PN_LOCAL.equals( n.type() ) ).findFirst()
+            .map( n -> UrnResolution.found( super.getLocationForLsp( document, n ) ) ).orElseGet( UrnResolution::temporarilyUnresolvable );
+   }
+
+   private Optional<String> subjectUrn( final TurtleSyntaxTree.Node subject, final TurtleSyntaxTree tree ) {
+      final Optional<String> local = subject.children().stream().filter( n -> n.isToken() && ParserTokenType.PN_LOCAL.equals( n.type() ) ).map( TurtleSyntaxTree.Node::content ).findFirst();
+      final String prefix = subject.children().stream().filter( n -> ParserTokenType.NAMESPACE.equals( n.type() ) ).map( TurtleSyntaxTree.Node::content ).findFirst().orElse( "" );
+      final String prefixName = prefix.endsWith( ":" ) ? prefix.substring( 0, prefix.length() - 1 ) : prefix;
+      return local.flatMap( name -> getPrefixIri( prefixName, tree ).map( iri -> iri + name ) );
+   }
+
+   public record UrnResolution( Outcome outcome, Location location ) {
+      public enum Outcome { FOUND, NOT_FOUND, AMBIGUOUS, UNSUPPORTED_URI, TEMPORARILY_UNRESOLVABLE }
+      static UrnResolution found( final Location value ) { return new UrnResolution( Outcome.FOUND, value ); }
+      static UrnResolution notFound() { return new UrnResolution( Outcome.NOT_FOUND, null ); }
+      static UrnResolution ambiguous() { return new UrnResolution( Outcome.AMBIGUOUS, null ); }
+      static UrnResolution unsupportedUri() { return new UrnResolution( Outcome.UNSUPPORTED_URI, null ); }
+      static UrnResolution temporarilyUnresolvable() { return new UrnResolution( Outcome.TEMPORARILY_UNRESOLVABLE, null ); }
    }
 
    private Optional<TurtleSyntaxTree.Node> findLocalNameInStream(

@@ -35,6 +35,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.generator.AspectGenerator;
@@ -78,7 +79,29 @@ public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[],
     * @return the generated SVG and its navigation target sidecar
     */
    public DiagramNavigationResult generateSvgWithNavigationMetadata() {
-      return generateSvg( DiagramHeaderNavigation.enabled() );
+      return generateSvgWithNavigationMetadata( Integer.MAX_VALUE );
+   }
+
+   /**
+    * Generates a navigation-enabled SVG if the traversed diagram does not exceed the box limit.
+    * The single traversed diagram is counted immediately before, and then passed unchanged to,
+    * Graphper rendering.
+    *
+    * @param maximumBoxes maximum permitted number of rendered boxes
+    * @return the generated SVG and navigation sidecar
+    * @throws DiagramBoxLimitExceededException if the diagram exceeds the limit
+    */
+   public DiagramNavigationResult generateSvgWithNavigationMetadata( final int maximumBoxes ) {
+      return generateSvgWithNavigationMetadata( maximumBoxes, this::generateSvg );
+   }
+
+   DiagramNavigationResult generateSvgWithNavigationMetadata( final int maximumBoxes,
+         final Function<Diagram, DiagramNavigationResult> graphperRenderer ) {
+      final Diagram diagram = createDiagram( DiagramHeaderNavigation.enabled() );
+      if ( diagram.getBoxes().size() > maximumBoxes ) {
+         throw new DiagramBoxLimitExceededException( diagram.getBoxes().size(), maximumBoxes );
+      }
+      return graphperRenderer.apply( diagram );
    }
 
    @Override
@@ -124,12 +147,10 @@ public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[],
    }
 
    private String generateSvg() {
-      return generateSvg( DiagramHeaderNavigation.disabled() ).svg();
+      return generateSvg( createDiagram( DiagramHeaderNavigation.disabled() ) ).svg();
    }
 
-   private DiagramNavigationResult generateSvg( final DiagramHeaderNavigation headerNavigation ) {
-      final DiagramVisitor diagramVisitor = new DiagramVisitor( config.language(), headerNavigation );
-      final Diagram diagram = aspect().accept( diagramVisitor, Optional.empty() );
+   private DiagramNavigationResult generateSvg( final Diagram diagram ) {
       final Graphviz graphviz = render( diagram );
 
       try ( final InputStream fontStream = getInputStream( FONT_FILE ) ) {
@@ -151,6 +172,11 @@ public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[],
       } catch ( final ExecuteException | IOException exception ) {
          throw new DocumentGenerationException( exception );
       }
+   }
+
+   private Diagram createDiagram( final DiagramHeaderNavigation headerNavigation ) {
+      final DiagramVisitor diagramVisitor = new DiagramVisitor( config.language(), headerNavigation );
+      return aspect().accept( diagramVisitor, Optional.empty() );
    }
 
    private Map<String, String> navigationTargets( final Diagram diagram ) {
@@ -245,5 +271,14 @@ public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[],
             } )
             .forEach( graphvizBuilder::addLine );
       return graphvizBuilder.build();
+   }
+
+   /** Signals that a traversed diagram must not be passed to Graphper. */
+   public static class DiagramBoxLimitExceededException extends DocumentGenerationException {
+      private static final long serialVersionUID = 1L;
+
+      DiagramBoxLimitExceededException( final int actualBoxes, final int maximumBoxes ) {
+         super( "Diagram contains %d boxes; maximum is %d".formatted( actualBoxes, maximumBoxes ) );
+      }
    }
 }

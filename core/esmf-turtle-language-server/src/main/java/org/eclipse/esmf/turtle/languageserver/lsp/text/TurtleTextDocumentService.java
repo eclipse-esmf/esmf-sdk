@@ -25,16 +25,22 @@ import java.util.concurrent.Executors;
 
 import org.eclipse.esmf.aspectmodel.ViolationReport;
 import org.eclipse.esmf.turtle.languageserver.aspect.navigation.AspectCrossFileDefinitionService;
+import org.eclipse.esmf.turtle.languageserver.graphical.GraphicalViewService;
 import org.eclipse.esmf.turtle.languageserver.lsp.ResolutionStrategyService;
 import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.DiagnosticMapper;
-import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.ViolationProvider;
 import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.ResolutionStrategyAwareViolationProvider;
+import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.ViolationProvider;
+import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewRenderParams;
+import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewRenderResult;
+import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewResolveTargetParams;
+import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewResolveTargetResult;
 import org.eclipse.esmf.turtle.languageserver.structure.DocumentSymbolService;
 import org.eclipse.esmf.turtle.languageserver.structure.TurtleTokenService;
 import org.eclipse.esmf.turtle.languageserver.turtle.TurtleCompletionService;
 import org.eclipse.esmf.turtle.languageserver.turtle.ValidationCoordinator;
 import org.eclipse.esmf.turtle.languageserver.turtle.navigation.TurtleDefinitionService;
 
+import com.google.common.collect.Streams;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.CompletionParams;
@@ -57,8 +63,6 @@ import org.eclipse.lsp4j.services.TextDocumentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Streams;
-
 public class TurtleTextDocumentService implements TextDocumentService {
    private static final Logger LOG = LoggerFactory.getLogger( TurtleTextDocumentService.class );
 
@@ -70,6 +74,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
    private final TreeSitterTurtleParserService turtleParserService;
    private final TurtleTokenService tokenService;
    private final DocumentSymbolService documentSymbolService;
+   private final GraphicalViewService graphicalViewService;
    private final ResolutionStrategyService resolutionStrategyService = new ResolutionStrategyService();
    private final Map<String, Document> documents = new ConcurrentHashMap<>();
    private final ExecutorService asyncExecutor = Executors.newCachedThreadPool(
@@ -86,6 +91,8 @@ public class TurtleTextDocumentService implements TextDocumentService {
       turtleParserService = new TreeSitterTurtleParserService();
       tokenService = new TurtleTokenService();
       aspectCrossFileDefinitionService = new AspectCrossFileDefinitionService( turtleParserService, documents, resolutionStrategyService );
+      graphicalViewService = new GraphicalViewService( documents, turtleParserService, resolutionStrategyService,
+            aspectCrossFileDefinitionService );
       documentSymbolService = new DocumentSymbolService( turtleParserService );
       final List<ViolationProvider> violationProviders =
             Streams.stream( ServiceLoader.load( ViolationProvider.class ).iterator() ).toList();
@@ -107,7 +114,26 @@ public class TurtleTextDocumentService implements TextDocumentService {
 
    public void shutdown() {
       validationCoordinator.close();
+      graphicalViewService.close();
       asyncExecutor.shutdown();
+   }
+
+   /** Visible for lifecycle verification of all per-server executors. */
+   public boolean executorsShutdown() {
+      return asyncExecutor.isShutdown() && graphicalViewService.executorsShutdown();
+   }
+
+   /** Visible for lifecycle verification that shutdown workers have actually terminated. */
+   public boolean executorsTerminated() {
+      return asyncExecutor.isTerminated() && graphicalViewService.executorsTerminated();
+   }
+
+   public CompletableFuture<GraphicalViewRenderResult> renderGraphicalView( final GraphicalViewRenderParams params ) {
+      return graphicalViewService.render( params );
+   }
+
+   public CompletableFuture<GraphicalViewResolveTargetResult> resolveGraphicalViewTarget( final GraphicalViewResolveTargetParams params ) {
+      return graphicalViewService.resolveTarget( params );
    }
 
    public CompletableFuture<ViolationReport> validateDocument( final String uri ) {
