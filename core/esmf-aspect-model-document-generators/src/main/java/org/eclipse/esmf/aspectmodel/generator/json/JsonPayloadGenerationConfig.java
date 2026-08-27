@@ -53,7 +53,8 @@ public record JsonPayloadGenerationConfig(
          } catch ( final IllegalArgumentException e ) {
             throw new IllegalArgumentException(
                   "Invalid timestamp format: '" + timestamp
-                        + "'. Expected XML Schema dateTime format (e.g. 2025-06-15T10:30:00.000Z).", e );
+                        + "'. Expected XML Schema dateTime format (e.g. 2025-06-15T10:30:00.000Z).",
+                  e );
          }
          if ( cal.getYear() == DatatypeConstants.FIELD_UNDEFINED
                || cal.getMonth() == DatatypeConstants.FIELD_UNDEFINED
