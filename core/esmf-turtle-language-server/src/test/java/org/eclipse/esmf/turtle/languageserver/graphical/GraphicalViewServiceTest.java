@@ -14,6 +14,7 @@ import org.eclipse.esmf.turtle.languageserver.aspect.navigation.AspectCrossFileD
 import org.eclipse.esmf.turtle.languageserver.lsp.ResolutionStrategyService;
 import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewRenderParams;
 import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewRenderResult;
+import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewResolveAttributeTargetParams;
 import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewResolveTargetParams;
 import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewResolveTargetWarning;
 import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewTarget;
@@ -172,6 +173,42 @@ class GraphicalViewServiceTest {
       assertThat( throwingService.resolveTarget( new GraphicalViewResolveTargetParams( uri, urn ) ).get().warning() )
             .isEqualTo( GraphicalViewResolveTargetWarning.TEMPORARILY_UNRESOLVABLE );
       throwingService.close();
+   }
+
+   @Test
+   void invalidAttributeLocationIsConvertedToControlledWarningBeforeTransport(
+         @TempDir final java.nio.file.Path directory ) throws Exception {
+      final String sourceText = """
+            @prefix : <urn:samm:example.resolve:1.0.0#> .
+            @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+            :Source a samm:Aspect ;
+               samm:see <https://example.test/reference/with/a/long/path>, <urn:irdi:0173:1:02:AAO677:003> ;
+               samm:properties () ;
+               samm:operations () .
+            """;
+      final String uri = java.nio.file.Files.writeString( directory.resolve( "Source.ttl" ), sourceText ).toUri().toString();
+      final Map<String, Document> documents = Map.of( uri, new Document( uri, sourceText ) );
+      final TreeSitterTurtleParserService parser = new TreeSitterTurtleParserService();
+      final ResolutionStrategyService strategies = new ResolutionStrategyService();
+      final AspectCrossFileDefinitionService malformed = new AspectCrossFileDefinitionService( parser, documents, strategies ) {
+         @Override public UrnResolution findAttributeStatement(
+               final org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument source,
+               final org.eclipse.esmf.aspectmodel.urn.AspectModelUrn ownerUrn, final String predicateUrn,
+               final org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewAttributeSelection selection,
+               final String language ) {
+            return new UrnResolution( UrnResolution.Outcome.FOUND,
+                  new Location( uri, new Range( new Position( 2, 5 ), new Position( 1, 0 ) ) ) );
+         }
+      };
+      final GraphicalViewService service = resolverService( documents, parser, strategies, malformed );
+
+      final var result = service.resolveAttributeTarget( new GraphicalViewResolveAttributeTargetParams( uri,
+            "urn:samm:example.resolve:1.0.0#Source", "urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#see",
+            "predicateStart", null ) ).get();
+
+      assertThat( result.location() ).isNull();
+      assertThat( result.warning() ).isEqualTo( GraphicalViewResolveTargetWarning.TEMPORARILY_UNRESOLVABLE.wireValue() );
+      service.close();
    }
 
    @Test

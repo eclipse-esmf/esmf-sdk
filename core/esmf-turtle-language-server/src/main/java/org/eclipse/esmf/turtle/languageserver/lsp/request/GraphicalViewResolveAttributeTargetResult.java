@@ -7,9 +7,9 @@ import org.eclipse.lsp4j.Location;
 /** Fresh attribute statement location, or one controlled warning. */
 public record GraphicalViewResolveAttributeTargetResult(
       Location location,
-      GraphicalViewResolveTargetWarning warning
+      String warning
 ) {
    public static GraphicalViewResolveAttributeTargetResult warning( final GraphicalViewResolveTargetWarning warning ) {
-      return new GraphicalViewResolveAttributeTargetResult( null, warning );
+      return new GraphicalViewResolveAttributeTargetResult( null, warning.wireValue() );
    }
 }

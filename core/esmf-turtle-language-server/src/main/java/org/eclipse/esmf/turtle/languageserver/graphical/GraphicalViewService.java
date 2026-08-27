@@ -51,6 +51,9 @@ import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TreeSitterTurtleParserService;
 
+import org.eclipse.lsp4j.Location;
+import org.eclipse.lsp4j.Position;
+
 /** Request-local graphical rendering and live semantic target resolution. */
 public class GraphicalViewService implements AutoCloseable {
    static final int MAX_BOXES = 1_000;
@@ -205,9 +208,7 @@ public class GraphicalViewService implements AutoCloseable {
             final var resolution = definitions.findAttributeStatement( parser.apply( source ), owner.get(), predicate.get().toString(),
                   selection.get(), language );
             return switch ( resolution.outcome() ) {
-               case FOUND -> isFile( resolution.location().getUri() )
-                     ? new GraphicalViewResolveAttributeTargetResult( resolution.location(), null )
-                     : GraphicalViewResolveAttributeTargetResult.warning( GraphicalViewResolveTargetWarning.UNSUPPORTED_URI );
+               case FOUND -> attributeLocationResult( resolution.location() );
                case NOT_FOUND -> GraphicalViewResolveAttributeTargetResult.warning( GraphicalViewResolveTargetWarning.NOT_FOUND );
                case AMBIGUOUS -> GraphicalViewResolveAttributeTargetResult.warning( GraphicalViewResolveTargetWarning.AMBIGUOUS );
                case UNSUPPORTED_URI ->
@@ -219,6 +220,30 @@ public class GraphicalViewService implements AutoCloseable {
             return GraphicalViewResolveAttributeTargetResult.warning( GraphicalViewResolveTargetWarning.TEMPORARILY_UNRESOLVABLE );
          }
       }, executor );
+   }
+
+   private static GraphicalViewResolveAttributeTargetResult attributeLocationResult( final Location location ) {
+      if ( location == null || location.getUri() == null ) {
+         return GraphicalViewResolveAttributeTargetResult.warning( GraphicalViewResolveTargetWarning.TEMPORARILY_UNRESOLVABLE );
+      }
+      if ( !isFile( location.getUri() ) ) {
+         return GraphicalViewResolveAttributeTargetResult.warning( GraphicalViewResolveTargetWarning.UNSUPPORTED_URI );
+      }
+      if ( location.getRange() == null || !validPosition( location.getRange().getStart() )
+            || !validPosition( location.getRange().getEnd() ) ) {
+         return GraphicalViewResolveAttributeTargetResult.warning( GraphicalViewResolveTargetWarning.TEMPORARILY_UNRESOLVABLE );
+      }
+      final Position start = location.getRange().getStart();
+      final Position end = location.getRange().getEnd();
+      if ( start.getLine() > end.getLine()
+            || ( start.getLine() == end.getLine() && start.getCharacter() > end.getCharacter() ) ) {
+         return GraphicalViewResolveAttributeTargetResult.warning( GraphicalViewResolveTargetWarning.TEMPORARILY_UNRESOLVABLE );
+      }
+      return new GraphicalViewResolveAttributeTargetResult( location, null );
+   }
+
+   private static boolean validPosition( final Position position ) {
+      return position != null && position.getLine() >= 0 && position.getCharacter() >= 0;
    }
 
    private Document sourceContext( final String sourceUri ) {

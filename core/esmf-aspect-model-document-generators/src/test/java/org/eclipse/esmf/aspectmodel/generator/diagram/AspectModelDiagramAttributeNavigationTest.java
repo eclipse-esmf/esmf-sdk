@@ -46,7 +46,7 @@ class AspectModelDiagramAttributeNavigationTest {
             samm:preferredName "Attribute Aspect"@en ;
             samm:preferredName "Attributaspekt"@de ;
             samm:description "A deliberately long English description that wraps into more than one physical diagram row for navigation"@en ;
-            samm:see <urn:irdi:0173:1:02:AAO677:002>, <urn:irdi:0173:1:02:AAO677:003> ;
+            samm:see <https://example.test/reference/with/a/long/path>, <urn:irdi:0173:1:02:AAO677:003> ;
             samm:properties ( :enumProperty :stateProperty :measurementProperty :lengthProperty ) ;
             samm:operations () .
 

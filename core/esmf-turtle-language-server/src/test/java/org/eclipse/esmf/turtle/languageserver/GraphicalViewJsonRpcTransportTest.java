@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.URI;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.charset.StandardCharsets;
@@ -37,9 +38,13 @@ class GraphicalViewJsonRpcTransportTest {
    void bothGraphicalMethodsRoundTripThroughRealLauncherWithExactWireShapes( @TempDir final Path directory ) throws Exception {
       final Path source = Files.writeString( directory.resolve( "Transport.ttl" ), model() );
       final String uri = source.toUri().toString();
+      final Path ambiguousSource = Files.writeString( directory.resolve( "AmbiguousTransport.ttl" ), ambiguousModel() );
+      final String ambiguousUri = ambiguousSource.toUri().toString();
       final TurtleLanguageServer server = new TurtleLanguageServer();
-      ( (TurtleTextDocumentService) server.getTextDocumentService() ).didOpen(
-            new DidOpenTextDocumentParams( new TextDocumentItem( uri, "turtle", 1, model() ) ) );
+      final TurtleTextDocumentService textDocuments = (TurtleTextDocumentService) server.getTextDocumentService();
+      textDocuments.didOpen( new DidOpenTextDocumentParams( new TextDocumentItem( uri, "turtle", 1, model() ) ) );
+      textDocuments.didOpen(
+            new DidOpenTextDocumentParams( new TextDocumentItem( ambiguousUri, "turtle", 1, ambiguousModel() ) ) );
 
       try ( final AsynchronousServerSocketChannel listener = AsynchronousServerSocketChannel.open() ) {
          listener.bind( new InetSocketAddress( "localhost", 0 ) );
@@ -85,7 +90,7 @@ class GraphicalViewJsonRpcTransportTest {
                   .filter( target -> "urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#see".equals(
                         target.path( "predicateUrn" ).asText() ) )
                   .toList();
-            assertThat( wrappedSeeTargets ).hasSizeGreaterThan( 1 )
+            assertThat( wrappedSeeTargets ).hasSize( 2 )
                   .extracting( target -> target.get( "id" ).asText() ).doesNotHaveDuplicates();
             assertThat( wrappedSeeTargets ).allSatisfy( target -> {
                assertThat( target.get( "ownerUrn" ).asText() ).isEqualTo( "urn:samm:example.transport:1.0.0#Transport" );
@@ -126,12 +131,35 @@ class GraphicalViewJsonRpcTransportTest {
                final JsonNode response = readResponse( client.getInputStream(), requestId );
                assertThat( fieldNames( response.get( "result" ) ) ).containsExactly( "location" );
                final JsonNode location = response.at( "/result/location" );
-               assertThat( location.get( "uri" ).asText() ).isEqualTo( uri );
+               assertValidSeeLocation( location, uri, model() );
                if ( sharedSeeLocation == null ) {
                   sharedSeeLocation = location;
                } else {
                   assertThat( location ).isEqualTo( sharedSeeLocation );
                }
+            }
+
+            final String ambiguousRenderRequest = """
+                  {"jsonrpc":"2.0","id":10,"method":"turtle/graphicalView/render","params":{"uri":"%s","includeAttributeRows":true}}
+                  """.formatted( ambiguousUri ).strip();
+            writeMessage( client.getOutputStream(), ambiguousRenderRequest );
+            final JsonNode ambiguousRenderResponse = readResponse( client.getInputStream(), 10 );
+            final List<JsonNode> ambiguousSeeTargets = ambiguousRenderResponse.at( "/result/targets" ).valueStream()
+                  .filter( target -> "attributeRow".equals( target.path( "kind" ).asText() ) )
+                  .filter( target -> "urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#see".equals(
+                        target.path( "predicateUrn" ).asText() ) )
+                  .toList();
+            assertThat( ambiguousSeeTargets ).isNotEmpty();
+            for ( int index = 0; index < ambiguousSeeTargets.size(); index++ ) {
+               final int requestId = 11 + index;
+               final String request = """
+                     {"jsonrpc":"2.0","id":%d,"method":"turtle/graphicalView/resolveAttributeTarget","params":{"sourceUri":"%s","ownerUrn":"urn:samm:example.transport:1.0.0#Transport","predicateUrn":"urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#see","selection":"predicateStart"}}
+                     """.formatted( requestId, ambiguousUri ).strip();
+               writeMessage( client.getOutputStream(), request );
+               final JsonNode response = readResponse( client.getInputStream(), requestId );
+               assertThat( fieldNames( response.get( "result" ) ) ).containsExactly( "warning" );
+               assertThat( response.at( "/result/warning" ).isTextual() ).isTrue();
+               assertThat( response.at( "/result/warning" ).asText() ).isEqualTo( "ambiguous" );
             }
 
             client.close();
@@ -143,6 +171,41 @@ class GraphicalViewJsonRpcTransportTest {
    private static Set<String> fieldNames( final JsonNode node ) {
       return node.properties().stream().map( java.util.Map.Entry::getKey )
             .collect( java.util.stream.Collectors.toCollection( java.util.LinkedHashSet::new ) );
+   }
+
+   private static void assertValidSeeLocation( final JsonNode location, final String expectedUri, final String source ) {
+      assertThat( fieldNames( location ) ).containsExactlyInAnyOrder( "uri", "range" );
+      assertThat( location.get( "uri" ).isTextual() ).isTrue();
+      assertThat( location.get( "uri" ).asText() ).isEqualTo( expectedUri );
+      final URI uri = URI.create( location.get( "uri" ).asText() );
+      assertThat( uri.isAbsolute() ).isTrue();
+      assertThat( uri.getScheme() ).isEqualToIgnoringCase( "file" );
+      assertThat( Path.of( uri ).isAbsolute() ).isTrue();
+
+      final JsonNode range = location.get( "range" );
+      assertThat( fieldNames( range ) ).containsExactlyInAnyOrder( "start", "end" );
+      final int[] start = position( range.get( "start" ) );
+      final int[] end = position( range.get( "end" ) );
+      assertThat( start ).containsExactly( 5, 3 );
+      assertThat( end ).containsExactly( 5, 11 );
+      assertThat( start[0] < end[0] || ( start[0] == end[0] && start[1] <= end[1] ) ).isTrue();
+      final List<String> lines = source.lines().toList();
+      assertThat( start[0] ).isLessThan( lines.size() );
+      assertThat( start[1] ).isLessThanOrEqualTo( lines.get( start[0] ).length() );
+      assertThat( lines.get( start[0] ).substring( start[1] ) ).startsWith( "samm:see" );
+   }
+
+   private static int[] position( final JsonNode position ) {
+      assertThat( fieldNames( position ) ).containsExactlyInAnyOrder( "line", "character" );
+      assertThat( position.get( "line" ).isIntegralNumber() ).isTrue();
+      assertThat( position.get( "character" ).isIntegralNumber() ).isTrue();
+      assertThat( position.get( "line" ).canConvertToInt() ).isTrue();
+      assertThat( position.get( "character" ).canConvertToInt() ).isTrue();
+      final int line = position.get( "line" ).intValue();
+      final int character = position.get( "character" ).intValue();
+      assertThat( line ).isNotNegative();
+      assertThat( character ).isNotNegative();
+      return new int[] { line, character };
    }
 
    private JsonNode readResponse( final InputStream input, final int id ) throws Exception {
@@ -187,9 +250,16 @@ class GraphicalViewJsonRpcTransportTest {
 
             :Transport a samm:Aspect ;
                samm:description "Transport aspect"@en ;
-               samm:see <urn:irdi:0173:1:02:AAO677:002>, <urn:irdi:0173:1:02:AAO677:003> ;
+               samm:see <https://example.test/reference/with/a/long/path>, <urn:irdi:0173:1:02:AAO677:003> ;
                samm:properties () ;
                samm:operations () .
             """;
+   }
+
+   private static String ambiguousModel() {
+      return model().replace(
+            "samm:see <https://example.test/reference/with/a/long/path>, <urn:irdi:0173:1:02:AAO677:003> ;",
+            "samm:see <https://example.test/reference/with/a/long/path> ;\n"
+                  + "   samm:see <urn:irdi:0173:1:02:AAO677:003> ;" );
    }
 }

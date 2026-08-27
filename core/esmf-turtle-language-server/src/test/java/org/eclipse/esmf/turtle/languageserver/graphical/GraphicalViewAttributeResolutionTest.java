@@ -154,6 +154,23 @@ class GraphicalViewAttributeResolutionTest {
       service.close();
    }
 
+   @Test
+   void distinctSeePredicateStatementsAreAmbiguous( @TempDir final Path directory ) throws Exception {
+      final String duplicateSeeModel = model( "" ).replace(
+            "samm:see <https://example.test/one>, <https://example.test/two> ;",
+            "samm:see <https://example.test/reference/with/a/long/path> ;\n"
+                  + "   samm:see <urn:irdi:0173:1:02:AAO677:003> ;" );
+      final Path source = Files.writeString( directory.resolve( "DuplicateSee.ttl" ), duplicateSeeModel );
+      final String uri = source.toUri().toString();
+      final Map<String, Document> open = new ConcurrentHashMap<>();
+      open.put( uri, new Document( uri, duplicateSeeModel ) );
+      final GraphicalViewService service = trustedService( open, uri ).service();
+
+      assertWarning( resolve( service, uri, OWNER, SEE, "predicateStart", null ),
+            GraphicalViewResolveTargetWarning.AMBIGUOUS );
+      service.close();
+   }
+
    private static TestContext trustedService( final Map<String, Document> documents, final String uri ) throws Exception {
       final TreeSitterTurtleParserService parser = new TreeSitterTurtleParserService();
       final ResolutionStrategyService strategies = new ResolutionStrategyService();
@@ -187,7 +204,7 @@ class GraphicalViewAttributeResolutionTest {
    private static void assertWarning( final GraphicalViewResolveAttributeTargetResult result,
          final GraphicalViewResolveTargetWarning warning ) {
       assertThat( result.location() ).isNull();
-      assertThat( result.warning() ).isEqualTo( warning );
+      assertThat( result.warning() ).isEqualTo( warning.wireValue() );
    }
 
    private static void assertStartsAt( final Location location, final String source, final String expected ) {
