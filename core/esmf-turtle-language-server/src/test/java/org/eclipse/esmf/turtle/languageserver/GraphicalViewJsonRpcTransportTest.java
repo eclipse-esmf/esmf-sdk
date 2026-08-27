@@ -16,6 +16,7 @@ import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -79,6 +80,17 @@ class GraphicalViewJsonRpcTransportTest {
                   .containsExactlyInAnyOrder( "id", "kind", "ownerUrn", "predicateUrn", "selection", "language" );
             assertThat( attributeTarget.get( "selection" ).asText() ).isEqualTo( "singleOccurrence" );
             assertThat( attributeTarget.get( "language" ).asText() ).isEqualTo( "en" );
+            final List<JsonNode> wrappedSeeTargets = renderResponse.at( "/result/targets" ).valueStream()
+                  .filter( target -> "attributeRow".equals( target.path( "kind" ).asText() ) )
+                  .filter( target -> "urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#see".equals(
+                        target.path( "predicateUrn" ).asText() ) )
+                  .toList();
+            assertThat( wrappedSeeTargets ).hasSizeGreaterThan( 1 )
+                  .extracting( target -> target.get( "id" ).asText() ).doesNotHaveDuplicates();
+            assertThat( wrappedSeeTargets ).allSatisfy( target -> {
+               assertThat( target.get( "ownerUrn" ).asText() ).isEqualTo( "urn:samm:example.transport:1.0.0#Transport" );
+               assertThat( target.get( "selection" ).asText() ).isEqualTo( "predicateStart" );
+            } );
 
             final String resolveRequest = """
                   {"jsonrpc":"2.0","id":2,"method":"turtle/graphicalView/resolveTarget","params":{"sourceUri":"%s","elementUrn":"urn:samm:example.transport:1.0.0#Transport"}}
@@ -103,6 +115,24 @@ class GraphicalViewJsonRpcTransportTest {
             final JsonNode resolveAttributeResponse = readResponse( client.getInputStream(), 3 );
             assertThat( fieldNames( resolveAttributeResponse.get( "result" ) ) ).containsExactly( "location" );
             assertThat( resolveAttributeResponse.at( "/result/location/uri" ).asText() ).isEqualTo( uri );
+
+            JsonNode sharedSeeLocation = null;
+            for ( int index = 0; index < wrappedSeeTargets.size(); index++ ) {
+               final int requestId = 4 + index;
+               final String resolveWrappedSeeRequest = """
+                     {"jsonrpc":"2.0","id":%d,"method":"turtle/graphicalView/resolveAttributeTarget","params":{"sourceUri":"%s","ownerUrn":"urn:samm:example.transport:1.0.0#Transport","predicateUrn":"urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#see","selection":"predicateStart"}}
+                     """.formatted( requestId, uri ).strip();
+               writeMessage( client.getOutputStream(), resolveWrappedSeeRequest );
+               final JsonNode response = readResponse( client.getInputStream(), requestId );
+               assertThat( fieldNames( response.get( "result" ) ) ).containsExactly( "location" );
+               final JsonNode location = response.at( "/result/location" );
+               assertThat( location.get( "uri" ).asText() ).isEqualTo( uri );
+               if ( sharedSeeLocation == null ) {
+                  sharedSeeLocation = location;
+               } else {
+                  assertThat( location ).isEqualTo( sharedSeeLocation );
+               }
+            }
 
             client.close();
             handler.get( 5, TimeUnit.SECONDS );
@@ -157,6 +187,7 @@ class GraphicalViewJsonRpcTransportTest {
 
             :Transport a samm:Aspect ;
                samm:description "Transport aspect"@en ;
+               samm:see <urn:irdi:0173:1:02:AAO677:002>, <urn:irdi:0173:1:02:AAO677:003> ;
                samm:properties () ;
                samm:operations () .
             """;

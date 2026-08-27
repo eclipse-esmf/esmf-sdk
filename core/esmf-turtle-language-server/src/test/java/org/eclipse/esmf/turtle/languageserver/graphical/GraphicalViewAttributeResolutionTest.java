@@ -80,6 +80,44 @@ class GraphicalViewAttributeResolutionTest {
    }
 
    @Test
+   void resolvesSameFileOwnerWrittenAsFullIri( @TempDir final Path directory ) throws Exception {
+      final String fullIriModel = model( "" ).replace( ":Owner a samm:Aspect", "<" + OWNER + "> a samm:Aspect" );
+      final Path source = Files.writeString( directory.resolve( "FullIriOwner.ttl" ), fullIriModel );
+      final String uri = source.toUri().toString();
+      final Map<String, Document> open = new ConcurrentHashMap<>();
+      open.put( uri, new Document( uri, fullIriModel ) );
+      final GraphicalViewService service = trustedService( open, uri ).service();
+
+      final GraphicalViewResolveAttributeTargetResult result = resolve( service, uri, OWNER, DESCRIPTION,
+            "singleOccurrence", "en" );
+
+      assertThat( result.warning() ).isNull();
+      assertThat( result.location().getUri() ).isEqualTo( uri );
+      assertStartsAt( result.location(), fullIriModel, "samm:description" );
+      service.close();
+   }
+
+   @Test
+   void resolvesImportedOwnerWrittenAsFullIri( @TempDir final Path directory ) throws Exception {
+      final Path main = Files.writeString( directory.resolve( "Main.ttl" ), model( "" ) );
+      final String fullIriImportedModel = importedModel().replace( ":ImportedOwner a samm:Property",
+            "<" + IMPORTED_OWNER + "> a samm:Property" );
+      final Path imported = Files.writeString( directory.resolve( "ImportedOwner.ttl" ), fullIriImportedModel );
+      final String uri = main.toUri().toString();
+      final Map<String, Document> open = new ConcurrentHashMap<>();
+      open.put( uri, new Document( uri, model( "" ) ) );
+      final GraphicalViewService service = trustedService( open, uri ).service();
+
+      final GraphicalViewResolveAttributeTargetResult result = resolve( service, uri, IMPORTED_OWNER, DESCRIPTION,
+            "singleOccurrence", "en" );
+
+      assertThat( result.warning() ).isNull();
+      assertThat( result.location().getUri() ).isEqualTo( imported.toUri().toString() );
+      assertStartsAt( result.location(), fullIriImportedModel, "samm:description" );
+      service.close();
+   }
+
+   @Test
    void missingAmbiguousMalformedInvalidSyntaxUnsupportedAndUntrustedInputsFailClosed( @TempDir final Path directory ) throws Exception {
       final Path source = Files.writeString( directory.resolve( "Main.ttl" ), model( "" ) );
       final String uri = source.toUri().toString();

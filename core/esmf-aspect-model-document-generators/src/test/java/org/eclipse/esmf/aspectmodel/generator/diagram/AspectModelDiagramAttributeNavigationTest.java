@@ -46,7 +46,7 @@ class AspectModelDiagramAttributeNavigationTest {
             samm:preferredName "Attribute Aspect"@en ;
             samm:preferredName "Attributaspekt"@de ;
             samm:description "A deliberately long English description that wraps into more than one physical diagram row for navigation"@en ;
-            samm:see <https://example.test/one>, <https://example.test/two> ;
+            samm:see <urn:irdi:0173:1:02:AAO677:002>, <urn:irdi:0173:1:02:AAO677:003> ;
             samm:properties ( :enumProperty :stateProperty :measurementProperty :lengthProperty ) ;
             samm:operations () .
 
@@ -93,9 +93,14 @@ class AspectModelDiagramAttributeNavigationTest {
       assertOne( result, target -> target.ownerUrn().equals( MODEL_NAMESPACE + "NamedLengthConstraint" )
             && target.predicateUrn().equals( SAMMC + "minValue" ) && target.selection().equals( "singleOccurrence" ) );
 
-      assertThat( matching( result, target -> target.ownerUrn().equals( MODEL_NAMESPACE + "AttributeAspect" )
-            && target.predicateUrn().equals( SAMM + "see" ) ) )
+      final List<DiagramAttributeNavigationTarget> wrappedSee = matching( result,
+            target -> target.ownerUrn().equals( MODEL_NAMESPACE + "AttributeAspect" )
+                  && target.predicateUrn().equals( SAMM + "see" ) );
+      assertThat( wrappedSee ).hasSizeGreaterThan( 1 ).extracting( DiagramAttributeNavigationTarget::id ).doesNotHaveDuplicates();
+      assertThat( wrappedSee )
             .allMatch( target -> target.selection().equals( "predicateStart" ) && target.language() == null );
+      assertThat( wrappedSee ).extracting( target -> List.of( target.ownerUrn(), target.predicateUrn(), target.selection() ) )
+            .containsOnly( List.of( MODEL_NAMESPACE + "AttributeAspect", SAMM + "see", "predicateStart" ) );
       assertThat( matching( result, target -> target.ownerUrn().equals( MODEL_NAMESPACE + "Enumeration" )
             && target.predicateUrn().equals( SAMMC + "values" ) ) )
             .allMatch( target -> target.selection().equals( "predicateStart" ) );

@@ -202,8 +202,7 @@ public class AspectCrossFileDefinitionService extends TurtleService {
 
    private Optional<String> tripleSubjectUrn( final TurtleSyntaxTree.Token triple, final TurtleSyntaxTree tree ) {
       return triple.childWithType( ParserTokenType.SUBJECT )
-            .flatMap( subject -> descendantWithType( subject, ParserTokenType.PREFIXED_NAME ) )
-            .flatMap( prefixedName -> expandedPrefixedName( prefixedName, tree ) );
+            .flatMap( subject -> expandedIri( subject, tree ) );
    }
 
    private Optional<String> expandedIri( final TurtleSyntaxTree.Node node, final TurtleSyntaxTree tree ) {
