@@ -47,15 +47,7 @@ public record JsonPayloadGenerationConfig(
          randomStrategy = new Random();
       }
       if ( timestamp != null && !timestamp.isBlank() ) {
-         final XMLGregorianCalendar cal;
-         try {
-            cal = DatatypeFactory.newDefaultInstance().newXMLGregorianCalendar( timestamp );
-         } catch ( final IllegalArgumentException e ) {
-            throw new IllegalArgumentException(
-                  "Invalid timestamp format: '" + timestamp
-                        + "'. Expected XML Schema dateTime format (e.g. 2025-06-15T10:30:00.000Z).",
-                  e );
-         }
+         final XMLGregorianCalendar cal = parseTimestamp( timestamp );
          if ( cal.getYear() == DatatypeConstants.FIELD_UNDEFINED
                || cal.getMonth() == DatatypeConstants.FIELD_UNDEFINED
                || cal.getDay() == DatatypeConstants.FIELD_UNDEFINED
@@ -66,6 +58,17 @@ public record JsonPayloadGenerationConfig(
                   "Timestamp must be a full XML Schema dateTime (e.g. 2025-06-15T10:30:00.000Z). "
                         + "Partial timestamps are not supported: '" + timestamp + "'." );
          }
+      }
+   }
+
+   private static XMLGregorianCalendar parseTimestamp( final String timestamp ) {
+      try {
+         return DatatypeFactory.newDefaultInstance().newXMLGregorianCalendar( timestamp );
+      } catch ( final IllegalArgumentException e ) {
+         throw new IllegalArgumentException(
+               "Invalid timestamp format: '" + timestamp
+                     + "'. Expected XML Schema dateTime format (e.g. 2025-06-15T10:30:00.000Z).",
+               e );
       }
    }
 }
