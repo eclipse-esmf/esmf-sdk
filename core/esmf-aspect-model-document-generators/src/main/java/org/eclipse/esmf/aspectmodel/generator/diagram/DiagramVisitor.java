@@ -76,15 +76,22 @@ import org.apache.jena.vocabulary.XSD;
 public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>> {
    private final Locale locale;
    private final DiagramHeaderNavigation headerNavigation;
+   private final DiagramAttributeNavigation attributeNavigation;
    private final Map<ModelElement, Diagram.Box> seenElements = new HashMap<>();
 
    public DiagramVisitor( final Locale locale ) {
-      this( locale, DiagramHeaderNavigation.disabled() );
+      this( locale, DiagramHeaderNavigation.disabled(), DiagramAttributeNavigation.disabled() );
    }
 
    DiagramVisitor( final Locale locale, final DiagramHeaderNavigation headerNavigation ) {
+      this( locale, headerNavigation, DiagramAttributeNavigation.disabled() );
+   }
+
+   DiagramVisitor( final Locale locale, final DiagramHeaderNavigation headerNavigation,
+         final DiagramAttributeNavigation attributeNavigation ) {
       this.locale = locale;
       this.headerNavigation = headerNavigation;
+      this.attributeNavigation = attributeNavigation;
    }
 
    @Override
@@ -167,7 +174,8 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
             final Scalar scalar = type.as( Scalar.class );
             final String typeName = scalar.getUrn().replace( XSD.NS, "" ).replace( RDF.uri, "" )
                   .replace( SammNs.SAMM.getNamespace(), "" );
-            result.getFocusBox().addEntry( attribute( "dataType", String.class, () -> typeName ) );
+            addAttribute( box, characteristic, SammNs.SAMM.dataType().getURI(), DiagramAttributeNavigation.Selection.SINGLE_OCCURRENCE,
+                  null, "dataType", String.class, () -> typeName );
          } else {
             result.add( childElementDiagram( box, type.as( ComplexType.class ), "dataType" ) );
          }
@@ -221,11 +229,16 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
 
       final Diagram result = defaultBox( unit, "Unit", Diagram.Color.UNIT );
       final Diagram.Box box = result.getFocusBox();
-      unit.getSymbol().ifPresent( symbol -> box.addEntry( attribute( "symbol", String.class, () -> symbol ) ) );
-      unit.getReferenceUnit().ifPresent( referenceUnit -> box.addEntry( attribute( "referenceUnit", String.class, () -> referenceUnit ) ) );
-      unit.getCode().ifPresent( code -> box.addEntry( attribute( "code", String.class, () -> code ) ) );
+      unit.getSymbol().ifPresent( symbol -> addAttribute( box, unit, SammNs.SAMM.symbol().getURI(),
+            DiagramAttributeNavigation.Selection.SINGLE_OCCURRENCE, null, "symbol", String.class, () -> symbol ) );
+      unit.getReferenceUnit().ifPresent( referenceUnit -> addAttribute( box, unit, SammNs.SAMM.referenceUnit().getURI(),
+            DiagramAttributeNavigation.Selection.SINGLE_OCCURRENCE, null, "referenceUnit", String.class, () -> referenceUnit ) );
+      unit.getCode().ifPresent( code -> addAttribute( box, unit, SammNs.SAMM.commonCode().getURI(),
+            DiagramAttributeNavigation.Selection.SINGLE_OCCURRENCE, null, "code", String.class, () -> code ) );
       unit.getConversionFactor()
-            .ifPresent( conversionFactor -> box.addEntry( attribute( "conversionFactor", String.class, () -> conversionFactor ) ) );
+            .ifPresent( conversionFactor -> addAttribute( box, unit, SammNs.SAMM.conversionFactor().getURI(),
+                  DiagramAttributeNavigation.Selection.SINGLE_OCCURRENCE, null, "conversionFactor", String.class,
+                  () -> conversionFactor ) );
       return result;
    }
 
@@ -252,8 +265,10 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
 
       final Diagram result = defaultBox( lengthConstraint, "LengthConstraint", Diagram.Color.CONSTRAINT );
       final Diagram.Box box = result.getFocusBox();
-      lengthConstraint.getMinValue().ifPresent( minValue -> box.addEntry( attribute( "minValue", BigInteger.class, () -> minValue ) ) );
-      lengthConstraint.getMinValue().ifPresent( maxValue -> box.addEntry( attribute( "maxValue", BigInteger.class, () -> maxValue ) ) );
+      lengthConstraint.getMinValue().ifPresent( minValue -> addAttribute( box, lengthConstraint, SammNs.SAMMC.minValue().getURI(),
+            DiagramAttributeNavigation.Selection.SINGLE_OCCURRENCE, null, "minValue", BigInteger.class, () -> minValue ) );
+      lengthConstraint.getMinValue().ifPresent( maxValue -> addAttribute( box, lengthConstraint, SammNs.SAMMC.maxValue().getURI(),
+            DiagramAttributeNavigation.Selection.SINGLE_OCCURRENCE, null, "maxValue", BigInteger.class, () -> maxValue ) );
       return result;
    }
 
@@ -265,17 +280,21 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
 
       final Diagram result = defaultBox( rangeConstraint, "RangeConstraint", Diagram.Color.CONSTRAINT );
       final Diagram.Box box = result.getFocusBox();
-      rangeConstraint.getMinValue().ifPresent( minValue -> box.addEntry( attribute( "minValue", ScalarValue.class, () -> minValue ) ) );
-      rangeConstraint.getMaxValue().ifPresent( maxValue -> box.addEntry( attribute( "maxValue", ScalarValue.class, () -> maxValue ) ) );
+      rangeConstraint.getMinValue().ifPresent( minValue -> addAttribute( box, rangeConstraint, SammNs.SAMMC.minValue().getURI(),
+            DiagramAttributeNavigation.Selection.SINGLE_OCCURRENCE, null, "minValue", ScalarValue.class, () -> minValue ) );
+      rangeConstraint.getMaxValue().ifPresent( maxValue -> addAttribute( box, rangeConstraint, SammNs.SAMMC.maxValue().getURI(),
+            DiagramAttributeNavigation.Selection.SINGLE_OCCURRENCE, null, "maxValue", ScalarValue.class, () -> maxValue ) );
       if ( rangeConstraint.getLowerBoundDefinition() == BoundDefinition.AT_LEAST
             || rangeConstraint.getLowerBoundDefinition() == BoundDefinition.GREATER_THAN ) {
-         box.addEntry( attribute( "lowerBoundDefinition", String.class,
-               () -> rangeConstraint.getLowerBoundDefinition().toString().toLowerCase() ) );
+         addAttribute( box, rangeConstraint, SammNs.SAMMC.lowerBoundDefinition().getURI(),
+               DiagramAttributeNavigation.Selection.SINGLE_OCCURRENCE, null, "lowerBoundDefinition", String.class,
+               () -> rangeConstraint.getLowerBoundDefinition().toString().toLowerCase() );
       }
       if ( rangeConstraint.getUpperBoundDefinition() == BoundDefinition.AT_MOST
             || rangeConstraint.getUpperBoundDefinition() == BoundDefinition.LESS_THAN ) {
-         box.addEntry( attribute( "upperBoundDefinition", String.class,
-               () -> rangeConstraint.getUpperBoundDefinition().toString().toLowerCase() ) );
+         addAttribute( box, rangeConstraint, SammNs.SAMMC.upperBoundDefinition().getURI(),
+               DiagramAttributeNavigation.Selection.SINGLE_OCCURRENCE, null, "upperBoundDefinition", String.class,
+               () -> rangeConstraint.getUpperBoundDefinition().toString().toLowerCase() );
       }
 
       return result;
@@ -289,8 +308,10 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
 
       final Diagram result = defaultBox( fixedPointConstraint, "FixedPointConstraint", Diagram.Color.CONSTRAINT );
       final Diagram.Box box = result.getFocusBox();
-      box.addEntry( attribute( "integer", Integer.class, fixedPointConstraint::getInteger ) );
-      box.addEntry( attribute( "scale", Integer.class, fixedPointConstraint::getScale ) );
+      addAttribute( box, fixedPointConstraint, SammNs.SAMMC.integer().getURI(), DiagramAttributeNavigation.Selection.SINGLE_OCCURRENCE,
+            null, "integer", Integer.class, fixedPointConstraint::getInteger );
+      addAttribute( box, fixedPointConstraint, SammNs.SAMMC.scale().getURI(), DiagramAttributeNavigation.Selection.SINGLE_OCCURRENCE,
+            null, "scale", Integer.class, fixedPointConstraint::getScale );
       return result;
    }
 
@@ -302,7 +323,8 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
 
       final Diagram result = defaultBox( encodingConstraint, "EncodingConstraint", Diagram.Color.CONSTRAINT );
       final Diagram.Box box = result.getFocusBox();
-      box.addEntry( attribute( "charset", Charset.class, encodingConstraint::getValue ) );
+      addAttribute( box, encodingConstraint, SammNs.SAMM.value().getURI(), DiagramAttributeNavigation.Selection.SINGLE_OCCURRENCE,
+            null, "charset", Charset.class, encodingConstraint::getValue );
       return result;
    }
 
@@ -314,7 +336,9 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
 
       final Diagram result = defaultBox( languageConstraint, "LanguageConstraint", Diagram.Color.CONSTRAINT );
       final Diagram.Box box = result.getFocusBox();
-      box.addEntry( attribute( "charset", String.class, () -> languageConstraint.getLanguageCode().toLanguageTag() ) );
+      addAttribute( box, languageConstraint, SammNs.SAMMC.languageCode().getURI(),
+            DiagramAttributeNavigation.Selection.SINGLE_OCCURRENCE, null, "charset", String.class,
+            () -> languageConstraint.getLanguageCode().toLanguageTag() );
       return result;
    }
 
@@ -327,7 +351,9 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
 
       final Diagram result = defaultBox( regularExpressionConstraint, "RegularExpressionConstraint", Diagram.Color.CONSTRAINT );
       final Diagram.Box box = result.getFocusBox();
-      box.addEntry( attribute( "value", String.class, regularExpressionConstraint::getValue ) );
+      addAttribute( box, regularExpressionConstraint, SammNs.SAMM.value().getURI(),
+            DiagramAttributeNavigation.Selection.SINGLE_OCCURRENCE, null, "value", String.class,
+            regularExpressionConstraint::getValue );
       return result;
    }
 
@@ -450,7 +476,8 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
       if ( collectionDiagram.getScalarValue() == null ) {
          result.add( collectionDiagram );
       } else {
-         box.addEntry( attribute( "values", String.class, () -> String.join( ", ", collectionDiagram.getScalarValue() ) ) );
+         addAttribute( box, enumeration, SammNs.SAMMC.values().getURI(), DiagramAttributeNavigation.Selection.PREDICATE_START,
+               null, "values", String.class, () -> String.join( ", ", collectionDiagram.getScalarValue() ) );
       }
       return result;
    }
@@ -484,7 +511,8 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
       final Diagram valueDiagram = state.getDefaultValue().accept( this, Optional.of( new Context( box ) ) );
       result.add( valueDiagram );
       if ( valueDiagram.getScalarValue() != null ) {
-         box.addEntry( attribute( "defaultValue", String.class, valueDiagram::getScalarValue ) );
+         addAttribute( box, state, SammNs.SAMMC.defaultValue().getURI(), DiagramAttributeNavigation.Selection.SINGLE_OCCURRENCE,
+               null, "defaultValue", String.class, valueDiagram::getScalarValue );
       }
       if ( valueDiagram.getFocusBox() != null ) {
          result.addEdge( new Diagram.Edge( box, valueDiagram.getFocusBox(), "defaultValue" ) );
@@ -505,7 +533,9 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
          }
       }
 
-      box.addEntry( attribute( "deconstructionRule", String.class, structuredValue::getDeconstructionRule ) );
+      addAttribute( box, structuredValue, SammNs.SAMMC.deconstructionRule().getURI(),
+            DiagramAttributeNavigation.Selection.SINGLE_OCCURRENCE, null, "deconstructionRule", String.class,
+            structuredValue::getDeconstructionRule );
       return result;
    }
 
@@ -559,7 +589,11 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
          } else {
             // If the value's diagram representation's scalar value is set, use it for an attribute entry in the
             // entity instance's box
-            box.addEntry( attribute( propertyName, String.class, valueDiagram::getScalarValue ) );
+            final DiagramAttributeNavigation.Selection selection = assertion.getValue() instanceof CollectionValue
+                  ? DiagramAttributeNavigation.Selection.PREDICATE_START
+                  : DiagramAttributeNavigation.Selection.SINGLE_OCCURRENCE;
+            addAttribute( box, instance, property.isAnonymous() ? null : property.urn().toString(), selection, null, propertyName, String.class,
+                  valueDiagram::getScalarValue );
          }
       }
 
@@ -600,21 +634,22 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
       final Diagram.Box box = header
             .map( value -> new Diagram.Box( prototype, name, background, value.markerId(), value.targetUrn() ) )
             .orElseGet( () -> new Diagram.Box( prototype, name, background ) );
-      final ImmutableList.Builder<String> standardAttributes = ImmutableList.builder();
       element.getPreferredNames().stream()
             .filter( preferredName -> preferredName.getLanguageTag().equals( locale ) )
             .findFirst()
-            .map( LangString::getValue )
-            .ifPresent( preferredName -> standardAttributes.addAll( attribute( "preferredName", String.class, () -> preferredName ) ) );
+            .ifPresent( preferredName -> addAttribute( box, element, SammNs.SAMM.preferredName().getURI(),
+                  DiagramAttributeNavigation.Selection.SINGLE_OCCURRENCE, preferredName.getLanguageTag(), "preferredName", String.class,
+                  preferredName::getValue ) );
       element.getDescriptions().stream()
             .filter( description -> description.getLanguageTag().equals( locale ) )
             .findFirst()
-            .map( LangString::getValue )
-            .ifPresent( description -> standardAttributes.addAll( attribute( "description", String.class, () -> description ) ) );
+            .ifPresent( description -> addAttribute( box, element, SammNs.SAMM.description().getURI(),
+                  DiagramAttributeNavigation.Selection.SINGLE_OCCURRENCE, description.getLanguageTag(), "description", String.class,
+                  description::getValue ) );
       if ( !element.getSee().isEmpty() ) {
-         standardAttributes.addAll( attribute( "see", String.class, () -> String.join( ", ", element.getSee() ) ) );
+         addAttribute( box, element, SammNs.SAMM.see().getURI(), DiagramAttributeNavigation.Selection.PREDICATE_START,
+               null, "see", String.class, () -> String.join( ", ", element.getSee() ) );
       }
-      box.addEntry( standardAttributes.build() );
       seenElements.put( element, box );
       return new Diagram( box );
    }
@@ -634,5 +669,12 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
          builder.add( i > 0 ? "   " + lines[i] : lines[i] );
       }
       return builder.build();
+   }
+
+   private <T> void addAttribute( final Diagram.Box box, final ModelElement owner, final String predicateUrn,
+         final DiagramAttributeNavigation.Selection selection, final Locale language, final String attributeName, final Class<T> type,
+         final Supplier<T> value ) {
+      final List<String> physicalRows = attribute( attributeName, type, value );
+      box.addEntry( physicalRows, attributeNavigation.rowsFor( owner, predicateUrn, selection, language, physicalRows.size() ) );
    }
 }

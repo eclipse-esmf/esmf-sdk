@@ -31,11 +31,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
 import java.util.Base64;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.generator.AspectGenerator;
@@ -83,6 +85,17 @@ public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[],
    }
 
    /**
+    * Generates an SVG with header navigation and, when explicitly requested, attribute-row
+    * navigation metadata.
+    *
+    * @param includeAttributeRows whether eligible physical attribute rows receive metadata
+    * @return generated SVG and navigation sidecars
+    */
+   public DiagramNavigationResult generateSvgWithNavigationMetadata( final boolean includeAttributeRows ) {
+      return generateSvgWithNavigationMetadata( Integer.MAX_VALUE, includeAttributeRows );
+   }
+
+   /**
     * Generates a navigation-enabled SVG if the traversed diagram does not exceed the box limit.
     * The single traversed diagram is counted immediately before, and then passed unchanged to,
     * Graphper rendering.
@@ -92,12 +105,24 @@ public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[],
     * @throws DiagramBoxLimitExceededException if the diagram exceeds the limit
     */
    public DiagramNavigationResult generateSvgWithNavigationMetadata( final int maximumBoxes ) {
-      return generateSvgWithNavigationMetadata( maximumBoxes, this::generateSvg );
+      return generateSvgWithNavigationMetadata( maximumBoxes, false );
+   }
+
+   /** Generates navigation-enabled SVG under the requested box and row-metadata bounds. */
+   public DiagramNavigationResult generateSvgWithNavigationMetadata( final int maximumBoxes, final boolean includeAttributeRows ) {
+      return generateSvgWithNavigationMetadata( maximumBoxes, includeAttributeRows, this::generateSvg );
    }
 
    DiagramNavigationResult generateSvgWithNavigationMetadata( final int maximumBoxes,
          final Function<Diagram, DiagramNavigationResult> graphperRenderer ) {
-      final Diagram diagram = createDiagram( DiagramHeaderNavigation.enabled() );
+      return generateSvgWithNavigationMetadata( maximumBoxes, false, graphperRenderer );
+   }
+
+   DiagramNavigationResult generateSvgWithNavigationMetadata( final int maximumBoxes, final boolean includeAttributeRows,
+         final Function<Diagram, DiagramNavigationResult> graphperRenderer ) {
+      final Diagram diagram = createDiagram( DiagramHeaderNavigation.enabled(), includeAttributeRows
+            ? DiagramAttributeNavigation.enabled()
+            : DiagramAttributeNavigation.disabled() );
       if ( diagram.getBoxes().size() > maximumBoxes ) {
          throw new DiagramBoxLimitExceededException( diagram.getBoxes().size(), maximumBoxes );
       }
@@ -147,7 +172,7 @@ public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[],
    }
 
    private String generateSvg() {
-      return generateSvg( createDiagram( DiagramHeaderNavigation.disabled() ) ).svg();
+      return generateSvg( createDiagram( DiagramHeaderNavigation.disabled(), DiagramAttributeNavigation.disabled() ) ).svg();
    }
 
    private DiagramNavigationResult generateSvg( final Diagram diagram ) {
@@ -168,14 +193,16 @@ public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[],
                + "\");\n"
                + "}\n"
                + "</style>";
-         return new DiagramNavigationResult( svgDocument.replaceFirst( ">", ">" + css ), navigationTargets( diagram ) );
+         return new DiagramNavigationResult( svgDocument.replaceFirst( ">", ">" + css ), navigationTargets( diagram ),
+               attributeNavigationTargets( diagram ) );
       } catch ( final ExecuteException | IOException exception ) {
          throw new DocumentGenerationException( exception );
       }
    }
 
-   private Diagram createDiagram( final DiagramHeaderNavigation headerNavigation ) {
-      final DiagramVisitor diagramVisitor = new DiagramVisitor( config.language(), headerNavigation );
+   private Diagram createDiagram( final DiagramHeaderNavigation headerNavigation,
+         final DiagramAttributeNavigation attributeNavigation ) {
+      final DiagramVisitor diagramVisitor = new DiagramVisitor( config.language(), headerNavigation, attributeNavigation );
       return aspect().accept( diagramVisitor, Optional.empty() );
    }
 
@@ -194,6 +221,19 @@ public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[],
          } );
       } );
       return targets;
+   }
+
+   private List<DiagramAttributeNavigationTarget> attributeNavigationTargets( final Diagram diagram ) {
+      final Map<String, DiagramAttributeNavigationTarget> targets = new LinkedHashMap<>();
+      diagram.getBoxes().forEach( box -> box.getEntryNavigation().stream().flatMap( Optional::stream ).forEach( row -> {
+         final DiagramAttributeNavigation.Locator locator = row.locator();
+         final DiagramAttributeNavigationTarget target = new DiagramAttributeNavigationTarget( row.markerId(), locator.ownerUrn(),
+               locator.predicateUrn(), locator.selection().wireValue(), locator.language() );
+         if ( targets.putIfAbsent( row.markerId(), target ) != null ) {
+            throw new IllegalStateException( "Duplicate diagram attribute marker: " + row.markerId() );
+         }
+      } ) );
+      return List.copyOf( targets.values() );
    }
 
    private byte[] generatePng( final String svg ) {
@@ -250,8 +290,13 @@ public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[],
                }
                if ( !box.getEntries().isEmpty() ) {
                   table.tr( td().cellPadding( 1 ).bgColor( Color.BLACK ).height( 1 ) );
-                  box.getEntries()
-                        .forEach( entry -> table.tr( td().cellPadding( 3 ).text( entry ).fontName( fontName ).align( Labeljust.LEFT ) ) );
+                  final List<Optional<DiagramAttributeNavigation.Row>> entryNavigation = box.getEntryNavigation();
+                  IntStream.range( 0, box.getEntries().size() ).forEach( index -> {
+                     final Html.Td entryCell = td().cellPadding( 3 ).text( box.getEntries().get( index ) ).fontName( fontName )
+                           .align( Labeljust.LEFT );
+                     entryNavigation.get( index ).map( DiagramAttributeNavigation.Row::markerId ).ifPresent( entryCell::id );
+                     table.tr( entryCell );
+                  } );
                }
                final Node node = Node.builder().color( Color.BLACK ).table( table ).build();
                return new AbstractMap.SimpleEntry<>( box, node );

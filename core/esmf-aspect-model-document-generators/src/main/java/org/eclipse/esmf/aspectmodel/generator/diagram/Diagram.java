@@ -97,6 +97,7 @@ public class Diagram {
       private final String headerMarkerId;
       private final String navigationTargetUrn;
       private final List<String> entries = new ArrayList<>();
+      private final List<Optional<DiagramAttributeNavigation.Row>> entryNavigation = new ArrayList<>();
 
       public Box( final String prototype, final String title, final Color background ) {
          this( prototype, title, background, null, null );
@@ -113,6 +114,15 @@ public class Diagram {
 
       public void addEntry( final List<String> entry ) {
          entries.addAll( entry );
+         entryNavigation.addAll( java.util.Collections.nCopies( entry.size(), Optional.empty() ) );
+      }
+
+      void addEntry( final List<String> entry, final List<Optional<DiagramAttributeNavigation.Row>> navigation ) {
+         if ( entry.size() != navigation.size() ) {
+            throw new IllegalArgumentException( "Diagram entry and navigation metadata must have equal sizes" );
+         }
+         entries.addAll( entry );
+         entryNavigation.addAll( navigation );
       }
 
       public void setPrototype( final String prototype ) {
@@ -141,6 +151,13 @@ public class Diagram {
 
       public List<String> getEntries() {
          return entries;
+      }
+
+      List<Optional<DiagramAttributeNavigation.Row>> getEntryNavigation() {
+         if ( entries.size() != entryNavigation.size() ) {
+            throw new IllegalStateException( "Diagram entry navigation metadata is not aligned" );
+         }
+         return entryNavigation;
       }
    }
 

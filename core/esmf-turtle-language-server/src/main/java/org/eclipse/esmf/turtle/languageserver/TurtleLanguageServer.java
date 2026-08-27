@@ -27,6 +27,8 @@ import java.util.function.Function;
 import org.eclipse.esmf.aspectmodel.ViolationReport;
 import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewRenderParams;
 import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewRenderResult;
+import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewResolveAttributeTargetParams;
+import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewResolveAttributeTargetResult;
 import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewResolveTargetParams;
 import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewResolveTargetResult;
 import org.eclipse.esmf.turtle.languageserver.lsp.request.ValidateDocumentParams;
@@ -126,6 +128,12 @@ public class TurtleLanguageServer implements LanguageServer, LanguageClientAware
    @JsonRequest( "turtle/graphicalView/resolveTarget" )
    public CompletableFuture<GraphicalViewResolveTargetResult> resolveGraphicalViewTarget( final GraphicalViewResolveTargetParams params ) {
       return textDocumentService.resolveGraphicalViewTarget( params );
+   }
+
+   @JsonRequest( "turtle/graphicalView/resolveAttributeTarget" )
+   public CompletableFuture<GraphicalViewResolveAttributeTargetResult> resolveGraphicalViewAttributeTarget(
+         final GraphicalViewResolveAttributeTargetParams params ) {
+      return textDocumentService.resolveGraphicalViewAttributeTarget( params );
    }
 
    /**

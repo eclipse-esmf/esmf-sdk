@@ -56,11 +56,12 @@ class GraphicalViewJsonRpcTransportTest {
                   } );
 
             final String renderRequest = """
-                  {"jsonrpc":"2.0","id":1,"method":"turtle/graphicalView/render","params":{"uri":"%s"}}
+                  {"jsonrpc":"2.0","id":1,"method":"turtle/graphicalView/render","params":{"uri":"%s","includeAttributeRows":true}}
                   """.formatted( uri ).strip();
             assertThat( fieldNames( mapper.readTree( renderRequest ) ) )
                   .containsExactlyInAnyOrder( "jsonrpc", "id", "method", "params" );
-            assertThat( fieldNames( mapper.readTree( renderRequest ).get( "params" ) ) ).containsExactly( "uri" );
+            assertThat( fieldNames( mapper.readTree( renderRequest ).get( "params" ) ) )
+                  .containsExactlyInAnyOrder( "uri", "includeAttributeRows" );
             writeMessage( client.getOutputStream(), renderRequest );
             final JsonNode renderResponse = readResponse( client.getInputStream(), 1 );
             assertThat( fieldNames( renderResponse ) ).containsExactlyInAnyOrder( "jsonrpc", "id", "result" );
@@ -72,6 +73,12 @@ class GraphicalViewJsonRpcTransportTest {
             assertThat( renderResponse.at( "/result/warnings" ).isEmpty() ).isTrue();
             assertThat( renderResponse.at( "/result/targets/0" ).properties().stream().map( java.util.Map.Entry::getKey ) )
                   .containsExactlyInAnyOrder( "id", "kind", "elementUrn" );
+            final JsonNode attributeTarget = renderResponse.at( "/result/targets" ).valueStream()
+                  .filter( target -> "attributeRow".equals( target.get( "kind" ).asText() ) ).findFirst().orElseThrow();
+            assertThat( fieldNames( attributeTarget ) )
+                  .containsExactlyInAnyOrder( "id", "kind", "ownerUrn", "predicateUrn", "selection", "language" );
+            assertThat( attributeTarget.get( "selection" ).asText() ).isEqualTo( "singleOccurrence" );
+            assertThat( attributeTarget.get( "language" ).asText() ).isEqualTo( "en" );
 
             final String resolveRequest = """
                   {"jsonrpc":"2.0","id":2,"method":"turtle/graphicalView/resolveTarget","params":{"sourceUri":"%s","elementUrn":"urn:samm:example.transport:1.0.0#Transport"}}
@@ -86,6 +93,16 @@ class GraphicalViewJsonRpcTransportTest {
             assertThat( fieldNames( resolveResponse.at( "/result/location/range" ) ) )
                   .containsExactlyInAnyOrder( "start", "end" );
             assertThat( resolveResponse.get( "result" ).has( "warning" ) ).isFalse();
+
+            final String resolveAttributeRequest = """
+                  {"jsonrpc":"2.0","id":3,"method":"turtle/graphicalView/resolveAttributeTarget","params":{"sourceUri":"%s","ownerUrn":"urn:samm:example.transport:1.0.0#Transport","predicateUrn":"urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#description","selection":"singleOccurrence","language":"en"}}
+                  """.formatted( uri ).strip();
+            assertThat( fieldNames( mapper.readTree( resolveAttributeRequest ).get( "params" ) ) )
+                  .containsExactlyInAnyOrder( "sourceUri", "ownerUrn", "predicateUrn", "selection", "language" );
+            writeMessage( client.getOutputStream(), resolveAttributeRequest );
+            final JsonNode resolveAttributeResponse = readResponse( client.getInputStream(), 3 );
+            assertThat( fieldNames( resolveAttributeResponse.get( "result" ) ) ).containsExactly( "location" );
+            assertThat( resolveAttributeResponse.at( "/result/location/uri" ).asText() ).isEqualTo( uri );
 
             client.close();
             handler.get( 5, TimeUnit.SECONDS );
@@ -139,6 +156,7 @@ class GraphicalViewJsonRpcTransportTest {
             @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
 
             :Transport a samm:Aspect ;
+               samm:description "Transport aspect"@en ;
                samm:properties () ;
                samm:operations () .
             """;

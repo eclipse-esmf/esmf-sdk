@@ -138,12 +138,23 @@ class GraphicalViewProtocolTest {
 
       assertThat( rendered.warnings() ).isEmpty();
       assertThat( rendered.targets() ).allMatch( target -> target.kind().equals( GraphicalViewTarget.ELEMENT_HEADER ) );
-      assertThat( rendered.targets() ).extracting( GraphicalViewTarget::elementUrn )
+      assertThat( rendered.targets().stream().map( GraphicalViewTarget.class::cast ) ).extracting( GraphicalViewTarget::elementUrn )
             .contains( "urn:samm:example.sidecar:1.0.0#SidecarAspect",
                   "urn:samm:example.sidecar:1.0.0#NamedProperty",
                   "urn:samm:example.sidecar:1.0.0#NamedEntity" );
       assertThat( rendered.svg() ).contains( "«SingleEntity»", "«Either»" );
-      assertThat( rendered.targets() ).noneMatch( target -> target.elementUrn().contains( "Either" ) );
+      assertThat( rendered.targets().stream().map( GraphicalViewTarget.class::cast ) )
+            .noneMatch( target -> target.elementUrn().contains( "Either" ) );
+
+      final GraphicalViewRenderResult explicitFalse = server.renderGraphicalView( new GraphicalViewRenderParams( uri, false ) )
+            .get( 30, TimeUnit.SECONDS );
+      assertThat( explicitFalse.targets() ).allMatch( GraphicalViewTarget.class::isInstance );
+      assertThat( explicitFalse.svg() ).doesNotContain( "gv-attribute-" );
+
+      final GraphicalViewRenderResult withRows = server.renderGraphicalView( new GraphicalViewRenderParams( uri, true ) )
+            .get( 30, TimeUnit.SECONDS );
+      assertThat( withRows.targets() ).anyMatch( target -> target.kind().equals( "attributeRow" ) );
+      assertThat( withRows.svg() ).contains( "gv-attribute-" );
       server.shutdown();
    }
 
@@ -170,6 +181,7 @@ class GraphicalViewProtocolTest {
       @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#> .
 
       :SidecarAspect a samm:Aspect ;
+         samm:preferredName "Sidecar Aspect"@en ;
          samm:properties ( :NamedProperty :AnonymousProperty :AmbiguousProperty ) ;
          samm:operations () .
       :NamedProperty a samm:Property ; samm:characteristic samm-c:Text .

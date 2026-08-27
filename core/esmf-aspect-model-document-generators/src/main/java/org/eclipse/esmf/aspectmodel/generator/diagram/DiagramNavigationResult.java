@@ -13,6 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.generator.diagram;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,9 +24,15 @@ import java.util.Map;
  */
 public record DiagramNavigationResult(
       String svg,
-      Map<String, String> navigationTargets
+      Map<String, String> navigationTargets,
+      List<DiagramAttributeNavigationTarget> attributeNavigationTargets
 ) {
+   public DiagramNavigationResult( final String svg, final Map<String, String> navigationTargets ) {
+      this( svg, navigationTargets, List.of() );
+   }
+
    public DiagramNavigationResult {
       navigationTargets = Map.copyOf( navigationTargets );
+      attributeNavigationTargets = List.copyOf( attributeNavigationTargets );
    }
 }

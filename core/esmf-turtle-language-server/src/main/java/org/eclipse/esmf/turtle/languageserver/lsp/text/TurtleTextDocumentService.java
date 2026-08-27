@@ -32,6 +32,8 @@ import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.ResolutionStrategyA
 import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.ViolationProvider;
 import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewRenderParams;
 import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewRenderResult;
+import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewResolveAttributeTargetParams;
+import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewResolveAttributeTargetResult;
 import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewResolveTargetParams;
 import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewResolveTargetResult;
 import org.eclipse.esmf.turtle.languageserver.structure.DocumentSymbolService;
@@ -134,6 +136,11 @@ public class TurtleTextDocumentService implements TextDocumentService {
 
    public CompletableFuture<GraphicalViewResolveTargetResult> resolveGraphicalViewTarget( final GraphicalViewResolveTargetParams params ) {
       return graphicalViewService.resolveTarget( params );
+   }
+
+   public CompletableFuture<GraphicalViewResolveAttributeTargetResult> resolveGraphicalViewAttributeTarget(
+         final GraphicalViewResolveAttributeTargetParams params ) {
+      return graphicalViewService.resolveAttributeTarget( params );
    }
 
    public CompletableFuture<ViolationReport> validateDocument( final String uri ) {

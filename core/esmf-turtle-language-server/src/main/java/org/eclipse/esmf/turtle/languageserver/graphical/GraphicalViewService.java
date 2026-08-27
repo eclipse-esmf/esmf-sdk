@@ -36,8 +36,13 @@ import org.eclipse.esmf.aspectmodel.resolver.AspectModelFileLoader;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.turtle.languageserver.aspect.navigation.AspectCrossFileDefinitionService;
 import org.eclipse.esmf.turtle.languageserver.lsp.ResolutionStrategyService;
+import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewAttributeSelection;
+import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewAttributeTarget;
 import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewRenderParams;
 import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewRenderResult;
+import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewRenderTarget;
+import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewResolveAttributeTargetParams;
+import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewResolveAttributeTargetResult;
 import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewResolveTargetParams;
 import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewResolveTargetResult;
 import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewResolveTargetWarning;
@@ -50,7 +55,9 @@ import org.eclipse.esmf.turtle.languageserver.lsp.text.TreeSitterTurtleParserSer
 public class GraphicalViewService implements AutoCloseable {
    static final int MAX_BOXES = 1_000;
    static final long RENDER_TIMEOUT_MILLIS = 30_000;
-   private static final Pattern MARKER = Pattern.compile( "gv-header-[a-z0-9]{16,32}" );
+   private static final Pattern HEADER_MARKER = Pattern.compile( "gv-header-[a-z0-9]{16,32}" );
+   private static final Pattern ATTRIBUTE_MARKER = Pattern.compile( "gv-attribute-[a-z0-9]{16,32}" );
+   private static final Pattern LANGUAGE = Pattern.compile( "[a-z]{2,8}(?:-[a-z0-9]{1,8})*" );
    private static final Pattern SVG_ID = Pattern.compile( "\\bid=\\\"([^\\\"]+)\\\"" );
    private final Map<String, Document> documents;
    private final TreeSitterTurtleParserService parser;
@@ -59,7 +66,7 @@ public class GraphicalViewService implements AutoCloseable {
    private final ExecutorService executor;
    private final ScheduledExecutorService timeouts;
    private final long timeoutMillis;
-   private final RenderOperation renderOperation;
+   private final AttributeRenderOperation renderOperation;
    private final Set<String> trustedRenderedSourceUris = java.util.concurrent.ConcurrentHashMap.newKeySet();
 
    public GraphicalViewService( final Map<String, Document> documents, final TreeSitterTurtleParserService parser,
@@ -84,7 +91,7 @@ public class GraphicalViewService implements AutoCloseable {
       this.executor = executor;
       this.timeouts = timeouts;
       this.timeoutMillis = timeoutMillis;
-      this.renderOperation = renderOperation;
+      this.renderOperation = ( snapshot, uri, ignored ) -> renderOperation.render( snapshot, uri );
    }
 
    public CompletableFuture<GraphicalViewRenderResult> render( final GraphicalViewRenderParams params ) {
@@ -101,7 +108,7 @@ public class GraphicalViewService implements AutoCloseable {
       final CompletableFuture<GraphicalViewRenderResult> result = new CompletableFuture<>();
       final Future<?> worker = executor.submit( () -> {
          try {
-            result.complete( renderOperation.render( snapshot, params.uri() ) );
+            result.complete( renderOperation.render( snapshot, params.uri(), params.attributeRowsRequested() ) );
          } catch ( final RuntimeException exception ) {
             result.complete( GraphicalViewRenderResult.warning( params.uri(), TEMPORARILY_UNRESOLVABLE ) );
          }
@@ -115,13 +122,13 @@ public class GraphicalViewService implements AutoCloseable {
       return result;
    }
 
-   private GraphicalViewRenderResult renderSnapshot( final Document snapshot, final String uri ) {
+   private GraphicalViewRenderResult renderSnapshot( final Document snapshot, final String uri, final boolean includeAttributeRows ) {
       try {
          final ParsedDocument parsed = new TreeSitterTurtleParserService().apply( snapshot );
          final var aspect = new AspectModelLoader( strategies.buildResolutionStrategyForDocument( parsed ) )
                .load( AspectModelFileLoader.load( parsed.turtleSyntaxTree(), parsed.getUri() ) ).aspect();
          final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( aspect, svgConfig() );
-         return successfulRender( uri, generator.generateSvgWithNavigationMetadata( MAX_BOXES ) );
+         return successfulRender( uri, generator.generateSvgWithNavigationMetadata( MAX_BOXES, includeAttributeRows ) );
       } catch ( final DiagramBoxLimitExceededException exception ) {
          return GraphicalViewRenderResult.warning( uri, MODEL_TOO_LARGE );
       } catch ( final RuntimeException exception ) {
@@ -130,8 +137,14 @@ public class GraphicalViewService implements AutoCloseable {
    }
 
    private static GraphicalViewRenderResult successfulRender( final String uri, final DiagramNavigationResult diagram ) {
-      final List<GraphicalViewTarget> targets = diagram.navigationTargets().entrySet().stream()
-            .map( e -> new GraphicalViewTarget( e.getKey(), GraphicalViewTarget.ELEMENT_HEADER, e.getValue() ) ).toList();
+      final List<GraphicalViewRenderTarget> targets = java.util.stream.Stream.concat(
+            diagram.navigationTargets().entrySet().stream()
+                  .map( e -> (GraphicalViewRenderTarget) new GraphicalViewTarget( e.getKey(), GraphicalViewTarget.ELEMENT_HEADER,
+                        e.getValue() ) ),
+            diagram.attributeNavigationTargets().stream()
+                  .map( target -> (GraphicalViewRenderTarget) new GraphicalViewAttributeTarget( target.id(),
+                        GraphicalViewAttributeTarget.ATTRIBUTE_ROW, target.ownerUrn(), target.predicateUrn(), target.selection(),
+                        target.language() ) ) ).toList();
       return valid( diagram.svg(), targets ) ? new GraphicalViewRenderResult( uri, diagram.svg(), targets, List.of() )
             : GraphicalViewRenderResult.warning( uri, TEMPORARILY_UNRESOLVABLE );
    }
@@ -168,6 +181,46 @@ public class GraphicalViewService implements AutoCloseable {
       }, executor );
    }
 
+   public CompletableFuture<GraphicalViewResolveAttributeTargetResult> resolveAttributeTarget(
+         final GraphicalViewResolveAttributeTargetParams params ) {
+      if ( params == null || params.sourceUri() == null || !isFile( params.sourceUri() ) ) {
+         return CompletableFuture.completedFuture(
+               GraphicalViewResolveAttributeTargetResult.warning( GraphicalViewResolveTargetWarning.UNSUPPORTED_URI ) );
+      }
+      final var owner = params.ownerUrn() == null ? java.util.Optional.<AspectModelUrn> empty()
+            : AspectModelUrn.from( params.ownerUrn() ).toJavaOptional();
+      final var predicate = params.predicateUrn() == null ? java.util.Optional.<AspectModelUrn> empty()
+            : AspectModelUrn.from( params.predicateUrn() ).toJavaOptional();
+      final var selection = GraphicalViewAttributeSelection.fromWireValue( params.selection() );
+      final String language = params.language();
+      final boolean validLanguage = language == null || ( LANGUAGE.matcher( language ).matches()
+            && selection.filter( GraphicalViewAttributeSelection.SINGLE_OCCURRENCE::equals ).isPresent() );
+      final Document source = sourceContext( params.sourceUri() );
+      if ( owner.isEmpty() || predicate.isEmpty() || selection.isEmpty() || !validLanguage || source == null ) {
+         return CompletableFuture.completedFuture(
+               GraphicalViewResolveAttributeTargetResult.warning( GraphicalViewResolveTargetWarning.TEMPORARILY_UNRESOLVABLE ) );
+      }
+      return CompletableFuture.supplyAsync( () -> {
+         try {
+            final var resolution = definitions.findAttributeStatement( parser.apply( source ), owner.get(), predicate.get().toString(),
+                  selection.get(), language );
+            return switch ( resolution.outcome() ) {
+               case FOUND -> isFile( resolution.location().getUri() )
+                     ? new GraphicalViewResolveAttributeTargetResult( resolution.location(), null )
+                     : GraphicalViewResolveAttributeTargetResult.warning( GraphicalViewResolveTargetWarning.UNSUPPORTED_URI );
+               case NOT_FOUND -> GraphicalViewResolveAttributeTargetResult.warning( GraphicalViewResolveTargetWarning.NOT_FOUND );
+               case AMBIGUOUS -> GraphicalViewResolveAttributeTargetResult.warning( GraphicalViewResolveTargetWarning.AMBIGUOUS );
+               case UNSUPPORTED_URI ->
+                     GraphicalViewResolveAttributeTargetResult.warning( GraphicalViewResolveTargetWarning.UNSUPPORTED_URI );
+               case TEMPORARILY_UNRESOLVABLE ->
+                     GraphicalViewResolveAttributeTargetResult.warning( GraphicalViewResolveTargetWarning.TEMPORARILY_UNRESOLVABLE );
+            };
+         } catch ( final RuntimeException exception ) {
+            return GraphicalViewResolveAttributeTargetResult.warning( GraphicalViewResolveTargetWarning.TEMPORARILY_UNRESOLVABLE );
+         }
+      }, executor );
+   }
+
    private Document sourceContext( final String sourceUri ) {
       final Document open = documents.get( sourceUri );
       if ( open != null ) {
@@ -188,24 +241,40 @@ public class GraphicalViewService implements AutoCloseable {
       return DiagramGenerationConfigBuilder.builder().format( DiagramGenerationConfig.Format.SVG ).language( Locale.ENGLISH ).build();
    }
 
-   static boolean valid( final String svg, final List<GraphicalViewTarget> targets ) {
+   static boolean valid( final String svg, final List<? extends GraphicalViewRenderTarget> targets ) {
       final Set<String> svgMarkers = new HashSet<>();
       final var matcher = SVG_ID.matcher( svg );
       while ( matcher.find() ) {
          final String id = matcher.group( 1 );
-         if ( id.startsWith( "gv-header-" ) && !id.matches( "gv-header-[a-z0-9]{16,32}_(polygon|text_0)" ) && (
-               !MARKER.matcher( id ).matches() || !svgMarkers.add( id ) ) ) {
+         final boolean applicationMarker = id.startsWith( "gv-header-" ) || id.startsWith( "gv-attribute-" );
+         final boolean graphperDescendant = id.matches( "gv-(?:header|attribute)-[a-z0-9]{16,32}_(?:polygon|text_0)" );
+         if ( applicationMarker && !graphperDescendant && ( !markerMatchesEitherKind( id ) || !svgMarkers.add( id ) ) ) {
             return false;
          }
       }
       final Set<String> sidecarMarkers = new HashSet<>();
-      for ( final GraphicalViewTarget target : targets ) {
-         if ( !MARKER.matcher( target.id() ).matches() || !GraphicalViewTarget.ELEMENT_HEADER.equals( target.kind() )
-               || AspectModelUrn.from( target.elementUrn() ).toJavaOptional().isEmpty() || !sidecarMarkers.add( target.id() ) ) {
+      for ( final GraphicalViewRenderTarget target : targets ) {
+         final boolean validTarget = switch ( target ) {
+            case final GraphicalViewTarget header -> HEADER_MARKER.matcher( header.id() ).matches()
+                  && GraphicalViewTarget.ELEMENT_HEADER.equals( header.kind() )
+                  && AspectModelUrn.from( header.elementUrn() ).toJavaOptional().isPresent();
+            case final GraphicalViewAttributeTarget attribute -> ATTRIBUTE_MARKER.matcher( attribute.id() ).matches()
+                  && GraphicalViewAttributeTarget.ATTRIBUTE_ROW.equals( attribute.kind() )
+                  && AspectModelUrn.from( attribute.ownerUrn() ).toJavaOptional().isPresent()
+                  && AspectModelUrn.from( attribute.predicateUrn() ).toJavaOptional().isPresent()
+                  && GraphicalViewAttributeSelection.fromWireValue( attribute.selection() ).isPresent()
+                  && ( attribute.language() == null || ( LANGUAGE.matcher( attribute.language() ).matches()
+                        && GraphicalViewAttributeSelection.SINGLE_OCCURRENCE.wireValue().equals( attribute.selection() ) ) );
+         };
+         if ( !validTarget || !sidecarMarkers.add( target.id() ) ) {
             return false;
          }
       }
       return svgMarkers.equals( sidecarMarkers );
+   }
+
+   private static boolean markerMatchesEitherKind( final String id ) {
+      return HEADER_MARKER.matcher( id ).matches() || ATTRIBUTE_MARKER.matcher( id ).matches();
    }
 
    static boolean isFile( final String value ) {
@@ -238,5 +307,10 @@ public class GraphicalViewService implements AutoCloseable {
    @FunctionalInterface
    interface RenderOperation {
       GraphicalViewRenderResult render( Document snapshot, String uri );
+   }
+
+   @FunctionalInterface
+   private interface AttributeRenderOperation {
+      GraphicalViewRenderResult render( Document snapshot, String uri, boolean includeAttributeRows );
    }
 }

@@ -22,6 +22,7 @@ import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.treesitterturtle.ParserTokenType;
 import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
 import org.eclipse.esmf.turtle.languageserver.lsp.ResolutionStrategyService;
+import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewAttributeSelection;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TreeSitterTurtleParserService;
@@ -137,6 +138,114 @@ public class AspectCrossFileDefinitionService extends TurtleService {
          return getOrLoadDocument( Paths.get( target ) ).map( document -> findByUrn( urn, document ) ).orElseGet( UrnResolution::temporarilyUnresolvable );
       } catch ( final ModelResolutionException e ) { return UrnResolution.notFound();
       } catch ( final IllegalArgumentException e ) { return UrnResolution.unsupportedUri(); }
+   }
+
+   /** Resolves one current predicate statement on a named owner without matching displayed values. */
+   public UrnResolution findAttributeStatement( final ParsedDocument sourceDocument, final AspectModelUrn ownerUrn,
+         final String predicateUrn, final GraphicalViewAttributeSelection selection, final String language ) {
+      if ( !documentIsAspectModel( sourceDocument ) || hasSyntaxErrors( sourceDocument ) ) {
+         return UrnResolution.temporarilyUnresolvable();
+      }
+      final UrnResolution local = findAttributeInDocument( sourceDocument, ownerUrn, predicateUrn, selection, language );
+      if ( local.outcome() != UrnResolution.Outcome.NOT_FOUND ) {
+         return local;
+      }
+      try {
+         final URI target = resolutionStrategyService.buildResolutionStrategyForDocument( sourceDocument )
+               .apply( ownerUrn, RESOLUTION_SUPPORT ).sourceUri();
+         if ( !"file".equalsIgnoreCase( target.getScheme() ) ) {
+            return UrnResolution.unsupportedUri();
+         }
+         return getOrLoadDocument( Paths.get( target ) )
+               .map( document -> hasSyntaxErrors( document )
+                     ? UrnResolution.temporarilyUnresolvable()
+                     : findAttributeInDocument( document, ownerUrn, predicateUrn, selection, language ) )
+               .orElseGet( UrnResolution::temporarilyUnresolvable );
+      } catch ( final ModelResolutionException e ) {
+         return UrnResolution.notFound();
+      } catch ( final IllegalArgumentException e ) {
+         return UrnResolution.unsupportedUri();
+      }
+   }
+
+   private UrnResolution findAttributeInDocument( final ParsedDocument document, final AspectModelUrn ownerUrn,
+         final String predicateUrn, final GraphicalViewAttributeSelection selection, final String language ) {
+      final TurtleSyntaxTree tree = document.turtleSyntaxTree();
+      final List<TurtleSyntaxTree.Node> matchingProperties = tree.tokens()
+            .filter( token -> ParserTokenType.TRIPLE.equals( token.type() ) )
+            .filter( token -> tripleSubjectUrn( token, tree ).map( ownerUrn.toString()::equals ).orElse( false ) )
+            .flatMap( token -> token.childWithType( ParserTokenType.PROPERTY_LIST ).stream() )
+            .flatMap( propertyList -> propertyList.children().stream() )
+            .filter( property -> ParserTokenType.PROPERTY.equals( property.type() ) )
+            .filter( property -> property.childWithType( ParserTokenType.PREDICATE )
+                  .flatMap( predicate -> expandedIri( predicate, tree ) )
+                  .map( predicateUrn::equals ).orElse( false ) )
+            .filter( property -> language == null || hasLanguage( property, language ) )
+            .toList();
+      if ( matchingProperties.isEmpty() ) {
+         return UrnResolution.notFound();
+      }
+      if ( matchingProperties.size() > 1 ) {
+         return UrnResolution.ambiguous();
+      }
+      final TurtleSyntaxTree.Node property = matchingProperties.getFirst();
+      final Optional<TurtleSyntaxTree.Node> predicate = property.childWithType( ParserTokenType.PREDICATE );
+      if ( predicate.isEmpty() || selection == null ) {
+         return UrnResolution.temporarilyUnresolvable();
+      }
+      return UrnResolution.found( super.getLocationForLsp( document, predicate.get() ) );
+   }
+
+   private boolean hasSyntaxErrors( final ParsedDocument document ) {
+      return document.turtleSyntaxTree().nodes().anyMatch( TurtleSyntaxTree.Node::isError );
+   }
+
+   private Optional<String> tripleSubjectUrn( final TurtleSyntaxTree.Token triple, final TurtleSyntaxTree tree ) {
+      return triple.childWithType( ParserTokenType.SUBJECT )
+            .flatMap( subject -> descendantWithType( subject, ParserTokenType.PREFIXED_NAME ) )
+            .flatMap( prefixedName -> expandedPrefixedName( prefixedName, tree ) );
+   }
+
+   private Optional<String> expandedIri( final TurtleSyntaxTree.Node node, final TurtleSyntaxTree tree ) {
+      final Optional<TurtleSyntaxTree.Node> iriReference = descendantWithType( node, ParserTokenType.IRI_REFERENCE );
+      if ( iriReference.isPresent() ) {
+         final String value = iriReference.get().content();
+         return Optional.of( value.startsWith( "<" ) && value.endsWith( ">" ) ? value.substring( 1, value.length() - 1 ) : value );
+      }
+      return descendantWithType( node, ParserTokenType.PREFIXED_NAME )
+            .flatMap( prefixedName -> expandedPrefixedName( prefixedName, tree ) );
+   }
+
+   private Optional<String> expandedPrefixedName( final TurtleSyntaxTree.Node prefixedName, final TurtleSyntaxTree tree ) {
+      final Optional<String> local = prefixedName.children().stream()
+            .filter( child -> child.isToken() && ParserTokenType.PN_LOCAL.equals( child.type() ) )
+            .map( TurtleSyntaxTree.Node::content ).findFirst();
+      final String prefix = prefixedName.children().stream()
+            .filter( child -> ParserTokenType.NAMESPACE.equals( child.type() ) )
+            .map( TurtleSyntaxTree.Node::content ).findFirst().orElse( "" );
+      final String prefixName = prefix.endsWith( ":" ) ? prefix.substring( 0, prefix.length() - 1 ) : prefix;
+      return local.flatMap( name -> getPrefixIri( prefixName, tree ).map( iri -> iri + name ) );
+   }
+
+   private Optional<TurtleSyntaxTree.Node> descendantWithType( final TurtleSyntaxTree.Node node, final String type ) {
+      if ( type.equals( node.type() ) ) {
+         return Optional.of( node );
+      }
+      return node.children().stream().map( child -> descendantWithType( child, type ) )
+            .flatMap( Optional::stream ).findFirst();
+   }
+
+   private boolean hasLanguage( final TurtleSyntaxTree.Node property, final String language ) {
+      return descendantsWithType( property, ParserTokenType.LANG_TAG )
+            .map( TurtleSyntaxTree.Node::content )
+            .map( value -> value.startsWith( "@" ) ? value.substring( 1 ) : value )
+            .map( value -> value.toLowerCase( java.util.Locale.ROOT ) )
+            .anyMatch( language::equals );
+   }
+
+   private Stream<TurtleSyntaxTree.Node> descendantsWithType( final TurtleSyntaxTree.Node node, final String type ) {
+      final Stream<TurtleSyntaxTree.Node> current = type.equals( node.type() ) ? Stream.of( node ) : Stream.empty();
+      return Stream.concat( current, node.children().stream().flatMap( child -> descendantsWithType( child, type ) ) );
    }
 
    Optional<String> getPrefixIri( final String prefixName, final TurtleSyntaxTree tree ) {
