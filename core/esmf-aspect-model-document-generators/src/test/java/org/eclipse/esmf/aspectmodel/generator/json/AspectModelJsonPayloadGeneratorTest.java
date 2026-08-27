@@ -653,6 +653,48 @@ class AspectModelJsonPayloadGeneratorTest {
       assertThat( StringUtils.countMatches( generatedJson, "entity property example" ) ).isEqualTo( 2 );
    }
 
+   @Test
+   void testGenerateJsonWithDefaultTimestamp() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
+      final String generatedJson = new AspectModelJsonPayloadGenerator( aspect ).generateJson();
+
+      final AspectWithSimpleProperties parsed = parseJson( generatedJson, AspectWithSimpleProperties.class );
+
+      assertThat( parsed.getTestLocalDateTimeWithoutExample() ).isNotNull();
+   }
+
+   @Test
+   void testGenerateJsonWithCustomTimestamp() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
+      final JsonPayloadGenerationConfig config = JsonPayloadGenerationConfigBuilder.builder()
+            .timestamp( "2025-06-15T10:30:00.000Z" )
+            .build();
+
+      final String generatedJson = new AspectModelJsonPayloadGenerator( aspect, config ).generateJson();
+      final AspectWithSimpleProperties parsed = parseJson( generatedJson, AspectWithSimpleProperties.class );
+
+      assertThat( parsed.getTestLocalDateTimeWithoutExample() ).isEqualTo(
+            datatypeFactory.newXMLGregorianCalendar( "2025-06-15T10:30:00.000Z" ) );
+   }
+
+   @Test
+   void testGenerateJsonWithInvalidTimestampThrowsException() {
+      assertThatCode( () -> JsonPayloadGenerationConfigBuilder.builder()
+            .timestamp( "not-a-timestamp" )
+            .build()
+      ).isInstanceOf( IllegalArgumentException.class )
+            .hasMessageContaining( "Invalid timestamp format" );
+   }
+
+   @Test
+   void testGenerateJsonWithPartialTimestampThrowsException() {
+      assertThatCode( () -> JsonPayloadGenerationConfigBuilder.builder()
+            .timestamp( "2025-06" )
+            .build()
+      ).isInstanceOf( IllegalArgumentException.class )
+            .hasMessageContaining( "Partial timestamps are not supported" );
+   }
+
    private String generateJsonForModel( final Aspect aspect ) {
       final AspectModelJsonPayloadGenerator jsonGenerator = new AspectModelJsonPayloadGenerator( aspect );
       return jsonGenerator.generateJson();

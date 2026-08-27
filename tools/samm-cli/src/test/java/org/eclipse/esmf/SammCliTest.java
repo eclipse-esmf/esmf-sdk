@@ -751,6 +751,15 @@ class SammCliTest extends SammCliAbstractTest {
    }
 
    @Test
+   void testAspectToJsonWithCustomTimestamp() {
+      final String input = inputFile( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).getAbsolutePath();
+      final ExecutionResult result = sammCli.runAndExpectSuccess(
+            "--disable-color", "aspect", input, "to", "json", "--timestamp", "2024-05-15T10:30:00.000Z" );
+      assertThat( result.stdout() ).contains( "\"testLocalDateTimeWithoutExample\" : \"2024-05-15T10:30:00.000Z\"" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
    void testAspectToJsonLdToFile( @TempDir final Path outputDirectory ) {
       final File targetFile = outputFile( outputDirectory, "output.json" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "jsonld", "-o",

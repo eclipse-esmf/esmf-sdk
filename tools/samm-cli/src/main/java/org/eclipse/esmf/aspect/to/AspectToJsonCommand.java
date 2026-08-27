@@ -56,6 +56,13 @@ public class AspectToJsonCommand extends AbstractCommand {
             + "instead of returning an empty value." )
    private boolean failOnEmptyExampleValue = false;
 
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+      names = { "--timestamp" },
+      description = "Specifies a fixed timestamp in XML Schema dateTime format (e.g. 2025-06-15T10:30:00.000Z)"
+            + " to use when no example value is defined. Partial timestamps are not supported." )
+   private String timestamp;
+
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
 
@@ -73,6 +80,7 @@ public class AspectToJsonCommand extends AbstractCommand {
       final JsonPayloadGenerationConfig config = JsonPayloadGenerationConfigBuilder.builder()
             .addTypeAttributeForEntityInheritance( addTypeAttribute )
             .failOnInvalidRegularExpressions( failOnEmptyExampleValue )
+            .timestamp( timestamp )
             .build();
 
       final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator(
