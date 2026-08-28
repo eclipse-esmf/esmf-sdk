@@ -25,6 +25,7 @@ import org.eclipse.esmf.aspectmodel.generator.diagram.DiagramGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.diagram.DiagramGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.turtle.languageserver.TurtleLanguageServer;
+import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewAttributeTarget;
 import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewRenderParams;
 import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewRenderResult;
 import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewResolveTargetParams;
@@ -63,8 +64,9 @@ class GraphicalViewProtocolTest {
       final TurtleLanguageServer server = new TurtleLanguageServer();
       ( (TurtleTextDocumentService) server.getTextDocumentService() ).didOpen( new DidOpenTextDocumentParams( new TextDocumentItem( uri, "turtle", 1, model( "Unsaved" ) ) ) );
       final GraphicalViewRenderResult rendered = server.renderGraphicalView( new GraphicalViewRenderParams( uri ) ).get( 30, TimeUnit.SECONDS );
-      assertThat( rendered.warnings() ).isEmpty(); assertThat( rendered.svg() ).contains( "Unsaved", "English&#160;label" )
-            .doesNotContain( "Persisted", "Deutsche&#160;Bezeichnung" );
+      assertThat( rendered.warnings() ).isEmpty();
+      assertThat( rendered.svg() ).contains( "Unsaved", "preferredName&#160;[de]:&#160;Deutsche&#160;Bezeichnung",
+            "preferredName&#160;[en]:&#160;English&#160;label" ).doesNotContain( "Persisted" );
       final GraphicalViewResolveTargetResult resolved = server.resolveGraphicalViewTarget( new GraphicalViewResolveTargetParams( uri, "urn:samm:example.graphical:1.0.0#Unsaved" ) ).get( 10, TimeUnit.SECONDS );
       assertThat( resolved.warning() ).isNull(); assertThat( resolved.location().getUri() ).isEqualTo( uri ); assertThat( resolved.location().getRange().getStart().getLine() ).isEqualTo( 3 ); server.shutdown();
    }
@@ -150,11 +152,70 @@ class GraphicalViewProtocolTest {
             .get( 30, TimeUnit.SECONDS );
       assertThat( explicitFalse.targets() ).allMatch( GraphicalViewTarget.class::isInstance );
       assertThat( explicitFalse.svg() ).doesNotContain( "gv-attribute-" );
+      assertThat( explicitFalse.svg() ).contains( "preferredName&#160;[en]:&#160;Sidecar&#160;Aspect" );
 
       final GraphicalViewRenderResult withRows = server.renderGraphicalView( new GraphicalViewRenderParams( uri, true ) )
             .get( 30, TimeUnit.SECONDS );
       assertThat( withRows.targets() ).anyMatch( target -> target.kind().equals( "attributeRow" ) );
       assertThat( withRows.svg() ).contains( "gv-attribute-" );
+      server.shutdown();
+   }
+
+   @Test
+   void lspRenderReturnsAllLocalizedRowsWithQualifiedSidecarsAndBoundedDisplayValues( @TempDir final Path directory )
+         throws Exception {
+      final String longDescription = "x".repeat( 257 );
+      final String model = """
+            @prefix : <urn:samm:example.multilingual:1.0.0#> .
+            @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+            :MultilingualAspect a samm:Aspect ;
+               samm:preferredName "English name"@en ;
+               samm:preferredName "Deutscher Name"@de ;
+               samm:description "%s"@en ;
+               samm:description "Deutsche Beschreibung"@de ;
+               samm:properties () ;
+               samm:operations () .
+            """.formatted( longDescription );
+      final Path file = Files.writeString( directory.resolve( "Multilingual.ttl" ), model );
+      final String uri = file.toUri().toString();
+      final TurtleLanguageServer server = new TurtleLanguageServer();
+      ( (TurtleTextDocumentService) server.getTextDocumentService() ).didOpen(
+            new DidOpenTextDocumentParams( new TextDocumentItem( uri, "turtle", 1, model ) ) );
+
+      final GraphicalViewRenderResult rendered = server.renderGraphicalView( new GraphicalViewRenderParams( uri, true ) )
+            .get( 30, TimeUnit.SECONDS );
+
+      assertThat( rendered.warnings() ).isEmpty();
+      assertThat( rendered.svg() ).contains(
+            "preferredName&#160;[de]:&#160;Deutscher&#160;Name",
+            "preferredName&#160;[en]:&#160;English&#160;name",
+            "description&#160;[de]:&#160;Deutsche&#160;Beschreibung",
+            "x".repeat( 253 ) + "..." ).doesNotContain( longDescription );
+      final List<GraphicalViewAttributeTarget> localizedTargets = rendered.targets().stream()
+            .filter( GraphicalViewAttributeTarget.class::isInstance ).map( GraphicalViewAttributeTarget.class::cast )
+            .filter( target -> target.predicateUrn().endsWith( "#preferredName" ) || target.predicateUrn().endsWith( "#description" ) )
+            .toList();
+      assertThat( localizedTargets.stream()
+            .map( target -> target.predicateUrn().substring( target.predicateUrn().lastIndexOf( '#' ) + 1 ) + ":" + target.language() )
+            .collect( java.util.stream.Collectors.toSet() ) )
+            .containsExactlyInAnyOrder( "preferredName:de", "preferredName:en", "description:de", "description:en" );
+      assertThat( localizedTargets ).allMatch( target -> target.selection().equals( "singleOccurrence" )
+            && target.ownerUrn().equals( "urn:samm:example.multilingual:1.0.0#MultilingualAspect" ) );
+      assertThat( localizedTargets ).extracting( GraphicalViewAttributeTarget::id ).doesNotHaveDuplicates();
+      assertThat( localizedTargets ).allSatisfy( target -> assertThat( rendered.svg() ).contains( "id=\"" + target.id() + "\"" ) );
+      assertThat( localizedTargets.stream().filter( target -> target.predicateUrn().endsWith( "#preferredName" ) ) )
+            .hasSize( 2 );
+      assertThat( localizedTargets.stream().filter( target -> target.predicateUrn().endsWith( "#description" )
+            && "de".equals( target.language() ) ) ).hasSize( 1 );
+      final List<GraphicalViewAttributeTarget> wrappedEnglishDescription = localizedTargets.stream()
+            .filter( target -> target.predicateUrn().endsWith( "#description" ) && "en".equals( target.language() ) )
+            .toList();
+      assertThat( wrappedEnglishDescription ).hasSizeGreaterThan( 1 ).allSatisfy( target -> {
+         assertThat( target.ownerUrn() ).isEqualTo( "urn:samm:example.multilingual:1.0.0#MultilingualAspect" );
+         assertThat( target.selection() ).isEqualTo( "singleOccurrence" );
+         assertThat( target.language() ).isEqualTo( "en" );
+      } );
+
       server.shutdown();
    }
 

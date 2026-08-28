@@ -122,7 +122,7 @@ public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[],
          final Function<Diagram, DiagramNavigationResult> graphperRenderer ) {
       final Diagram diagram = createDiagram( DiagramHeaderNavigation.enabled(), includeAttributeRows
             ? DiagramAttributeNavigation.enabled()
-            : DiagramAttributeNavigation.disabled() );
+            : DiagramAttributeNavigation.disabled(), true );
       if ( diagram.getBoxes().size() > maximumBoxes ) {
          throw new DiagramBoxLimitExceededException( diagram.getBoxes().size(), maximumBoxes );
       }
@@ -172,7 +172,7 @@ public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[],
    }
 
    private String generateSvg() {
-      return generateSvg( createDiagram( DiagramHeaderNavigation.disabled(), DiagramAttributeNavigation.disabled() ) ).svg();
+      return generateSvg( createDiagram( DiagramHeaderNavigation.disabled(), DiagramAttributeNavigation.disabled(), false ) ).svg();
    }
 
    private DiagramNavigationResult generateSvg( final Diagram diagram ) {
@@ -201,8 +201,9 @@ public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[],
    }
 
    private Diagram createDiagram( final DiagramHeaderNavigation headerNavigation,
-         final DiagramAttributeNavigation attributeNavigation ) {
-      final DiagramVisitor diagramVisitor = new DiagramVisitor( config.language(), headerNavigation, attributeNavigation );
+         final DiagramAttributeNavigation attributeNavigation, final boolean includeAllLocalizedRows ) {
+      final DiagramVisitor diagramVisitor = new DiagramVisitor( config.language(), headerNavigation, attributeNavigation,
+            includeAllLocalizedRows );
       return aspect().accept( diagramVisitor, Optional.empty() );
    }
 

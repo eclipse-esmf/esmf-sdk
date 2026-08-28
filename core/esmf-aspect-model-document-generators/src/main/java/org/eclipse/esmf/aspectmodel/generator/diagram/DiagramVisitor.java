@@ -16,6 +16,7 @@ package org.eclipse.esmf.aspectmodel.generator.diagram;
 import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -77,21 +78,28 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
    private final Locale locale;
    private final DiagramHeaderNavigation headerNavigation;
    private final DiagramAttributeNavigation attributeNavigation;
+   private final boolean includeAllLocalizedRows;
    private final Map<ModelElement, Diagram.Box> seenElements = new HashMap<>();
 
    public DiagramVisitor( final Locale locale ) {
-      this( locale, DiagramHeaderNavigation.disabled(), DiagramAttributeNavigation.disabled() );
+      this( locale, DiagramHeaderNavigation.disabled(), DiagramAttributeNavigation.disabled(), false );
    }
 
    DiagramVisitor( final Locale locale, final DiagramHeaderNavigation headerNavigation ) {
-      this( locale, headerNavigation, DiagramAttributeNavigation.disabled() );
+      this( locale, headerNavigation, DiagramAttributeNavigation.disabled(), false );
    }
 
    DiagramVisitor( final Locale locale, final DiagramHeaderNavigation headerNavigation,
          final DiagramAttributeNavigation attributeNavigation ) {
+      this( locale, headerNavigation, attributeNavigation, false );
+   }
+
+   DiagramVisitor( final Locale locale, final DiagramHeaderNavigation headerNavigation,
+         final DiagramAttributeNavigation attributeNavigation, final boolean includeAllLocalizedRows ) {
       this.locale = locale;
       this.headerNavigation = headerNavigation;
       this.attributeNavigation = attributeNavigation;
+      this.includeAllLocalizedRows = includeAllLocalizedRows;
    }
 
    @Override
@@ -634,18 +642,24 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
       final Diagram.Box box = header
             .map( value -> new Diagram.Box( prototype, name, background, value.markerId(), value.targetUrn() ) )
             .orElseGet( () -> new Diagram.Box( prototype, name, background ) );
-      element.getPreferredNames().stream()
-            .filter( preferredName -> preferredName.getLanguageTag().equals( locale ) )
-            .findFirst()
-            .ifPresent( preferredName -> addAttribute( box, element, SammNs.SAMM.preferredName().getURI(),
-                  DiagramAttributeNavigation.Selection.SINGLE_OCCURRENCE, preferredName.getLanguageTag(), "preferredName", String.class,
-                  preferredName::getValue ) );
-      element.getDescriptions().stream()
-            .filter( description -> description.getLanguageTag().equals( locale ) )
-            .findFirst()
-            .ifPresent( description -> addAttribute( box, element, SammNs.SAMM.description().getURI(),
-                  DiagramAttributeNavigation.Selection.SINGLE_OCCURRENCE, description.getLanguageTag(), "description", String.class,
-                  description::getValue ) );
+      if ( includeAllLocalizedRows ) {
+         addLocalizedAttributes( box, element, SammNs.SAMM.preferredName().getURI(), "preferredName",
+               element.getPreferredNames() );
+         addLocalizedAttributes( box, element, SammNs.SAMM.description().getURI(), "description", element.getDescriptions() );
+      } else {
+         element.getPreferredNames().stream()
+               .filter( preferredName -> preferredName.getLanguageTag().equals( locale ) )
+               .findFirst()
+               .ifPresent( preferredName -> addAttribute( box, element, SammNs.SAMM.preferredName().getURI(),
+                     DiagramAttributeNavigation.Selection.SINGLE_OCCURRENCE, preferredName.getLanguageTag(), "preferredName", String.class,
+                     preferredName::getValue ) );
+         element.getDescriptions().stream()
+               .filter( description -> description.getLanguageTag().equals( locale ) )
+               .findFirst()
+               .ifPresent( description -> addAttribute( box, element, SammNs.SAMM.description().getURI(),
+                     DiagramAttributeNavigation.Selection.SINGLE_OCCURRENCE, description.getLanguageTag(), "description", String.class,
+                     description::getValue ) );
+      }
       if ( !element.getSee().isEmpty() ) {
          addAttribute( box, element, SammNs.SAMM.see().getURI(), DiagramAttributeNavigation.Selection.PREDICATE_START,
                null, "see", String.class, () -> String.join( ", ", element.getSee() ) );
@@ -676,5 +690,29 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
          final Supplier<T> value ) {
       final List<String> physicalRows = attribute( attributeName, type, value );
       box.addEntry( physicalRows, attributeNavigation.rowsFor( owner, predicateUrn, selection, language, physicalRows.size() ) );
+   }
+
+   private void addLocalizedAttributes( final Diagram.Box box, final ModelElement owner, final String predicateUrn,
+         final String attributeName, final java.util.Collection<LangString> values ) {
+      values.stream()
+            .sorted( Comparator.comparing( DiagramVisitor::normalizedLanguageTag ) )
+            .forEach( value -> {
+               final String languageTag = value.getLanguageTag().toLanguageTag();
+               addAttribute( box, owner, predicateUrn, DiagramAttributeNavigation.Selection.SINGLE_OCCURRENCE,
+                     value.getLanguageTag(), "%s [%s]".formatted( attributeName, languageTag ), String.class,
+                     () -> truncateLocalizedValue( value.getValue() ) );
+            } );
+   }
+
+   private static String normalizedLanguageTag( final LangString value ) {
+      return value.getLanguageTag().toLanguageTag().toLowerCase( Locale.ROOT );
+   }
+
+   static String truncateLocalizedValue( final String value ) {
+      final int codePoints = value.codePointCount( 0, value.length() );
+      if ( codePoints <= 256 ) {
+         return value;
+      }
+      return value.substring( 0, value.offsetByCodePoints( 0, 253 ) ) + "...";
    }
 }

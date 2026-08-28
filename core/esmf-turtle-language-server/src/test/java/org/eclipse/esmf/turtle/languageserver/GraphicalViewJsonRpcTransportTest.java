@@ -79,12 +79,18 @@ class GraphicalViewJsonRpcTransportTest {
             assertThat( renderResponse.at( "/result/warnings" ).isEmpty() ).isTrue();
             assertThat( renderResponse.at( "/result/targets/0" ).properties().stream().map( java.util.Map.Entry::getKey ) )
                   .containsExactlyInAnyOrder( "id", "kind", "elementUrn" );
-            final JsonNode attributeTarget = renderResponse.at( "/result/targets" ).valueStream()
-                  .filter( target -> "attributeRow".equals( target.get( "kind" ).asText() ) ).findFirst().orElseThrow();
+            final List<JsonNode> descriptionTargets = renderResponse.at( "/result/targets" ).valueStream()
+                  .filter( target -> "attributeRow".equals( target.path( "kind" ).asText() ) )
+                  .filter( target -> "urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#description".equals(
+                        target.path( "predicateUrn" ).asText() ) )
+                  .toList();
+            assertThat( descriptionTargets ).extracting( target -> target.get( "language" ).asText() )
+                  .containsExactly( "de", "en" );
+            final JsonNode attributeTarget = descriptionTargets.getFirst();
             assertThat( fieldNames( attributeTarget ) )
                   .containsExactlyInAnyOrder( "id", "kind", "ownerUrn", "predicateUrn", "selection", "language" );
             assertThat( attributeTarget.get( "selection" ).asText() ).isEqualTo( "singleOccurrence" );
-            assertThat( attributeTarget.get( "language" ).asText() ).isEqualTo( "en" );
+            assertThat( attributeTarget.get( "language" ).asText() ).isEqualTo( "de" );
             final List<JsonNode> wrappedSeeTargets = renderResponse.at( "/result/targets" ).valueStream()
                   .filter( target -> "attributeRow".equals( target.path( "kind" ).asText() ) )
                   .filter( target -> "urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#see".equals(
@@ -120,6 +126,16 @@ class GraphicalViewJsonRpcTransportTest {
             final JsonNode resolveAttributeResponse = readResponse( client.getInputStream(), 3 );
             assertThat( fieldNames( resolveAttributeResponse.get( "result" ) ) ).containsExactly( "location" );
             assertThat( resolveAttributeResponse.at( "/result/location/uri" ).asText() ).isEqualTo( uri );
+
+            final String resolveGermanAttributeRequest = """
+                  {"jsonrpc":"2.0","id":7,"method":"turtle/graphicalView/resolveAttributeTarget","params":{"sourceUri":"%s","ownerUrn":"urn:samm:example.transport:1.0.0#Transport","predicateUrn":"urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#description","selection":"singleOccurrence","language":"de"}}
+                  """.formatted( uri ).strip();
+            writeMessage( client.getOutputStream(), resolveGermanAttributeRequest );
+            final JsonNode resolveGermanAttributeResponse = readResponse( client.getInputStream(), 7 );
+            assertThat( fieldNames( resolveGermanAttributeResponse.get( "result" ) ) ).containsExactly( "location" );
+            assertThat( resolveGermanAttributeResponse.at( "/result/location/uri" ).asText() ).isEqualTo( uri );
+            assertThat( resolveGermanAttributeResponse.at( "/result/location/range" ) )
+                  .isNotEqualTo( resolveAttributeResponse.at( "/result/location/range" ) );
 
             JsonNode sharedSeeLocation = null;
             for ( int index = 0; index < wrappedSeeTargets.size(); index++ ) {
@@ -186,8 +202,8 @@ class GraphicalViewJsonRpcTransportTest {
       assertThat( fieldNames( range ) ).containsExactlyInAnyOrder( "start", "end" );
       final int[] start = position( range.get( "start" ) );
       final int[] end = position( range.get( "end" ) );
-      assertThat( start ).containsExactly( 5, 3 );
-      assertThat( end ).containsExactly( 5, 11 );
+      assertThat( start ).containsExactly( 6, 3 );
+      assertThat( end ).containsExactly( 6, 11 );
       assertThat( start[0] < end[0] || ( start[0] == end[0] && start[1] <= end[1] ) ).isTrue();
       final List<String> lines = source.lines().toList();
       assertThat( start[0] ).isLessThan( lines.size() );
@@ -249,6 +265,7 @@ class GraphicalViewJsonRpcTransportTest {
             @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
 
             :Transport a samm:Aspect ;
+               samm:description "Transportbeschreibung"@de ;
                samm:description "Transport aspect"@en ;
                samm:see <https://example.test/reference/with/a/long/path>, <urn:irdi:0173:1:02:AAO677:003> ;
                samm:properties () ;

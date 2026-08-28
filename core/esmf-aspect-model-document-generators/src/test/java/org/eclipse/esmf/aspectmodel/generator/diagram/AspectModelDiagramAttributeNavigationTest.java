@@ -83,7 +83,9 @@ class AspectModelDiagramAttributeNavigationTest {
       assertOne( result, target -> target.ownerUrn().equals( MODEL_NAMESPACE + "AttributeAspect" )
             && target.predicateUrn().equals( SAMM + "preferredName" )
             && target.selection().equals( "singleOccurrence" ) && "en".equals( target.language() ) );
-      assertThat( result.attributeNavigationTargets() ).noneMatch( target -> "de".equals( target.language() ) );
+      assertOne( result, target -> target.ownerUrn().equals( MODEL_NAMESPACE + "AttributeAspect" )
+            && target.predicateUrn().equals( SAMM + "preferredName" )
+            && target.selection().equals( "singleOccurrence" ) && "de".equals( target.language() ) );
       assertOne( result, target -> target.ownerUrn().equals( MODEL_NAMESPACE + "Enumeration" )
             && target.predicateUrn().equals( SAMM + "dataType" ) && target.selection().equals( "singleOccurrence" ) );
       assertOne( result, target -> target.ownerUrn().equals( MODEL_NAMESPACE + "State" )

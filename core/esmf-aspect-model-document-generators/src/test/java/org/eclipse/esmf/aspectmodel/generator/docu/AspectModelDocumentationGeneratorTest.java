@@ -19,7 +19,13 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.Locale;
+import java.util.regex.Pattern;
 
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
@@ -124,6 +130,45 @@ class AspectModelDocumentationGeneratorTest {
    void testDocumentationIsNotEmptyForModelWithoutLanguageTags() {
       final String aspectWithoutLanguageTags = generateHtmlDocumentation( TestAspect.ASPECT_WITHOUT_LANGUAGE_TAGS );
       assertThat( aspectWithoutLanguageTags ).isNotEmpty();
+   }
+
+   @Test
+   void embeddedDefaultDiagramsPreservePerArtifactLocaleAndSemanticLangStringsWithoutNavigationMetadata() {
+      final String semanticValue = "🚲".repeat( 257 );
+      final Aspect aspect = new AspectModelLoader().load( isolationModel( semanticValue ),
+            URI.create( "file:///documentation-isolation.ttl" ) ).aspect();
+      final var artifacts = new AspectModelDocumentationGenerator( aspect ).generate().toList();
+      assertThat( artifacts ).extracting( DocumentationArtifact::language )
+            .containsExactlyInAnyOrder( Locale.ENGLISH, Locale.GERMAN );
+      final String englishSvg = embeddedDiagram( artifacts.stream().filter( artifact -> artifact.language().equals( Locale.ENGLISH ) )
+            .findFirst().orElseThrow().getContent() );
+      final String germanSvg = embeddedDiagram( artifacts.stream().filter( artifact -> artifact.language().equals( Locale.GERMAN ) )
+            .findFirst().orElseThrow().getContent() );
+
+      assertThat( englishSvg ).contains( "preferredName:&#160;English&#160;name", "description:&#160;English&#160;description",
+            "Semantic&#160;English", "Semantisch&#160;Deutsch" )
+            .doesNotContain( "Deutscher&#160;Name", "Deutsche&#160;Beschreibung", "preferredName&#160;[en]",
+                  "description&#160;[en]", "gv-header-", "gv-attribute-" );
+      assertThat( germanSvg ).contains( "preferredName:&#160;Deutscher&#160;Name", "description:&#160;Deutsche&#160;Beschreibung",
+            "Semantic&#160;English", "Semantisch&#160;Deutsch" )
+            .doesNotContain( "English&#160;name", "English&#160;description", "preferredName&#160;[de]",
+                  "description&#160;[de]", "gv-header-", "gv-attribute-" );
+      assertThat( englishSvg.codePoints().filter( codePoint -> codePoint == "🚲".codePointAt( 0 ) ).count() ).isEqualTo( 257 );
+      assertThat( germanSvg.codePoints().filter( codePoint -> codePoint == "🚲".codePointAt( 0 ) ).count() ).isEqualTo( 257 );
+   }
+
+   private static String embeddedDiagram( final String html ) {
+      final var matcher = Pattern.compile( "data:image/svg\\+xml;base64,([A-Za-z0-9+/=]+)" ).matcher( html );
+      String svg = null;
+      while ( matcher.find() && svg == null ) {
+         final String candidate = new String( Base64.getDecoder().decode( matcher.group( 1 ) ), StandardCharsets.UTF_8 );
+         if ( candidate.contains( "id=\"graph_root\"" ) ) {
+            svg = candidate;
+         }
+      }
+      final String diagramSvg = svg;
+      assertThat( diagramSvg ).isNotNull();
+      return diagramSvg;
    }
 
    @Test
@@ -389,5 +434,25 @@ class AspectModelDocumentationGeneratorTest {
       final Aspect aspect = TestResources.load( testAspect ).aspect();
       final AspectModelDocumentationGenerator aspectModelDocumentationGenerator = new AspectModelDocumentationGenerator( aspect );
       return aspectModelDocumentationGenerator.getContent();
+   }
+
+   private static String isolationModel( final String semanticValue ) {
+      return """
+            @prefix : <urn:samm:org.eclipse.esmf.documentation.isolation:1.0.0#> .
+            @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+            @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#> .
+            @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+            :MultilingualAspect a samm:Aspect ;
+               samm:preferredName "English name"@en ;
+               samm:preferredName "Deutscher Name"@de ;
+               samm:description "English description"@en ;
+               samm:description "Deutsche Beschreibung"@de ;
+               samm:properties ( :enumProperty ) ;
+               samm:operations () .
+            :enumProperty a samm:Property ; samm:characteristic :Enumeration .
+            :Enumeration a samm-c:Enumeration ;
+               samm:dataType rdf:langString ;
+               samm-c:values ( "Semantic English"@en "Semantisch Deutsch"@de "%s"@en ) .
+            """.formatted( semanticValue );
    }
 }

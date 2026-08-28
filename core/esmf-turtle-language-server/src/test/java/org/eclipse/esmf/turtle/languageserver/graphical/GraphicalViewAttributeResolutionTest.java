@@ -46,6 +46,11 @@ class GraphicalViewAttributeResolutionTest {
             "singleOccurrence", "en" );
       assertThat( description.warning() ).isNull();
       assertStartsAt( description.location(), document.content(), "samm:description" );
+      final GraphicalViewResolveAttributeTargetResult germanDescription = resolve( service, uri, OWNER, DESCRIPTION,
+            "singleOccurrence", "de" );
+      assertThat( germanDescription.warning() ).isNull();
+      assertStartsAt( germanDescription.location(), document.content(), "samm:description" );
+      assertThat( germanDescription.location().getRange() ).isNotEqualTo( description.location().getRange() );
 
       final GraphicalViewResolveAttributeTargetResult see = resolve( service, uri, OWNER, SEE, "predicateStart", null );
       assertThat( see.warning() ).isNull();
@@ -55,9 +60,14 @@ class GraphicalViewAttributeResolutionTest {
       update( context.parser(), document, moved );
       final GraphicalViewResolveAttributeTargetResult movedDescription = resolve( service, uri, OWNER, DESCRIPTION,
             "singleOccurrence", "en" );
+      final GraphicalViewResolveAttributeTargetResult movedGermanDescription = resolve( service, uri, OWNER, DESCRIPTION,
+            "singleOccurrence", "de" );
       assertThat( movedDescription.location().getRange().getStart().getLine() )
             .isGreaterThan( description.location().getRange().getStart().getLine() );
       assertStartsAt( movedDescription.location(), moved, "samm:description" );
+      assertThat( movedGermanDescription.location().getRange().getStart().getLine() )
+            .isGreaterThan( germanDescription.location().getRange().getStart().getLine() );
+      assertStartsAt( movedGermanDescription.location(), moved, "samm:description" );
       service.close();
    }
 
