@@ -653,6 +653,31 @@ class AspectModelJsonPayloadGeneratorTest {
       assertThat( StringUtils.countMatches( generatedJson, "entity property example" ) ).isEqualTo( 2 );
    }
 
+   @Test
+   void testGenerateJsonWithDefaultTimestamp() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
+      final String generatedJson = new AspectModelJsonPayloadGenerator( aspect ).generateJson();
+
+      final AspectWithSimpleProperties parsed = parseJson( generatedJson, AspectWithSimpleProperties.class );
+
+      assertThat( parsed.getTestLocalDateTimeWithoutExample() ).isEqualTo(
+            datatypeFactory.newXMLGregorianCalendar( "1970-01-01T00:00:00.000Z" ) );
+   }
+
+   @Test
+   void testGenerateJsonWithCurrentTimestamp() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
+      final JsonPayloadGenerationConfig config = JsonPayloadGenerationConfigBuilder.builder()
+            .currentTimestamp( true )
+            .build();
+
+      final String generatedJson = new AspectModelJsonPayloadGenerator( aspect, config ).generateJson();
+      final AspectWithSimpleProperties parsed = parseJson( generatedJson, AspectWithSimpleProperties.class );
+
+      assertThat( parsed.getTestLocalDateTimeWithoutExample() ).isNotNull();
+      assertThat( parsed.getTestLocalDateTimeWithoutExample().getYear() ).isGreaterThanOrEqualTo( 2024 );
+   }
+
    private String generateJsonForModel( final Aspect aspect ) {
       final AspectModelJsonPayloadGenerator jsonGenerator = new AspectModelJsonPayloadGenerator( aspect );
       return jsonGenerator.generateJson();

@@ -751,6 +751,25 @@ class SammCliTest extends SammCliAbstractTest {
    }
 
    @Test
+   void testAspectToJsonWithDefaultTimestamp() {
+      final String input = inputFile( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).getAbsolutePath();
+      final ExecutionResult result = sammCli.runAndExpectSuccess(
+            "--disable-color", "aspect", input, "to", "json" );
+      assertThat( result.stdout() ).contains( "\"testLocalDateTimeWithoutExample\" : \"1970-01-01T00:00:00.000Z\"" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectToJsonWithCurrentTimestamp() {
+      final String input = inputFile( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).getAbsolutePath();
+      final ExecutionResult result = sammCli.runAndExpectSuccess(
+            "--disable-color", "aspect", input, "to", "json", "--current-timestamp" );
+      assertThat( result.stdout() ).contains( "\"testLocalDateTimeWithoutExample\" :" );
+      assertThat( result.stdout() ).doesNotContain( "\"testLocalDateTimeWithoutExample\" : \"1970-01-01T00:00:00.000Z\"" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
    void testAspectToJsonLdToFile( @TempDir final Path outputDirectory ) {
       final File targetFile = outputFile( outputDirectory, "output.json" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "jsonld", "-o",
