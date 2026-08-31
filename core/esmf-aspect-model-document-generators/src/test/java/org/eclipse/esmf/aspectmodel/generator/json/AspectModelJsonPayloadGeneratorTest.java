@@ -660,39 +660,22 @@ class AspectModelJsonPayloadGeneratorTest {
 
       final AspectWithSimpleProperties parsed = parseJson( generatedJson, AspectWithSimpleProperties.class );
 
-      assertThat( parsed.getTestLocalDateTimeWithoutExample() ).isNotNull();
+      assertThat( parsed.getTestLocalDateTimeWithoutExample() ).isEqualTo(
+            datatypeFactory.newXMLGregorianCalendar( "1970-01-01T00:00:00.000Z" ) );
    }
 
    @Test
-   void testGenerateJsonWithCustomTimestamp() {
+   void testGenerateJsonWithCurrentTimestamp() {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
       final JsonPayloadGenerationConfig config = JsonPayloadGenerationConfigBuilder.builder()
-            .timestamp( "2025-06-15T10:30:00.000Z" )
+            .currentTimestamp( true )
             .build();
 
       final String generatedJson = new AspectModelJsonPayloadGenerator( aspect, config ).generateJson();
       final AspectWithSimpleProperties parsed = parseJson( generatedJson, AspectWithSimpleProperties.class );
 
-      assertThat( parsed.getTestLocalDateTimeWithoutExample() ).isEqualTo(
-            datatypeFactory.newXMLGregorianCalendar( "2025-06-15T10:30:00.000Z" ) );
-   }
-
-   @Test
-   void testGenerateJsonWithInvalidTimestampThrowsException() {
-      assertThatCode( () -> JsonPayloadGenerationConfigBuilder.builder()
-            .timestamp( "not-a-timestamp" )
-            .build()
-      ).isInstanceOf( IllegalArgumentException.class )
-            .hasMessageContaining( "Invalid timestamp format" );
-   }
-
-   @Test
-   void testGenerateJsonWithPartialTimestampThrowsException() {
-      assertThatCode( () -> JsonPayloadGenerationConfigBuilder.builder()
-            .timestamp( "2025-06" )
-            .build()
-      ).isInstanceOf( IllegalArgumentException.class )
-            .hasMessageContaining( "Partial timestamps are not supported" );
+      assertThat( parsed.getTestLocalDateTimeWithoutExample() ).isNotNull();
+      assertThat( parsed.getTestLocalDateTimeWithoutExample().getYear() ).isGreaterThanOrEqualTo( 2024 );
    }
 
    private String generateJsonForModel( final Aspect aspect ) {

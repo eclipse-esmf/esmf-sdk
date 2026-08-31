@@ -84,6 +84,7 @@ public class JsonPayloadGenerator<S extends StructureElement>
       extends JsonGenerator<S, JsonPayloadGenerationConfig, JsonNode, JsonPayloadArtifact>
       implements AspectVisitor<JsonNode, JsonPayloadGenerator.Context> {
    private static final Logger LOG = LoggerFactory.getLogger( JsonPayloadGenerator.class );
+   public static final LocalDateTime DEFAULT_TIMESTAMP = LocalDateTime.of( 1970, 1, 1, 0, 0, 0 );
    public static final JsonPayloadGenerationConfig DEFAULT_CONFIG = JsonPayloadGenerationConfigBuilder.builder().build();
 
    public JsonPayloadGenerator( final S element, final JsonPayloadGenerationConfig config ) {
@@ -95,14 +96,10 @@ public class JsonPayloadGenerator<S extends StructureElement>
    }
 
    private LocalDateTime getReferenceDateTime() {
-      if ( config.timestamp() == null || config.timestamp().isBlank() ) {
+      if ( config.currentTimestamp() ) {
          return LocalDateTime.now();
       }
-      final XMLGregorianCalendar cal = DatatypeFactory.newDefaultInstance().newXMLGregorianCalendar( config.timestamp() );
-      return LocalDateTime.of(
-            cal.getYear(), cal.getMonth(), cal.getDay(),
-            cal.getHour(), cal.getMinute(), cal.getSecond()
-      );
+      return DEFAULT_TIMESTAMP;
    }
 
    @Override

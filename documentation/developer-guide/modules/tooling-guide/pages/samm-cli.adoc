@@ -183,7 +183,7 @@ of model resolution] for more information.
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
                                    | _--add-type-attribute_, _-ta_ : Add `@type` attribute for inherited Entities            |
-                                   | _--timestamp_ : Specifies a fixed timestamp in XML Schema dateTime format (e.g. `2025-06-15T10:30:00.000Z`) to use when no example value is defined (default: current timestamp). Partial timestamps are not supported. | `samm aspect AspectModel.ttl to json --timestamp 2025-06-15T10:30:00.000Z`
+                                   | _--current-timestamp_ : Generate current timestamp dynamically instead of using the fixed default timestamp (Unix epoch `1970-01-01T00:00:00.000Z`). | `samm aspect AspectModel.ttl to json --current-timestamp`
 .4+| [[aspect-to-parquet]] aspect <model> to parquet | Generate example Apache Parquet payload data for an Aspect Model      | `samm aspect AspectModel.ttl to parquet`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |

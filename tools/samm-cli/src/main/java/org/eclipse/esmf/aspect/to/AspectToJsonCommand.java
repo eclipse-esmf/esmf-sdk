@@ -58,10 +58,9 @@ public class AspectToJsonCommand extends AbstractCommand {
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
-      names = { "--timestamp" },
-      description = "Specifies a fixed timestamp in XML Schema dateTime format (e.g. 2025-06-15T10:30:00.000Z)"
-            + " to use when no example value is defined. Partial timestamps are not supported." )
-   private String timestamp;
+      names = { "--current-timestamp" },
+      description = "Generate current timestamp dynamically instead of using the fixed default timestamp." )
+   private boolean currentTimestamp = false;
 
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
@@ -80,7 +79,7 @@ public class AspectToJsonCommand extends AbstractCommand {
       final JsonPayloadGenerationConfig config = JsonPayloadGenerationConfigBuilder.builder()
             .addTypeAttributeForEntityInheritance( addTypeAttribute )
             .failOnInvalidRegularExpressions( failOnEmptyExampleValue )
-            .timestamp( timestamp )
+            .currentTimestamp( currentTimestamp )
             .build();
 
       final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator(
