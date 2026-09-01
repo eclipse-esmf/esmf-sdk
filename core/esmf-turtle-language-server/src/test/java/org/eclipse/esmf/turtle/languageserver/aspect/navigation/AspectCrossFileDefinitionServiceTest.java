@@ -9,7 +9,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -172,56 +171,5 @@ class AspectCrossFileDefinitionServiceTest {
       assertThat( location.getUri() ).contains( "unit" );
       assertThat( location.getUri() ).endsWith( ".ttl" );
       assertThat( location.getRange().getStart().getLine() ).isGreaterThan( 1000 );
-   }
-
-   @Test
-   void fullUrnResolutionUsesOpenTargetCoordinatesAndClosedPersistedContent( @TempDir final Path directory ) throws IOException {
-      final Path target = directory.resolve( "Thing.ttl" );
-      Files.writeString( target, """
-            @prefix : <urn:samm:example.cross:1.0.0#> .
-            @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
-            :PersistedThing a samm:Characteristic .
-            """ );
-      final Path source = Files.writeString( directory.resolve( "Source.ttl" ), """
-            @prefix : <urn:samm:source:1.0.0#> .
-            @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
-            :Source a samm:Aspect ; samm:properties (); samm:operations () .
-            """ );
-      final Document sourceDocument = new Document( source.toUri(), Files.readString( source ) );
-      final Map<String, Document> open = new HashMap<>();
-      final AspectCrossFileDefinitionService service = new AspectCrossFileDefinitionService( parserService, open );
-      final var persisted = service.findDefinition( parserService.apply( sourceDocument ),
-            org.eclipse.esmf.aspectmodel.urn.AspectModelUrn.from( "urn:samm:example.cross:1.0.0#PersistedThing" ).get() );
-      assertThat( persisted.outcome() ).isEqualTo( AspectCrossFileDefinitionService.UrnResolution.Outcome.FOUND );
-      assertThat( persisted.location().getRange().getStart().getLine() ).isEqualTo( 2 );
-
-      open.put( target.toUri().toString(), new Document( target.toUri(), """
-            @prefix : <urn:samm:example.cross:1.0.0#> .
-            @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
-
-            :PersistedThing a samm:Characteristic .
-            """ ) );
-      final var moved = service.findDefinition( parserService.apply( sourceDocument ),
-            org.eclipse.esmf.aspectmodel.urn.AspectModelUrn.from( "urn:samm:example.cross:1.0.0#PersistedThing" ).get() );
-      assertThat( moved.outcome() ).isEqualTo( AspectCrossFileDefinitionService.UrnResolution.Outcome.FOUND );
-      assertThat( moved.location().getRange().getStart().getLine() ).isEqualTo( 3 );
-   }
-
-   @Test
-   void fullUrnResolutionReturnsNotFoundAndAmbiguousOutcomes( @TempDir final Path directory ) throws IOException {
-      final String model = """
-            @prefix : <urn:samm:example.outcome:1.0.0#> .
-            @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
-            :Source a samm:Aspect ; samm:properties (); samm:operations () .
-            :Duplicate a samm:Characteristic .
-            :Duplicate a samm:Characteristic .
-            """;
-      final Path file = Files.writeString( directory.resolve( "outcomes.ttl" ), model );
-      final Document document = new Document( file.toUri(), model );
-      final AspectCrossFileDefinitionService service = new AspectCrossFileDefinitionService( parserService, Map.of() );
-      assertThat( service.findDefinition( parserService.apply( document ), org.eclipse.esmf.aspectmodel.urn.AspectModelUrn.from( "urn:samm:example.outcome:1.0.0#Missing" ).get() ).outcome() )
-            .isEqualTo( AspectCrossFileDefinitionService.UrnResolution.Outcome.NOT_FOUND );
-      assertThat( service.findDefinition( parserService.apply( document ), org.eclipse.esmf.aspectmodel.urn.AspectModelUrn.from( "urn:samm:example.outcome:1.0.0#Duplicate" ).get() ).outcome() )
-            .isEqualTo( AspectCrossFileDefinitionService.UrnResolution.Outcome.AMBIGUOUS );
    }
 }

@@ -25,12 +25,12 @@ import java.util.concurrent.Executors;
 import java.util.function.Function;
 
 import org.eclipse.esmf.aspectmodel.ViolationReport;
-import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewRenderParams;
-import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewRenderResult;
-import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewResolveAttributeTargetParams;
-import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewResolveAttributeTargetResult;
-import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewResolveTargetParams;
-import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewResolveTargetResult;
+import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderParams;
+import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderResult;
+import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewResolveAttributeTargetParams;
+import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewResolveAttributeTargetResult;
+import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewResolveTargetParams;
+import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewResolveTargetResult;
 import org.eclipse.esmf.turtle.languageserver.lsp.request.ValidateDocumentParams;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TurtleTextDocumentService;
 import org.eclipse.esmf.turtle.languageserver.lsp.workspace.TurtleWorkspaceService;
@@ -189,11 +189,7 @@ public class TurtleLanguageServer implements LanguageServer, LanguageClientAware
    }
 
    private static void handleClientConnection( final AsynchronousSocketChannel socketChannel ) {
-      handleClientConnection( socketChannel, new TurtleLanguageServer() );
-   }
-
-   static void handleClientConnection( final AsynchronousSocketChannel socketChannel,
-         final TurtleLanguageServer languageServer ) {
+      final TurtleLanguageServer languageServer = new TurtleLanguageServer();
       try ( final var inputStream = Channels.newInputStream( socketChannel );
             final var outputStream = Channels.newOutputStream( socketChannel );
             final var executorService = Executors.newCachedThreadPool();

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: MPL-2.0
  */
-package org.eclipse.esmf.turtle.languageserver.lsp.request;
+package org.eclipse.esmf.turtle.languageserver.graphical.protocol;
 /** A response-local SVG marker and its semantic target. */
 public record GraphicalViewTarget( String id, String kind, String elementUrn ) implements GraphicalViewRenderTarget {
    public static final String ELEMENT_HEADER = "elementHeader";

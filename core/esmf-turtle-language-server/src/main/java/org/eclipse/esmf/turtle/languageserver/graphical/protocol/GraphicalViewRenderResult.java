@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: MPL-2.0
  */
-package org.eclipse.esmf.turtle.languageserver.lsp.request;
+package org.eclipse.esmf.turtle.languageserver.graphical.protocol;
 import java.util.List;
 /** Render response. Warning outcomes contain no SVG and no targets. */
 public record GraphicalViewRenderResult( String uri, String svg, List<GraphicalViewRenderTarget> targets,

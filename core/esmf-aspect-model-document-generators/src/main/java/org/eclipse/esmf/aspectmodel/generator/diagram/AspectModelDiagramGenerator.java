@@ -36,8 +36,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.generator.AspectGenerator;
@@ -110,23 +108,11 @@ public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[],
 
    /** Generates navigation-enabled SVG under the requested box and row-metadata bounds. */
    public DiagramNavigationResult generateSvgWithNavigationMetadata( final int maximumBoxes, final boolean includeAttributeRows ) {
-      return generateSvgWithNavigationMetadata( maximumBoxes, includeAttributeRows, this::generateSvg );
-   }
-
-   DiagramNavigationResult generateSvgWithNavigationMetadata( final int maximumBoxes,
-         final Function<Diagram, DiagramNavigationResult> graphperRenderer ) {
-      return generateSvgWithNavigationMetadata( maximumBoxes, false, graphperRenderer );
-   }
-
-   DiagramNavigationResult generateSvgWithNavigationMetadata( final int maximumBoxes, final boolean includeAttributeRows,
-         final Function<Diagram, DiagramNavigationResult> graphperRenderer ) {
       final Diagram diagram = createDiagram( DiagramHeaderNavigation.enabled(), includeAttributeRows
             ? DiagramAttributeNavigation.enabled()
             : DiagramAttributeNavigation.disabled(), true );
-      if ( diagram.getBoxes().size() > maximumBoxes ) {
-         throw new DiagramBoxLimitExceededException( diagram.getBoxes().size(), maximumBoxes );
-      }
-      return graphperRenderer.apply( diagram );
+      DiagramBoxLimit.maximum( maximumBoxes ).validate( diagram );
+      return generateSvg( diagram );
    }
 
    @Override
@@ -226,7 +212,8 @@ public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[],
 
    private List<DiagramAttributeNavigationTarget> attributeNavigationTargets( final Diagram diagram ) {
       final Map<String, DiagramAttributeNavigationTarget> targets = new LinkedHashMap<>();
-      diagram.getBoxes().forEach( box -> box.getEntryNavigation().stream().flatMap( Optional::stream ).forEach( row -> {
+      diagram.getBoxes().forEach( box -> box.getEntryRows().stream().map( Diagram.Box.EntryRow::navigation )
+            .flatMap( Optional::stream ).forEach( row -> {
          final DiagramAttributeNavigation.Locator locator = row.locator();
          final DiagramAttributeNavigationTarget target = new DiagramAttributeNavigationTarget( row.markerId(), locator.ownerUrn(),
                locator.predicateUrn(), locator.selection().wireValue(), locator.language() );
@@ -289,13 +276,12 @@ public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[],
                   box.getHeaderMarkerId().ifPresent( titleCell::id );
                   table.tr( titleCell );
                }
-               if ( !box.getEntries().isEmpty() ) {
+               if ( !box.getEntryRows().isEmpty() ) {
                   table.tr( td().cellPadding( 1 ).bgColor( Color.BLACK ).height( 1 ) );
-                  final List<Optional<DiagramAttributeNavigation.Row>> entryNavigation = box.getEntryNavigation();
-                  IntStream.range( 0, box.getEntries().size() ).forEach( index -> {
-                     final Html.Td entryCell = td().cellPadding( 3 ).text( box.getEntries().get( index ) ).fontName( fontName )
+                  box.getEntryRows().forEach( row -> {
+                     final Html.Td entryCell = td().cellPadding( 3 ).text( row.text() ).fontName( fontName )
                            .align( Labeljust.LEFT );
-                     entryNavigation.get( index ).map( DiagramAttributeNavigation.Row::markerId ).ifPresent( entryCell::id );
+                     row.navigation().map( DiagramAttributeNavigation.Row::markerId ).ifPresent( entryCell::id );
                      table.tr( entryCell );
                   } );
                }

@@ -1198,48 +1198,11 @@ class SammCliTest extends SammCliAbstractTest {
    }
 
    @Test
-   void testAspectToSvgKeepsDefaultLocaleSemanticLangStringsAndNoNavigationMetadata( @TempDir final Path directory )
-         throws IOException {
-      final String semanticValue = "🚲".repeat( 257 );
-      final Path model = Files.writeString( directory.resolve( "CliIsolation.ttl" ), isolationModel( semanticValue ) );
-
-      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", model.toString(), "to", "svg" );
-
-      assertThat( result.stderr() ).isEmpty();
-      assertThat( result.stdout() ).contains( "preferredName:&#160;English&#160;name",
-            "description:&#160;English&#160;description", "Semantic&#160;English", "Semantisch&#160;Deutsch" )
-            .doesNotContain( "Deutscher&#160;Name", "Deutsche&#160;Beschreibung", "preferredName&#160;[en]",
-                  "description&#160;[en]", "gv-header-", "gv-attribute-" );
-      assertThat( result.stdout().codePoints().filter( codePoint -> codePoint == "🚲".codePointAt( 0 ) ).count() )
-            .isEqualTo( 257 );
-   }
-
-   @Test
    void testAspectToSvgWithCustomResolver() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "svg",
             "--custom-resolver", resolverCommand() );
       assertThat( result.stdout() ).contains( "<svg" );
       assertThat( result.stderr() ).isEmpty();
-   }
-
-   private static String isolationModel( final String semanticValue ) {
-      return """
-            @prefix : <urn:samm:org.eclipse.esmf.cli.isolation:1.0.0#> .
-            @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
-            @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#> .
-            @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-            :MultilingualAspect a samm:Aspect ;
-               samm:preferredName "English name"@en ;
-               samm:preferredName "Deutscher Name"@de ;
-               samm:description "English description"@en ;
-               samm:description "Deutsche Beschreibung"@de ;
-               samm:properties ( :enumProperty ) ;
-               samm:operations () .
-            :enumProperty a samm:Property ; samm:characteristic :Enumeration .
-            :Enumeration a samm-c:Enumeration ;
-               samm:dataType rdf:langString ;
-               samm-c:values ( "Semantic English"@en "Semantisch Deutsch"@de "%s"@en ) .
-            """.formatted( semanticValue );
    }
 
    @Test

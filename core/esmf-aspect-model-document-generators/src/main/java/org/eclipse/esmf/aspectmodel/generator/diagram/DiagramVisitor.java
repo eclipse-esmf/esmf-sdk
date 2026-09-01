@@ -85,15 +85,6 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
       this( locale, DiagramHeaderNavigation.disabled(), DiagramAttributeNavigation.disabled(), false );
    }
 
-   DiagramVisitor( final Locale locale, final DiagramHeaderNavigation headerNavigation ) {
-      this( locale, headerNavigation, DiagramAttributeNavigation.disabled(), false );
-   }
-
-   DiagramVisitor( final Locale locale, final DiagramHeaderNavigation headerNavigation,
-         final DiagramAttributeNavigation attributeNavigation ) {
-      this( locale, headerNavigation, attributeNavigation, false );
-   }
-
    DiagramVisitor( final Locale locale, final DiagramHeaderNavigation headerNavigation,
          final DiagramAttributeNavigation attributeNavigation, final boolean includeAllLocalizedRows ) {
       this.locale = locale;

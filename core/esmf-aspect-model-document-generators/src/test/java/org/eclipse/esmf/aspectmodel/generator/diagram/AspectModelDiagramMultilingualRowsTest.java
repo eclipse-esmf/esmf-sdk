@@ -28,7 +28,7 @@ class AspectModelDiagramMultilingualRowsTest {
 
    @Test
    void graphicalRowsContainEveryLocalizedValueInDeterministicLanguageOrder() {
-      final Diagram.Box box = graphicalBox( PREFIXES + """
+      final DiagramNavigationResult result = graphicalResult( PREFIXES + """
             :MultilingualAspect a samm:Aspect ;
                samm:description "English description"@en ;
                samm:preferredName "US name"@en-US ;
@@ -40,15 +40,14 @@ class AspectModelDiagramMultilingualRowsTest {
                samm:operations () .
             """ );
 
-      assertThat( box.getEntries() ).containsExactly(
-            "preferredName [de]: Deutscher Name",
-            "preferredName [en]: English name",
-            "preferredName [en-US]: US name",
-            "description [de]: Deutsche Beschreibung",
-            "description [en]: English description",
-            "description [en-US]: US description" );
-      assertThat( box.getEntryNavigation() ).allMatch( Optional::isPresent );
-      assertThat( box.getEntryNavigation() ).extracting( row -> row.orElseThrow().locator().language() )
+      assertInOrder( result.svg(),
+            "preferredName&#160;[de]:&#160;Deutscher&#160;Name",
+            "preferredName&#160;[en]:&#160;English&#160;name",
+            "preferredName&#160;[en-US]:&#160;US&#160;name",
+            "description&#160;[de]:&#160;Deutsche&#160;Beschreibung",
+            "description&#160;[en]:&#160;English&#160;description",
+            "description&#160;[en-US]:&#160;US&#160;description" );
+      assertThat( localizedTargets( result ) ).extracting( DiagramAttributeNavigationTarget::language )
             .containsExactly( "de", "en", "en-us", "de", "en", "en-us" );
    }
 
@@ -71,9 +70,10 @@ class AspectModelDiagramMultilingualRowsTest {
                samm:operations () .
             """;
 
-      assertThat( graphicalBox( first ).getEntries() ).containsExactly(
-            "preferredName [de]: Deutscher Name", "preferredName [zh-Hans]: 中文名称", "description [de]: Beschreibung" )
-            .isEqualTo( graphicalBox( reordered ).getEntries() );
+      assertInOrder( graphicalResult( first ).svg(), "preferredName&#160;[de]:&#160;Deutscher&#160;Name",
+            "preferredName&#160;[zh-Hans]:&#160;中文名称", "description&#160;[de]:&#160;Beschreibung" );
+      assertInOrder( graphicalResult( reordered ).svg(), "preferredName&#160;[de]:&#160;Deutscher&#160;Name",
+            "preferredName&#160;[zh-Hans]:&#160;中文名称", "description&#160;[de]:&#160;Beschreibung" );
    }
 
    @Test
@@ -94,30 +94,22 @@ class AspectModelDiagramMultilingualRowsTest {
    @Test
    void truncationPrecedesWrappingAndEveryPhysicalRowKeepsOneLanguageLocator() {
       final String value = "localized value ".repeat( 40 ).strip();
-      final Diagram.Box box = graphicalBox( PREFIXES + """
+      final DiagramNavigationResult result = graphicalResult( PREFIXES + """
             :MultilingualAspect a samm:Aspect ;
                samm:description "%s"@en ;
                samm:properties () ;
                samm:operations () .
             """.formatted( value ) );
 
-      final List<Integer> descriptionRows = java.util.stream.IntStream.range( 0, box.getEntries().size() )
-            .filter( index -> box.getEntryNavigation().get( index ).stream()
-                  .anyMatch( row -> row.locator().predicateUrn().equals( SammNs.SAMM.description().getURI() ) ) )
-            .boxed().toList();
+      final List<DiagramAttributeNavigationTarget> descriptionRows = localizedTargets( result ).stream()
+            .filter( target -> target.predicateUrn().equals( SammNs.SAMM.description().getURI() ) ).toList();
       assertThat( descriptionRows ).hasSizeGreaterThan( 1 );
-      assertThat( descriptionRows.stream().map( index -> box.getEntryNavigation().get( index ).orElseThrow().markerId() ) )
-            .doesNotHaveDuplicates();
-      assertThat( descriptionRows.stream().map( index -> box.getEntryNavigation().get( index ).orElseThrow().locator() ) )
-            .allMatch( locator -> locator.ownerUrn().endsWith( "#MultilingualAspect" )
-                  && locator.predicateUrn().equals( SammNs.SAMM.description().getURI() )
-                  && locator.selection() == DiagramAttributeNavigation.Selection.SINGLE_OCCURRENCE
-                  && "en".equals( locator.language() ) );
-
-      final String reconstructed = descriptionRows.stream().map( index -> box.getEntries().get( index ) )
-            .map( row -> row.startsWith( "   " ) ? row.substring( 3 ) : row )
-            .collect( java.util.stream.Collectors.joining( " " ) );
-      assertThat( reconstructed ).isEqualTo( "description [en]: " + DiagramVisitor.truncateLocalizedValue( value ) );
+      assertThat( descriptionRows ).extracting( DiagramAttributeNavigationTarget::id ).doesNotHaveDuplicates();
+      assertThat( descriptionRows ).allMatch( target -> target.ownerUrn().endsWith( "#MultilingualAspect" )
+            && target.predicateUrn().equals( SammNs.SAMM.description().getURI() )
+            && target.selection().equals( "singleOccurrence" ) && "en".equals( target.language() ) );
+      assertThat( result.svg() ).doesNotContain( value );
+      assertThat( descriptionRows ).allSatisfy( target -> assertThat( result.svg() ).contains( "id=\"" + target.id() + "\"" ) );
    }
 
    @Test
@@ -135,11 +127,10 @@ class AspectModelDiagramMultilingualRowsTest {
             """;
       final Aspect aspect = load( model );
       final Diagram defaultDiagram = aspect.accept( new DiagramVisitor( Locale.ENGLISH ), Optional.empty() );
-      final Diagram graphicalDiagram = aspect.accept( graphicalVisitor(), Optional.empty() );
+      final DiagramNavigationResult graphical = generator( aspect ).generateSvgWithNavigationMetadata( true );
 
       assertThat( defaultDiagram.getFocusBox().getEntries() ).containsExactly( "preferredName: English name" );
-      assertThat( graphicalDiagram.getBoxes().stream().filter( box -> "Enumeration".equals( box.getTitle() ) ).findFirst().orElseThrow()
-               .getEntries() ).contains( "values: \"One\"@en, \"Eins\"@de" );
+      assertThat( graphical.svg() ).contains( "values:&#160;&quot;One&quot;@en,&#160;&quot;Eins&quot;@de" );
    }
 
    @Test
@@ -160,7 +151,7 @@ class AspectModelDiagramMultilingualRowsTest {
 
    @Test
    void localizedRowsOwnedByAnonymousElementsRemainNonInteractive() {
-      final Diagram diagram = load( PREFIXES + """
+      final DiagramNavigationResult result = graphicalResult( PREFIXES + """
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             :MultilingualAspect a samm:Aspect ;
                samm:properties ( :anonymousProperty ) ;
@@ -171,19 +162,36 @@ class AspectModelDiagramMultilingualRowsTest {
                   samm:preferredName "Anonymous name"@en ;
                   samm:dataType xsd:string
                ] .
-            """ ).accept( graphicalVisitor(), Optional.empty() );
-      final Diagram.Box anonymous = diagram.getBoxes().stream()
-            .filter( box -> box.getEntries().contains( "preferredName [en]: Anonymous name" ) ).findFirst().orElseThrow();
+            """ );
 
-      assertThat( anonymous.getEntryNavigation() ).allMatch( Optional::isEmpty );
+      assertThat( result.svg() ).contains( "preferredName&#160;[en]:&#160;Anonymous&#160;name" );
+      assertThat( result.attributeNavigationTargets() ).noneMatch( target -> target.predicateUrn()
+            .equals( SammNs.SAMM.preferredName().getURI() ) );
    }
 
-   private static Diagram.Box graphicalBox( final String model ) {
-      return load( model ).accept( graphicalVisitor(), Optional.empty() ).getFocusBox();
+   private static DiagramNavigationResult graphicalResult( final String model ) {
+      return generator( load( model ) ).generateSvgWithNavigationMetadata( true );
    }
 
-   private static DiagramVisitor graphicalVisitor() {
-      return new DiagramVisitor( Locale.ENGLISH, DiagramHeaderNavigation.enabled(), DiagramAttributeNavigation.enabled(), true );
+   private static AspectModelDiagramGenerator generator( final Aspect aspect ) {
+      return new AspectModelDiagramGenerator( aspect, DiagramGenerationConfigBuilder.builder()
+            .format( DiagramGenerationConfig.Format.SVG ).language( Locale.ENGLISH ).build() );
+   }
+
+   private static List<DiagramAttributeNavigationTarget> localizedTargets( final DiagramNavigationResult result ) {
+      return result.attributeNavigationTargets().stream()
+            .filter( target -> target.predicateUrn().equals( SammNs.SAMM.preferredName().getURI() )
+                  || target.predicateUrn().equals( SammNs.SAMM.description().getURI() ) )
+            .toList();
+   }
+
+   private static void assertInOrder( final String svg, final String... rows ) {
+      int previous = -1;
+      for ( final String row : rows ) {
+         final int current = svg.indexOf( row );
+         assertThat( current ).as( row ).isGreaterThan( previous );
+         previous = current;
+      }
    }
 
    private static Aspect load( final String model ) {

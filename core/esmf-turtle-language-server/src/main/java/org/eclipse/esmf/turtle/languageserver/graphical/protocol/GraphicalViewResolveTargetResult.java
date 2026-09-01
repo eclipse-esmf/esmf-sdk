@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: MPL-2.0
  */
-package org.eclipse.esmf.turtle.languageserver.lsp.request;
+package org.eclipse.esmf.turtle.languageserver.graphical.protocol;
 import org.eclipse.lsp4j.Location;
 /** Fresh source location, or one controlled warning. */
 public record GraphicalViewResolveTargetResult( Location location, GraphicalViewResolveTargetWarning warning ) {

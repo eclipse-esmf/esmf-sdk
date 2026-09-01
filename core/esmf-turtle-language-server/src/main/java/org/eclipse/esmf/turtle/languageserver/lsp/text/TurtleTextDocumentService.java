@@ -26,16 +26,16 @@ import java.util.concurrent.Executors;
 import org.eclipse.esmf.aspectmodel.ViolationReport;
 import org.eclipse.esmf.turtle.languageserver.aspect.navigation.AspectCrossFileDefinitionService;
 import org.eclipse.esmf.turtle.languageserver.graphical.GraphicalViewService;
+import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderParams;
+import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderResult;
+import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewResolveAttributeTargetParams;
+import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewResolveAttributeTargetResult;
+import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewResolveTargetParams;
+import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewResolveTargetResult;
 import org.eclipse.esmf.turtle.languageserver.lsp.ResolutionStrategyService;
 import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.DiagnosticMapper;
 import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.ResolutionStrategyAwareViolationProvider;
 import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.ViolationProvider;
-import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewRenderParams;
-import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewRenderResult;
-import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewResolveAttributeTargetParams;
-import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewResolveAttributeTargetResult;
-import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewResolveTargetParams;
-import org.eclipse.esmf.turtle.languageserver.lsp.request.GraphicalViewResolveTargetResult;
 import org.eclipse.esmf.turtle.languageserver.structure.DocumentSymbolService;
 import org.eclipse.esmf.turtle.languageserver.structure.TurtleTokenService;
 import org.eclipse.esmf.turtle.languageserver.turtle.TurtleCompletionService;
@@ -93,8 +93,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
       turtleParserService = new TreeSitterTurtleParserService();
       tokenService = new TurtleTokenService();
       aspectCrossFileDefinitionService = new AspectCrossFileDefinitionService( turtleParserService, documents, resolutionStrategyService );
-      graphicalViewService = new GraphicalViewService( documents, turtleParserService, resolutionStrategyService,
-            aspectCrossFileDefinitionService );
+      graphicalViewService = new GraphicalViewService( documents, turtleParserService, resolutionStrategyService );
       documentSymbolService = new DocumentSymbolService( turtleParserService );
       final List<ViolationProvider> violationProviders =
             Streams.stream( ServiceLoader.load( ViolationProvider.class ).iterator() ).toList();
@@ -118,16 +117,6 @@ public class TurtleTextDocumentService implements TextDocumentService {
       validationCoordinator.close();
       graphicalViewService.close();
       asyncExecutor.shutdown();
-   }
-
-   /** Visible for lifecycle verification of all per-server executors. */
-   public boolean executorsShutdown() {
-      return asyncExecutor.isShutdown() && graphicalViewService.executorsShutdown();
-   }
-
-   /** Visible for lifecycle verification that shutdown workers have actually terminated. */
-   public boolean executorsTerminated() {
-      return asyncExecutor.isTerminated() && graphicalViewService.executorsTerminated();
    }
 
    public CompletableFuture<GraphicalViewRenderResult> renderGraphicalView( final GraphicalViewRenderParams params ) {

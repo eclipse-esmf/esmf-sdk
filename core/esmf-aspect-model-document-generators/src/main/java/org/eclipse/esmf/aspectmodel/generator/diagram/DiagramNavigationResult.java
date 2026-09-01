@@ -27,10 +27,6 @@ public record DiagramNavigationResult(
       Map<String, String> navigationTargets,
       List<DiagramAttributeNavigationTarget> attributeNavigationTargets
 ) {
-   public DiagramNavigationResult( final String svg, final Map<String, String> navigationTargets ) {
-      this( svg, navigationTargets, List.of() );
-   }
-
    public DiagramNavigationResult {
       navigationTargets = Map.copyOf( navigationTargets );
       attributeNavigationTargets = List.copyOf( attributeNavigationTargets );

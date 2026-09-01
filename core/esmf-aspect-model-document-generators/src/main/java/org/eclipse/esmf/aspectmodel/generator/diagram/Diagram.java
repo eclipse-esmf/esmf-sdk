@@ -13,6 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.generator.diagram;
 
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -96,8 +97,35 @@ public class Diagram {
       private final String title;
       private final String headerMarkerId;
       private final String navigationTargetUrn;
-      private final List<String> entries = new ArrayList<>();
-      private final List<Optional<DiagramAttributeNavigation.Row>> entryNavigation = new ArrayList<>();
+      private final List<EntryRow> entryRows = new ArrayList<>();
+      private final List<String> entriesView = new AbstractList<>() {
+         @Override
+         public String get( final int index ) {
+            return entryRows.get( index ).text();
+         }
+
+         @Override
+         public int size() {
+            return entryRows.size();
+         }
+
+         @Override
+         public String set( final int index, final String text ) {
+            final EntryRow previous = entryRows.get( index );
+            entryRows.set( index, new EntryRow( text, previous.navigation() ) );
+            return previous.text();
+         }
+
+         @Override
+         public void add( final int index, final String text ) {
+            entryRows.add( index, new EntryRow( text, Optional.empty() ) );
+         }
+
+         @Override
+         public String remove( final int index ) {
+            return entryRows.remove( index ).text();
+         }
+      };
 
       public Box( final String prototype, final String title, final Color background ) {
          this( prototype, title, background, null, null );
@@ -113,16 +141,16 @@ public class Diagram {
       }
 
       public void addEntry( final List<String> entry ) {
-         entries.addAll( entry );
-         entryNavigation.addAll( java.util.Collections.nCopies( entry.size(), Optional.empty() ) );
+         entry.stream().map( text -> new EntryRow( text, Optional.empty() ) ).forEach( entryRows::add );
       }
 
       void addEntry( final List<String> entry, final List<Optional<DiagramAttributeNavigation.Row>> navigation ) {
          if ( entry.size() != navigation.size() ) {
             throw new IllegalArgumentException( "Diagram entry and navigation metadata must have equal sizes" );
          }
-         entries.addAll( entry );
-         entryNavigation.addAll( navigation );
+         for ( int index = 0; index < entry.size(); index++ ) {
+            entryRows.add( new EntryRow( entry.get( index ), navigation.get( index ) ) );
+         }
       }
 
       public void setPrototype( final String prototype ) {
@@ -150,15 +178,17 @@ public class Diagram {
       }
 
       public List<String> getEntries() {
-         return entries;
+         return entriesView;
       }
 
-      List<Optional<DiagramAttributeNavigation.Row>> getEntryNavigation() {
-         if ( entries.size() != entryNavigation.size() ) {
-            throw new IllegalStateException( "Diagram entry navigation metadata is not aligned" );
-         }
-         return entryNavigation;
+      List<EntryRow> getEntryRows() {
+         return List.copyOf( entryRows );
       }
+
+      record EntryRow(
+            String text,
+            Optional<DiagramAttributeNavigation.Row> navigation
+      ) {}
    }
 
    /**
