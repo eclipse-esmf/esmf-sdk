@@ -166,7 +166,7 @@ class AspectModelDiagramAttributeNavigationTest {
 
                :AttributeAspect a samm:Aspect ;
                   samm:preferredName "Attribute Aspect"@en ;
-                  samm:description "A deliberately long English description that wraps into more than one physical diagram row for navigation"@en ;
+                  samm:description "A long English description that wraps into more than one physical diagram row for navigation"@en ;
                   samm:properties () ;
                   samm:operations () .
                """ );
@@ -216,8 +216,9 @@ class AspectModelDiagramAttributeNavigationTest {
       final NodeList nodes = svg.getElementsByTagName( "*" );
       for ( int i = 0; i < nodes.getLength(); i++ ) {
          final String id = ( (Element) nodes.item( i ) ).getAttribute( "id" );
-         if ( id.matches( "gv-attribute-[a-z0-9]{16,32}" ) )
+         if ( id.matches( "gv-attribute-[a-z0-9]{16,32}" ) ) {
             result.add( id );
+         }
       }
       return result;
    }
@@ -232,8 +233,9 @@ class AspectModelDiagramAttributeNavigationTest {
       final NodeList nodes = svg.getElementsByTagName( "*" );
       for ( int i = 0; i < nodes.getLength(); i++ ) {
          final Element element = (Element) nodes.item( i );
-         if ( id.equals( element.getAttribute( "id" ) ) )
+         if ( id.equals( element.getAttribute( "id" ) ) ) {
             return element;
+         }
       }
       throw new AssertionError( "Missing marker " + id );
    }
@@ -241,8 +243,9 @@ class AspectModelDiagramAttributeNavigationTest {
    private static Set<String> childNames( final Element element ) {
       final Set<String> names = new java.util.LinkedHashSet<>();
       for ( int i = 0; i < element.getChildNodes().getLength(); i++ ) {
-         if ( element.getChildNodes().item( i ) instanceof final Element child )
+         if ( element.getChildNodes().item( i ) instanceof final Element child ) {
             names.add( child.getTagName() );
+         }
       }
       return names;
    }
@@ -264,8 +267,9 @@ class AspectModelDiagramAttributeNavigationTest {
          }
       }
       result.append( '>' ).append( node.getNodeValue() );
-      for ( int i = 0; i < node.getChildNodes().getLength(); i++ )
+      for ( int i = 0; i < node.getChildNodes().getLength(); i++ ) {
          appendNormalized( node.getChildNodes().item( i ), result );
+      }
    }
 
    private static byte[] transcodePng( final String svg ) throws Exception {

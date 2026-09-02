@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 
 class AspectModelDiagramBoxLimitTest {
    @Test
-   void publicStringEntriesRemainAMutableViewOfStructuralRows() {
+   void publicStringEntriesRemainMutableViewOfStructuralRows() {
       final Diagram.Box box = box( 0 );
       box.addEntry( java.util.List.of( "first" ) );
 
