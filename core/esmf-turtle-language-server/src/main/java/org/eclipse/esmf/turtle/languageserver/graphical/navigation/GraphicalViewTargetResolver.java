@@ -1,5 +1,7 @@
-/* Copyright (c) 2026 Robert Bosch Manufacturing Solutions GmbH
- * SPDX-License-Identifier: MPL-2.0 */
+/*
+ * Copyright (c) 2026 Robert Bosch Manufacturing Solutions GmbH
+ * SPDX-License-Identifier: MPL-2.0
+ */
 package org.eclipse.esmf.turtle.languageserver.graphical.navigation;
 
 import java.net.URI;
@@ -218,13 +220,31 @@ public final class GraphicalViewTargetResolver extends TurtleService {
       return Stream.concat( current, node.children().stream().flatMap( child -> descendantsWithType( child, type ) ) );
    }
 
-   public enum Outcome { FOUND, NOT_FOUND, AMBIGUOUS, UNSUPPORTED_URI, TEMPORARILY_UNRESOLVABLE }
+   public enum Outcome {
+      FOUND, NOT_FOUND, AMBIGUOUS, UNSUPPORTED_URI, TEMPORARILY_UNRESOLVABLE
+   }
 
-   public record Resolution( Outcome outcome, Location location ) {
-      static Resolution found( final Location location ) { return new Resolution( Outcome.FOUND, location ); }
-      static Resolution notFound() { return new Resolution( Outcome.NOT_FOUND, null ); }
-      static Resolution ambiguous() { return new Resolution( Outcome.AMBIGUOUS, null ); }
-      static Resolution unsupportedUri() { return new Resolution( Outcome.UNSUPPORTED_URI, null ); }
-      static Resolution temporarilyUnresolvable() { return new Resolution( Outcome.TEMPORARILY_UNRESOLVABLE, null ); }
+   public record Resolution(
+         Outcome outcome, Location location
+   ) {
+      static Resolution found( final Location location ) {
+         return new Resolution( Outcome.FOUND, location );
+      }
+
+      static Resolution notFound() {
+         return new Resolution( Outcome.NOT_FOUND, null );
+      }
+
+      static Resolution ambiguous() {
+         return new Resolution( Outcome.AMBIGUOUS, null );
+      }
+
+      static Resolution unsupportedUri() {
+         return new Resolution( Outcome.UNSUPPORTED_URI, null );
+      }
+
+      static Resolution temporarilyUnresolvable() {
+         return new Resolution( Outcome.TEMPORARILY_UNRESOLVABLE, null );
+      }
    }
 }

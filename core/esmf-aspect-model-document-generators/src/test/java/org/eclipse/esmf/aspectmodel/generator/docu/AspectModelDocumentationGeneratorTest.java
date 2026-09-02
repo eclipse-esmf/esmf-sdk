@@ -438,21 +438,21 @@ class AspectModelDocumentationGeneratorTest {
 
    private static String isolationModel( final String semanticValue ) {
       return """
-            @prefix : <urn:samm:org.eclipse.esmf.documentation.isolation:1.0.0#> .
-            @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
-            @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#> .
-            @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-            :MultilingualAspect a samm:Aspect ;
-               samm:preferredName "English name"@en ;
-               samm:preferredName "Deutscher Name"@de ;
-               samm:description "English description"@en ;
-               samm:description "Deutsche Beschreibung"@de ;
-               samm:properties ( :enumProperty ) ;
-               samm:operations () .
-            :enumProperty a samm:Property ; samm:characteristic :Enumeration .
-            :Enumeration a samm-c:Enumeration ;
-               samm:dataType rdf:langString ;
-               samm-c:values ( "Semantic English"@en "Semantisch Deutsch"@de "%s"@en ) .
-            """.formatted( semanticValue );
+         @prefix : <urn:samm:org.eclipse.esmf.documentation.isolation:1.0.0#> .
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+         @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#> .
+         @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+         :MultilingualAspect a samm:Aspect ;
+            samm:preferredName "English name"@en ;
+            samm:preferredName "Deutscher Name"@de ;
+            samm:description "English description"@en ;
+            samm:description "Deutsche Beschreibung"@de ;
+            samm:properties ( :enumProperty ) ;
+            samm:operations () .
+         :enumProperty a samm:Property ; samm:characteristic :Enumeration .
+         :Enumeration a samm-c:Enumeration ;
+            samm:dataType rdf:langString ;
+            samm-c:values ( "Semantic English"@en "Semantisch Deutsch"@de "%s"@en ) .
+         """.formatted( semanticValue );
    }
 }

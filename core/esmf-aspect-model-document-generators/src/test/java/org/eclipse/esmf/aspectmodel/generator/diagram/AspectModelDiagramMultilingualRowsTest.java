@@ -20,25 +20,25 @@ import org.junit.jupiter.api.Test;
 
 class AspectModelDiagramMultilingualRowsTest {
    private static final String PREFIXES = """
-         @prefix : <urn:samm:org.eclipse.esmf.multilingual:1.0.0#> .
-         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
-         @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#> .
-         @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-         """;
+      @prefix : <urn:samm:org.eclipse.esmf.multilingual:1.0.0#> .
+      @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+      @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#> .
+      @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+      """;
 
    @Test
    void graphicalRowsContainEveryLocalizedValueInDeterministicLanguageOrder() {
       final DiagramNavigationResult result = graphicalResult( PREFIXES + """
-            :MultilingualAspect a samm:Aspect ;
-               samm:description "English description"@en ;
-               samm:preferredName "US name"@en-US ;
-               samm:preferredName "Deutscher Name"@de ;
-               samm:description "Deutsche Beschreibung"@de ;
-               samm:preferredName "English name"@en ;
-               samm:description "US description"@en-US ;
-               samm:properties () ;
-               samm:operations () .
-            """ );
+         :MultilingualAspect a samm:Aspect ;
+            samm:description "English description"@en ;
+            samm:preferredName "US name"@en-US ;
+            samm:preferredName "Deutscher Name"@de ;
+            samm:description "Deutsche Beschreibung"@de ;
+            samm:preferredName "English name"@en ;
+            samm:description "US description"@en-US ;
+            samm:properties () ;
+            samm:operations () .
+         """ );
 
       assertInOrder( result.svg(),
             "preferredName&#160;[de]:&#160;Deutscher&#160;Name",
@@ -54,21 +54,21 @@ class AspectModelDiagramMultilingualRowsTest {
    @Test
    void graphicalRowsDoNotRequireEnglishAndIgnoreSourceCollectionOrder() {
       final String first = PREFIXES + """
-            :MultilingualAspect a samm:Aspect ;
-               samm:preferredName "中文名称"@zh-Hans ;
-               samm:preferredName "Deutscher Name"@de ;
-               samm:description "Beschreibung"@de ;
-               samm:properties () ;
-               samm:operations () .
-            """;
+         :MultilingualAspect a samm:Aspect ;
+            samm:preferredName "中文名称"@zh-Hans ;
+            samm:preferredName "Deutscher Name"@de ;
+            samm:description "Beschreibung"@de ;
+            samm:properties () ;
+            samm:operations () .
+         """;
       final String reordered = PREFIXES + """
-            :MultilingualAspect a samm:Aspect ;
-               samm:description "Beschreibung"@de ;
-               samm:preferredName "Deutscher Name"@de ;
-               samm:preferredName "中文名称"@zh-Hans ;
-               samm:properties () ;
-               samm:operations () .
-            """;
+         :MultilingualAspect a samm:Aspect ;
+            samm:description "Beschreibung"@de ;
+            samm:preferredName "Deutscher Name"@de ;
+            samm:preferredName "中文名称"@zh-Hans ;
+            samm:properties () ;
+            samm:operations () .
+         """;
 
       assertInOrder( graphicalResult( first ).svg(), "preferredName&#160;[de]:&#160;Deutscher&#160;Name",
             "preferredName&#160;[zh-Hans]:&#160;中文名称", "description&#160;[de]:&#160;Beschreibung" );
@@ -95,11 +95,11 @@ class AspectModelDiagramMultilingualRowsTest {
    void truncationPrecedesWrappingAndEveryPhysicalRowKeepsOneLanguageLocator() {
       final String value = "localized value ".repeat( 40 ).strip();
       final DiagramNavigationResult result = graphicalResult( PREFIXES + """
-            :MultilingualAspect a samm:Aspect ;
-               samm:description "%s"@en ;
-               samm:properties () ;
-               samm:operations () .
-            """.formatted( value ) );
+         :MultilingualAspect a samm:Aspect ;
+            samm:description "%s"@en ;
+            samm:properties () ;
+            samm:operations () .
+         """.formatted( value ) );
 
       final List<DiagramAttributeNavigationTarget> descriptionRows = localizedTargets( result ).stream()
             .filter( target -> target.predicateUrn().equals( SammNs.SAMM.description().getURI() ) ).toList();
@@ -115,16 +115,16 @@ class AspectModelDiagramMultilingualRowsTest {
    @Test
    void defaultLocaleRowsAndOtherLangStringScalarValuesRemainUnchanged() {
       final String model = PREFIXES + """
-            :MultilingualAspect a samm:Aspect ;
-               samm:preferredName "English name"@en ;
-               samm:preferredName "Deutscher Name"@de ;
-               samm:properties ( :enumProperty ) ;
-               samm:operations () .
-            :enumProperty a samm:Property ; samm:characteristic :Enumeration .
-            :Enumeration a samm-c:Enumeration ;
-               samm:dataType rdf:langString ;
-               samm-c:values ( "One"@en "Eins"@de ) .
-            """;
+         :MultilingualAspect a samm:Aspect ;
+            samm:preferredName "English name"@en ;
+            samm:preferredName "Deutscher Name"@de ;
+            samm:properties ( :enumProperty ) ;
+            samm:operations () .
+         :enumProperty a samm:Property ; samm:characteristic :Enumeration .
+         :Enumeration a samm-c:Enumeration ;
+            samm:dataType rdf:langString ;
+            samm-c:values ( "One"@en "Eins"@de ) .
+         """;
       final Aspect aspect = load( model );
       final Diagram defaultDiagram = aspect.accept( new DiagramVisitor( Locale.ENGLISH ), Optional.empty() );
       final DiagramNavigationResult graphical = generator( aspect ).generateSvgWithNavigationMetadata( true );
@@ -152,17 +152,17 @@ class AspectModelDiagramMultilingualRowsTest {
    @Test
    void localizedRowsOwnedByAnonymousElementsRemainNonInteractive() {
       final DiagramNavigationResult result = graphicalResult( PREFIXES + """
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-            :MultilingualAspect a samm:Aspect ;
-               samm:properties ( :anonymousProperty ) ;
-               samm:operations () .
-            :anonymousProperty a samm:Property ;
-               samm:characteristic [
-                  a samm:Characteristic ;
-                  samm:preferredName "Anonymous name"@en ;
-                  samm:dataType xsd:string
-               ] .
-            """ );
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         :MultilingualAspect a samm:Aspect ;
+            samm:properties ( :anonymousProperty ) ;
+            samm:operations () .
+         :anonymousProperty a samm:Property ;
+            samm:characteristic [
+               a samm:Characteristic ;
+               samm:preferredName "Anonymous name"@en ;
+               samm:dataType xsd:string
+            ] .
+         """ );
 
       assertThat( result.svg() ).contains( "preferredName&#160;[en]:&#160;Anonymous&#160;name" );
       assertThat( result.attributeNavigationTargets() ).noneMatch( target -> target.predicateUrn()
@@ -200,17 +200,17 @@ class AspectModelDiagramMultilingualRowsTest {
 
    static String isolationModel( final String semanticValue ) {
       return PREFIXES + """
-            :MultilingualAspect a samm:Aspect ;
-               samm:preferredName "English name"@en ;
-               samm:preferredName "Deutscher Name"@de ;
-               samm:description "English description"@en ;
-               samm:description "Deutsche Beschreibung"@de ;
-               samm:properties ( :enumProperty ) ;
-               samm:operations () .
-            :enumProperty a samm:Property ; samm:characteristic :Enumeration .
-            :Enumeration a samm-c:Enumeration ;
-               samm:dataType rdf:langString ;
-               samm-c:values ( "Semantic English"@en "Semantisch Deutsch"@de "%s"@en ) .
-            """.formatted( semanticValue );
+         :MultilingualAspect a samm:Aspect ;
+            samm:preferredName "English name"@en ;
+            samm:preferredName "Deutscher Name"@de ;
+            samm:description "English description"@en ;
+            samm:description "Deutsche Beschreibung"@de ;
+            samm:properties ( :enumProperty ) ;
+            samm:operations () .
+         :enumProperty a samm:Property ; samm:characteristic :Enumeration .
+         :Enumeration a samm-c:Enumeration ;
+            samm:dataType rdf:langString ;
+            samm-c:values ( "Semantic English"@en "Semantisch Deutsch"@de "%s"@en ) .
+         """.formatted( semanticValue );
    }
 }

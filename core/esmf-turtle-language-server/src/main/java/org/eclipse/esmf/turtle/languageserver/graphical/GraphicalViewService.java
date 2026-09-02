@@ -1,5 +1,7 @@
-/* Copyright (c) 2026 Robert Bosch Manufacturing Solutions GmbH
- * SPDX-License-Identifier: MPL-2.0 */
+/*
+ * Copyright (c) 2026 Robert Bosch Manufacturing Solutions GmbH
+ * SPDX-License-Identifier: MPL-2.0
+ */
 package org.eclipse.esmf.turtle.languageserver.graphical;
 
 import static org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderWarning.MISSING_DOCUMENT;
@@ -135,9 +137,9 @@ public final class GraphicalViewService implements AutoCloseable {
                GraphicalViewResolveTargetWarning.TEMPORARILY_UNRESOLVABLE ) );
       }
       return CompletableFuture.supplyAsync( () -> attributeResult( resolver.resolveAttribute( snapshot.get(), owner.get(),
-            predicate.get().toString(), params.language() ) ), executor ).exceptionally( error ->
-                  GraphicalViewResolveAttributeTargetResult.warning(
-                        GraphicalViewResolveTargetWarning.TEMPORARILY_UNRESOLVABLE ) );
+            predicate.get().toString(), params.language() ) ), executor )
+            .exceptionally( error -> GraphicalViewResolveAttributeTargetResult.warning(
+                  GraphicalViewResolveTargetWarning.TEMPORARILY_UNRESOLVABLE ) );
    }
 
    private GraphicalViewResolveTargetResult headerResult( final Resolution resolution ) {

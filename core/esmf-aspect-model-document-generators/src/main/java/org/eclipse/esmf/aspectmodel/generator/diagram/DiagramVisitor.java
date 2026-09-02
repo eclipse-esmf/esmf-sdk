@@ -591,7 +591,8 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
             final DiagramAttributeNavigation.Selection selection = assertion.getValue() instanceof CollectionValue
                   ? DiagramAttributeNavigation.Selection.PREDICATE_START
                   : DiagramAttributeNavigation.Selection.SINGLE_OCCURRENCE;
-            addAttribute( box, instance, property.isAnonymous() ? null : property.urn().toString(), selection, null, propertyName, String.class,
+            addAttribute( box, instance, property.isAnonymous() ? null : property.urn().toString(), selection, null, propertyName,
+                  String.class,
                   valueDiagram::getScalarValue );
          }
       }

@@ -1,5 +1,7 @@
-/* Copyright (c) 2026 Robert Bosch Manufacturing Solutions GmbH
- * SPDX-License-Identifier: MPL-2.0 */
+/*
+ * Copyright (c) 2026 Robert Bosch Manufacturing Solutions GmbH
+ * SPDX-License-Identifier: MPL-2.0
+ */
 package org.eclipse.esmf.turtle.languageserver.graphical.render;
 
 import static org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderWarning.MODEL_TOO_LARGE;
@@ -62,7 +64,8 @@ public final class GraphicalViewRenderer {
             diagram.attributeNavigationTargets().stream()
                   .map( target -> (GraphicalViewRenderTarget) new GraphicalViewAttributeTarget( target.id(),
                         GraphicalViewAttributeTarget.ATTRIBUTE_ROW, target.ownerUrn(), target.predicateUrn(), target.selection(),
-                        target.language() ) ) ).toList();
+                        target.language() ) ) )
+            .toList();
       return validator.isValid( diagram.svg(), targets )
             ? new GraphicalViewRenderResult( uri, diagram.svg(), targets, List.of() )
             : GraphicalViewRenderResult.warning( uri, TEMPORARILY_UNRESOLVABLE );

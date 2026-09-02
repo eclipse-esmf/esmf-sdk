@@ -1,5 +1,7 @@
-/* Copyright (c) 2026 Robert Bosch Manufacturing Solutions GmbH
- * SPDX-License-Identifier: MPL-2.0 */
+/*
+ * Copyright (c) 2026 Robert Bosch Manufacturing Solutions GmbH
+ * SPDX-License-Identifier: MPL-2.0
+ */
 package org.eclipse.esmf.turtle.languageserver.graphical.navigation;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,13 +35,13 @@ class GraphicalViewTargetResolverTest {
    void headerResolverReturnsFoundNotFoundAndAmbiguousWithoutFullIriSubjectSupport() {
       final GraphicalViewTargetResolver resolver = resolver( Map.of(), new ResolutionStrategyService() );
       final GraphicalViewSourceSnapshot source = snapshot( """
-            @prefix : <urn:samm:example.resolve:1.0.0#> .
-            @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
-            :Owner a samm:Aspect ; samm:properties (); samm:operations () .
-            :Duplicate a samm:Characteristic .
-            :Duplicate a samm:Characteristic .
-            <urn:samm:example.resolve:1.0.0#FullIri> a samm:Characteristic .
-            """ );
+         @prefix : <urn:samm:example.resolve:1.0.0#> .
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+         :Owner a samm:Aspect ; samm:properties (); samm:operations () .
+         :Duplicate a samm:Characteristic .
+         :Duplicate a samm:Characteristic .
+         <urn:samm:example.resolve:1.0.0#FullIri> a samm:Characteristic .
+         """ );
 
       final var found = resolver.resolveHeader( source, urn( OWNER ) );
       assertThat( found.outcome() ).isEqualTo( Outcome.FOUND );
@@ -80,10 +82,10 @@ class GraphicalViewTargetResolverTest {
    void externalOwnerUsesSourceContextSnapshotInsteadOfFilesystem() {
       final String externalUri = "file:///tmp/graphical/external-owner.ttl";
       final String externalText = """
-            @prefix : <urn:samm:example.external:1.0.0#> .
-            @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
-            :ExternalOwner a samm:Property ; samm:description "Current open"@en .
-            """;
+         @prefix : <urn:samm:example.external:1.0.0#> .
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+         :ExternalOwner a samm:Property ; samm:description "Current open"@en .
+         """;
       final TreeSitterTurtleParserService parser = new TreeSitterTurtleParserService();
       final Document externalDocument = new Document( externalUri, externalText );
       final AspectModelFile resolvedFile = AspectModelFileLoader.load( parser.apply( externalDocument ).turtleSyntaxTree(),
@@ -118,10 +120,25 @@ class GraphicalViewTargetResolverTest {
             return file;
          }
 
-         @Override public Stream<URI> listContents() { return Stream.of( file.sourceUri() ); }
-         @Override public Stream<URI> listContentsForNamespace( final AspectModelUrn urn ) { return listContents(); }
-         @Override public Stream<AspectModelFile> loadContents() { return Stream.of( file ); }
-         @Override public Stream<AspectModelFile> loadContentsForNamespace( final AspectModelUrn urn ) { return loadContents(); }
+         @Override
+         public Stream<URI> listContents() {
+            return Stream.of( file.sourceUri() );
+         }
+
+         @Override
+         public Stream<URI> listContentsForNamespace( final AspectModelUrn urn ) {
+            return listContents();
+         }
+
+         @Override
+         public Stream<AspectModelFile> loadContents() {
+            return Stream.of( file );
+         }
+
+         @Override
+         public Stream<AspectModelFile> loadContentsForNamespace( final AspectModelUrn urn ) {
+            return loadContents();
+         }
       };
    }
 
@@ -140,14 +157,14 @@ class GraphicalViewTargetResolverTest {
 
    private static String model() {
       return """
-            @prefix : <urn:samm:example.resolve:1.0.0#> .
-            @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
-            :Owner a samm:Aspect ;
-               samm:description "English"@en ;
-               samm:description "Deutsch"@de ;
-               samm:see <https://example.test/one>, <https://example.test/two> ;
-               samm:properties () ;
-               samm:operations () .
-            """;
+         @prefix : <urn:samm:example.resolve:1.0.0#> .
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+         :Owner a samm:Aspect ;
+            samm:description "English"@en ;
+            samm:description "Deutsch"@de ;
+            samm:see <https://example.test/one>, <https://example.test/two> ;
+            samm:properties () ;
+            samm:operations () .
+         """;
    }
 }

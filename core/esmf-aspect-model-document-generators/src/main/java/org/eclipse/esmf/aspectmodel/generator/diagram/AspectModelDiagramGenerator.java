@@ -214,13 +214,13 @@ public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[],
       final Map<String, DiagramAttributeNavigationTarget> targets = new LinkedHashMap<>();
       diagram.getBoxes().forEach( box -> box.getEntryRows().stream().map( Diagram.Box.EntryRow::navigation )
             .flatMap( Optional::stream ).forEach( row -> {
-         final DiagramAttributeNavigation.Locator locator = row.locator();
-         final DiagramAttributeNavigationTarget target = new DiagramAttributeNavigationTarget( row.markerId(), locator.ownerUrn(),
-               locator.predicateUrn(), locator.selection().wireValue(), locator.language() );
-         if ( targets.putIfAbsent( row.markerId(), target ) != null ) {
-            throw new IllegalStateException( "Duplicate diagram attribute marker: " + row.markerId() );
-         }
-      } ) );
+               final DiagramAttributeNavigation.Locator locator = row.locator();
+               final DiagramAttributeNavigationTarget target = new DiagramAttributeNavigationTarget( row.markerId(), locator.ownerUrn(),
+                     locator.predicateUrn(), locator.selection().wireValue(), locator.language() );
+               if ( targets.putIfAbsent( row.markerId(), target ) != null ) {
+                  throw new IllegalStateException( "Duplicate diagram attribute marker: " + row.markerId() );
+               }
+            } ) );
       return List.copyOf( targets.values() );
    }
 

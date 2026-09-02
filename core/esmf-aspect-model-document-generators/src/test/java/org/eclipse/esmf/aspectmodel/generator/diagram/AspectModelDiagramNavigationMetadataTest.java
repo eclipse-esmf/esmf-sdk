@@ -51,56 +51,56 @@ class AspectModelDiagramNavigationMetadataTest {
    private static final URI SOURCE_URI = URI.create( "file:/diagram-navigation.ttl" );
    private static final URI PNG_SOURCE_URI = URI.create( "file:/diagram-navigation-png.ttl" );
    private static final String PNG_MODEL = """
-         @prefix : <urn:samm:org.eclipse.esmf.test:2.2.0#> .
-         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+      @prefix : <urn:samm:org.eclipse.esmf.test:2.2.0#> .
+      @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
 
-         :AspectForPng a samm:Aspect ;
-            samm:properties () ;
-            samm:operations () .
-         """;
+      :AspectForPng a samm:Aspect ;
+         samm:properties () ;
+         samm:operations () .
+      """;
    private static final String ASPECT_URN = "urn:samm:org.eclipse.esmf.diagram:1.0.0#AspectWithDiagramNavigation";
    private static final String ENTITY_URN = "urn:samm:org.eclipse.esmf.diagram:1.0.0#NamedEntity";
    private static final String MODEL = """
-         @prefix : <urn:samm:org.eclipse.esmf.diagram:1.0.0#> .
-         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
-         @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#> .
-         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+      @prefix : <urn:samm:org.eclipse.esmf.diagram:1.0.0#> .
+      @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+      @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#> .
+      @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-         :AspectWithDiagramNavigation a samm:Aspect ;
-            samm:preferredName "Visible <escaped> & \\"quoted\\""@en ;
-            samm:description "Description <escaped> & \\"quoted\\""@en ;
-            samm:properties ( :namedProperty :anonymousEntityProperty :ambiguousEitherProperty ) ;
-            samm:operations ( ) .
+      :AspectWithDiagramNavigation a samm:Aspect ;
+         samm:preferredName "Visible <escaped> & \\"quoted\\""@en ;
+         samm:description "Description <escaped> & \\"quoted\\""@en ;
+         samm:properties ( :namedProperty :anonymousEntityProperty :ambiguousEitherProperty ) ;
+         samm:operations ( ) .
 
-         :namedProperty a samm:Property ;
-            samm:preferredName "Same displayed row"@en ;
-            samm:characteristic samm-c:Text .
+      :namedProperty a samm:Property ;
+         samm:preferredName "Same displayed row"@en ;
+         samm:characteristic samm-c:Text .
 
-         :anonymousEntityProperty a samm:Property ;
-            samm:characteristic [
-               a samm-c:SingleEntity ;
-               samm:dataType :NamedEntity
-            ] .
+      :anonymousEntityProperty a samm:Property ;
+         samm:characteristic [
+            a samm-c:SingleEntity ;
+            samm:dataType :NamedEntity
+         ] .
 
-         :ambiguousEitherProperty a samm:Property ;
-            samm:characteristic [
-               a samm-c:Either ;
-               samm-c:left :LeftCharacteristic ;
-               samm-c:right :RightCharacteristic
-            ] .
+      :ambiguousEitherProperty a samm:Property ;
+         samm:characteristic [
+            a samm-c:Either ;
+            samm-c:left :LeftCharacteristic ;
+            samm-c:right :RightCharacteristic
+         ] .
 
-         :NamedEntity a samm:Entity ;
-            samm:properties ( :entityProperty ) .
+      :NamedEntity a samm:Entity ;
+         samm:properties ( :entityProperty ) .
 
-         :entityProperty a samm:Property ;
-            samm:characteristic samm-c:Text .
+      :entityProperty a samm:Property ;
+         samm:characteristic samm-c:Text .
 
-         :LeftCharacteristic a samm:Characteristic ;
-            samm:dataType xsd:string .
+      :LeftCharacteristic a samm:Characteristic ;
+         samm:dataType xsd:string .
 
-         :RightCharacteristic a samm:Characteristic ;
-            samm:dataType xsd:string .
-         """;
+      :RightCharacteristic a samm:Characteristic ;
+         samm:dataType xsd:string .
+      """;
 
    @Test
    void namedBoxMarkerIsOnTitleRowOnlyAndSidecarContainsOwnUrn() throws Exception {
@@ -254,39 +254,39 @@ class AspectModelDiagramNavigationMetadataTest {
 
    private static Aspect loadMultiFileAspect() {
       final AspectModelFile main = AspectModelFileLoader.load( """
-            @prefix : <urn:samm:org.eclipse.esmf.diagram.main:1.0.0#> .
-            @prefix one: <urn:samm:org.eclipse.esmf.diagram.one:1.0.0#> .
-            @prefix two: <urn:samm:org.eclipse.esmf.diagram.two:1.0.0#> .
-            @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+         @prefix : <urn:samm:org.eclipse.esmf.diagram.main:1.0.0#> .
+         @prefix one: <urn:samm:org.eclipse.esmf.diagram.one:1.0.0#> .
+         @prefix two: <urn:samm:org.eclipse.esmf.diagram.two:1.0.0#> .
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
 
-            :AspectWithDuplicateTitles a samm:Aspect ;
-               samm:properties ( :propertyOne :propertyTwo ) ;
-               samm:operations ( ) .
+         :AspectWithDuplicateTitles a samm:Aspect ;
+            samm:properties ( :propertyOne :propertyTwo ) ;
+            samm:operations ( ) .
 
-            :propertyOne a samm:Property ;
-               samm:characteristic one:SharedCharacteristic .
+         :propertyOne a samm:Property ;
+            samm:characteristic one:SharedCharacteristic .
 
-            :propertyTwo a samm:Property ;
-               samm:characteristic two:SharedCharacteristic .
-            """, URI.create( "file:/diagram-navigation-main.ttl" ) );
+         :propertyTwo a samm:Property ;
+            samm:characteristic two:SharedCharacteristic .
+         """, URI.create( "file:/diagram-navigation-main.ttl" ) );
       final AspectModelFile one = AspectModelFileLoader.load( """
-            @prefix : <urn:samm:org.eclipse.esmf.diagram.one:1.0.0#> .
-            @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
-            @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#> .
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         @prefix : <urn:samm:org.eclipse.esmf.diagram.one:1.0.0#> .
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+         @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-            :SharedCharacteristic a samm:Characteristic ;
-               samm:dataType xsd:string .
-            """, URI.create( "file:/diagram-navigation-one.ttl" ) );
+         :SharedCharacteristic a samm:Characteristic ;
+            samm:dataType xsd:string .
+         """, URI.create( "file:/diagram-navigation-one.ttl" ) );
       final AspectModelFile two = AspectModelFileLoader.load( """
-            @prefix : <urn:samm:org.eclipse.esmf.diagram.two:1.0.0#> .
-            @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
-            @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#> .
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         @prefix : <urn:samm:org.eclipse.esmf.diagram.two:1.0.0#> .
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+         @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-            :SharedCharacteristic a samm:Characteristic ;
-               samm:dataType xsd:string .
-            """, URI.create( "file:/diagram-navigation-two.ttl" ) );
+         :SharedCharacteristic a samm:Characteristic ;
+            samm:dataType xsd:string .
+         """, URI.create( "file:/diagram-navigation-two.ttl" ) );
       final AspectModel aspectModel = new AspectModelLoader().loadAspectModelFiles( List.of( main, one, two ) );
       return aspectModel.aspect();
    }

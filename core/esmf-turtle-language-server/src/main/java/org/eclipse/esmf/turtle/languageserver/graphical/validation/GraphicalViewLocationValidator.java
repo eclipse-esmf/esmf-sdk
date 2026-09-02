@@ -1,5 +1,7 @@
-/* Copyright (c) 2026 Robert Bosch Manufacturing Solutions GmbH
- * SPDX-License-Identifier: MPL-2.0 */
+/*
+ * Copyright (c) 2026 Robert Bosch Manufacturing Solutions GmbH
+ * SPDX-License-Identifier: MPL-2.0
+ */
 package org.eclipse.esmf.turtle.languageserver.graphical.validation;
 
 import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewResolveTargetWarning;
@@ -34,7 +36,9 @@ public final class GraphicalViewLocationValidator {
       return position != null && position.getLine() >= 0 && position.getCharacter() >= 0;
    }
 
-   public record Result( Location location, GraphicalViewResolveTargetWarning warning ) {
+   public record Result(
+         Location location, GraphicalViewResolveTargetWarning warning
+   ) {
       static Result warning( final GraphicalViewResolveTargetWarning warning ) {
          return new Result( null, warning );
       }

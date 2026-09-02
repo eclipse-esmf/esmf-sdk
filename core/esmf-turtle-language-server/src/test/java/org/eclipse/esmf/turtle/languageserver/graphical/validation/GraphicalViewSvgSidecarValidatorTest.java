@@ -1,5 +1,7 @@
-/* Copyright (c) 2026 Robert Bosch Manufacturing Solutions GmbH
- * SPDX-License-Identifier: MPL-2.0 */
+/*
+ * Copyright (c) 2026 Robert Bosch Manufacturing Solutions GmbH
+ * SPDX-License-Identifier: MPL-2.0
+ */
 package org.eclipse.esmf.turtle.languageserver.graphical.validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,7 +24,7 @@ class GraphicalViewSvgSidecarValidatorTest {
             new GraphicalViewTarget( headerId, "elementHeader", "urn:samm:example.validation:1.0.0#Target" ),
             new GraphicalViewAttributeTarget( attributeId, "attributeRow", "urn:samm:example.validation:1.0.0#Target",
                   "urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#description", "singleOccurrence", "en" ) ) ) )
-            .isTrue();
+                        .isTrue();
    }
 
    @Test

@@ -1,5 +1,7 @@
-/* Copyright (c) 2026 Robert Bosch Manufacturing Solutions GmbH
- * SPDX-License-Identifier: MPL-2.0 */
+/*
+ * Copyright (c) 2026 Robert Bosch Manufacturing Solutions GmbH
+ * SPDX-License-Identifier: MPL-2.0
+ */
 package org.eclipse.esmf.turtle.languageserver.lsp.text;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,10 +23,10 @@ class TurtleTextDocumentServiceLifecycleTest {
    @Test
    void normalShutdownStopsLanguageAndGraphicalWorkerResources( @TempDir final Path directory ) throws Exception {
       final String model = """
-            @prefix : <urn:samm:example.lifecycle:1.0.0#> .
-            @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
-            :Lifecycle a samm:Aspect ; samm:properties (); samm:operations () .
-            """;
+         @prefix : <urn:samm:example.lifecycle:1.0.0#> .
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+         :Lifecycle a samm:Aspect ; samm:properties (); samm:operations () .
+         """;
       final String uri = Files.writeString( directory.resolve( "Lifecycle.ttl" ), model ).toUri().toString();
       final TurtleTextDocumentService service = new TurtleTextDocumentService();
       service.didOpen( new DidOpenTextDocumentParams( new TextDocumentItem( uri, "turtle", 1, model ) ) );
