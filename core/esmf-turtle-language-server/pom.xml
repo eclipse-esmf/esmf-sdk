@@ -43,6 +43,30 @@
       <dependency>
          <groupId>org.eclipse.esmf</groupId>
          <artifactId>esmf-aspect-model-document-generators</artifactId>
+         <!--
+           Graphical View uses only the diagram generator. Parquet, Avro, and Hadoop are used by
+           unrelated document generators and introduce non-convergent transitive dependencies into
+           the standalone LSP. Keep these exclusions until the diagram generator is extracted into
+           its own module; do not remove them without restoring dependency convergence.
+         -->
+         <exclusions>
+            <exclusion>
+               <groupId>org.apache.parquet</groupId>
+               <artifactId>parquet-hadoop</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>org.apache.parquet</groupId>
+               <artifactId>parquet-avro</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>org.apache.hadoop</groupId>
+               <artifactId>hadoop-client</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>org.apache.avro</groupId>
+               <artifactId>avro</artifactId>
+            </exclusion>
+         </exclusions>
       </dependency>
       <dependency>
          <groupId>org.eclipse.esmf</groupId>
