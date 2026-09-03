@@ -1096,7 +1096,8 @@ class AspectModelOpenApiGeneratorTest {
       assertThat( property ).isNotNull();
       assertThat( property.getExample() ).isEqualTo( "Example Value Test" );
 
-      final JsonNode propertyNode = json.get( "components" ).get( "schemas" ).get( aspect.getName() ).get( "properties" ).get( "testString" );
+      final JsonNode propertyNode = json.get( "components" ).get( "schemas" )
+            .get( aspect.getName() ).get( "properties" ).get( "testString" );
       assertThat( propertyNode.has( "example" ) ).isTrue();
       assertThat( propertyNode.get( "example" ).asString() ).isEqualTo( "Example Value Test" );
    }
@@ -1104,22 +1105,22 @@ class AspectModelOpenApiGeneratorTest {
    @Test
    void testPropertyWithCollectionExampleValue_ShouldBeArray() {
       final String ttl = """
-            @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#> .
-            @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#> .
-            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-            @prefix : <urn:samm:org.example.test:1.0.0#> .
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#> .
+         @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         @prefix : <urn:samm:org.example.test:1.0.0#> .
 
-            :AspectWithCollectionExample a samm:Aspect ;
-               samm:properties ( :numberList ) ;
-               samm:operations ( ) .
+         :AspectWithCollectionExample a samm:Aspect ;
+            samm:properties ( :numberList ) ;
+            samm:operations ( ) .
 
-            :numberList a samm:Property ;
-               samm:characteristic :Numbers ;
-               samm:exampleValue "42"^^xsd:int .
+         :numberList a samm:Property ;
+            samm:characteristic :Numbers ;
+            samm:exampleValue "42"^^xsd:int .
 
-            :Numbers a samm-c:List ;
-               samm:dataType xsd:int .
-            """;
+         :Numbers a samm-c:List ;
+            samm:dataType xsd:int .
+         """;
       final AspectModel aspectModel = new AspectModelLoader().load(
             new ByteArrayInputStream( ttl.getBytes( StandardCharsets.UTF_8 ) ),
             URI.create( "test:AspectWithCollectionExample.ttl" ) );
@@ -1142,7 +1143,8 @@ class AspectModelOpenApiGeneratorTest {
       assertThat( property ).isNotNull();
       assertThat( property.getExample() ).hasToString( "[42]" );
 
-      final JsonNode propertyNode = json.get( "components" ).get( "schemas" ).get( aspect.getName() ).get( "properties" ).get( "numberList" );
+      final JsonNode propertyNode = json.get( "components" ).get( "schemas" )
+            .get( aspect.getName() ).get( "properties" ).get( "numberList" );
       assertThat( propertyNode.has( "example" ) ).isTrue();
       assertThat( propertyNode.get( "example" ).isArray() ).isTrue();
       assertThat( propertyNode.get( "example" ).get( 0 ).asInt() ).isEqualTo( 42 );
