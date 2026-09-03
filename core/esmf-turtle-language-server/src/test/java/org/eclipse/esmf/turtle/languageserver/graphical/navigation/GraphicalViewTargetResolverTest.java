@@ -7,6 +7,7 @@ package org.eclipse.esmf.turtle.languageserver.graphical.navigation;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.URI;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -24,9 +25,11 @@ import org.eclipse.esmf.turtle.languageserver.lsp.text.TreeSitterTurtleParserSer
 
 import org.eclipse.lsp4j.Location;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 class GraphicalViewTargetResolverTest {
-   private static final String URI_VALUE = "file:///tmp/graphical/resolver.ttl";
+   private static final String URI_VALUE = Path.of( System.getProperty( "java.io.tmpdir" ), "graphical", "resolver.ttl" )
+         .toUri().toString();
    private static final String OWNER = "urn:samm:example.resolve:1.0.0#Owner";
    private static final String DESCRIPTION = "urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#description";
    private static final String SEE = "urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#see";
@@ -79,8 +82,8 @@ class GraphicalViewTargetResolverTest {
    }
 
    @Test
-   void externalOwnerUsesSourceContextSnapshotInsteadOfFilesystem() {
-      final String externalUri = "file:///tmp/graphical/external-owner.ttl";
+   void externalOwnerUsesSourceContextSnapshotInsteadOfFilesystem( @TempDir final Path directory ) {
+      final String externalUri = directory.resolve( "external-owner.ttl" ).toUri().toString();
       final String externalText = """
          @prefix : <urn:samm:example.external:1.0.0#> .
          @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .

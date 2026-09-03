@@ -65,13 +65,14 @@ class GraphicalViewServiceTest {
    }
 
    @Test
-   void malformedMissingAndNonLocalInputsAreControlled() throws Exception {
+   void malformedMissingAndNonLocalInputsAreControlled( @TempDir final Path directory ) throws Exception {
+      final String missingUri = directory.resolve( "missing.ttl" ).toUri().toString();
       try ( final GraphicalViewService service = service( Map.of() ) ) {
          assertThat( service.render( new GraphicalViewRenderParams( "https://example/model.ttl" ) ).get().warnings() )
                .containsExactly( GraphicalViewRenderWarning.UNSUPPORTED_URI );
-         assertThat( service.render( new GraphicalViewRenderParams( "file:///missing.ttl" ) ).get().warnings() )
+         assertThat( service.render( new GraphicalViewRenderParams( missingUri ) ).get().warnings() )
                .containsExactly( GraphicalViewRenderWarning.MISSING_DOCUMENT );
-         assertThat( service.resolveTarget( new GraphicalViewResolveTargetParams( "file:///missing.ttl", "bad" ) )
+         assertThat( service.resolveTarget( new GraphicalViewResolveTargetParams( missingUri, "bad" ) )
                .get().warning() ).isEqualTo( GraphicalViewResolveTargetWarning.TEMPORARILY_UNRESOLVABLE );
          assertThat( service.resolveTarget( new GraphicalViewResolveTargetParams( "https://example/model.ttl",
                "urn:samm:x:1.0.0#x" ) ).get().warning() )
@@ -80,8 +81,8 @@ class GraphicalViewServiceTest {
    }
 
    @Test
-   void headerResolveParsesTheSnapshotCapturedBeforeConcurrentChange() throws Exception {
-      final String uri = "file:///tmp/graphical/header-snapshot.ttl";
+   void headerResolveParsesTheSnapshotCapturedBeforeConcurrentChange( @TempDir final Path directory ) throws Exception {
+      final String uri = directory.resolve( "header-snapshot.ttl" ).toUri().toString();
       final Document document = new Document( uri, model() );
       final BlockingParser parser = new BlockingParser();
       try ( final GraphicalViewService service = new GraphicalViewService( Map.of( uri, document ), parser,
@@ -97,8 +98,8 @@ class GraphicalViewServiceTest {
    }
 
    @Test
-   void attributeResolveParsesTheSnapshotCapturedBeforeConcurrentChange() throws Exception {
-      final String uri = "file:///tmp/graphical/attribute-snapshot.ttl";
+   void attributeResolveParsesTheSnapshotCapturedBeforeConcurrentChange( @TempDir final Path directory ) throws Exception {
+      final String uri = directory.resolve( "attribute-snapshot.ttl" ).toUri().toString();
       final String source = model().replace( "samm:properties ()", "samm:description \"Current\"@en ; samm:properties ()" );
       final Document document = new Document( uri, source );
       final BlockingParser parser = new BlockingParser();

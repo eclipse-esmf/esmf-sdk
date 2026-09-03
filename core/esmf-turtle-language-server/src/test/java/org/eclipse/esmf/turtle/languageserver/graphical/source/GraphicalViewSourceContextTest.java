@@ -18,8 +18,8 @@ import org.junit.jupiter.api.io.TempDir;
 
 class GraphicalViewSourceContextTest {
    @Test
-   void openSnapshotRemainsImmutableAfterDocumentChange() {
-      final String uri = "file:///snapshot.ttl";
+   void openSnapshotRemainsImmutableAfterDocumentChange( @TempDir final Path directory ) {
+      final String uri = directory.resolve( "snapshot.ttl" ).toUri().toString();
       final Document document = new Document( uri, "first" );
       final GraphicalViewSourceContext context = new GraphicalViewSourceContext( Map.of( uri, document ) );
 
@@ -54,11 +54,12 @@ class GraphicalViewSourceContextTest {
    }
 
    @Test
-   void unsafeUriShapesAreRejectedBeforeFilesystemAccess() {
+   void unsafeUriShapesAreRejectedBeforeFilesystemAccess( @TempDir final Path directory ) {
       for ( final String uri : java.util.List.of( "file:opaque.ttl", "file://server/share.ttl", "file:relative.ttl",
             "file:///tmp/../secret.ttl", "file:///bad%ZZ.ttl", "https://example/model.ttl" ) ) {
          assertThat( GraphicalViewSourceContext.isLocalFileUri( uri ) ).isFalse();
       }
-      assertThat( GraphicalViewSourceContext.isLocalFileUri( "file:///tmp/model.ttl" ) ).isTrue();
+      assertThat( GraphicalViewSourceContext.isLocalFileUri( directory.resolve( "model.ttl" ).toUri().toString() ) )
+            .isTrue();
    }
 }
