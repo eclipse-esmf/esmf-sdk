@@ -30,6 +30,8 @@ import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
 import java.util.Base64;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -68,6 +70,49 @@ public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[],
 
    public AspectModelDiagramGenerator( final Aspect aspect, final DiagramGenerationConfig config ) {
       super( aspect, config );
+   }
+
+   /**
+    * Generates an SVG with opaque navigation markers on eligible element header cells and returns
+    * the corresponding marker-to-semantic-URN sidecar.
+    *
+    * @return the generated SVG and its navigation target sidecar
+    */
+   public DiagramNavigationResult generateSvgWithNavigationMetadata() {
+      return generateSvgWithNavigationMetadata( Integer.MAX_VALUE );
+   }
+
+   /**
+    * Generates an SVG with header navigation and, when explicitly requested, attribute-row
+    * navigation metadata.
+    *
+    * @param includeAttributeRows whether eligible physical attribute rows receive metadata
+    * @return generated SVG and navigation sidecars
+    */
+   public DiagramNavigationResult generateSvgWithNavigationMetadata( final boolean includeAttributeRows ) {
+      return generateSvgWithNavigationMetadata( Integer.MAX_VALUE, includeAttributeRows );
+   }
+
+   /**
+    * Generates a navigation-enabled SVG if the traversed diagram does not exceed the box limit.
+    * The single traversed diagram is counted immediately before, and then passed unchanged to,
+    * Graphper rendering.
+    *
+    * @param maximumBoxes maximum permitted number of rendered boxes
+    * @return the generated SVG and navigation sidecar
+    * @throws DiagramBoxLimitExceededException if the diagram exceeds the limit
+    */
+   public DiagramNavigationResult generateSvgWithNavigationMetadata( final int maximumBoxes ) {
+      return generateSvgWithNavigationMetadata( maximumBoxes, false );
+   }
+
+   /** Generates navigation-enabled SVG under the requested box and row-metadata bounds. */
+   public DiagramNavigationResult generateSvgWithNavigationMetadata( final int maximumBoxes, final boolean includeAttributeRows ) {
+      final Diagram diagram = createDiagram( DiagramHeaderNavigation.enabled(), includeAttributeRows
+            ? DiagramAttributeNavigation.enabled()
+            : DiagramAttributeNavigation.disabled(), true );
+      DiagramBoxLimit.maximum( maximumBoxes ).validate( diagram );
+      return generateSvg( diagram );
    }
 
    @Override
@@ -113,8 +158,10 @@ public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[],
    }
 
    private String generateSvg() {
-      final DiagramVisitor diagramVisitor = new DiagramVisitor( config.language() );
-      final Diagram diagram = aspect().accept( diagramVisitor, Optional.empty() );
+      return generateSvg( createDiagram( DiagramHeaderNavigation.disabled(), DiagramAttributeNavigation.disabled(), false ) ).svg();
+   }
+
+   private DiagramNavigationResult generateSvg( final Diagram diagram ) {
       final Graphviz graphviz = render( diagram );
 
       try ( final InputStream fontStream = getInputStream( FONT_FILE ) ) {
@@ -132,10 +179,49 @@ public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[],
                + "\");\n"
                + "}\n"
                + "</style>";
-         return svgDocument.replaceFirst( ">", ">" + css );
+         return new DiagramNavigationResult( svgDocument.replaceFirst( ">", ">" + css ), navigationTargets( diagram ),
+               attributeNavigationTargets( diagram ) );
       } catch ( final ExecuteException | IOException exception ) {
          throw new DocumentGenerationException( exception );
       }
+   }
+
+   private Diagram createDiagram( final DiagramHeaderNavigation headerNavigation,
+         final DiagramAttributeNavigation attributeNavigation, final boolean includeAllLocalizedRows ) {
+      final DiagramVisitor diagramVisitor = new DiagramVisitor( config.language(), headerNavigation, attributeNavigation,
+            includeAllLocalizedRows );
+      return aspect().accept( diagramVisitor, Optional.empty() );
+   }
+
+   private Map<String, String> navigationTargets( final Diagram diagram ) {
+      final Map<String, String> targets = new LinkedHashMap<>();
+      diagram.getBoxes().forEach( box -> {
+         final Optional<String> markerId = box.getHeaderMarkerId();
+         final Optional<String> targetUrn = box.getNavigationTargetUrn();
+         if ( markerId.isPresent() != targetUrn.isPresent() ) {
+            throw new IllegalStateException( "A diagram header marker and its navigation target must be present together" );
+         }
+         markerId.ifPresent( marker -> {
+            if ( targets.putIfAbsent( marker, targetUrn.orElseThrow() ) != null ) {
+               throw new IllegalStateException( "Duplicate diagram header marker: " + marker );
+            }
+         } );
+      } );
+      return targets;
+   }
+
+   private List<DiagramAttributeNavigationTarget> attributeNavigationTargets( final Diagram diagram ) {
+      final Map<String, DiagramAttributeNavigationTarget> targets = new LinkedHashMap<>();
+      diagram.getBoxes().forEach( box -> box.getEntryRows().stream().map( Diagram.Box.EntryRow::navigation )
+            .flatMap( Optional::stream ).forEach( row -> {
+               final DiagramAttributeNavigation.Locator locator = row.locator();
+               final DiagramAttributeNavigationTarget target = new DiagramAttributeNavigationTarget( row.markerId(), locator.ownerUrn(),
+                     locator.predicateUrn(), locator.selection().wireValue(), locator.language() );
+               if ( targets.putIfAbsent( row.markerId(), target ) != null ) {
+                  throw new IllegalStateException( "Duplicate diagram attribute marker: " + row.markerId() );
+               }
+            } ) );
+      return List.copyOf( targets.values() );
    }
 
    private byte[] generatePng( final String svg ) {
@@ -176,17 +262,28 @@ public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[],
       final Map<Diagram.Box, Node> boxMap = diagram.getBoxes()
             .stream()
             .map( box -> {
+               final Html.Td prototypeCell = td().text( "«" + box.getPrototype() + "»" ).fontName( fontName )
+                     .align( Labeljust.CENTER );
+               if ( box.getTitle().isEmpty() ) {
+                  box.getHeaderMarkerId().ifPresent( prototypeCell::id );
+               }
                final Html.Table table = table()
                      .color( Color.BLACK ).bgColor( Color.ofRGB( box.getBackground().getColor() ) )
                      .cellBorder( 0 ).border( 1 ).cellSpacing( 0 ).cellPadding( 4 )
-                     .tr( td().text( "«" + box.getPrototype() + "»" ).fontName( fontName ).align( Labeljust.CENTER ) );
+                     .tr( prototypeCell );
                if ( !box.getTitle().isEmpty() ) {
-                  table.tr( td().text( box.getTitle() ).fontName( fontName ).align( Labeljust.CENTER ) );
+                  final Html.Td titleCell = td().text( box.getTitle() ).fontName( fontName ).align( Labeljust.CENTER );
+                  box.getHeaderMarkerId().ifPresent( titleCell::id );
+                  table.tr( titleCell );
                }
-               if ( !box.getEntries().isEmpty() ) {
+               if ( !box.getEntryRows().isEmpty() ) {
                   table.tr( td().cellPadding( 1 ).bgColor( Color.BLACK ).height( 1 ) );
-                  box.getEntries()
-                        .forEach( entry -> table.tr( td().cellPadding( 3 ).text( entry ).fontName( fontName ).align( Labeljust.LEFT ) ) );
+                  box.getEntryRows().forEach( row -> {
+                     final Html.Td entryCell = td().cellPadding( 3 ).text( row.text() ).fontName( fontName )
+                           .align( Labeljust.LEFT );
+                     row.navigation().map( DiagramAttributeNavigation.Row::markerId ).ifPresent( entryCell::id );
+                     table.tr( entryCell );
+                  } );
                }
                final Node node = Node.builder().color( Color.BLACK ).table( table ).build();
                return new AbstractMap.SimpleEntry<>( box, node );
@@ -206,5 +303,14 @@ public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[],
             } )
             .forEach( graphvizBuilder::addLine );
       return graphvizBuilder.build();
+   }
+
+   /** Signals that a traversed diagram must not be passed to Graphper. */
+   public static class DiagramBoxLimitExceededException extends DocumentGenerationException {
+      private static final long serialVersionUID = 1L;
+
+      DiagramBoxLimitExceededException( final int actualBoxes, final int maximumBoxes ) {
+         super( "Diagram contains %d boxes; maximum is %d".formatted( actualBoxes, maximumBoxes ) );
+      }
    }
 }

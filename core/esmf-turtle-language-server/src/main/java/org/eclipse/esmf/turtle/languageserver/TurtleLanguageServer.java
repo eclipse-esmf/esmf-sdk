@@ -25,6 +25,12 @@ import java.util.concurrent.Executors;
 import java.util.function.Function;
 
 import org.eclipse.esmf.aspectmodel.ViolationReport;
+import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderParams;
+import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderResult;
+import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewResolveAttributeTargetParams;
+import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewResolveAttributeTargetResult;
+import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewResolveTargetParams;
+import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewResolveTargetResult;
 import org.eclipse.esmf.turtle.languageserver.lsp.request.ValidateDocumentParams;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TurtleTextDocumentService;
 import org.eclipse.esmf.turtle.languageserver.lsp.workspace.TurtleWorkspaceService;
@@ -114,6 +120,22 @@ public class TurtleLanguageServer implements LanguageServer, LanguageClientAware
       return textDocumentService.validateDocument( params.uri() );
    }
 
+   @JsonRequest( "turtle/graphicalView/render" )
+   public CompletableFuture<GraphicalViewRenderResult> renderGraphicalView( final GraphicalViewRenderParams params ) {
+      return textDocumentService.renderGraphicalView( params );
+   }
+
+   @JsonRequest( "turtle/graphicalView/resolveTarget" )
+   public CompletableFuture<GraphicalViewResolveTargetResult> resolveGraphicalViewTarget( final GraphicalViewResolveTargetParams params ) {
+      return textDocumentService.resolveGraphicalViewTarget( params );
+   }
+
+   @JsonRequest( "turtle/graphicalView/resolveAttributeTarget" )
+   public CompletableFuture<GraphicalViewResolveAttributeTargetResult> resolveGraphicalViewAttributeTarget(
+         final GraphicalViewResolveAttributeTargetParams params ) {
+      return textDocumentService.resolveGraphicalViewAttributeTarget( params );
+   }
+
    /**
     * Starts the language server using stdin/stdout communication.
     * This method does not return.
@@ -167,11 +189,11 @@ public class TurtleLanguageServer implements LanguageServer, LanguageClientAware
    }
 
    private static void handleClientConnection( final AsynchronousSocketChannel socketChannel ) {
+      final TurtleLanguageServer languageServer = new TurtleLanguageServer();
       try ( final var inputStream = Channels.newInputStream( socketChannel );
             final var outputStream = Channels.newOutputStream( socketChannel );
             final var executorService = Executors.newCachedThreadPool();
             socketChannel ) {
-         final TurtleLanguageServer languageServer = new TurtleLanguageServer();
          final Launcher<LanguageClient> launcher =
                Launcher.createIoLauncher( languageServer, LanguageClient.class, inputStream,
                      outputStream, executorService, Function.identity() );
@@ -183,6 +205,8 @@ public class TurtleLanguageServer implements LanguageServer, LanguageClientAware
          LOG.error( "Client connection handler was interrupted", exception );
       } catch ( final Exception exception ) {
          LOG.error( "Error handling client connection", exception );
+      } finally {
+         languageServer.shutdown();
       }
    }
 }
