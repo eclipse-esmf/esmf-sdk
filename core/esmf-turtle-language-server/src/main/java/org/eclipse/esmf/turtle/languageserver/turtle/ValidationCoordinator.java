@@ -25,6 +25,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiConsumer;
 
@@ -33,6 +34,7 @@ import org.eclipse.esmf.aspectmodel.validation.ProcessingViolationBuilder;
 import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.ViolationProvider;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
+import org.eclipse.esmf.turtle.languageserver.lsp.text.TreeSitterTurtleParserService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +47,9 @@ public class ValidationCoordinator implements AutoCloseable {
    private final BiConsumer<Document, ViolationReport> onValidationComplete;
    private final ExecutorService executorService;
    private final ScheduledExecutorService scheduler;
+   private final Object parserLock;
+   private final TreeSitterTurtleParserService parserService;
+   private final AtomicBoolean closed = new AtomicBoolean();
 
    private final Map<Document, CompletableFuture<?>> runningValidations = new ConcurrentHashMap<>();
    private final Map<Document, ScheduledFuture<?>> scheduledValidations = new ConcurrentHashMap<>();
@@ -54,14 +59,33 @@ public class ValidationCoordinator implements AutoCloseable {
    public ValidationCoordinator(
          final List<ViolationProvider> violationProviders,
          final BiConsumer<Document, ViolationReport> onValidationComplete ) {
+      this( violationProviders, onValidationComplete, null );
+   }
+
+   public ValidationCoordinator(
+         final List<ViolationProvider> violationProviders,
+         final BiConsumer<Document, ViolationReport> onValidationComplete,
+         final TreeSitterTurtleParserService parserService ) {
       this.violationProviders = violationProviders;
       this.onValidationComplete = onValidationComplete;
+      this.parserService = parserService;
+      parserLock = parserService == null ? new Object() : parserService;
       executorService = Executors.newSingleThreadExecutor( Thread.ofPlatform().name( "semantic-models-validation-", 0 ).factory() );
       scheduler = Executors.newSingleThreadScheduledExecutor(
             Thread.ofPlatform().name( "semantic-models-validation-debounce-", 0 ).factory() );
    }
 
    private ViolationReport validateFast( final ParsedDocument parsedDocument ) {
+      if ( parserService != null ) {
+         return parserService.withExistingParsedDocument( parsedDocument.sourceDocument(), this::validateFastForCurrentDocument )
+               .orElse( ViolationReport.EMPTY );
+      }
+      synchronized ( parserLock ) {
+         return validateFastForCurrentDocument( parsedDocument );
+      }
+   }
+
+   private ViolationReport validateFastForCurrentDocument( final ParsedDocument parsedDocument ) {
       final ViolationReport result = violationProviders.stream()
             .filter( provider -> provider.type().equals( ViolationProvider.Type.FAST ) )
             .map( provider -> executeViolationProvider( provider, parsedDocument ) )
@@ -96,14 +120,20 @@ public class ValidationCoordinator implements AutoCloseable {
       cancelScheduledValidation( document );
       cancelRunningValidation( document );
       generations.remove( document );
+      fastValidationResults.remove( document );
    }
 
    @Override
    public void close() {
+      if ( !closed.compareAndSet( false, true ) ) {
+         return;
+      }
       scheduledValidations.values().forEach( f -> f.cancel( false ) );
       scheduledValidations.clear();
       runningValidations.values().forEach( f -> f.cancel( true ) );
       runningValidations.clear();
+      generations.clear();
+      fastValidationResults.clear();
       scheduler.shutdownNow();
       executorService.shutdownNow();
    }
@@ -183,6 +213,16 @@ public class ValidationCoordinator implements AutoCloseable {
    }
 
    private ViolationReport validateDelayed( final ParsedDocument parsedDocument ) {
+      if ( parserService != null ) {
+         return parserService.withExistingParsedDocument( parsedDocument.sourceDocument(), this::validateDelayedForCurrentDocument )
+               .orElse( ViolationReport.EMPTY );
+      }
+      synchronized ( parserLock ) {
+         return validateDelayedForCurrentDocument( parsedDocument );
+      }
+   }
+
+   private ViolationReport validateDelayedForCurrentDocument( final ParsedDocument parsedDocument ) {
       return violationProviders.stream()
             .filter( provider -> provider.type().equals( ViolationProvider.Type.DELAYED ) )
             .map( provider -> executeViolationProvider( provider, parsedDocument ) )

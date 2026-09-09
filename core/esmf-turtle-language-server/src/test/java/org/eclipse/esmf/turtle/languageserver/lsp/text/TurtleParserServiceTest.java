@@ -352,6 +352,7 @@ class TurtleParserServiceTest {
       final String initialContent = "ex:subject ex:predicate ex:object.";
       final Document document = new Document( "test.ttl", initialContent );
       final TSTree oldTree = parserService.apply( document ).concreteSyntaxTree();
+      final String oldTreeRepresentation = oldTree.getRootNode().toString();
       final Range range = new Range( pos( 0, 33 ), pos( 0, 33 ) );
       final TextDocumentContentChangeEvent change = new TextDocumentContentChangeEvent( range, " " );
       document.update( range, " " );
@@ -360,7 +361,7 @@ class TurtleParserServiceTest {
       final TSTree tree = parserService.apply( document ).concreteSyntaxTree();
       assertThat( tree.getRootNode().hasError() ).isFalse();
       assertThat( document.content() ).endsWith( "object ." );
-      assertThat( oldTree.getRootNode().toString() ).isEqualTo( tree.getRootNode().toString() );
+      assertThat( oldTreeRepresentation ).isEqualTo( tree.getRootNode().toString() );
    }
 
    void printDocumentAndTree( final Document document, final TSTree tree ) {
