@@ -72,7 +72,7 @@ class TurtleTextDocumentServiceLifecycleTest {
    }
 
    @Test
-   void concurrentParserChangesPreserveAValidTree() throws Exception {
+   void concurrentParserChangesPreserveValidTree() throws Exception {
       final TreeSitterTurtleParserService parserService = new TreeSitterTurtleParserService();
       final Document document = new Document( URI, CONTENT );
       parserService.onOpen( document );
