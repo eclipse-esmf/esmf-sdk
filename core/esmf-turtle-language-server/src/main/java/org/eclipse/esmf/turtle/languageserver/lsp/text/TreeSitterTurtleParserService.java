@@ -16,6 +16,7 @@ package org.eclipse.esmf.turtle.languageserver.lsp.text;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.WeakHashMap;
 import java.util.function.Function;
 
@@ -36,10 +37,11 @@ import org.treesitter.TSTree;
  * Service for parsing Turtle documents using Tree-sitter and maintaining their syntax trees.
  * Supports incremental parsing for efficient updates when documents change.
  */
-public class TreeSitterTurtleParserService implements Function<Document, ParsedDocument> {
+public class TreeSitterTurtleParserService implements Function<Document, ParsedDocument>, AutoCloseable {
    private final TSParser parser;
    private final Map<Document, TSTree> syntaxTrees = new HashMap<>();
    private final Map<Document, Rope> previousDocumentStates = new WeakHashMap<>();
+   private boolean closed;
 
    public TreeSitterTurtleParserService() {
       TurtleLoader.init();
@@ -49,8 +51,24 @@ public class TreeSitterTurtleParserService implements Function<Document, ParsedD
    }
 
    @Override
-   public ParsedDocument apply( final Document document ) {
+   public synchronized ParsedDocument apply( final Document document ) {
+      ensureOpen();
       return new ParsedDocument( document, syntaxTrees.computeIfAbsent( document, this::parseDocument ) );
+   }
+
+   public synchronized <T> T withParsedDocument( final Document document,
+         final Function<ParsedDocument, T> operation ) {
+      return operation.apply( apply( document ) );
+   }
+
+   public synchronized <T> Optional<T> withExistingParsedDocument( final Document document,
+         final Function<ParsedDocument, T> operation ) {
+      ensureOpen();
+      final TSTree tree = syntaxTrees.get( document );
+      if ( tree == null ) {
+         return Optional.empty();
+      }
+      return Optional.of( operation.apply( new ParsedDocument( document, tree ) ) );
    }
 
    private TSTree parseDocument( final Document document ) {
@@ -112,32 +130,70 @@ public class TreeSitterTurtleParserService implements Function<Document, ParsedD
       }
    }
 
-   public void onOpen( final Document document ) {
-      syntaxTrees.put( document, parseDocument( document ) );
+   public synchronized void onOpen( final Document document ) {
+      ensureOpen();
+      replaceTree( document, parseDocument( document ) );
    }
 
-   public void onChange( final Document document, final TextDocumentContentChangeEvent changeEvent ) {
+   public synchronized void onChange( final Document document, final TextDocumentContentChangeEvent changeEvent ) {
+      ensureOpen();
       final TSTree oldTree = syntaxTrees.get( document );
       if ( oldTree == null ) {
-         syntaxTrees.put( document, parseDocument( document ) );
+         replaceTree( document, parseDocument( document ) );
          return;
       }
 
       final Rope oldRope = previousDocumentStates.get( document );
       if ( oldRope == null ) {
-         syntaxTrees.put( document, parseDocument( document ) );
+         replaceTree( document, parseDocument( document ) );
          return;
       }
 
       final TSInputEdit edit = treeChangeFromLspChange( oldRope, changeEvent );
       if ( edit == null ) {
-         syntaxTrees.put( document, parseDocument( document ) );
+         replaceTree( document, parseDocument( document ) );
          return;
       }
 
       oldTree.edit( edit );
       final TSTree newTree = parser.parseString( oldTree, document.content() );
-      syntaxTrees.put( document, newTree );
+      replaceTree( document, newTree );
       previousDocumentStates.put( document, document.rope() );
+   }
+
+   public synchronized void remove( final Document document ) {
+      closeTree( syntaxTrees.remove( document ) );
+      previousDocumentStates.remove( document );
+   }
+
+   @Override
+   public synchronized void close() {
+      if ( closed ) {
+         return;
+      }
+      closed = true;
+      syntaxTrees.values().forEach( TreeSitterTurtleParserService::closeTree );
+      syntaxTrees.clear();
+      previousDocumentStates.clear();
+      parser.close();
+   }
+
+   private void replaceTree( final Document document, final TSTree newTree ) {
+      final TSTree replacedTree = syntaxTrees.put( document, newTree );
+      if ( replacedTree != newTree ) {
+         closeTree( replacedTree );
+      }
+   }
+
+   private static void closeTree( final @Nullable TSTree tree ) {
+      if ( tree != null ) {
+         tree.close();
+      }
+   }
+
+   private void ensureOpen() {
+      if ( closed ) {
+         throw new IllegalStateException( "Parser service is closed" );
+      }
    }
 }

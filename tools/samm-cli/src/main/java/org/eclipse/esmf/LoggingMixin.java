@@ -66,6 +66,16 @@ public class LoggingMixin {
 
    public void configureLoggers() {
       final Level level = getTopLevelCommandLoggingMixin( mixee ).calcLogLevel();
+      configureLoggers( level );
+   }
+
+   public void ensureLspDiagnostics() {
+      if ( getTopLevelCommandLoggingMixin( mixee ).calcLogLevel() == Level.OFF ) {
+         configureLoggers( Level.ERROR );
+      }
+   }
+
+   private void configureLoggers( final Level level ) {
       final LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
       final Logger root = loggerContext.getLogger( Logger.ROOT_LOGGER_NAME );
       root.detachAndStopAllAppenders();
