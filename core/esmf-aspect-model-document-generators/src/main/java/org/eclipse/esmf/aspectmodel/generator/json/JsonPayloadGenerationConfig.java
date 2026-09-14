@@ -30,12 +30,15 @@ import io.soabase.recordbuilder.core.RecordBuilder;
  *        instead of creating a fallback
  * @param currentTimestamp if set to true, generates current timestamp dynamically using
  *        LocalDateTime.now() instead of the fixed default timestamp (start of Unix epoch).
+ * @param ignoreExampleValue if a random value is generated for each property,
+ *        even if an example value is defined in the Aspect Model
  */
 @RecordBuilder
 public record JsonPayloadGenerationConfig(
       Random randomStrategy,
       boolean addTypeAttributeForEntityInheritance,
       boolean failOnInvalidRegularExpressions,
+      boolean ignoreExampleValue,
       boolean currentTimestamp
 ) implements JsonGenerationConfig {
    public JsonPayloadGenerationConfig {

@@ -42,6 +42,9 @@ public class GenerateJsonPayload extends AspectModelMojo {
    @Parameter( defaultValue = "false" )
    private boolean currentTimestamp;
 
+   @Parameter( defaultValue = "false" )
+   private boolean ignoreExampleValue;
+
    @Override
    public void executeGeneration() throws MojoExecutionException, MojoFailureException {
       validateParameters();
@@ -51,6 +54,7 @@ public class GenerateJsonPayload extends AspectModelMojo {
          final JsonPayloadGenerationConfig config = JsonPayloadGenerationConfigBuilder.builder()
                .addTypeAttributeForEntityInheritance( addTypeAttribute )
                .currentTimestamp( currentTimestamp )
+               .ignoreExampleValue( ignoreExampleValue )
                .build();
          final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator( context, config );
          for ( final JsonPayloadArtifact artifact : generator.generate().toList() ) {
