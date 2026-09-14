@@ -28,12 +28,15 @@ import io.soabase.recordbuilder.core.RecordBuilder;
  *        for inherited entities
  * @param failOnInvalidRegularExpressions if a sample value for a regex can not be generated, fail
  *        instead of creating a fallback
+ * @param ignoreExampleValue if a random value is generated for each property,
+ *        even if an example value is defined in the Aspect Model
  */
 @RecordBuilder
 public record JsonPayloadGenerationConfig(
       Random randomStrategy,
       boolean addTypeAttributeForEntityInheritance,
-      boolean failOnInvalidRegularExpressions
+      boolean failOnInvalidRegularExpressions,
+      boolean ignoreExampleValue
 ) implements JsonGenerationConfig {
    public JsonPayloadGenerationConfig {
       if ( randomStrategy == null ) {
