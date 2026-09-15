@@ -40,6 +40,9 @@ public class GenerateJsonPayload extends AspectModelMojo {
    private boolean addTypeAttribute;
 
    @Parameter( defaultValue = "false" )
+   private boolean currentTimestamp;
+
+   @Parameter( defaultValue = "false" )
    private boolean ignoreExampleValue;
 
    @Override
@@ -50,6 +53,7 @@ public class GenerateJsonPayload extends AspectModelMojo {
       for ( final Aspect context : aspects ) {
          final JsonPayloadGenerationConfig config = JsonPayloadGenerationConfigBuilder.builder()
                .addTypeAttributeForEntityInheritance( addTypeAttribute )
+               .currentTimestamp( currentTimestamp )
                .ignoreExampleValue( ignoreExampleValue )
                .build();
          final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator( context, config );
