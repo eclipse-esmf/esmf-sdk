@@ -16,9 +16,9 @@ import org.eclipse.lsp4j.Location;
 
 /** Fresh source location, or one controlled warning. */
 public record GraphicalViewResolveTargetResult(
-      Location location, GraphicalViewResolveTargetWarning warning
+      Location location, String warning
 ) {
    public static GraphicalViewResolveTargetResult warning( final GraphicalViewResolveTargetWarning warning ) {
-      return new GraphicalViewResolveTargetResult( null, warning );
+      return new GraphicalViewResolveTargetResult( null, warning.wireValue() );
    }
 }

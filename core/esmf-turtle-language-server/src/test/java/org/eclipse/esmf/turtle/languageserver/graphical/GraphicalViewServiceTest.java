@@ -60,7 +60,8 @@ class GraphicalViewServiceTest {
                "urn:samm:example.facade:1.0.0#Facade" ) ).get( 5, TimeUnit.SECONDS );
 
          assertThat( resolved.location() ).isNull();
-         assertThat( resolved.warning() ).isEqualTo( GraphicalViewResolveTargetWarning.TEMPORARILY_UNRESOLVABLE );
+         assertThat( resolved.warning() )
+               .isEqualTo( GraphicalViewResolveTargetWarning.TEMPORARILY_UNRESOLVABLE.wireValue() );
       }
    }
 
@@ -73,10 +74,10 @@ class GraphicalViewServiceTest {
          assertThat( service.render( new GraphicalViewRenderParams( missingUri ) ).get().warnings() )
                .containsExactly( GraphicalViewRenderWarning.MISSING_DOCUMENT );
          assertThat( service.resolveTarget( new GraphicalViewResolveTargetParams( missingUri, "bad" ) )
-               .get().warning() ).isEqualTo( GraphicalViewResolveTargetWarning.TEMPORARILY_UNRESOLVABLE );
+               .get().warning() ).isEqualTo( GraphicalViewResolveTargetWarning.TEMPORARILY_UNRESOLVABLE.wireValue() );
          assertThat( service.resolveTarget( new GraphicalViewResolveTargetParams( "https://example/model.ttl",
                "urn:samm:x:1.0.0#x" ) ).get().warning() )
-                     .isEqualTo( GraphicalViewResolveTargetWarning.UNSUPPORTED_URI );
+                     .isEqualTo( GraphicalViewResolveTargetWarning.UNSUPPORTED_URI.wireValue() );
       }
    }
 

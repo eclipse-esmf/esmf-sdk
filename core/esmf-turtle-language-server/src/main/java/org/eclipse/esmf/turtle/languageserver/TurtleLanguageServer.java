@@ -189,7 +189,11 @@ public class TurtleLanguageServer implements LanguageServer, LanguageClientAware
    }
 
    private static void handleClientConnection( final AsynchronousSocketChannel socketChannel ) {
-      final TurtleLanguageServer languageServer = new TurtleLanguageServer();
+      handleClientConnection( socketChannel, new TurtleLanguageServer() );
+   }
+
+   static void handleClientConnection( final AsynchronousSocketChannel socketChannel,
+         final TurtleLanguageServer languageServer ) {
       try ( final var inputStream = Channels.newInputStream( socketChannel );
             final var outputStream = Channels.newOutputStream( socketChannel );
             final var executorService = Executors.newCachedThreadPool();
