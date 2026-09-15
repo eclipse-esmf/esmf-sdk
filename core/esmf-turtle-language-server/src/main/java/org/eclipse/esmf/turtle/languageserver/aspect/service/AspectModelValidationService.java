@@ -20,7 +20,6 @@ import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
 import org.eclipse.esmf.aspectmodel.validation.Validator;
 import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
 import org.eclipse.esmf.metamodel.AspectModel;
-import org.eclipse.esmf.turtle.languageserver.aspect.navigation.ExternalModelFileCache;
 import org.eclipse.esmf.turtle.languageserver.lsp.ResolutionStrategyService;
 import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.ResolutionStrategyAwareViolationProvider;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
@@ -50,13 +49,9 @@ public class AspectModelValidationService extends TurtleService implements Resol
       this.resolutionStrategyService = resolutionStrategyService;
    }
 
-   private boolean shouldValidateDocument( final ParsedDocument parsedDocument ) {
-      return documentIsAspectModel( parsedDocument ) && !ExternalModelFileCache.isCachedModelUri( parsedDocument.getUri() );
-   }
-
    @Override
    public ViolationReport validate( final ParsedDocument parsedDocument ) {
-      if ( !shouldValidateDocument( parsedDocument ) ) {
+      if ( !documentIsAspectModel( parsedDocument ) || isExemptFromValidation( parsedDocument ) ) {
          return ViolationReport.EMPTY;
       }
       LOG.debug( "[load] loading aspect model from {}", parsedDocument.getUri() );
