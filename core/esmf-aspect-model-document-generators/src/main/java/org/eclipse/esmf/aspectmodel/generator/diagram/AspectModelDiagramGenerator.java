@@ -112,7 +112,7 @@ public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[],
             ? DiagramAttributeNavigation.enabled()
             : DiagramAttributeNavigation.disabled(), true );
       DiagramBoxLimit.maximum( maximumBoxes ).validate( diagram );
-      return generateSvg( diagram );
+      return generateSvg( diagram, false );
    }
 
    @Override
@@ -158,20 +158,28 @@ public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[],
    }
 
    private String generateSvg() {
-      return generateSvg( createDiagram( DiagramHeaderNavigation.disabled(), DiagramAttributeNavigation.disabled(), false ) ).svg();
+      return generateSvg( createDiagram( DiagramHeaderNavigation.disabled(), DiagramAttributeNavigation.disabled(), false ), true ).svg();
    }
 
-   private DiagramNavigationResult generateSvg( final Diagram diagram ) {
+   private DiagramNavigationResult generateSvg( final Diagram diagram, final boolean embedFontStyle ) {
       final Graphviz graphviz = render( diagram );
 
-      try ( final InputStream fontStream = getInputStream( FONT_FILE ) ) {
+      try {
          final String svgDocument = graphviz.toSvgStr()
                .replace( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "" )
                .replace( "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">", "" );
 
+         if ( !embedFontStyle ) {
+            return new DiagramNavigationResult( svgDocument, navigationTargets( diagram ),
+                  attributeNavigationTargets( diagram ) );
+         }
+
          // To make the font available in the generated SVG, it needs to be Base64-encoded
          // and embedded in the file.
-         final String fontInBase64 = base64EncodeInputStream( fontStream );
+         final String fontInBase64;
+         try ( final InputStream fontStream = getInputStream( FONT_FILE ) ) {
+            fontInBase64 = base64EncodeInputStream( fontStream );
+         }
          final String css = "\n<style>\n"
                + "@font-face {\n"
                + "    font-family: \"" + FONT_NAME + "\";\n"

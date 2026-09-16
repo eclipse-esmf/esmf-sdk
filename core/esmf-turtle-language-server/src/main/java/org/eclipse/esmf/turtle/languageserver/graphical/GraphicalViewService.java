@@ -35,7 +35,6 @@ import org.eclipse.esmf.turtle.languageserver.graphical.render.GraphicalViewRend
 import org.eclipse.esmf.turtle.languageserver.graphical.source.GraphicalViewSourceContext;
 import org.eclipse.esmf.turtle.languageserver.graphical.source.GraphicalViewSourceSnapshot;
 import org.eclipse.esmf.turtle.languageserver.graphical.validation.GraphicalViewLocationValidator;
-import org.eclipse.esmf.turtle.languageserver.graphical.validation.GraphicalViewSvgSidecarValidator;
 import org.eclipse.esmf.turtle.languageserver.lsp.ResolutionStrategyService;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TreeSitterTurtleParserService;
@@ -55,7 +54,7 @@ public final class GraphicalViewService implements AutoCloseable {
    public GraphicalViewService( final Map<String, Document> documents, final TreeSitterTurtleParserService parser,
          final ResolutionStrategyService strategies ) {
       sources = new GraphicalViewSourceContext( documents );
-      renderer = new GraphicalViewRenderer( strategies, new GraphicalViewSvgSidecarValidator() );
+      renderer = new GraphicalViewRenderer( strategies );
       resolver = new GraphicalViewTargetResolver( parser, strategies, sources );
       locationValidator = new GraphicalViewLocationValidator();
       executor = Executors.newFixedThreadPool( 2, runnable -> new Thread( runnable, "graphical-view-worker" ) );

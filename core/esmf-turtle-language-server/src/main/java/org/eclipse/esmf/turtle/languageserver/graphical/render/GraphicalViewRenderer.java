@@ -22,7 +22,6 @@ import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRe
 import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderTarget;
 import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewTarget;
 import org.eclipse.esmf.turtle.languageserver.graphical.source.GraphicalViewSourceSnapshot;
-import org.eclipse.esmf.turtle.languageserver.graphical.validation.GraphicalViewSvgSidecarValidator;
 import org.eclipse.esmf.turtle.languageserver.lsp.ResolutionStrategyService;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TreeSitterTurtleParserService;
@@ -32,12 +31,9 @@ public final class GraphicalViewRenderer {
    public static final int MAX_BOXES = 1_000;
 
    private final ResolutionStrategyService strategies;
-   private final GraphicalViewSvgSidecarValidator validator;
 
-   public GraphicalViewRenderer( final ResolutionStrategyService strategies,
-         final GraphicalViewSvgSidecarValidator validator ) {
+   public GraphicalViewRenderer( final ResolutionStrategyService strategies ) {
       this.strategies = strategies;
-      this.validator = validator;
    }
 
    public GraphicalViewRenderResult render( final GraphicalViewSourceSnapshot snapshot, final String requestedUri,
@@ -66,9 +62,7 @@ public final class GraphicalViewRenderer {
                         GraphicalViewAttributeTarget.ATTRIBUTE_ROW, target.ownerUrn(), target.predicateUrn(), target.selection(),
                         target.language() ) ) )
             .toList();
-      return validator.isValid( diagram.svg(), targets )
-            ? new GraphicalViewRenderResult( uri, diagram.svg(), targets, List.of() )
-            : GraphicalViewRenderResult.warning( uri, TEMPORARILY_UNRESOLVABLE );
+      return new GraphicalViewRenderResult( uri, diagram.svg(), targets, List.of() );
    }
 
    private static DiagramGenerationConfig svgConfig() {

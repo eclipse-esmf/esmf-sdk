@@ -218,15 +218,18 @@ class AspectModelDiagramNavigationMetadataTest {
    }
 
    @Test
-   void defaultAndOptInSvgDifferOnlyByNavigationIdsAndProduceIdenticalPng() throws Exception {
+   void graphicalViewSvgOmitsEmbeddedFontStyleWhileDefaultOutputAndGeometryStayCompatible() throws Exception {
       final Aspect aspect = loadAspect( PNG_MODEL, PNG_SOURCE_URI );
       final String defaultSvg = new String( new AspectModelDiagramGenerator( aspect, svgConfig() ).getContent(),
             StandardCharsets.UTF_8 );
       final String optInSvg = renderWithNavigation( aspect ).svg();
 
       assertThat( defaultSvg ).doesNotContain( "gv-header-" );
-      assertThat( optInSvg ).contains( "gv-header-" );
-      assertEquivalentExceptNavigationMarkerIds( parseSvg( defaultSvg ), parseSvg( optInSvg ) );
+      assertThat( defaultSvg ).contains( "<style>", "data:application/font-truetype" );
+      assertThat( optInSvg ).contains( "gv-header-" )
+            .doesNotContain( "<style", " style=", "data:" );
+      final String defaultWithoutEmbeddedStyle = defaultSvg.replaceFirst( "(?s)\\n<style>.*?</style>", "" );
+      assertEquivalentExceptNavigationMarkerIds( parseSvg( defaultWithoutEmbeddedStyle ), parseSvg( optInSvg ) );
       assertThat( transcodePng( optInSvg ) ).isEqualTo( transcodePng( defaultSvg ) );
    }
 
