@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2025 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -29,12 +29,12 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.XSD;
 
+import org.eclipse.esmf.aspectmodel.generator.exception.CodeGenerationException;
 import org.eclipse.esmf.aspectmodel.java.AspectModelJavaUtil;
 import org.eclipse.esmf.aspectmodel.java.DeconstructionSet;
 import org.eclipse.esmf.aspectmodel.java.StructuredValuePropertiesDeconstructor;
 import org.eclipse.esmf.aspectmodel.java.ValueExpressionVisitor;
 import org.eclipse.esmf.aspectmodel.java.ValueInitializer;
-import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.BoundDefinition;

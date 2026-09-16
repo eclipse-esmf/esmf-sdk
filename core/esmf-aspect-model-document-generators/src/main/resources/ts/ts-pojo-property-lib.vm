@@ -1,0 +1,20 @@
+#macro (tsPojoProperty $property)
+    #if (!$property.isAbstract())
+        #set ($propertyType = $util.getPropertyTypeAndAddImport($property, $codeGenerationConfig))
+        #if (!$property.isOptional() && !$property.isNotInPayload())
+    // NotNull
+        #end
+        #if ($propertyType == 'byte[]')
+        // Serialization for byte arrays
+            #if ($property.dataType.get().urn == $XSD.hexBinary.URI)
+            // HexBinary Serializer/Deserializer
+            #else
+            // Base64Binary Serializer/Deserializer
+            #end
+        #end
+        #if (!$property.isOptional() && $Trait.isAssignableFrom($property.getCharacteristic().get().getClass()))
+        // Constraints for characteristics
+        #end
+    $property.getPayloadName(): $propertyType;
+    #end
+#end
