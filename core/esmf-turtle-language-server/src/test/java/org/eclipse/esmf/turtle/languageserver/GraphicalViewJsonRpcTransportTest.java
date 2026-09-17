@@ -194,29 +194,29 @@ class GraphicalViewJsonRpcTransportTest {
 
    private static String validModel() {
       return """
-            @prefix : <urn:samm:example.transport:1.0.0#> .
-            @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+         @prefix : <urn:samm:example.transport:1.0.0#> .
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
 
-            :Transport a samm:Aspect ;
-               samm:description "Transport aspect"@en ;
-               samm:see <https://example.test/reference> ;
-               samm:properties () ;
-               samm:operations () .
-            """;
+         :Transport a samm:Aspect ;
+            samm:description "Transport aspect"@en ;
+            samm:see <https://example.test/reference> ;
+            samm:properties () ;
+            samm:operations () .
+         """;
    }
 
    private static String ambiguousModel() {
       return """
-            @prefix : <urn:samm:example.transport:1.0.0#> .
-            @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+         @prefix : <urn:samm:example.transport:1.0.0#> .
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
 
-            :Ambiguous a samm:Aspect ;
-               samm:see <https://example.test/one> ;
-               samm:see <https://example.test/two> ;
-               samm:properties () ;
-               samm:operations () .
-            :Duplicate a samm:Characteristic .
-            :Duplicate a samm:Characteristic .
-            """;
+         :Ambiguous a samm:Aspect ;
+            samm:see <https://example.test/one> ;
+            samm:see <https://example.test/two> ;
+            samm:properties () ;
+            samm:operations () .
+         :Duplicate a samm:Characteristic .
+         :Duplicate a samm:Characteristic .
+         """;
    }
 }
