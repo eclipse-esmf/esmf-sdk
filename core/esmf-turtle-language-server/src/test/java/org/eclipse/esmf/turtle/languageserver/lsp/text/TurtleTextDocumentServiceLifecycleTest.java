@@ -21,7 +21,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 class TurtleTextDocumentServiceLifecycleTest {
    @Test
-   void normalShutdownStopsLanguageAndGraphicalWorkerResources( @TempDir final Path directory ) throws Exception {
+   void normalShutdownStopsWorkerResources( @TempDir final Path directory ) throws Exception {
       final String model = """
          @prefix : <urn:samm:example.lifecycle:1.0.0#> .
          @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
@@ -37,16 +37,15 @@ class TurtleTextDocumentServiceLifecycleTest {
 
       service.shutdown();
 
-      final long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos( 2 );
-      while ( System.nanoTime() < deadline && !ownedThreads().isEmpty() ) {
-         Thread.sleep( 10 );
-      }
       assertThat( ownedThreads() ).isEmpty();
    }
 
    private static java.util.List<String> ownedThreads() {
       return Thread.getAllStackTraces().keySet().stream().filter( Thread::isAlive ).map( Thread::getName )
-            .filter( name -> name.startsWith( "semantic-models-async-worker" ) || name.startsWith( "graphical-view-" ) )
+            .filter( name -> name.startsWith( "semantic-models-async-worker" )
+                  || name.startsWith( "semantic-models-validation-" )
+                  || name.startsWith( "semantic-models-validation-debounce-" )
+                  || name.startsWith( "graphical-view-" ) )
             .toList();
    }
 }

@@ -172,5 +172,7 @@ public final class GraphicalViewService implements AutoCloseable {
    public void close() {
       executor.shutdownNow();
       timeouts.shutdownNow();
+      executor.close();
+      timeouts.close();
    }
 }

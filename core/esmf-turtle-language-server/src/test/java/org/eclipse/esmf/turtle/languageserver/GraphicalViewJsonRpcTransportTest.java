@@ -23,7 +23,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TurtleTextDocumentService;
 
+import org.eclipse.lsp4j.DidCloseTextDocumentParams;
 import org.eclipse.lsp4j.DidOpenTextDocumentParams;
+import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -60,33 +62,37 @@ class GraphicalViewJsonRpcTransportTest {
                }
             } );
 
-            int id = 1;
-            assertWarning( client, id++, "turtle/graphicalView/resolveTarget",
-                  headerParams( validUri, NAMESPACE + "Missing" ), "notFound" );
-            assertWarning( client, id++, "turtle/graphicalView/resolveTarget",
-                  headerParams( ambiguousUri, NAMESPACE + "Duplicate" ), "ambiguous" );
-            assertWarning( client, id++, "turtle/graphicalView/resolveTarget",
-                  headerParams( "https://example.test/model.ttl", NAMESPACE + "Transport" ), "unsupportedUri" );
-            assertWarning( client, id++, "turtle/graphicalView/resolveTarget",
-                  headerParams( validUri, "not-a-urn" ), "temporarilyUnresolvable" );
+            try {
+               int id = 1;
+               assertWarning( client, id++, "turtle/graphicalView/resolveTarget",
+                     headerParams( validUri, NAMESPACE + "Missing" ), "notFound" );
+               assertWarning( client, id++, "turtle/graphicalView/resolveTarget",
+                     headerParams( ambiguousUri, NAMESPACE + "Duplicate" ), "ambiguous" );
+               assertWarning( client, id++, "turtle/graphicalView/resolveTarget",
+                     headerParams( "https://example.test/model.ttl", NAMESPACE + "Transport" ), "unsupportedUri" );
+               assertWarning( client, id++, "turtle/graphicalView/resolveTarget",
+                     headerParams( validUri, "not-a-urn" ), "temporarilyUnresolvable" );
 
-            assertWarning( client, id++, "turtle/graphicalView/resolveAttributeTarget",
-                  attributeParams( validUri, NAMESPACE + "Transport", META_MODEL + "name" ), "notFound" );
-            assertWarning( client, id++, "turtle/graphicalView/resolveAttributeTarget",
-                  attributeParams( ambiguousUri, NAMESPACE + "Ambiguous", META_MODEL + "see" ), "ambiguous" );
-            assertWarning( client, id++, "turtle/graphicalView/resolveAttributeTarget",
-                  attributeParams( "https://example.test/model.ttl", NAMESPACE + "Transport", META_MODEL + "see" ),
-                  "unsupportedUri" );
-            assertWarning( client, id++, "turtle/graphicalView/resolveAttributeTarget",
-                  attributeParams( validUri, "not-a-urn", META_MODEL + "see" ), "temporarilyUnresolvable" );
+               assertWarning( client, id++, "turtle/graphicalView/resolveAttributeTarget",
+                     attributeParams( validUri, NAMESPACE + "Transport", META_MODEL + "name" ), "notFound" );
+               assertWarning( client, id++, "turtle/graphicalView/resolveAttributeTarget",
+                     attributeParams( ambiguousUri, NAMESPACE + "Ambiguous", META_MODEL + "see" ), "ambiguous" );
+               assertWarning( client, id++, "turtle/graphicalView/resolveAttributeTarget",
+                     attributeParams( "https://example.test/model.ttl", NAMESPACE + "Transport", META_MODEL + "see" ),
+                     "unsupportedUri" );
+               assertWarning( client, id++, "turtle/graphicalView/resolveAttributeTarget",
+                     attributeParams( validUri, "not-a-urn", META_MODEL + "see" ), "temporarilyUnresolvable" );
 
-            assertLocation( client, id++, "turtle/graphicalView/resolveTarget",
-                  headerParams( validUri, NAMESPACE + "Transport" ), validUri );
-            assertLocation( client, id, "turtle/graphicalView/resolveAttributeTarget",
-                  attributeParams( validUri, NAMESPACE + "Transport", META_MODEL + "description" ), validUri );
-
-            client.close();
-            handler.get( 5, TimeUnit.SECONDS );
+               assertLocation( client, id++, "turtle/graphicalView/resolveTarget",
+                     headerParams( validUri, NAMESPACE + "Transport" ), validUri );
+               assertLocation( client, id, "turtle/graphicalView/resolveAttributeTarget",
+                     attributeParams( validUri, NAMESPACE + "Transport", META_MODEL + "description" ), validUri );
+            } finally {
+               close( textDocuments, validUri );
+               close( textDocuments, ambiguousUri );
+               client.close();
+               handler.get( 5, TimeUnit.SECONDS );
+            }
          }
       }
    }
@@ -142,6 +148,10 @@ class GraphicalViewJsonRpcTransportTest {
 
    private static void open( final TurtleTextDocumentService service, final String uri, final String content ) {
       service.didOpen( new DidOpenTextDocumentParams( new TextDocumentItem( uri, "turtle", 1, content ) ) );
+   }
+
+   private static void close( final TurtleTextDocumentService service, final String uri ) {
+      service.didClose( new DidCloseTextDocumentParams( new TextDocumentIdentifier( uri ) ) );
    }
 
    private static Set<String> fieldNames( final JsonNode node ) {

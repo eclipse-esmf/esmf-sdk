@@ -116,7 +116,8 @@ public class TurtleTextDocumentService implements TextDocumentService {
    public void shutdown() {
       validationCoordinator.close();
       graphicalViewService.close();
-      asyncExecutor.shutdown();
+      asyncExecutor.shutdownNow();
+      asyncExecutor.close();
    }
 
    public CompletableFuture<GraphicalViewRenderResult> renderGraphicalView( final GraphicalViewRenderParams params ) {
