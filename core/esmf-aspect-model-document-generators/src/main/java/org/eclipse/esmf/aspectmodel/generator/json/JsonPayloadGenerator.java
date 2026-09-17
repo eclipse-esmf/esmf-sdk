@@ -84,6 +84,7 @@ public class JsonPayloadGenerator<S extends StructureElement>
       extends JsonGenerator<S, JsonPayloadGenerationConfig, JsonNode, JsonPayloadArtifact>
       implements AspectVisitor<JsonNode, JsonPayloadGenerator.Context> {
    private static final Logger LOG = LoggerFactory.getLogger( JsonPayloadGenerator.class );
+   public static final LocalDateTime DEFAULT_TIMESTAMP = LocalDateTime.of( 1970, 1, 1, 0, 0, 0 );
    public static final JsonPayloadGenerationConfig DEFAULT_CONFIG = JsonPayloadGenerationConfigBuilder.builder().build();
 
    public JsonPayloadGenerator( final S element, final JsonPayloadGenerationConfig config ) {
@@ -94,10 +95,17 @@ public class JsonPayloadGenerator<S extends StructureElement>
       this( element, DEFAULT_CONFIG );
    }
 
+   private LocalDateTime getReferenceDateTime() {
+      if ( config.currentTimestamp() ) {
+         return LocalDateTime.now();
+      }
+      return DEFAULT_TIMESTAMP;
+   }
+
    @Override
    public Stream<JsonPayloadArtifact> generate() {
       final StructureElement element = structureElement();
-      final JsonNode json = element.accept( this, new Context() );
+      final JsonNode json = element.accept( this, new Context().doIgnoreExampleValue( config.ignoreExampleValue() ) );
       return Stream.of( new JsonPayloadArtifact( element.getName() + ".json", json ) );
    }
 
@@ -199,7 +207,7 @@ public class JsonPayloadGenerator<S extends StructureElement>
 
       if ( context.ignoreExampleValue() ) {
          return property.getCharacteristic()
-               .map( c -> c.accept( this, context.doIgnoreExampleValue( false ) ) )
+               .map( c -> c.accept( this, context.doIgnoreExampleValue( config.ignoreExampleValue() ) ) )
                .orElse( null );
       } else {
          return property.getExampleValue()
@@ -245,7 +253,7 @@ public class JsonPayloadGenerator<S extends StructureElement>
       }
       final ArrayNode result = JsonNodeFactory.instance.arrayNode( numberOfElements );
       final Context contextForSubsequentElements = context.withConstraints( List.of() );
-      final Context contextForFirstElement = contextForSubsequentElements.doIgnoreExampleValue( false );
+      final Context contextForFirstElement = contextForSubsequentElements.doIgnoreExampleValue( config.ignoreExampleValue() );
       result.add( collectionElementType.accept( this, contextForFirstElement ) );
       for ( int i = 1; i < numberOfElements; i++ ) {
          result.add( collectionElementType.accept( this, contextForSubsequentElements ) );
@@ -402,9 +410,9 @@ public class JsonPayloadGenerator<S extends StructureElement>
 
    @Override
    public JsonNode visitXsdDate( final SammType.XsdDate date, final Context context ) {
-      final LocalDateTime now = LocalDateTime.now();
+      final LocalDateTime reference = getReferenceDateTime();
       final XMLGregorianCalendar calendar = DatatypeFactory.newDefaultInstance()
-            .newXMLGregorianCalendar( now.getYear(), now.getMonthValue(), now.getDayOfMonth(),
+            .newXMLGregorianCalendar( reference.getYear(), reference.getMonthValue(), reference.getDayOfMonth(),
                   DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED,
                   DatatypeConstants.FIELD_UNDEFINED, 0 );
       return JsonNodeFactory.instance.stringNode( calendar.toXMLFormat() );
@@ -412,20 +420,20 @@ public class JsonPayloadGenerator<S extends StructureElement>
 
    @Override
    public JsonNode visitXsdTime( final SammType.XsdTime time, final Context context ) {
-      final LocalDateTime now = LocalDateTime.now();
+      final LocalDateTime reference = getReferenceDateTime();
       final XMLGregorianCalendar calendar = DatatypeFactory.newDefaultInstance()
             .newXMLGregorianCalendar( DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED,
                   DatatypeConstants.FIELD_UNDEFINED,
-                  now.getHour(), now.getMinute(), now.getSecond(), 0, 0 );
+                  reference.getHour(), reference.getMinute(), reference.getSecond(), 0, 0 );
       return JsonNodeFactory.instance.stringNode( calendar.toXMLFormat() );
    }
 
    @Override
    public JsonNode visitXsdDateTime( final SammType.@Nullable XsdDateTime dateTime, final Context context ) {
-      final LocalDateTime now = LocalDateTime.now();
+      final LocalDateTime reference = getReferenceDateTime();
       final XMLGregorianCalendar calendar = DatatypeFactory.newDefaultInstance()
-            .newXMLGregorianCalendar( now.getYear(), now.getMonthValue(), now.getDayOfMonth(),
-                  now.getHour(), now.getMinute(), now.getSecond(), 0, 0 );
+            .newXMLGregorianCalendar( reference.getYear(), reference.getMonthValue(), reference.getDayOfMonth(),
+                  reference.getHour(), reference.getMinute(), reference.getSecond(), 0, 0 );
       return JsonNodeFactory.instance.stringNode( calendar.toXMLFormat() );
    }
 
@@ -436,29 +444,29 @@ public class JsonPayloadGenerator<S extends StructureElement>
 
    @Override
    public JsonNode visitXsdGYear( final SammType.XsdGYear gYear, final Context context ) {
-      return JsonNodeFactory.instance.stringNode( "" + LocalDateTime.now().getYear() );
+      return JsonNodeFactory.instance.stringNode( "" + getReferenceDateTime().getYear() );
    }
 
    @Override
    public JsonNode visitXsdGMonth( final SammType.XsdGMonth gMonth, final Context context ) {
-      return JsonNodeFactory.instance.stringNode( "--%02d".formatted( LocalDateTime.now().getMonthValue() ) );
+      return JsonNodeFactory.instance.stringNode( "--%02d".formatted( getReferenceDateTime().getMonthValue() ) );
    }
 
    @Override
    public JsonNode visitXsdGDay( final SammType.XsdGDay gDay, final Context context ) {
-      return JsonNodeFactory.instance.stringNode( "---%02d".formatted( LocalDateTime.now().getDayOfMonth() ) );
+      return JsonNodeFactory.instance.stringNode( "---%02d".formatted( getReferenceDateTime().getDayOfMonth() ) );
    }
 
    @Override
    public JsonNode visitXsdGYearMonth( final SammType.XsdGYearMonth gYearMonth, final Context context ) {
-      final LocalDateTime now = LocalDateTime.now();
-      return JsonNodeFactory.instance.stringNode( "%04d-%02d".formatted( now.getYear(), now.getMonthValue() ) );
+      final LocalDateTime reference = getReferenceDateTime();
+      return JsonNodeFactory.instance.stringNode( "%04d-%02d".formatted( reference.getYear(), reference.getMonthValue() ) );
    }
 
    @Override
    public JsonNode visitXsdGMonthDay( final SammType.XsdMonthDay monthDay, final Context context ) {
-      final LocalDateTime now = LocalDateTime.now();
-      return JsonNodeFactory.instance.stringNode( "--%02d-%02d".formatted( now.getMonthValue(), now.getDayOfMonth() ) );
+      final LocalDateTime reference = getReferenceDateTime();
+      return JsonNodeFactory.instance.stringNode( "--%02d-%02d".formatted( reference.getMonthValue(), reference.getDayOfMonth() ) );
    }
 
    @Override

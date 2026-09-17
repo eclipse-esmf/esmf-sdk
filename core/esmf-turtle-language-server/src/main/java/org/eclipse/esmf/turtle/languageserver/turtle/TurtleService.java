@@ -23,6 +23,7 @@ import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.treesitterturtle.ParserTokenType;
 import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
+import org.eclipse.esmf.turtle.languageserver.aspect.navigation.ExternalModelFileCache;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 
 import org.eclipse.lsp4j.Location;
@@ -46,6 +47,15 @@ public abstract class TurtleService {
       final Map<TurtleSyntaxTree.Node, TurtleSyntaxTree.Node> predicateObjectMap = predicateObjectMapForTriple( triple );
       return predicateObjectMap.keySet().stream().map( TurtleSyntaxTree.Node::content )
             .anyMatch( TYPE_DEFINITION_PREDICATES::contains );
+   }
+
+   /**
+    * Cached/materialized model files (e.g. SAMM meta model files opened via "go to definition") are
+    * internal structures the user never wrote and must never be validated by any provider - regardless
+    * of whether the provider is aspect-model-specific or a generic Turtle check.
+    */
+   protected boolean isExemptFromValidation( final ParsedDocument parsedDocument ) {
+      return ExternalModelFileCache.isCachedModelUri( parsedDocument.sourceDocument().uri() );
    }
 
    protected boolean documentIsAspectModel( final ParsedDocument parsedDocument ) {

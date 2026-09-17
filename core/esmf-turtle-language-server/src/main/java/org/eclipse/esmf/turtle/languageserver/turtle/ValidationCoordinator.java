@@ -39,7 +39,7 @@ import org.eclipse.esmf.turtle.languageserver.lsp.text.TreeSitterTurtleParserSer
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ValidationCoordinator implements AutoCloseable {
+public class ValidationCoordinator extends TurtleService implements AutoCloseable {
    private static final Logger LOG = LoggerFactory.getLogger( ValidationCoordinator.class );
    private static final long IDLE_VALIDATION_DELAY_SECONDS = 4L;
 
@@ -76,6 +76,9 @@ public class ValidationCoordinator implements AutoCloseable {
    }
 
    private ViolationReport validateFast( final ParsedDocument parsedDocument ) {
+      if ( isExemptFromValidation( parsedDocument ) ) {
+         return ViolationReport.EMPTY;
+      }
       if ( parserService != null ) {
          return parserService.withExistingParsedDocument( parsedDocument.sourceDocument(), this::validateFastForCurrentDocument )
                .orElse( ViolationReport.EMPTY );
@@ -213,6 +216,9 @@ public class ValidationCoordinator implements AutoCloseable {
    }
 
    private ViolationReport validateDelayed( final ParsedDocument parsedDocument ) {
+      if ( isExemptFromValidation( parsedDocument ) ) {
+         return ViolationReport.EMPTY;
+      }
       if ( parserService != null ) {
          return parserService.withExistingParsedDocument( parsedDocument.sourceDocument(), this::validateDelayedForCurrentDocument )
                .orElse( ViolationReport.EMPTY );

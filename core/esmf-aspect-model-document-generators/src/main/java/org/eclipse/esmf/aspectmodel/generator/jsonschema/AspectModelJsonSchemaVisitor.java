@@ -267,6 +267,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
    public JsonNode visitProperty( final Property property, final ObjectNode context ) {
       final ObjectNode propertyNode = addDescription( FACTORY.objectNode(), property, config.locale() );
       addSammExtensionAttribute( propertyNode, property );
+      addExampleValue( propertyNode, property );
       final Characteristic characteristic = determineCharacteristic( property );
       final String referenceNodeName = getSchemaNameForModelElement( characteristic, property );
       if ( processedProperties.contains( property ) ) {
@@ -656,6 +657,21 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       if ( !describedElement.isAnonymous() ) {
          node.put( AspectModelJsonSchemaGenerator.SAMM_EXTENSION, describedElement.urn().toString() );
       }
+   }
+
+   private void addExampleValue( final ObjectNode node, final Property property ) {
+      if ( !config.generateForOpenApi() ) {
+         return;
+      }
+      property.getExampleValue().ifPresent( exampleValue -> {
+         final JsonNode exampleNode = exampleValue.accept( this, node );
+         final boolean isCollection = property.getEffectiveCharacteristic()
+               .map( c -> c.is( Collection.class ) )
+               .orElse( false );
+         node.set( "example", isCollection
+               ? FACTORY.arrayNode().add( exampleNode )
+               : exampleNode );
+      } );
    }
 
    private ObjectNode generateRefOrWrappedRef( final ObjectNode propertyNode, final String referenceNodeName ) {

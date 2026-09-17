@@ -109,6 +109,7 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
    private static final AspectModelJsonSchemaVisitor SCHEMA_VISITOR = new AspectModelJsonSchemaVisitor(
          JsonSchemaGenerationConfigBuilder.builder()
                .useExtendedTypes( false )
+               .generateForOpenApi( true )
                .build() );
    private static final AspectModelPagingGenerator PAGING_GENERATOR = new AspectModelPagingGenerator();
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelOpenApiGenerator.class );
