@@ -67,7 +67,7 @@ public class AspectModelNamingConventionValidationService extends TurtleService 
 
    @Override
    public ViolationReport validate( final ParsedDocument parsedDocument ) {
-      if ( !documentIsAspectModel( parsedDocument ) ) {
+      if ( !documentIsAspectModel( parsedDocument ) || isExemptFromValidation( parsedDocument ) ) {
          return ViolationReport.EMPTY;
       }
       return new ViolationReport(

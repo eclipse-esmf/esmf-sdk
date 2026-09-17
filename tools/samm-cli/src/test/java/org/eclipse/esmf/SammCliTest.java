@@ -741,10 +741,48 @@ class SammCliTest extends SammCliAbstractTest {
    }
 
    @Test
+   void testAspectToJsonToStdoutIgnoringExampleValues() throws IOException {
+      final String input = inputFile( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).getAbsolutePath();
+
+      final ExecutionResult resultWithExampleValues = sammCli.runAndExpectSuccess(
+            "--disable-color", "aspect", input, "to", "json" );
+      final ExecutionResult resultIgnoringExampleValues = sammCli.runAndExpectSuccess(
+            "--disable-color", "aspect", input, "to", "json", "--ignore-example-value" );
+
+      final ObjectMapper objectMapper = new ObjectMapper();
+      final JsonNode payloadWithExampleValues = objectMapper.readTree( resultWithExampleValues.stdout() );
+      final JsonNode payloadIgnoringExampleValues = objectMapper.readTree( resultIgnoringExampleValues.stdout() );
+
+      assertThat( payloadWithExampleValues.get( "testString" ).asText() ).isEqualTo( "Example Value Test" );
+      assertThat( payloadIgnoringExampleValues.get( "testString" ).asText() ).isNotEqualTo( "Example Value Test" );
+      assertThat( resultWithExampleValues.stderr() ).isEmpty();
+      assertThat( resultIgnoringExampleValues.stderr() ).isEmpty();
+   }
+
+   @Test
    void testAspectToJsonToStdoutWithCustomResolver() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "json",
             "--custom-resolver", resolverCommand() );
       assertThat( result.stdout() ).contains( "\"entityProperty\" :" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectToJsonWithDefaultTimestamp() {
+      final String input = inputFile( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).getAbsolutePath();
+      final ExecutionResult result = sammCli.runAndExpectSuccess(
+            "--disable-color", "aspect", input, "to", "json" );
+      assertThat( result.stdout() ).contains( "\"testLocalDateTimeWithoutExample\" : \"1970-01-01T00:00:00.000Z\"" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectToJsonWithCurrentTimestamp() {
+      final String input = inputFile( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).getAbsolutePath();
+      final ExecutionResult result = sammCli.runAndExpectSuccess(
+            "--disable-color", "aspect", input, "to", "json", "--current-timestamp" );
+      assertThat( result.stdout() ).contains( "\"testLocalDateTimeWithoutExample\" :" );
+      assertThat( result.stdout() ).doesNotContain( "\"testLocalDateTimeWithoutExample\" : \"1970-01-01T00:00:00.000Z\"" );
       assertThat( result.stderr() ).isEmpty();
    }
 

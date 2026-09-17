@@ -17,8 +17,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assumptions.assumeThat;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
@@ -28,7 +30,9 @@ import java.util.Map;
 
 import org.eclipse.esmf.aspectmodel.generator.AbstractSchemaArtifact;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
@@ -1069,6 +1073,109 @@ class AspectModelOpenApiGeneratorTest {
                   .isEqualTo( "#/components/schemas/PagingSchema" );
 
       assertThat( openApi.getComponents().getSchemas() ).containsKey( "AspectWithProperty" );
+   }
+
+   @Test
+   void testPropertyWithExampleValue_ShouldContainExampleInPropertySchema() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_ENGLISH_DESCRIPTION ).aspect();
+      final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( true )
+            .baseUrl( TEST_BASE_URL )
+            .resourcePath( TEST_RESOURCE_PATH )
+            .locale( Locale.ENGLISH )
+            .build();
+
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
+      final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
+      final OpenAPI openApi = result.getOpenAPI();
+
+      final Schema<?> schema = openApi.getComponents().getSchemas().get( aspect.getName() );
+      assertThat( schema ).isNotNull();
+
+      final Schema<?> property = (Schema<?>) schema.getProperties().get( "testString" );
+      assertThat( property ).isNotNull();
+      assertThat( property.getExample() ).isEqualTo( "Example Value Test" );
+
+      final JsonNode propertyNode = json.get( "components" ).get( "schemas" )
+            .get( aspect.getName() ).get( "properties" ).get( "testString" );
+      assertThat( propertyNode.has( "example" ) ).isTrue();
+      assertThat( propertyNode.get( "example" ).asString() ).isEqualTo( "Example Value Test" );
+   }
+
+   @Test
+   void testPropertyWithCollectionExampleValue_ShouldBeArray() {
+      final String ttl = """
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#> .
+         @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         @prefix : <urn:samm:org.example.test:1.0.0#> .
+
+         :AspectWithCollectionExample a samm:Aspect ;
+            samm:properties ( :numberList ) ;
+            samm:operations ( ) .
+
+         :numberList a samm:Property ;
+            samm:characteristic :Numbers ;
+            samm:exampleValue "42"^^xsd:int .
+
+         :Numbers a samm-c:List ;
+            samm:dataType xsd:int .
+         """;
+      final AspectModel aspectModel = new AspectModelLoader().load(
+            new ByteArrayInputStream( ttl.getBytes( StandardCharsets.UTF_8 ) ),
+            URI.create( "test:AspectWithCollectionExample.ttl" ) );
+      final Aspect aspect = aspectModel.aspect();
+      final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( true )
+            .baseUrl( TEST_BASE_URL )
+            .resourcePath( TEST_RESOURCE_PATH )
+            .locale( Locale.ENGLISH )
+            .build();
+
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
+      final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
+      final OpenAPI openApi = result.getOpenAPI();
+
+      final Schema<?> schema = openApi.getComponents().getSchemas().get( aspect.getName() );
+      assertThat( schema ).isNotNull();
+
+      final Schema<?> property = (Schema<?>) schema.getProperties().get( "numberList" );
+      assertThat( property ).isNotNull();
+      assertThat( property.getExample() ).hasToString( "[42]" );
+
+      final JsonNode propertyNode = json.get( "components" ).get( "schemas" )
+            .get( aspect.getName() ).get( "properties" ).get( "numberList" );
+      assertThat( propertyNode.has( "example" ) ).isTrue();
+      assertThat( propertyNode.get( "example" ).isArray() ).isTrue();
+      assertThat( propertyNode.get( "example" ).get( 0 ).asInt() ).isEqualTo( 42 );
+   }
+
+   @Test
+   void testOperationWithExampleValue_ShouldContainExampleInParams() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SCRIPT_TAGS ).aspect();
+      final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( true )
+            .baseUrl( TEST_BASE_URL )
+            .resourcePath( TEST_RESOURCE_PATH )
+            .locale( Locale.ENGLISH )
+            .build();
+
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
+      final JsonNode paramsProperties = json.get( "components" )
+            .get( "schemas" )
+            .get( "Operation" )
+            .get( "allOf" )
+            .get( 1 )
+            .get( "properties" )
+            .get( "params" )
+            .get( "properties" );
+      assertThat( paramsProperties ).isNotNull();
+
+      final JsonNode inputProp = paramsProperties.get( "operationInput" );
+      assertThat( inputProp ).isNotNull();
+      assertThat( inputProp.has( "example" ) ).isTrue();
+      assertThat( inputProp.get( "example" ).asString() )
+            .isEqualTo( "Example operation input <script>alert('Should not be alerted');</script>" );
    }
 
    private void assertSpecificationIsValid( final JsonNode jsonNode, final String json, final Aspect aspect ) throws IOException {
