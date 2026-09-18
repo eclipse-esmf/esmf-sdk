@@ -25,6 +25,10 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.Triple;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.vocabulary.RDF;
 import org.assertj.core.api.Assertions;
 
 import org.eclipse.esmf.aspectmodel.AspectLoadingException;
@@ -32,6 +36,8 @@ import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.ValueParsingException;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFileBuilder;
+import org.eclipse.esmf.aspectmodel.resolver.parser.SmartToken;
+import org.eclipse.esmf.aspectmodel.resolver.parser.TokenRegistry;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.ComplexType;
@@ -147,5 +153,35 @@ class AspectModelLoaderTest {
             .first()
             .satisfies(
                   aspect -> assertThat( aspect.urn().toString() ).isEqualTo( "urn:samm:org.eclipse.esmf.test.ordering:1.0.0#Aspect" ) );
+   }
+
+   @Test
+   void testJenaWrapAsResourceConsistency() {
+      // Test consistency of 'wrapAsResource' (as used in AspectModelLoader), since it's marked as
+      // "use only if necessary".
+      // Contract: wrapAsResource must hand back the *identical* Node instance (==),
+      // it must not create a new, merely equal one.
+      // This is crucial for the TokenRegistry, which keys its node -> token map by object identity (Guava
+      // MapMaker.weakKeys),
+      // because two Node_URI instances for the same URI are equal but represent different occurrences in
+      // different source files.
+      final AspectModel aspectModel = TestResources.load( TestAspect.ASPECT );
+      final Model sourceModel = aspectModel.files().getFirst().sourceModel();
+      final Node aspectNode = sourceModel.getGraph().stream( null, RDF.type.asNode(), null )
+            .map( Triple::getSubject )
+            .filter( Node::isURI )
+            .filter( node -> node.getURI().equals( "urn:samm:org.eclipse.esmf.test:1.0.0#Aspect" ) )
+            .findFirst()
+            .orElseThrow( () -> new AssertionError( "Could not find the Aspect node in the source model" ) );
+
+      // Precondition: the node instance as it was created while parsing the source file carries token
+      // information
+      final SmartToken token = TokenRegistry.getToken( aspectNode )
+            .orElseThrow( () -> new AssertionError( "The parsed Aspect node has no token information" ) );
+
+      final Node wrappedAspectNode = aspectModel.mergedModel().wrapAsResource( aspectNode ).asNode();
+
+      assertThat( wrappedAspectNode ).isSameAs( aspectNode );
+      assertThat( TokenRegistry.getToken( wrappedAspectNode ) ).containsSame( token );
    }
 }
