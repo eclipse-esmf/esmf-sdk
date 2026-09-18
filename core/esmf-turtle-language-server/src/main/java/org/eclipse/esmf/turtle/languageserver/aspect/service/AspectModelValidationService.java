@@ -19,7 +19,6 @@ import org.eclipse.esmf.aspectmodel.resolver.AspectModelFileLoader;
 import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
 import org.eclipse.esmf.aspectmodel.validation.Validator;
 import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
-import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.turtle.languageserver.lsp.ResolutionStrategyService;
 import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.ResolutionStrategyAwareViolationProvider;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
@@ -27,8 +26,6 @@ import org.eclipse.esmf.turtle.languageserver.turtle.TurtleService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.vavr.control.Either;
 
 public class AspectModelValidationService extends TurtleService implements ResolutionStrategyAwareViolationProvider {
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelValidationService.class );
@@ -55,25 +52,22 @@ public class AspectModelValidationService extends TurtleService implements Resol
          return ViolationReport.EMPTY;
       }
       LOG.debug( "[load] loading aspect model from {}", parsedDocument.getUri() );
-      final Either<ViolationReport, AspectModel> reportOrModel = validator.loadModel( () -> {
+      final ViolationReport violationReport = validator.validateModel( () -> {
          final AspectModelLoader aspectModelLoader = parsedDocument.getUri().getScheme() == null
                ? new AspectModelLoader()
                : new AspectModelLoader( resolutionStrategyService.buildResolutionStrategyForDocument( parsedDocument ) );
          return aspectModelLoader.load( AspectModelFileLoader.load( parsedDocument.turtleSyntaxTree(), parsedDocument.getUri() ) );
       } );
-      if ( reportOrModel.isLeft() ) {
-         final ViolationReport report = reportOrModel.getLeft();
-         logProcessingViolations( report );
-         return report;
-      }
-      return ViolationReport.EMPTY;
+      logProcessingViolations( violationReport );
+      return violationReport;
    }
 
    private void logProcessingViolations( final ViolationReport violations ) {
       violations.violations().stream()
             .filter( ProcessingViolation.class::isInstance )
             .map( ProcessingViolation.class::cast )
-            .forEach( violation -> LOG.warn( "[validation] aspect model processing failed: {}", violation.message(), violation.cause() ) );
+            .forEach( violation -> LOG.warn( "[validation] aspect model processing failed: {}, {}",
+                  violation.message(), violation.cause() ) );
    }
 
    @Override
