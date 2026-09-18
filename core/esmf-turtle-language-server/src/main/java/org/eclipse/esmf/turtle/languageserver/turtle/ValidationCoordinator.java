@@ -109,6 +109,8 @@ public class ValidationCoordinator extends TurtleService implements AutoCloseabl
       runningValidations.clear();
       scheduler.shutdownNow();
       executorService.shutdownNow();
+      scheduler.close();
+      executorService.close();
    }
 
    private void rescheduleValidation( final ParsedDocument parsedDocument ) {
