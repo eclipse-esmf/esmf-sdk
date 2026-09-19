@@ -18,62 +18,69 @@ allows AAS submodels to be described with rich semantics, as it is possible with
 == Details of the Mapping Concept
 
 In the following section, the mapping rules applied by the generator are explained. The rules apply
-to xref:2.0.0@samm-specification:ROOT:index.adoc[SAMM v2.0.0] and
+to xref:samm-specification:ROOT:index.adoc[SAMM v2.0.0 / v2.1.0 / v2.2.0] and
 https://industrialdigitaltwin.io/aas-specifications/IDTA-01001/v3.0/index.html[AAS Specification Part 1 V3.0].
+
+In the table below, bold entries denote SAMM model elements, while the plain entries following them
+are the attributes of the preceding model element.
 
 [cols="1,1,2"]
 |===
 | SAMM  | AAS  | Comment
 
-| **samm:Aspect**  |  aas:Submodel with kind=Template  | Empty Asset and AssetAdministrationShell entries are added to the output file
+| **samm:Aspect**  |  aas:Submodel | Generates an aas:Submodel with kind=Template (or kind=Instance if aspect data is supplied). An AssetAdministrationShell referencing the submodel is also created, containing AssetInformation with assetKind=Type (or assetKind=Instance if aspect data is supplied) and the Aspect URN as globalAssetId.
 
-| samm:name   | aas:Submodel.idShort  |
+| samm:name   | aas:Submodel.idShort  | All generated idShorts are sanitized to match the AAS idShort pattern `[a-zA-Z][a-zA-Z0-9_-]*[a-zA-Z0-9_]+`: leading non-letters and invalid characters are removed, trailing hyphens are stripped, single-character results are suffixed with an underscore and empty results fall back to `idShort`.
 
-| samm:preferredName   | aas:Submodel.displayName  |
+| samm:preferredName   | aas:ConceptDescription.displayName  | Mapped to displayName and IEC61360 preferredName on the ConceptDescription of the Aspect. (Not mapped to aas:Submodel.displayName).
 
-| samm:description   | aas:Submodel.description  |
+| samm:description   | aas:Submodel.description  | Also mapped to description and IEC61360 definition on the ConceptDescription of the Aspect.
 
 | samm:property   | see **samm:Property**  |
 
 | samm:operation   | see **samm:Operation**   |
 
-| samm:Aspect.urn  | aas:Submodel.semanticId  |
+| samm:Aspect.urn  | aas:Submodel.semanticId  | Also used as the identifier for the ConceptDescription, the AssetAdministrationShell, and the AssetInformation globalAssetId. The aas:Submodel.id is the Aspect URN with the suffix `/submodel`.
 
-| **samm:Property**  | aas:Property, aas:SubmodelElementCollection   | The AAS type is derived from the type of the SAMM Characteristic specifying the SAMM property. Depending on the type it is decided what the resulting AAS element will be. In case of an Entity it will result in a SubmodelElementCollection. It will also be a SubmodelElementCollection if the SAMM Characteristic is of a Collection type (see the https://eclipse-esmf.github.io/samm-specification/2.0.0/characteristics.html[Characteristics taxonomy]). In all other cases an aas:Property will be generated
+| samm:see  | aas:Submodel.supplementalSemanticIds, aas:SubmodelElement.supplementalSemanticIds  | samm:see references of Aspects, Properties, Operations, Entities and Characteristics are added as external global references to the supplementalSemanticIds of the corresponding aas:Submodel or aas:SubmodelElement. URNs and http(s) URLs are used as they are, bare IRDIs are converted to `urn:irdi:` references with `#` encoded as `%23`, and local file paths are ignored unless their last segment is an IRDI.
 
-| samm:Property.name  | aas:Property.idShort |
+| **samm:Property**  | aas:Property, aas:SubmodelElementCollection, aas:SubmodelElementList, aas:MultiLanguageProperty, aas:ReferenceElement | The AAS element depends on the SAMM property type: an Entity becomes a SubmodelElementCollection; a Collection type (see xref:samm-specification:ROOT:characteristics.adoc#collection-characteristic[Characteristics taxonomy]) becomes a SubmodelElementList; a MultiLanguageText becomes a MultiLanguageProperty; a Reference becomes a ReferenceElement. In all other cases, an aas:Property is generated. In template mode, SMT/Cardinality qualifiers (ZeroToOne, One, ZeroToMany, OneToMany) are also attached. Abstract Properties and Properties without a Characteristic are excluded from the mapping.
 
-| samm:Property.urn  | aas:ConceptDescription.identification.id, aas:Property.semanticId|
+| samm:Property.name  | aas:SubmodelElement.idShort | The idShort is derived from the Property's payloadName, which falls back to the Property name if no payloadName is defined, and is sanitized as described above. SubmodelElements that are direct children of an aas:SubmodelElementList carry no idShort.
 
-| samm:Property.preferredName   | aas:Property.displayName  |
+| samm:Property.urn  | aas:ConceptDescription.id, aas:SubmodelElement.semanticId | Always used as the id of the generated ConceptDescription. It is used as semanticId for aas:Property, aas:MultiLanguageProperty and aas:ReferenceElement, and for aas:SubmodelElementList only if the Collection Characteristic is named. For Entity-typed Properties, the semanticId of the aas:SubmodelElementCollection is the Entity URN, and the aas:SubmodelElementList generated for samm-c:Either carries no semanticId.
 
-| samm:Property.description   | aas:Property.description  |  Note: Also mapped to aas:DataSpecificationIEC61360.definition of the aas:ConceptDescription of this property
+| samm:Property.preferredName   | aas:SubmodelElement.displayName  | Mapped to displayName on the SubmodelElement. Also mapped to displayName and IEC61360 preferredName on the ConceptDescription.
 
-| samm:Property.exampleValue  |aas:Property.value  |
+| samm:Property.description   | aas:ConceptDescription (IEC61360 definition), aas:SubmodelElement.description  | Mapped to aas:DataSpecificationIEC61360.definition of the ConceptDescription. Also mapped to description on complex SubmodelElements (Collection, List, MultiLanguageProperty, ReferenceElement), but omitted on scalar aas:Property.
 
-| samm:Characteristic.dataType  | aas:Property.valueType |
+| samm:Property.exampleValue  | aas:Property.value  | In templates, exampleValue is used as aas:Property.value and added as an SMT/ExampleValue qualifier of kind TemplateQualifier. When data is provided, the real value is used and no qualifiers are generated.
 
-| **samm:Operation** |  Operation  | in/out parameters are not used in SAMM so the mapping only generates input variables and output variables in AAS
+| samm:Characteristic.dataType  | aas:Property.valueType | Mapped to aas:Property.valueType using a fixed XSD type mapping, where types without explicit mapping default to xsd:string. The dataType of the DataSpecificationIEC61360 in the ConceptDescription is set accordingly, defaulting to STRING. For aas:SubmodelElementList, the typeValueListElement is SubmodelElementCollection in template mode and SubmodelElement when aspect data is supplied; if the element type is an Entity, its URN is used as semanticIdListElement.
 
-| xref:samm-specification:ROOT:characteristics.adoc#characteristic-characteristic[**samm-c:Characteristic**]  | aas:SubmodelElement, aas:ConceptDescription  | Characteristics in SAMM define the semantics of a property, which includes there types as well as links to further definitions (standards, dictionaries, etc), a natural language description and name in different languages. Type and description are separated in AAS, which is why there is not a one-to-one mapping of a Characteristic to one element in AAS but rather Characteristics are used in the mapping of Properties, first, to guide the generation process and, second, to capture semantics in ConceptDescriptions of properties with data specification "DataSpecificationIEC61360" of the AAS.
+| **samm:Operation** |  aas:Operation  | in/out parameters are not used in SAMM so the mapping only generates input variables and output variables in AAS. A ConceptDescription is also created.
 
-| xref:samm-specification:ROOT:characteristics.adoc#collection-characteristic[**samm-c:Collection**] | aas:SubmodelElementList, aas:ConceptDescription  | The general remarks to Characteristics apply also to Collection type Characteristics. However, properties referencing Collections are mapped to SubmodelElementLists. Specific properties of collections are mapped. samm:Set is unique, samm:SortedSet is unique and sorted, samm:List is sorted.
+| xref:samm-specification:ROOT:characteristics.adoc#characteristic-characteristic[**samm-c:Characteristic**]  | aas:SubmodelElement, aas:ConceptDescription  | Characteristics in SAMM define the meaning and type of a property. In AAS, type and description are separated. Characteristics help create the SubmodelElements and fill the ConceptDescriptions (with DataSpecificationIEC61360).
+
+| xref:samm-specification:ROOT:characteristics.adoc#collection-characteristic[**samm-c:Collection**] | aas:SubmodelElementList, aas:ConceptDescription  | The general remarks to Characteristics apply also to Collection type Characteristics. Properties referencing Collections (including samm-c:List, samm-c:Set, samm-c:SortedSet, and samm-c:TimeSeries) are mapped to SubmodelElementLists with orderRelevant set to false. Uniqueness and sorting constraints are not represented in AAS. When aspect data is supplied and the element type is a scalar, all values are serialized into a single aas:Blob with content type text/plain and comma-separated values.
 
 | xref:samm-specification:ROOT:characteristics.adoc#quantifiable-characteristic[**samm-c:Quantifiable**]  | aas:SubmodelElement, aas:ConceptDescription | The general remarks to Characteristics apply also to Quantifiable type Characteristics. Quantifiables (also Duration and Measurement) reference a unit, which is added to the ConceptDescription corresponding the mapped Characteristic.
 
-| xref:samm-specification:ROOT:characteristics.adoc#either-characteristic[**samm-c:Either**]  | aas:SubmodelElement, aas:ConceptDescription | The general remarks to Characteristics apply also to Either. However, the Either characteristic has two distinct entries of which one is to be selected. This concept is not present in AAS. Thus, both entries will be written to a Submodel template, where one has to be ignored.
+| xref:samm-specification:ROOT:characteristics.adoc#either-characteristic[**samm-c:Either**]  | aas:SubmodelElementList, aas:ConceptDescription | The Either characteristic has two distinct entries of which one is to be selected. When generating templates, both entries are written to a SubmodelElementList. When generating with instance data, only the present side is generated.
 
 | xref:samm-specification:ROOT:characteristics.adoc#trait-characteristic[**samm-c:Trait**]  | aas:SubmodelElement, aas:ConceptDescription | The general remarks to Characteristics apply also to Trait. However, the constraint of a trait will be ignored and only the base type will be evaluated, which will act as the characteristic of a property.
 
 | xref:samm-specification:ROOT:characteristics.adoc#code-characteristic[**samm-c:Code**] | aas:SubmodelElement, aas:ConceptDescription | Similar to plain Characteristic.
 
-| xref:samm-specification:ROOT:characteristics.adoc#structured-value-characteristic[**samm-c:StructuredValue**]  | aas:SubmodelElement, aas:ConceptDescription | The general remarks to Characteristics apply also to StructuredValue. However, AAS has no concpet like deconstruction rule. Thus, the deconstruction rule and the sub properties of the deconstruction entity will be ignored and only the Characteristic is mapped.
+| xref:samm-specification:ROOT:characteristics.adoc#reference-characteristic[**samm-c:Reference**] | aas:ReferenceElement, aas:ConceptDescription | Properties referencing a Reference characteristic are mapped to an aas:ReferenceElement. Its value is an external global reference built from the property value, or from the exampleValue when a template is generated; if neither is available, no value is set.
+
+| xref:samm-specification:ROOT:characteristics.adoc#structured-value-characteristic[**samm-c:StructuredValue**]  | aas:SubmodelElement, aas:ConceptDescription | The general remarks to Characteristics apply also to StructuredValue. AAS has no concept like deconstruction rule. Thus, the deconstruction rule is ignored and only the Characteristic is mapped.
 
 | xref:samm-specification:ROOT:characteristics.adoc#enumeration-characteristic[**samm-c:Enumeration**]  | aas:SubmodelElement, aas:ConceptDescription | The general remarks to Characteristics apply also to Enumerations. Additionally, the values of an Enumeration are mapped to a valueList of a DataSpecificationIEC61360.
 
 | xref:samm-specification:ROOT:characteristics.adoc#state-characteristic[**samm-c:State**]  | aas:SubmodelElement, aas:ConceptDescription | Same as Enumeration.
 
-| xref:samm-specification:ROOT:characteristics.adoc#MultiLanguageText[samm-c:MultiLanguageText]  | aas:MultiLanguageProperty | if a MultiLanguageText is used in SAMM it is mapped to the MultiLanguageProperty in AAS.
+| xref:samm-specification:ROOT:characteristics.adoc#multi-language-text-characteristic[**samm-c:MultiLanguageText**]  | aas:MultiLanguageProperty, aas:ConceptDescription | Every Property with the data type rdf:langString, as used by MultiLanguageText, is mapped to a MultiLanguageProperty in AAS. Its localized values are taken from the aspect data when it is supplied.
 |===
 
 == Known Limitations
@@ -81,8 +88,11 @@ The AAS Generator implements a base set of features, which are mapped from SAMM 
 However, there are still limitations:
 
 * Predefined entity mapping (FileResource would be mapped to aas:File)
-* samm-c:Either is mapped to aas:SubmodelElementCollection with two entries for left and right side
+* samm-c:Either is mapped to aas:SubmodelElementList with two entries for left and right side
 * Recursive optional properties of SAMM model are not included in output but dropped straight away
+* Abstract Properties and Properties without a Characteristic are skipped during mapping
+* Constraints of samm-c:Trait as well as uniqueness and ordering of collections are not represented in AAS
+* Collections of scalar values are represented as a single aas:Blob when aspect data is supplied
 
 [[translate-aspect-model-to-aas]]
 == Translate Aspect Model to AAS
@@ -135,5 +145,5 @@ include::example$GenerateAspectFromAas.java[tags=imports]
 include::example$GenerateAspectFromAas.java[tags=generate]
 ----
 
-To include the translator artifact, use the same same dependencies as shown above in section
+To include the translator artifact, use the same dependencies as shown above in section
 <<translate-aspect-model-to-aas>>.
