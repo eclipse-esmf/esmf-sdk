@@ -249,7 +249,7 @@ public class AspectModelValidator implements Validator {
       return Stream.concat( builtInValidators, extensionValidators )
             .map( validator -> validator.get().validateModel( model ) )
             .filter( result -> !result.isEmpty() )
-            .findFirst()
+            .reduce( ViolationReport::merge )
             .orElse( ViolationReport.EMPTY );
    }
 
