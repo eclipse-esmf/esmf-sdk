@@ -17,19 +17,27 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.esmf.turtle.languageserver.aspect.TestUtil.emptyParsedDocument;
 import static org.eclipse.esmf.turtle.languageserver.aspect.TestUtil.parsedDocument;
 
+import java.net.URI;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import org.eclipse.esmf.aspectmodel.ViolationReport;
 import org.eclipse.esmf.aspectmodel.resolver.ModelResolutionViolation;
+import org.eclipse.esmf.aspectmodel.shacl.violation.MinCountViolation;
 import org.eclipse.esmf.aspectmodel.validation.InvalidLexicalValueViolation;
 import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
+import org.eclipse.esmf.aspectmodel.validation.RegularExpressionConstraintViolation;
 import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.test.InvalidTestAspect;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.treesitterturtle.TurtleViolationCode;
 import org.eclipse.esmf.turtle.languageserver.aspect.diagnostic.TestViolation;
+import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.DiagnosticMapper;
+import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 
+import org.eclipse.lsp4j.Diagnostic;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
@@ -157,5 +165,62 @@ class AspectDocumentValidationServiceTest {
                      .doesNotContain( "AspectLoadingException" )
                      .doesNotContain( "\tat" );
             } );
+   }
+
+   @Test
+   void measurementWithoutUnitIsMappedToDiagnosticAtTheMeasurementDefinition() {
+      final AspectModelValidationService service = new AspectModelValidationService();
+      final ParsedDocument document = parsedDocument( "AspectWithMeasurementWithoutUnit.ttl", """
+         @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+         @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+         :InvalidMeasurement a samm-c:Measurement ;
+            samm:dataType xsd:positiveInteger ;
+            samm:description "Specifies the mileage of the vehicle in kilometers."@en .
+         """ );
+
+      final ViolationReport report = service.validate( document );
+      assertThat( report.violations() ).singleElement()
+            .isInstanceOfSatisfying( MinCountViolation.class,
+                  violation -> assertThat( violation.message() ).contains( "unit" ) );
+
+      final Map<URI, List<Diagnostic>> diagnostics = new DiagnosticMapper().apply( document.sourceDocument(), report );
+      assertThat( diagnostics.get( document.getUri() ) ).singleElement().satisfies( diagnostic -> {
+         assertThat( diagnostic.getRange().getStart().getLine() ).isEqualTo( 5 );
+         assertThat( diagnostic.getRange().getStart().getCharacter() ).isZero();
+      } );
+   }
+
+   @Test
+   void violationsFoundByDifferentValidatorsAreProperlyReported() {
+      final AspectModelValidationService service = new AspectModelValidationService();
+      final ParsedDocument document = parsedDocument( "AspectWithMultipleViolations.ttl", """
+         @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+         @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+         :InvalidMeasurement a samm-c:Measurement ;
+            samm:dataType xsd:positiveInteger .
+
+         :InvalidRegexConstraint a samm-c:RegularExpressionConstraint ;
+            samm:value "x(?<named>[a-z])y" .
+         """ );
+
+      final ViolationReport report = service.validate( document );
+
+      assertThat( report.violations() ).hasSize( 2 );
+      assertThat( report.violations() )
+            .anySatisfy( violation -> assertThat( violation ).isInstanceOfSatisfying( MinCountViolation.class, minCountViolation -> {
+               assertThat( minCountViolation.code().code() ).isEqualTo( MinCountViolation.ERROR_CODE );
+               assertThat( minCountViolation.message() ).contains( "unit" );
+            } ) );
+      assertThat( report.violations() ).anySatisfy(
+            violation -> assertThat( violation ).isInstanceOfSatisfying( RegularExpressionConstraintViolation.class, regexViolation -> {
+               assertThat( regexViolation.code().code() ).isEqualTo( RegularExpressionConstraintViolation.ERROR_CODE );
+               assertThat( regexViolation.message() ).contains( "Regular expression" );
+            } ) );
    }
 }
