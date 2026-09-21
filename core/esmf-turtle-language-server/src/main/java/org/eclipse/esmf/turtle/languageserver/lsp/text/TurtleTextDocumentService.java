@@ -156,6 +156,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
       if ( document != null ) {
          validationCoordinator.onDocumentClosed( document );
       }
+      clientNotifier.publishEmptyDiagnostics( uri );
    }
 
    @Override
