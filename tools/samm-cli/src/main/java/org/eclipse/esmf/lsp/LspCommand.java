@@ -47,6 +47,7 @@ public class LspCommand extends AbstractCommand {
 
    @Override
    public void run() {
+      loggingMixin.ensureLspDiagnostics();
       if ( useStdio ) {
          TurtleLanguageServer.launchForStdio();
          return;
