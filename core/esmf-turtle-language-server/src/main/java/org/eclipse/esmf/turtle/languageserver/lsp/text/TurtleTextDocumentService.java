@@ -22,19 +22,22 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.esmf.aspectmodel.ViolationReport;
 import org.eclipse.esmf.turtle.languageserver.aspect.navigation.AspectCrossFileDefinitionService;
 import org.eclipse.esmf.turtle.languageserver.lsp.ResolutionStrategyService;
 import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.DiagnosticMapper;
-import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.ViolationProvider;
 import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.ResolutionStrategyAwareViolationProvider;
+import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.ViolationProvider;
 import org.eclipse.esmf.turtle.languageserver.structure.DocumentSymbolService;
 import org.eclipse.esmf.turtle.languageserver.structure.TurtleTokenService;
 import org.eclipse.esmf.turtle.languageserver.turtle.TurtleCompletionService;
 import org.eclipse.esmf.turtle.languageserver.turtle.ValidationCoordinator;
 import org.eclipse.esmf.turtle.languageserver.turtle.navigation.TurtleDefinitionService;
 
+import com.google.common.collect.Streams;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.CompletionParams;
@@ -57,8 +60,6 @@ import org.eclipse.lsp4j.services.TextDocumentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Streams;
-
 public class TurtleTextDocumentService implements TextDocumentService {
    private static final Logger LOG = LoggerFactory.getLogger( TurtleTextDocumentService.class );
 
@@ -78,6 +79,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
             t.setDaemon( true );
             return t;
          } );
+   private final AtomicBoolean closed = new AtomicBoolean();
 
    public TurtleTextDocumentService() {
       clientNotifier = new TextDocumentClientNotifier( new DiagnosticMapper() );
@@ -94,7 +96,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
             aware.setResolutionStrategyService( resolutionStrategyService );
          }
       } );
-      validationCoordinator = new ValidationCoordinator( violationProviders, clientNotifier::publishDiagnostics );
+      validationCoordinator = new ValidationCoordinator( violationProviders, clientNotifier::publishDiagnostics, turtleParserService );
    }
 
    public void connect( final LanguageClient client ) {
@@ -106,8 +108,20 @@ public class TurtleTextDocumentService implements TextDocumentService {
    }
 
    public void shutdown() {
+      if ( !closed.compareAndSet( false, true ) ) {
+         return;
+      }
       validationCoordinator.close();
-      asyncExecutor.shutdown();
+      asyncExecutor.shutdownNow();
+      try {
+         if ( !asyncExecutor.awaitTermination( 5, TimeUnit.SECONDS ) ) {
+            LOG.warn( "Timed out waiting for language-server request workers to stop" );
+         }
+      } catch ( final InterruptedException exception ) {
+         Thread.currentThread().interrupt();
+      }
+      documents.clear();
+      turtleParserService.close();
    }
 
    public CompletableFuture<ViolationReport> validateDocument( final String uri ) {
@@ -155,6 +169,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
       final Document document = documents.remove( uri );
       if ( document != null ) {
          validationCoordinator.onDocumentClosed( document );
+         turtleParserService.remove( document );
       }
    }
 
@@ -181,8 +196,8 @@ public class TurtleTextDocumentService implements TextDocumentService {
       if ( document == null ) {
          return CompletableFuture.completedFuture( new SemanticTokens( List.of() ) );
       }
-      final ParsedDocument parsedDocument = turtleParserService.apply( document );
-      return CompletableFuture.supplyAsync( () -> tokenService.buildSemanticTokens( parsedDocument ), asyncExecutor );
+      return CompletableFuture.supplyAsync(
+            () -> turtleParserService.withParsedDocument( document, tokenService::buildSemanticTokens ), asyncExecutor );
    }
 
    @Override
@@ -194,17 +209,18 @@ public class TurtleTextDocumentService implements TextDocumentService {
       }
 
       return CompletableFuture.supplyAsync( () -> {
-         final ParsedDocument parsedDocument = turtleParserService.apply( document );
-         Optional<Location> declaration = turtleDefinitionService.findDefinition( parsedDocument, params.getPosition() );
+         return turtleParserService.withParsedDocument( document, parsedDocument -> {
+            Optional<Location> declaration = turtleDefinitionService.findDefinition( parsedDocument, params.getPosition() );
 
-         if ( declaration.isEmpty() && aspectCrossFileDefinitionService != null ) {
-            declaration = aspectCrossFileDefinitionService.findDefinition( parsedDocument, params.getPosition() );
-         }
+            if ( declaration.isEmpty() && aspectCrossFileDefinitionService != null ) {
+               declaration = aspectCrossFileDefinitionService.findDefinition( parsedDocument, params.getPosition() );
+            }
 
-         return declaration
-               .<Either<List<? extends Location>, List<? extends LocationLink>>>map(
-                     location -> Either.forLeft( List.of( location ) ) )
-               .orElseGet( () -> Either.forLeft( List.of() ) );
+            return declaration
+                  .<Either<List<? extends Location>, List<? extends LocationLink>>>map(
+                        location -> Either.forLeft( List.of( location ) ) )
+                  .orElseGet( () -> Either.forLeft( List.of() ) );
+         } );
       }, asyncExecutor );
    }
 
@@ -216,8 +232,9 @@ public class TurtleTextDocumentService implements TextDocumentService {
       if ( document == null ) {
          return CompletableFuture.completedFuture( List.of() );
       }
-      return CompletableFuture.supplyAsync( () -> documentSymbolService.symbols( document ).stream()
-            .map( Either::<SymbolInformation, DocumentSymbol>forRight ).toList(),
+      return CompletableFuture.supplyAsync( () -> turtleParserService.withParsedDocument( document,
+            parsedDocument -> documentSymbolService.symbols( parsedDocument ).stream()
+                  .map( Either::<SymbolInformation, DocumentSymbol>forRight ).toList() ),
             asyncExecutor );
    }
 
@@ -229,8 +246,8 @@ public class TurtleTextDocumentService implements TextDocumentService {
          return CompletableFuture.completedFuture( Either.forLeft( List.of() ) );
       }
       return CompletableFuture.supplyAsync( () -> {
-         final ParsedDocument parsedDocument = turtleParserService.apply( document );
-         return Either.forLeft( turtleCompletionService.complete( parsedDocument, position ) );
+         return turtleParserService.withParsedDocument( document,
+               parsedDocument -> Either.forLeft( turtleCompletionService.complete( parsedDocument, position ) ) );
       }, asyncExecutor );
    }
 }
