@@ -1,0 +1,35 @@
+#**
+ ~ Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+ ~
+ ~ See the AUTHORS file(s) distributed with this work for additional
+ ~ information regarding authorship.
+ ~
+ ~ This Source Code Form is subject to the terms of the Mozilla Public
+ ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+ ~ file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ ~
+ ~ SPDX-License-Identifier: MPL-2.0
+ *#
+
+## Phase 2: Enum is not yet supported
+
+#macro( tsEnumerationClassBody )
+
+/**
+* Generated class ${enumeration.name} (${elementUrn}).
+* Generated "$codeGeneratorName", date = "$codeGeneratorDate"
+*#if ( $enumeration.getDescription( $localeEn ) ) $enumeration.getDescription( $localeEn )#end
+*/
+export const ${enumeration.name} = {
+    #foreach( $value in $enumeration.values )
+        $util.generateEnumKey($value) : $util.generateEnumValue($value, $codeGenerationConfig),
+    #end
+
+    #if( $State.isAssignableFrom( $enumeration.class ) )
+    getDefaultValue: function () {
+        #set( $state = $util.castToState( $enumeration ) )
+        return this. $util.generateEnumKey( $state.getDefaultValue() );
+    }
+    #end
+} as const;
+#end
