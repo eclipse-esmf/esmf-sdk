@@ -32,8 +32,6 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.jena.rdf.model.Model;
-
 import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
@@ -45,6 +43,7 @@ import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
 import org.eclipse.esmf.util.download.Download;
 
 import io.vavr.control.Try;
+import org.apache.jena.rdf.model.Model;
 
 /**
  * Loads an input source into a {@link RawAspectModelFile}, i.e., an Aspect Model file that does not
@@ -59,8 +58,8 @@ public class AspectModelFileLoader {
     * @return the loaded file content
     */
    public static RawAspectModelFile load( final File file ) {
-      try {
-         final String stringContent = content( new FileInputStream( file ), file.toURI() );
+      try ( final InputStream inputStream = new FileInputStream( file ) ) {
+         final String stringContent = content( inputStream, file.toURI() );
          final RawAspectModelFile fromString = load( stringContent, file.toURI() );
          return new RawAspectModelFile( stringContent, fromString.sourceModel(), fromString.headerComment(), file.toURI() );
       } catch ( final ModelResolutionException exception ) {
@@ -76,6 +75,12 @@ public class AspectModelFileLoader {
          throw new ModelResolutionException( ModelResolutionViolationBuilder.builder()
                .location( file.toURI() )
                .message( "File not found: " + file )
+               .cause( Optional.of( exception ) )
+               .build() );
+      } catch ( final IOException exception ) {
+         throw new ModelResolutionException( ModelResolutionViolationBuilder.builder()
+               .location( file.toURI() )
+               .message( "Could not load content from input stream" )
                .cause( Optional.of( exception ) )
                .build() );
       }
@@ -114,7 +119,7 @@ public class AspectModelFileLoader {
    /**
     * Loads the content of an AspectModelFile from an input stream
     *
-    * @param inputStream the input stream
+    * @param inputStream the caller-owned input stream; this method does not close it
     * @param sourceLocation the logical location of the file source
     * @return the loaded file content
     */
@@ -167,9 +172,9 @@ public class AspectModelFileLoader {
             throw new ModelResolutionException( "Can not load model from URL", exception );
          }
       }
-      try {
+      try ( final InputStream inputStream = url.openStream() ) {
          // Other URLs (e.g. resource://) we just load using openStream()
-         return load( url.openStream(), url.toURI() );
+         return load( inputStream, url.toURI() );
       } catch ( final IOException | URISyntaxException exception ) {
          throw new ModelResolutionException( "Can not load model from URL", exception );
       }
