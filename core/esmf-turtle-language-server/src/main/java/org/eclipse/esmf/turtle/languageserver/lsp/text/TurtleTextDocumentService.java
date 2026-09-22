@@ -171,6 +171,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
          validationCoordinator.onDocumentClosed( document );
          turtleParserService.remove( document );
       }
+      clientNotifier.publishEmptyDiagnostics( uri );
    }
 
    @Override
