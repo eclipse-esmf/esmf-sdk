@@ -27,6 +27,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.esmf.aspectmodel.ViolationReport;
 import org.eclipse.esmf.turtle.languageserver.aspect.navigation.AspectCrossFileDefinitionService;
+import org.eclipse.esmf.turtle.languageserver.graphical.GraphicalViewService;
+import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderParams;
+import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderResult;
+import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewResolveAttributeTargetParams;
+import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewResolveAttributeTargetResult;
+import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewResolveTargetParams;
+import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewResolveTargetResult;
 import org.eclipse.esmf.turtle.languageserver.lsp.ResolutionStrategyService;
 import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.DiagnosticMapper;
 import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.ResolutionStrategyAwareViolationProvider;
@@ -71,6 +78,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
    private final TreeSitterTurtleParserService turtleParserService;
    private final TurtleTokenService tokenService;
    private final DocumentSymbolService documentSymbolService;
+   private final GraphicalViewService graphicalViewService;
    private final ResolutionStrategyService resolutionStrategyService = new ResolutionStrategyService();
    private final Map<String, Document> documents = new ConcurrentHashMap<>();
    private final ExecutorService asyncExecutor = Executors.newCachedThreadPool(
@@ -88,6 +96,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
       turtleParserService = new TreeSitterTurtleParserService();
       tokenService = new TurtleTokenService();
       aspectCrossFileDefinitionService = new AspectCrossFileDefinitionService( turtleParserService, documents, resolutionStrategyService );
+      graphicalViewService = new GraphicalViewService( documents, turtleParserService, resolutionStrategyService );
       documentSymbolService = new DocumentSymbolService( turtleParserService );
       final List<ViolationProvider> violationProviders =
             Streams.stream( ServiceLoader.load( ViolationProvider.class ).iterator() ).toList();
@@ -112,6 +121,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
          return;
       }
       validationCoordinator.close();
+      graphicalViewService.close();
       asyncExecutor.shutdownNow();
       try {
          if ( !asyncExecutor.awaitTermination( 5, TimeUnit.SECONDS ) ) {
@@ -122,6 +132,19 @@ public class TurtleTextDocumentService implements TextDocumentService {
       }
       documents.clear();
       turtleParserService.close();
+   }
+
+   public CompletableFuture<GraphicalViewRenderResult> renderGraphicalView( final GraphicalViewRenderParams params ) {
+      return graphicalViewService.render( params );
+   }
+
+   public CompletableFuture<GraphicalViewResolveTargetResult> resolveGraphicalViewTarget( final GraphicalViewResolveTargetParams params ) {
+      return graphicalViewService.resolveTarget( params );
+   }
+
+   public CompletableFuture<GraphicalViewResolveAttributeTargetResult> resolveGraphicalViewAttributeTarget(
+         final GraphicalViewResolveAttributeTargetParams params ) {
+      return graphicalViewService.resolveAttributeTarget( params );
    }
 
    public CompletableFuture<ViolationReport> validateDocument( final String uri ) {
