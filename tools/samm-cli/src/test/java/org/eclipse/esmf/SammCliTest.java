@@ -789,6 +789,23 @@ class SammCliTest extends SammCliAbstractTest {
    }
 
    @Test
+   void testAspectToJsonWithRandomTimestamp() throws IOException {
+      final String input = inputFile( TestAspect.ASPECT_WITH_SIMPLE_TYPES ).getAbsolutePath();
+      final ExecutionResult defaultResult = sammCli.runAndExpectSuccess(
+            "--disable-color", "aspect", input, "to", "json" );
+      final ExecutionResult randomResult = sammCli.runAndExpectSuccess(
+            "--disable-color", "aspect", input, "to", "json", "--random-timestamp" );
+
+      final ObjectMapper objectMapper = new ObjectMapper();
+      final JsonNode defaultPayload = objectMapper.readTree( defaultResult.stdout() );
+      final JsonNode randomPayload = objectMapper.readTree( randomResult.stdout() );
+      assertThat( randomPayload.get( "dateTimeProperty" ) ).isNotEqualTo( defaultPayload.get( "dateTimeProperty" ) );
+      assertThat( randomPayload.get( "dateTimeStampProperty" ) ).isNotEqualTo( defaultPayload.get( "dateTimeStampProperty" ) );
+      assertThat( defaultResult.stderr() ).isEmpty();
+      assertThat( randomResult.stderr() ).isEmpty();
+   }
+
+   @Test
    void testAspectToJsonLdToFile( @TempDir final Path outputDirectory ) {
       final File targetFile = outputFile( outputDirectory, "output.json" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "jsonld", "-o",

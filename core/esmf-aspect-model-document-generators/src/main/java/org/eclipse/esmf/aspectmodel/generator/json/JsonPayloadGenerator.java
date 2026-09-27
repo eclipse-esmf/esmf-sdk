@@ -19,6 +19,7 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -84,6 +85,8 @@ public class JsonPayloadGenerator<S extends StructureElement>
       extends JsonGenerator<S, JsonPayloadGenerationConfig, JsonNode, JsonPayloadArtifact>
       implements AspectVisitor<JsonNode, JsonPayloadGenerator.Context> {
    private static final Logger LOG = LoggerFactory.getLogger( JsonPayloadGenerator.class );
+   private static final long RANDOM_TIMESTAMP_UPPER_BOUND = LocalDateTime.of( 2100, 1, 1, 0, 0 )
+         .toEpochSecond( ZoneOffset.UTC );
    public static final LocalDateTime DEFAULT_TIMESTAMP = LocalDateTime.of( 1970, 1, 1, 0, 0, 0 );
    public static final JsonPayloadGenerationConfig DEFAULT_CONFIG = JsonPayloadGenerationConfigBuilder.builder().build();
 
@@ -96,6 +99,10 @@ public class JsonPayloadGenerator<S extends StructureElement>
    }
 
    private LocalDateTime getReferenceDateTime() {
+      if ( config.randomTimestamp() ) {
+         final long epochSecond = config.randomStrategy().nextLong( RANDOM_TIMESTAMP_UPPER_BOUND );
+         return LocalDateTime.ofEpochSecond( epochSecond, 0, ZoneOffset.UTC );
+      }
       if ( config.currentTimestamp() ) {
          return LocalDateTime.now();
       }
