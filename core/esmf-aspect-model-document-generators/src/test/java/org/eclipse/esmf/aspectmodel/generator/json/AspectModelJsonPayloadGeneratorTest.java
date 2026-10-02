@@ -37,6 +37,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -94,6 +95,7 @@ import org.eclipse.esmf.aspectmodel.java.QualifiedName;
 import org.eclipse.esmf.aspectmodel.java.pojo.AspectModelJavaGenerator;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.datatype.SammType;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 import org.eclipse.esmf.test.shared.compiler.JavaCompiler;
@@ -103,7 +105,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import tools.jackson.core.StreamReadFeature;
 import tools.jackson.databind.JsonNode;
@@ -113,6 +117,47 @@ import tools.jackson.databind.json.JsonMapper;
 class AspectModelJsonPayloadGeneratorTest {
    private static final String PACKAGE = "org.eclipse.esmf.test.generatedtestclasses";
    private static DatatypeFactory datatypeFactory;
+
+   static Stream<Arguments> timestampTypes() {
+      return Stream.of(
+            Arguments.of( SammType.DATE, "1970-01-01Z" ),
+            Arguments.of( SammType.TIME, "00:00:00.000Z" ),
+            Arguments.of( SammType.DATE_TIME, "1970-01-01T00:00:00.000Z" ),
+            Arguments.of( SammType.DATE_TIME_STAMP, "1970-01-01T00:00:00.000Z" ),
+            Arguments.of( SammType.G_YEAR, "1970" ),
+            Arguments.of( SammType.G_MONTH, "--01" ),
+            Arguments.of( SammType.G_DAY, "---01" ),
+            Arguments.of( SammType.G_YEAR_MONTH, "1970-01" ),
+            Arguments.of( SammType.G_MONTH_DAY, "--01-01" ) );
+   }
+
+   @ParameterizedTest
+   @MethodSource( "timestampTypes" )
+   void testRandomTimestamps( final SammType<?> type, final String defaultValue ) {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
+      final JsonPayloadGenerationConfig config = JsonPayloadGenerationConfigBuilder.builder()
+            .randomTimestamp( true )
+            .randomStrategy( new Random( 0 ) )
+            .build();
+      final JsonPayloadGenerator<Aspect> generator = new JsonPayloadGenerator<>( aspect, config );
+      final List<String> values = IntStream.range( 0, 100 )
+            .mapToObj( i -> type.accept( generator,
+                  new JsonPayloadGenerator.Context( List.of(), Set.of(), Map.of(), false ) ).asText() )
+            .toList();
+
+      assertThat( values ).allMatch( type::isValid );
+      assertThat( values.stream().distinct().count() ).isGreaterThan( 1 );
+      assertThat( values ).anyMatch( value -> !value.equals( defaultValue ) );
+
+      final JsonPayloadGenerationConfig sameSeedConfig = JsonPayloadGenerationConfigBuilder.builder()
+            .randomTimestamp( true )
+            .randomStrategy( new Random( 0 ) )
+            .build();
+      final JsonPayloadGenerator<Aspect> sameSeedGenerator = new JsonPayloadGenerator<>( aspect, sameSeedConfig );
+      assertThat( type.accept( sameSeedGenerator,
+            new JsonPayloadGenerator.Context( List.of(), Set.of(), Map.of(), false ) ).asText() )
+                  .isEqualTo( values.getFirst() );
+   }
 
    @BeforeAll
    static void setup() {

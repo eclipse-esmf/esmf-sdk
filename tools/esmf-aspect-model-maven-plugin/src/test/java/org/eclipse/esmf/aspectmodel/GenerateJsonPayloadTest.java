@@ -20,6 +20,9 @@ import org.apache.maven.api.plugin.testing.InjectMojo;
 import org.apache.maven.api.plugin.testing.MojoTest;
 import org.junit.jupiter.api.Test;
 
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
+
 @MojoTest
 public class GenerateJsonPayloadTest extends AspectModelMojoTest {
    @Test
@@ -29,5 +32,19 @@ public class GenerateJsonPayloadTest extends AspectModelMojoTest {
    public void testGenerateJsonPayload( final GenerateJsonPayload generateJsonPayload ) {
       assertThatCode( generateJsonPayload::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "Aspect.json" ) ).exists();
+   }
+
+   @Test
+   @InjectMojo(
+      goal = GenerateJsonPayload.MAVEN_GOAL,
+      pom = "src/test/resources/test-pom-valid-aspect-model-random-timestamp/pom.xml" )
+   public void testGenerateJsonPayloadWithRandomTimestamp( final GenerateJsonPayload generateJsonPayload ) {
+      assertThatCode( generateJsonPayload::execute ).doesNotThrowAnyException();
+      final JsonNode payload = JsonMapper.builder().build()
+            .readTree( generatedFilePath( "AspectWithSimpleTypes.json" ).toFile() );
+      // While there is an extremely rare chance of failure theoretically,
+      // running it again is supposed to result in success almost certainly.
+      assertThat( payload.get( "dateTimeProperty" ).asString() ).isNotEqualTo( "1970-01-01T00:00:00.000Z" );
+      assertThat( payload.get( "dateTimeStampProperty" ).asString() ).isNotEqualTo( "1970-01-01T00:00:00.000Z" );
    }
 }
