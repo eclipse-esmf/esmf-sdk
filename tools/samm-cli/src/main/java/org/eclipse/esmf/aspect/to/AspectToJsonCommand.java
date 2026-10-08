@@ -62,6 +62,12 @@ public class AspectToJsonCommand extends AbstractCommand {
       description = "Generate current timestamp dynamically instead of using the fixed default timestamp." )
    private boolean currentTimestamp = false;
 
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+      names = { "--random-timestamp" },
+      description = "Generate random date/time values instead of using the fixed default timestamp." )
+   private boolean randomTimestamp = false;
+
    @CommandLine.Option(
       names = { "--ignore-example-value" },
       description = "Ignore example values defined in the Aspect Model and always generate random values." )
@@ -85,6 +91,7 @@ public class AspectToJsonCommand extends AbstractCommand {
             .addTypeAttributeForEntityInheritance( addTypeAttribute )
             .failOnInvalidRegularExpressions( failOnEmptyExampleValue )
             .currentTimestamp( currentTimestamp )
+            .randomTimestamp( randomTimestamp )
             .ignoreExampleValue( ignoreExampleValue )
             .build();
 
