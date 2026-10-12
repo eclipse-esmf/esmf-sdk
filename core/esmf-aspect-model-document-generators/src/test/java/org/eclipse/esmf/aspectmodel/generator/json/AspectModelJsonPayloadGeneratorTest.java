@@ -372,6 +372,40 @@ class AspectModelJsonPayloadGeneratorTest {
    }
 
    @Test
+   void testGenerateDiverseValidYearMonthDurations() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
+      final JsonPayloadGenerationConfig config = JsonPayloadGenerationConfigBuilder.builder()
+            .randomStrategy( new Random( 0 ) )
+            .build();
+      final JsonPayloadGenerator<Aspect> generator = new JsonPayloadGenerator<>( aspect, config );
+
+      final Set<String> generatedValues = IntStream.range( 0, 100 )
+            .mapToObj( ignored -> SammType.YEAR_MONTH_DURATION.accept( generator, null ).textValue() )
+            .collect( Collectors.toSet() );
+
+      assertThat( generatedValues )
+            .hasSizeGreaterThan( 10 )
+            .allMatch( SammType.YEAR_MONTH_DURATION::isValid );
+   }
+
+   @Test
+   void testGenerateDiverseValidDayTimeDurations() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
+      final JsonPayloadGenerationConfig config = JsonPayloadGenerationConfigBuilder.builder()
+            .randomStrategy( new Random( 0 ) )
+            .build();
+      final JsonPayloadGenerator<Aspect> generator = new JsonPayloadGenerator<>( aspect, config );
+
+      final Set<String> generatedValues = IntStream.range( 0, 100 )
+            .mapToObj( ignored -> SammType.DAY_TIME_DURATION.accept( generator, null ).textValue() )
+            .collect( Collectors.toSet() );
+
+      assertThat( generatedValues )
+            .hasSizeGreaterThan( 10 )
+            .allMatch( SammType.DAY_TIME_DURATION::isValid );
+   }
+
+   @Test
    void testGenerateJsonForAspectWithStateType() {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES_AND_STATE );
 

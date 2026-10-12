@@ -483,12 +483,22 @@ public class JsonPayloadGenerator<S extends StructureElement>
 
    @Override
    public JsonNode visitXsdYearMonthDuration( final SammType.XsdYearMonthDuration yearMonthDuration, final Context context ) {
-      return JsonNodeFactory.instance.stringNode( randomValueOf( "P10M", "P5Y2M" ) );
+      final String sign = randomValueOf( "", "-" );
+      final int years = randomInt( 0, 100 );
+      final int months = randomInt( 0, 11 );
+      return JsonNodeFactory.instance.stringNode( "%sP%dY%dM".formatted( sign, years, months ) );
    }
 
    @Override
    public JsonNode visitXsdDayTimeDuration( final SammType.XsdDayTimeDuration dayTimeDuration, final Context context ) {
-      return JsonNodeFactory.instance.stringNode( randomValueOf( "P30D", "P1DT5H", "PT1H5M0S" ) );
+      final String sign = randomValueOf( "", "-" );
+      final int days = randomInt( 0, 365 );
+      final int hours = randomInt( 0, 23 );
+      final int minutes = randomInt( 0, 59 );
+      final int seconds = randomInt( 0, 59 );
+      final int milliseconds = randomInt( 0, 999 );
+      return JsonNodeFactory.instance.stringNode(
+            "%sP%dDT%dH%dM%d.%03dS".formatted( sign, days, hours, minutes, seconds, milliseconds ) );
    }
 
    @Override
