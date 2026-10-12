@@ -21,6 +21,7 @@ import org.eclipse.esmf.turtle.languageserver.graphical.source.GraphicalViewSour
 import org.eclipse.esmf.turtle.languageserver.graphical.source.GraphicalViewSourceSnapshot;
 import org.eclipse.esmf.turtle.languageserver.lsp.ResolutionStrategyService;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
+import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TreeSitterTurtleParserService;
 
 import org.eclipse.lsp4j.Location;
@@ -95,8 +96,7 @@ class GraphicalViewTargetResolverTest {
             URI.create( externalUri ) );
       final ResolutionStrategyService strategies = new ResolutionStrategyService() {
          @Override
-         public ResolutionStrategy buildResolutionStrategyForDocument(
-               final org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument ignored ) {
+         public ResolutionStrategy buildResolutionStrategyForDocument( final ParsedDocument ignored ) {
             return fixedStrategy( resolvedFile );
          }
       };

@@ -8,6 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
@@ -20,6 +21,7 @@ import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRe
 import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewResolveTargetWarning;
 import org.eclipse.esmf.turtle.languageserver.lsp.ResolutionStrategyService;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
+import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TreeSitterTurtleParserService;
 
 import org.junit.jupiter.api.Test;
@@ -138,7 +140,7 @@ class GraphicalViewServiceTest {
       return new GraphicalViewService( documents, new TreeSitterTurtleParserService(), new ResolutionStrategyService() );
    }
 
-   private static java.util.List<String> liveGraphicalThreads() {
+   private static List<String> liveGraphicalThreads() {
       return Thread.getAllStackTraces().keySet().stream().filter( Thread::isAlive ).map( Thread::getName )
             .filter( name -> name.startsWith( "graphical-view-" ) ).toList();
    }
@@ -148,7 +150,7 @@ class GraphicalViewServiceTest {
       private final CountDownLatch release = new CountDownLatch( 1 );
 
       @Override
-      public org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument apply( final Document document ) {
+      public ParsedDocument apply( final Document document ) {
          started.countDown();
          try {
             release.await();

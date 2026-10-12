@@ -30,8 +30,25 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.jena.datatypes.RDFDatatype;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.XSD;
+import org.apache.parquet.column.page.PageReadStore;
+import org.apache.parquet.example.data.Group;
+import org.apache.parquet.example.data.simple.convert.GroupRecordConverter;
+import org.apache.parquet.hadoop.ParquetFileReader;
+import org.apache.parquet.io.ColumnIOFactory;
+import org.apache.parquet.io.LocalInputFile;
+import org.apache.parquet.io.MessageColumnIO;
+import org.apache.parquet.io.RecordReader;
+import org.apache.parquet.schema.MessageType;
 
 import org.eclipse.esmf.aspectmodel.generator.ParquetArtifact;
 import org.eclipse.esmf.metamodel.Aspect;
@@ -48,22 +65,14 @@ import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
 import org.eclipse.esmf.test.TestResources;
 
-import com.google.common.collect.Lists;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.jena.datatypes.RDFDatatype;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.vocabulary.XSD;
-import org.apache.parquet.example.data.Group;
-import org.apache.parquet.hadoop.ParquetFileReader;
-import org.apache.parquet.io.LocalInputFile;
-import org.apache.parquet.schema.MessageType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import com.google.common.collect.Lists;
 
 /**
  * Test suite for AspectModelParquetPayloadGenerator.
@@ -585,7 +594,7 @@ class AspectModelParquetPayloadGeneratorTest {
    void testGenerateParquetWithCustomConfig() throws IOException {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
       final ParquetGenerationConfig config = ParquetGenerationConfigBuilder.builder()
-            .randomStrategy( new java.util.Random( 42 ) )
+            .randomStrategy( new Random( 42 ) )
             .build();
 
       final Path parquetFile = generateParquetForModel( aspect, config );
@@ -877,13 +886,12 @@ class AspectModelParquetPayloadGeneratorTest {
       final LocalInputFile inputFile = new LocalInputFile( parquetFile );
       try ( final ParquetFileReader fileReader = ParquetFileReader.open( inputFile ) ) {
          final MessageType schema = fileReader.getFooter().getFileMetaData().getSchema();
-         final org.apache.parquet.io.ColumnIOFactory columnIoFactory = new org.apache.parquet.io.ColumnIOFactory();
-         final org.apache.parquet.io.MessageColumnIO columnIo = columnIoFactory.getColumnIO( schema );
-         org.apache.parquet.column.page.PageReadStore pages;
+         final ColumnIOFactory columnIoFactory = new ColumnIOFactory();
+         final MessageColumnIO columnIo = columnIoFactory.getColumnIO( schema );
+         PageReadStore pages;
          while ( ( pages = fileReader.readNextRowGroup() ) != null ) {
             final long rowCount = pages.getRowCount();
-            final org.apache.parquet.io.RecordReader<Group> recordReader =
-                  columnIo.getRecordReader( pages, new org.apache.parquet.example.data.simple.convert.GroupRecordConverter( schema ) );
+            final RecordReader<Group> recordReader = columnIo.getRecordReader( pages, new GroupRecordConverter( schema ) );
             for ( long i = 0; i < rowCount; i++ ) {
                records.add( recordReader.read() );
             }
@@ -1064,7 +1072,7 @@ class AspectModelParquetPayloadGeneratorTest {
       return range;
    }
 
-   private static final java.util.Map<Class<?>, Pair<Number, Number>> TEST_RANGES = java.util.Map.of(
+   private static final Map<Class<?>, Pair<Number, Number>> TEST_RANGES = Map.of(
          Byte.class, Pair.of( (byte) -34, (byte) 112 ),
          Short.class, Pair.of( (short) -11856, (short) 27856 ),
          Integer.class, Pair.of( -118560, 278560 ),

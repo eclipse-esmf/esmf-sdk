@@ -50,7 +50,7 @@ class GraphicalViewJsonRpcTransportTest {
 
       try ( final AsynchronousServerSocketChannel listener = AsynchronousServerSocketChannel.open() ) {
          listener.bind( new InetSocketAddress( "localhost", 0 ) );
-         final java.util.concurrent.Future<AsynchronousSocketChannel> accepted = listener.accept();
+         final Future<AsynchronousSocketChannel> accepted = listener.accept();
          try ( final Socket client = new Socket() ) {
             client.connect( (InetSocketAddress) listener.getLocalAddress() );
             client.setSoTimeout( 30_000 );

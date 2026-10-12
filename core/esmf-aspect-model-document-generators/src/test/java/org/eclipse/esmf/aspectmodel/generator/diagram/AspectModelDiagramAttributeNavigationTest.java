@@ -10,21 +10,24 @@ import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.function.Predicate;
+
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.image.PNGTranscoder;
 
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
-import org.apache.batik.transcoder.TranscoderInput;
-import org.apache.batik.transcoder.TranscoderOutput;
-import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -212,7 +215,7 @@ class AspectModelDiagramAttributeNavigationTest {
    }
 
    private static Set<String> markerIds( final Document svg ) {
-      final Set<String> result = new java.util.LinkedHashSet<>();
+      final Set<String> result = new LinkedHashSet<>();
       final NodeList nodes = svg.getElementsByTagName( "*" );
       for ( int i = 0; i < nodes.getLength(); i++ ) {
          final String id = ( (Element) nodes.item( i ) ).getAttribute( "id" );
@@ -241,7 +244,7 @@ class AspectModelDiagramAttributeNavigationTest {
    }
 
    private static Set<String> childNames( final Element element ) {
-      final Set<String> names = new java.util.LinkedHashSet<>();
+      final Set<String> names = new LinkedHashSet<>();
       for ( int i = 0; i < element.getChildNodes().getLength(); i++ ) {
          if ( element.getChildNodes().item( i ) instanceof final Element child ) {
             names.add( child.getTagName() );

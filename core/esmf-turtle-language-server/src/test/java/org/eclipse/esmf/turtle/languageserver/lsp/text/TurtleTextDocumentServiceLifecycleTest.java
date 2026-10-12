@@ -67,7 +67,7 @@ class TurtleTextDocumentServiceLifecycleTest {
       assertThat( ownedThreads() ).isEmpty();
    }
 
-   private static java.util.List<String> ownedThreads() {
+   private static List<String> ownedThreads() {
       return Thread.getAllStackTraces().keySet().stream().filter( Thread::isAlive ).map( Thread::getName )
             .filter( name -> name.startsWith( "semantic-models-async-worker" )
                   || name.startsWith( "semantic-models-validation-" )
