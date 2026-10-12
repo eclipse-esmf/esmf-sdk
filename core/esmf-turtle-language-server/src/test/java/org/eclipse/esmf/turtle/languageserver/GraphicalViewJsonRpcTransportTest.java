@@ -25,10 +25,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TurtleTextDocumentService;
 
@@ -165,8 +167,8 @@ class GraphicalViewJsonRpcTransportTest {
    }
 
    private static Set<String> fieldNames( final JsonNode node ) {
-      return node.properties().stream().map( java.util.Map.Entry::getKey )
-            .collect( java.util.stream.Collectors.toCollection( LinkedHashSet::new ) );
+      return node.properties().stream().map( Map.Entry::getKey )
+            .collect( Collectors.toCollection( LinkedHashSet::new ) );
    }
 
    private JsonNode readResponse( final InputStream input, final int id ) throws Exception {

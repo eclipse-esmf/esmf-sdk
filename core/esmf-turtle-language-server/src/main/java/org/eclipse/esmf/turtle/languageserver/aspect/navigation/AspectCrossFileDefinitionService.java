@@ -15,6 +15,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.resolver.EitherStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategySupport;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
@@ -50,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The resolution strategy is fully injected, making it straightforward to add further
  * strategies in the future (e.g. a GitHub-based strategy) by wrapping them in an
- * {@link org.eclipse.esmf.aspectmodel.resolver.EitherStrategy}.
+ * {@link EitherStrategy}.
  */
 public class AspectCrossFileDefinitionService extends TurtleService {
    private static final Logger LOG = LoggerFactory.getLogger( AspectCrossFileDefinitionService.class );

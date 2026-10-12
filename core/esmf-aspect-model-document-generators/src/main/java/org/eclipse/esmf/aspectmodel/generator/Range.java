@@ -18,6 +18,7 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.esmf.metamodel.BoundDefinition;
 import org.eclipse.esmf.metamodel.Constraint;
 import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.constraint.LengthConstraint;
@@ -115,21 +116,21 @@ public record Range(
                   if ( floatingPoint ) {
                      final Optional<Double> rcMin = rc.getMinValue()
                            .map( v -> getScalarValue( v ).doubleValue() )
-                           .map( v -> org.eclipse.esmf.metamodel.BoundDefinition.GREATER_THAN
+                           .map( v -> BoundDefinition.GREATER_THAN
                                  .equals( rc.getLowerBoundDefinition() ) ? v + EPSILON : v );
                      final Optional<Double> rcMax = rc.getMaxValue()
                            .map( v -> getScalarValue( v ).doubleValue() )
-                           .map( v -> org.eclipse.esmf.metamodel.BoundDefinition.LESS_THAN
+                           .map( v -> BoundDefinition.LESS_THAN
                                  .equals( rc.getUpperBoundDefinition() ) ? v - EPSILON : v );
                      return Optional.of( new Range( rcMin.orElse( null ), rcMax.orElse( null ) ) );
                   }
                   final Optional<BigDecimal> rcMin = rc.getMinValue()
                         .map( Range::getScalarValue )
-                        .map( v -> org.eclipse.esmf.metamodel.BoundDefinition.GREATER_THAN
+                        .map( v -> BoundDefinition.GREATER_THAN
                               .equals( rc.getLowerBoundDefinition() ) ? v.add( BigDecimal.ONE ) : v );
                   final Optional<BigDecimal> rcMax = rc.getMaxValue()
                         .map( Range::getScalarValue )
-                        .map( v -> org.eclipse.esmf.metamodel.BoundDefinition.LESS_THAN
+                        .map( v -> BoundDefinition.LESS_THAN
                               .equals( rc.getUpperBoundDefinition() ) ? v.subtract( BigDecimal.ONE ) : v );
                   return Optional.of( new Range( rcMin.orElse( null ), rcMax.orElse( null ) ) );
                }

@@ -19,6 +19,8 @@ import java.util.stream.Stream;
 import org.eclipse.esmf.aspectmodel.generator.AspectGenerator;
 import org.eclipse.esmf.aspectmodel.generator.DocumentGenerationException;
 import org.eclipse.esmf.aspectmodel.generator.ParquetArtifact;
+import org.eclipse.esmf.aspectmodel.generator.json.AspectModelJsonPayloadGenerator;
+import org.eclipse.esmf.aspectmodel.generator.json.JsonPayloadGenerator;
 import org.eclipse.esmf.metamodel.Aspect;
 
 /**
@@ -31,12 +33,12 @@ import org.eclipse.esmf.metamodel.Aspect;
  * </p>
  * <ul>
  * <li>{@link ParquetPayloadGenerator} — visitor-based payload generation (analogous to
- * {@link org.eclipse.esmf.aspectmodel.generator.json.JsonPayloadGenerator})</li>
+ * {@link JsonPayloadGenerator})</li>
  * <li>{@link ParquetFileWriter} — data extraction, flattening, and Parquet file writing</li>
  * <li>{@link ParquetSchemaMapper} — XSD-to-Parquet type mapping</li>
  * </ul>
  *
- * @see org.eclipse.esmf.aspectmodel.generator.json.AspectModelJsonPayloadGenerator
+ * @see AspectModelJsonPayloadGenerator
  */
 public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, byte[], ParquetGenerationConfig, ParquetArtifact> {
 

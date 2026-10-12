@@ -112,6 +112,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import tools.jackson.core.StreamReadFeature;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 
 class AspectModelJsonPayloadGeneratorTest {
@@ -856,7 +857,7 @@ class AspectModelJsonPayloadGeneratorTest {
       return JsonMapper.builder()
             .addModule( new AspectModelJacksonModule() )
             .configure( StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION, true )
-            .configure( tools.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS, false )
+            .configure( SerializationFeature.FAIL_ON_EMPTY_BEANS, false )
             .build();
    }
 

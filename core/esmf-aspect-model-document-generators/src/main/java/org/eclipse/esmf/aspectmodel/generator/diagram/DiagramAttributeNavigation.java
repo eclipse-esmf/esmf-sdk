@@ -13,12 +13,14 @@
 
 package org.eclipse.esmf.aspectmodel.generator.diagram;
 
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
 import org.eclipse.esmf.metamodel.ModelElement;
 
@@ -42,11 +44,11 @@ final class DiagramAttributeNavigation {
    List<Optional<Row>> rowsFor( final ModelElement owner, final String predicateUrn, final Selection selection,
          final Locale language, final int physicalRows ) {
       if ( !enabled || owner.isAnonymous() || predicateUrn == null || predicateUrn.isBlank() ) {
-         return java.util.Collections.nCopies( physicalRows, Optional.empty() );
+         return Collections.nCopies( physicalRows, Optional.empty() );
       }
       final String normalizedLanguage = language == null ? null : language.toLanguageTag().toLowerCase( Locale.ROOT );
       final Locator locator = new Locator( owner.urn().toString(), predicateUrn, selection, normalizedLanguage );
-      return java.util.stream.IntStream.range( 0, physicalRows )
+      return IntStream.range( 0, physicalRows )
             .mapToObj( ignored -> Optional.of( new Row( newMarkerId(), locator ) ) )
             .toList();
    }

@@ -14,8 +14,10 @@ package org.eclipse.esmf.turtle.languageserver.graphical.source;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -57,13 +59,13 @@ class GraphicalViewSourceContextTest {
       documents.put( uri, new Document( uri, "current open external" ) );
       final GraphicalViewSourceContext context = new GraphicalViewSourceContext( documents );
 
-      assertThat( context.resolvedSnapshot( java.net.URI.create( uri ) ) ).get()
+      assertThat( context.resolvedSnapshot( URI.create( uri ) ) ).get()
             .extracting( GraphicalViewSourceSnapshot::content ).isEqualTo( "current open external" );
    }
 
    @Test
    void unsafeUriShapesAreRejectedBeforeFilesystemAccess( @TempDir final Path directory ) {
-      for ( final String uri : java.util.List.of( "file:opaque.ttl", "file://server/share.ttl", "file:relative.ttl",
+      for ( final String uri : List.of( "file:opaque.ttl", "file://server/share.ttl", "file:relative.ttl",
             "file:///tmp/../secret.ttl", "file:///bad%ZZ.ttl", "https://example/model.ttl" ) ) {
          assertThat( GraphicalViewSourceContext.isLocalFileUri( uri ) ).isFalse();
       }

@@ -19,13 +19,14 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 
 /** Owns graphical-view source snapshots, local-URI policy and trusted persisted fallback. */
 public final class GraphicalViewSourceContext {
    private final Map<String, Document> documents;
-   private final Set<String> trustedRenderedSourceUris = java.util.concurrent.ConcurrentHashMap.newKeySet();
+   private final Set<String> trustedRenderedSourceUris = ConcurrentHashMap.newKeySet();
 
    public GraphicalViewSourceContext( final Map<String, Document> documents ) {
       this.documents = documents;

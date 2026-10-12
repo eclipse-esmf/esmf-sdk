@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.datatypes.RDFDatatype;
@@ -1095,7 +1096,7 @@ class AspectModelParquetPayloadGeneratorTest {
       return SammXsdType.ALL_TYPES.stream()
             .filter( dataType -> dataType.getJavaClass() != null )
             .filter( dataType -> Number.class.isAssignableFrom( dataType.getJavaClass() ) )
-            .collect( java.util.stream.Collectors.toList() );
+            .collect( Collectors.toList() );
    }
 
    private static final List<Optional<BoundDefinition>> RANGE_CONSTRAINTS_TO_TEST = Arrays.asList(

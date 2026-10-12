@@ -14,6 +14,7 @@ package org.eclipse.esmf.turtle.languageserver.graphical.navigation;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -220,7 +221,7 @@ public final class GraphicalViewTargetResolver extends TurtleService {
    private boolean hasLanguage( final TurtleSyntaxTree.Node property, final String language ) {
       return descendantsWithType( property, ParserTokenType.LANG_TAG ).map( TurtleSyntaxTree.Node::content )
             .map( value -> value.startsWith( "@" ) ? value.substring( 1 ) : value )
-            .map( value -> value.toLowerCase( java.util.Locale.ROOT ) ).anyMatch( language::equals );
+            .map( value -> value.toLowerCase( Locale.ROOT ) ).anyMatch( language::equals );
    }
 
    private Stream<TurtleSyntaxTree.Node> descendantsWithType( final TurtleSyntaxTree.Node node, final String type ) {

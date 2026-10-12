@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.HexFormat;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Stream;
@@ -30,6 +31,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.eclipse.esmf.aspectmodel.generator.Range;
+import org.eclipse.esmf.aspectmodel.generator.json.JsonPayloadGenerator;
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.Constraint;
@@ -59,7 +61,7 @@ import com.github.curiousoddman.rgxgen.RgxGen;
  * XMLGregorianCalendar, etc.) that can be written directly into Parquet groups.
  * </p>
  *
- * @see org.eclipse.esmf.aspectmodel.generator.json.JsonPayloadGenerator
+ * @see JsonPayloadGenerator
  */
 public class ParquetExampleValueGenerator implements AspectVisitor<Object, ParquetExampleValueGenerator.Context> {
 
@@ -397,7 +399,7 @@ public class ParquetExampleValueGenerator implements AspectVisitor<Object, Parqu
    @Override
    public Object visitRdfLangString( final SammType.RdfLangString langString, final Context context ) {
       final String languageTag = randomValueOf( "en", "de" );
-      return java.util.Map.of( languageTag, randomString( 5, 20 ) );
+      return Map.of( languageTag, randomString( 5, 20 ) );
    }
 
    BigDecimal randomFloatingPointNumber( final BigDecimal start, final BigDecimal end,
@@ -465,7 +467,7 @@ public class ParquetExampleValueGenerator implements AspectVisitor<Object, Parqu
 
    @SuppressWarnings( "FinalMethod" )
    @SafeVarargs
-   private final <T> T randomValueOf( final T... values ) {
+   private <T> T randomValueOf( final T... values ) {
       if ( values.length == 0 ) {
          throw new IndexOutOfBoundsException();
       }

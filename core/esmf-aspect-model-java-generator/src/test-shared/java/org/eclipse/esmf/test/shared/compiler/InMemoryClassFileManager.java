@@ -17,11 +17,12 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.tools.FileObject;
 import javax.tools.ForwardingJavaFileManager;
+import javax.tools.JavaFileManager;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 
 /**
- * A {@link javax.tools.JavaFileManager} to be used by the compiler that creates in-memory
+ * A {@link JavaFileManager} to be used by the compiler that creates in-memory
  * {@link CompilerOutput}s as File objects.
  */
 public class InMemoryClassFileManager extends ForwardingJavaFileManager<StandardJavaFileManager> {

@@ -13,8 +13,10 @@
 
 package org.eclipse.esmf.test.shared.compiler;
 
+import javax.tools.JavaFileObject;
+
 /**
- * A {@link javax.tools.JavaFileObject} that abstracts Java source code backed by a buffer in
+ * A {@link JavaFileObject} that abstracts Java source code backed by a buffer in
  * memory.
  */
 public class CompilerInput extends InMemoryJavaFileObject {

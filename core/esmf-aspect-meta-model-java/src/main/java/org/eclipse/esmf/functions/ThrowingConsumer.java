@@ -14,9 +14,10 @@
 package org.eclipse.esmf.functions;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
- * A Consumer similar to {@link java.util.function.Consumer} except a {@link Throwable} can be
+ * A Consumer similar to {@link Consumer} except a {@link Throwable} can be
  * thrown
  *
  * @param <T> the type of the input to the function

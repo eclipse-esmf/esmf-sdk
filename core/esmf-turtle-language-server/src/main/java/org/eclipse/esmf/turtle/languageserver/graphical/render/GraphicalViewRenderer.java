@@ -17,6 +17,7 @@ import static org.eclipse.esmf.turtle.languageserver.graphical.protocol.Graphica
 
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
 import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator.DiagramBoxLimitExceededException;
@@ -62,7 +63,7 @@ public final class GraphicalViewRenderer {
    }
 
    private GraphicalViewRenderResult successfulRender( final String uri, final DiagramNavigationResult diagram ) {
-      final List<GraphicalViewRenderTarget> targets = java.util.stream.Stream.concat(
+      final List<GraphicalViewRenderTarget> targets = Stream.concat(
             diagram.navigationTargets().entrySet().stream()
                   .map( entry -> (GraphicalViewRenderTarget) new GraphicalViewTarget( entry.getKey(),
                         GraphicalViewTarget.ELEMENT_HEADER, entry.getValue() ) ),
