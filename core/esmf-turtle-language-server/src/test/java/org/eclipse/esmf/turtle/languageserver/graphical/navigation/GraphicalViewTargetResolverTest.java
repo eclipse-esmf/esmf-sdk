@@ -47,7 +47,7 @@ class GraphicalViewTargetResolverTest {
          <urn:samm:example.resolve:1.0.0#FullIri> a samm:Characteristic .
          """ );
 
-      final var found = resolver.resolveHeader( source, urn( OWNER ) );
+      final GraphicalViewTargetResolver.Resolution found = resolver.resolveHeader( source, urn( OWNER ) );
       assertThat( found.outcome() ).isEqualTo( Outcome.FOUND );
       assertStartsAt( found.location(), source.content(), "Owner" );
       assertThat( resolver.resolveHeader( source, urn( "urn:samm:example.resolve:1.0.0#Missing" ) ).outcome() )
@@ -64,8 +64,8 @@ class GraphicalViewTargetResolverTest {
       final String sourceText = model();
       final GraphicalViewSourceSnapshot source = snapshot( sourceText );
 
-      final var english = resolver.resolveAttribute( source, urn( OWNER ), DESCRIPTION, "en" );
-      final var german = resolver.resolveAttribute( source, urn( OWNER ), DESCRIPTION, "de" );
+      final GraphicalViewTargetResolver.Resolution english = resolver.resolveAttribute( source, urn( OWNER ), DESCRIPTION, "en" );
+      final GraphicalViewTargetResolver.Resolution german = resolver.resolveAttribute( source, urn( OWNER ), DESCRIPTION, "de" );
       assertThat( english.outcome() ).isEqualTo( Outcome.FOUND );
       assertThat( german.outcome() ).isEqualTo( Outcome.FOUND );
       assertThat( english.location().getRange() ).isNotEqualTo( german.location().getRange() );
@@ -102,7 +102,7 @@ class GraphicalViewTargetResolverTest {
       };
       final GraphicalViewTargetResolver resolver = resolver( Map.of( externalUri, externalDocument ), strategies );
 
-      final var result = resolver.resolveAttribute( snapshot( model() ),
+      final GraphicalViewTargetResolver.Resolution result = resolver.resolveAttribute( snapshot( model() ),
             urn( "urn:samm:example.external:1.0.0#ExternalOwner" ), DESCRIPTION, "en" );
 
       assertThat( result.outcome() ).isEqualTo( Outcome.FOUND );

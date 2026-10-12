@@ -6,22 +6,27 @@ package org.eclipse.esmf.turtle.languageserver.graphical.render;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.net.URI;
 import java.io.StringReader;
+import java.net.URI;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewAttributeTarget;
+import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderResult;
 import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderWarning;
 import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewTarget;
 import org.eclipse.esmf.turtle.languageserver.graphical.source.GraphicalViewSourceSnapshot;
 import org.eclipse.esmf.turtle.languageserver.lsp.ResolutionStrategyService;
 
 import org.junit.jupiter.api.Test;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 class GraphicalViewRendererTest {
@@ -30,7 +35,7 @@ class GraphicalViewRendererTest {
 
    @Test
    void rendersHeadersLocalizedRowsAndWrappedAggregatedTargetsFromSnapshot() {
-      final var result = renderer().render( snapshot( model() ), URI_VALUE, true );
+      final GraphicalViewRenderResult result = renderer().render( snapshot( model() ), URI_VALUE, true );
 
       assertThat( result.warnings() ).isEmpty();
       assertThat( result.svg() ).contains( "preferredName&#160;[de]:&#160;Darstellung",
@@ -50,7 +55,7 @@ class GraphicalViewRendererTest {
 
    @Test
    void omittedAttributeRowsKeepAllLocalizedContentButReturnHeaderTargetsOnly() {
-      final var result = renderer().render( snapshot( model() ), URI_VALUE, false );
+      final GraphicalViewRenderResult result = renderer().render( snapshot( model() ), URI_VALUE, false );
 
       assertThat( result.warnings() ).isEmpty();
       assertThat( result.svg() ).contains( "preferredName&#160;[de]:&#160;Darstellung",
@@ -60,7 +65,7 @@ class GraphicalViewRendererTest {
 
    @Test
    void oneThousandOneBoxesReturnExplicitModelTooLargeWithoutSvg() {
-      final var result = renderer().render( snapshot( modelWithBoxes( 1_001 ) ), URI_VALUE, false );
+      final GraphicalViewRenderResult result = renderer().render( snapshot( modelWithBoxes( 1_001 ) ), URI_VALUE, false );
 
       assertThat( result.svg() ).isNull();
       assertThat( result.targets() ).isEmpty();
@@ -69,7 +74,7 @@ class GraphicalViewRendererTest {
 
    @Test
    void activeContentShapedModelValuesRemainPassiveText() {
-      final var result = renderer().render( snapshot( activeContentModel() ), URI_VALUE, true );
+      final GraphicalViewRenderResult result = renderer().render( snapshot( activeContentModel() ), URI_VALUE, true );
 
       assertThat( result.warnings() ).isEmpty();
       assertThat( result.svg() ).contains( "&lt;/text&gt;&lt;script&gt;alert(1)&lt;/script&gt;",
@@ -88,7 +93,7 @@ class GraphicalViewRendererTest {
             samm:properties () ; samm:operations () .
          """.formatted( "\\" + "u0001" );
 
-      final var result = renderer().render( snapshot( model ), URI_VALUE, true );
+      final GraphicalViewRenderResult result = renderer().render( snapshot( model ), URI_VALUE, true );
 
       assertThat( result.warnings() ).isEmpty();
       assertThat( result.svg() ).contains( "before-&#1;-after" );
@@ -106,7 +111,7 @@ class GraphicalViewRendererTest {
             samm:properties () ; samm:operations () .
          """;
 
-      final var result = renderer().render( snapshot( model ), URI_VALUE, true );
+      final GraphicalViewRenderResult result = renderer().render( snapshot( model ), URI_VALUE, true );
 
       assertThat( result.warnings() ).isEmpty();
       assertThat( result.svg() ).contains( "bicycle", "🚲" );
@@ -169,16 +174,16 @@ class GraphicalViewRendererTest {
          } catch ( final IllegalArgumentException unsupportedProperty ) {
             // The module may supply a parser that implements the feature flags but not these JAXP properties.
          }
-         final var document = factory.newDocumentBuilder().parse( new InputSource( new StringReader( svg ) ) );
+         final Document document = factory.newDocumentBuilder().parse( new InputSource( new StringReader( svg ) ) );
          assertThat( document.getDocumentElement().getNamespaceURI() ).isEqualTo( "http://www.w3.org/2000/svg" );
          final Set<String> allowedElements = Set.of( "svg", "g", "polygon", "path", "text", "title" );
          final Set<String> markerIds = new HashSet<>();
-         final var elements = document.getElementsByTagName( "*" );
+         final NodeList elements = document.getElementsByTagName( "*" );
          for ( int index = 0; index < elements.getLength(); index++ ) {
             final Element element = (Element) elements.item( index );
             assertThat( allowedElements ).contains( element.getLocalName() );
             for ( int attributeIndex = 0; attributeIndex < element.getAttributes().getLength(); attributeIndex++ ) {
-               final var attribute = element.getAttributes().item( attributeIndex );
+               final Node attribute = element.getAttributes().item( attributeIndex );
                final String name = attribute.getNodeName();
                final String value = attribute.getNodeValue().toLowerCase();
                assertThat( name ).doesNotStartWith( "on" );

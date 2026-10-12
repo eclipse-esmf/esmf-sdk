@@ -17,6 +17,7 @@ import org.eclipse.esmf.aspectmodel.generator.diagram.DiagramGenerationConfigBui
 import org.eclipse.esmf.aspectmodel.generator.diagram.DiagramNavigationResult;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelFileLoader;
+import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewAttributeTarget;
 import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderResult;
 import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderTarget;
@@ -40,7 +41,7 @@ public final class GraphicalViewRenderer {
          final boolean includeAttributeRows ) {
       try {
          final ParsedDocument parsed = new TreeSitterTurtleParserService().apply( snapshot.document() );
-         final var aspect = new AspectModelLoader( strategies.buildResolutionStrategyForDocument( parsed ) )
+         final Aspect aspect = new AspectModelLoader( strategies.buildResolutionStrategyForDocument( parsed ) )
                .load( AspectModelFileLoader.load( parsed.turtleSyntaxTree(), parsed.getUri() ) ).aspect();
          final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( aspect, svgConfig() );
          return successfulRender( requestedUri,

@@ -22,7 +22,9 @@ import java.io.PrintStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
@@ -137,7 +139,7 @@ class AspectModelDocumentationGeneratorTest {
       final String semanticValue = "🚲".repeat( 257 );
       final Aspect aspect = new AspectModelLoader().load( isolationModel( semanticValue ),
             URI.create( "file:///documentation-isolation.ttl" ) ).aspect();
-      final var artifacts = new AspectModelDocumentationGenerator( aspect ).generate().toList();
+      final List<DocumentationArtifact> artifacts = new AspectModelDocumentationGenerator( aspect ).generate().toList();
       assertThat( artifacts ).extracting( DocumentationArtifact::language )
             .containsExactlyInAnyOrder( Locale.ENGLISH, Locale.GERMAN );
       final String englishSvg = embeddedDiagram( artifacts.stream().filter( artifact -> artifact.language().equals( Locale.ENGLISH ) )
@@ -158,7 +160,7 @@ class AspectModelDocumentationGeneratorTest {
    }
 
    private static String embeddedDiagram( final String html ) {
-      final var matcher = Pattern.compile( "data:image/svg\\+xml;base64,([A-Za-z0-9+/=]+)" ).matcher( html );
+      final Matcher matcher = Pattern.compile( "data:image/svg\\+xml;base64,([A-Za-z0-9+/=]+)" ).matcher( html );
       String svg = null;
       while ( matcher.find() && svg == null ) {
          final String candidate = new String( Base64.getDecoder().decode( matcher.group( 1 ) ), StandardCharsets.UTF_8 );

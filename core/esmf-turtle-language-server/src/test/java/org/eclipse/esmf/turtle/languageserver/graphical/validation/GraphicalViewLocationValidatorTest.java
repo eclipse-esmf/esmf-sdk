@@ -24,7 +24,7 @@ class GraphicalViewLocationValidatorTest {
       final Location location = new Location( directory.resolve( "model.ttl" ).toUri().toString(),
             new Range( new Position( 1, 2 ), new Position( 1, 5 ) ) );
 
-      final var result = validator.validate( location );
+      final GraphicalViewLocationValidator.Result result = validator.validate( location );
 
       assertThat( result.location() ).isSameAs( location );
       assertThat( result.warning() ).isNull();
@@ -45,7 +45,7 @@ class GraphicalViewLocationValidatorTest {
    }
 
    private void assertWarning( final Location location, final GraphicalViewResolveTargetWarning warning ) {
-      final var result = validator.validate( location );
+      final GraphicalViewLocationValidator.Result result = validator.validate( location );
       assertThat( result.location() ).isNull();
       assertThat( result.warning() ).isEqualTo( warning );
    }

@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -17,7 +18,9 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderParams;
 import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderWarning;
 import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewResolveAttributeTargetParams;
+import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewResolveAttributeTargetResult;
 import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewResolveTargetParams;
+import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewResolveTargetResult;
 import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewResolveTargetWarning;
 import org.eclipse.esmf.turtle.languageserver.lsp.ResolutionStrategyService;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
@@ -39,7 +42,7 @@ class GraphicalViewServiceTest {
                .isEmpty();
 
          documents.remove( uri );
-         final var resolved = service.resolveTarget( new GraphicalViewResolveTargetParams( uri,
+         final GraphicalViewResolveTargetResult resolved = service.resolveTarget( new GraphicalViewResolveTargetParams( uri,
                "urn:samm:example.facade:1.0.0#Facade" ) ).get( 5, TimeUnit.SECONDS );
 
          assertThat( resolved.warning() ).isNull();
@@ -55,15 +58,15 @@ class GraphicalViewServiceTest {
       documents.put( uri, new Document( uri, "not valid Turtle" ) );
       try ( final GraphicalViewService service = service( documents ) ) {
          assertThat( service.render( new GraphicalViewRenderParams( uri ) ).get( 10, TimeUnit.SECONDS ).warnings() )
-               .containsExactly( GraphicalViewRenderWarning.TEMPORARILY_UNRESOLVABLE );
+               .containsExactly( GraphicalViewRenderWarning.UNRESOLVABLE );
 
          documents.remove( uri );
-         final var resolved = service.resolveTarget( new GraphicalViewResolveTargetParams( uri,
+         final GraphicalViewResolveTargetResult resolved = service.resolveTarget( new GraphicalViewResolveTargetParams( uri,
                "urn:samm:example.facade:1.0.0#Facade" ) ).get( 5, TimeUnit.SECONDS );
 
          assertThat( resolved.location() ).isNull();
          assertThat( resolved.warning() )
-               .isEqualTo( GraphicalViewResolveTargetWarning.TEMPORARILY_UNRESOLVABLE.wireValue() );
+               .isEqualTo( GraphicalViewResolveTargetWarning.UNRESOLVABLE.wireValue() );
       }
    }
 
@@ -76,7 +79,7 @@ class GraphicalViewServiceTest {
          assertThat( service.render( new GraphicalViewRenderParams( missingUri ) ).get().warnings() )
                .containsExactly( GraphicalViewRenderWarning.MISSING_DOCUMENT );
          assertThat( service.resolveTarget( new GraphicalViewResolveTargetParams( missingUri, "bad" ) )
-               .get().warning() ).isEqualTo( GraphicalViewResolveTargetWarning.TEMPORARILY_UNRESOLVABLE.wireValue() );
+               .get().warning() ).isEqualTo( GraphicalViewResolveTargetWarning.UNRESOLVABLE.wireValue() );
          assertThat( service.resolveTarget( new GraphicalViewResolveTargetParams( "https://example/model.ttl",
                "urn:samm:x:1.0.0#x" ) ).get().warning() )
                      .isEqualTo( GraphicalViewResolveTargetWarning.UNSUPPORTED_URI.wireValue() );
@@ -90,8 +93,8 @@ class GraphicalViewServiceTest {
       final BlockingParser parser = new BlockingParser();
       try ( final GraphicalViewService service = new GraphicalViewService( Map.of( uri, document ), parser,
             new ResolutionStrategyService() ) ) {
-         final var future = service.resolveTarget( new GraphicalViewResolveTargetParams( uri,
-               "urn:samm:example.facade:1.0.0#Facade" ) );
+         final CompletableFuture<GraphicalViewResolveTargetResult> future =
+               service.resolveTarget( new GraphicalViewResolveTargetParams( uri, "urn:samm:example.facade:1.0.0#Facade" ) );
          assertThat( parser.started.await( 1, TimeUnit.SECONDS ) ).isTrue();
          document.update( null, model().replace( ":Facade", ":Renamed" ) );
          parser.release.countDown();
@@ -108,9 +111,10 @@ class GraphicalViewServiceTest {
       final BlockingParser parser = new BlockingParser();
       try ( final GraphicalViewService service = new GraphicalViewService( Map.of( uri, document ), parser,
             new ResolutionStrategyService() ) ) {
-         final var future = service.resolveAttributeTarget( new GraphicalViewResolveAttributeTargetParams( uri,
-               "urn:samm:example.facade:1.0.0#Facade",
-               "urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#description", "singleOccurrence", "en" ) );
+         final CompletableFuture<GraphicalViewResolveAttributeTargetResult> future =
+               service.resolveAttributeTarget( new GraphicalViewResolveAttributeTargetParams( uri,
+                     "urn:samm:example.facade:1.0.0#Facade",
+                     "urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#description", "singleOccurrence", "en" ) );
          assertThat( parser.started.await( 1, TimeUnit.SECONDS ) ).isTrue();
          document.update( null, model() );
          parser.release.countDown();

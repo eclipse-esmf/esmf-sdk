@@ -21,6 +21,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -239,7 +240,8 @@ class EsmfPerformanceTest {
       @Override
       public AspectModelFile apply( final AspectModelUrn aspectModelUrn, final ResolutionStrategySupport support ) {
          final Resource resource = ResourceFactory.createResource( aspectModelUrn.getUrn().toString() );
-         final var probablyFile = files.stream().filter( file -> support.containsDefinition( file, aspectModelUrn ) ).findAny();
+         final Optional<AspectModelFile> probablyFile =
+               files.stream().filter( file -> support.containsDefinition( file, aspectModelUrn ) ).findAny();
          if ( probablyFile.isEmpty() ) {
             throw new ResourceDefinitionNotFoundException( getClass().getSimpleName(), resource.toString() );
          }
