@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TurtleTextDocumentService;
@@ -29,6 +30,7 @@ import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
@@ -71,7 +73,7 @@ class GraphicalViewJsonRpcTransportTest {
                assertWarning( client, id++, "turtle/graphicalView/resolveTarget",
                      headerParams( "https://example.test/model.ttl", NAMESPACE + "Transport" ), "unsupportedUri" );
                assertWarning( client, id++, "turtle/graphicalView/resolveTarget",
-                     headerParams( validUri, "not-a-urn" ), "temporarilyUnresolvable" );
+                     headerParams( validUri, "not-a-urn" ), "unresolvable" );
 
                assertWarning( client, id++, "turtle/graphicalView/resolveAttributeTarget",
                      attributeParams( validUri, NAMESPACE + "Transport", META_MODEL + "name" ), "notFound" );
@@ -81,7 +83,7 @@ class GraphicalViewJsonRpcTransportTest {
                      attributeParams( "https://example.test/model.ttl", NAMESPACE + "Transport", META_MODEL + "see" ),
                      "unsupportedUri" );
                assertWarning( client, id++, "turtle/graphicalView/resolveAttributeTarget",
-                     attributeParams( validUri, "not-a-urn", META_MODEL + "see" ), "temporarilyUnresolvable" );
+                     attributeParams( validUri, "not-a-urn", META_MODEL + "see" ), "unresolvable" );
 
                assertLocation( client, id++, "turtle/graphicalView/resolveTarget",
                      headerParams( validUri, NAMESPACE + "Transport" ), validUri );

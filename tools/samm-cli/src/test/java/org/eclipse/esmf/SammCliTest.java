@@ -351,7 +351,7 @@ class SammCliTest extends SammCliAbstractTest {
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
       assertThat( targetFile ).exists();
-      assertThat( contentType( targetFile ) ).isEqualTo( MediaType.text( "plain" ) );
+      assertThat( contentType( targetFile ) ).isEqualTo( MediaType.application( "json" ) );
    }
 
    @Test
@@ -753,8 +753,8 @@ class SammCliTest extends SammCliAbstractTest {
       final JsonNode payloadWithExampleValues = objectMapper.readTree( resultWithExampleValues.stdout() );
       final JsonNode payloadIgnoringExampleValues = objectMapper.readTree( resultIgnoringExampleValues.stdout() );
 
-      assertThat( payloadWithExampleValues.get( "testString" ).asText() ).isEqualTo( "Example Value Test" );
-      assertThat( payloadIgnoringExampleValues.get( "testString" ).asText() ).isNotEqualTo( "Example Value Test" );
+      assertThat( payloadWithExampleValues.get( "testString" ).asString() ).isEqualTo( "Example Value Test" );
+      assertThat( payloadIgnoringExampleValues.get( "testString" ).asString() ).isNotEqualTo( "Example Value Test" );
       assertThat( resultWithExampleValues.stderr() ).isEmpty();
       assertThat( resultIgnoringExampleValues.stderr() ).isEmpty();
    }
