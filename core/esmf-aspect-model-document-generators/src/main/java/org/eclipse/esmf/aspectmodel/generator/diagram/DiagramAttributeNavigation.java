@@ -29,16 +29,8 @@ final class DiagramAttributeNavigation {
    private final boolean enabled;
    private final Set<String> allocatedMarkerIds = new LinkedHashSet<>();
 
-   private DiagramAttributeNavigation( final boolean enabled ) {
+   DiagramAttributeNavigation( final boolean enabled ) {
       this.enabled = enabled;
-   }
-
-   static DiagramAttributeNavigation disabled() {
-      return new DiagramAttributeNavigation( false );
-   }
-
-   static DiagramAttributeNavigation enabled() {
-      return new DiagramAttributeNavigation( true );
    }
 
    List<Optional<Row>> rowsFor( final ModelElement owner, final String predicateUrn, final Selection selection,

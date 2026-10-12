@@ -38,15 +38,16 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import org.apache.batik.transcoder.TranscoderException;
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.image.PNGTranscoder;
+
 import org.eclipse.esmf.aspectmodel.generator.AspectGenerator;
 import org.eclipse.esmf.aspectmodel.generator.DocumentGenerationException;
 import org.eclipse.esmf.aspectmodel.generator.LanguageCollector;
 import org.eclipse.esmf.metamodel.Aspect;
 
-import org.apache.batik.transcoder.TranscoderException;
-import org.apache.batik.transcoder.TranscoderInput;
-import org.apache.batik.transcoder.TranscoderOutput;
-import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.graphper.api.Graphviz;
 import org.graphper.api.Html;
 import org.graphper.api.Line;
@@ -109,8 +110,8 @@ public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[],
    /** Generates navigation-enabled SVG under the requested box and row-metadata bounds. */
    public DiagramNavigationResult generateSvgWithNavigationMetadata( final int maximumBoxes, final boolean includeAttributeRows ) {
       final Diagram diagram = createDiagram( DiagramHeaderNavigation.enabled(), includeAttributeRows
-            ? DiagramAttributeNavigation.enabled()
-            : DiagramAttributeNavigation.disabled(), true );
+            ? new DiagramAttributeNavigation( true )
+            : new DiagramAttributeNavigation( false ), true );
       DiagramBoxLimit.maximum( maximumBoxes ).validate( diagram );
       return generateSvg( diagram, false );
    }
@@ -158,7 +159,7 @@ public class AspectModelDiagramGenerator extends AspectGenerator<String, byte[],
    }
 
    private String generateSvg() {
-      return generateSvg( createDiagram( DiagramHeaderNavigation.disabled(), DiagramAttributeNavigation.disabled(), false ), true ).svg();
+      return generateSvg( createDiagram( DiagramHeaderNavigation.disabled(), new DiagramAttributeNavigation( false ), false ), true ).svg();
    }
 
    private DiagramNavigationResult generateSvg( final Diagram diagram, final boolean embedFontStyle ) {

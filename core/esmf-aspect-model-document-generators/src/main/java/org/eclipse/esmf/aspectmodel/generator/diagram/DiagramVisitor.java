@@ -24,6 +24,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import org.apache.commons.text.WordUtils;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.XSD;
+
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.Aspect;
@@ -67,9 +71,6 @@ import org.eclipse.esmf.metamodel.datatype.LangString;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import com.google.common.collect.ImmutableList;
-import org.apache.commons.text.WordUtils;
-import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.XSD;
 
 /**
  * AspectVisitor that creates an {@link Diagram} representation for the given Aspect Model.
@@ -82,7 +83,7 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
    private final Map<ModelElement, Diagram.Box> seenElements = new HashMap<>();
 
    public DiagramVisitor( final Locale locale ) {
-      this( locale, DiagramHeaderNavigation.disabled(), DiagramAttributeNavigation.disabled(), false );
+      this( locale, DiagramHeaderNavigation.disabled(), new DiagramAttributeNavigation( false ), false );
    }
 
    DiagramVisitor( final Locale locale, final DiagramHeaderNavigation headerNavigation,
