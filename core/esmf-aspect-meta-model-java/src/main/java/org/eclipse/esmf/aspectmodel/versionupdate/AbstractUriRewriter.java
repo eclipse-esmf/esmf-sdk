@@ -19,10 +19,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.resolver.parser.TokenRegistry;
 import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
 import org.eclipse.esmf.samm.KnownVersion;
 
-import com.google.common.collect.Streams;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
@@ -49,23 +49,37 @@ public abstract class AbstractUriRewriter extends AbstractSammMigrator {
     */
    protected abstract Optional<String> rewriteUri( Resource resource, Map<String, String> oldToNewNamespaces );
 
+   // TokenRegistry identifies tokens by node object identity. Migrate this identity as well
+   // Otherwise source location for violations cannot be resolved
+   private <T extends RDFNode> T keepToken( final RDFNode original, final T replacement ) {
+      if ( original.asNode() != replacement.asNode() ) {
+         TokenRegistry.getToken( original.asNode() ).ifPresent( token -> TokenRegistry.put( replacement.asNode(), token ) );
+      }
+      return replacement;
+   }
+
    protected Resource updateResource( final Resource resource, final Map<String, String> oldToNewNamespaces ) {
       if ( resource.isAnon() ) {
          return resource;
       }
 
-      return rewriteUri( resource, oldToNewNamespaces ).map( uriref -> resource.getModel().createResource( uriref ) ).orElse( resource );
+      return rewriteUri( resource, oldToNewNamespaces )
+            .map( uriref -> keepToken( resource, resource.getModel().createResource( uriref ) ) )
+            .orElse( resource );
    }
 
    protected Property updateProperty( final Property property, final Map<String, String> oldToNewNamespaces ) {
-      return rewriteUri( property, oldToNewNamespaces ).map( uriref -> property.getModel().createProperty( uriref ) ).orElse( property );
+      return rewriteUri( property, oldToNewNamespaces )
+            .map( uriref -> keepToken( property, property.getModel().createProperty( uriref ) ) )
+            .orElse( property );
    }
 
    protected Literal updateLiteral( final Literal literal, final Map<String, String> oldToNewNamespaces ) {
       return Optional.ofNullable( literal.getDatatypeURI() )
             .map( uri -> literal.getModel().createResource( uri ) )
             .flatMap( datatype -> rewriteUri( datatype, oldToNewNamespaces ) )
-            .map( uri -> literal.getModel().createTypedLiteral( literal.getLexicalForm(), NodeFactory.getType( uri ) ) )
+            .map( uri -> keepToken( literal,
+                  literal.getModel().createTypedLiteral( literal.getLexicalForm(), NodeFactory.getType( uri ) ) ) )
             .orElse( literal );
    }
 
@@ -116,12 +130,11 @@ public abstract class AbstractUriRewriter extends AbstractSammMigrator {
       final Map<String, String> targetPrefixes = RdfNamespace.createPrefixMap( getTargetKnownVersion() );
       final Map<String, String> oldToNewNamespaces = buildReplacementPrefixMap( sourceModel, targetPrefixes );
 
-      Streams.stream( sourceModel.listStatements() ).map( statement -> targetModel
-            .createStatement(
-                  updateResource( statement.getSubject(), oldToNewNamespaces ),
-                  updateProperty( statement.getPredicate(), oldToNewNamespaces ),
-                  updateRdfNode( statement.getObject(), oldToNewNamespaces )
-            ) ).forEach( targetModel::add );
+      // do not create a new statement here. Required to keep node identity in TokenRegistry
+      sourceModel.listStatements().forEach( statement -> targetModel.add(
+            updateResource( statement.getSubject(), oldToNewNamespaces ),
+            updateProperty( statement.getPredicate(), oldToNewNamespaces ),
+            updateRdfNode( statement.getObject(), oldToNewNamespaces ) ) );
 
       targetModel.setNsPrefixes( buildPrefixMap( sourceModel, targetPrefixes, oldToNewNamespaces ) );
       return targetModel;

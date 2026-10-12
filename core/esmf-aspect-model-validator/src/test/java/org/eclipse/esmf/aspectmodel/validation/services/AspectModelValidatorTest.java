@@ -385,6 +385,24 @@ class AspectModelValidatorTest {
    }
 
    @Test
+   void testValidateFixedPointConstraintWithInvalidDatatypeInMigratedModel() {
+      // The model uses an older SAMM version and is migrated during loading. Source location information
+      // (TokenRegistry) must survive the migration, also for anonymous nodes such as the constraint.
+      final Either<ViolationReport, AspectModel> result = TestResources.loadWithValidation(
+            InvalidTestAspect.FIXED_POINT_CONSTRAINT_WITH_INVALID_DATATYPE_OLD_META_MODEL_VERSION, validator );
+      assertThat( result.isLeft() ).isTrue();
+      final List<Violation> violations = result.getLeft().violations();
+      assertThat( violations )
+            .singleElement()
+            .isInstanceOfSatisfying( SparqlConstraintViolation.class, violation -> {
+               assertThat( violation.message() ).contains( "Fixed Point Constraint" ).contains( "xsd:decimal" );
+               assertThat( violation.sourceDocument().toString() )
+                     .contains( "FixedPointConstraintWithInvalidDatatypeOldMetaModelVersion.ttl" );
+               assertThat( violation.location().fromLine() ).isEqualTo( 23 );
+            } );
+   }
+
+   @Test
    void testValidateAnonymousRegularExpressionExampleValueValidator() {
       final Either<ViolationReport, AspectModel> result = TestResources.loadWithValidation(
             InvalidTestAspect.ASPECT_WITH_INVALID_ANONYMOUS_REGEX_CONSTRAINT, validator );
