@@ -13,8 +13,8 @@
 package org.eclipse.esmf.turtle.languageserver.graphical;
 
 import static org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderWarning.MISSING_DOCUMENT;
-import static org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderWarning.UNRESOLVABLE;
 import static org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderWarning.TIMEOUT;
+import static org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderWarning.UNRESOLVABLE;
 import static org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderWarning.UNSUPPORTED_URI;
 
 import java.util.Map;
@@ -41,7 +41,6 @@ import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRe
 import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewResolveTargetWarning;
 import org.eclipse.esmf.turtle.languageserver.graphical.render.GraphicalViewRenderer;
 import org.eclipse.esmf.turtle.languageserver.graphical.source.GraphicalViewSourceContext;
-import org.eclipse.esmf.turtle.languageserver.graphical.source.GraphicalViewSourceSnapshot;
 import org.eclipse.esmf.turtle.languageserver.graphical.validation.GraphicalViewLocationValidator;
 import org.eclipse.esmf.turtle.languageserver.lsp.ResolutionStrategyService;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
@@ -74,7 +73,7 @@ public final class GraphicalViewService implements AutoCloseable {
          return CompletableFuture.completedFuture(
                GraphicalViewRenderResult.warning( params == null ? null : params.uri(), UNSUPPORTED_URI ) );
       }
-      final Optional<GraphicalViewSourceSnapshot> snapshot = sources.openSnapshot( params.uri() );
+      final Optional<Document> snapshot = sources.openSnapshot( params.uri() );
       if ( snapshot.isEmpty() ) {
          return CompletableFuture.completedFuture( GraphicalViewRenderResult.warning( params.uri(), MISSING_DOCUMENT ) );
       }
@@ -115,7 +114,7 @@ public final class GraphicalViewService implements AutoCloseable {
       }
       final Optional<AspectModelUrn> urn = params.elementUrn() == null ? Optional.empty()
             : AspectModelUrn.from( params.elementUrn() ).toJavaOptional();
-      final Optional<GraphicalViewSourceSnapshot> snapshot = sources.requestSnapshot( params.sourceUri() );
+      final Optional<Document> snapshot = sources.requestSnapshot( params.sourceUri() );
       if ( urn.isEmpty() || snapshot.isEmpty() ) {
          return CompletableFuture.completedFuture(
                GraphicalViewResolveTargetResult.warning( GraphicalViewResolveTargetWarning.UNRESOLVABLE ) );
@@ -138,7 +137,7 @@ public final class GraphicalViewService implements AutoCloseable {
       final Optional<GraphicalViewAttributeSelection> selection = GraphicalViewAttributeSelection.fromWireValue( params.selection() );
       final boolean validLanguage = params.language() == null || ( LANGUAGE.matcher( params.language() ).matches()
             && selection.filter( GraphicalViewAttributeSelection.SINGLE_OCCURRENCE::equals ).isPresent() );
-      final Optional<GraphicalViewSourceSnapshot> snapshot = sources.requestSnapshot( params.sourceUri() );
+      final Optional<Document> snapshot = sources.requestSnapshot( params.sourceUri() );
       if ( owner.isEmpty() || predicate.isEmpty() || selection.isEmpty() || !validLanguage || snapshot.isEmpty() ) {
          return CompletableFuture.completedFuture( GraphicalViewResolveAttributeTargetResult.warning(
                GraphicalViewResolveTargetWarning.UNRESOLVABLE ) );

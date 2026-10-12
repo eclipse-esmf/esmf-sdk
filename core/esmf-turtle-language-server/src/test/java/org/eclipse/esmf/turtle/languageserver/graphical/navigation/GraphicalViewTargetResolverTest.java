@@ -26,7 +26,6 @@ import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategySupport;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.turtle.languageserver.graphical.navigation.GraphicalViewTargetResolver.Outcome;
 import org.eclipse.esmf.turtle.languageserver.graphical.source.GraphicalViewSourceContext;
-import org.eclipse.esmf.turtle.languageserver.graphical.source.GraphicalViewSourceSnapshot;
 import org.eclipse.esmf.turtle.languageserver.lsp.ResolutionStrategyService;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
@@ -46,7 +45,7 @@ class GraphicalViewTargetResolverTest {
    @Test
    void headerResolverReturnsFoundNotFoundAndAmbiguousWithoutFullIriSubjectSupport() {
       final GraphicalViewTargetResolver resolver = resolver( Map.of(), new ResolutionStrategyService() );
-      final GraphicalViewSourceSnapshot source = snapshot( """
+      final Document source = snapshot( """
          @prefix : <urn:samm:example.resolve:1.0.0#> .
          @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
          :Owner a samm:Aspect ; samm:properties (); samm:operations () .
@@ -70,7 +69,7 @@ class GraphicalViewTargetResolverTest {
    void attributeResolverKeepsLanguageFullIriOwnerAndDistinctSeeSemantics() {
       final GraphicalViewTargetResolver resolver = resolver( Map.of(), new ResolutionStrategyService() );
       final String sourceText = model();
-      final GraphicalViewSourceSnapshot source = snapshot( sourceText );
+      final Document source = snapshot( sourceText );
 
       final GraphicalViewTargetResolver.Resolution english = resolver.resolveAttribute( source, urn( OWNER ), DESCRIPTION, "en" );
       final GraphicalViewTargetResolver.Resolution german = resolver.resolveAttribute( source, urn( OWNER ), DESCRIPTION, "de" );
@@ -153,8 +152,8 @@ class GraphicalViewTargetResolverTest {
       };
    }
 
-   private static GraphicalViewSourceSnapshot snapshot( final String content ) {
-      return new GraphicalViewSourceSnapshot( URI.create( URI_VALUE ), content );
+   private static Document snapshot( final String content ) {
+      return new Document( URI.create( URI_VALUE ), content );
    }
 
    private static AspectModelUrn urn( final String value ) {

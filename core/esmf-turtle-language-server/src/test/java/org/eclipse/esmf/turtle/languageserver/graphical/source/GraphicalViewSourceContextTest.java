@@ -33,7 +33,7 @@ class GraphicalViewSourceContextTest {
       final Document document = new Document( uri, "first" );
       final GraphicalViewSourceContext context = new GraphicalViewSourceContext( Map.of( uri, document ) );
 
-      final GraphicalViewSourceSnapshot snapshot = context.requestSnapshot( uri ).orElseThrow();
+      final Document snapshot = context.requestSnapshot( uri ).orElseThrow();
       document.update( null, "second" );
 
       assertThat( snapshot.content() ).isEqualTo( "first" );
@@ -48,7 +48,7 @@ class GraphicalViewSourceContextTest {
 
       assertThat( context.requestSnapshot( uri ) ).isEmpty();
       context.trustAfterValidatedRender( uri );
-      assertThat( context.requestSnapshot( uri ) ).get().extracting( GraphicalViewSourceSnapshot::content )
+      assertThat( context.requestSnapshot( uri ) ).get().extracting( Document::content )
             .isEqualTo( "persisted" );
    }
 
@@ -60,7 +60,7 @@ class GraphicalViewSourceContextTest {
       final GraphicalViewSourceContext context = new GraphicalViewSourceContext( documents );
 
       assertThat( context.resolvedSnapshot( URI.create( uri ) ) ).get()
-            .extracting( GraphicalViewSourceSnapshot::content ).isEqualTo( "current open external" );
+            .extracting( Document::content ).isEqualTo( "current open external" );
    }
 
    @Test

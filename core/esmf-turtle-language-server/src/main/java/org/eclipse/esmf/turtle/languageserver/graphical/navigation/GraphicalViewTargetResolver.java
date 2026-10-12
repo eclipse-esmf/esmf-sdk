@@ -25,8 +25,8 @@ import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.treesitterturtle.ParserTokenType;
 import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
 import org.eclipse.esmf.turtle.languageserver.graphical.source.GraphicalViewSourceContext;
-import org.eclipse.esmf.turtle.languageserver.graphical.source.GraphicalViewSourceSnapshot;
 import org.eclipse.esmf.turtle.languageserver.lsp.ResolutionStrategyService;
+import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TreeSitterTurtleParserService;
 import org.eclipse.esmf.turtle.languageserver.turtle.TurtleService;
@@ -49,7 +49,7 @@ public final class GraphicalViewTargetResolver extends TurtleService {
    }
 
    /** Header resolution deliberately accepts prefixed-name subjects only. */
-   public Resolution resolveHeader( final GraphicalViewSourceSnapshot source, final AspectModelUrn targetUrn ) {
+   public Resolution resolveHeader( final Document source, final AspectModelUrn targetUrn ) {
       final ParsedDocument parsedSource = parse( source );
       if ( !documentIsAspectModel( parsedSource ) || hasSyntaxErrors( parsedSource ) ) {
          return Resolution.unresolvable();
@@ -59,7 +59,7 @@ public final class GraphicalViewTargetResolver extends TurtleService {
    }
 
    /** Attribute lookup supports prefixed-name and full-IRI named owners. */
-   public Resolution resolveAttribute( final GraphicalViewSourceSnapshot source, final AspectModelUrn ownerUrn,
+   public Resolution resolveAttribute( final Document source, final AspectModelUrn ownerUrn,
          final String predicateUrn, final String language ) {
       final ParsedDocument parsedSource = parse( source );
       if ( !documentIsAspectModel( parsedSource ) || hasSyntaxErrors( parsedSource ) ) {
@@ -150,8 +150,8 @@ public final class GraphicalViewTargetResolver extends TurtleService {
             .orElseGet( Resolution::unresolvable );
    }
 
-   private ParsedDocument parse( final GraphicalViewSourceSnapshot snapshot ) {
-      return parser.apply( snapshot.document() );
+   private ParsedDocument parse( final Document snapshot ) {
+      return parser.apply( snapshot );
    }
 
    private boolean hasSyntaxErrors( final ParsedDocument document ) {

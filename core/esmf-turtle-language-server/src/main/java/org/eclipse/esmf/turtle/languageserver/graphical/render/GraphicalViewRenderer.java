@@ -31,8 +31,8 @@ import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewAt
 import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderResult;
 import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderTarget;
 import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewTarget;
-import org.eclipse.esmf.turtle.languageserver.graphical.source.GraphicalViewSourceSnapshot;
 import org.eclipse.esmf.turtle.languageserver.lsp.ResolutionStrategyService;
+import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TreeSitterTurtleParserService;
 
@@ -46,10 +46,10 @@ public final class GraphicalViewRenderer {
       this.strategies = strategies;
    }
 
-   public GraphicalViewRenderResult render( final GraphicalViewSourceSnapshot snapshot, final String requestedUri,
+   public GraphicalViewRenderResult render( final Document snapshot, final String requestedUri,
          final boolean includeAttributeRows ) {
       try {
-         final ParsedDocument parsed = new TreeSitterTurtleParserService().apply( snapshot.document() );
+         final ParsedDocument parsed = new TreeSitterTurtleParserService().apply( snapshot );
          final Aspect aspect = new AspectModelLoader( strategies.buildResolutionStrategyForDocument( parsed ) )
                .load( AspectModelFileLoader.load( parsed.turtleSyntaxTree(), parsed.getUri() ) ).aspect();
          final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( aspect, svgConfig() );

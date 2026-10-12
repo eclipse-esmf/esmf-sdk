@@ -27,11 +27,10 @@ import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewAt
 import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderResult;
 import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderWarning;
 import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewTarget;
-import org.eclipse.esmf.turtle.languageserver.graphical.source.GraphicalViewSourceSnapshot;
 import org.eclipse.esmf.turtle.languageserver.lsp.ResolutionStrategyService;
+import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 
 import org.junit.jupiter.api.Test;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -130,8 +129,8 @@ class GraphicalViewRendererTest {
       return new GraphicalViewRenderer( new ResolutionStrategyService() );
    }
 
-   private static GraphicalViewSourceSnapshot snapshot( final String content ) {
-      return new GraphicalViewSourceSnapshot( URI.create( URI_VALUE ), content );
+   private static Document snapshot( final String content ) {
+      return new Document( URI.create( URI_VALUE ), content );
    }
 
    private static String model() {
@@ -182,7 +181,7 @@ class GraphicalViewRendererTest {
          } catch ( final IllegalArgumentException unsupportedProperty ) {
             // The module may supply a parser that implements the feature flags but not these JAXP properties.
          }
-         final Document document = factory.newDocumentBuilder().parse( new InputSource( new StringReader( svg ) ) );
+         final org.w3c.dom.Document document = factory.newDocumentBuilder().parse( new InputSource( new StringReader( svg ) ) );
          assertThat( document.getDocumentElement().getNamespaceURI() ).isEqualTo( "http://www.w3.org/2000/svg" );
          final Set<String> allowedElements = Set.of( "svg", "g", "polygon", "path", "text", "title" );
          final Set<String> markerIds = new HashSet<>();

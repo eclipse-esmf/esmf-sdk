@@ -32,14 +32,14 @@ public final class GraphicalViewSourceContext {
       this.documents = documents;
    }
 
-   public Optional<GraphicalViewSourceSnapshot> openSnapshot( final String sourceUri ) {
+   public Optional<Document> openSnapshot( final String sourceUri ) {
       if ( !isLocalFileUri( sourceUri ) ) {
          return Optional.empty();
       }
       return snapshotOpenDocument( sourceUri );
    }
 
-   public Optional<GraphicalViewSourceSnapshot> requestSnapshot( final String sourceUri ) {
+   public Optional<Document> requestSnapshot( final String sourceUri ) {
       if ( !isLocalFileUri( sourceUri ) ) {
          return Optional.empty();
       }
@@ -49,7 +49,7 @@ public final class GraphicalViewSourceContext {
    }
 
    /** Loads a target URI produced by the established model resolution strategy. */
-   public Optional<GraphicalViewSourceSnapshot> resolvedSnapshot( final URI resolvedUri ) {
+   public Optional<Document> resolvedSnapshot( final URI resolvedUri ) {
       if ( resolvedUri == null || !isLocalFileUri( resolvedUri.toString() ) ) {
          return Optional.empty();
       }
@@ -76,14 +76,14 @@ public final class GraphicalViewSourceContext {
       }
    }
 
-   private Optional<GraphicalViewSourceSnapshot> snapshotOpenDocument( final String sourceUri ) {
+   private Optional<Document> snapshotOpenDocument( final String sourceUri ) {
       final Document open = documents.get( sourceUri );
-      return open == null ? Optional.empty() : Optional.of( new GraphicalViewSourceSnapshot( open.uri(), open.content() ) );
+      return open == null ? Optional.empty() : Optional.of( new Document( open.uri(), open.content() ) );
    }
 
-   private Optional<GraphicalViewSourceSnapshot> persistedSnapshot( final URI uri ) {
+   private Optional<Document> persistedSnapshot( final URI uri ) {
       try {
-         return Optional.of( new GraphicalViewSourceSnapshot( uri, Files.readString( Path.of( uri ) ) ) );
+         return Optional.of( new Document( uri, Files.readString( Path.of( uri ) ) ) );
       } catch ( final IOException | IllegalArgumentException exception ) {
          return Optional.empty();
       }
