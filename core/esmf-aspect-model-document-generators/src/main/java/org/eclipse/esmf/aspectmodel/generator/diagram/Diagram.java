@@ -13,7 +13,6 @@
 
 package org.eclipse.esmf.aspectmodel.generator.diagram;
 
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -95,53 +94,26 @@ public class Diagram {
       private String prototype;
       private final Color background;
       private final String title;
-      private final String headerMarkerId;
-      private final String navigationTargetUrn;
+      private final Optional<String> headerMarkerId;
+      private final Optional<String> navigationTargetUrn;
       private final List<EntryRow> entryRows = new ArrayList<>();
-      private final List<String> entriesView = new AbstractList<>() {
-         @Override
-         public String get( final int index ) {
-            return entryRows.get( index ).text();
-         }
-
-         @Override
-         public int size() {
-            return entryRows.size();
-         }
-
-         @Override
-         public String set( final int index, final String text ) {
-            final EntryRow previous = entryRows.get( index );
-            entryRows.set( index, new EntryRow( text, previous.navigation() ) );
-            return previous.text();
-         }
-
-         @Override
-         public void add( final int index, final String text ) {
-            entryRows.add( index, new EntryRow( text, Optional.empty() ) );
-         }
-
-         @Override
-         public String remove( final int index ) {
-            return entryRows.remove( index ).text();
-         }
-      };
 
       public Box( final String prototype, final String title, final Color background ) {
-         this( prototype, title, background, null, null );
+         this( prototype, title, background, Optional.empty(), Optional.empty() );
       }
 
       Box( final String prototype, final String title, final Color background, final String headerMarkerId,
             final String navigationTargetUrn ) {
+         this( prototype, title, background, Optional.of( headerMarkerId ), Optional.of( navigationTargetUrn ) );
+      }
+
+      Box( final String prototype, final String title, final Color background, final Optional<String> headerMarkerId,
+            final Optional<String> navigationTargetUrn ) {
          this.prototype = prototype;
          this.title = title;
          this.background = background;
          this.headerMarkerId = headerMarkerId;
          this.navigationTargetUrn = navigationTargetUrn;
-      }
-
-      public void addEntry( final List<String> entry ) {
-         entry.stream().map( text -> new EntryRow( text, Optional.empty() ) ).forEach( entryRows::add );
       }
 
       void addEntry( final List<String> entry, final List<Optional<DiagramAttributeNavigation.Row>> navigation ) {
@@ -170,15 +142,15 @@ public class Diagram {
       }
 
       public Optional<String> getHeaderMarkerId() {
-         return Optional.ofNullable( headerMarkerId );
+         return headerMarkerId;
       }
 
       public Optional<String> getNavigationTargetUrn() {
-         return Optional.ofNullable( navigationTargetUrn );
+         return navigationTargetUrn;
       }
 
       public List<String> getEntries() {
-         return entriesView;
+         return entryRows.stream().map( EntryRow::text ).toList();
       }
 
       List<EntryRow> getEntryRows() {

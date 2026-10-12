@@ -5,7 +5,7 @@
 package org.eclipse.esmf.turtle.languageserver.graphical.render;
 
 import static org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderWarning.MODEL_TOO_LARGE;
-import static org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderWarning.TEMPORARILY_UNRESOLVABLE;
+import static org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderWarning.UNRESOLVABLE;
 
 import java.util.List;
 import java.util.Locale;
@@ -49,7 +49,7 @@ public final class GraphicalViewRenderer {
       } catch ( final DiagramBoxLimitExceededException exception ) {
          return GraphicalViewRenderResult.warning( requestedUri, MODEL_TOO_LARGE );
       } catch ( final RuntimeException exception ) {
-         return GraphicalViewRenderResult.warning( requestedUri, TEMPORARILY_UNRESOLVABLE );
+         return GraphicalViewRenderResult.warning( requestedUri, UNRESOLVABLE );
       }
    }
 

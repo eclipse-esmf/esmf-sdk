@@ -5,7 +5,7 @@
 package org.eclipse.esmf.turtle.languageserver.graphical;
 
 import static org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderWarning.MISSING_DOCUMENT;
-import static org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderWarning.TEMPORARILY_UNRESOLVABLE;
+import static org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderWarning.UNRESOLVABLE;
 import static org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderWarning.TIMEOUT;
 import static org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderWarning.UNSUPPORTED_URI;
 
@@ -77,7 +77,7 @@ public final class GraphicalViewService implements AutoCloseable {
          try {
             rendered = renderer.render( snapshot.get(), params.uri(), params.attributeRowsRequested() );
          } catch ( final RuntimeException exception ) {
-            result.complete( GraphicalViewRenderResult.warning( params.uri(), TEMPORARILY_UNRESOLVABLE ) );
+            result.complete( GraphicalViewRenderResult.warning( params.uri(), UNRESOLVABLE ) );
             return;
          }
          synchronized ( result ) {
@@ -110,11 +110,11 @@ public final class GraphicalViewService implements AutoCloseable {
       final Optional<GraphicalViewSourceSnapshot> snapshot = sources.requestSnapshot( params.sourceUri() );
       if ( urn.isEmpty() || snapshot.isEmpty() ) {
          return CompletableFuture.completedFuture(
-               GraphicalViewResolveTargetResult.warning( GraphicalViewResolveTargetWarning.TEMPORARILY_UNRESOLVABLE ) );
+               GraphicalViewResolveTargetResult.warning( GraphicalViewResolveTargetWarning.UNRESOLVABLE ) );
       }
       return CompletableFuture.supplyAsync( () -> headerResult( resolver.resolveHeader( snapshot.get(), urn.get() ) ), executor )
             .exceptionally( error -> GraphicalViewResolveTargetResult.warning(
-                  GraphicalViewResolveTargetWarning.TEMPORARILY_UNRESOLVABLE ) );
+                  GraphicalViewResolveTargetWarning.UNRESOLVABLE ) );
    }
 
    public CompletableFuture<GraphicalViewResolveAttributeTargetResult> resolveAttributeTarget(
@@ -133,12 +133,12 @@ public final class GraphicalViewService implements AutoCloseable {
       final Optional<GraphicalViewSourceSnapshot> snapshot = sources.requestSnapshot( params.sourceUri() );
       if ( owner.isEmpty() || predicate.isEmpty() || selection.isEmpty() || !validLanguage || snapshot.isEmpty() ) {
          return CompletableFuture.completedFuture( GraphicalViewResolveAttributeTargetResult.warning(
-               GraphicalViewResolveTargetWarning.TEMPORARILY_UNRESOLVABLE ) );
+               GraphicalViewResolveTargetWarning.UNRESOLVABLE ) );
       }
       return CompletableFuture.supplyAsync( () -> attributeResult( resolver.resolveAttribute( snapshot.get(), owner.get(),
             predicate.get().toString(), params.language() ) ), executor )
             .exceptionally( error -> GraphicalViewResolveAttributeTargetResult.warning(
-                  GraphicalViewResolveTargetWarning.TEMPORARILY_UNRESOLVABLE ) );
+                  GraphicalViewResolveTargetWarning.UNRESOLVABLE ) );
    }
 
    private GraphicalViewResolveTargetResult headerResult( final Resolution resolution ) {
@@ -164,7 +164,7 @@ public final class GraphicalViewService implements AutoCloseable {
          case NOT_FOUND -> GraphicalViewResolveTargetWarning.NOT_FOUND;
          case AMBIGUOUS -> GraphicalViewResolveTargetWarning.AMBIGUOUS;
          case UNSUPPORTED_URI -> GraphicalViewResolveTargetWarning.UNSUPPORTED_URI;
-         case TEMPORARILY_UNRESOLVABLE, FOUND -> GraphicalViewResolveTargetWarning.TEMPORARILY_UNRESOLVABLE;
+         case UNRESOLVABLE, FOUND -> GraphicalViewResolveTargetWarning.UNRESOLVABLE;
       };
    }
 

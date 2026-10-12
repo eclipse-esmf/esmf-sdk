@@ -14,19 +14,6 @@ import org.junit.jupiter.api.Test;
 
 class AspectModelDiagramBoxLimitTest {
    @Test
-   void publicStringEntriesRemainMutableViewOfStructuralRows() {
-      final Diagram.Box box = box( 0 );
-      box.addEntry( java.util.List.of( "first" ) );
-
-      box.getEntries().add( "second" );
-      box.getEntries().set( 0, "changed" );
-
-      assertThat( box.getEntries() ).containsExactly( "changed", "second" );
-      assertThat( box.getEntryRows() ).extracting( Diagram.Box.EntryRow::text ).containsExactly( "changed", "second" );
-      assertThat( box.getEntryRows() ).allMatch( row -> row.navigation().isEmpty() );
-   }
-
-   @Test
    void exactlyOneThousandBoxesPassTheProductionBoundary() {
       final Diagram diagram = diagramWithBoxes( 1_000 );
 

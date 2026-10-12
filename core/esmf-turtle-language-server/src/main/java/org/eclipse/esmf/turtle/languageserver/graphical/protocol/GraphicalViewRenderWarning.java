@@ -12,7 +12,7 @@ public enum GraphicalViewRenderWarning {
    MISSING_DOCUMENT( "missingDocument" ),
    MODEL_TOO_LARGE( "modelTooLarge" ),
    TIMEOUT( "timeout" ),
-   TEMPORARILY_UNRESOLVABLE( "temporarilyUnresolvable" );
+   UNRESOLVABLE( "unresolvable" );
 
    private final String wireValue;
 

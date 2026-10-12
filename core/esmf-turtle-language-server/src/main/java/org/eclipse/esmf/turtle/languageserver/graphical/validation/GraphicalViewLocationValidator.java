@@ -14,20 +14,20 @@ import org.eclipse.lsp4j.Position;
 public final class GraphicalViewLocationValidator {
    public Result validate( final Location location ) {
       if ( location == null || location.getUri() == null ) {
-         return Result.warning( GraphicalViewResolveTargetWarning.TEMPORARILY_UNRESOLVABLE );
+         return Result.warning( GraphicalViewResolveTargetWarning.UNRESOLVABLE );
       }
       if ( !GraphicalViewSourceContext.isLocalFileUri( location.getUri() ) ) {
          return Result.warning( GraphicalViewResolveTargetWarning.UNSUPPORTED_URI );
       }
       if ( location.getRange() == null || !validPosition( location.getRange().getStart() )
             || !validPosition( location.getRange().getEnd() ) ) {
-         return Result.warning( GraphicalViewResolveTargetWarning.TEMPORARILY_UNRESOLVABLE );
+         return Result.warning( GraphicalViewResolveTargetWarning.UNRESOLVABLE );
       }
       final Position start = location.getRange().getStart();
       final Position end = location.getRange().getEnd();
       if ( start.getLine() > end.getLine()
             || ( start.getLine() == end.getLine() && start.getCharacter() > end.getCharacter() ) ) {
-         return Result.warning( GraphicalViewResolveTargetWarning.TEMPORARILY_UNRESOLVABLE );
+         return Result.warning( GraphicalViewResolveTargetWarning.UNRESOLVABLE );
       }
       return new Result( location, null );
    }

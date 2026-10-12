@@ -37,11 +37,11 @@ class GraphicalViewLocationValidatorTest {
             GraphicalViewResolveTargetWarning.UNSUPPORTED_URI );
       final Location missingRange = new Location();
       missingRange.setUri( uri );
-      assertWarning( missingRange, GraphicalViewResolveTargetWarning.TEMPORARILY_UNRESOLVABLE );
+      assertWarning( missingRange, GraphicalViewResolveTargetWarning.UNRESOLVABLE );
       assertWarning( new Location( uri, new Range( new Position( -1, 0 ), new Position() ) ),
-            GraphicalViewResolveTargetWarning.TEMPORARILY_UNRESOLVABLE );
+            GraphicalViewResolveTargetWarning.UNRESOLVABLE );
       assertWarning( new Location( uri, new Range( new Position( 2, 0 ), new Position( 1, 0 ) ) ),
-            GraphicalViewResolveTargetWarning.TEMPORARILY_UNRESOLVABLE );
+            GraphicalViewResolveTargetWarning.UNRESOLVABLE );
    }
 
    private void assertWarning( final Location location, final GraphicalViewResolveTargetWarning warning ) {

@@ -43,7 +43,7 @@ public final class GraphicalViewTargetResolver extends TurtleService {
    public Resolution resolveHeader( final GraphicalViewSourceSnapshot source, final AspectModelUrn targetUrn ) {
       final ParsedDocument parsedSource = parse( source );
       if ( !documentIsAspectModel( parsedSource ) || hasSyntaxErrors( parsedSource ) ) {
-         return Resolution.temporarilyUnresolvable();
+         return Resolution.unresolvable();
       }
       final Resolution local = findHeaderInDocument( parsedSource, targetUrn );
       return local.outcome() == Outcome.NOT_FOUND ? resolveExternalHeader( parsedSource, targetUrn ) : local;
@@ -54,7 +54,7 @@ public final class GraphicalViewTargetResolver extends TurtleService {
          final String predicateUrn, final String language ) {
       final ParsedDocument parsedSource = parse( source );
       if ( !documentIsAspectModel( parsedSource ) || hasSyntaxErrors( parsedSource ) ) {
-         return Resolution.temporarilyUnresolvable();
+         return Resolution.unresolvable();
       }
       final Resolution local = findAttributeInDocument( parsedSource, ownerUrn, predicateUrn, language );
       return local.outcome() == Outcome.NOT_FOUND
@@ -69,9 +69,9 @@ public final class GraphicalViewTargetResolver extends TurtleService {
             return Resolution.unsupportedUri();
          }
          return sources.resolvedSnapshot( targetUri ).map( this::parse )
-               .map( target -> hasSyntaxErrors( target ) ? Resolution.temporarilyUnresolvable()
+               .map( target -> hasSyntaxErrors( target ) ? Resolution.unresolvable()
                      : findHeaderInDocument( target, targetUrn ) )
-               .orElseGet( Resolution::temporarilyUnresolvable );
+               .orElseGet( Resolution::unresolvable );
       } catch ( final ModelResolutionException exception ) {
          return Resolution.notFound();
       } catch ( final IllegalArgumentException exception ) {
@@ -87,9 +87,9 @@ public final class GraphicalViewTargetResolver extends TurtleService {
             return Resolution.unsupportedUri();
          }
          return sources.resolvedSnapshot( targetUri ).map( this::parse )
-               .map( target -> hasSyntaxErrors( target ) ? Resolution.temporarilyUnresolvable()
+               .map( target -> hasSyntaxErrors( target ) ? Resolution.unresolvable()
                      : findAttributeInDocument( target, ownerUrn, predicateUrn, language ) )
-               .orElseGet( Resolution::temporarilyUnresolvable );
+               .orElseGet( Resolution::unresolvable );
       } catch ( final ModelResolutionException exception ) {
          return Resolution.notFound();
       } catch ( final IllegalArgumentException exception ) {
@@ -114,7 +114,7 @@ public final class GraphicalViewTargetResolver extends TurtleService {
       return matches.getFirst().children().stream()
             .filter( node -> node.isToken() && ParserTokenType.PN_LOCAL.equals( node.type() ) ).findFirst()
             .map( node -> Resolution.found( getLocationForLsp( document, node ) ) )
-            .orElseGet( Resolution::temporarilyUnresolvable );
+            .orElseGet( Resolution::unresolvable );
    }
 
    private Resolution findAttributeInDocument( final ParsedDocument document, final AspectModelUrn ownerUrn,
@@ -138,7 +138,7 @@ public final class GraphicalViewTargetResolver extends TurtleService {
       }
       return matchingProperties.getFirst().childWithType( ParserTokenType.PREDICATE )
             .map( predicate -> Resolution.found( getLocationForLsp( document, predicate ) ) )
-            .orElseGet( Resolution::temporarilyUnresolvable );
+            .orElseGet( Resolution::unresolvable );
    }
 
    private ParsedDocument parse( final GraphicalViewSourceSnapshot snapshot ) {
@@ -221,7 +221,7 @@ public final class GraphicalViewTargetResolver extends TurtleService {
    }
 
    public enum Outcome {
-      FOUND, NOT_FOUND, AMBIGUOUS, UNSUPPORTED_URI, TEMPORARILY_UNRESOLVABLE
+      FOUND, NOT_FOUND, AMBIGUOUS, UNSUPPORTED_URI, UNRESOLVABLE
    }
 
    public record Resolution(
@@ -243,8 +243,8 @@ public final class GraphicalViewTargetResolver extends TurtleService {
          return new Resolution( Outcome.UNSUPPORTED_URI, null );
       }
 
-      static Resolution temporarilyUnresolvable() {
-         return new Resolution( Outcome.TEMPORARILY_UNRESOLVABLE, null );
+      static Resolution unresolvable() {
+         return new Resolution( Outcome.UNRESOLVABLE, null );
       }
    }
 }

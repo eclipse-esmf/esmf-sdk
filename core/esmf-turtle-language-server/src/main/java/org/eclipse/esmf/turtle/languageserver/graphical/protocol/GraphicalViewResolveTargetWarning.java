@@ -11,7 +11,7 @@ public enum GraphicalViewResolveTargetWarning {
    NOT_FOUND( "notFound" ),
    AMBIGUOUS( "ambiguous" ),
    UNSUPPORTED_URI( "unsupportedUri" ),
-   TEMPORARILY_UNRESOLVABLE( "temporarilyUnresolvable" );
+   UNRESOLVABLE( "unresolvable" );
 
    private final String wireValue;
 
