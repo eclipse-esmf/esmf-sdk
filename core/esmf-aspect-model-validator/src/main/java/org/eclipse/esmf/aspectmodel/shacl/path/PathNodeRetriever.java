@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
@@ -71,7 +72,7 @@ public class PathNodeRetriever implements Path.Visitor<List<Statement>> {
 
    @Override
    public List<Statement> visitInversePath( final Resource resource, final InversePath path ) {
-      if ( path.path() instanceof PredicatePath( final org.apache.jena.rdf.model.Property predicate ) ) {
+      if ( path.path() instanceof PredicatePath( final Property predicate ) ) {
          return resource.getModel().listStatements( null, predicate, resource )
                .filterKeep( statement -> statement.getObject().isResource() )
                .mapWith( statement -> resource.getModel()

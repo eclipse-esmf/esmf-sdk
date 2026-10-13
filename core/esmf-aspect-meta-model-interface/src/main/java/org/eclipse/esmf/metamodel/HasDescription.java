@@ -24,7 +24,7 @@ public interface HasDescription {
    String getName();
 
    /**
-    * @return a {@link java.util.List} of links to an external taxonomy/ontology.
+    * @return a {@link List} of links to an external taxonomy/ontology.
     */
    default List<String> getSee() {
       return Collections.emptyList();

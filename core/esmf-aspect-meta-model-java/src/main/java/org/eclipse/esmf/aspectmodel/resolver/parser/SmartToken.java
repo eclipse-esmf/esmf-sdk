@@ -183,7 +183,7 @@ public final class SmartToken {
       if ( obj == null || obj.getClass() != getClass() ) {
          return false;
       }
-      final var that = (SmartToken) obj;
+      final SmartToken that = (SmartToken) obj;
       return jenaToken != null
             ? Objects.equals( jenaToken, that.jenaToken )
             : Objects.equals( treesitterToken, that.treesitterToken );

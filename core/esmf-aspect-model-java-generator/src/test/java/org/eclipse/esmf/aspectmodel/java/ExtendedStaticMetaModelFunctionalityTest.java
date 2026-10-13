@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
@@ -221,17 +222,17 @@ public class ExtendedStaticMetaModelFunctionalityTest extends StaticMetaModelGen
             (StaticProperty<Object, String>) metaEntity.getField( "TEST_STRING" ).get( null );
       final StaticProperty<Object, Integer> intProperty =
             (StaticProperty<Object, Integer>) metaEntity.getField( "TEST_INT" ).get( null );
-      final var entities = List.of( e1, e2, e3 );
+      final List<Object> entities = List.of( e1, e2, e3 );
 
-      final var matchSingleString = PropertyPredicates.on( stringProperty ).isEqualTo( "string1" );
+      final Predicate<Object> matchSingleString = PropertyPredicates.on( stringProperty ).isEqualTo( "string1" );
       assertThat( entities.stream().filter( matchSingleString ) ).containsExactly( e1 );
       assertThat( entities.stream().filter( matchSingleString.negate() ) ).containsExactlyInAnyOrder( e2, e3 );
 
-      final var matchSubString = PropertyPredicates.matchOn( stringProperty ).contains( "ing1" );
+      final Predicate<Object> matchSubString = PropertyPredicates.matchOn( stringProperty ).contains( "ing1" );
       assertThat( entities.stream().filter( matchSubString ) ).containsExactly( e1 );
       assertThat( entities.stream().filter( matchSubString.negate() ) ).containsExactlyInAnyOrder( e2, e3 );
 
-      final var matchRegex = PropertyPredicates.matchOn( stringProperty ).matches( ".*[12]" );
+      final Predicate<Object> matchRegex = PropertyPredicates.matchOn( stringProperty ).matches( ".*[12]" );
       assertThat( entities.stream().filter( matchRegex ) ).containsExactlyInAnyOrder( e1, e2 );
       assertThat( entities.stream().filter( matchRegex.negate() ) ).containsExactly( e3 );
 
@@ -272,7 +273,7 @@ public class ExtendedStaticMetaModelFunctionalityTest extends StaticMetaModelGen
       final Object e2 = ConstructorUtils.invokeConstructor( entityClass, "string2", 2, 2.0f, List.of( ne2 ) );
       final Object e3 = ConstructorUtils.invokeConstructor( entityClass, "string3", 3, 3.0f, List.of() );
 
-      final var entities = List.of( e1, e2, e3 );
+      final List<Object> entities = List.of( e1, e2, e3 );
 
       final StaticContainerProperty entityProperty =
             (StaticContainerProperty) metaEntity.getField( "TEST_SECOND_LIST" ).get( null );
@@ -280,16 +281,18 @@ public class ExtendedStaticMetaModelFunctionalityTest extends StaticMetaModelGen
             (StaticProperty<Object, String>) metaNestedEntity.getField( "RANDOM_VALUE" ).get( null );
       final ContainerPropertyChain entityStringCollectionChain =
             PropertyChain.fromCollection( entityProperty ).to( nestedStringProperty );
-      final var matchNestedEntityString1 = PropertyPredicates.onCollection( entityStringCollectionChain ).contains( "nested-string1" );
-      final var matchNestedEntityString2 = PropertyPredicates.onCollection( entityStringCollectionChain ).contains( "nested-string2" );
+      final Predicate matchNestedEntityString1 =
+            PropertyPredicates.onCollection( entityStringCollectionChain ).contains( "nested-string1" );
+      final Predicate matchNestedEntityString2 =
+            PropertyPredicates.onCollection( entityStringCollectionChain ).contains( "nested-string2" );
       assertThat( entities.stream().filter( matchNestedEntityString1 ) ).containsExactly( e1 );
       assertThat( entities.stream().filter( matchNestedEntityString2 ) ).containsExactly( e1, e2 );
 
-      final var matchNestedEntityStringAny = PropertyPredicates.onCollection( entityStringCollectionChain )
+      final Predicate matchNestedEntityStringAny = PropertyPredicates.onCollection( entityStringCollectionChain )
             .containsAnyOf( List.of( "nested-string1", "nested-string2" ) );
-      final var matchNestedEntityStringAll = PropertyPredicates.onCollection( entityStringCollectionChain )
+      final Predicate matchNestedEntityStringAll = PropertyPredicates.onCollection( entityStringCollectionChain )
             .containsAllOf( List.of( "nested-string1", "nested-string2" ) );
-      final var matchNestedEntityStringAnyWithNoneMatching = PropertyPredicates.onCollection( entityStringCollectionChain )
+      final Predicate matchNestedEntityStringAnyWithNoneMatching = PropertyPredicates.onCollection( entityStringCollectionChain )
             .containsAnyOf( List.of( "some-string1", "some-string2" ) );
       assertThat( entities.stream().filter( matchNestedEntityStringAny ) ).containsExactlyInAnyOrder( e1, e2 );
       assertThat( entities.stream().filter( matchNestedEntityStringAll ) ).containsExactly( e1 );

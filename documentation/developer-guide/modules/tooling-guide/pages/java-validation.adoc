@@ -4,7 +4,7 @@
 = Validating Aspect Models
 
 Aspect Models are validated using the `AspectModelValidator`. Validation returns a list of
-`Violation`s. A violation has a human-readable message and a unique error code and provides access
+`Violation`&#8203;s. A violation has a human-readable message and a unique error code and provides access
 to the `EvaluationContext` which contains references to the model element that caused the
 violation and the SHACL shape that triggered the violation.
 

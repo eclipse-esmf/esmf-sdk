@@ -318,6 +318,10 @@
       <property name="checkFormat" value="$1"/>
       <property name="influenceFormat" value="1"/>
     </module>
+    <module name="UnnecessaryFullyQualifiedType"/>
+    <module name="IllegalType">
+       <property name="illegalClassNames" value="var"/>
+    </module>
   </module>
   <module name="SuppressionSingleFilter">
     <property name="checks" value=".*"/>

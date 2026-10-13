@@ -14,10 +14,12 @@
 package org.eclipse.esmf.test.shared.compiler;
 
 import java.net.URI;
+
+import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
 
 /**
- * Base class for {@link javax.tools.JavaFileObject}s that are backed by a buffer.
+ * Base class for {@link JavaFileObject}s that are backed by a buffer.
  */
 public abstract class InMemoryJavaFileObject extends SimpleJavaFileObject {
    protected InMemoryJavaFileObject( final String name, final Kind kind ) {

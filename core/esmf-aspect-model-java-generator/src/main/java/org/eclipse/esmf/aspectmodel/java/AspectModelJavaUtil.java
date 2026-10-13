@@ -29,7 +29,15 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
 import javax.xml.datatype.DatatypeConstants;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
+import org.apache.commons.text.translate.UnicodeUnescaper;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.XSD;
 
 import org.eclipse.esmf.aspectmodel.VersionInfo;
 import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
@@ -59,13 +67,8 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Converter;
+
 import jakarta.validation.Valid;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.StringEscapeUtils;
-import org.apache.commons.text.translate.UnicodeUnescaper;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.vocabulary.XSD;
 
 public class AspectModelJavaUtil {
 
@@ -710,7 +713,7 @@ public class AspectModelJavaUtil {
       codeGenerationConfig.importTracker().importExplicit( DatatypeConstants.class );
 
       // Enhanced pattern to match both Integer and Long valueOf calls
-      final Pattern pattern = java.util.regex.Pattern.compile(
+      final Pattern pattern = Pattern.compile(
             "(Integer|Long)\\s*\\.\\s*valueOf\\s*\\(\\s*matcher\\s*\\.\\s*group\\s*\\(\\s*(\\d+)\\s*\\)\\s*\\)"
       );
       final Matcher matcher = pattern.matcher( expression );

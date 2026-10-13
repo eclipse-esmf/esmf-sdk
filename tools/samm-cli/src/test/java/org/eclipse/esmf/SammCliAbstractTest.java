@@ -17,7 +17,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -35,10 +34,11 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import org.apache.jena.shared.LockMRSW;
 import org.apache.jena.sparql.core.mem.PMapQuadTable;
-import org.apache.tika.config.TikaConfig;
-import org.apache.tika.exception.TikaException;
+import org.apache.tika.detect.DefaultDetector;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
+import org.apache.tika.io.TikaInputStream;
+import org.apache.tika.parser.ParseContext;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.condition.OS;
 import org.slf4j.LoggerFactory;
@@ -116,17 +116,20 @@ abstract class SammCliAbstractTest {
    }
 
    protected MediaType contentType( final byte[] input ) {
-      try {
-         return new TikaConfig().getDetector().detect( new BufferedInputStream( new ByteArrayInputStream( input ) ), new Metadata() );
-      } catch ( final IOException | TikaException exception ) {
+      final Metadata metadata = new Metadata();
+      try ( final BufferedInputStream bufferedInputStream = new BufferedInputStream( new ByteArrayInputStream( input ) );
+            final TikaInputStream tikaInputStream = TikaInputStream.get( bufferedInputStream, metadata ) ) {
+         return new DefaultDetector().detect( tikaInputStream, metadata, new ParseContext() );
+      } catch ( final IOException exception ) {
          throw new RuntimeException( exception );
       }
    }
 
    protected static MediaType contentType( final File file ) {
-      try ( final BufferedInputStream bis = new BufferedInputStream( new FileInputStream( file ) ) ) {
-         return new TikaConfig().getDetector().detect( bis, new Metadata() );
-      } catch ( final IOException | TikaException exception ) {
+      final Metadata metadata = new Metadata();
+      try ( final TikaInputStream tikaInputStream = TikaInputStream.get( file.toPath(), metadata ) ) {
+         return new DefaultDetector().detect( tikaInputStream, metadata, new ParseContext() );
+      } catch ( final IOException exception ) {
          throw new RuntimeException( exception );
       }
    }

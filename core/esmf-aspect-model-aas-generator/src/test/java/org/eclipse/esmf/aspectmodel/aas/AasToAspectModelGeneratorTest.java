@@ -31,6 +31,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -41,6 +42,7 @@ import org.eclipse.digitaltwin.aas4j.v3.dataformat.xml.XmlDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.model.AasSubmodelElements;
 import org.eclipse.digitaltwin.aas4j.v3.model.DataTypeDefXsd;
 import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
+import org.eclipse.digitaltwin.aas4j.v3.model.Key;
 import org.eclipse.digitaltwin.aas4j.v3.model.KeyTypes;
 import org.eclipse.digitaltwin.aas4j.v3.model.ModellingKind;
 import org.eclipse.digitaltwin.aas4j.v3.model.ReferenceTypes;
@@ -543,7 +545,7 @@ class AasToAspectModelGeneratorTest {
             .filter( SubmodelElementCollection.class::isInstance )
             .flatMap( element -> Optional.ofNullable( element.getSemanticId() ).stream() )
             .flatMap( SubmodelToAspectUtils::keys )
-            .map( key -> key.getValue() )
+            .map( Key::getValue )
             .flatMap( value -> {
                try {
                   return Stream.of( AspectModelUrn.fromUrn( value ).getName() );
@@ -551,7 +553,7 @@ class AasToAspectModelGeneratorTest {
                   return Stream.empty();
                }
             } )
-            .collect( java.util.stream.Collectors.toSet() );
+            .collect( Collectors.toSet() );
    }
 
    private static Stream<SubmodelElement> flattenSubmodelElement( final SubmodelElement submodelElement ) {

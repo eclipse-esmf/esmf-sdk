@@ -16,8 +16,10 @@ package org.eclipse.esmf.test.shared.compiler;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 
+import javax.tools.JavaFileObject;
+
 /**
- * A {@link javax.tools.JavaFileObject} that lives in memory and can be written to by the compiler.
+ * A {@link JavaFileObject} that lives in memory and can be written to by the compiler.
  */
 public class CompilerOutput extends InMemoryJavaFileObject {
    private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

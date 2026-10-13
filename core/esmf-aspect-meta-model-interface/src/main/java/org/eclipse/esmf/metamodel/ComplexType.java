@@ -25,7 +25,7 @@ import java.util.stream.Stream;
  */
 public interface ComplexType extends Type, StructureElement {
    /**
-    * @return a {@link java.util.List} of {@link ComplexType}s which extend this Entity
+    * @return a {@link List} of ComplexTypes which extend this Entity
     */
    default List<ComplexType> getExtendingElements() {
       return Collections.emptyList();

@@ -1029,7 +1029,7 @@ class AspectModelJsonSchemaGeneratorTest {
       final JsonNode schema = buildJsonSchema( aspect );
       final DocumentContext context = JsonPath.parse( schema.toString() );
 
-      final var refs = context.<java.util.List<String>>read(
+      final List<String> refs = context.read(
             "$['components']['schemas']['ExtendingTestEntity']['allOf'][*]['$ref']" );
       assertThat( refs ).contains( "#/components/schemas/AbstractTestEntity" );
 

@@ -1,0 +1,91 @@
+/*
+ * Copyright (c) 2026 Robert Bosch Manufacturing Solutions GmbH
+ *
+ * See the AUTHORS file(s) distributed with this work for additional
+ * information regarding authorship.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * SPDX-License-Identifier: MPL-2.0
+ */
+package org.eclipse.esmf.turtle.languageserver.graphical.source;
+
+import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
+
+/** Owns graphical-view source snapshots, local-URI policy and trusted persisted fallback. */
+public final class GraphicalViewSourceContext {
+   private final Map<String, Document> documents;
+   private final Set<String> trustedRenderedSourceUris = ConcurrentHashMap.newKeySet();
+
+   public GraphicalViewSourceContext( final Map<String, Document> documents ) {
+      this.documents = documents;
+   }
+
+   public Optional<Document> openSnapshot( final String sourceUri ) {
+      if ( !isLocalFileUri( sourceUri ) ) {
+         return Optional.empty();
+      }
+      return snapshotOpenDocument( sourceUri );
+   }
+
+   public Optional<Document> requestSnapshot( final String sourceUri ) {
+      if ( !isLocalFileUri( sourceUri ) ) {
+         return Optional.empty();
+      }
+      return snapshotOpenDocument( sourceUri ).or( () -> trustedRenderedSourceUris.contains( sourceUri )
+            ? persistedSnapshot( URI.create( sourceUri ) )
+            : Optional.empty() );
+   }
+
+   /** Loads a target URI produced by the established model resolution strategy. */
+   public Optional<Document> resolvedSnapshot( final URI resolvedUri ) {
+      if ( resolvedUri == null || !isLocalFileUri( resolvedUri.toString() ) ) {
+         return Optional.empty();
+      }
+      return snapshotOpenDocument( resolvedUri.toString() ).or( () -> persistedSnapshot( resolvedUri ) );
+   }
+
+   public void trustAfterValidatedRender( final String sourceUri ) {
+      if ( isLocalFileUri( sourceUri ) ) {
+         trustedRenderedSourceUris.add( sourceUri );
+      }
+   }
+
+   public static boolean isLocalFileUri( final String value ) {
+      try {
+         final URI uri = URI.create( value );
+         if ( !"file".equalsIgnoreCase( uri.getScheme() ) || uri.isOpaque() || uri.getAuthority() != null
+               || uri.getRawPath() == null ) {
+            return false;
+         }
+         final Path path = Path.of( uri );
+         return path.isAbsolute() && path.normalize().equals( path );
+      } catch ( final IllegalArgumentException exception ) {
+         return false;
+      }
+   }
+
+   private Optional<Document> snapshotOpenDocument( final String sourceUri ) {
+      final Document open = documents.get( sourceUri );
+      return open == null ? Optional.empty() : Optional.of( new Document( open.uri(), open.content() ) );
+   }
+
+   private Optional<Document> persistedSnapshot( final URI uri ) {
+      try {
+         return Optional.of( new Document( uri, Files.readString( Path.of( uri ) ) ) );
+      } catch ( final IOException | IllegalArgumentException exception ) {
+         return Optional.empty();
+      }
+   }
+}

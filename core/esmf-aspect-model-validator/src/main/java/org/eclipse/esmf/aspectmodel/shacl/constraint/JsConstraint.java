@@ -70,15 +70,11 @@ public class JsConstraint implements Constraint {
       }
 
       // The guest application (i.e., the JavaScript) can only be compiled at runtime if either the host
-      // application runs via GraalVM
-      // or, on a regular JVMCI-enabled JDK, the Graal Compiler is set up (additional JIT compilers are
-      // added). Otherwise, the script runs
-      // in interpreted mode, which will be slower and print a corresponding warning. Since in the SHACL
-      // validation only very little
-      // JavaScript
-      // code is executed, this is not a problem. The following the property disables the corresponding
-      // warning.
-      // See
+      // application runs via GraalVM or, on a regular JVMCI-enabled JDK, the Graal Compiler is set up
+      // (additional JIT compilers are added). Otherwise, the script runs in interpreted mode, which
+      // will be slower and print a corresponding warning. Since in the SHACL validation only very
+      // little JavaScript code is executed, this is not a problem. The following the property disables
+      // the corresponding warning. See
       // https://www.graalvm.org/22.3/reference-manual/js/FAQ/#warning-implementation-does-not-support-runtime-compilation
       System.setProperty( "polyglot.engine.WarnInterpreterOnly", "false" );
       engine = new ScriptEngineManager().getEngineByName( "JavaScript" );
@@ -105,7 +101,7 @@ public class JsConstraint implements Constraint {
     * @param doEvaluate configure whether to evaluate JavaScript or not
     */
    public static void setEvaluateJavaScript( final boolean doEvaluate ) {
-      LOG.debug( String.format( "Globally %sabled JavaScript constraint evaluation", doEvaluate ? "en" : "dis" ) );
+      LOG.debug( "Globally {}abled JavaScript constraint evaluation", doEvaluate ? "en" : "dis" );
       JsConstraint.evaluateJavaScript = doEvaluate;
    }
 
@@ -136,7 +132,10 @@ public class JsConstraint implements Constraint {
                      .collect( Collectors.toMap(
                            entry -> (String) entry.getKey(),
                            entry -> entry.getValue() instanceof final JsTerm term ? term.getNode() : entry.getValue() ) );
-               yield List.of( new JsConstraintViolation( context, message(), jsLibrary(), jsFunctionName(), resultMap ) );
+               final String resultMessage = resultMap.containsKey( "message" ) && resultMap.containsKey( "value" )
+                     ? resultMap.get( "message" ) + ": " + resultMap.get( "value" )
+                     : message();
+               yield List.of( new JsConstraintViolation( context, resultMessage, jsLibrary(), jsFunctionName(), resultMap ) );
             }
             default -> {
                LOG.debug( "JavaScript evaluation of {} returned invalid result: {}", jsFunctionName(), result );

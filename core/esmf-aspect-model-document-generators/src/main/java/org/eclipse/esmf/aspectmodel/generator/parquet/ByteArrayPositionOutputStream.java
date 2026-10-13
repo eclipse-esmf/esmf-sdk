@@ -18,7 +18,7 @@ import java.io.ByteArrayOutputStream;
 import org.apache.parquet.io.PositionOutputStream;
 
 /**
- * A {@link org.apache.parquet.io.PositionOutputStream} implementation that delegates all write
+ * A {@link PositionOutputStream} implementation that delegates all write
  * operations to an underlying {@link ByteArrayOutputStream}, while tracking the current stream
  * position as required by the Parquet API.
  *

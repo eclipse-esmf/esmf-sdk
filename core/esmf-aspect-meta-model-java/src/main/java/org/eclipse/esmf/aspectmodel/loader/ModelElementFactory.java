@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
@@ -283,14 +284,14 @@ public class ModelElementFactory extends AttributeValueRetriever {
    /**
     * @param modelElement the RDF {@link Resource} representing the Aspect Model element to be
     *        processed
-    * @param attribute the RDF {@link org.apache.jena.rdf.model.Property} for which the values will be
+    * @param attribute the RDF {@link Property} for which the values will be
     *        retrieved
     * @param valueRetriever the {@link AttributeValueRetriever} used to retrieve the attribute values
     * @return a {@link List} containing all values for the given Property in the given Aspect Model
     *         element
     */
    private static Set<LangString> getLanguages( final Resource modelElement,
-         final org.apache.jena.rdf.model.Property attribute, final AttributeValueRetriever valueRetriever ) {
+         final Property attribute, final AttributeValueRetriever valueRetriever ) {
       return valueRetriever.attributeValues( modelElement, attribute ).stream()
             .filter( languageStatement -> !"und".equals( Locale.forLanguageTag( languageStatement.getLanguage() ).toLanguageTag() ) )
             .map( statement -> new LangString( statement.getString(), Locale.forLanguageTag( statement.getLanguage() ) ) )
