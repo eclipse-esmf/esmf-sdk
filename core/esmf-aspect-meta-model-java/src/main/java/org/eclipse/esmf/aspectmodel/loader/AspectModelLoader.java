@@ -42,6 +42,7 @@ import org.apache.jena.graph.Node;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
@@ -735,7 +736,7 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
       final Map<URI, AspectModelFile> filesByUri = new HashMap<>();
       for ( final AspectModelFile file : files ) {
          filesByUri.put( file.sourceUri(), file );
-         final var subjects = file.sourceModel().listSubjects();
+         final ResIterator subjects = file.sourceModel().listSubjects();
          try {
             subjects.forEachRemaining( subject -> {
                if ( subject.hasProperty( RDF.type ) ) {
