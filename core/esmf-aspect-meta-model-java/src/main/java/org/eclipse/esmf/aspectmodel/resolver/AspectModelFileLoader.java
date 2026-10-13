@@ -199,8 +199,7 @@ public class AspectModelFileLoader {
       try {
          final byte[] bytes = inputStream.readAllBytes();
          final CharsetDecoder charsetDecoder = StandardCharsets.UTF_8.newDecoder();
-         charsetDecoder.decode( ByteBuffer.wrap( bytes ) );
-         return new String( bytes, StandardCharsets.UTF_8 );
+         return charsetDecoder.decode( ByteBuffer.wrap( bytes ) ).toString();
       } catch ( final MalformedInputException | UnmappableCharacterException exception ) {
          throw new ModelResolutionException( ModelResolutionViolationBuilder.builder()
                .location( sourceLocation )
