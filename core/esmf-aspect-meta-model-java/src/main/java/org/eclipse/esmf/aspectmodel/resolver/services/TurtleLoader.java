@@ -13,7 +13,6 @@
 package org.eclipse.esmf.aspectmodel.resolver.services;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -23,7 +22,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFParser;
@@ -94,12 +92,12 @@ public final class TurtleLoader {
     */
    public static Try<Model> loadTurtle( final String modelContent, final URI location ) {
       init();
-      try ( final InputStream turtleInputStream = new ByteArrayInputStream( modelContent.getBytes( StandardCharsets.UTF_8 ) ) ) {
+      try {
          final Context context = Context.create();
          context.put( DOCUMENT_URI, location );
          final Model streamModel = RDFParser.create()
                .factory( new FactoryRDFStd() )
-               .source( turtleInputStream )
+               .fromString( modelContent )
                .lang( Lang.TURTLE )
                .context( context )
                .toModel();
@@ -112,8 +110,6 @@ public final class TurtleLoader {
       } catch ( final RiotException exception ) {
          // Thrown by Jena for regular syntax errors
          return Try.failure( new ParserException( exception, modelContent, location ) );
-      } catch ( final IOException exception ) {
-         return Try.failure( exception );
       }
    }
 
@@ -137,13 +133,13 @@ public final class TurtleLoader {
    public static Try<Model> loadTurtle( final TurtleSyntaxTree syntaxTree, final URI location ) {
       init();
       final String sourceRepresentation = syntaxTree.content();
-      try ( final InputStream input = IOUtils.toInputStream( sourceRepresentation, StandardCharsets.UTF_8 ) ) {
+      try {
          final Context context = Context.create();
          context.put( TREE_SITTER_SYNTAX_TREE, syntaxTree );
          context.put( DOCUMENT_URI, location );
          final Model streamModel = RDFParser.create()
                .factory( new FactoryRDFStd() )
-               .source( input )
+               .fromString( sourceRepresentation )
                .lang( Lang.TURTLE )
                .context( context )
                .toModel();
@@ -156,8 +152,6 @@ public final class TurtleLoader {
       } catch ( final RiotException exception ) {
          // Thrown by Jena for regular syntax errors
          return Try.failure( new ParserException( exception, sourceRepresentation, location ) );
-      } catch ( final IOException exception ) {
-         return Try.failure( exception );
       }
    }
 

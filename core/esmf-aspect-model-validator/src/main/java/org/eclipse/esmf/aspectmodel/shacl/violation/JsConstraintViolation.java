@@ -58,16 +58,12 @@ public record JsConstraintViolation(
       }
       String interpolatedMessage = bindings.getOrDefault( "message", constraintMessage() ).toString();
       for ( final Map.Entry<String, Object> entry : bindings.entrySet() ) {
-         final String value;
-         if ( entry.getValue() instanceof final Node_Literal literal ) {
-            value = literal.getLiteralLexicalForm();
-         } else if ( entry.getValue() instanceof final Node_URI namedNode ) {
-            value = context.shortUri( namedNode.getURI() );
-         } else if ( entry.getValue() instanceof Node_Blank ) {
-            value = "anonymous element";
-         } else {
-            value = entry.getValue().toString();
-         }
+         final String value = switch ( entry.getValue() ) {
+            case final Node_Literal literal -> literal.getLiteralLexicalForm();
+            case final Node_URI namedNode -> context.shortUri( namedNode.getURI() );
+            case Node_Blank _ -> "anonymous element";
+            default -> entry.getValue().toString();
+         };
          interpolatedMessage = interpolatedMessage.replaceAll( "\\{[$?]" + entry.getKey() + "\\}", value );
       }
       return interpolatedMessage;

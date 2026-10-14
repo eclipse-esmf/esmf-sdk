@@ -28,9 +28,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.tika.mime.MediaType;
-
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
@@ -44,6 +41,8 @@ import org.eclipse.esmf.test.TestSharedModel;
 import org.eclipse.esmf.util.process.ProcessLauncher;
 import org.eclipse.esmf.util.process.ProcessLauncher.ExecutionResult;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.tika.mime.MediaType;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
@@ -54,7 +53,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
@@ -353,7 +351,7 @@ class SammCliTest extends SammCliAbstractTest {
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
       assertThat( targetFile ).exists();
-      assertThat( contentType( targetFile ) ).isEqualTo( MediaType.text( "plain" ) );
+      assertThat( contentType( targetFile ) ).isEqualTo( MediaType.application( "json" ) );
    }
 
    @Test
@@ -755,8 +753,8 @@ class SammCliTest extends SammCliAbstractTest {
       final JsonNode payloadWithExampleValues = objectMapper.readTree( resultWithExampleValues.stdout() );
       final JsonNode payloadIgnoringExampleValues = objectMapper.readTree( resultIgnoringExampleValues.stdout() );
 
-      assertThat( payloadWithExampleValues.get( "testString" ).asText() ).isEqualTo( "Example Value Test" );
-      assertThat( payloadIgnoringExampleValues.get( "testString" ).asText() ).isNotEqualTo( "Example Value Test" );
+      assertThat( payloadWithExampleValues.get( "testString" ).asString() ).isEqualTo( "Example Value Test" );
+      assertThat( payloadIgnoringExampleValues.get( "testString" ).asString() ).isNotEqualTo( "Example Value Test" );
       assertThat( resultWithExampleValues.stderr() ).isEmpty();
       assertThat( resultIgnoringExampleValues.stderr() ).isEmpty();
    }

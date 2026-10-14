@@ -18,7 +18,7 @@ import org.apache.parquet.io.OutputFile;
 import org.apache.parquet.io.PositionOutputStream;
 
 /**
- * An implementation of Parquet's {@link org.apache.parquet.io.OutputFile} that writes entirely
+ * An implementation of Parquet's {@link OutputFile} that writes entirely
  * in-memory using a {@link ByteArrayOutputStream} .
  *
  * <p>

@@ -24,6 +24,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import org.eclipse.esmf.aspectmodel.generator.json.JsonPayloadGenerator;
 import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.AbstractEntity;
@@ -55,10 +56,10 @@ import org.eclipse.esmf.metamodel.impl.DefaultProperty;
  * Each {@code visit*} method handles a specific model element type and returns a
  * {@code Map<String, Object>} representing the property names as keys and their corresponding
  * values. This follows the same structural approach as
- * {@link org.eclipse.esmf.aspectmodel.generator.json.JsonPayloadGenerator}.
+ * {@link JsonPayloadGenerator}.
  * </p>
  *
- * @see org.eclipse.esmf.aspectmodel.generator.json.JsonPayloadGenerator
+ * @see JsonPayloadGenerator
  */
 class ParquetPayloadGenerator implements AspectVisitor<Map<String, Object>, ParquetPayloadGenerator.Context> {
 
@@ -245,7 +246,7 @@ class ParquetPayloadGenerator implements AspectVisitor<Map<String, Object>, Parq
     * handler based on the property's characteristic type.
     *
     * <p>
-    * A {@link Collection} will be represented as a {@link java.util.List}.
+    * A {@link Collection} will be represented as a {@link List}.
     * {@link Entity} and {@link Either} will be represented as {@link Map}.
     * </p>
     *

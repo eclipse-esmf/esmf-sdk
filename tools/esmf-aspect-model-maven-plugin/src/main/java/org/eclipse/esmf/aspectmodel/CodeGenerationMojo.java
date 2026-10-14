@@ -17,14 +17,14 @@ import java.io.File;
 import java.io.OutputStream;
 import java.util.Optional;
 
+import org.apache.commons.lang3.EnumUtils;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Parameter;
+
 import org.eclipse.esmf.aspectmodel.java.QualifiedName;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.functions.ThrowingFunction;
 import org.eclipse.esmf.metamodel.Aspect;
-
-import org.apache.commons.lang3.EnumUtils;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.annotations.Parameter;
 
 public abstract class CodeGenerationMojo extends AspectModelMojo {
    @Parameter
@@ -79,7 +79,7 @@ public abstract class CodeGenerationMojo extends AspectModelMojo {
    }
 
    protected static <T extends Enum<T>> T getEnumConstant( final Class<T> enumClass, final String constant, final String defaultConstant ) {
-      final var sanitizedConstant = Optional.ofNullable( constant )
+      final String sanitizedConstant = Optional.ofNullable( constant )
             .map( c -> c.toUpperCase().replace( "-", "_" ) )
             .orElse( defaultConstant );
 

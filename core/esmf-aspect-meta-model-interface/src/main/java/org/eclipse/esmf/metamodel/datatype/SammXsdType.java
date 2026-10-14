@@ -16,6 +16,7 @@ package org.eclipse.esmf.metamodel.datatype;
 import static org.eclipse.esmf.aspectmodel.StreamUtil.asMap;
 
 import java.util.AbstractList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -124,7 +125,7 @@ public abstract non-sealed class SammXsdType<T> extends XSDDatatype implements S
       }
 
       @Override
-      public java.util.Iterator<SammType<?>> iterator() {
+      public Iterator<SammType<?>> iterator() {
          return allTypesInternal().iterator();
       }
    };

@@ -199,7 +199,7 @@ public class DownloadZig extends ZigContext {
             validateZigReleaseSignature( minisignExe, zigReleaseArchive );
             // exit the loop if we reach this point without any exception
             break;
-         } catch ( Exception e ) {
+         } catch ( final Exception e ) {
             System.out.println( e.getMessage() );
             try {
                // Cache should be removed if it can't be downloaded or its signature is invalid

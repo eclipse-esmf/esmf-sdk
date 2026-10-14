@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -93,16 +94,35 @@ public class Diagram {
       private String prototype;
       private final Color background;
       private final String title;
-      private final List<String> entries = new ArrayList<>();
+      private final Optional<String> headerMarkerId;
+      private final Optional<String> navigationTargetUrn;
+      private final List<EntryRow> entryRows = new ArrayList<>();
 
       public Box( final String prototype, final String title, final Color background ) {
+         this( prototype, title, background, Optional.empty(), Optional.empty() );
+      }
+
+      Box( final String prototype, final String title, final Color background, final String headerMarkerId,
+            final String navigationTargetUrn ) {
+         this( prototype, title, background, Optional.of( headerMarkerId ), Optional.of( navigationTargetUrn ) );
+      }
+
+      Box( final String prototype, final String title, final Color background, final Optional<String> headerMarkerId,
+            final Optional<String> navigationTargetUrn ) {
          this.prototype = prototype;
          this.title = title;
          this.background = background;
+         this.headerMarkerId = headerMarkerId;
+         this.navigationTargetUrn = navigationTargetUrn;
       }
 
-      public void addEntry( final List<String> entry ) {
-         entries.addAll( entry );
+      void addEntry( final List<String> entry, final List<Optional<DiagramAttributeNavigation.Row>> navigation ) {
+         if ( entry.size() != navigation.size() ) {
+            throw new IllegalArgumentException( "Diagram entry and navigation metadata must have equal sizes" );
+         }
+         for ( int index = 0; index < entry.size(); index++ ) {
+            entryRows.add( new EntryRow( entry.get( index ), navigation.get( index ) ) );
+         }
       }
 
       public void setPrototype( final String prototype ) {
@@ -121,9 +141,26 @@ public class Diagram {
          return background;
       }
 
-      public List<String> getEntries() {
-         return entries;
+      public Optional<String> getHeaderMarkerId() {
+         return headerMarkerId;
       }
+
+      public Optional<String> getNavigationTargetUrn() {
+         return navigationTargetUrn;
+      }
+
+      public List<String> getEntries() {
+         return entryRows.stream().map( EntryRow::text ).toList();
+      }
+
+      List<EntryRow> getEntryRows() {
+         return List.copyOf( entryRows );
+      }
+
+      record EntryRow(
+            String text,
+            Optional<DiagramAttributeNavigation.Row> navigation
+      ) {}
    }
 
    /**
