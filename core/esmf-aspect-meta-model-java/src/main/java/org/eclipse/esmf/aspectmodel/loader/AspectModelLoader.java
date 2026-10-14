@@ -38,9 +38,11 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.jena.graph.Node;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
@@ -358,7 +360,7 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
    public AspectModel loadUrns( final Collection<AspectModelUrn> urns ) {
       final LoaderContext loaderContext = new LoaderContext();
       for ( final AspectModelUrn inputUrn : urns ) {
-         loaderContext.unresolvedUrns().add( inputUrn.toString() );
+         loaderContext.enqueue( inputUrn.toString() );
       }
       resolve( List.of(), loaderContext );
       return loadAspectModelFiles( loaderContext.loadedFiles() );
@@ -463,10 +465,17 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
          Set<AspectModelFile> loadedFiles,
          Set<URI> loadedSourceLocations,
          Deque<String> unresolvedUrns,
+         Set<String> pendingUrns,
          Deque<AspectModelFile> unresolvedFiles
    ) {
       private LoaderContext() {
-         this( new HashSet<>(), new LinkedHashSet<>(), new HashSet<>(), new ArrayDeque<>(), new ArrayDeque<>() );
+         this( new HashSet<>(), new LinkedHashSet<>(), new HashSet<>(), new ArrayDeque<>(), new HashSet<>(), new ArrayDeque<>() );
+      }
+
+      private void enqueue( final String urn ) {
+         if ( !resolvedUrns.contains( urn ) && pendingUrns.add( urn ) ) {
+            unresolvedUrns.add( urn );
+         }
       }
    }
 
@@ -537,9 +546,8 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
       RdfUtil.getAllUrnsInModelExceptOnlyReferencedBySee( modelFile.sourceModel() ).stream()
             .map( AspectModelUrn::toString )
             .filter( urn -> !context.resolvedUrns().contains( urn ) )
-            .filter( urn -> !SammNs.wellKnownNamespaces().map( rdfNamespace -> urn.startsWith( rdfNamespace.getNamespace() ) )
-                  .toList().contains( true ) )
-            .forEach( urn -> context.unresolvedUrns().add( urn ) );
+            .filter( urn -> SammNs.wellKnownNamespaces().noneMatch( rdfNamespace -> urn.startsWith( rdfNamespace.getNamespace() ) ) )
+            .forEach( context::enqueue );
    }
 
    private void markModelFileAsLoaded( final AspectModelFile modelFile, final LoaderContext context ) {
@@ -558,28 +566,31 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
       }
 
       final List<ModelResolutionViolation> loadingFailures = new ArrayList<>();
-      while ( !context.unresolvedFiles().isEmpty() || !context.unresolvedUrns().isEmpty() ) {
-         if ( !context.unresolvedFiles().isEmpty() ) {
-            final AspectModelFile modelFile = context.unresolvedFiles().pop();
-            if ( context.loadedFiles().contains( modelFile ) ) {
-               continue;
-            }
-            markModelFileAsLoaded( modelFile, context );
+      while ( !context.unresolvedFiles().isEmpty() ) {
+         final AspectModelFile modelFile = context.unresolvedFiles().pop();
+         if ( context.loadedFiles().contains( modelFile ) ) {
+            continue;
          }
+         markModelFileAsLoaded( modelFile, context );
+      }
 
-         while ( !context.unresolvedUrns().isEmpty() ) {
-            try {
-               applyResolutionStrategy( context.unresolvedUrns().pop() )
-                     .map( this::migrate )
-                     .ifPresent( resolvedFile -> markModelFileAsLoaded( resolvedFile, context ) );
-            } catch ( final ModelResolutionException exception ) {
-               // If one element can not be resolved, collect its cause and continue, so that
-               // we can create a comprehensive overview of all elements that can not be resolved
-               if ( exception.getCheckedLocations().isEmpty() ) {
-                  throw exception;
-               } else {
-                  loadingFailures.addAll( exception.getCheckedLocations() );
-               }
+      while ( !context.unresolvedUrns().isEmpty() ) {
+         final String urn = context.unresolvedUrns().pop();
+         context.pendingUrns().remove( urn );
+         if ( context.resolvedUrns().contains( urn ) ) {
+            continue;
+         }
+         try {
+            applyResolutionStrategy( urn )
+                  .map( this::migrate )
+                  .ifPresent( resolvedFile -> markModelFileAsLoaded( resolvedFile, context ) );
+         } catch ( final ModelResolutionException exception ) {
+            // If one element can not be resolved, collect its cause and continue, so that
+            // we can create a comprehensive overview of all elements that can not be resolved
+            if ( exception.getCheckedLocations().isEmpty() ) {
+               throw exception;
+            } else {
+               loadingFailures.addAll( exception.getCheckedLocations() );
             }
          }
       }
@@ -680,18 +691,28 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
          final DefaultAspectModelFile aspectModelFile = new DefaultAspectModelFile( file.sourceModel(), file.headerComment(),
                file.sourceUri() );
          files.add( aspectModelFile );
+      }
+
+      final ModelElementFactory modelElementFactory = new ModelElementFactory( mergedModel, Map.of(), createSourceLocator( files ) );
+      for ( final AspectModelFile file : files ) {
          final Model model = file.sourceModel();
-         final ModelElementFactory modelElementFactory = new ModelElementFactory( mergedModel, Map.of(), element -> aspectModelFile );
-         final List<ModelElement> fileElements = model.listStatements( null, RDF.type, (RDFNode) null ).toList().stream()
-               .filter( statement -> !statement.getObject().isURIResource() || !statement.getResource().equals( SammNs.SAMM.Namespace() ) )
-               .map( Statement::getSubject )
-               .filter( RDFNode::isURIResource )
-               // use 'wrapAsResource' here to keep the same node instead of creating a new one with
-               // createResource()
-               .map( resource -> mergedModel.wrapAsResource( resource.asNode() ) )
-               .map( resource -> modelElementFactory.create( ModelElement.class, resource ) )
-               .toList();
-         aspectModelFile.setElements( fileElements );
+         final StmtIterator statements = model.listStatements( null, RDF.type, (RDFNode) null );
+         final List<ModelElement> fileElements;
+         try {
+            fileElements = Streams.stream( statements )
+                  .filter(
+                        statement -> !statement.getObject().isURIResource() || !statement.getResource().equals( SammNs.SAMM.Namespace() ) )
+                  .map( Statement::getSubject )
+                  .filter( RDFNode::isURIResource )
+                  // use 'wrapAsResource' here to keep the same node instead of creating a new one with
+                  // createResource()
+                  .map( resource -> mergedModel.wrapAsResource( resource.asNode() ) )
+                  .map( resource -> modelElementFactory.create( ModelElement.class, resource ) )
+                  .toList();
+         } finally {
+            statements.close();
+         }
+         ( (DefaultAspectModelFile) file ).setElements( fileElements );
          elements.addAll( fileElements );
       }
 
@@ -708,6 +729,37 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
          }
       }
       return new DefaultAspectModel( files, mergedModel, elements );
+   }
+
+   private Function<RDFNode, AspectModelFile> createSourceLocator( final Collection<AspectModelFile> files ) {
+      final Map<Node, AspectModelFile> sourceFiles = new HashMap<>();
+      final Map<URI, AspectModelFile> filesByUri = new HashMap<>();
+      for ( final AspectModelFile file : files ) {
+         filesByUri.put( file.sourceUri(), file );
+         final ResIterator subjects = file.sourceModel().listSubjects();
+         try {
+            subjects.forEachRemaining( subject -> {
+               if ( subject.hasProperty( RDF.type ) ) {
+                  sourceFiles.put( subject.asNode(), file );
+               } else {
+                  sourceFiles.putIfAbsent( subject.asNode(), file );
+               }
+            } );
+         } finally {
+            subjects.close();
+         }
+      }
+      return node -> {
+         final AspectModelFile definitionFile = sourceFiles.get( node.asNode() );
+         if ( definitionFile != null ) {
+            return definitionFile;
+         }
+         return TokenRegistry.getToken( node.asNode() )
+               .map( token -> filesByUri.get( token.getSourceDocument() ) )
+               .orElseGet( () -> files.stream()
+                     .filter( file -> file.sourceModel().contains( null, null, node ) )
+                     .findFirst().orElseThrow( () -> new AspectLoadingException( "No source file found for " + node ) ) );
+      };
    }
 
    /**
