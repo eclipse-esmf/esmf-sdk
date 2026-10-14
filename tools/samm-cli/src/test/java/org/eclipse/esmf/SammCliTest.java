@@ -723,20 +723,47 @@ class SammCliTest extends SammCliAbstractTest {
    }
 
    @Test
-   void testAspectToJsonToFile( @TempDir final Path outputDirectory ) {
+   void testAspectToJsonToFile( @TempDir final Path outputDirectory ) throws IOException {
       final File targetFile = outputFile( outputDirectory, "output.json" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "json", "-o",
             targetFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
       assertThat( targetFile ).exists();
-      assertThat( targetFile ).content().contains( "\"entityProperty\" :" );
+      final String output = Files.readString( targetFile.toPath() );
+      assertThat( output ).endsWith( "\n" );
+      final List<String> records = output.lines().toList();
+      assertThat( records ).hasSize( 1 );
+      final JsonNode json = new ObjectMapper().readTree( records.getFirst() );
+      assertThat( json.isObject() ).isTrue();
+      assertThat( json.get( "testProperty" ).has( "entityProperty" ) ).isTrue();
    }
 
    @Test
-   void testAspectToJsonToStdout() {
+   void testAspectToJsonToStdout() throws IOException {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "json" );
-      assertThat( result.stdout() ).contains( "\"entityProperty\" :" );
+      assertThat( result.stdout() ).endsWith( "\n" );
+      final List<String> records = result.stdout().lines().toList();
+      assertThat( records ).hasSize( 1 );
+      final JsonNode json = new ObjectMapper().readTree( records.getFirst() );
+      assertThat( json.isObject() ).isTrue();
+      assertThat( json.get( "testProperty" ).has( "entityProperty" ) ).isTrue();
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectToJsonWithCount() throws IOException {
+      final ExecutionResult result = sammCli.runAndExpectSuccess(
+            "--disable-color", "aspect", defaultInputFile, "to", "json", "--count", "3" );
+      assertThat( result.stdout() ).endsWith( "\n" );
+      final List<String> records = result.stdout().lines().toList();
+      assertThat( records ).hasSize( 3 );
+      final ObjectMapper objectMapper = new ObjectMapper();
+      for ( final String record : records ) {
+         final JsonNode json = objectMapper.readTree( record );
+         assertThat( json.isObject() ).isTrue();
+         assertThat( json.get( "testProperty" ).has( "entityProperty" ) ).isTrue();
+      }
       assertThat( result.stderr() ).isEmpty();
    }
 
@@ -763,7 +790,7 @@ class SammCliTest extends SammCliAbstractTest {
    void testAspectToJsonToStdoutWithCustomResolver() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "json",
             "--custom-resolver", resolverCommand() );
-      assertThat( result.stdout() ).contains( "\"entityProperty\" :" );
+      assertThat( result.stdout() ).containsPattern( "\"entityProperty\" *:" );
       assertThat( result.stderr() ).isEmpty();
    }
 
@@ -772,7 +799,7 @@ class SammCliTest extends SammCliAbstractTest {
       final String input = inputFile( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).getAbsolutePath();
       final ExecutionResult result = sammCli.runAndExpectSuccess(
             "--disable-color", "aspect", input, "to", "json" );
-      assertThat( result.stdout() ).contains( "\"testLocalDateTimeWithoutExample\" : \"1970-01-01T00:00:00.000Z\"" );
+      assertThat( result.stdout() ).containsPattern( "\"testLocalDateTimeWithoutExample\" *: *\"1970-01-01T00:00:00.000Z\"" );
       assertThat( result.stderr() ).isEmpty();
    }
 
@@ -781,8 +808,8 @@ class SammCliTest extends SammCliAbstractTest {
       final String input = inputFile( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).getAbsolutePath();
       final ExecutionResult result = sammCli.runAndExpectSuccess(
             "--disable-color", "aspect", input, "to", "json", "--current-timestamp" );
-      assertThat( result.stdout() ).contains( "\"testLocalDateTimeWithoutExample\" :" );
-      assertThat( result.stdout() ).doesNotContain( "\"testLocalDateTimeWithoutExample\" : \"1970-01-01T00:00:00.000Z\"" );
+      assertThat( result.stdout() ).containsPattern( "\"testLocalDateTimeWithoutExample\" *:" );
+      assertThat( result.stdout() ).doesNotContainPattern( "\"testLocalDateTimeWithoutExample\" *: *\"1970-01-01T00:00:00.000Z\"" );
       assertThat( result.stderr() ).isEmpty();
    }
 
