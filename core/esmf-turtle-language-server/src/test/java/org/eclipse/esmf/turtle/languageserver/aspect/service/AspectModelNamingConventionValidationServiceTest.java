@@ -43,7 +43,7 @@ class AspectModelNamingConventionValidationServiceTest {
 
    private final AspectModelNamingConventionValidationService service = new AspectModelNamingConventionValidationService();
 
-   static Stream<Arguments> namingConventionWarningScenarios() {
+   static Stream<Arguments> namingConventionErrorScenarios() {
       return Stream.of(
             Arguments.of(
                   "characteristic name starting lowercase produces warning",
@@ -57,7 +57,7 @@ class AspectModelNamingConventionValidationServiceTest {
                      :myValue a samm:Characteristic ;
                         samm:dataType xsd:string .
                      """,
-                  "WARN_NAMING_CONVENTION",
+                  "ERR_NAMING_CONVENTION",
                   NAMING_CONVENTION_DOCS,
                   "'myValue' should start with an uppercase letter, e.g. 'MyValue'"
             ),
@@ -74,7 +74,7 @@ class AspectModelNamingConventionValidationServiceTest {
                         samm:dataType xsd:string ;
                         samm-c:values ( "a" "b" ) .
                      """,
-                  "WARN_NAMING_CONVENTION",
+                  "ERR_NAMING_CONVENTION",
                   NAMING_CONVENTION_DOCS,
                   "'myState' should start with an uppercase letter, e.g. 'MyState'"
             ),
@@ -90,7 +90,7 @@ class AspectModelNamingConventionValidationServiceTest {
                      :MyState a samm:Characteristic ;
                         samm:dataType xsd:string .
                      """,
-                  "WARN_NAMING_CONVENTION",
+                  "ERR_NAMING_CONVENTION",
                   NAMING_CONVENTION_DOCS,
                   "'MyValue' should start with a lowercase letter, e.g. 'myValue'"
             ),
@@ -109,10 +109,30 @@ class AspectModelNamingConventionValidationServiceTest {
                      :MyState a samm:Characteristic ;
                         samm:dataType xsd:string .
                      """,
-                  "WARN_NAMING_CONVENTION",
+                  "ERR_NAMING_CONVENTION",
                   NAMING_CONVENTION_DOCS,
                   "'MyAbstractValue' should start with a lowercase letter, e.g. 'myAbstractValue'"
-            ),
+            ) );
+   }
+
+   @ParameterizedTest( name = "{0}" )
+   @MethodSource( "namingConventionErrorScenarios" )
+   void namingConventionViolationProducesError( final String scenarioName, final String content, final String expectedErrorCode,
+         final String expectedHref, final String expectedMessage ) {
+      final ParsedDocument document = parsedDocument( "Aspect.ttl", PREFIXES + content );
+
+      final ViolationReport report = service.validate( document );
+
+      assertThat( report.violations() ).singleElement().isInstanceOfSatisfying( DefaultDocumentLocationViolation.class, diagnostic -> {
+         assertThat( diagnostic.code().code() ).isEqualTo( expectedErrorCode );
+         assertThat( diagnostic.code().href() ).contains( expectedHref );
+         assertThat( diagnostic.severity() ).isEqualTo( Violation.Severity.ERROR );
+         assertThat( diagnostic.message() ).isEqualTo( expectedMessage );
+      } );
+   }
+
+   static Stream<Arguments> namingBestPracticeInfoScenarios() {
+      return Stream.of(
             Arguments.of(
                   "property name with uppercase acronym produces warning",
                   """
@@ -125,7 +145,7 @@ class AspectModelNamingConventionValidationServiceTest {
                      :MyValue a samm:Characteristic ;
                         samm:dataType xsd:string .
                      """,
-                  "WARN_NAMING_BEST_PRACTICES",
+                  "INFO_NAMING_BEST_PRACTICES",
                   BEST_PRACTICES_DOCS,
                   "Name 'documentURL' should use camel case for acronyms instead of all-uppercase, e.g. 'documentUrl'"
             ),
@@ -141,7 +161,7 @@ class AspectModelNamingConventionValidationServiceTest {
                      :XMLParserValue a samm:Characteristic ;
                         samm:dataType xsd:string .
                      """,
-                  "WARN_NAMING_BEST_PRACTICES",
+                  "INFO_NAMING_BEST_PRACTICES",
                   BEST_PRACTICES_DOCS,
                   "Name 'XMLParserValue' should use camel case for acronyms instead of all-uppercase, e.g. 'XmlParserValue'"
             ),
@@ -152,7 +172,7 @@ class AspectModelNamingConventionValidationServiceTest {
                         samm:description "this is a test description."@en ;
                         samm:properties ( ) .
                      """,
-                  "WARN_NAMING_BEST_PRACTICES",
+                  "INFO_NAMING_BEST_PRACTICES",
                   BEST_PRACTICES_DOCS,
                   "Description should start with an uppercase letter"
             ),
@@ -163,7 +183,7 @@ class AspectModelNamingConventionValidationServiceTest {
                         samm:description "This is a test description"@en ;
                         samm:properties ( ) .
                      """,
-                  "WARN_NAMING_BEST_PRACTICES",
+                  "INFO_NAMING_BEST_PRACTICES",
                   BEST_PRACTICES_DOCS,
                   "Description should end with a period"
             ),
@@ -173,7 +193,7 @@ class AspectModelNamingConventionValidationServiceTest {
                      :VehicleAspect a samm:Aspect ;
                         samm:properties ( ) .
                      """,
-                  "WARN_NAMING_BEST_PRACTICES",
+                  "INFO_NAMING_BEST_PRACTICES",
                   BEST_PRACTICES_DOCS,
                   "Name 'VehicleAspect' should not contain the meta model element type 'Aspect', e.g. 'Vehicle'"
             ),
@@ -189,7 +209,7 @@ class AspectModelNamingConventionValidationServiceTest {
                      :MyValue a samm:Characteristic ;
                         samm:dataType xsd:string .
                      """,
-                  "WARN_NAMING_BEST_PRACTICES",
+                  "INFO_NAMING_BEST_PRACTICES",
                   BEST_PRACTICES_DOCS,
                   "Name 'priceProperty' should not contain the meta model element type 'Property', e.g. 'price'"
             ),
@@ -199,7 +219,7 @@ class AspectModelNamingConventionValidationServiceTest {
                      :ExampleAspectTest a samm:Aspect ;
                         samm:properties ( ) .
                      """,
-                  "WARN_NAMING_BEST_PRACTICES",
+                  "INFO_NAMING_BEST_PRACTICES",
                   BEST_PRACTICES_DOCS,
                   "Name 'ExampleAspectTest' should not contain the meta model element type 'Aspect', e.g. 'ExampleTest'"
             ),
@@ -215,7 +235,7 @@ class AspectModelNamingConventionValidationServiceTest {
                      :TemperatureCharacteristic a samm:Characteristic ;
                         samm:dataType xsd:string .
                      """,
-                  "WARN_NAMING_BEST_PRACTICES",
+                  "INFO_NAMING_BEST_PRACTICES",
                   BEST_PRACTICES_DOCS,
                   "Name 'TemperatureCharacteristic' should not contain the meta model element type 'Characteristic', e.g. 'Temperature'"
             ),
@@ -234,7 +254,7 @@ class AspectModelNamingConventionValidationServiceTest {
                      :EngineEntity a samm:Entity ;
                         samm:properties ( ) .
                      """,
-                  "WARN_NAMING_BEST_PRACTICES",
+                  "INFO_NAMING_BEST_PRACTICES",
                   BEST_PRACTICES_DOCS,
                   "Name 'EngineEntity' should not contain the meta model element type 'Entity', e.g. 'Engine'"
             ),
@@ -250,7 +270,7 @@ class AspectModelNamingConventionValidationServiceTest {
                      :Characteristic a samm:Characteristic ;
                         samm:dataType xsd:string .
                      """,
-                  "WARN_NAMING_BEST_PRACTICES",
+                  "INFO_NAMING_BEST_PRACTICES",
                   BEST_PRACTICES_DOCS,
                   "Name 'Characteristic' should not simply repeat the meta model element type 'Characteristic', "
                         + "choose a more descriptive name"
@@ -259,8 +279,8 @@ class AspectModelNamingConventionValidationServiceTest {
    }
 
    @ParameterizedTest( name = "{0}" )
-   @MethodSource( "namingConventionWarningScenarios" )
-   void namingConventionViolationProducesWarning( final String scenarioName, final String content, final String expectedErrorCode,
+   @MethodSource( "namingBestPracticeInfoScenarios" )
+   void namingBestPracticeViolationProducesInfo( final String scenarioName, final String content, final String expectedErrorCode,
          final String expectedHref, final String expectedMessage ) {
       final ParsedDocument document = parsedDocument( "Aspect.ttl", PREFIXES + content );
 
@@ -269,7 +289,7 @@ class AspectModelNamingConventionValidationServiceTest {
       assertThat( report.violations() ).singleElement().isInstanceOfSatisfying( DefaultDocumentLocationViolation.class, diagnostic -> {
          assertThat( diagnostic.code().code() ).isEqualTo( expectedErrorCode );
          assertThat( diagnostic.code().href() ).contains( expectedHref );
-         assertThat( diagnostic.severity() ).isEqualTo( Violation.Severity.WARNING );
+         assertThat( diagnostic.severity() ).isEqualTo( Violation.Severity.INFO );
          assertThat( diagnostic.message() ).isEqualTo( expectedMessage );
       } );
    }
