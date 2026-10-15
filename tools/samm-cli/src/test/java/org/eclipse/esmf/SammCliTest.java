@@ -28,9 +28,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.tika.mime.MediaType;
-
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
@@ -44,6 +41,8 @@ import org.eclipse.esmf.test.TestSharedModel;
 import org.eclipse.esmf.util.process.ProcessLauncher;
 import org.eclipse.esmf.util.process.ProcessLauncher.ExecutionResult;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.tika.mime.MediaType;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
@@ -54,7 +53,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
@@ -353,7 +351,7 @@ class SammCliTest extends SammCliAbstractTest {
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
       assertThat( targetFile ).exists();
-      assertThat( contentType( targetFile ) ).isEqualTo( MediaType.text( "plain" ) );
+      assertThat( contentType( targetFile ) ).isEqualTo( MediaType.application( "json" ) );
    }
 
    @Test
@@ -743,11 +741,66 @@ class SammCliTest extends SammCliAbstractTest {
    }
 
    @Test
+   void testAspectToJsonToStdoutIgnoringExampleValues() throws IOException {
+      final String input = inputFile( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).getAbsolutePath();
+
+      final ExecutionResult resultWithExampleValues = sammCli.runAndExpectSuccess(
+            "--disable-color", "aspect", input, "to", "json" );
+      final ExecutionResult resultIgnoringExampleValues = sammCli.runAndExpectSuccess(
+            "--disable-color", "aspect", input, "to", "json", "--ignore-example-value" );
+
+      final ObjectMapper objectMapper = new ObjectMapper();
+      final JsonNode payloadWithExampleValues = objectMapper.readTree( resultWithExampleValues.stdout() );
+      final JsonNode payloadIgnoringExampleValues = objectMapper.readTree( resultIgnoringExampleValues.stdout() );
+
+      assertThat( payloadWithExampleValues.get( "testString" ).asString() ).isEqualTo( "Example Value Test" );
+      assertThat( payloadIgnoringExampleValues.get( "testString" ).asString() ).isNotEqualTo( "Example Value Test" );
+      assertThat( resultWithExampleValues.stderr() ).isEmpty();
+      assertThat( resultIgnoringExampleValues.stderr() ).isEmpty();
+   }
+
+   @Test
    void testAspectToJsonToStdoutWithCustomResolver() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "json",
             "--custom-resolver", resolverCommand() );
       assertThat( result.stdout() ).contains( "\"entityProperty\" :" );
       assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectToJsonWithDefaultTimestamp() {
+      final String input = inputFile( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).getAbsolutePath();
+      final ExecutionResult result = sammCli.runAndExpectSuccess(
+            "--disable-color", "aspect", input, "to", "json" );
+      assertThat( result.stdout() ).contains( "\"testLocalDateTimeWithoutExample\" : \"1970-01-01T00:00:00.000Z\"" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectToJsonWithCurrentTimestamp() {
+      final String input = inputFile( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).getAbsolutePath();
+      final ExecutionResult result = sammCli.runAndExpectSuccess(
+            "--disable-color", "aspect", input, "to", "json", "--current-timestamp" );
+      assertThat( result.stdout() ).contains( "\"testLocalDateTimeWithoutExample\" :" );
+      assertThat( result.stdout() ).doesNotContain( "\"testLocalDateTimeWithoutExample\" : \"1970-01-01T00:00:00.000Z\"" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectToJsonWithRandomTimestamp() throws IOException {
+      final String input = inputFile( TestAspect.ASPECT_WITH_SIMPLE_TYPES ).getAbsolutePath();
+      final ExecutionResult defaultResult = sammCli.runAndExpectSuccess(
+            "--disable-color", "aspect", input, "to", "json" );
+      final ExecutionResult randomResult = sammCli.runAndExpectSuccess(
+            "--disable-color", "aspect", input, "to", "json", "--random-timestamp" );
+
+      final ObjectMapper objectMapper = new ObjectMapper();
+      final JsonNode defaultPayload = objectMapper.readTree( defaultResult.stdout() );
+      final JsonNode randomPayload = objectMapper.readTree( randomResult.stdout() );
+      assertThat( randomPayload.get( "dateTimeProperty" ) ).isNotEqualTo( defaultPayload.get( "dateTimeProperty" ) );
+      assertThat( randomPayload.get( "dateTimeStampProperty" ) ).isNotEqualTo( defaultPayload.get( "dateTimeStampProperty" ) );
+      assertThat( defaultResult.stderr() ).isEmpty();
+      assertThat( randomResult.stderr() ).isEmpty();
    }
 
    @Test

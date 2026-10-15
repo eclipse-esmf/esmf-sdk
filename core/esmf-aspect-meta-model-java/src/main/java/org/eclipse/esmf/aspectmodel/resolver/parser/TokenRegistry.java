@@ -38,25 +38,14 @@ public class TokenRegistry {
     */
    private static final Map<Node, SmartToken> TOKENS = new MapMaker().weakKeys().makeMap();
 
+   private TokenRegistry() {}
+
    public static void put( final Node node, final SmartToken token ) {
       TOKENS.put( node, token );
    }
 
    public static Optional<SmartToken> getToken( final Node node ) {
       return Optional.ofNullable( TOKENS.get( node ) );
-   }
-
-   /**
-    * Replace a registered node, but keep the associated token
-    *
-    * @param oldNode the old node
-    * @param newNode the new node
-    */
-   public static synchronized void updateNode( final Node oldNode, final Node newNode ) {
-      if ( TOKENS.containsKey( oldNode ) ) {
-         final SmartToken token = TOKENS.remove( oldNode );
-         TOKENS.put( newNode, token );
-      }
    }
 
    /**

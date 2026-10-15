@@ -17,6 +17,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.JarURLConnection;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.text.Collator;
@@ -166,7 +167,7 @@ public class NamespacePackage implements ResolutionStrategy, Artifact<URI, byte[
    }
 
    /**
-    * Constructs the "jar:" URL as described in {@link java.net.JarURLConnection}, as a URI.
+    * Constructs the "jar:" URL as described in {@link JarURLConnection}, as a URI.
     *
     * @param filePath the relative path inside the file
     * @return the full jar URL

@@ -19,12 +19,39 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.jena.rfc3986.IRI;
+import org.apache.jena.rfc3986.RFC3986;
+import org.apache.jena.vocabulary.XSD;
+import org.eclipse.digitaltwin.aas4j.v3.model.AasSubmodelElements;
+import org.eclipse.digitaltwin.aas4j.v3.model.Blob;
+import org.eclipse.digitaltwin.aas4j.v3.model.Capability;
+import org.eclipse.digitaltwin.aas4j.v3.model.EventElement;
+import org.eclipse.digitaltwin.aas4j.v3.model.File;
+import org.eclipse.digitaltwin.aas4j.v3.model.HasSemantics;
+import org.eclipse.digitaltwin.aas4j.v3.model.Identifiable;
+import org.eclipse.digitaltwin.aas4j.v3.model.Key;
+import org.eclipse.digitaltwin.aas4j.v3.model.KeyTypes;
+import org.eclipse.digitaltwin.aas4j.v3.model.MultiLanguageProperty;
+import org.eclipse.digitaltwin.aas4j.v3.model.OperationVariable;
+import org.eclipse.digitaltwin.aas4j.v3.model.Range;
+import org.eclipse.digitaltwin.aas4j.v3.model.Reference;
+import org.eclipse.digitaltwin.aas4j.v3.model.ReferenceElement;
+import org.eclipse.digitaltwin.aas4j.v3.model.RelationshipElement;
+import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
+import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
+import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElementCollection;
+import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElementList;
 
 import org.eclipse.esmf.aspectmodel.VersionNumber;
 import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
@@ -57,33 +84,10 @@ import org.eclipse.esmf.metamodel.impl.DefaultProperty;
 import org.eclipse.esmf.metamodel.impl.DefaultScalar;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
-import io.vavr.control.Try;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.jena.rfc3986.IRI;
-import org.apache.jena.rfc3986.RFC3986;
-import org.apache.jena.vocabulary.XSD;
-import org.eclipse.digitaltwin.aas4j.v3.model.AasSubmodelElements;
-import org.eclipse.digitaltwin.aas4j.v3.model.Blob;
-import org.eclipse.digitaltwin.aas4j.v3.model.Capability;
-import org.eclipse.digitaltwin.aas4j.v3.model.EventElement;
-import org.eclipse.digitaltwin.aas4j.v3.model.File;
-import org.eclipse.digitaltwin.aas4j.v3.model.HasSemantics;
-import org.eclipse.digitaltwin.aas4j.v3.model.Identifiable;
-import org.eclipse.digitaltwin.aas4j.v3.model.Key;
-import org.eclipse.digitaltwin.aas4j.v3.model.KeyTypes;
-import org.eclipse.digitaltwin.aas4j.v3.model.MultiLanguageProperty;
-import org.eclipse.digitaltwin.aas4j.v3.model.OperationVariable;
-import org.eclipse.digitaltwin.aas4j.v3.model.Range;
-import org.eclipse.digitaltwin.aas4j.v3.model.Reference;
-import org.eclipse.digitaltwin.aas4j.v3.model.ReferenceElement;
-import org.eclipse.digitaltwin.aas4j.v3.model.RelationshipElement;
-import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
-import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
-import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElementCollection;
-import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElementList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.vavr.control.Try;
 
 class SubmodelToAspectConverter {
    private static final String EXAMPLE_NAMESPACE = "com.example";
@@ -423,7 +427,7 @@ class SubmodelToAspectConverter {
          final boolean upperCase, final boolean includeSee, final boolean useSemanticIdUrnForAutomaticNames ) {
       final ElementName elementName;
       final AspectModelUrn urn;
-      if ( elementNamingStrategy instanceof DetermineAutomatically( String namePrefix, boolean appendElementIdShort ) ) {
+      if ( elementNamingStrategy instanceof DetermineAutomatically( final String namePrefix, final boolean appendElementIdShort ) ) {
          elementName = determineSubmodelElementName( element, namePrefix, upperCase, appendElementIdShort );
          final String uniqueName = nextUniqueName( elementName.name() );
          final boolean useSemanticIdUrn =
@@ -431,7 +435,7 @@ class SubmodelToAspectConverter {
          urn = useSemanticIdUrn
                ? aspectModelUrnFromSemanticId( element ).orElseGet( () -> aspectUrn.withName( uniqueName ) )
                : aspectUrn.withName( uniqueName );
-      } else if ( elementNamingStrategy instanceof UseGivenUrn( AspectModelUrn aspectModelUrn ) ) {
+      } else if ( elementNamingStrategy instanceof UseGivenUrn( final AspectModelUrn aspectModelUrn ) ) {
          elementName = determineSubmodelElementName( element, "", upperCase, true );
          urn = aspectModelUrn;
       } else {
@@ -502,7 +506,7 @@ class SubmodelToAspectConverter {
             .flatMap( SubmodelToAspectUtils::keys )
             .map( Key::getValue )
             .map( conceptDescriptionInfoById::get )
-            .filter( java.util.Objects::nonNull )
+            .filter( Objects::nonNull )
             .findFirst();
    }
 
@@ -607,7 +611,7 @@ class SubmodelToAspectConverter {
       final MetaModelBaseAttributes metaModelBaseAttributes = MetaModelBaseAttributes.builder()
             .withUrn( urn )
             .withPreferredNames( SubmodelToAspectUtils.langStringSet( relationshipElement.getDisplayName() ) )
-            .withDescription( java.util.Locale.ENGLISH, characteristicDescription )
+            .withDescription( Locale.ENGLISH, characteristicDescription )
             .withSee( List.of() )
             .isAnonymous( elementName.isSynthetic() )
             .build();

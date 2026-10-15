@@ -141,6 +141,7 @@ class AspectModelAsyncApiGeneratorTest {
                                           "testProperty" : {
                                             "description" : "This is a test property.",
                                             "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty",
+                                            "example" : "Example Value",
                                             "allOf" : [ {
                                               "$ref" : "#/components/schemas/Text"
                                             } ]

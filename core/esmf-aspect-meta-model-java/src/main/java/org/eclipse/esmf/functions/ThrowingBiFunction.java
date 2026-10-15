@@ -13,8 +13,10 @@
 
 package org.eclipse.esmf.functions;
 
+import java.util.function.BiFunction;
+
 /**
- * A BiFunction similar to {@link java.util.function.BiFunction} except a {@link Throwable} can be
+ * A BiFunction similar to {@link BiFunction} except a {@link Throwable} can be
  * thrown
  *
  * @param <T> the type of the first input to the function

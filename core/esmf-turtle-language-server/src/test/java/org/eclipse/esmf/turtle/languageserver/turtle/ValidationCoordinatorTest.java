@@ -18,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.eclipse.esmf.turtle.languageserver.aspect.TestUtil.emptyParsedDocument;
 import static org.eclipse.esmf.turtle.languageserver.aspect.TestUtil.parsedDocument;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -29,18 +30,18 @@ import java.util.function.BiConsumer;
 import org.eclipse.esmf.aspectmodel.ViolationReport;
 import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
 import org.eclipse.esmf.test.TestAspect;
+import org.eclipse.esmf.turtle.languageserver.aspect.navigation.ExternalModelFileCache;
 import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.ViolationProvider;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TreeSitterTurtleParserService;
 
-import org.junit.jupiter.api.Test;
-import org.slf4j.LoggerFactory;
-
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
+import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
 
 class ValidationCoordinatorTest {
    @Test
@@ -466,6 +467,99 @@ class ValidationCoordinatorTest {
          Thread.sleep( 1000 );
          // Only the second validation should complete (the first was canceled)
          assertThat( callbackCount.get() ).isLessThanOrEqualTo( 1 );
+      }
+   }
+
+   /**
+    * Cached/materialized model files (e.g. SAMM meta model files opened via "go to definition") are
+    * internal
+    * structures the user never wrote, therefore no violation provider - neither fast nor delayed -
+    * must run on them.
+    */
+   @Test
+   void internalCachedModelFilesAreNotValidated() throws InterruptedException {
+      final Path cachedFile = ExternalModelFileCache.materialize( "ValidationCoordinatorTest-internal.ttl", "# internal model" );
+      final ParsedDocument cachedDocument = parsedDocument( cachedFile.toString(), "# internal model" );
+      assertThat( ExternalModelFileCache.isCachedModelUri( cachedDocument.sourceDocument().uri() ) ).isTrue();
+
+      final AtomicInteger providerInvocations = new AtomicInteger( 0 );
+      final CountDownLatch callbackCalled = new CountDownLatch( 1 );
+      final AtomicReference<ViolationReport> report = new AtomicReference<>();
+
+      final BiConsumer<Document, ViolationReport> onValidationComplete =
+            ( _, violationReport ) -> {
+               report.set( violationReport );
+               callbackCalled.countDown();
+            };
+      final List<ViolationProvider> violationProviders = List.of(
+            new ViolationProvider() {
+               @Override
+               public ViolationReport validate( final ParsedDocument document ) {
+                  providerInvocations.incrementAndGet();
+                  return new ViolationReport( new ProcessingViolation( "fast", new RuntimeException() ) );
+               }
+            },
+            new ViolationProvider() {
+               @Override
+               public ViolationReport validate( final ParsedDocument document ) {
+                  providerInvocations.incrementAndGet();
+                  return new ViolationReport( new ProcessingViolation( "delayed", new RuntimeException() ) );
+               }
+
+               @Override
+               public Type type() {
+                  return Type.DELAYED;
+               }
+            }
+      );
+      final ValidationCoordinator coordinator = new ValidationCoordinator( violationProviders, onValidationComplete );
+
+      try ( coordinator ) {
+         coordinator.onDocumentOpened( cachedDocument );
+
+         assertThat( callbackCalled.await( 5, TimeUnit.SECONDS ) ).isTrue();
+         assertThat( report.get().violations() ).isEmpty();
+         assertThat( providerInvocations.get() ).isZero();
+      }
+   }
+
+   @Test
+   void documentsOutsideTheModelCacheAreValidated() throws InterruptedException {
+      final ParsedDocument regularDocument = emptyParsedDocument();
+      assertThat( ExternalModelFileCache.isCachedModelUri( regularDocument.sourceDocument().uri() ) ).isFalse();
+
+      final AtomicInteger providerInvocations = new AtomicInteger( 0 );
+      final CountDownLatch callbackCalled = new CountDownLatch( 1 );
+      final AtomicReference<ViolationReport> report = new AtomicReference<>();
+
+      final BiConsumer<Document, ViolationReport> onValidationComplete =
+            ( _, violationReport ) -> {
+               report.set( violationReport );
+               callbackCalled.countDown();
+            };
+      final List<ViolationProvider> violationProviders = List.of(
+            new ViolationProvider() {
+               @Override
+               public ViolationReport validate( final ParsedDocument document ) {
+                  providerInvocations.incrementAndGet();
+                  return new ViolationReport( new ProcessingViolation( "delayed", new RuntimeException() ) );
+               }
+
+               @Override
+               public Type type() {
+                  return Type.DELAYED;
+               }
+            }
+      );
+      final ValidationCoordinator coordinator = new ValidationCoordinator( violationProviders, onValidationComplete );
+
+      try ( coordinator ) {
+         coordinator.onDocumentOpened( regularDocument );
+
+         assertThat( callbackCalled.await( 5, TimeUnit.SECONDS ) ).isTrue();
+         assertThat( report.get().violations() ).singleElement()
+               .satisfies( violation -> assertThat( violation.message() ).isEqualTo( "delayed" ) );
+         assertThat( providerInvocations.get() ).isEqualTo( 1 );
       }
    }
 }

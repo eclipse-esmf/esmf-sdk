@@ -17,6 +17,7 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.eclipse.esmf.AbstractCommand;
@@ -65,7 +66,7 @@ public class AspectUsageCommand extends AbstractCommand {
        * @return the list of formats
        */
       public static String allValues() {
-         return String.join( ", ", java.util.stream.Stream.of( values() ).map( AspectUsageFormat::toString ).toList() );
+         return String.join( ", ", Stream.of( values() ).map( AspectUsageFormat::toString ).toList() );
       }
    }
 

@@ -15,6 +15,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.resolver.EitherStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategySupport;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
@@ -50,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The resolution strategy is fully injected, making it straightforward to add further
  * strategies in the future (e.g. a GitHub-based strategy) by wrapping them in an
- * {@link org.eclipse.esmf.aspectmodel.resolver.EitherStrategy}.
+ * {@link EitherStrategy}.
  */
 public class AspectCrossFileDefinitionService extends TurtleService {
    private static final Logger LOG = LoggerFactory.getLogger( AspectCrossFileDefinitionService.class );
@@ -192,7 +193,6 @@ public class AspectCrossFileDefinitionService extends TurtleService {
 
    Optional<Location> findByLocalName( final String localName, final ParsedDocument targetDocument ) {
       final TurtleSyntaxTree tree = targetDocument.turtleSyntaxTree();
-
       final Optional<TurtleSyntaxTree.Node> definitionNode = findLocalNameInStream(
             localName, typeDefinitionSubjectPrefixedNames( tree ) )
                   .or( () -> findLocalNameInStream( localName, allSubjectPrefixedNames( tree ) ) )
@@ -203,12 +203,10 @@ public class AspectCrossFileDefinitionService extends TurtleService {
       return definitionNode.map( n -> super.getLocationForLsp( targetDocument, n ) );
    }
 
-   private Optional<TurtleSyntaxTree.Node> findLocalNameInStream(
-         final String localName, final Stream<TurtleSyntaxTree.Node> stream ) {
-      return stream
-            .filter( n -> n.children().stream()
-                  .filter( c -> c.isToken() && ParserTokenType.PN_LOCAL.equals( c.type() ) )
-                  .anyMatch( c -> localName.equals( c.content() ) ) )
+   private Optional<TurtleSyntaxTree.Node> findLocalNameInStream( final String localName, final Stream<TurtleSyntaxTree.Node> stream ) {
+      return stream.filter( n -> n.children().stream()
+            .filter( c -> c.isToken() && ParserTokenType.PN_LOCAL.equals( c.type() ) )
+            .anyMatch( c -> localName.equals( c.content() ) ) )
             .findFirst();
    }
 }

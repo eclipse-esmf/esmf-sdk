@@ -15,8 +15,11 @@ package org.eclipse.esmf.aspectmodel.java.pojo;
 
 import java.time.Year;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -83,10 +86,10 @@ public class StructureElementJavaArtifactGenerator<E extends StructureElement> i
    @Override
    public JavaArtifact apply( final E element, final JavaCodeGenerationConfig config ) {
       final ImportTracker importTracker = config.importTracker();
-      importTracker.importExplicit( java.util.Optional.class );
-      importTracker.importExplicit( java.util.List.class );
-      importTracker.importExplicit( java.util.Locale.class );
-      importTracker.importExplicit( java.util.Objects.class );
+      importTracker.importExplicit( Optional.class );
+      importTracker.importExplicit( List.class );
+      importTracker.importExplicit( Locale.class );
+      importTracker.importExplicit( Objects.class );
       importTracker.importExplicit( Generated.class );
 
       final Map<String, Object> context = ImmutableMap.<String, Object>builder()

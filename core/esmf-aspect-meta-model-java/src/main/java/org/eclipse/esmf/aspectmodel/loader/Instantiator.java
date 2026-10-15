@@ -14,6 +14,7 @@
 package org.eclipse.esmf.aspectmodel.loader;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -221,7 +222,7 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
 
    private CollectionValue buildCollectionValue( final RDFList list, final CollectionValue.CollectionType collectionType,
          final Optional<Resource> elementCharacteristic, final Type elementType ) {
-      final java.util.Collection<Value> values = createEmptyCollectionForType( collectionType );
+      final Collection<Value> values = createEmptyCollectionForType( collectionType );
       list.asJavaList().forEach( element -> values.add( buildValue( element, elementCharacteristic, elementType ) ) );
       return new DefaultCollectionValue( values, collectionType, elementType );
    }
@@ -255,7 +256,7 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
       return new DefaultEntityInstance( baseAttributes, assertions, type );
    }
 
-   private java.util.Collection<Value> createEmptyCollectionForType( final CollectionValue.CollectionType collectionType ) {
+   private Collection<Value> createEmptyCollectionForType( final CollectionValue.CollectionType collectionType ) {
       if ( collectionType == CollectionValue.CollectionType.SORTEDSET || collectionType == CollectionValue.CollectionType.SET ) {
          return new LinkedHashSet<>();
       }

@@ -719,6 +719,9 @@ Configuration Properties:
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated JSON payload will be written to. | `String` | none | {ok}
 | `addTypeAttribute` | Adds a `@type` attribute for inherited Entities | `Boolean` | `false` | {nok}
+| `currentTimestamp` | Generates the current timestamp dynamically instead of using the fixed default timestamp (Unix epoch `1970-01-01T00:00:00.000Z`). | `Boolean` | `false` | {nok}
+| `randomTimestamp` | Generates random date/time values between 1970 (inclusive) and 2100 (exclusive). Takes precedence over `currentTimestamp`. | `Boolean` | `false` | {nok}
+| `ignoreExampleValue` | Ignores example values defined in the Aspect Model and generates random values for all Properties. | `Boolean` | `false` | {nok}
 |===
 
 === Generating Sample Parquet Payload

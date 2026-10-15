@@ -43,7 +43,7 @@ public class Document implements TurtleSyntaxTree.TokenProvider {
       return uri;
    }
 
-   public String content() {
+   public synchronized String content() {
       return content.toString();
    }
 

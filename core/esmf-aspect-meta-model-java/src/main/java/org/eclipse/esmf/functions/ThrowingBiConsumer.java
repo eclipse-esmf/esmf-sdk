@@ -14,9 +14,10 @@
 package org.eclipse.esmf.functions;
 
 import java.util.Objects;
+import java.util.function.BiConsumer;
 
 /**
- * A BiConsumer similar to {@link java.util.function.BiConsumer} except a {@link Throwable} can be
+ * A BiConsumer similar to {@link BiConsumer} except a {@link Throwable} can be
  * thrown
  *
  * @param <T> the type of the first argument to the operation

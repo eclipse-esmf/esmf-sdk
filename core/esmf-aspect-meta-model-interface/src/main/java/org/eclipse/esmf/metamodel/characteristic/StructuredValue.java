@@ -28,7 +28,7 @@ public interface StructuredValue extends Characteristic {
    String getDeconstructionRule();
 
    /**
-    * @return a {@link java.util.List} of elements where each element is either a Property or a String.
+    * @return a {@link List} of elements where each element is either a Property or a String.
     */
    List<Object> getElements();
 }

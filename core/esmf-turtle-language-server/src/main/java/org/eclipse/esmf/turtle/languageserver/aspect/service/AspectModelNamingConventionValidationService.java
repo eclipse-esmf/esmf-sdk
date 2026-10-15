@@ -46,8 +46,8 @@ public class AspectModelNamingConventionValidationService extends TurtleService 
    private static final String BEST_PRACTICES_DOCS =
          "https://eclipse-esmf.github.io/samm-specification/%s/appendix/best-practices.html"
                .formatted( VersionInfo.ASPECT_META_MODEL_VERSION );
-   private static final Violation.Code NAMING_CONVENTION_CODE = new ViolationCode( "WARN_NAMING_CONVENTION", NAMING_CONVENTION_DOCS_HREF );
-   private static final Violation.Code NAMING_BEST_PRACTICES_CODE = new ViolationCode( "WARN_NAMING_BEST_PRACTICES", BEST_PRACTICES_DOCS );
+   private static final Violation.Code NAMING_CONVENTION_CODE = new ViolationCode( "ERR_NAMING_CONVENTION", NAMING_CONVENTION_DOCS_HREF );
+   private static final Violation.Code NAMING_BEST_PRACTICES_CODE = new ViolationCode( "INFO_NAMING_BEST_PRACTICES", BEST_PRACTICES_DOCS );
    private static final Pattern UPPERCASE_ACRONYM = Pattern.compile( "\\p{Upper}{2,}" );
    private static final String SAMM_DESCRIPTION_PREDICATE = RdfUtil.curie( SammNs.SAMM.description().getURI() );
    private static final Set<String> UPPERCASE_TYPES;
@@ -67,7 +67,7 @@ public class AspectModelNamingConventionValidationService extends TurtleService 
 
    @Override
    public ViolationReport validate( final ParsedDocument parsedDocument ) {
-      if ( !documentIsAspectModel( parsedDocument ) ) {
+      if ( !documentIsAspectModel( parsedDocument ) || isExemptFromValidation( parsedDocument ) ) {
          return ViolationReport.EMPTY;
       }
       return new ViolationReport(
@@ -121,7 +121,7 @@ public class AspectModelNamingConventionValidationService extends TurtleService 
             .sourceDocument( parsedDocument.getUri() )
             .documentContent( () -> parsedDocument.sourceDocument().content() )
             .location( node.location() )
-            .severity( Violation.Severity.WARNING )
+            .severity( Violation.Severity.ERROR )
             .build() );
    }
 
@@ -139,7 +139,7 @@ public class AspectModelNamingConventionValidationService extends TurtleService 
             .sourceDocument( parsedDocument.getUri() )
             .documentContent( () -> parsedDocument.sourceDocument().content() )
             .location( node.location() )
-            .severity( Violation.Severity.WARNING )
+            .severity( Violation.Severity.ERROR )
             .build() );
    }
 
@@ -155,7 +155,7 @@ public class AspectModelNamingConventionValidationService extends TurtleService 
                .sourceDocument( parsedDocument.getUri() )
                .documentContent( () -> parsedDocument.sourceDocument().content() )
                .location( node.location() )
-               .severity( Violation.Severity.WARNING )
+               .severity( Violation.Severity.INFO )
                .build() );
       }
       if ( !content.isEmpty() && Character.isLowerCase( content.charAt( 0 ) ) ) {
@@ -166,7 +166,7 @@ public class AspectModelNamingConventionValidationService extends TurtleService 
                .sourceDocument( parsedDocument.getUri() )
                .documentContent( () -> parsedDocument.sourceDocument().content() )
                .location( node.location() )
-               .severity( Violation.Severity.WARNING )
+               .severity( Violation.Severity.INFO )
                .build() );
       }
       return diagnostics;
@@ -182,7 +182,7 @@ public class AspectModelNamingConventionValidationService extends TurtleService 
                .sourceDocument( parsedDocument.getUri() )
                .documentContent( () -> parsedDocument.sourceDocument().content() )
                .location( node.location() )
-               .severity( Violation.Severity.WARNING )
+               .severity( Violation.Severity.INFO )
                .build();
       } );
    }
@@ -209,7 +209,7 @@ public class AspectModelNamingConventionValidationService extends TurtleService 
                      .sourceDocument( parsedDocument.getUri() )
                      .documentContent( () -> parsedDocument.sourceDocument().content() )
                      .location( localName.location() )
-                     .severity( Violation.Severity.WARNING )
+                     .severity( Violation.Severity.INFO )
                      .build();
             } );
    }

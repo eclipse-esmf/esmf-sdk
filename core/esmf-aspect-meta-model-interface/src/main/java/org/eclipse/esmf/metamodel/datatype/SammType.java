@@ -615,9 +615,9 @@ public sealed interface SammType<T> extends RDFDatatype, Scalar
       }
    }
 
-   final class XsdDuration extends SammXsdType<javax.xml.datatype.Duration> implements SammType<javax.xml.datatype.Duration> {
+   final class XsdDuration extends SammXsdType<Duration> implements SammType<Duration> {
       private XsdDuration() {
-         super( org.apache.jena.vocabulary.XSD.duration, javax.xml.datatype.Duration.class );
+         super( org.apache.jena.vocabulary.XSD.duration, Duration.class );
       }
 
       @Override
@@ -626,7 +626,7 @@ public sealed interface SammType<T> extends RDFDatatype, Scalar
       }
 
       @Override
-      public javax.xml.datatype.Duration parseTypedValue( final String lexicalForm ) {
+      public Duration parseTypedValue( final String lexicalForm ) {
          return Try.of( () -> datatypeFactory().newDuration( lexicalForm ) )
                .getOrElseThrow( cause -> new ValueParsingException( org.apache.jena.vocabulary.XSD.duration, lexicalForm, cause ) );
       }
@@ -637,10 +637,9 @@ public sealed interface SammType<T> extends RDFDatatype, Scalar
       }
    }
 
-   final class XsdYearMonthDuration extends SammXsdType.SammExtendedXsdType<javax.xml.datatype.Duration>
-         implements SammType<javax.xml.datatype.Duration> {
+   final class XsdYearMonthDuration extends SammXsdType.SammExtendedXsdType<Duration> implements SammType<Duration> {
       private XsdYearMonthDuration() {
-         super( org.apache.jena.vocabulary.XSD.yearMonthDuration, javax.xml.datatype.Duration.class );
+         super( org.apache.jena.vocabulary.XSD.yearMonthDuration, Duration.class );
       }
 
       @Override
@@ -649,7 +648,7 @@ public sealed interface SammType<T> extends RDFDatatype, Scalar
       }
 
       @Override
-      public javax.xml.datatype.Duration parseTypedValue( final String lexicalForm ) {
+      public Duration parseTypedValue( final String lexicalForm ) {
          return Try.of( () -> SammXsdType.datatypeFactory().newDurationYearMonth( lexicalForm ) )
                .getOrElseThrow(
                      cause -> new ValueParsingException( org.apache.jena.vocabulary.XSD.yearMonthDuration, lexicalForm, cause ) );
@@ -661,10 +660,9 @@ public sealed interface SammType<T> extends RDFDatatype, Scalar
       }
    }
 
-   final class XsdDayTimeDuration extends SammXsdType.SammExtendedXsdType<javax.xml.datatype.Duration>
-         implements SammType<javax.xml.datatype.Duration> {
+   final class XsdDayTimeDuration extends SammXsdType.SammExtendedXsdType<Duration> implements SammType<Duration> {
       private XsdDayTimeDuration() {
-         super( org.apache.jena.vocabulary.XSD.dayTimeDuration, javax.xml.datatype.Duration.class );
+         super( org.apache.jena.vocabulary.XSD.dayTimeDuration, Duration.class );
       }
 
       @Override
@@ -673,7 +671,7 @@ public sealed interface SammType<T> extends RDFDatatype, Scalar
       }
 
       @Override
-      public javax.xml.datatype.Duration parseTypedValue( final String lexicalForm ) {
+      public Duration parseTypedValue( final String lexicalForm ) {
          return Try.of( () -> SammXsdType.datatypeFactory().newDurationDayTime( lexicalForm ) )
                .getOrElseThrow( cause -> new ValueParsingException( org.apache.jena.vocabulary.XSD.dayTimeDuration, lexicalForm, cause ) );
       }

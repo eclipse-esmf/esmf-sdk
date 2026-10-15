@@ -13,6 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.aas;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,12 +24,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.eclipse.esmf.aspectmodel.generator.AspectArtifact;
-import org.eclipse.esmf.aspectmodel.generator.Generator;
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.datatype.LangString;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -42,6 +37,12 @@ import org.eclipse.digitaltwin.aas4j.v3.model.DataSpecificationIec61360;
 import org.eclipse.digitaltwin.aas4j.v3.model.EmbeddedDataSpecification;
 import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
 import org.eclipse.digitaltwin.aas4j.v3.model.ModellingKind;
+
+import org.eclipse.esmf.aspectmodel.generator.AspectArtifact;
+import org.eclipse.esmf.aspectmodel.generator.Generator;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.datatype.LangString;
 
 public class AasToAspectModelGenerator extends Generator<Environment, AspectModelUrn, Aspect, AspectGenerationConfig, AspectArtifact> {
    public static final AspectGenerationConfig DEFAULT_CONFIG = AspectGenerationConfigBuilder.builder().build();
@@ -80,7 +81,7 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
       return new AasToAspectModelGenerator( environment );
    }
 
-   public static AasToAspectModelGenerator fromFile( final java.io.File file ) {
+   public static AasToAspectModelGenerator fromFile( final File file ) {
       try ( final InputStream inputStream = new FileInputStream( file ) ) {
          return switch ( FilenameUtils.getExtension( file.getAbsolutePath() ) ) {
             case "xml" -> AasToAspectModelGenerator.fromAasXml( inputStream );

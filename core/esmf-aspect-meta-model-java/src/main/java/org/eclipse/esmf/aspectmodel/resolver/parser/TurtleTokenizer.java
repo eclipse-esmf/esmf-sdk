@@ -22,6 +22,8 @@ import java.util.stream.Collectors;
 
 import org.apache.jena.atlas.iterator.PeekIterator;
 import org.apache.jena.riot.RiotParseException;
+import org.apache.jena.riot.lang.LangEngine;
+import org.apache.jena.riot.lang.LangTurtle;
 import org.apache.jena.riot.system.ErrorHandler;
 import org.apache.jena.riot.tokens.Token;
 import org.apache.jena.riot.tokens.Tokenizer;
@@ -37,8 +39,8 @@ import com.google.common.collect.Streams;
  * regular immutable list of the tokens, and via the iterator interface ({@link #hasNext()},
  * {@link #next()}. In order to reset the iterator to the start to re-read the tokens, call
  * {@link #close()}. The second method is implemented mainly to make the TurtleTokenizer usable with
- * Apache Jena's {@link org.apache.jena.riot.lang.LangEngine}, the base class for RDF parsers, and
- * its derived classes such as {@link org.apache.jena.riot.lang.LangTurtle}.
+ * Apache Jena's {@link LangEngine}, the base class for RDF parsers, and
+ * its derived classes such as {@link LangTurtle}.
  */
 public class TurtleTokenizer implements Tokenizer {
    private PeekIterator<Token> iterator;
