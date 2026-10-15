@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 import org.eclipse.esmf.aspectmodel.ViolationReport;
 import org.eclipse.esmf.aspectmodel.validation.ProcessingViolationBuilder;
@@ -55,6 +56,7 @@ public class ValidationCoordinator extends TurtleService implements AutoCloseabl
    private final Map<Document, ScheduledFuture<?>> scheduledValidations = new ConcurrentHashMap<>();
    private final Map<Document, AtomicLong> generations = new ConcurrentHashMap<>();
    private final Map<Document, ViolationReport> fastValidationResults = new ConcurrentHashMap<>();
+   private final Map<Document, ViolationReport> delayedValidationResults = new ConcurrentHashMap<>();
 
    public ValidationCoordinator(
          final List<ViolationProvider> violationProviders,
@@ -73,29 +75,6 @@ public class ValidationCoordinator extends TurtleService implements AutoCloseabl
       executorService = Executors.newSingleThreadExecutor( Thread.ofPlatform().name( "semantic-models-validation-", 0 ).factory() );
       scheduler = Executors.newSingleThreadScheduledExecutor(
             Thread.ofPlatform().name( "semantic-models-validation-debounce-", 0 ).factory() );
-   }
-
-   private ViolationReport validateFast( final ParsedDocument parsedDocument ) {
-      if ( isExemptFromValidation( parsedDocument ) ) {
-         return ViolationReport.EMPTY;
-      }
-      if ( parserService != null ) {
-         return parserService.withExistingParsedDocument( parsedDocument.sourceDocument(), this::validateFastForCurrentDocument )
-               .orElse( ViolationReport.EMPTY );
-      }
-      synchronized ( parserLock ) {
-         return validateFastForCurrentDocument( parsedDocument );
-      }
-   }
-
-   private ViolationReport validateFastForCurrentDocument( final ParsedDocument parsedDocument ) {
-      final ViolationReport result = violationProviders.stream()
-            .filter( provider -> provider.type().equals( ViolationProvider.Type.FAST ) )
-            .map( provider -> executeViolationProvider( provider, parsedDocument ) )
-            .reduce( ViolationReport::merge )
-            .orElse( ViolationReport.EMPTY );
-      fastValidationResults.put( parsedDocument.sourceDocument(), result );
-      return result;
    }
 
    public void onDocumentOpened( final ParsedDocument parsedDocument ) {
@@ -124,6 +103,7 @@ public class ValidationCoordinator extends TurtleService implements AutoCloseabl
       cancelRunningValidation( document );
       generations.remove( document );
       fastValidationResults.remove( document );
+      delayedValidationResults.remove( document );
    }
 
    @Override
@@ -137,6 +117,7 @@ public class ValidationCoordinator extends TurtleService implements AutoCloseabl
       runningValidations.clear();
       generations.clear();
       fastValidationResults.clear();
+      delayedValidationResults.clear();
       scheduler.shutdownNow();
       executorService.shutdownNow();
       scheduler.close();
@@ -218,25 +199,41 @@ public class ValidationCoordinator extends TurtleService implements AutoCloseabl
    }
 
    private ViolationReport validateDelayed( final ParsedDocument parsedDocument ) {
+      return validate( parsedDocument, ViolationProvider.Type.DELAYED );
+   }
+
+   private ViolationReport validateFast( final ParsedDocument parsedDocument ) {
+      return validate( parsedDocument, ViolationProvider.Type.FAST );
+   }
+
+   private ViolationReport validate( final ParsedDocument parsedDocument, final ViolationProvider.Type type ) {
       if ( isExemptFromValidation( parsedDocument ) ) {
          return ViolationReport.EMPTY;
       }
+      final Function<ParsedDocument, ViolationReport> validationFunction = ( document ) -> validateForCurrentDocument( document, type );
       if ( parserService != null ) {
-         return parserService.withExistingParsedDocument( parsedDocument.sourceDocument(), this::validateDelayedForCurrentDocument )
+         return parserService.withExistingParsedDocument( parsedDocument.sourceDocument(), validationFunction )
                .orElse( ViolationReport.EMPTY );
       }
       synchronized ( parserLock ) {
-         return validateDelayedForCurrentDocument( parsedDocument );
+         return validationFunction.apply( parsedDocument );
       }
    }
 
-   private ViolationReport validateDelayedForCurrentDocument( final ParsedDocument parsedDocument ) {
-      return violationProviders.stream()
-            .filter( provider -> provider.type().equals( ViolationProvider.Type.DELAYED ) )
+   private ViolationReport validateForCurrentDocument( final ParsedDocument parsedDocument, final ViolationProvider.Type type ) {
+      final Map<Document, ViolationReport> previousValidationResults = type.equals( ViolationProvider.Type.FAST ) ?
+            fastValidationResults :
+            delayedValidationResults;
+      final Map<Document, ViolationReport> otherTypeValidationResults = type.equals( ViolationProvider.Type.FAST ) ?
+            delayedValidationResults :
+            fastValidationResults;
+      final ViolationReport result = violationProviders.stream()
+            .filter( provider -> provider.type().equals( type ) )
             .map( provider -> executeViolationProvider( provider, parsedDocument ) )
             .reduce( ViolationReport::merge )
-            .orElse( ViolationReport.EMPTY )
-            .merge( fastValidationResults.getOrDefault( parsedDocument.sourceDocument(), ViolationReport.EMPTY ) );
+            .orElse( ViolationReport.EMPTY );
+      previousValidationResults.put( parsedDocument.sourceDocument(), result );
+      return result.merge( otherTypeValidationResults.getOrDefault( parsedDocument.sourceDocument(), ViolationReport.EMPTY ) );
    }
 
    private Throwable unwrap( final Throwable throwable ) {
