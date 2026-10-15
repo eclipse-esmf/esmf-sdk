@@ -93,7 +93,7 @@ jobs:
           export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
 
           # Required for reactor dependencies
-          mvn clean install -DskipTests -Dmaven.javadoc.skip=true
+          mvn clean install -DskipTests -Dmaven.javadoc.skip=true -Dskip.maven.failsafe
           mvn versions:set -DnewVersion=${RELEASE_VERSION}
           mvn versions:commit
 
@@ -182,7 +182,7 @@ jobs:
           export MAVEN_OPTS="-Xmx4096m"
           export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
           # Required for reactor dependencies
-          mvn clean install -DskipTests -Dmaven.javadoc.skip=true
+          mvn clean install -DskipTests -Dmaven.javadoc.skip=true -Dskip.maven.failsafe
           mvn versions:set -DnewVersion=${RELEASE_VERSION}
           mvn versions:commit
           # Actual build of core SDK
@@ -272,7 +272,7 @@ jobs:
           export MAVEN_OPTS="-Xmx4096m"
           export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
 
-          mvn clean install -DskipTests -Dmaven.javadoc.skip=true
+          mvn clean install -DskipTests -Dmaven.javadoc.skip=true -Dskip.maven.failsafe
           mvn versions:set -DnewVersion=${RELEASE_VERSION}
           mvn versions:commit
 
@@ -362,7 +362,7 @@ jobs:
           echo "release_branch_name=$release_branch_name" >> $GITHUB_ENV
 
           # Set version in pom.xml files
-          mvn -B clean install -DskipTests -Dmaven.javadoc.skip=true
+          mvn -B clean install -DskipTests -Dmaven.javadoc.skip=true -Dskip.maven.failsafe
           mvn -B versions:set -DnewVersion=${RELEASE_VERSION}
           mvn -B versions:commit
           # Set version in Antora module
@@ -489,7 +489,7 @@ jobs:
       # Milestone release: Maven deploy to Github
       - name: Publish to Github
         if: contains( env.RELEASE_VERSION, '-M' )
-        run: mvn -s ./settings.xml -B clean -pl '!documentation,!tools/samm-cli' deploy -DskipTests -Pmilestone-build,sign
+        run: mvn -s ./settings.xml -B clean -pl '!documentation,!tools/samm-cli' deploy -DskipTests -Dskip.maven.failsafe -Pmilestone-build,sign
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
           PGP_KEY_PASSWORD: ${{ secrets.PGP_KEY_PASSWORD }}
