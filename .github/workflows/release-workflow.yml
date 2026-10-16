@@ -396,6 +396,7 @@ jobs:
 
       - name: "Notify issues of release their fix is contained in"
         if: ${{ !contains( env.RELEASE_VERSION, '-M' ) }}
+        continue-on-error: true
         uses: apexskier/github-release-commenter@3bd413ad5e1d603bfe2282f9f06f2bdcec079327 # v1.3.6
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
