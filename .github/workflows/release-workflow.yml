@@ -443,6 +443,11 @@ jobs:
           SHA1="$(echo -n "${DATA}" | openssl dgst -sha1 -hmac "${WEBHOOK_SECRET}" | sed 's/SHA1(stdin)= //')"
           curl -X POST https://ci.eclipse.org/esmf/github-webhook/ -H "Content-Type: application/json" -H "X-GitHub-Event: push" -H "X-Hub-Signature: sha1=${SHA1}" -d "${DATA}"
 
+      - name: Fetch Linux Artifacts
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 #v6.0.0
+        with:
+          name: linux-artifacts
+
       # Full release: Maven Central
       - name: Release to Maven Central
         if: ${{ !contains( env.RELEASE_VERSION, '-M' ) }}
