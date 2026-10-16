@@ -221,12 +221,10 @@ public class ValidationCoordinator extends TurtleService implements AutoCloseabl
    }
 
    private ViolationReport validateForCurrentDocument( final ParsedDocument parsedDocument, final ViolationProvider.Type type ) {
-      final Map<Document, ViolationReport> previousValidationResults = type.equals( ViolationProvider.Type.FAST ) ?
-            fastValidationResults :
-            delayedValidationResults;
-      final Map<Document, ViolationReport> otherTypeValidationResults = type.equals( ViolationProvider.Type.FAST ) ?
-            delayedValidationResults :
-            fastValidationResults;
+      final Map<Document, ViolationReport> previousValidationResults =
+            type.equals( ViolationProvider.Type.FAST ) ? fastValidationResults : delayedValidationResults;
+      final Map<Document, ViolationReport> otherTypeValidationResults =
+            type.equals( ViolationProvider.Type.FAST ) ? delayedValidationResults : fastValidationResults;
       final ViolationReport result = violationProviders.stream()
             .filter( provider -> provider.type().equals( type ) )
             .map( provider -> executeViolationProvider( provider, parsedDocument ) )
