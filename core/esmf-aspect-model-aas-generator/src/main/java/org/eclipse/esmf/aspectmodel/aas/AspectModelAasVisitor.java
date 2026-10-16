@@ -172,6 +172,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       return this.<T>tryFindPropertyMapper( property ).orElse( (PropertyMapper<T>) DEFAULT_MAPPER );
    }
 
+   @SuppressWarnings( "unchecked" )
    protected <T extends SubmodelElement> Optional<PropertyMapper<T>> tryFindPropertyMapper( final Property property ) {
       return getCustomPropertyMappers().stream()
             .filter( mapper -> mapper.canHandle( property ) )
@@ -687,24 +688,32 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
    }
 
    private <T extends Collection> Environment visitCollectionProperty( final T collection, final Context context ) {
-      final String listIdShort = collection.getDataType()
+      final Optional<Type> dataType = collection.getDataType();
+      final DataTypeDefXsd dataTypeDefXsd = dataType
+            .filter( Type::isScalar )
+            .map( Type::getUrn )
+            .map( AasDataTypeMapper::mapAspectTypeToAasXsdDataType )
+            .orElse( null );
+      final String listIdShort = dataType
             .filter( Entity.class::isInstance )
             .map( DEFAULT_MAPPER::determineIdShortFor )
             .orElse( null );
-      final Optional<Reference> semanticIdListElement = collection.getDataType()
+      final Optional<Reference> semanticIdListElement = dataType
             .filter( Entity.class::isInstance )
             .map( Entity.class::cast )
             .map( entity -> buildReferenceForCollection( DEFAULT_MAPPER.determineIdentifierFor( entity ) ) );
 
       final SubmodelElementBuilder defaultBuilder = property -> {
+         final SubmodelElement value = decideOnMapping( property, context );
          final DefaultSubmodelElementList.Builder submodelBuilder = new DefaultSubmodelElementList.Builder()
                .idShort( AasIdShort.from( listIdShort != null ? listIdShort : property.getName() ) )
                .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
                .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
-               .value( List.of( clearDirectListChildIdShort( decideOnMapping( property, context ) ) ) )
-               .typeValueListElement( AasSubmodelElements.SUBMODEL_ELEMENT_COLLECTION )
+               .value( List.of( clearDirectListChildIdShort( value ) ) )
+               .typeValueListElement( SubmodelToAspectUtils.submodelElementType( value ) )
+               .valueTypeListElement( dataTypeDefXsd )
                .supplementalSemanticIds( buildGlobalReferenceForSeeReferences( collection ) )
-               .orderRelevant( false );
+               .orderRelevant( collection.isOrdered() );
 
          semanticIdListElement.ifPresent( submodelBuilder::semanticIdListElement );
 
@@ -718,7 +727,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
 
       final SubmodelElementBuilder listBuilder =
             tryFindPropertyMapper( context.getProperty() )
-                  .flatMap( mapper -> collection.getDataType().map(
+                  .flatMap( mapper -> dataType.map(
                         type -> (SubmodelElementBuilder) ( Property property ) -> mapper.mapToAasProperty( type, property, context ) ) )
                   .or( () -> context.getRawPropertyValue()
                         .filter( ArrayNode.class::isInstance )
@@ -732,8 +741,10 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
                                  .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
                                  .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
                                  .value( values )
-                                 .typeValueListElement( AasSubmodelElements.SUBMODEL_ELEMENT )
-                                 .orderRelevant( false )
+                                 .typeValueListElement(
+                                       values.isEmpty() ? null : SubmodelToAspectUtils.submodelElementType( values.getFirst() ) )
+                                 .valueTypeListElement( dataTypeDefXsd )
+                                 .orderRelevant( collection.isOrdered() )
                                  .semanticId( buildReferenceForCollection( propertyUrn ) )
                                  .semanticIdListElement( semanticIdListElement.orElse( null ) )
                                  .build();

@@ -124,7 +124,9 @@ class AspectModelAasGeneratorTest {
                                  .anySatisfy( property -> assertThat( property ).asInstanceOf( type( Property.class ) )
                                        .extracting( Property::getValue )
                                        .isEqualTo( "2.25" ) ) );
-                     assertThat( ( (SubmodelElementList) sme ).getOrderRelevant() ).isFalse();
+                     assertThat( ( (SubmodelElementList) sme ).getOrderRelevant() ).isTrue();
+                     assertThat( ( (SubmodelElementList) sme ).getTypeValueListElement() )
+                           .isEqualTo( AasSubmodelElements.SUBMODEL_ELEMENT_COLLECTION );
                   }
                   ) );
    }
@@ -204,8 +206,9 @@ class AspectModelAasGeneratorTest {
       assertThat( submodelElement ).asInstanceOf( type( SubmodelElementList.class ) )
             .satisfies( submodelElementList -> {
                assertThat( submodelElementList.getIdShort() ).isEqualTo( "testProperty" );
-               assertThat( submodelElementList.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.SUBMODEL_ELEMENT_COLLECTION );
-               assertThat( ( submodelElementList ).getOrderRelevant() ).isFalse();
+               assertThat( submodelElementList.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.PROPERTY );
+               assertThat( submodelElementList.getValueTypeListElement() ).isEqualTo( DataTypeDefXsd.STRING );
+               assertThat( submodelElementList.getOrderRelevant() ).isFalse();
             } );
 
       assertThat( submodelElement.getSemanticId().getKeys().getFirst().getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
@@ -222,8 +225,9 @@ class AspectModelAasGeneratorTest {
       assertThat( submodelElement ).asInstanceOf( type( SubmodelElementList.class ) )
             .satisfies( submodelElementList -> {
                assertThat( submodelElementList.getIdShort() ).isEqualTo( "testProperty" );
-               assertThat( submodelElementList.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.SUBMODEL_ELEMENT_COLLECTION );
-               assertThat( ( submodelElementList ).getOrderRelevant() ).isFalse();
+               assertThat( submodelElementList.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.PROPERTY );
+               assertThat( submodelElementList.getValueTypeListElement() ).isEqualTo( DataTypeDefXsd.STRING );
+               assertThat( submodelElementList.getOrderRelevant() ).isTrue();
             } );
 
       assertThat( submodelElement.getSemanticId().getKeys().getFirst().getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
@@ -240,8 +244,9 @@ class AspectModelAasGeneratorTest {
       assertThat( submodelElement ).asInstanceOf( type( SubmodelElementList.class ) )
             .satisfies( submodelElementList -> {
                assertThat( submodelElementList.getIdShort() ).isEqualTo( "testProperty" );
-               assertThat( submodelElementList.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.SUBMODEL_ELEMENT_COLLECTION );
-               assertThat( ( submodelElementList ).getOrderRelevant() ).isFalse();
+               assertThat( submodelElementList.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.PROPERTY );
+               assertThat( submodelElementList.getValueTypeListElement() ).isEqualTo( DataTypeDefXsd.STRING );
+               assertThat( submodelElementList.getOrderRelevant() ).isFalse();
             } );
       assertThat( submodelElement.getSemanticId().getKeys().getFirst().getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
 
@@ -255,7 +260,7 @@ class AspectModelAasGeneratorTest {
       assertThat( env.getSubmodels().getFirst().getSubmodelElements() ).hasSize( 1 );
       final SubmodelElement submodelElement = env.getSubmodels().getFirst().getSubmodelElements().getFirst();
       assertThat( submodelElement ).as( "SubmodelElement is not a SubmodelElementList" ).isInstanceOf( SubmodelElementList.class );
-      assertThat( ( ( (SubmodelElementList) submodelElement ) ).getOrderRelevant() ).isFalse();
+      assertThat( ( ( (SubmodelElementList) submodelElement ) ).getOrderRelevant() ).isTrue();
       assertThat( submodelElement.getIdShort() ).isEqualTo( "testProperty" );
       assertThat( submodelElement.getSemanticId().getKeys().getFirst().getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
 

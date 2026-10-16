@@ -56,13 +56,13 @@ are the attributes of the preceding model element.
 
 | samm:Property.exampleValue  | aas:Property.value  | In templates, exampleValue is used as aas:Property.value and added as an SMT/ExampleValue qualifier of kind TemplateQualifier. When data is provided, the real value is used and no qualifiers are generated.
 
-| samm:Characteristic.dataType  | aas:Property.valueType | Mapped to aas:Property.valueType using a fixed XSD type mapping, where types without explicit mapping default to xsd:string. The dataType of the DataSpecificationIEC61360 in the ConceptDescription is set accordingly, defaulting to STRING. For aas:SubmodelElementList, the typeValueListElement is SubmodelElementCollection in template mode and SubmodelElement when aspect data is supplied; if the element type is an Entity, its URN is used as semanticIdListElement.
+| samm:Characteristic.dataType  | aas:Property.valueType, aas:SubmodelElementList.valueTypeListElement | Mapped to aas:Property.valueType using a fixed XSD type mapping, where types without explicit mapping default to xsd:string. The dataType of the DataSpecificationIEC61360 in the ConceptDescription is set accordingly, defaulting to STRING. For collection mappings, typeValueListElement reflects the actual generated child type: the template child's type in template mode, or the first generated child's type when aspect data is supplied (for example, Property, SubmodelElementCollection, or Blob). Scalar collection data types are mapped to valueTypeListElement using the same XSD type mapping in both template and instance mode; valueTypeListElement is omitted for non-scalar or absent data types. If the element type is an Entity, its URN is used as semanticIdListElement.
 
 | **samm:Operation** |  aas:Operation  | in/out parameters are not used in SAMM so the mapping only generates input variables and output variables in AAS. A ConceptDescription is also created.
 
 | xref:samm-specification:ROOT:characteristics.adoc#characteristic-characteristic[**samm-c:Characteristic**]  | aas:SubmodelElement, aas:ConceptDescription  | Characteristics in SAMM define the meaning and type of a property. In AAS, type and description are separated. Characteristics help create the SubmodelElements and fill the ConceptDescriptions (with DataSpecificationIEC61360).
 
-| xref:samm-specification:ROOT:characteristics.adoc#collection-characteristic[**samm-c:Collection**] | aas:SubmodelElementList, aas:ConceptDescription  | The general remarks to Characteristics apply also to Collection type Characteristics. Properties referencing Collections (including samm-c:List, samm-c:Set, samm-c:SortedSet, and samm-c:TimeSeries) are mapped to SubmodelElementLists with orderRelevant set to false. Uniqueness and sorting constraints are not represented in AAS. When aspect data is supplied and the element type is a scalar, all values are serialized into a single aas:Blob with content type text/plain and comma-separated values.
+| xref:samm-specification:ROOT:characteristics.adoc#collection-characteristic[**samm-c:Collection**] | aas:SubmodelElementList, aas:ConceptDescription  | The general remarks to Characteristics apply also to Collection type Characteristics. Properties referencing Collections (including samm-c:List, samm-c:Set, samm-c:SortedSet, and samm-c:TimeSeries) are mapped to SubmodelElementLists. In both template and instance mode, orderRelevant is set to true for samm-c:List, samm-c:SortedSet, and samm-c:TimeSeries, and to false for samm-c:Collection and samm-c:Set. Uniqueness and specific sorting constraints are not represented in AAS beyond this ordered/unordered distinction. When aspect data is supplied and the element type is a scalar, all values are serialized into a single aas:Blob with content type text/plain and comma-separated values.
 
 | xref:samm-specification:ROOT:characteristics.adoc#quantifiable-characteristic[**samm-c:Quantifiable**]  | aas:SubmodelElement, aas:ConceptDescription | The general remarks to Characteristics apply also to Quantifiable type Characteristics. Quantifiables (also Duration and Measurement) reference a unit, which is added to the ConceptDescription corresponding the mapped Characteristic.
 
@@ -91,7 +91,7 @@ However, there are still limitations:
 * samm-c:Either is mapped to aas:SubmodelElementList with two entries for left and right side
 * Recursive optional properties of SAMM model are not included in output but dropped straight away
 * Abstract Properties and Properties without a Characteristic are skipped during mapping
-* Constraints of samm-c:Trait as well as uniqueness and ordering of collections are not represented in AAS
+* Constraints of samm-c:Trait as well as uniqueness and specific sorting constraints of collections are not represented in AAS; collection ordering is represented by orderRelevant
 * Collections of scalar values are represented as a single aas:Blob when aspect data is supplied
 
 [[translate-aspect-model-to-aas]]
