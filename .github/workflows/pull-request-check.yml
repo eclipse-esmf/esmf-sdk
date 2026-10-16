@@ -35,7 +35,7 @@ jobs:
 
       - name: Checkout repository (Windows)
         if: matrix.os == 'windows-latest'
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
         env:
           GIT_CONFIG_GLOBAL: ${{ runner.temp }}\.gitconfig
         with:
@@ -44,13 +44,13 @@ jobs:
 
       - name: Checkout repository (non-Windows)
         if: matrix.os != 'windows-latest'
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
         with:
           submodules: recursive
           persist-credentials: false
 
       - name: Setup JDK
-        uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad #v6.1.0
         with:
           java-version: '25.0.1'
           distribution: 'temurin'
@@ -63,13 +63,13 @@ jobs:
           echo "RELEASE_VERSION=$version"
 
       - name: Setup Python
-        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 #v6.3.0
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 #v7.0.0
         with:
           python-version: '3.13'
       - run: pip install pefile
 
       - name: Cache Maven packages
-        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb #v5.0.1
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 #v6.1.0
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
