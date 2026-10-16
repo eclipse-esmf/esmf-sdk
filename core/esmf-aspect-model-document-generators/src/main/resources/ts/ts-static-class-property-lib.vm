@@ -1,0 +1,136 @@
+#**
+ ~ Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+ ~
+ ~ See the AUTHORS file(s) distributed with this work for additional
+ ~ information regarding authorship.
+ ~
+ ~ This Source Code Form is subject to the terms of the Mozilla Public
+ ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+ ~ file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ ~
+ ~ SPDX-License-Identifier: MPL-2.0
+ *#
+
+#macro( propertyDeclaration ) public static readonly #end
+
+#macro( getCharacteristicClassName )
+    $property.getEffectiveCharacteristic().get().getClass().getSimpleName()
+#end
+
+
+#* @vtlvariable name="characteristic" type="org.eclipse.esmf.metamodel.Characteristic" *#
+#* @vtlvariable name="element" type="org.eclipse.esmf.metamodel.StructureElement" *#
+#macro( propertyCharacteristic $element $property $characteristic $propertyTypeName )
+    $characteristic.accept($modelVisitor, $context.withCurrentElement( $element ).withCurrentProperty( $property ) )
+#end
+
+#macro( tsStaticClassProperty $property $codeGenerationConfig $element )
+#set( $propertyType = $util.getPropertyType( $property, $codeGenerationConfig ) )
+#set( $containingClass = $util.generateClassName( $element, $codeGenerationConfig ) )
+
+## public static readonly $property = (definition)
+    #propertyDeclaration() $util.toConstant( $property.getName() ) = #staticProperty( $property $containingClass $codeGenerationConfig )
+
+#end
+
+## -------------------------------------------------
+
+#macro( staticProperty $property $containingClass $codeGenerationConfig )
+    #set( $propertyType = $util.getPropertyTypeAndAddImport( $property, $codeGenerationConfig ) )
+
+    ## new (class extends $type <...> {
+    #if( $Trait.isAssignableFrom( $property.getCharacteristic().get().getClass() ) )
+        $codeGenerationConfig.importTracker().importLibExplicit( 'staticProperty' , 'aspect-meta-model/staticProperty' )
+        #if( $util.hasContainerType( $property ) )
+            $codeGenerationConfig.importTracker().importLibExplicit( 'StaticConstraintContainerProperty' , 'aspect-meta-model/staticProperty'  )
+            #set( $containedType = $util.getCharacteristicTsType( $property, $codeGenerationConfig ) )
+            new (class extends StaticConstraintContainerProperty<$containingClass, $containedType, $propertyType, #getCharacteristicClassName()>{
+        #elseif( $util.hasUnit( $property.getCharacteristic().get() ) )
+            $codeGenerationConfig.importTracker().importLibExplicit( 'StaticConstraintUnitProperty' , 'aspect-meta-model/staticProperty'  )
+        new (class extends StaticConstraintUnitProperty<$containingClass, $propertyType, #getCharacteristicClassName()>{
+        #else
+        new (class extends staticProperty<$containingClass, $propertyType, #getCharacteristicClassName()>{
+        #end
+    #else
+        #if( $util.hasContainerType( $property ) && !$propertyType.startsWith( "Map" ) )
+            $codeGenerationConfig.importTracker().importLibExplicit( 'StaticContainerProperty' , 'aspect-meta-model/staticProperty'  )
+            #set( $containedType = $util.getCharacteristicTsType( $property, $codeGenerationConfig ) )
+        new (class extends StaticContainerProperty<$containingClass, $containedType, $propertyType> {
+        #elseif( $util.hasUnit( $property.getCharacteristic().get() ) )
+            $codeGenerationConfig.importTracker().importLibExplicit( 'StaticUnitProperty' , 'aspect-meta-model/staticProperty'  )
+        new (class extends StaticUnitProperty<$containingClass, $propertyType>{
+        #else
+            $codeGenerationConfig.importTracker().importLibExplicit( 'DefaultStaticProperty' , 'aspect-meta-model/staticProperty'  )
+        new (class extends DefaultStaticProperty<$containingClass, $propertyType>{
+        #end
+    #end
+
+    ## Body })(
+    #if( $Trait.isAssignableFrom( $property.getCharacteristic().get().getClass() ) )
+        getConstraints(): Array<Constraint> {
+            return this.characteristic.constraints;
+        }
+        getBaseCharacteristic(): DefaultCode {
+            return this.characteristic.baseCharacteristic;
+        }
+    #end
+
+    #set( $propertyType = $util.getPropertyType( $property, $codeGenerationConfig ) )
+    getPropertyType(): string {
+        #if( $util.hasContainerType( $property ) )
+            return '${codeGenerationConfig.importTracker().getRawContainerType( $propertyType )}';
+        #else
+            #if( ${propertyType.contains( "Either" )} )
+                return 'Either';
+            #else
+                return '${propertyType}';
+            #end
+        #end
+    }
+
+    getContainingType(): string {
+        return '${containingClass}';
+    }
+
+    #if( $util.hasContainerType( $property ) && !$propertyType.startsWith( "Map" ) )
+        getContainedType(): string {
+            return '${containedType}';
+        }
+    #end
+
+    getValue( object : $containingClass) : $propertyType {
+        return object.$property.getPayloadName();
+    }
+
+        setValue( object : $containingClass, value : $propertyType ) {
+            object.$property.getPayloadName() = value;
+        }
+
+        #if( $util.hasUnit( $property.getCharacteristic().get() ) )
+            $codeGenerationConfig.importTracker().importLibExplicit('Units', './shared/units' )
+            getUnit(): any {
+            return Units.fromName('$util.castToQuantifiable( $property.getCharacteristic().get() )')
+            }
+        #end
+    })(
+
+    ## {$arg1, $arg2, ...});
+    KnownVersion.getLatest().toString(),
+    $util.elementUrn( $element, $context ),
+    '$property.getName()',
+    #propertyCharacteristic( $element, $property, $property.getCharacteristic().get(), $propertyType ),
+    $property.isNotInPayload(),
+    $property.isOptional(),
+    $modelVisitor.exampleValue( $property, $context ),
+    #if ( '$property.getPayloadName()' != '' )
+        '$property.getPayloadName()',
+    #else
+        undefined,
+    #end
+    $property.isAbstract(),
+    #if ( !$property.getExtends().isEmpty() )
+        #staticProperty( $property.getExtends().get(), $containingClass, $codeGenerationConfig )
+    #end
+    );
+
+#end
