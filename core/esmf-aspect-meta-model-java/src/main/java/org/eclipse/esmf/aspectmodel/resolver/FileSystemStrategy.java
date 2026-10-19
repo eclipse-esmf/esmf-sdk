@@ -52,7 +52,7 @@ public class FileSystemStrategy implements ResolutionStrategy {
     * Example:
     *
     * <pre>
-    * models   <-- must be configured as modelsRoot
+    * models   -- must be configured as modelsRoot
     * └── com.example
     *     ├── 1.0.0
     *     │   ├── ExampleAspect.ttl
