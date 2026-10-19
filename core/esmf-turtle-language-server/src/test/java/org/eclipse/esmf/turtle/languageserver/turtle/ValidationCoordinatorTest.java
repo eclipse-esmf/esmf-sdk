@@ -336,12 +336,7 @@ class ValidationCoordinatorTest {
                }
             };
       final List<ViolationProvider> violationProviders = List.of(
-            new ViolationProvider() {
-               @Override
-               public ViolationReport validate( final ParsedDocument document ) {
-                  return new ViolationReport( new ProcessingViolation( "fast validation error", new RuntimeException() ) );
-               }
-            },
+            _ -> new ViolationReport( new ProcessingViolation( "fast validation error", new RuntimeException() ) ),
             new ViolationProvider() {
                @Override
                public ViolationReport validate( final ParsedDocument document ) {
@@ -362,6 +357,50 @@ class ValidationCoordinatorTest {
          assertThat( callbackCalled.await( 5, TimeUnit.SECONDS ) ).isTrue();
          assertThat( finalReport.get().violations() ).hasSize( 2 );
          assertThat( finalReport.get().violations() )
+               .anySatisfy( d -> assertThat( d.message() ).isEqualTo( "fast validation error" ) )
+               .anySatisfy( d -> assertThat( d.message() ).isEqualTo( "delayed validation error" ) );
+      }
+   }
+
+   @Test
+   void delayedValidationResultsAreMergedDuringFastValidation() throws InterruptedException {
+      final ParsedDocument parsedDocument = emptyParsedDocument();
+      final CountDownLatch delayedCallbackCalled = new CountDownLatch( 1 );
+      final AtomicReference<ViolationReport> fastReport = new AtomicReference<>();
+
+      final BiConsumer<Document, ViolationReport> onValidationComplete =
+            ( _, report ) -> {
+               if ( report.violations().stream().anyMatch( d -> d.message().equals( "fast validation error" ) ) ) {
+                  fastReport.set( report );
+               }
+               if ( report.violations().stream().anyMatch( d -> d.message().equals( "delayed validation error" ) ) ) {
+                  delayedCallbackCalled.countDown();
+               }
+            };
+      final List<ViolationProvider> violationProviders = List.of(
+            _ -> new ViolationReport( new ProcessingViolation( "fast validation error", new RuntimeException() ) ),
+            new ViolationProvider() {
+               @Override
+               public ViolationReport validate( final ParsedDocument document ) {
+                  return new ViolationReport( new ProcessingViolation( "delayed validation error", new RuntimeException() ) );
+               }
+
+               @Override
+               public Type type() {
+                  return Type.DELAYED;
+               }
+            }
+      );
+      final ValidationCoordinator coordinator = new ValidationCoordinator( violationProviders, onValidationComplete );
+
+      try ( coordinator ) {
+         coordinator.validateAsync( parsedDocument );
+
+         assertThat( delayedCallbackCalled.await( 5, TimeUnit.SECONDS ) ).isTrue();
+         coordinator.onDocumentChanged( parsedDocument );
+
+         assertThat( fastReport.get().violations() ).hasSize( 2 );
+         assertThat( fastReport.get().violations() )
                .anySatisfy( d -> assertThat( d.message() ).isEqualTo( "fast validation error" ) )
                .anySatisfy( d -> assertThat( d.message() ).isEqualTo( "delayed validation error" ) );
       }
