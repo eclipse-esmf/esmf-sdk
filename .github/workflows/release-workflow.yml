@@ -105,6 +105,8 @@ jobs:
           echo "Contents of $(pwd):"
           ls -lR
           rm -rf org/eclipse/esmf/esmf-documentation
+          find . -type f -name maven-metadata* -exec rm -f "{}" \;
+          find . -type f -name "_remote.repositories*" -exec rm -f "{}" \;
           zip -r -9 ../../central-bundle.zip .
           popd
 
