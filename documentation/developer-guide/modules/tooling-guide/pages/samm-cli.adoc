@@ -191,10 +191,18 @@ of model resolution] for more information.
                                        `--ignore-example-value` is also set.                                                  | `samm aspect AspectModel.ttl to json --random-timestamp`
                                    | _--ignore-example-value_ : Ignore example values defined in the Aspect Model and generate
                                        random values for all Properties                                                      |
-.4+| [[aspect-to-parquet]] aspect <model> to parquet | Generate example Apache Parquet payload data for an Aspect Model      | `samm aspect AspectModel.ttl to parquet`
+.7+| [[aspect-to-parquet]] aspect <model> to parquet | Generate example Apache Parquet payload data for an Aspect Model      | `samm aspect AspectModel.ttl to parquet`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
                                    | _--add-type-attribute_, _-ta_ : Add `@type` attribute for inherited Entities            |
+                                   | _--current-timestamp_ : Generate current timestamp dynamically instead of using the fixed default timestamp (Unix epoch `1970-01-01T00:00:00.000Z`). | `samm aspect AspectModel.ttl to parquet --current-timestamp`
+                                   | _--random-timestamp_ : Generate random date/time values between 1970 (inclusive) and 2100
+                                       (exclusive), in UTC. By default, date/time values use `1970-01-01T00:00:00.000Z`.
+                                       Applies to `date`, `time`, `dateTime`, `dateTimeStamp`, `gYear`, `gMonth`, `gDay`,
+                                       `gYearMonth`, and `gMonthDay`. Model example values take precedence unless
+                                       `--ignore-example-value` is also set.                                                  | `samm aspect AspectModel.ttl to parquet --random-timestamp`
+                                   | _--ignore-example-value_ : Ignore example values defined in the Aspect Model and generate
+                                       random values for all Properties                                                      |
 .3+| [[aspect-to-jsonld]] aspect <model> to jsonld | Generate JSON-LD representation of an Aspect Model                      | `samm aspect AspectModel.ttl to jsonld`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |

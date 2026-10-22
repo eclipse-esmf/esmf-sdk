@@ -55,8 +55,9 @@ public class AspectModelParquetPayloadGenerator extends AspectGenerator<String, 
    @Override
    public Stream<ParquetArtifact> generate() {
       final Aspect aspect = aspect();
-      final ParquetExampleValueGenerator exampleValueGenerator = new ParquetExampleValueGenerator( config.randomStrategy() );
-      final ParquetFileWriter fileWriter = new ParquetFileWriter( exampleValueGenerator );
+      final ParquetExampleValueGenerator exampleValueGenerator = new ParquetExampleValueGenerator( config.randomStrategy(),
+            config.currentTimestamp(), config.randomTimestamp() );
+      final ParquetFileWriter fileWriter = new ParquetFileWriter( exampleValueGenerator, config.ignoreExampleValue() );
 
       try {
          // Generate the Parquet file

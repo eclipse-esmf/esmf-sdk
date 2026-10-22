@@ -26,6 +26,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -141,6 +143,64 @@ class AspectModelParquetPayloadGeneratorTest {
       final Group intRecord = findRecordWithField( records, "testInt" );
       assertThat( intRecord ).isNotNull();
       assertThat( intRecord.getInteger( "testInt", 0 ) ).isEqualTo( 3 );
+   }
+
+   @Test
+   void testGenerateParquetIgnoringExampleValues() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
+      final ParquetGenerationConfig config = ParquetGenerationConfigBuilder.builder()
+            .randomStrategy( new Random( 0 ) )
+            .ignoreExampleValue( true )
+            .build();
+
+      final List<Group> records = readAllRecords( generateParquetForModel( aspect, config ) );
+      final Group stringRecord = findRecordWithField( records, "testString" );
+
+      assertThat( stringRecord ).isNotNull();
+      assertThat( stringRecord.getString( "testString", 0 ) ).isNotEqualTo( "Example Value Test" );
+   }
+
+   @Test
+   void testGenerateParquetWithDefaultTimestamp() throws IOException {
+      final List<Group> records = readAllRecords( generateParquetForModel( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ) );
+      final Group timestampRecord = findRecordWithField( records, "testLocalDateTimeWithoutExample" );
+
+      assertThat( timestampRecord ).isNotNull();
+      assertThat( timestampRecord.getLong( "testLocalDateTimeWithoutExample", 0 ) ).isZero();
+   }
+
+   @Test
+   void testGenerateParquetWithCurrentTimestamp() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
+      final ParquetGenerationConfig config = ParquetGenerationConfigBuilder.builder()
+            .currentTimestamp( true )
+            .build();
+      final long earliestExpectedTimestamp = LocalDateTime.now().toEpochSecond( ZoneOffset.UTC ) * 1_000_000;
+
+      final List<Group> records = readAllRecords( generateParquetForModel( aspect, config ) );
+      final long latestExpectedTimestamp = LocalDateTime.now().toEpochSecond( ZoneOffset.UTC ) * 1_000_000;
+      final Group timestampRecord = findRecordWithField( records, "testLocalDateTimeWithoutExample" );
+
+      assertThat( timestampRecord ).isNotNull();
+      assertThat( timestampRecord.getLong( "testLocalDateTimeWithoutExample", 0 ) )
+            .isBetween( earliestExpectedTimestamp, latestExpectedTimestamp );
+   }
+
+   @Test
+   void testGenerateParquetWithRandomTimestamp() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
+      final ParquetGenerationConfig config = ParquetGenerationConfigBuilder.builder()
+            .randomStrategy( new Random( 0 ) )
+            .randomTimestamp( true )
+            .build();
+
+      final List<Group> records = readAllRecords( generateParquetForModel( aspect, config ) );
+      final Group timestampRecord = findRecordWithField( records, "testLocalDateTimeWithoutExample" );
+      final long upperBound = LocalDateTime.of( 2100, 1, 1, 0, 0 ).toEpochSecond( ZoneOffset.UTC ) * 1_000_000;
+
+      assertThat( timestampRecord ).isNotNull();
+      assertThat( timestampRecord.getLong( "testLocalDateTimeWithoutExample", 0 ) )
+            .isBetween( 0L, upperBound - 1 );
    }
 
    @Test
@@ -595,7 +655,7 @@ class AspectModelParquetPayloadGeneratorTest {
    void testGenerateParquetWithCustomConfig() throws IOException {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
       final ParquetGenerationConfig config = ParquetGenerationConfigBuilder.builder()
-            .randomStrategy( new Random( 42 ) )
+            .randomStrategy( new Random( 0 ) )
             .build();
 
       final Path parquetFile = generateParquetForModel( aspect, config );
