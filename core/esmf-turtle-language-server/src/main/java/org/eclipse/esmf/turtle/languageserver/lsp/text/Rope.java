@@ -180,10 +180,15 @@ public class Rope implements CharSequence {
     * @param start the start index, inclusive
     * @param end the end index, exclusive
     * @return the subsequence of characters
+    * @throws IllegalArgumentException if the start index is negative or bigger than end index
     */
    @Override
    public @NonNull Rope subSequence( final int start, final int end ) {
-      if ( start >= end ) {
+      // Don't check if end index is beyond length because we'd have to calculate the Rope's length.
+      if ( start < 0 || start > end ) {
+         throw new IllegalArgumentException();
+      }
+      if ( start == end ) {
          return EMPTY;
       }
       final Rope part1 = split( start )[1];
