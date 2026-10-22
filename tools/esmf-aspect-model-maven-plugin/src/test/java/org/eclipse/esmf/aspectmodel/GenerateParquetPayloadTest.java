@@ -30,4 +30,14 @@ public class GenerateParquetPayloadTest extends AspectModelMojoTest {
       assertThatCode( generateParquetPayload::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "Aspect.parquet" ) ).exists();
    }
+
+   @Test
+   @InjectMojo(
+      goal = GenerateParquetPayload.MAVEN_GOAL,
+      pom = "src/test/resources/test-pom-valid-aspect-model-parquet-options/pom.xml" )
+   public void testGenerateParquetPayloadWithPayloadGenerationOptions(
+         final GenerateParquetPayload generateParquetPayload ) {
+      assertThatCode( generateParquetPayload::execute ).doesNotThrowAnyException();
+      assertThat( generatedFilePath( "AspectWithSimpleTypes.parquet" ) ).exists().isNotEmptyFile();
+   }
 }

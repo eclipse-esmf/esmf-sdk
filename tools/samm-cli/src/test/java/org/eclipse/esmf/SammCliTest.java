@@ -804,6 +804,20 @@ class SammCliTest extends SammCliAbstractTest {
    }
 
    @Test
+   void testAspectToParquetWithPayloadGenerationOptions( @TempDir final Path outputDirectory ) {
+      final File targetFile = outputFile( outputDirectory, "output.parquet" );
+      final String input = inputFile( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).getAbsolutePath();
+      final ExecutionResult result = sammCli.runAndExpectSuccess(
+            "--disable-color", "aspect", input, "to", "parquet",
+            "--ignore-example-value", "--current-timestamp", "--random-timestamp",
+            "--output", targetFile.getAbsolutePath() );
+
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( targetFile ).exists().isNotEmpty();
+   }
+
+   @Test
    void testAspectToJsonLdToFile( @TempDir final Path outputDirectory ) {
       final File targetFile = outputFile( outputDirectory, "output.json" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "jsonld", "-o",
