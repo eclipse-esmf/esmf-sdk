@@ -49,14 +49,14 @@ public class GenerateJsonPayload extends AspectModelMojo {
    @Parameter( defaultValue = "false" )
    private boolean randomTimestamp;
 
-   @Parameter( defaultValue = "1" )
-   private int count;
+   @Parameter
+   private Integer count;
 
    @Override
    public void executeGeneration() throws MojoExecutionException, MojoFailureException {
       validateParameters();
 
-      if ( count < 1 ) {
+      if ( count != null && count < 1 ) {
          throw new MojoExecutionException( "The value for count must be greater than zero." );
       }
 
@@ -69,6 +69,11 @@ public class GenerateJsonPayload extends AspectModelMojo {
                .randomTimestamp( randomTimestamp )
                .build();
          final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator( context, config );
+         if ( count == null ) {
+            writePrettyPrintedPayload( context, generator );
+            continue;
+         }
+
          try ( final OutputStream output = getOutputStreamForFile( context.getName() + ".json", outputDirectory ) ) {
             for ( int i = 0; i < count; i++ ) {
                for ( final JsonPayloadArtifact artifact : generator.generate().toList() ) {
@@ -82,5 +87,17 @@ public class GenerateJsonPayload extends AspectModelMojo {
          }
       }
       LOG.info( "Successfully generated example JSON payloads for Aspect Models." );
+   }
+
+   private void writePrettyPrintedPayload( final Aspect context, final AspectModelJsonPayloadGenerator generator )
+         throws MojoExecutionException {
+      for ( final JsonPayloadArtifact artifact : generator.generate().toList() ) {
+         try ( final OutputStream output = getOutputStreamForFile( context.getName() + ".json", outputDirectory ) ) {
+            output.write( artifact.serialize() );
+            output.flush();
+         } catch ( final Throwable exception ) {
+            throw new MojoExecutionException( "Could not write to output " + outputDirectory, exception );
+         }
+      }
    }
 }

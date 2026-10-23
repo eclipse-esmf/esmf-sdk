@@ -81,8 +81,8 @@ public class AspectToJsonCommand extends AbstractCommand {
 
    @CommandLine.Option(
       names = { "--count" },
-      description = "Number of JSON records to generate (default: ${DEFAULT-VALUE})" )
-   private int count = 1;
+      description = "Number of JSON records to generate in JSON Lines format" )
+   private Integer count;
 
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
@@ -98,7 +98,7 @@ public class AspectToJsonCommand extends AbstractCommand {
       setDetails( details );
       setResolverConfig( resolverConfiguration );
 
-      if ( count < 1 ) {
+      if ( count != null && count < 1 ) {
          throw new CommandException( "The value for --count must be greater than zero." );
       }
 
@@ -112,6 +112,15 @@ public class AspectToJsonCommand extends AbstractCommand {
 
       final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator(
             getInputHandler( parentCommand.parentCommand.getInput() ).loadAspect(), config );
+
+      // we intentionally override the name of the generated artifact here to the name explicitly desired
+      // by the user (outputFilePath),
+      // as opposed to what the model thinks it should be called (name)
+      if ( count == null ) {
+         generator.generate( name -> getStreamForFile( outputFilePath ) );
+         return;
+      }
+
       try ( final OutputStream output = getStreamForFile( outputFilePath ) ) {
          for ( int i = 0; i < count; i++ ) {
             for ( final JsonPayloadArtifact artifact : generator.generate().toList() ) {

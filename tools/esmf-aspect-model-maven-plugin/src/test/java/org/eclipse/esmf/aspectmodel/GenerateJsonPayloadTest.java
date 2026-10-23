@@ -32,10 +32,13 @@ public class GenerateJsonPayloadTest extends AspectModelMojoTest {
    @Test
    @InjectMojo(
       goal = GenerateJsonPayload.MAVEN_GOAL,
-      pom = "src/test/resources/test-pom-valid-aspect-model-output-directory/pom.xml" )
-   public void testGenerateJsonPayload( final GenerateJsonPayload generateJsonPayload ) {
+      pom = "src/test/resources/test-pom-valid-aspect-model-random-timestamp/pom.xml" )
+   public void testGenerateJsonPayload( final GenerateJsonPayload generateJsonPayload ) throws IOException {
       assertThatCode( generateJsonPayload::execute ).doesNotThrowAnyException();
-      assertThat( generatedFilePath( "Aspect.json" ) ).exists();
+      final String output = Files.readString( generatedFilePath( "AspectWithSimpleTypes.json" ) );
+      assertThat( output.lines() ).hasSizeGreaterThan( 1 );
+      assertThat( output ).contains( "\"stringProperty\" :" );
+      assertThat( JsonMapper.builder().build().readTree( output ).isObject() ).isTrue();
    }
 
    @Test
