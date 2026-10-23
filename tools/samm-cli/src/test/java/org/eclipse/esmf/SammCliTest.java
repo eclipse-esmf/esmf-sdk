@@ -723,20 +723,45 @@ class SammCliTest extends SammCliAbstractTest {
    }
 
    @Test
-   void testAspectToJsonToFile( @TempDir final Path outputDirectory ) {
+   void testAspectToJsonToFile( @TempDir final Path outputDirectory ) throws IOException {
       final File targetFile = outputFile( outputDirectory, "output.json" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "json", "-o",
             targetFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
       assertThat( targetFile ).exists();
-      assertThat( targetFile ).content().contains( "\"entityProperty\" :" );
+      final String output = Files.readString( targetFile.toPath() );
+      assertThat( output.lines() ).hasSizeGreaterThan( 1 );
+      assertThat( output ).contains( "\"entityProperty\" :" );
+      final JsonNode json = new ObjectMapper().readTree( output );
+      assertThat( json.isObject() ).isTrue();
+      assertThat( json.get( "testProperty" ).has( "entityProperty" ) ).isTrue();
    }
 
    @Test
-   void testAspectToJsonToStdout() {
+   void testAspectToJsonToStdout() throws IOException {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "json" );
+      assertThat( result.stdout().lines() ).hasSizeGreaterThan( 1 );
       assertThat( result.stdout() ).contains( "\"entityProperty\" :" );
+      final JsonNode json = new ObjectMapper().readTree( result.stdout() );
+      assertThat( json.isObject() ).isTrue();
+      assertThat( json.get( "testProperty" ).has( "entityProperty" ) ).isTrue();
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectToJsonWithCount() throws IOException {
+      final ExecutionResult result = sammCli.runAndExpectSuccess(
+            "--disable-color", "aspect", defaultInputFile, "to", "json", "--count", "3" );
+      assertThat( result.stdout() ).endsWith( "\n" );
+      final List<String> records = result.stdout().lines().toList();
+      assertThat( records ).hasSize( 3 );
+      final ObjectMapper objectMapper = new ObjectMapper();
+      for ( final String record : records ) {
+         final JsonNode json = objectMapper.readTree( record );
+         assertThat( json.isObject() ).isTrue();
+         assertThat( json.get( "testProperty" ).has( "entityProperty" ) ).isTrue();
+      }
       assertThat( result.stderr() ).isEmpty();
    }
 
