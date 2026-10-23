@@ -78,11 +78,13 @@ import org.apache.parquet.schema.Types;
 class ParquetFileWriter {
 
    private final ParquetExampleValueGenerator parquetValueGenerator;
+   private final boolean ignoreExampleValue;
    private final List<String> columnNames = new ArrayList<>();
    private MessageType messageTypeSchema;
 
-   ParquetFileWriter( final ParquetExampleValueGenerator parquetValueGenerator ) {
+   ParquetFileWriter( final ParquetExampleValueGenerator parquetValueGenerator, final boolean ignoreExampleValue ) {
       this.parquetValueGenerator = parquetValueGenerator;
+      this.ignoreExampleValue = ignoreExampleValue;
    }
 
    /**
@@ -441,7 +443,7 @@ class ParquetFileWriter {
    }
 
    private Object extractExampleValueFromProperty( final Property property, final Characteristic characteristic ) {
-      if ( property.getExampleValue().isPresent() ) {
+      if ( !ignoreExampleValue && property.getExampleValue().isPresent() ) {
          final Value exampleValue = property.getExampleValue().orElse( null );
          return extractActualValue( exampleValue );
       }

@@ -62,7 +62,7 @@ public class Document implements TurtleSyntaxTree.TokenProvider {
    public String subSequence( final int fromLine, final int fromColumn, final int toLine, final int toColumn ) {
       final int fromIndex = index( fromLine, fromColumn );
       final int toIndex = index( toLine, toColumn );
-      return content.subSequence( fromIndex, toIndex ).toString();
+      return fromIndex > toIndex ? "" : content.subSequence( fromIndex, toIndex ).toString();
    }
 
    public synchronized void update( final @Nullable Range range, final String newContent ) {

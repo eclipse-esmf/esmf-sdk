@@ -151,6 +151,18 @@ class RopeTest {
       assertThat( rope.subSequence( 4, 7 ).toString() ).isEqualTo( "def" );
    }
 
+   @Property
+   void testSubSequenceGracefullyHandlesInputIndices( @ForAll( "inputString" ) final String string ) {
+      final Rope rope = new Rope( string );
+      for ( int start = 0; start <= rope.length(); start++ ) {
+         for ( int end = 0; end <= rope.length(); end++ ) {
+            if ( start <= end ) {
+               assertThat( rope.subSequence( start, end ) ).isNotNull();
+            }
+         }
+      }
+   }
+
    @Test
    void testGetIndex() {
       final Rope rope = new Rope( "abc\ndef\nghi\n" );
