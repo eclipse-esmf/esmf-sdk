@@ -13,24 +13,14 @@
 package org.eclipse.esmf.turtle.languageserver;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.esmf.turtle.languageserver.JsonRpcTransportTestSupport.fieldNames;
+import static org.eclipse.esmf.turtle.languageserver.JsonRpcTransportTestSupport.request;
+import static org.eclipse.esmf.turtle.languageserver.JsonRpcTransportTestSupport.withConnection;
 
-import java.io.EOFException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.nio.channels.AsynchronousServerSocketChannel;
-import java.nio.channels.AsynchronousSocketChannel;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TurtleTextDocumentService;
 
@@ -42,12 +32,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
 
 class GraphicalViewJsonRpcTransportTest {
    private static final String NAMESPACE = "urn:samm:example.transport:1.0.0#";
    private static final String META_MODEL = "urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#";
-   private final ObjectMapper mapper = new ObjectMapper();
 
    @Test
    void productionLauncherEmitsCanonicalWarningsAndValidLocationsForBothResolveMethods(
@@ -60,52 +48,37 @@ class GraphicalViewJsonRpcTransportTest {
       open( textDocuments, validUri, validModel() );
       open( textDocuments, ambiguousUri, ambiguousModel() );
 
-      try ( final AsynchronousServerSocketChannel listener = AsynchronousServerSocketChannel.open() ) {
-         listener.bind( new InetSocketAddress( "localhost", 0 ) );
-         final Future<AsynchronousSocketChannel> accepted = listener.accept();
-         try ( final Socket client = new Socket() ) {
-            client.connect( (InetSocketAddress) listener.getLocalAddress() );
-            client.setSoTimeout( 30_000 );
-            final CompletableFuture<Void> handler = CompletableFuture.runAsync( () -> {
-               try {
-                  TurtleLanguageServer.handleClientConnection( accepted.get( 2, TimeUnit.SECONDS ), server );
-               } catch ( final Exception exception ) {
-                  throw new IllegalStateException( exception );
-               }
-            } );
+      try {
+         withConnection( server, client -> {
+            int id = 1;
+            assertWarning( client, id++, "turtle/graphicalView/resolveTarget",
+                  headerParams( validUri, NAMESPACE + "Missing" ), "notFound" );
+            assertWarning( client, id++, "turtle/graphicalView/resolveTarget",
+                  headerParams( ambiguousUri, NAMESPACE + "Duplicate" ), "ambiguous" );
+            assertWarning( client, id++, "turtle/graphicalView/resolveTarget",
+                  headerParams( "https://example.test/model.ttl", NAMESPACE + "Transport" ), "unsupportedUri" );
+            assertWarning( client, id++, "turtle/graphicalView/resolveTarget",
+                  headerParams( validUri, "not-a-urn" ), "unresolvable" );
 
-            try {
-               int id = 1;
-               assertWarning( client, id++, "turtle/graphicalView/resolveTarget",
-                     headerParams( validUri, NAMESPACE + "Missing" ), "notFound" );
-               assertWarning( client, id++, "turtle/graphicalView/resolveTarget",
-                     headerParams( ambiguousUri, NAMESPACE + "Duplicate" ), "ambiguous" );
-               assertWarning( client, id++, "turtle/graphicalView/resolveTarget",
-                     headerParams( "https://example.test/model.ttl", NAMESPACE + "Transport" ), "unsupportedUri" );
-               assertWarning( client, id++, "turtle/graphicalView/resolveTarget",
-                     headerParams( validUri, "not-a-urn" ), "unresolvable" );
+            assertWarning( client, id++, "turtle/graphicalView/resolveAttributeTarget",
+                  attributeParams( validUri, NAMESPACE + "Transport", META_MODEL + "name" ), "notFound" );
+            assertWarning( client, id++, "turtle/graphicalView/resolveAttributeTarget",
+                  attributeParams( ambiguousUri, NAMESPACE + "Ambiguous", META_MODEL + "see" ), "ambiguous" );
+            assertWarning( client, id++, "turtle/graphicalView/resolveAttributeTarget",
+                  attributeParams( "https://example.test/model.ttl", NAMESPACE + "Transport", META_MODEL + "see" ),
+                  "unsupportedUri" );
+            assertWarning( client, id++, "turtle/graphicalView/resolveAttributeTarget",
+                  attributeParams( validUri, "not-a-urn", META_MODEL + "see" ), "unresolvable" );
 
-               assertWarning( client, id++, "turtle/graphicalView/resolveAttributeTarget",
-                     attributeParams( validUri, NAMESPACE + "Transport", META_MODEL + "name" ), "notFound" );
-               assertWarning( client, id++, "turtle/graphicalView/resolveAttributeTarget",
-                     attributeParams( ambiguousUri, NAMESPACE + "Ambiguous", META_MODEL + "see" ), "ambiguous" );
-               assertWarning( client, id++, "turtle/graphicalView/resolveAttributeTarget",
-                     attributeParams( "https://example.test/model.ttl", NAMESPACE + "Transport", META_MODEL + "see" ),
-                     "unsupportedUri" );
-               assertWarning( client, id++, "turtle/graphicalView/resolveAttributeTarget",
-                     attributeParams( validUri, "not-a-urn", META_MODEL + "see" ), "unresolvable" );
-
-               assertLocation( client, id++, "turtle/graphicalView/resolveTarget",
-                     headerParams( validUri, NAMESPACE + "Transport" ), validUri );
-               assertLocation( client, id, "turtle/graphicalView/resolveAttributeTarget",
-                     attributeParams( validUri, NAMESPACE + "Transport", META_MODEL + "description" ), validUri );
-            } finally {
-               close( textDocuments, validUri );
-               close( textDocuments, ambiguousUri );
-               client.close();
-               handler.get( 5, TimeUnit.SECONDS );
-            }
-         }
+            assertLocation( client, id++, "turtle/graphicalView/resolveTarget",
+                  headerParams( validUri, NAMESPACE + "Transport" ), validUri );
+            assertLocation( client, id, "turtle/graphicalView/resolveAttributeTarget",
+                  attributeParams( validUri, NAMESPACE + "Transport", META_MODEL + "description" ), validUri );
+         } );
+      } finally {
+         close( textDocuments, validUri );
+         close( textDocuments, ambiguousUri );
+         server.shutdown().get( 5, TimeUnit.SECONDS );
       }
    }
 
@@ -134,13 +107,6 @@ class GraphicalViewJsonRpcTransportTest {
       assertPosition( location.at( "/range/end" ) );
    }
 
-   private JsonNode request( final Socket client, final int id, final String method, final String params ) throws Exception {
-      final String request = "{\"jsonrpc\":\"2.0\",\"id\":" + id + ",\"method\":\"" + method
-            + "\",\"params\":" + params + "}";
-      writeMessage( client.getOutputStream(), request );
-      return readResponse( client.getInputStream(), id );
-   }
-
    private static void assertPosition( final JsonNode position ) {
       assertThat( fieldNames( position ) ).containsExactlyInAnyOrder( "line", "character" );
       assertThat( position.get( "line" ).isIntegralNumber() ).isTrue();
@@ -166,61 +132,13 @@ class GraphicalViewJsonRpcTransportTest {
       service.didClose( new DidCloseTextDocumentParams( new TextDocumentIdentifier( uri ) ) );
    }
 
-   private static Set<String> fieldNames( final JsonNode node ) {
-      return node.properties().stream().map( Map.Entry::getKey )
-            .collect( Collectors.toCollection( LinkedHashSet::new ) );
-   }
-
-   private JsonNode readResponse( final InputStream input, final int id ) throws Exception {
-      while ( true ) {
-         final JsonNode message = mapper.readTree( readMessage( input ) );
-         if ( message.has( "id" ) && message.get( "id" ).asInt() == id ) {
-            return message;
-         }
-      }
-   }
-
-   private static void writeMessage( final OutputStream output, final String json ) throws Exception {
-      final byte[] content = json.getBytes( StandardCharsets.UTF_8 );
-      output.write( ( "Content-Length: " + content.length + "\r\n\r\n" ).getBytes( StandardCharsets.US_ASCII ) );
-      output.write( content );
-      output.flush();
-   }
-
-   private static String readMessage( final InputStream input ) throws Exception {
-      int contentLength = -1;
-      String line;
-      while ( !( line = readHeaderLine( input ) ).isEmpty() ) {
-         if ( line.regionMatches( true, 0, "Content-Length:", 0, "Content-Length:".length() ) ) {
-            contentLength = Integer.parseInt( line.substring( "Content-Length:".length() ).trim() );
-         }
-      }
-      if ( contentLength < 0 ) {
-         throw new EOFException( "Missing Content-Length" );
-      }
-      return new String( input.readNBytes( contentLength ), StandardCharsets.UTF_8 );
-   }
-
-   private static String readHeaderLine( final InputStream input ) throws Exception {
-      final StringBuilder line = new StringBuilder();
-      for ( int value; ( value = input.read() ) >= 0; ) {
-         if ( value == '\n' ) {
-            return line.toString();
-         }
-         if ( value != '\r' ) {
-            line.append( (char) value );
-         }
-      }
-      throw new EOFException();
-   }
-
    private static String validModel() {
       return """
          @prefix : <urn:samm:example.transport:1.0.0#> .
          @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
 
          :Transport a samm:Aspect ;
-            samm:description "Transport aspect"@en ;
+            samm:description "Transport aspect."@en ;
             samm:see <https://example.test/reference> ;
             samm:properties () ;
             samm:operations () .
