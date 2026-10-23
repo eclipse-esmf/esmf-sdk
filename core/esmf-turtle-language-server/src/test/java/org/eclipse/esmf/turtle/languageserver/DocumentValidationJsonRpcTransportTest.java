@@ -45,8 +45,8 @@ class DocumentValidationJsonRpcTransportTest {
    @Test
    void validateDocumentV2ReturnsValidationStatus( @TempDir final Path directory ) throws Exception {
       withValidationDocuments( directory, ( client, validUri, invalidUri ) -> {
-         assertValidationStatus( client, 1, validUri, "Success" );
-         assertValidationStatus( client, 2, invalidUri, "Error" );
+         assertValidationStatus( client, 1, validUri, "validation_successful" );
+         assertValidationStatus( client, 2, invalidUri, "validation_failed" );
       } );
    }
 
@@ -111,7 +111,7 @@ class DocumentValidationJsonRpcTransportTest {
       final JsonNode response = request( client, id, "turtle/aspectValidation/validateDocumentV2",
             "{\"uri\":\"" + uri + "\"}" );
       assertThat( fieldNames( response ) ).containsExactlyInAnyOrder( "jsonrpc", "id", "result" );
-      assertThat( response.get( "result" ).isTextual() ).isTrue();
+      assertThat( response.get( "result" ).isTextual() ).as( "raw response: %s", response ).isTrue();
       assertThat( response.get( "result" ).asText() ).isEqualTo( expected );
    }
 

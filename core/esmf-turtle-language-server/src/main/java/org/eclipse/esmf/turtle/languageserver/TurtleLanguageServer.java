@@ -32,6 +32,7 @@ import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRe
 import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewResolveTargetParams;
 import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewResolveTargetResult;
 import org.eclipse.esmf.turtle.languageserver.lsp.request.ValidateDocumentParams;
+import org.eclipse.esmf.turtle.languageserver.lsp.response.ValidateDocumentResponse;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TurtleTextDocumentService;
 import org.eclipse.esmf.turtle.languageserver.lsp.workspace.TurtleWorkspaceService;
 import org.eclipse.esmf.turtle.languageserver.structure.TurtleTokenService;
@@ -131,7 +132,8 @@ public class TurtleLanguageServer implements LanguageServer, LanguageClientAware
                new ResponseError( ResponseErrorCode.InvalidParams, "Missing or invalid parameters", params ) );
       }
       return textDocumentService.validateDocument( params.uri() )
-            .thenApply( report -> report.isEmpty() ? "Success" : "Error" );
+            .thenApply( report -> report.isEmpty() ? ValidateDocumentResponse.SUCCESS : ValidateDocumentResponse.FAILURE )
+            .thenApply( ValidateDocumentResponse::wireValue );
    }
 
    @JsonRequest( "turtle/graphicalView/render" )
