@@ -20,16 +20,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+import org.apache.commons.io.FilenameUtils;
+
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.ViolationReport;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
-import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.AspectModel;
 
 import io.vavr.control.Either;
-import org.apache.commons.io.FilenameUtils;
 
 /**
  * The FileInputHandler knows how to load Aspect Models if the given input is a local file
@@ -46,7 +47,7 @@ public class FileInputHandler extends AbstractInputHandler {
    @Override
    public AspectModel loadAspectModel() {
       final Function<AspectModelLoader, AspectModel> loaderFunction = validate
-            ? ( (Function<AspectModelLoader, Either<List<Violation>, AspectModel>>) loader -> loader.withValidation( validator )
+            ? ( (Function<AspectModelLoader, Either<ViolationReport, AspectModel>>) loader -> loader.withValidation( validator )
                   .load( inputFile ) ).andThen( this::getAspectModelOrPrintValidationReport )
             : ( aspectModelLoader -> aspectModelLoader.load( inputFile ) );
       return applyAspectModelLoader( loaderFunction );
@@ -96,7 +97,7 @@ public class FileInputHandler extends AbstractInputHandler {
       final AspectModel aspectModel = loadAspectModel();
       return aspectModel.files()
             .stream()
-            .filter( file -> file.sourceLocation().map( location -> location.equals( inputUri() ) ).orElse( false ) )
+            .filter( file -> file.sourceUri().equals( inputUri() ) )
             .findFirst()
             .orElseThrow( () -> new CommandException( "Could not load: " + inputUri() ) );
    }

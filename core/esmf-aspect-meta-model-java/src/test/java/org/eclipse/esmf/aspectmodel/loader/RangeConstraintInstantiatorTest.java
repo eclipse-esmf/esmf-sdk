@@ -14,7 +14,7 @@
 package org.eclipse.esmf.aspectmodel.loader;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.esmf.metamodel.builder.SammBuilder.*;
+import static org.eclipse.esmf.metamodel.builder.SammBuilder.value;
 import static org.eclipse.esmf.test.shared.AspectModelAsserts.assertThat;
 
 import org.eclipse.esmf.metamodel.Aspect;
@@ -43,8 +43,8 @@ public class RangeConstraintInstantiatorTest extends AbstractAspectModelInstanti
          final BoundDefinition boundDefinitionForLowerBound, final BoundDefinition boundDefinitionForUpperBound ) {
       assertThat( aspect ).properties().hasSize( 1 );
 
-      final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic().get();
-      final RangeConstraint rangeConstraint = (RangeConstraint) trait.getConstraints().get( 0 );
+      final Trait trait = (Trait) aspect.getProperties().getFirst().getCharacteristic().get();
+      final RangeConstraint rangeConstraint = (RangeConstraint) trait.getConstraints().getFirst();
 
       assertBaseAttributes( rangeConstraint );
       assertThat( rangeConstraint )
@@ -60,8 +60,8 @@ public class RangeConstraintInstantiatorTest extends AbstractAspectModelInstanti
 
       assertThat( aspect ).properties().hasSize( 1 );
 
-      final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic().get();
-      final RangeConstraint rangeConstraint = (RangeConstraint) trait.getConstraints().get( 0 );
+      final Trait trait = (Trait) aspect.getProperties().getFirst().getCharacteristic().get();
+      final RangeConstraint rangeConstraint = (RangeConstraint) trait.getConstraints().getFirst();
 
       assertBaseAttributes( rangeConstraint );
 
@@ -79,8 +79,8 @@ public class RangeConstraintInstantiatorTest extends AbstractAspectModelInstanti
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic().get();
-      final RangeConstraint rangeConstraint = (RangeConstraint) trait.getConstraints().get( 0 );
+      final Trait trait = (Trait) aspect.getProperties().getFirst().getCharacteristic().get();
+      final RangeConstraint rangeConstraint = (RangeConstraint) trait.getConstraints().getFirst();
 
       assertBaseAttributes( rangeConstraint );
 
@@ -98,8 +98,8 @@ public class RangeConstraintInstantiatorTest extends AbstractAspectModelInstanti
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic().get();
-      final RangeConstraint rangeConstraint = (RangeConstraint) trait.getConstraints().get( 0 );
+      final Trait trait = (Trait) aspect.getProperties().getFirst().getCharacteristic().get();
+      final RangeConstraint rangeConstraint = (RangeConstraint) trait.getConstraints().getFirst();
 
       assertBaseAttributes( rangeConstraint );
 
@@ -116,8 +116,8 @@ public class RangeConstraintInstantiatorTest extends AbstractAspectModelInstanti
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic().get();
-      final RangeConstraint rangeConstraint = (RangeConstraint) trait.getConstraints().get( 0 );
+      final Trait trait = (Trait) aspect.getProperties().getFirst().getCharacteristic().get();
+      final RangeConstraint rangeConstraint = (RangeConstraint) trait.getConstraints().getFirst();
 
       assertBaseAttributes( rangeConstraint );
 

@@ -15,6 +15,8 @@ package org.eclipse.esmf.aspectmodel.loader;
 
 import static org.eclipse.esmf.test.shared.AspectModelAsserts.assertThat;
 
+import org.apache.jena.vocabulary.XSD;
+
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Property;
@@ -27,7 +29,6 @@ import org.eclipse.esmf.metamodel.characteristic.Quantifiable;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
 
-import org.apache.jena.vocabulary.XSD;
 import org.junit.jupiter.api.Test;
 
 public class QuantifiableInstantiatorTest extends AbstractAspectModelInstantiatorTest {
@@ -38,7 +39,7 @@ public class QuantifiableInstantiatorTest extends AbstractAspectModelInstantiato
 
       assertThat( aspect ).properties().hasSize( 1 );
 
-      final Property property = aspect.getProperties().get( 0 );
+      final Property property = aspect.getProperties().getFirst();
       final Quantifiable quantifiable = (Quantifiable) property.getCharacteristic().get();
 
       assertBaseAttributes( quantifiable, expectedAspectModelUrn, "TestQuantifiable",
@@ -58,7 +59,7 @@ public class QuantifiableInstantiatorTest extends AbstractAspectModelInstantiato
 
       assertThat( aspect ).properties().hasSize( 1 );
 
-      final Quantifiable quantifiable = (Quantifiable) aspect.getProperties().get( 0 ).getCharacteristic().get();
+      final Quantifiable quantifiable = (Quantifiable) aspect.getProperties().getFirst().getCharacteristic().get();
 
       assertBaseAttributes( quantifiable, expectedAspectModelUrn, "TestQuantifiable",
             "Test Quantifiable", "This is a test Quantifiable", "http://example.com/" );
@@ -74,7 +75,7 @@ public class QuantifiableInstantiatorTest extends AbstractAspectModelInstantiato
 
       assertThat( aspect ).properties().hasSize( 1 );
 
-      final Measurement measurement = (Measurement) aspect.getProperties().get( 0 ).getCharacteristic().get();
+      final Measurement measurement = (Measurement) aspect.getProperties().getFirst().getCharacteristic().get();
 
       assertBaseAttributes( measurement, expectedAspectModelUrn, "TestMeasurement",
             "Test Measurement", "This is a test Measurement", "http://example.com/" );
@@ -93,7 +94,7 @@ public class QuantifiableInstantiatorTest extends AbstractAspectModelInstantiato
 
       assertThat( aspect ).properties().hasSize( 1 );
 
-      final Duration duration = (Duration) aspect.getProperties().get( 0 ).getCharacteristic().get();
+      final Duration duration = (Duration) aspect.getProperties().getFirst().getCharacteristic().get();
 
       assertBaseAttributes( duration, expectedAspectModelUrn, "TestDuration",
             "Test Duration", "This is a test Duration", "http://example.com/" );

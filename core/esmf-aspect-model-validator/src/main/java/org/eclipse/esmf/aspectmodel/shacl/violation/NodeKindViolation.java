@@ -28,7 +28,7 @@ import org.apache.jena.rdf.model.RDFNode;
 public record NodeKindViolation(
       EvaluationContext context, Shape.NodeKind allowedNodeKind, Shape.NodeKind actualNodeKind
 )
-      implements Violation {
+      implements ShaclViolation {
    public static final String ERROR_CODE = "ERR_NODEKIND";
 
    @Override

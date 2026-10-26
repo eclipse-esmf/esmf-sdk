@@ -154,8 +154,7 @@ public class AspectChangeManager implements ChangeContext {
 
          if ( file instanceof RawAspectModelFile ) {
             final Optional<AspectModelFile> updatedAspectModelFile = aspectModel.files().stream()
-                  .filter( f -> f.sourceLocation().isPresent() )
-                  .filter( f -> f.sourceLocation().equals( file.sourceLocation() ) )
+                  .filter( f -> f.sourceUri().equals( file.sourceUri() ) )
                   .findFirst();
             if ( updatedAspectModelFile.isEmpty() ) {
                continue;
@@ -245,7 +244,7 @@ public class AspectChangeManager implements ChangeContext {
    protected WriteResult performFileSystemWrite() {
       final List<String> messages = new ArrayList<>();
       removedFiles()
-            .map( fileToRemove -> Paths.get( fileToRemove.sourceLocation().orElseThrow() ).toFile() )
+            .map( fileToRemove -> Paths.get( fileToRemove.sourceUri() ).toFile() )
             .forEach( file -> {
                try {
                   Files.delete( file.toPath() );
@@ -255,7 +254,7 @@ public class AspectChangeManager implements ChangeContext {
             } );
 
       createdFiles().forEach( fileToCreate -> {
-         final File file = Paths.get( fileToCreate.sourceLocation().orElseThrow() ).toFile();
+         final File file = Paths.get( fileToCreate.sourceUri() ).toFile();
          if ( !file.getParentFile().exists() && !file.getParentFile().mkdirs() ) {
             messages.add( "Target path to write file could not be created: " + file );
          } else {

@@ -13,6 +13,7 @@
 
 package org.eclipse.esmf.treesitterturtle;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -22,7 +23,8 @@ import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import org.eclipse.esmf.Diagnostic;
+import org.eclipse.esmf.aspectmodel.Location;
+import org.eclipse.esmf.aspectmodel.Violation;
 
 import org.jspecify.annotations.Nullable;
 import org.treesitter.TSNode;
@@ -32,8 +34,8 @@ import org.treesitter.TSTree;
  * Represents the concrete syntax tree of a turtle document
  */
 public class TurtleSyntaxTree {
-   private final Supplier<String> sourceRepresentationSupplier;
    private final Node rootNode;
+   private final String content;
 
    public static class TurtleSyntaxTreeTraversalError extends RuntimeException {
    }
@@ -50,6 +52,8 @@ public class TurtleSyntaxTree {
       default boolean isToken() {
          return !isError();
       }
+
+      String content();
 
       default List<Node> children() {
          return List.of();
@@ -72,13 +76,13 @@ public class TurtleSyntaxTree {
     * Represents one node in the concrete syntax tree in the source document
     *
     * @param type the type of token, expected to be one of the constants in {@link ParserTokenType}
-    * @param content the actual content of the token
+    * @param contentSupplier supplier for the actual content of the token
     * @param location the location in the source document
     * @param children children of the node
     */
    public record Token(
          String type,
-         String content,
+         Supplier<String> contentSupplier,
          Location location,
          List<Node> children
    ) implements Node {
@@ -86,12 +90,18 @@ public class TurtleSyntaxTree {
       public Token asToken() {
          return this;
       }
+
+      @Override
+      public String content() {
+         return contentSupplier.get();
+      }
    }
 
    public record Error(
          String type,
-         Diagnostic.Code errorType,
-         Location location
+         Violation.Code errorType,
+         Location location,
+         List<Node> children
    ) implements Node {
       @Override
       public boolean isError() {
@@ -99,25 +109,20 @@ public class TurtleSyntaxTree {
       }
 
       @Override
+      public List<Node> children() {
+         return children;
+      }
+
+      @Override
       public Error asError() {
          return this;
       }
-   }
 
-   /**
-    * Zero-based section of a document
-    *
-    * @param fromLine starting line
-    * @param fromColumn starting column
-    * @param toLine ending line
-    * @param toColumn ending column
-    */
-   public record Location(
-         int fromLine,
-         int fromColumn,
-         int toLine,
-         int toColumn
-   ) {}
+      @Override
+      public String content() {
+         return "ERROR";
+      }
+   }
 
    /**
     * Provides the token (substring) for a given location
@@ -137,75 +142,51 @@ public class TurtleSyntaxTree {
 
       @Override
       public String apply( final Location location ) {
-         if ( sourceDocument == null || sourceDocument.isEmpty() ) {
-            return "";
-         }
-
-         int startIndex = 0;
-         int currentLine = 0;
-         for ( int i = 0; i < sourceDocument.length() && currentLine < location.fromLine(); i++ ) {
-            if ( sourceDocument.charAt( i ) == '\n' ) {
-               currentLine++;
-            }
-            startIndex = i + 1;
-         }
-         startIndex += location.fromColumn();
-         int endIndex = 0;
-         currentLine = 0;
-
-         for ( int i = 0; i < sourceDocument.length() && currentLine < location.toLine(); i++ ) {
-            if ( sourceDocument.charAt( i ) == '\n' ) {
-               currentLine++;
-            }
-            endIndex = i + 1;
-         }
-         endIndex += location.toColumn();
-         startIndex = Math.clamp( startIndex, 0, sourceDocument.length() );
-         endIndex = Math.clamp( endIndex, 0, sourceDocument.length() );
-
-         if ( startIndex > endIndex ) {
-            return "";
-         }
-
-         return sourceDocument.substring( startIndex, endIndex );
+         return location.forDocument( sourceDocument );
       }
    }
 
-   private TurtleSyntaxTree( final Node rootNode, final Supplier<String> sourceRepresentationSupplier ) {
+   private TurtleSyntaxTree( final Node rootNode, final String content ) {
       this.rootNode = rootNode;
-      this.sourceRepresentationSupplier = sourceRepresentationSupplier;
+      this.content = content;
    }
 
    public Node rootNode() {
       return rootNode;
    }
 
-   public Supplier<String> sourceRepresentationSupplier() {
-      return sourceRepresentationSupplier;
+   public String content() {
+      return content;
    }
 
-   public static TurtleSyntaxTree fromConcreteSyntaxTree( final TSTree syntaxTree, final Supplier<String> sourceRepresentationSupplier,
-         final TokenProvider tokenProvider ) {
-      return new TurtleSyntaxTree( nodeForTsNode( syntaxTree.getRootNode(), tokenProvider ), sourceRepresentationSupplier );
+   public static TurtleSyntaxTree fromConcreteSyntaxTree( final TSTree syntaxTree, final String content ) {
+      return new TurtleSyntaxTree( nodeForTsNode( syntaxTree.getRootNode(), content ), content );
    }
 
-   private static Node nodeForTsNode( final TSNode inputNode, final TokenProvider tokenProvider ) {
+   private static Node nodeForTsNode( final TSNode inputNode, final String content ) {
       final Location location = new Location(
             inputNode.getStartPoint().getRow(),
             inputNode.getStartPoint().getColumn(),
             inputNode.getEndPoint().getRow(),
             inputNode.getEndPoint().getColumn() );
-      if ( inputNode.isError() ) {
-         return new Error( inputNode.getType(), TurtleDiagnostic.TurtleCode.E0003, location );
-      } else if ( inputNode.isMissing() ) {
-         return new Error( inputNode.getType(), TurtleDiagnostic.TurtleCode.E0004, location );
-      }
-      final String token = tokenProvider.apply( location );
       final List<Node> children = IntStream.range( 0, inputNode.getChildCount() )
             .mapToObj( inputNode::getChild )
             .filter( Objects::nonNull )
-            .map( child -> nodeForTsNode( child, tokenProvider ) )
+            .map( child -> nodeForTsNode( child, content ) )
             .toList();
+      if ( inputNode.isError() || inputNode.isMissing() ) {
+         return new Error( inputNode.getType(), TurtleViolationCode.ERR_SYNTAX, location, children );
+      }
+      final Supplier<String> token = () -> new String(
+            // bytes
+            content.getBytes( StandardCharsets.UTF_8 ),
+            // offset
+            inputNode.getStartByte(),
+            // length
+            inputNode.getEndByte() - inputNode.getStartByte(),
+            // charset
+            StandardCharsets.UTF_8
+      );
       return new Token( inputNode.getType(), token, location, children );
    }
 

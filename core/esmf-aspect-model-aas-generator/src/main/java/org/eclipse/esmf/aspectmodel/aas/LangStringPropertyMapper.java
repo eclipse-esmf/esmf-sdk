@@ -16,14 +16,13 @@ import java.util.List;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import org.apache.jena.vocabulary.RDF;
+import org.eclipse.esmf.metamodel.Property;
+import org.eclipse.esmf.metamodel.Type;
+import org.eclipse.esmf.metamodel.datatype.RdfDatatypeUris;
+
 import org.eclipse.digitaltwin.aas4j.v3.model.LangStringTextType;
 import org.eclipse.digitaltwin.aas4j.v3.model.MultiLanguageProperty;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultMultiLanguageProperty;
-
-import org.eclipse.esmf.metamodel.Property;
-import org.eclipse.esmf.metamodel.Type;
-
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.node.ObjectNode;
 
@@ -36,7 +35,7 @@ public class LangStringPropertyMapper implements PropertyMapper<MultiLanguagePro
    public boolean canHandle( final Property property ) {
       return property.getDataType()
             .map( Type::getUrn )
-            .filter( RDF.langString.getURI()::equals )
+            .filter( RdfDatatypeUris.LANG_STRING::equals )
             .isPresent();
    }
 

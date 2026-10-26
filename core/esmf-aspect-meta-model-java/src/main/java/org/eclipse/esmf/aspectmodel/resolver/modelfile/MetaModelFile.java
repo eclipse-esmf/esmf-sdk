@@ -25,6 +25,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.rdf.model.Statement;
+
 import org.eclipse.esmf.aspectmodel.AspectLoadingException;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
@@ -35,14 +43,8 @@ import org.eclipse.esmf.samm.KnownVersion;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Streams;
+
 import io.vavr.Tuple2;
-import org.apache.commons.io.IOUtils;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.rdf.model.Statement;
 
 /**
  * Enumeration of the {@link AspectModelFile}s that contain the SAMM meta model definition.
@@ -85,11 +87,13 @@ public enum MetaModelFile implements AspectModelFile {
    private final MetaModelFileType metaModelFileType;
    private final Model sourceModel;
    private final String filename;
+   private final String section;
    private final URL sourceUrl;
 
    MetaModelFile( final String section, final String filename, final RdfNamespace rdfNamespace,
          final MetaModelFileType metaModelFileType ) {
       this.filename = filename;
+      this.section = section;
       this.rdfNamespace = rdfNamespace;
       this.metaModelFileType = metaModelFileType;
       sourceUrl = url( section, filename );
@@ -168,8 +172,8 @@ public enum MetaModelFile implements AspectModelFile {
    }
 
    @Override
-   public Optional<URI> sourceLocation() {
-      return Optional.of( URI.create( rdfNamespace.getUri() ) );
+   public URI sourceUri() {
+      return URI.create( rdfNamespace.getUri() );
    }
 
    @Override
@@ -220,14 +224,31 @@ public enum MetaModelFile implements AspectModelFile {
     * @return The resource URL
     */
    private URL url( final String section, final String filename ) {
-      final String spec = String.format( "samm/%s/%s/%s", section, KnownVersion.getLatest().toVersionString(), filename );
+      return findMetaModelResource( section, KnownVersion.getLatest(), filename )
+            .orElseThrow( () -> new AspectLoadingException( "Could not resolve meta model file: " + filename ) );
+   }
+
+   /**
+    * Resolves a meta model resource for a given meta model version on the class path. In contrast to
+    * the resources exposed by the enum constants of this class, which always refer to the latest known
+    * meta model version, this method can address the resources of any {@link KnownVersion}. Not every
+    * resource exists in every version, so the result is empty if the resource could not be found.
+    *
+    * @param section the meta model section, e.g. "meta-model" or "characteristic"
+    * @param metaModelVersion the meta model version
+    * @param filename the file name
+    * @return the resource URL, or empty if this version does not contain the given resource
+    */
+   public static Optional<URL> findMetaModelResource( final String section, final KnownVersion metaModelVersion,
+         final String filename ) {
+      final String spec = String.format( "samm/%s/%s/%s", section, metaModelVersion.toVersionString(), filename );
       try {
          final List<URL> urls = ImmutableList.copyOf( MetaModelFile.class.getClassLoader().getResources( spec ).asIterator() );
          if ( urls.size() == 1 ) {
-            return urls.get( 0 );
+            return Optional.of( urls.getFirst() );
          }
          if ( urls.isEmpty() ) {
-            throw new AspectLoadingException( "Could not resolve meta model file: " + filename );
+            return Optional.empty();
          }
 
          // If multiple resources with the given spec are found:
@@ -237,16 +258,25 @@ public enum MetaModelFile implements AspectModelFile {
          URL jarUrl = null;
          for ( final URL url : urls ) {
             if ( url.getProtocol().equals( "file" ) ) {
-               return url;
+               return Optional.of( url );
             }
             if ( url.getProtocol().equals( "jar" ) ) {
                jarUrl = url;
             }
          }
-         return jarUrl == null ? urls.get( 0 ) : jarUrl;
+         return Optional.of( jarUrl == null ? urls.getFirst() : jarUrl );
       } catch ( final IOException exception ) {
-         throw new AspectLoadingException( "Could not resolve meta model file: " + filename );
+         return Optional.empty();
       }
+   }
+
+   /**
+    * The meta model section this file belongs to, e.g. "meta-model" or "characteristic".
+    *
+    * @return the section
+    */
+   public String getSection() {
+      return section;
    }
 
    public RdfNamespace getRdfNamespace() {

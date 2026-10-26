@@ -18,17 +18,26 @@ import java.net.InetSocketAddress;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.Channels;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
 
-import org.eclipse.esmf.turtle.languageserver.aspect.request.ValidateDocumentParams;
-import org.eclipse.esmf.turtle.languageserver.diagnostic.DiagnosticReport;
+import org.eclipse.esmf.aspectmodel.ViolationReport;
+import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderParams;
+import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderResult;
+import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewResolveAttributeTargetParams;
+import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewResolveAttributeTargetResult;
+import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewResolveTargetParams;
+import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewResolveTargetResult;
+import org.eclipse.esmf.turtle.languageserver.lsp.request.ValidateDocumentParams;
+import org.eclipse.esmf.turtle.languageserver.lsp.response.ValidateDocumentResponse;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TurtleTextDocumentService;
 import org.eclipse.esmf.turtle.languageserver.lsp.workspace.TurtleWorkspaceService;
 import org.eclipse.esmf.turtle.languageserver.structure.TurtleTokenService;
 
+import org.eclipse.lsp4j.CompletionOptions;
 import org.eclipse.lsp4j.DocumentSymbolOptions;
 import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.InitializeResult;
@@ -38,6 +47,9 @@ import org.eclipse.lsp4j.ServerCapabilities;
 import org.eclipse.lsp4j.TextDocumentSyncKind;
 import org.eclipse.lsp4j.TextDocumentSyncOptions;
 import org.eclipse.lsp4j.jsonrpc.Launcher;
+import org.eclipse.lsp4j.jsonrpc.ResponseErrorException;
+import org.eclipse.lsp4j.jsonrpc.messages.ResponseError;
+import org.eclipse.lsp4j.jsonrpc.messages.ResponseErrorCode;
 import org.eclipse.lsp4j.jsonrpc.services.JsonRequest;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.LanguageClientAware;
@@ -51,6 +63,7 @@ public class TurtleLanguageServer implements LanguageServer, LanguageClientAware
    // R=18, D=4, F=6
    public static final int DEFAULT_PORT = 1846;
 
+   private static final List<String> COMPLETION_TRIGGER_SYMBOLS = List.of( ":" );
    private static final Logger LOG = LoggerFactory.getLogger( TurtleLanguageServer.class );
    private static volatile boolean serverRunning = true;
    private final TurtleTextDocumentService textDocumentService;
@@ -70,6 +83,7 @@ public class TurtleLanguageServer implements LanguageServer, LanguageClientAware
       syncOptions.setSave( new SaveOptions( true ) );
       capabilities.setTextDocumentSync( syncOptions );
       capabilities.setDefinitionProvider( true );
+      capabilities.setCompletionProvider( new CompletionOptions( false, COMPLETION_TRIGGER_SYMBOLS ) );
       capabilities.setSemanticTokensProvider(
             new SemanticTokensWithRegistrationOptions( TurtleTokenService.SUPPORTED_TOKEN_TYPES, true, false ) );
       capabilities.setDocumentSymbolProvider( new DocumentSymbolOptions( "Turtle Document Symbols" ) );
@@ -102,12 +116,40 @@ public class TurtleLanguageServer implements LanguageServer, LanguageClientAware
       textDocumentService.connect( client );
    }
 
+   @Deprecated
    @JsonRequest( "turtle/aspectValidation/validateDocument" )
-   public CompletableFuture<DiagnosticReport> validateDocument( final ValidateDocumentParams params ) {
+   public CompletableFuture<ViolationReport> validateDocument( final ValidateDocumentParams params ) {
       if ( params == null || params.uri() == null ) {
-         return CompletableFuture.completedFuture( DiagnosticReport.EMPTY );
+         return CompletableFuture.completedFuture( ViolationReport.EMPTY );
       }
-      return CompletableFuture.completedFuture( textDocumentService.validateDocument( params.uri() ) );
+      return textDocumentService.validateDocument( params.uri() );
+   }
+
+   @JsonRequest( "turtle/aspectValidation/validateDocumentV2" )
+   public CompletableFuture<String> validateDocumentV2( final ValidateDocumentParams params ) {
+      if ( params == null || params.uri() == null || params.uri().isEmpty() ) {
+         throw new ResponseErrorException(
+               new ResponseError( ResponseErrorCode.InvalidParams, "Missing or invalid parameters", params ) );
+      }
+      return textDocumentService.validateDocument( params.uri() )
+            .thenApply( report -> report.isEmpty() ? ValidateDocumentResponse.SUCCESS : ValidateDocumentResponse.FAILURE )
+            .thenApply( ValidateDocumentResponse::wireValue );
+   }
+
+   @JsonRequest( "turtle/graphicalView/render" )
+   public CompletableFuture<GraphicalViewRenderResult> renderGraphicalView( final GraphicalViewRenderParams params ) {
+      return textDocumentService.renderGraphicalView( params );
+   }
+
+   @JsonRequest( "turtle/graphicalView/resolveTarget" )
+   public CompletableFuture<GraphicalViewResolveTargetResult> resolveGraphicalViewTarget( final GraphicalViewResolveTargetParams params ) {
+      return textDocumentService.resolveGraphicalViewTarget( params );
+   }
+
+   @JsonRequest( "turtle/graphicalView/resolveAttributeTarget" )
+   public CompletableFuture<GraphicalViewResolveAttributeTargetResult> resolveGraphicalViewAttributeTarget(
+         final GraphicalViewResolveAttributeTargetParams params ) {
+      return textDocumentService.resolveGraphicalViewAttributeTarget( params );
    }
 
    /**
@@ -163,11 +205,15 @@ public class TurtleLanguageServer implements LanguageServer, LanguageClientAware
    }
 
    private static void handleClientConnection( final AsynchronousSocketChannel socketChannel ) {
+      handleClientConnection( socketChannel, new TurtleLanguageServer() );
+   }
+
+   static void handleClientConnection( final AsynchronousSocketChannel socketChannel,
+         final TurtleLanguageServer languageServer ) {
       try ( final var inputStream = Channels.newInputStream( socketChannel );
             final var outputStream = Channels.newOutputStream( socketChannel );
             final var executorService = Executors.newCachedThreadPool();
             socketChannel ) {
-         final TurtleLanguageServer languageServer = new TurtleLanguageServer();
          final Launcher<LanguageClient> launcher =
                Launcher.createIoLauncher( languageServer, LanguageClient.class, inputStream,
                      outputStream, executorService, Function.identity() );
@@ -179,6 +225,8 @@ public class TurtleLanguageServer implements LanguageServer, LanguageClientAware
          LOG.error( "Client connection handler was interrupted", exception );
       } catch ( final Exception exception ) {
          LOG.error( "Error handling client connection", exception );
+      } finally {
+         languageServer.shutdown();
       }
    }
 }

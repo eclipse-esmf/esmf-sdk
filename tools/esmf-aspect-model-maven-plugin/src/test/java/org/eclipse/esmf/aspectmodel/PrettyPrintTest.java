@@ -39,7 +39,7 @@ public class PrettyPrintTest extends AspectModelMojoTest {
    public void testPrettyPrintInvalidAspectModel( final PrettyPrint prettyPrint ) {
       assertThatCode( prettyPrint::execute )
             .isInstanceOf( MojoExecutionException.class )
-            .hasMessageContaining( "Error at line 17 column 3" );
+            .hasMessageContaining( "Error at line 17 column 4" );
       assertThat( generatedFilePath( "Aspect.ttl" ) ).doesNotExist();
    }
 }

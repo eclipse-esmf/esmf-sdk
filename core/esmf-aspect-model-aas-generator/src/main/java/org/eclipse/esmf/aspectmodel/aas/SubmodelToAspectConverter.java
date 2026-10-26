@@ -19,7 +19,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -28,9 +30,8 @@ import java.util.stream.Stream;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.jena.iri.IRI;
-import org.apache.jena.iri.IRIFactory;
-import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.rfc3986.IRI;
+import org.apache.jena.rfc3986.RFC3986;
 import org.apache.jena.vocabulary.XSD;
 import org.eclipse.digitaltwin.aas4j.v3.model.AasSubmodelElements;
 import org.eclipse.digitaltwin.aas4j.v3.model.Blob;
@@ -73,6 +74,7 @@ import org.eclipse.esmf.metamodel.characteristic.impl.DefaultTrait;
 import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
 import org.eclipse.esmf.metamodel.constraint.impl.DefaultRangeConstraint;
 import org.eclipse.esmf.metamodel.datatype.LangString;
+import org.eclipse.esmf.metamodel.datatype.RdfDatatypeUris;
 import org.eclipse.esmf.metamodel.impl.DefaultAspect;
 import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;
 import org.eclipse.esmf.metamodel.impl.DefaultEntity;
@@ -84,6 +86,8 @@ import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.vavr.control.Try;
 
 class SubmodelToAspectConverter {
    private static final String EXAMPLE_NAMESPACE = "com.example";
@@ -162,8 +166,10 @@ class SubmodelToAspectConverter {
    }
 
    private Optional<IRI> iri( final String lexicalRepresentation ) {
-      final IRI iri = IRIFactory.iriImplementation().create( lexicalRepresentation );
-      return iri.hasViolation( true ) ? Optional.empty() : Optional.of( iri );
+      return Try.of( () -> RFC3986.create( lexicalRepresentation ) )
+            .toJavaOptional()
+            .filter( iri -> !iri.hasViolations() )
+            .map( IRI.class::cast );
    }
 
    private VersionNumber determineAspectModelUrnVersion( final Submodel submodel ) {
@@ -421,17 +427,17 @@ class SubmodelToAspectConverter {
          final boolean upperCase, final boolean includeSee, final boolean useSemanticIdUrnForAutomaticNames ) {
       final ElementName elementName;
       final AspectModelUrn urn;
-      if ( elementNamingStrategy instanceof final DetermineAutomatically automatically ) {
-         elementName = determineSubmodelElementName( element, automatically.namePrefix(), upperCase, automatically.appendElementIdShort() );
+      if ( elementNamingStrategy instanceof DetermineAutomatically( final String namePrefix, final boolean appendElementIdShort ) ) {
+         elementName = determineSubmodelElementName( element, namePrefix, upperCase, appendElementIdShort );
          final String uniqueName = nextUniqueName( elementName.name() );
          final boolean useSemanticIdUrn =
-               useSemanticIdUrnForAutomaticNames && automatically.namePrefix().isEmpty() && automatically.appendElementIdShort();
+               useSemanticIdUrnForAutomaticNames && namePrefix.isEmpty() && appendElementIdShort;
          urn = useSemanticIdUrn
                ? aspectModelUrnFromSemanticId( element ).orElseGet( () -> aspectUrn.withName( uniqueName ) )
                : aspectUrn.withName( uniqueName );
-      } else if ( elementNamingStrategy instanceof final UseGivenUrn givenUrn ) {
+      } else if ( elementNamingStrategy instanceof UseGivenUrn( final AspectModelUrn aspectModelUrn ) ) {
          elementName = determineSubmodelElementName( element, "", upperCase, true );
-         urn = givenUrn.aspectModelUrn();
+         urn = aspectModelUrn;
       } else {
          throw new AspectModelGenerationException( "Unknown ElementNamingStrategy" );
       }
@@ -462,6 +468,18 @@ class SubmodelToAspectConverter {
             .build();
    }
 
+   private MetaModelBaseAttributes collectionPropertyBaseAttributes( final SubmodelElementCollection collection ) {
+      final ElementName elementName = determineSubmodelElementName( collection, "", false, true );
+      final String uniqueName = nextUniqueName( elementName.name() + "Property" );
+      return MetaModelBaseAttributes.builder()
+            .withUrn( aspectUrn.withName( uniqueName ) )
+            .withPreferredNames( preferredNamesForEntity( collection ) )
+            .withDescriptions( descriptionsForEntity( collection ) )
+            .withSee( seeReferences( collection ) )
+            .isAnonymous( elementName.isSynthetic() )
+            .build();
+   }
+
    private Set<LangString> preferredNamesForEntity( final SubmodelElement element ) {
       final Set<LangString> elementDisplayNames = SubmodelToAspectUtils.langStringSet( element.getDisplayName() );
       if ( !elementDisplayNames.isEmpty() ) {
@@ -488,7 +506,7 @@ class SubmodelToAspectConverter {
             .flatMap( SubmodelToAspectUtils::keys )
             .map( Key::getValue )
             .map( conceptDescriptionInfoById::get )
-            .filter( java.util.Objects::nonNull )
+            .filter( Objects::nonNull )
             .findFirst();
    }
 
@@ -507,9 +525,10 @@ class SubmodelToAspectConverter {
          return existingProperty;
       }
 
-      final boolean useSemanticIdUrnForProperty = !( submodelElement instanceof SubmodelElementCollection );
       final MetaModelBaseAttributes metaModelBaseAttributes =
-            baseAttributes( submodelElement, new DetermineAutomatically(), false, true, useSemanticIdUrnForProperty );
+            submodelElement instanceof final SubmodelElementCollection collection
+                  ? collectionPropertyBaseAttributes( collection )
+                  : baseAttributes( submodelElement, new DetermineAutomatically(), false, true );
       final Characteristic characteristic = createCharacteristic( submodelElement, metaModelBaseAttributes.urn() );
       final Optional<ScalarValue> exampleValue =
             submodelElement instanceof final org.eclipse.digitaltwin.aas4j.v3.model.Property property
@@ -592,7 +611,7 @@ class SubmodelToAspectConverter {
       final MetaModelBaseAttributes metaModelBaseAttributes = MetaModelBaseAttributes.builder()
             .withUrn( urn )
             .withPreferredNames( SubmodelToAspectUtils.langStringSet( relationshipElement.getDisplayName() ) )
-            .withDescription( java.util.Locale.ENGLISH, characteristicDescription )
+            .withDescription( Locale.ENGLISH, characteristicDescription )
             .withSee( List.of() )
             .isAnonymous( elementName.isSynthetic() )
             .build();
@@ -611,7 +630,7 @@ class SubmodelToAspectConverter {
    }
 
    private Characteristic createCharacteristicFromMultiLanguageProperty( final MultiLanguageProperty multiLanguageProperty ) {
-      return createDefaultScalarCharacteristic( multiLanguageProperty, RDF.langString.getURI(),
+      return createDefaultScalarCharacteristic( multiLanguageProperty, RdfDatatypeUris.LANG_STRING,
             new UseGivenUrn( AspectModelUrn.fromUrn( SammNs.SAMMC.MultiLanguageText().getURI() ) ) );
    }
 

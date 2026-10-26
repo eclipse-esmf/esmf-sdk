@@ -22,8 +22,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
-import java.util.Optional;
 import java.util.stream.Stream;
+
+import org.apache.jena.rdf.model.Model;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.AspectChangeManager;
@@ -38,8 +39,6 @@ import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
-import io.vavr.control.Try;
-import org.apache.jena.rdf.model.Model;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,6 +46,8 @@ import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+
+import io.vavr.control.Try;
 
 class AspectSerializerTest {
    Path outputDirectory = null;
@@ -107,7 +108,7 @@ class AspectSerializerTest {
       // Change the loaded test model's source location to a file system location
       final AspectChangeManager changeContext = new AspectChangeManager( aspectModel );
       final Path filePath = outputDirectory.resolve( "Aspect.ttl" );
-      changeContext.applyChange( new MoveRenameAspectModelFile( aspectModel.files().iterator().next(), filePath.toUri() ) );
+      changeContext.applyChange( new MoveRenameAspectModelFile( aspectModel.files().getFirst(), filePath.toUri() ) );
 
       // Serialize the model file content to the file system
       AspectSerializer.INSTANCE.write( aspectModel.files().iterator().next() );
@@ -122,7 +123,7 @@ class AspectSerializerTest {
       final AspectModel aspectModel = new AspectModelLoader().emptyModel();
       final Path file1Path = outputDirectory.resolve( "Aspect1.ttl" );
       final AspectModelFile file1 = RawAspectModelFileBuilder.builder()
-            .sourceLocation( Optional.of( file1Path.toUri() ) )
+            .sourceUri( file1Path.toUri() )
             .sourceModel( createModel( """
                @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> .
                @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -137,7 +138,7 @@ class AspectSerializerTest {
             .build();
       final Path file2Path = outputDirectory.resolve( "Aspect2.ttl" );
       final AspectModelFile file2 = RawAspectModelFileBuilder.builder()
-            .sourceLocation( Optional.of( file2Path.toUri() ) )
+            .sourceUri( file2Path.toUri() )
             .sourceModel( createModel( """
                @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> .
                @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .

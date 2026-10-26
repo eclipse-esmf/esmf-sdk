@@ -13,6 +13,7 @@
 
 package org.eclipse.esmf.metamodel.vocabulary;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.samm.KnownVersion;
@@ -100,6 +101,16 @@ public class SAMME implements RdfNamespace {
    }
 
    public Stream<Resource> allEntities() {
-      return Stream.of( TimeSeriesEntity(), Point3d(), FileResource(), Quantity() );
+      return allResources().stream();
+   }
+
+   @Override
+   public List<Resource> allResources() {
+      return List.of( TimeSeriesEntity(), Point3d(), FileResource(), Quantity() );
+   }
+
+   @Override
+   public List<Property> allProperties() {
+      return List.of( resource(), mimeType(), timestamp(), value(), x(), y(), z(), unit() );
    }
 }

@@ -229,7 +229,7 @@ public class RdfUtil {
    }
 
    /**
-    * Turn a an RDF model to its String representation. Note that this method should only be used where
+    * Turn an RDF model to its String representation. Note that this method should only be used where
     * {@link AspectSerializer} can not be used since it does not honor Aspect Model formatting rules.
     *
     * @param model the input model
@@ -328,5 +328,22 @@ public class RdfUtil {
             .map( ns -> "%s:%s".formatted( ns.getShortForm(), uri.replace( ns.getNamespace(), "" ) ) )
             .findFirst()
             .orElse( uri );
+   }
+
+   /**
+    * Expand a CURIE for a "well-known" namespace to the corresponding full URI.
+    * For example, the result for "xsd:float" is "http://w3.org/2001/XMLSchema#float".
+    * For URIs from other/unknown namespaces, the CURIE is returned as-is.
+    *
+    * @param curie the CURIE
+    * @return the corresponding URI
+    */
+   @SuppressWarnings( "JavadocLinkAsPlainText" )
+   public static String fullUri( final String curie ) {
+      return SammNs.wellKnownNamespaces()
+            .filter( ns -> curie.startsWith( ns.getShortForm() + ":" ) )
+            .map( ns -> curie.replace( ns.getShortForm() + ":", ns.getNamespace() ) )
+            .findFirst()
+            .orElse( curie );
    }
 }

@@ -15,11 +15,6 @@ package org.eclipse.esmf.aspectmodel.edit.change;
 
 import java.net.URI;
 
-import org.eclipse.esmf.aspectmodel.AspectModelFile;
-import org.eclipse.esmf.aspectmodel.edit.Change;
-import org.eclipse.esmf.aspectmodel.edit.ModelChangeException;
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
@@ -27,6 +22,11 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
+
+import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.edit.Change;
+import org.eclipse.esmf.aspectmodel.edit.ModelChangeException;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 /**
  * RDF-level refactoring operation: Renames all occurences of a namespace in model element URNs to
@@ -71,7 +71,7 @@ public class RenameNamespace extends EditAspectModel {
     * @param to the URN to change it into
     */
    public RenameNamespace( final AspectModelFile targetFile, final AspectModelUrn from, final AspectModelUrn to ) {
-      this( targetFile.sourceLocation().orElseThrow(), from, to );
+      this( targetFile.sourceUri(), from, to );
    }
 
    public AspectModelUrn from() {
@@ -84,7 +84,7 @@ public class RenameNamespace extends EditAspectModel {
 
    @Override
    protected ModelChanges calculateChangesForFile( final AspectModelFile aspectModelFile ) {
-      if ( targetLocation != null && !aspectModelFile.sourceLocation().map( targetLocation::equals ).orElse( false ) ) {
+      if ( targetLocation != null && !aspectModelFile.sourceUri().equals( targetLocation ) ) {
          return ModelChanges.NONE;
       }
 

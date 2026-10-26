@@ -17,7 +17,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.vocabulary.RDF;
+
 import org.eclipse.esmf.aspectmodel.AspectLoadingException;
+import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.loader.DefaultPropertyWrapper;
 import org.eclipse.esmf.aspectmodel.loader.Instantiator;
 import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
@@ -31,12 +38,6 @@ import org.eclipse.esmf.metamodel.impl.DefaultProperty;
 import org.eclipse.esmf.metamodel.impl.DefaultScalar;
 import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
-
-import org.apache.jena.rdf.model.Literal;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.vocabulary.RDF;
 
 public class PropertyInstantiator extends Instantiator<Property> {
    private final Characteristic fallbackCharacteristic;
@@ -98,7 +99,11 @@ public class PropertyInstantiator extends Instantiator<Property> {
       if ( node.isLiteral() ) {
          final Literal literal = node.asLiteral();
          return valueInstantiator.buildScalarValue( literal.getLexicalForm(), literal.getLanguage(), literal.getDatatypeURI() )
-               .orElseThrow( () -> new AspectLoadingException( "Literal cannot be parsed: " + literal, literal ) );
+               .orElseThrow( () -> {
+                  final AspectModelFile sourceFile = getSourceLocation( literal );
+                  return new AspectLoadingException( "Literal cannot be parsed: " + literal,
+                        sourceFile.sourceUri(), sourceFile::sourceRepresentation, literal );
+               } );
       }
 
       if ( node.isResource() ) {
@@ -108,7 +113,9 @@ public class PropertyInstantiator extends Instantiator<Property> {
             final Optional<String> valueOpt = optionalAttributeValue( resource, SammNs.SAMM.value() ).map( Statement::getString );
 
             if ( valueOpt.isEmpty() ) {
-               throw new AspectLoadingException( "samm:Value must contain a samm:value property", resource );
+               final AspectModelFile sourceFile = getSourceLocation( resource );
+               throw new AspectLoadingException( "samm:Value must contain a samm:value property",
+                     sourceFile.sourceUri(), sourceFile::sourceRepresentation, resource );
             }
 
             return new DefaultScalarValue( buildBaseAttributes( resource ), valueOpt.get(), new DefaultScalar( expectedType.toString() ) );
@@ -117,6 +124,8 @@ public class PropertyInstantiator extends Instantiator<Property> {
          return new DefaultScalarValue( buildBaseAttributes( resource ), resource.getURI(), new DefaultScalar( expectedType.toString() ) );
       }
 
-      throw new AspectLoadingException( "Unexpected RDF node type: " + node, node );
+      final AspectModelFile sourceFile = getSourceLocation( node );
+      throw new AspectLoadingException( "Unexpected RDF node type: " + node, sourceFile.sourceUri(), sourceFile::sourceRepresentation,
+            node );
    }
 }

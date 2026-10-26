@@ -52,7 +52,7 @@ public class FileSystemStrategy implements ResolutionStrategy {
     * Example:
     *
     * <pre>
-    * models   <-- must be configured as modelsRoot
+    * models   -- must be configured as modelsRoot
     * └── com.example
     *     ├── 1.0.0
     *     │   ├── ExampleAspect.ttl
@@ -88,7 +88,7 @@ public class FileSystemStrategy implements ResolutionStrategy {
     */
    @Override
    public AspectModelFile apply( final AspectModelUrn aspectModelUrn, final ResolutionStrategySupport resolutionStrategySupport ) {
-      final List<ModelResolutionException.LoadingFailure> checkedLocations = new ArrayList<>();
+      final List<ModelResolutionViolation> checkedLocations = new ArrayList<>();
 
       final Optional<File> namedResourceFile;
       namedResourceFile = modelsRoot.resolveAspectModelFile( aspectModelUrn );
@@ -96,22 +96,30 @@ public class FileSystemStrategy implements ResolutionStrategy {
          final File inputFile = namedResourceFile.get();
          final Try<RawAspectModelFile> tryFile = Try.of( () -> AspectModelFileLoader.load( inputFile ) );
          if ( tryFile.isFailure() ) {
-            checkedLocations.add(
-                  new ModelResolutionException.LoadingFailure( aspectModelUrn, inputFile.getAbsolutePath(),
-                        tryFile.getCause().getMessage(), tryFile.getCause() ) );
+            checkedLocations.add( ModelResolutionViolationBuilder.builder()
+                  .element( Optional.of( aspectModelUrn ) )
+                  .location( inputFile.toURI() )
+                  .message( tryFile.getCause().getMessage() )
+                  .cause( Optional.ofNullable( tryFile.getCause() ) )
+                  .build() );
          }
          final RawAspectModelFile loadedFile = tryFile.get();
          if ( resolutionStrategySupport.containsDefinition( loadedFile, aspectModelUrn ) ) {
             return loadedFile;
          } else {
-            checkedLocations.add( new ModelResolutionException.LoadingFailure( aspectModelUrn,
-                  inputFile.getAbsolutePath(), "File does not contain the element definition" ) );
+            checkedLocations.add( ModelResolutionViolationBuilder.builder()
+                  .element( Optional.of( aspectModelUrn ) )
+                  .location( inputFile.toURI() )
+                  .message( "File does not contain the element definition" )
+                  .build() );
          }
       } else {
-         checkedLocations.add( new ModelResolutionException.LoadingFailure( aspectModelUrn,
-               namedResourceFile.map( File::getAbsolutePath )
-                     .orElseGet( () -> modelsRoot.constructAspectModelFilePath( aspectModelUrn ).toString() ),
-               "File does not exist" ) );
+         checkedLocations.add( ModelResolutionViolationBuilder.builder()
+               .element( Optional.of( aspectModelUrn ) )
+               .location( namedResourceFile.map( File::toURI )
+                     .orElseGet( () -> modelsRoot.constructAspectModelFilePath( aspectModelUrn ).toUri() ) )
+               .message( "File does not exist" )
+               .build() );
       }
 
       // Element was not found in the named file. Check the other files in the directory.
@@ -121,17 +129,23 @@ public class FileSystemStrategy implements ResolutionStrategy {
          final File file = Paths.get( uri ).toFile();
          final Try<RawAspectModelFile> tryFile = Try.of( () -> AspectModelFileLoader.load( file ) );
          if ( tryFile.isFailure() ) {
-            checkedLocations.add( new ModelResolutionException.LoadingFailure( aspectModelUrn, file.getAbsolutePath(),
-                  "Could not load file", tryFile.getCause() ) );
+            checkedLocations.add( ModelResolutionViolationBuilder.builder()
+                  .element( Optional.of( aspectModelUrn ) )
+                  .location( file.toURI() )
+                  .message( "Could not load file" )
+                  .cause( Optional.ofNullable( tryFile.getCause() ) )
+                  .build() );
             continue;
          }
          final AspectModelFile result = tryFile.get();
          if ( resolutionStrategySupport.containsDefinition( result, aspectModelUrn ) ) {
             return result;
          }
-         checkedLocations.add(
-               new ModelResolutionException.LoadingFailure( aspectModelUrn, file.getAbsolutePath(),
-                     "File does not contain the element definition" ) );
+         checkedLocations.add( ModelResolutionViolationBuilder.builder()
+               .element( Optional.of( aspectModelUrn ) )
+               .location( file.toURI() )
+               .message( "File does not contain the element definition" )
+               .build() );
       }
 
       throw new ModelResolutionException( checkedLocations );

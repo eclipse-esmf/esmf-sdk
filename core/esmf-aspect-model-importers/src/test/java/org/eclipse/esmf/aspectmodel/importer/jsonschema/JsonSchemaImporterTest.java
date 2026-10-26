@@ -43,6 +43,7 @@ import org.apache.jena.vocabulary.RDF;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.RdfUtil;
+import org.eclipse.esmf.aspectmodel.ViolationReport;
 import org.eclipse.esmf.aspectmodel.generator.AspectArtifact;
 import org.eclipse.esmf.aspectmodel.generator.EntityArtifact;
 import org.eclipse.esmf.aspectmodel.generator.json.AspectModelJsonPayloadGenerator;
@@ -51,7 +52,6 @@ import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelFileLoader;
 import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
 import org.eclipse.esmf.aspectmodel.serializer.RdfModelCreatorVisitor;
-import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
 import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
@@ -122,8 +122,8 @@ public class JsonSchemaImporterTest {
 
       final Aspect importedAspect = new JsonSchemaToAspect( jsonSchema,
             JsonSchemaImporterConfigBuilder.builder().aspectModelUrn( testUrn ).build() ).getContent();
-      final List<Violation> violations = validator.validateModel( loadAsAspectModel( importedAspect ) );
-      assertThat( violations ).describedAs( () -> new ViolationFormatter().apply( violations ) ).isEmpty();
+      final ViolationReport violations = validator.validateModel( loadAsAspectModel( importedAspect ) );
+      assertThat( violations ).describedAs( () -> new ViolationFormatter().apply( violations ) ).satisfies( report -> report.isEmpty() );
    }
 
    /**
@@ -435,7 +435,7 @@ public class JsonSchemaImporterTest {
    private AspectModel loadAsAspectModel( final ModelElement modelElement ) {
       final String modelSource = AspectSerializer.INSTANCE.modelElementToString( modelElement );
       final AspectModelFile file = AspectModelFileLoader.load( modelSource, URI.create( "inmemory" ) );
-      final Either<List<Violation>, AspectModel> loadingResult =
+      final Either<ViolationReport, AspectModel> loadingResult =
             new AspectModelLoader().withValidation( validator ).loadAspectModelFiles( List.of( file ) );
       return loadingResult.mapLeft( violations -> new ViolationFormatter().apply( loadingResult.getLeft() ) )
             .getOrElseThrow( report -> {

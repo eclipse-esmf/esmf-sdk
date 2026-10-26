@@ -16,12 +16,13 @@ package org.eclipse.esmf.aspectmodel.validation;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.eclipse.esmf.aspectmodel.resolver.parser.TokenRegistry;
-import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
-import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
-
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
+
+import org.eclipse.esmf.aspectmodel.ProjectInfo;
+import org.eclipse.esmf.aspectmodel.ViolationCode;
+import org.eclipse.esmf.aspectmodel.loader.TokenBasedElementFocussedViolation;
+import org.eclipse.esmf.aspectmodel.resolver.parser.TokenRegistry;
 
 /**
  * Represents the violation of cycle rules: A cycle in a model (graph) is only allowed, when one of
@@ -31,28 +32,18 @@ import org.apache.jena.rdf.model.Resource;
  */
 public record CycleViolation(
       List<Resource> path
-) implements Violation {
+) implements TokenBasedElementFocussedViolation {
    public static final String ERROR_CODE = "ERR_CYCLE";
 
    @Override
-   public String errorCode() {
-      return ERROR_CODE;
-   }
-
-   @Override
-   public EvaluationContext context() {
-      return null;
-   }
-
-   @Override
-   public String violationSpecificMessage() {
-      return "The cycle includes the following properties: "
-            + path.stream().map( property -> property.getModel().shortForm( property.getURI() ) ).collect( Collectors.joining( " -> " ) );
+   public Code code() {
+      return new ViolationCode( ERROR_CODE, ProjectInfo.esmfErrorCodeUrl( ERROR_CODE ) );
    }
 
    @Override
    public String message() {
-      return "The Aspect Model contains a cycle. Please remove any cycles that do not allow a finite JSON payload";
+      return "The Aspect Model contains a cycle. The cycle includes the following properties: "
+            + path.stream().map( property -> property.getModel().shortForm( property.getURI() ) ).collect( Collectors.joining( " -> " ) );
    }
 
    @Override
@@ -62,10 +53,5 @@ public record CycleViolation(
             .map( resource -> resource.as( RDFNode.class ) )
             .findFirst()
             .orElse( path.getFirst() );
-   }
-
-   @Override
-   public <T> T accept( final Visitor<T> visitor ) {
-      return visitor.visitCycleViolation( this );
    }
 }

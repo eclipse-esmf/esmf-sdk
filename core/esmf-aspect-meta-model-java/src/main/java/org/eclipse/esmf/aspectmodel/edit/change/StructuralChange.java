@@ -15,15 +15,16 @@ package org.eclipse.esmf.aspectmodel.edit.change;
 
 import java.net.URI;
 
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
+
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.ChangeContext;
 import org.eclipse.esmf.aspectmodel.edit.ModelChangeException;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 import com.google.common.collect.Streams;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.vocabulary.RDF;
 
 public abstract class StructuralChange extends AbstractChange {
    protected AspectModelFile sourceFile( final ChangeContext changeContext, final AspectModelUrn elementUrn ) {
@@ -39,7 +40,7 @@ public abstract class StructuralChange extends AbstractChange {
 
    protected AspectModelFile sourceFile( final ChangeContext changeContext, final URI fileLocation ) {
       return changeContext.aspectModelFiles()
-            .filter( file -> file.sourceLocation().map( location -> location.equals( fileLocation ) ).orElse( false ) )
+            .filter( file -> file.sourceUri().equals( fileLocation ) )
             .findFirst()
             .orElseThrow( () -> new ModelChangeException( "Could not locate file with location " + fileLocation ) );
    }

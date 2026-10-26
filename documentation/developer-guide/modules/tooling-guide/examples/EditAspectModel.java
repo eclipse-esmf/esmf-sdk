@@ -63,9 +63,9 @@ public class EditAspectModel {
             // Move an element to a new Aspect Model file in the same namespace.
             new MoveElementToNewFile(
                   // The element to move.
-                  aspectModel.aspect().getProperties().get( 0 ),
+                  aspectModel.aspect().getProperties().getFirst(),
                   // If you intend to write the model to the file system, set the location
-                  // for the newly created file to some sensible location  here.
+                  // for the newly created file to some sensible location here.
                   URI.create( "file:///temp/out.ttl" ) )
       ) );
 

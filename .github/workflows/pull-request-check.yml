@@ -35,7 +35,7 @@ jobs:
 
       - name: Checkout repository (Windows)
         if: matrix.os == 'windows-latest'
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
         env:
           GIT_CONFIG_GLOBAL: ${{ runner.temp }}\.gitconfig
         with:
@@ -44,13 +44,13 @@ jobs:
 
       - name: Checkout repository (non-Windows)
         if: matrix.os != 'windows-latest'
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
         with:
           submodules: recursive
           persist-credentials: false
 
       - name: Setup JDK
-        uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad #v6.1.0
         with:
           java-version: '25.0.1'
           distribution: 'temurin'
@@ -62,9 +62,14 @@ jobs:
           echo "RELEASE_VERSION=$version" >> "$GITHUB_ENV"
           echo "RELEASE_VERSION=$version"
 
+      - name: Setup Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 #v7.0.0
+        with:
+          python-version: '3.13'
+      - run: pip install pefile
 
       - name: Cache Maven packages
-        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb #v5.0.1
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 #v6.1.0
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -94,10 +99,12 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           bundle="samm-cli-${RELEASE_VERSION}"
-          mkdir ${bundle}
+          mkdir -p ${bundle}/runtime
           curl -Lo jre.tar.gz https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.1%2B8/OpenJDK25U-jre_x64_linux_hotspot_25.0.1_8.tar.gz
           tar -xvf jre.tar.gz
-          mv ./jdk-25.0.1+8-jre ./${bundle}/jre
+          mv ./jdk-25.0.1+8-jre ./${bundle}/runtime/jre
+          # The jar must not sit in or next to a directory that ClassGraph probes for
+          # JRE/ext jars (java.home and its parent), hence the jre lives under runtime/
           cp tools/samm-cli/target/samm-cli-${RELEASE_VERSION}.jar ./${bundle}/
           cp tools/samm-cli/scripts/linux/run.sh ./${bundle}/
           chmod +x ./${bundle}/run.sh
@@ -117,10 +124,12 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: |
           bundle="samm-cli-${RELEASE_VERSION}"
-          mkdir ${bundle}
+          mkdir -p ${bundle}/runtime
           curl -Lo jre.zip https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.1%2B8/OpenJDK25U-jre_x64_windows_hotspot_25.0.1_8.zip
           7z x jre.zip
-          mv ./jdk-25.0.1+8-jre ./${bundle}/jre
+          mv ./jdk-25.0.1+8-jre ./${bundle}/runtime/jre
+          # The jar must not sit in or next to a directory that ClassGraph probes for
+          # JRE/ext jars (java.home and its parent), hence the jre lives under runtime/
           cp tools/samm-cli/target/samm-cli-${RELEASE_VERSION}.jar ./${bundle}/
           cp tools/samm-cli/scripts/windows/run.bat ./${bundle}/
 
@@ -131,16 +140,19 @@ jobs:
           fi
 
           ./warp-packer.exe pack --arch windows-x64 --input-dir ${bundle} --exec run.bat --output samm.exe --prefix samm-cli-${RELEASE_VERSION}
+          python3 tools/samm-cli/scripts/windows/set_cui_flag.py samm.exe
         shell: bash
 
       - name: Build native image (Mac)
         if: matrix.os == 'macos-15-intel'
         run: |
           bundle="samm-cli-${RELEASE_VERSION}"
-          mkdir ${bundle}
+          mkdir -p ${bundle}/runtime
           curl -Lo jre.tar.gz https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.1%2B8/OpenJDK25U-jre_x64_mac_hotspot_25.0.1_8.tar.gz
           tar -xvf jre.tar.gz
-          mv ./jdk-25.0.1+8-jre ./${bundle}/jre
+          mv ./jdk-25.0.1+8-jre ./${bundle}/runtime/jre
+          # The jar must not sit in or next to a directory that ClassGraph probes for
+          # JRE/ext jars (java.home and its parent), hence the jre lives under runtime/
           cp tools/samm-cli/target/samm-cli-${RELEASE_VERSION}.jar ./${bundle}/
           cp tools/samm-cli/scripts/macos/run.sh ./${bundle}/
           chmod +x ./${bundle}/run.sh

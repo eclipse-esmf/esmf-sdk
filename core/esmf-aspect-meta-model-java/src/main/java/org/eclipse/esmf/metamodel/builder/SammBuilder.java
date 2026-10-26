@@ -29,9 +29,6 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.vocabulary.RDF;
-
 import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.loader.ValueInstantiator;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
@@ -98,12 +95,15 @@ import org.eclipse.esmf.metamodel.constraint.impl.DefaultLocaleConstraint;
 import org.eclipse.esmf.metamodel.constraint.impl.DefaultRangeConstraint;
 import org.eclipse.esmf.metamodel.constraint.impl.DefaultRegularExpressionConstraint;
 import org.eclipse.esmf.metamodel.datatype.LangString;
+import org.eclipse.esmf.metamodel.datatype.RdfDatatypeUris;
 import org.eclipse.esmf.metamodel.impl.DefaultAspect;
 import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;
 import org.eclipse.esmf.metamodel.impl.DefaultEntity;
 import org.eclipse.esmf.metamodel.impl.DefaultEntityInstance;
 import org.eclipse.esmf.metamodel.impl.DefaultProperty;
 import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
+
+import org.apache.jena.rdf.model.Resource;
 
 /**
  * Builder for SAMM elements.
@@ -1698,7 +1698,7 @@ public class SammBuilder {
       if ( text == null || language == null ) {
          throw new AspectModelBuildingException( "Test and language must not be null" );
       }
-      return new ValueInstantiator().buildScalarValue( text, language.toLanguageTag(), RDF.langString.getURI() )
+      return new ValueInstantiator().buildScalarValue( text, language.toLanguageTag(), RdfDatatypeUris.LANG_STRING )
             .orElseThrow( AspectModelBuildingException::new );
    }
 

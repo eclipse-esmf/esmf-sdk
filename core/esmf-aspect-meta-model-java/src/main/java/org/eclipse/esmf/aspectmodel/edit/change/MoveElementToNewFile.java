@@ -67,7 +67,7 @@ public class MoveElementToNewFile extends StructuralChange {
             .orElse( List.of() );
       final RawAspectModelFile targetFile = RawAspectModelFileBuilder.builder()
             .headerComment( fileHeader )
-            .sourceLocation( Optional.of( sourceLocation ) )
+            .sourceUri( sourceLocation )
             .build();
       final Model targetModel = targetFile.sourceModel();
       targetModel.setNsPrefix( SammNs.SAMM.getShortForm(), SammNs.SAMM.getNamespace() );

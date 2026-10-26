@@ -1009,7 +1009,7 @@ class AspectModelJavaGeneratorTest {
    @Test
    void testGenerateAspectModelWithCollectionWithAbstractEntity() throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object>builder()
-            .put( "testProperty", "Collection<ExtendingTestEntity>" )
+            .put( "testProperty", "Collection<@Valid ExtendingTestEntity>" )
             .build();
 
       final ImmutableMap<String, Object> expectedFieldsForEntityClass = ImmutableMap.<String, Object>builder()
@@ -1253,7 +1253,8 @@ class AspectModelJavaGeneratorTest {
    void testValidAnnotationRules() throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForEvaluationResults = ImmutableMap.<String, Object>builder()
             .put( "entity", "TestEntity" )
-            .put( "collectionEntity", "Collection<TestEntity>" )
+            .put( "collectionEntity", "Collection<@Valid TestEntity>" )
+            .put( "optionalCollectionEntity", "Optional<Collection<@Valid TestEntity>>" )
             .put( "optionalEntity", "Optional<TestEntity>" )
             .put( "testProperty", String.class )
             .put( "collectionTestProperty", "Collection<String>" )
@@ -1268,10 +1269,15 @@ class AspectModelJavaGeneratorTest {
             ImmutableMap.<String, String>builder()
                   .put( "entity", "@Valid@NotNull" )
                   .put( "collectionEntity", "@Valid@NotNull" )
+                  .put( "optionalCollectionEntity", "@Valid" )
                   .put( "optionalEntity", "@Valid" )
                   .put( "testProperty", "@NotNull" )
                   .put( "collectionTestProperty", "@NotNull" )
                   .put( "optionalTestProperty", "" )
                   .build() );
+      result.assertCollectionElementValidationAnnotations( "AspectWithValidAnnotationTest", "collectionEntity",
+            "@Valid @NotNull private Collection<@Valid TestEntity> collectionEntity;" );
+      result.assertCollectionElementValidationAnnotations( "AspectWithValidAnnotationTest", "optionalCollectionEntity",
+            "@Valid private Optional<Collection<@Valid TestEntity>> optionalCollectionEntity;" );
    }
 }

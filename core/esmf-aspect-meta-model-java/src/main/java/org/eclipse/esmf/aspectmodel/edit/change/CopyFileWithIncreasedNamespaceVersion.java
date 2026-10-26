@@ -33,8 +33,7 @@ public class CopyFileWithIncreasedNamespaceVersion extends StructuralChange {
 
    public CopyFileWithIncreasedNamespaceVersion( final AspectModelFile file, final IncreaseVersion increaseVersion ) {
       this.increaseVersion = increaseVersion;
-      targetLocation = file.sourceLocation()
-            .orElseThrow( () -> new ModelChangeException( "Version can only be increased for files that have source locations." ) );
+      targetLocation = file.sourceUri();
    }
 
    public CopyFileWithIncreasedNamespaceVersion( final URI targetLocation, final IncreaseVersion increaseVersion ) {
@@ -49,7 +48,7 @@ public class CopyFileWithIncreasedNamespaceVersion extends StructuralChange {
 
       final VersionNumber currentVersion = namespace.version();
       final VersionNumber nextVersion = increaseVersion.apply( currentVersion );
-      final String sourceLocation = file.sourceLocation().orElseThrow().toString();
+      final String sourceLocation = file.sourceUri().toString();
       final String locationPart = namespace.namespaceMainPart() + "/" + namespace.version().toString();
       final int locationIndex = sourceLocation.lastIndexOf( locationPart );
       if ( locationIndex == -1 ) {

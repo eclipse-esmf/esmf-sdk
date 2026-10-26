@@ -37,7 +37,7 @@ public class FirstEffectiveProperty implements Path.Visitor<List<Property>> {
 
    @Override
    public List<Property> visitSequencePath( final Resource resource, final SequencePath path ) {
-      return path.subPaths().get( 0 ).accept( resource, this );
+      return path.subPaths().getFirst().accept( resource, this );
    }
 
    @Override

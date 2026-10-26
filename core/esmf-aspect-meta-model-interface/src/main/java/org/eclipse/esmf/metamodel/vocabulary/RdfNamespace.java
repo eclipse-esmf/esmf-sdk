@@ -14,6 +14,7 @@
 package org.eclipse.esmf.metamodel.vocabulary;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.esmf.samm.KnownVersion;
@@ -45,6 +46,14 @@ public interface RdfNamespace {
 
    default Resource resource( final String name ) {
       return ResourceFactory.createResource( urn( name ) );
+   }
+
+   default List<Resource> allResources() {
+      return List.of();
+   }
+
+   default List<Property> allProperties() {
+      return List.of();
    }
 
    static Map<String, String> createPrefixMap( final KnownVersion metaModelVersion ) {

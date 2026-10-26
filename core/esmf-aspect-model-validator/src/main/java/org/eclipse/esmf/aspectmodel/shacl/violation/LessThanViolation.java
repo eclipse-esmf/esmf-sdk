@@ -30,7 +30,7 @@ import org.apache.jena.rdf.model.RDFNode;
 public record LessThanViolation(
       EvaluationContext context, Property otherProperty, Literal otherValue, Literal actualValue
 )
-      implements Violation {
+      implements ShaclViolation {
    public static final String ERROR_CODE = "ERR_LESS_THAN";
 
    @Override

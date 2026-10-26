@@ -32,7 +32,7 @@ public class UsageTest {
       final Usage usage = new Usage( aspectModelLoader );
       assertThat( usage.referencesTo( AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "testProperty" ) ) )
             .map( Reference::pointerSource )
-            .map( file -> file.sourceLocation().get().toString() )
+            .map( file -> file.sourceUri().toString() )
             .anyMatch( location -> location.substring( location.lastIndexOf( '/' ) + 1 ).equals( "AspectWithProperty.ttl" ) );
    }
 }

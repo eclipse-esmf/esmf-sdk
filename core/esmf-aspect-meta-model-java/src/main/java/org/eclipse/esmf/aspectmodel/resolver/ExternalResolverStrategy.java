@@ -14,6 +14,7 @@
 package org.eclipse.esmf.aspectmodel.resolver;
 
 import java.net.URI;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
@@ -40,8 +41,12 @@ public class ExternalResolverStrategy implements ResolutionStrategy {
          final String result = CommandExecutor.executeCommand( commandWithParameters );
          return AspectModelFileLoader.load( result, URI.create( "input:stdin" ) );
       } catch ( final ModelResolutionException exception ) {
-         final ModelResolutionException.LoadingFailure failure = new ModelResolutionException.LoadingFailure(
-               aspectModelUrn, "The output of '" + command + "'", "Command evaluation failed", exception );
+         final ModelResolutionViolation failure = ModelResolutionViolationBuilder.builder()
+               .element( Optional.of( aspectModelUrn ) )
+               .location( URI.create( "inmemory:fromcommand" ) )
+               .message( "Command evaluation failed" )
+               .cause( Optional.of( exception ) )
+               .build();
          throw new ModelResolutionException( failure );
       }
    }

@@ -12,7 +12,7 @@ respective subsection), _or_ you can use the `esmf-aspect-model-starter` artifac
 
 include::esmf-developer-guide:ROOT:partial$esmf-aspect-model-starter-artifact.adoc[]
 
-Alternatively, you can use the `esmf-sdk-parent` artifact as a
+Alternatively, you can use the `esmf-sdk-bom` artifact as a
 https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Bill_of_Materials_.28BOM.29_POMs[Maven
 BOM] (Bill of Materials) to enable declaring dependencies to specific modules without an explicit
 version. Add the following section to the Maven pom.xml in your project:

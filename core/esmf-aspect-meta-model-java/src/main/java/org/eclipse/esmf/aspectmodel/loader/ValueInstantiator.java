@@ -19,11 +19,10 @@ import java.util.Optional;
 import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.datatype.LangString;
+import org.eclipse.esmf.metamodel.datatype.RdfDatatypeUris;
 import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 import org.eclipse.esmf.metamodel.impl.DefaultScalar;
 import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
-
-import org.apache.jena.vocabulary.RDF;
 
 /**
  * Creates new instances of {@link ScalarValue} from the value representation in RDF
@@ -61,7 +60,7 @@ public class ValueInstantiator {
       // .xsd.impl.RDFLangString but _not_ org.eclipse.esmf.metamodel.datatypes.LangString as we would
       // like to.
       // 3. So we construct an instance of LangString here from the RDFLangString.
-      if ( datatypeUri.equals( RDF.langString.getURI() ) ) {
+      if ( datatypeUri.equals( RdfDatatypeUris.LANG_STRING ) ) {
          return buildLanguageString( baseAttributes, lexicalRepresentation, languageTag );
       }
 
@@ -80,7 +79,7 @@ public class ValueInstantiator {
          return Optional.empty();
       }
       final LangString langString = new LangString( lexicalRepresentation, locale );
-      final Scalar type = new DefaultScalar( RDF.langString.getURI() );
+      final Scalar type = new DefaultScalar( RdfDatatypeUris.LANG_STRING );
       return Optional.of( new DefaultScalarValue( baseAttributes, langString, type ) );
    }
 

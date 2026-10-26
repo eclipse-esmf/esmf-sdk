@@ -22,7 +22,7 @@ import org.eclipse.esmf.aspectmodel.shacl.path.FirstEffectiveProperty;
 import org.eclipse.esmf.aspectmodel.shacl.violation.ClosedViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.NodeKindViolation;
-import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+import org.eclipse.esmf.aspectmodel.Violation;
 
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;

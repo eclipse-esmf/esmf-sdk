@@ -17,8 +17,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assumptions.assumeThat;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
@@ -31,7 +33,9 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 
 import org.eclipse.esmf.aspectmodel.generator.AbstractSchemaArtifact;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
@@ -279,25 +283,192 @@ class AspectModelOpenApiGeneratorTest {
    }
 
    @Test
-   void testValidTemplate() throws IOException {
+   void testOperationTemplateWithoutResponsesKeepsGeneratedResponses() throws IOException {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE ).aspect();
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
             .resourcePath( TEST_RESOURCE_PATH )
-            .template( getTemplateParameter() )
+            .template( getTemplateParameter( """
+               paths:
+                 __DEFAULT_QUERIES_TEMPLATE__:
+                   get:
+                     summary: Custom summary
+               """ ) )
             .build();
       final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       assertThat( result.getMessages() ).isEmpty();
 
       final OpenAPI openApi = result.getOpenAPI();
-      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getResponses().get( "400" ).get$ref() )
-            .isEqualTo( "./core-api.yaml#/components/responses/ClientError" );
-      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getResponses().get( "401" ).get$ref() )
-            .isEqualTo( "./core-api.yaml#/components/responses/Unauthorized" );
-      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getResponses().get( "403" ).get$ref() )
-            .isEqualTo( "./core-api.yaml#/components/responses/Forbidden" );
+      final Operation getOperation = openApi.getPaths().values().stream().findFirst().orElseThrow().getGet();
+      assertThat( getOperation.getResponses() ).containsKeys( "200", "400", "401", "403", "404" );
+      assertThat( getOperation.getSummary() ).isEqualTo( "Custom summary" );
+   }
+
+   @Test
+   void testOperationTemplateResponsesKeepGeneratedSuccessResponseAndReplaceGeneratedErrors() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE ).aspect();
+      final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( true )
+            .baseUrl( TEST_BASE_URL )
+            .resourcePath( TEST_RESOURCE_PATH )
+            .template( getTemplateParameter( """
+               paths:
+                 __DEFAULT_QUERIES_TEMPLATE__:
+                   get:
+                     responses:
+                       "400":
+                         description: Custom bad request response.
+                       "404":
+                         description: Custom not found response.
+               """ ) )
+            .build();
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
+      final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
+      assertThat( result.getMessages() ).isEmpty();
+
+      final OpenAPI openApi = result.getOpenAPI();
+      final Operation getOperation = openApi.getPaths().values().stream().findFirst().orElseThrow().getGet();
+      assertThat( getOperation.getResponses() ).containsOnlyKeys( "200", "400", "404" );
+      assertThat( getOperation.getResponses().get( "200" ).get$ref() ).isEqualTo( "#/components/responses/AspectWithoutSeeAttribute" );
+      assertThat( getOperation.getResponses().get( "400" ).getDescription() ).isEqualTo( "Custom bad request response." );
+      assertThat( getOperation.getResponses().get( "404" ).getDescription() ).isEqualTo( "Custom not found response." );
+   }
+
+   @Test
+   void testOperationTemplateCustomSuccessResponseReplacesGeneratedSuccessResponse() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE ).aspect();
+      final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( true )
+            .baseUrl( TEST_BASE_URL )
+            .resourcePath( TEST_RESOURCE_PATH )
+            .template( getTemplateParameter( """
+               paths:
+                 __DEFAULT_QUERIES_TEMPLATE__:
+                   get:
+                     responses:
+                       "200":
+                         description: Custom success response.
+               """ ) )
+            .build();
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
+      final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
+      assertThat( result.getMessages() ).isEmpty();
+
+      final OpenAPI openApi = result.getOpenAPI();
+      final Operation getOperation = openApi.getPaths().values().stream().findFirst().orElseThrow().getGet();
+      assertThat( getOperation.getResponses() ).containsOnlyKeys( "200" );
+      assertThat( getOperation.getResponses().get( "200" ).getDescription() ).isEqualTo( "Custom success response." );
+      assertThat( getOperation.getResponses().get( "200" ).get$ref() ).isNull();
+   }
+
+   @Test
+   void testOperationTemplateResponse201KeepsGeneratedSuccessResponse() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE ).aspect();
+      final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( true )
+            .baseUrl( TEST_BASE_URL )
+            .resourcePath( TEST_RESOURCE_PATH )
+            .template( getTemplateParameter( """
+               paths:
+                 __DEFAULT_QUERIES_TEMPLATE__:
+                   get:
+                     responses:
+                       "201":
+                         description: Created by custom template.
+               """ ) )
+            .build();
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
+      final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
+      assertThat( result.getMessages() ).isEmpty();
+
+      final OpenAPI openApi = result.getOpenAPI();
+      final Operation getOperation = openApi.getPaths().values().stream().findFirst().orElseThrow().getGet();
+      assertThat( getOperation.getResponses() ).containsOnlyKeys( "200", "201" );
+      assertThat( getOperation.getResponses().get( "200" ).get$ref() ).isEqualTo( "#/components/responses/AspectWithoutSeeAttribute" );
+      assertThat( getOperation.getResponses().get( "201" ).getDescription() ).isEqualTo( "Created by custom template." );
+   }
+
+   @Test
+   void testOperationTemplateCanDisableGeneratedSuccessResponse() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE ).aspect();
+      final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( true )
+            .baseUrl( TEST_BASE_URL )
+            .resourcePath( TEST_RESOURCE_PATH )
+            .template( getTemplateParameter( """
+               paths:
+                 __DEFAULT_QUERIES_TEMPLATE__:
+                   get:
+                     x-esmf-generate-success-response: false
+                     responses:
+                       "201":
+                         description: Created by custom template.
+               """ ) )
+            .build();
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
+      final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
+      assertThat( result.getMessages() ).isEmpty();
+
+      final OpenAPI openApi = result.getOpenAPI();
+      final Operation getOperation = openApi.getPaths().values().stream().findFirst().orElseThrow().getGet();
+      assertThat( getOperation.getResponses() ).containsOnlyKeys( "201" );
+      assertThat( getOperation.getResponses().get( "201" ).getDescription() ).isEqualTo( "Created by custom template." );
+   }
+
+   @Test
+   void testOperationTemplateDisableGeneratedSuccessResponseKeepsCustomSuccessResponse() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE ).aspect();
+      final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( true )
+            .baseUrl( TEST_BASE_URL )
+            .resourcePath( TEST_RESOURCE_PATH )
+            .template( getTemplateParameter( """
+               paths:
+                 __DEFAULT_QUERIES_TEMPLATE__:
+                   get:
+                     x-esmf-generate-success-response: false
+                     responses:
+                       "200":
+                         description: Custom success response.
+               """ ) )
+            .build();
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
+      final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
+      assertThat( result.getMessages() ).isEmpty();
+
+      final OpenAPI openApi = result.getOpenAPI();
+      final Operation getOperation = openApi.getPaths().values().stream().findFirst().orElseThrow().getGet();
+      assertThat( getOperation.getResponses() ).containsOnlyKeys( "200" );
+      assertThat( getOperation.getResponses().get( "200" ).getDescription() ).isEqualTo( "Custom success response." );
+      assertThat( getOperation.getResponses().get( "200" ).get$ref() ).isNull();
+   }
+
+   @Test
+   void testOperationsEndpointTemplateResponsesKeepGeneratedOperationSuccessResponse() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_OPERATION ).aspect();
+      final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( true )
+            .baseUrl( TEST_BASE_URL )
+            .resourcePath( TEST_RESOURCE_PATH )
+            .template( getTemplateParameter( """
+               paths:
+                 __DEFAULT_QUERIES_TEMPLATE__:
+                   post:
+                     responses:
+                       "400":
+                         description: Custom bad request response.
+               """ ) )
+            .build();
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
+      final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
+      assertThat( result.getMessages() ).isEmpty();
+
+      final OpenAPI openApi = result.getOpenAPI();
+      final Operation postOperation = openApi.getPaths().get( "/" + TEST_RESOURCE_PATH + "/operations" ).getPost();
+      assertThat( postOperation.getResponses() ).containsOnlyKeys( "200", "400" );
+      assertThat( postOperation.getResponses().get( "200" ).get$ref() ).isEqualTo( "#/components/responses/OperationResponse" );
    }
 
    @Test
@@ -397,7 +568,7 @@ class AspectModelOpenApiGeneratorTest {
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
       assertThat( openApi.getPaths() ).containsKey( "/{tenant-id}/aspect-with-collection" );
-      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 0 ).getName() ).isEqualTo(
+      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().getFirst().getName() ).isEqualTo(
             "tenant-id" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 1 ).getName() ).isEqualTo(
             "start" );
@@ -424,7 +595,7 @@ class AspectModelOpenApiGeneratorTest {
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
       assertThat( openApi.getPaths() ).containsKey( "/{tenant-id}/aspect-with-time-series" );
-      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 0 ).getName() ).isEqualTo(
+      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().getFirst().getName() ).isEqualTo(
             "tenant-id" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 1 ).getName() ).isEqualTo(
             "since" );
@@ -450,7 +621,7 @@ class AspectModelOpenApiGeneratorTest {
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
       assertThat( openApi.getPaths() ).containsKey( "/{tenant-id}/aspect-with-collection" );
-      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 0 ).getName() ).isEqualTo(
+      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().getFirst().getName() ).isEqualTo(
             "tenant-id" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 1 ).getName() ).isEqualTo(
             "before" );
@@ -487,7 +658,7 @@ class AspectModelOpenApiGeneratorTest {
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
       assertThat( openApi.getPaths() ).containsKey( "/{tenant-id}/aspect-with-collection" );
-      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 0 ).getName() ).isEqualTo(
+      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().getFirst().getName() ).isEqualTo(
             "tenant-id" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 1 ).getName() ).isEqualTo(
             "start" );
@@ -754,7 +925,7 @@ class AspectModelOpenApiGeneratorTest {
       final Schema<?> pagingSchema = openApi.getComponents().getSchemas().get( "PagingSchema" );
       assertThat( pagingSchema ).isNotNull();
 
-      final String propertyName = aspect.getProperties().get( 0 ).getName();
+      final String propertyName = aspect.getProperties().getFirst().getName();
 
       final Schema<?> property = (Schema<?>) pagingSchema.getProperties().get( propertyName );
       assertThat( property ).isNotNull();
@@ -801,7 +972,7 @@ class AspectModelOpenApiGeneratorTest {
 
       final List<Schema> allOfSchemas = property.getAllOf();
       assertThat( allOfSchemas ).isNotNull().hasSize( 1 );
-      assertThat( allOfSchemas.get( 0 ).get$ref() ).isEqualTo( "#/components/schemas/TestCollection" );
+      assertThat( allOfSchemas.getFirst().get$ref() ).isEqualTo( "#/components/schemas/TestCollection" );
 
       if ( property.getExtensions() != null && property.getExtensions().containsKey( "x-comment" ) ) {
          assertThat( property.getExtensions().get( "x-comment" ).toString() ).contains( "http://example.com/" );
@@ -826,7 +997,7 @@ class AspectModelOpenApiGeneratorTest {
 
       assertThat( openApi.getPaths() ).containsKey( "/{tenant-id}/aspect-with-property" );
 
-      final var params = openApi.getPaths()
+      final List<String> params = openApi.getPaths()
             .get( "/{tenant-id}/aspect-with-property" )
             .getGet()
             .getParameters()
@@ -882,7 +1053,7 @@ class AspectModelOpenApiGeneratorTest {
       final Operation op = pathItem.getGet();
       assertThat( op ).as( "No HTTP operation found for path %s", path ).isNotNull();
 
-      final var params = op.getParameters()
+      final List<String> params = op.getParameters()
             .stream()
             .map( Parameter::getName )
             .toList();
@@ -905,6 +1076,109 @@ class AspectModelOpenApiGeneratorTest {
                   .isEqualTo( "#/components/schemas/PagingSchema" );
 
       assertThat( openApi.getComponents().getSchemas() ).containsKey( "AspectWithProperty" );
+   }
+
+   @Test
+   void testPropertyWithExampleValue_ShouldContainExampleInPropertySchema() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_ENGLISH_DESCRIPTION ).aspect();
+      final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( true )
+            .baseUrl( TEST_BASE_URL )
+            .resourcePath( TEST_RESOURCE_PATH )
+            .locale( Locale.ENGLISH )
+            .build();
+
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
+      final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
+      final OpenAPI openApi = result.getOpenAPI();
+
+      final Schema<?> schema = openApi.getComponents().getSchemas().get( aspect.getName() );
+      assertThat( schema ).isNotNull();
+
+      final Schema<?> property = (Schema<?>) schema.getProperties().get( "testString" );
+      assertThat( property ).isNotNull();
+      assertThat( property.getExample() ).isEqualTo( "Example Value Test" );
+
+      final JsonNode propertyNode = json.get( "components" ).get( "schemas" )
+            .get( aspect.getName() ).get( "properties" ).get( "testString" );
+      assertThat( propertyNode.has( "example" ) ).isTrue();
+      assertThat( propertyNode.get( "example" ).asString() ).isEqualTo( "Example Value Test" );
+   }
+
+   @Test
+   void testPropertyWithCollectionExampleValue_ShouldBeArray() {
+      final String ttl = """
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#> .
+         @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         @prefix : <urn:samm:org.example.test:1.0.0#> .
+
+         :AspectWithCollectionExample a samm:Aspect ;
+            samm:properties ( :numberList ) ;
+            samm:operations ( ) .
+
+         :numberList a samm:Property ;
+            samm:characteristic :Numbers ;
+            samm:exampleValue "42"^^xsd:int .
+
+         :Numbers a samm-c:List ;
+            samm:dataType xsd:int .
+         """;
+      final AspectModel aspectModel = new AspectModelLoader().load(
+            new ByteArrayInputStream( ttl.getBytes( StandardCharsets.UTF_8 ) ),
+            URI.create( "test:AspectWithCollectionExample.ttl" ) );
+      final Aspect aspect = aspectModel.aspect();
+      final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( true )
+            .baseUrl( TEST_BASE_URL )
+            .resourcePath( TEST_RESOURCE_PATH )
+            .locale( Locale.ENGLISH )
+            .build();
+
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
+      final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
+      final OpenAPI openApi = result.getOpenAPI();
+
+      final Schema<?> schema = openApi.getComponents().getSchemas().get( aspect.getName() );
+      assertThat( schema ).isNotNull();
+
+      final Schema<?> property = (Schema<?>) schema.getProperties().get( "numberList" );
+      assertThat( property ).isNotNull();
+      assertThat( property.getExample() ).hasToString( "[42]" );
+
+      final JsonNode propertyNode = json.get( "components" ).get( "schemas" )
+            .get( aspect.getName() ).get( "properties" ).get( "numberList" );
+      assertThat( propertyNode.has( "example" ) ).isTrue();
+      assertThat( propertyNode.get( "example" ).isArray() ).isTrue();
+      assertThat( propertyNode.get( "example" ).get( 0 ).asInt() ).isEqualTo( 42 );
+   }
+
+   @Test
+   void testOperationWithExampleValue_ShouldContainExampleInParams() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SCRIPT_TAGS ).aspect();
+      final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( true )
+            .baseUrl( TEST_BASE_URL )
+            .resourcePath( TEST_RESOURCE_PATH )
+            .locale( Locale.ENGLISH )
+            .build();
+
+      final JsonNode json = new AspectModelOpenApiGenerator( aspect, config ).getContent();
+      final JsonNode paramsProperties = json.get( "components" )
+            .get( "schemas" )
+            .get( "Operation" )
+            .get( "allOf" )
+            .get( 1 )
+            .get( "properties" )
+            .get( "params" )
+            .get( "properties" );
+      assertThat( paramsProperties ).isNotNull();
+
+      final JsonNode inputProp = paramsProperties.get( "operationInput" );
+      assertThat( inputProp ).isNotNull();
+      assertThat( inputProp.has( "example" ) ).isTrue();
+      assertThat( inputProp.get( "example" ).asString() )
+            .isEqualTo( "Example operation input <script>alert('Should not be alerted');</script>" );
    }
 
    private void assertSpecificationIsValid( final JsonNode jsonNode, final String json, final Aspect aspect ) throws IOException {
@@ -950,7 +1224,7 @@ class AspectModelOpenApiGeneratorTest {
       assertThat( node.get( "info" ).get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION ).asString() ).isEqualTo( aspect.urn().toString() );
 
       assertThat( openApi.getServers() ).hasSize( 1 );
-      assertThat( openApi.getServers().get( 0 ).getUrl() ).isEqualTo( TEST_BASE_URL + "/api/" + expectedApiVersion );
+      assertThat( openApi.getServers().getFirst().getUrl() ).isEqualTo( TEST_BASE_URL + "/api/" + expectedApiVersion );
 
       assertThat( openApi.getPaths().keySet() ).noneMatch( path -> path.contains( "/query-api" ) );
       openApi.getPaths().entrySet().stream().filter( item -> !item.getKey().contains( "/operations" ) )
@@ -1031,9 +1305,7 @@ class AspectModelOpenApiGeneratorTest {
       return (ObjectNode) OBJECT_MAPPER.readTree( inputString );
    }
 
-   private ObjectNode getTemplateParameter() throws IOException {
-      final InputStream inputStream = getClass().getResourceAsStream( "/openapi/open-api-error-template.yaml" );
-      final String inputString = IOUtils.toString( inputStream, StandardCharsets.UTF_8 );
+   private ObjectNode getTemplateParameter( final String inputString ) throws IOException {
       return (ObjectNode) new YAMLMapper().readTree( inputString );
    }
 }

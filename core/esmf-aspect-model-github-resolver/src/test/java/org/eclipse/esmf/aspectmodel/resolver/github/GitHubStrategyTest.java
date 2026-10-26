@@ -21,24 +21,24 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.apache.commons.io.IOUtils;
+
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.Violation;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.GithubRepository;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
 import org.eclipse.esmf.aspectmodel.shacl.violation.SparqlConstraintViolation;
-import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
 import org.eclipse.esmf.metamodel.AspectModel;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -94,11 +94,10 @@ public class GitHubStrategyTest {
       final GitHubModelSource modelSource = new GitHubModelSource( esmfSdk, "core/esmf-test-aspect-models/src/main/resources/valid/" );
       final List<AspectModelFile> files = modelSource.loadContents().toList();
       assertThat( files ).isNotEmpty();
-      assertThat( files ).allMatch( file -> file.sourceLocation().isPresent()
-            && file.sourceLocation().get().toString().startsWith( "https://github.com" ) );
+      assertThat( files ).allMatch( file -> file.sourceUri().toString().startsWith( "https://github.com" ) );
 
       final AspectModelFile aspectModelFile = files.stream()
-            .filter( file -> file.sourceLocation().map( URI::toString ).get().endsWith( "/Aspect.ttl" ) ).findFirst().get();
+            .filter( file -> file.sourceUri().toString().endsWith( "/Aspect.ttl" ) ).findFirst().get();
       final AspectModel aspectModel = new AspectModelLoader().loadAspectModelFiles( List.of( aspectModelFile ) );
       assertThat( aspectModel ).files().hasSize( 1 );
       assertThat( aspectModel ).hasSingleAspectThat().hasName( "Aspect" );
@@ -149,7 +148,7 @@ public class GitHubStrategyTest {
       final AspectModel batteryPass = new AspectModelLoader( gitHubStrategy ).load( batteryPassUrn );
 
       final AspectModelValidator validator = new AspectModelValidator();
-      final List<Violation> violations = validator.validateModel( batteryPass );
+      final List<Violation> violations = validator.validateModel( batteryPass ).violations();
       assertThat( violations ).hasOnlyElementsOfType( SparqlConstraintViolation.class );
    }
 }

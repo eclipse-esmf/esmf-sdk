@@ -150,12 +150,12 @@ public class StaticClassGenerationResult extends GenerationResult {
     * Allows the assertion of method bodies for static meta properties in a generated meta class.
     * <p>
     * Method bodies are asserted in a relaxed way:
+    * </p>
     * <ul>
     * <li>all whitespace is trimmed before comparing</li>
     * <li>the given method body may also be just a part of the full method body, i.e. the check is
     * performed using .contains()</li>
     * </ul>
-    * </p>
     *
     * @param className the name of the meta class
     * @param propertyName the name of the property (given in CONSTANT_CASE)

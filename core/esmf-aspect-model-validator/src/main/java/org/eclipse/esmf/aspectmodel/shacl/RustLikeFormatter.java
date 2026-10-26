@@ -24,13 +24,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import org.eclipse.esmf.aspectmodel.AspectModelFile;
-import org.eclipse.esmf.aspectmodel.resolver.parser.PlainTextFormatter;
-import org.eclipse.esmf.aspectmodel.resolver.parser.RdfTextFormatter;
-import org.eclipse.esmf.aspectmodel.resolver.parser.SmartToken;
-import org.eclipse.esmf.aspectmodel.resolver.parser.TokenRegistry;
-
-import com.google.common.collect.Ordering;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFList;
 import org.apache.jena.rdf.model.RDFNode;
@@ -38,7 +31,16 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.sparql.graph.NodeConst;
 import org.apache.jena.vocabulary.RDF;
+
+import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.resolver.parser.PlainTextFormatter;
+import org.eclipse.esmf.aspectmodel.resolver.parser.RdfTextFormatter;
+import org.eclipse.esmf.aspectmodel.resolver.parser.SmartToken;
+import org.eclipse.esmf.aspectmodel.resolver.parser.TokenRegistry;
+
 import org.jspecify.annotations.Nullable;
+
+import com.google.common.collect.Ordering;
 
 /**
  * Rust-like message formatter. Formatted messages look something like the following example: <br/>
@@ -102,7 +104,7 @@ public class RustLikeFormatter {
             .toList();
 
       return formatError( highlightToken.content(), formatStatements(), highlightToken.line(), highlightToken.column(), message,
-            sourceFile.flatMap( AspectModelFile::sourceLocation ) );
+            sourceFile.map( AspectModelFile::sourceUri ) );
    }
 
    public RdfTextFormatter getFormatter() {
@@ -120,30 +122,34 @@ public class RustLikeFormatter {
       return nodePosition != null && nodePosition.line() == lineNumber;
    }
 
-   public String formatError( final String token, final String line, final int lineNumber, final int columnNumber,
-         final String errorMessage ) {
-      return formatError( token, line, lineNumber, columnNumber, errorMessage, Optional.empty() );
+   public String formatError( final int tokenLength, final Map<Integer, String> lines, final int lineNumber, final int columnNumber,
+         final String errorMessage, final URI sourceLocation ) {
+      return formatError( tokenLength, lines, lineNumber, columnNumber, errorMessage, Optional.of( sourceLocation ) );
    }
 
    public String formatError( final int tokenLength, final Map<Integer, String> lines, final int lineNumber, final int columnNumber,
          final String errorMessage, final Optional<URI> sourceLocation ) {
+      return formatError( tokenLength, lines, lineNumber, columnNumber, errorMessage,
+            sourceLocation.map( URI::toString )
+                  .map( location -> " in " + textFormatter.formatName( location ) )
+                  .orElse( "" ) );
+   }
+
+   public String formatError( final int tokenLength, final Map<Integer, String> lines, final int lineNumber, final int columnNumber,
+         final String errorMessage, final String sourceLocation ) {
       final int prefixWidth = lines.keySet().stream().mapToInt( lineNo -> String.valueOf( lineNo ).length() + 1 ).max().orElse( 0 );
-      final String source = sourceLocation
-            .map( URI::toString )
-            .map( location -> " in " + textFormatter.formatName( location ) )
-            .orElse( "" );
       final String prefix = " ".repeat( prefixWidth ) + "| ";
       final StringBuilder builder = new StringBuilder();
       builder.append( textFormatter.formatError( String.format( "%s> Error at line %d column %d", "-".repeat( prefixWidth ),
             lineNumber, columnNumber ) ) );
-      builder.append( source ).append( System.lineSeparator() );
+      builder.append( sourceLocation ).append( System.lineSeparator() );
       builder.append( prefix ).append( System.lineSeparator() );
       lines.entrySet().stream().sorted( Map.Entry.comparingByKey() ).forEach( entry -> {
          final int currentLine = entry.getKey();
          builder.append( String.format( "%" + ( prefixWidth - 1 ) + "d", currentLine ) ).append( " | " ).append( entry.getValue() )
                .append( System.lineSeparator() );
          if ( currentLine == lineNumber ) {
-            builder.append( prefix ).append( " ".repeat( columnNumber ) )
+            builder.append( prefix ).repeat( " ", columnNumber )
                   .append( textFormatter.formatError( "^".repeat( tokenLength ) + " " + errorMessage ) ).append( System.lineSeparator() );
          }
       } );

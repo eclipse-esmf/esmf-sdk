@@ -77,7 +77,7 @@ public class AssertTest {
             .hasSameNamespaceAs( aspect )
             .isMandatory()
             .see().hasSize( 2 ).allMatch( see -> see.contains( "example" ) );
-      final Property property = aspect.getProperties().get( 0 );
+      final Property property = aspect.getProperties().getFirst();
       assertThat( property ).characteristic().hasDataType( XSDDatatype.XSDstring ); // Apache Jena RDF type
       assertThat( property ).characteristic().hasDataType( xsd.string ); // SAMM Java API type
 

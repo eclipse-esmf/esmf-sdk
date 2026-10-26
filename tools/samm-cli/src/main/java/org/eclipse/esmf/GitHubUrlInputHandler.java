@@ -19,13 +19,13 @@ import java.util.List;
 import java.util.function.Function;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.ViolationReport;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.GitHubFileLocation;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.github.GitHubStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.github.GithubModelSourceConfig;
 import org.eclipse.esmf.aspectmodel.resolver.github.GithubModelSourceConfigBuilder;
-import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.AspectModel;
@@ -75,7 +75,7 @@ public class GitHubUrlInputHandler extends AbstractInputHandler {
       final AspectModelUrn urn = AspectModelUrn.from( location.namespaceMainPart(), location.version(), expectedAspectName() )
             .getOrElseThrow( () -> new CommandException( "Could not construct valid Aspect Model URN from input URL: " + url ) );
       final Function<AspectModelLoader, AspectModel> loaderFunction = validate
-            ? ( (Function<AspectModelLoader, Either<List<Violation>, AspectModel>>) loader -> loader.withValidation( validator )
+            ? ( (Function<AspectModelLoader, Either<ViolationReport, AspectModel>>) loader -> loader.withValidation( validator )
                   .load( urn ) ).andThen( this::getAspectModelOrPrintValidationReport )
             : ( aspectModelLoader -> aspectModelLoader.load( urn ) );
       return applyAspectModelLoader( loaderFunction );
@@ -91,7 +91,7 @@ public class GitHubUrlInputHandler extends AbstractInputHandler {
       final AspectModel aspectModel = loadAspectModel();
       return aspectModel.files()
             .stream()
-            .filter( file -> file.sourceLocation().map( location -> location.equals( inputUri() ) ).orElse( false ) )
+            .filter( file -> file.sourceUri().equals( inputUri() ) )
             .findFirst()
             .orElseThrow( () -> new CommandException( "Could not load: " + inputUri() ) );
    }

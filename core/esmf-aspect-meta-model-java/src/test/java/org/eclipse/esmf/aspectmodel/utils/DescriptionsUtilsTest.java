@@ -34,7 +34,7 @@ class DescriptionsUtilsTest {
    @BeforeAll
    public static void init() {
       final AspectModel aspectModel = TestResources.load( TestAspect.ASPECT_WITH_MARKDOWN_DESCRIPTION );
-      final AspectModelFile originalFile = aspectModel.files().iterator().next();
+      final AspectModelFile originalFile = aspectModel.files().getFirst();
       testDescription = originalFile.elements().getFirst().getDescription( Locale.ENGLISH );
    }
 
@@ -42,7 +42,7 @@ class DescriptionsUtilsTest {
    void testExtractNotesSingleNote() {
       final List<String> notes = DescriptionsUtils.notes( testDescription );
       assertThat( notes ).hasSize( 1 );
-      assertEquals( "This is a note block.\nIt supports multiple lines.\nHere's a second line of the note.", notes.get( 0 ) );
+      assertEquals( "This is a note block.\nIt supports multiple lines.\nHere's a second line of the note.", notes.getFirst() );
    }
 
    @Test
@@ -51,7 +51,7 @@ class DescriptionsUtilsTest {
 
       assertEquals( 2, examples.size() );
       assertEquals( "This is the first example block.\nIt can span several lines, and supports *italic* and **bold** text.",
-            examples.get( 0 ) );
+            examples.getFirst() );
       assertEquals( "This is the second example.\nAlso multiline, for testing multiple example entries.", examples.get( 1 ) );
    }
 
@@ -67,7 +67,8 @@ class DescriptionsUtilsTest {
    void testExtractSourcesWithLink() {
       final List<String> sources = DescriptionsUtils.sources( testDescription );
       assertEquals( 1, sources.size() );
-      assertThat( sources.get( 0 ) ).contains( "ISO 12345:2023, section 4.2.1\n" + "with an inline [link](https://www.example.com/spec)." );
+      assertThat( sources.getFirst() )
+            .contains( "ISO 12345:2023, section 4.2.1\n" + "with an inline [link](https://www.example.com/spec)." );
    }
 
    @Test

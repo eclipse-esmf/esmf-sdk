@@ -20,7 +20,6 @@ import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.Change;
 import org.eclipse.esmf.aspectmodel.edit.ChangeContext;
 import org.eclipse.esmf.aspectmodel.edit.ChangeReport;
-import org.eclipse.esmf.aspectmodel.edit.ModelChangeException;
 
 /**
  * Refactoring operation: Removes an AspectModelFile from an Aspect Model
@@ -34,7 +33,7 @@ public class RemoveAspectModelFile extends StructuralChange {
    }
 
    public RemoveAspectModelFile( final AspectModelFile fileToRemove ) {
-      this( fileToRemove.sourceLocation().orElseThrow( () -> new ModelChangeException( "Can remove only a named file" ) ) );
+      this( fileToRemove.sourceUri() );
    }
 
    @Override

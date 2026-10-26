@@ -58,11 +58,7 @@ class AspectModelAsyncApiGeneratorTest {
                         "Aspect": {
                            "address": "123/456/test/1.0.0/TestAspect",
                            "description": "Channel for updating Aspect Aspect.",
-                           "parameters": {
-                              "namespace": "org.eclipse.esmf.test",
-                              "version": "1.0.0",
-                              "aspect-name": "Aspect"
-                           },
+                           "parameters": {},
                            "messages": {}
                         }
                      },
@@ -112,11 +108,7 @@ class AspectModelAsyncApiGeneratorTest {
                      "AspectWithEvent": {
                         "address": "123/456/test/1.0.0/TestAspect",
                         "description": "Channel for updating AspectWithEvent Aspect.",
-                        "parameters": {
-                           "namespace": "org.eclipse.esmf.test",
-                           "version": "1.0.0",
-                           "aspect-name": "AspectWithEvent"
-                        },
+                        "parameters": {},
                         "messages": {
                            "SomeEvent": {
                               "$ref": "#/components/messages/SomeEvent"
@@ -149,6 +141,7 @@ class AspectModelAsyncApiGeneratorTest {
                                           "testProperty" : {
                                             "description" : "This is a test property.",
                                             "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty",
+                                            "example" : "Example Value",
                                             "allOf" : [ {
                                               "$ref" : "#/components/schemas/Text"
                                             } ]
@@ -165,8 +158,8 @@ class AspectModelAsyncApiGeneratorTest {
                                  }
                               """ );
 
-      assertThat( json.get( "info" ).get( "title" ).asText() ).isEqualTo( "Test Aspect MQTT API" );
-      assertThat( json.get( "info" ).get( "description" ).asText() ).isEqualTo( "This is a test description" );
+      assertThat( json.get( "info" ).get( "title" ).asString() ).isEqualTo( "Test Aspect MQTT API" );
+      assertThat( json.get( "info" ).get( "description" ).asString() ).isEqualTo( "This is a test description" );
       assertThat( json.get( "channels" ) ).isEqualTo( expectedChannels );
       assertThat( json.get( "components" ).get( "messages" ) ).isEqualTo( expectedComponentsMessages );
       assertThat( json.get( "components" ).get( "schemas" ) ).isEqualTo(
@@ -191,11 +184,7 @@ class AspectModelAsyncApiGeneratorTest {
                        "AspectWithOperation" : {
                          "address" : "123/456/test/1.0.0/TestAspect",
                          "description" : "Channel for updating AspectWithOperation Aspect.",
-                         "parameters" : {
-                           "namespace" : "org.eclipse.esmf.test",
-                           "version" : "1.0.0",
-                           "aspect-name" : "AspectWithOperation"
-                         },
+                         "parameters" : {},
                          "messages" : {
                            "testOperationRequest" : {
                              "$ref" : "#/components/messages/testOperationRequest"
@@ -261,13 +250,16 @@ class AspectModelAsyncApiGeneratorTest {
                                  {
                                       "testOperationRequest" : {
                                         "title" : "First Test Operation",
-                                        "allOf" : [ {
-                                          "description" : "Description of a text property that is used for input",
-                                          "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#input",
-                                          "allOf" : [ {
-                                            "$ref" : "#/components/schemas/Text"
-                                          } ]
-                                        } ]
+                                        "type" : "object",
+                                        "properties" : {
+                                          "input" : {
+                                            "description" : "Description of a text property that is used for input",
+                                            "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#input",
+                                            "allOf" : [ {
+                                              "$ref" : "#/components/schemas/Text"
+                                            } ]
+                                          }
+                                        }
                                       },
                                       "testOperationResponse" : {
                                         "description" : "Description of a text property that is used for output",
@@ -278,19 +270,23 @@ class AspectModelAsyncApiGeneratorTest {
                                       },
                                       "testOperationTwoRequest" : {
                                         "title" : "Second Test Operation",
-                                        "allOf" : [ {
-                                          "description" : "Description of a text property that is used for input",
-                                          "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#input",
-                                          "allOf" : [ {
-                                            "$ref" : "#/components/schemas/Text"
-                                          } ]
-                                        }, {
-                                          "description" : "Description of a second text property that is used for input",
-                                          "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#input2",
-                                          "allOf" : [ {
-                                            "$ref" : "#/components/schemas/Text"
-                                          } ]
-                                        } ]
+                                        "type" : "object",
+                                        "properties" : {
+                                          "input" : {
+                                            "description" : "Description of a text property that is used for input",
+                                            "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#input",
+                                            "allOf" : [ {
+                                              "$ref" : "#/components/schemas/Text"
+                                            } ]
+                                          },
+                                          "input2" : {
+                                            "description" : "Description of a second text property that is used for input",
+                                            "x-samm-aspect-model-urn" : "urn:samm:org.eclipse.esmf.test:1.0.0#input2",
+                                            "allOf" : [ {
+                                              "$ref" : "#/components/schemas/Text"
+                                            } ]
+                                          }
+                                        }
                                       },
                                       "testOperationTwoResponse" : {
                                         "description" : "Description of a text property that is used for output",
@@ -309,8 +305,8 @@ class AspectModelAsyncApiGeneratorTest {
                               """
       );
 
-      assertThat( json.get( "info" ).get( "title" ).asText() ).isEqualTo( "AspectWithOperation MQTT API" );
-      assertThat( json.get( "info" ).get( "description" ).asText() ).isEmpty();
+      assertThat( json.get( "info" ).get( "title" ).asString() ).isEqualTo( "AspectWithOperation MQTT API" );
+      assertThat( json.get( "info" ).get( "description" ).asString() ).isEmpty();
       assertThat( json.get( "channels" ) ).isEqualTo( expectedChannels );
       assertThat( json.get( "components" ).get( "messages" ) ).isEqualTo( expectedComponentsMessages );
       assertThat( json.get( "components" ).get( "schemas" ) ).isEqualTo( expectedComponentsSchemas );
@@ -334,11 +330,7 @@ class AspectModelAsyncApiGeneratorTest {
                     "AspectWithEventAndEntityProperty" : {
                       "address" : "123/456/test/1.0.0/TestAspect",
                       "description" : "Channel for updating AspectWithEventAndEntityProperty Aspect.",
-                      "parameters" : {
-                        "namespace" : "org.eclipse.esmf.test",
-                        "version" : "1.0.0",
-                        "aspect-name" : "AspectWithEventAndEntityProperty"
-                      },
+                      "parameters" : {},
                       "messages" : {
                         "EntityEvent" : {
                           "$ref" : "#/components/messages/EntityEvent"
@@ -420,10 +412,141 @@ class AspectModelAsyncApiGeneratorTest {
                               """
       );
 
-      assertThat( json.get( "info" ).get( "title" ).asText() ).isEqualTo( "Test Aspect MQTT API" );
-      assertThat( json.get( "info" ).get( "description" ).asText() ).isEqualTo( "This is a test description" );
+      assertThat( json.get( "info" ).get( "title" ).asString() ).isEqualTo( "Test Aspect MQTT API" );
+      assertThat( json.get( "info" ).get( "description" ).asString() ).isEqualTo( "This is a test description" );
       assertThat( json.get( "channels" ) ).isEqualTo( expectedChannels );
       assertThat( json.get( "components" ).get( "messages" ) ).isEqualTo( expectedComponentsMessages );
       assertThat( json.get( "components" ).get( "schemas" ) ).isEqualTo( expectedComponentsSchemas );
+   }
+
+   @Test
+   void testAsyncApiGeneratorDefaultChannelAddressIncludesTenantIdAndExpandedParameters() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT ).aspect();
+      final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( false )
+            .locale( Locale.ENGLISH )
+            .build();
+      final AsyncApiSchemaArtifact asyncSpec = new AspectModelAsyncApiGenerator( aspect, config ).singleResult();
+      final JsonNode json = asyncSpec.getContent();
+
+      final JsonNode expectedChannels = OBJECT_MAPPER.readTree(
+            """
+                  {
+                     "Aspect": {
+                        "address": "/{tenant-id}/{namespace}/{version}/{aspect-name}",
+                        "description": "Channel for updating Aspect Aspect.",
+                        "parameters": {
+                           "namespace": {
+                              "description": "The namespace of the Aspect Model.",
+                              "default": "org.eclipse.esmf.test"
+                           },
+                           "version": {
+                              "description": "The version of the Aspect Model.",
+                              "default": "1.0.0"
+                           },
+                           "aspect-name": {
+                              "description": "The name of the Aspect.",
+                              "default": "Aspect"
+                           },
+                           "tenant-id": {
+                              "description": "The ID of the tenant owning the requested Twin."
+                           }
+                        },
+                        "messages": {}
+                     }
+                  }
+               """ );
+
+      assertThat( json.get( "channels" ) ).isEqualTo( expectedChannels );
+   }
+
+   @Test
+   void testAsyncApiGeneratorAddTenantIdInParametersWithExplicitAddressContainingPlaceholder() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT ).aspect();
+      final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( false )
+            .channelAddress( "/{tenant-id}/custom/path" )
+            .locale( Locale.ENGLISH )
+            .build();
+      final AsyncApiSchemaArtifact asyncSpec = new AspectModelAsyncApiGenerator( aspect, config ).singleResult();
+      final JsonNode json = asyncSpec.getContent();
+
+      final JsonNode expectedChannels = OBJECT_MAPPER.readTree(
+            """
+                  {
+                     "Aspect": {
+                        "address": "/{tenant-id}/custom/path",
+                        "description": "Channel for updating Aspect Aspect.",
+                        "parameters": {
+                           "tenant-id": {
+                              "description": "The ID of the tenant owning the requested Twin."
+                           }
+                        },
+                        "messages": {}
+                     }
+                  }
+               """ );
+
+      assertThat( json.get( "channels" ) ).isEqualTo( expectedChannels );
+   }
+
+   @Test
+   void testAsyncApiGeneratorParametersOnlyIncludeThosePresentAsPlaceholdersInExplicitAddress() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT ).aspect();
+      final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( false )
+            .channelAddress( "/{tenant-id}/{aspect-name}" )
+            .locale( Locale.ENGLISH )
+            .build();
+      final AsyncApiSchemaArtifact asyncSpec = new AspectModelAsyncApiGenerator( aspect, config ).singleResult();
+      final JsonNode json = asyncSpec.getContent();
+
+      final JsonNode expectedChannels = OBJECT_MAPPER.readTree(
+            """
+                  {
+                     "Aspect": {
+                        "address": "/{tenant-id}/{aspect-name}",
+                        "description": "Channel for updating Aspect Aspect.",
+                        "parameters": {
+                           "aspect-name": {
+                              "description": "The name of the Aspect.",
+                              "default": "Aspect"
+                           },
+                           "tenant-id": {
+                              "description": "The ID of the tenant owning the requested Twin."
+                           }
+                        },
+                        "messages": {}
+                     }
+                  }
+               """ );
+
+      assertThat( json.get( "channels" ) ).isEqualTo( expectedChannels );
+   }
+
+   @Test
+   void testAsyncApiGeneratorParametersIgnoredWhenExplicitAddressHasNoPlaceholders() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT ).aspect();
+      final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( false )
+            .channelAddress( CHANNEL_ADDRESS )
+            .locale( Locale.ENGLISH )
+            .build();
+      final AsyncApiSchemaArtifact asyncSpec = new AspectModelAsyncApiGenerator( aspect, config ).singleResult();
+      final JsonNode json = asyncSpec.getContent();
+
+      final JsonNode expectedChannels = OBJECT_MAPPER.readTree(
+            """
+                  {
+                     "Aspect": {
+                        "address": "123/456/test/1.0.0/TestAspect",
+                        "description": "Channel for updating Aspect Aspect.",
+                        "parameters": {},
+                        "messages": {}
+                     }
+                  }
+               """ );
+
+      assertThat( json.get( "channels" ) ).isEqualTo( expectedChannels );
    }
 }

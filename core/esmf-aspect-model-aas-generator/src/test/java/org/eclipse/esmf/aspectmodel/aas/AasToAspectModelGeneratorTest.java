@@ -31,34 +31,18 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.esmf.aspectmodel.generator.AspectArtifact;
-import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
-import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
-import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
-import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
-import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
-import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.AspectModel;
-import org.eclipse.esmf.metamodel.Characteristic;
-import org.eclipse.esmf.metamodel.Entity;
-import org.eclipse.esmf.metamodel.Operation;
-import org.eclipse.esmf.metamodel.Property;
-import org.eclipse.esmf.metamodel.Unit;
-import org.eclipse.esmf.metamodel.characteristic.Collection;
-import org.eclipse.esmf.metamodel.characteristic.Set;
-import org.eclipse.esmf.metamodel.characteristic.Trait;
-import org.eclipse.esmf.metamodel.datatype.LangString;
-import org.eclipse.esmf.test.TestAspect;
-import org.eclipse.esmf.test.TestResources;
-
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.eclipse.digitaltwin.aas4j.v3.dataformat.aasx.AASXDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.DeserializationException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.json.JsonDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.xml.XmlDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.model.AasSubmodelElements;
 import org.eclipse.digitaltwin.aas4j.v3.model.DataTypeDefXsd;
 import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
+import org.eclipse.digitaltwin.aas4j.v3.model.Key;
 import org.eclipse.digitaltwin.aas4j.v3.model.KeyTypes;
 import org.eclipse.digitaltwin.aas4j.v3.model.ModellingKind;
 import org.eclipse.digitaltwin.aas4j.v3.model.ReferenceTypes;
@@ -76,6 +60,29 @@ import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultReference;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodel;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodelElementCollection;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodelElementList;
+
+import org.eclipse.esmf.aspectmodel.ViolationReport;
+import org.eclipse.esmf.aspectmodel.generator.AspectArtifact;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
+import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
+import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.AspectModel;
+import org.eclipse.esmf.metamodel.Characteristic;
+import org.eclipse.esmf.metamodel.Entity;
+import org.eclipse.esmf.metamodel.Operation;
+import org.eclipse.esmf.metamodel.Property;
+import org.eclipse.esmf.metamodel.Unit;
+import org.eclipse.esmf.metamodel.characteristic.Collection;
+import org.eclipse.esmf.metamodel.characteristic.Set;
+import org.eclipse.esmf.metamodel.characteristic.Trait;
+import org.eclipse.esmf.metamodel.datatype.LangString;
+import org.eclipse.esmf.metamodel.datatype.SammType;
+import org.eclipse.esmf.test.TestAspect;
+import org.eclipse.esmf.test.TestResources;
+
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
@@ -89,19 +96,29 @@ class AasToAspectModelGeneratorTest {
    @ParameterizedTest
    @MethodSource( "idtaSubmodelFiles" )
    void testIdtaAasxFilesCanBeTranslated( final File aasxFile ) {
-      try ( final InputStream input = new FileInputStream( aasxFile ) ) {
-         final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromAasx( input );
-         final List<Aspect> aspects = aspectModelGenerator.generate().map( AspectArtifact::getContent ).toList();
+      try {
+         final Environment environment = loadAasxEnvironment( aasxFile );
+         final java.util.Set<String> semanticIdDerivedEntityNames = submodelElementCollectionSemanticIdNames( environment );
+         final List<Aspect> aspects;
+         try ( final InputStream input = new FileInputStream( aasxFile ) ) {
+            final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromAasx( input );
+            aspects = aspectModelGenerator.generate().map( AspectArtifact::getContent ).toList();
+         }
          if ( aspects.isEmpty() ) {
             fail( "Translation of " + aasxFile.getName() + " yielded no Aspects" );
          }
-         final String result = AspectSerializer.INSTANCE.aspectToString( aspects.iterator().next() );
+         final String result = AspectSerializer.INSTANCE.aspectToString( aspects.getFirst() );
          final AspectModel aspectModel = new AspectModelLoader().load( new ByteArrayInputStream( result.getBytes() ), aasxFile.toURI() );
 
          aspectModel.elements().forEach( element -> {
             if ( element instanceof Property || element instanceof Operation || element instanceof Unit ) {
                assertThat( element.getName().charAt( 0 ) )
                      .describedAs( element.getName() + " is a " + element.getClass().getSimpleName() + " and must be lower case" )
+                     .isLowerCase();
+            } else if ( element instanceof Entity && Character.isLowerCase( element.getName().charAt( 0 ) )
+                  && semanticIdDerivedEntityNames.contains( element.getName() ) ) {
+               assertThat( element.getName().charAt( 0 ) )
+                     .describedAs( element.getName() + " is an Entity derived from a SubmodelElementCollection semanticId" )
                      .isLowerCase();
             } else {
                assertThat( element.getName().charAt( 0 ) )
@@ -110,7 +127,7 @@ class AasToAspectModelGeneratorTest {
             }
          } );
 
-         final List<Violation> violations = new AspectModelValidator().validateModel( aspectModel );
+         final ViolationReport violations = new AspectModelValidator().validateModel( aspectModel );
          if ( !violations.isEmpty() ) {
             final String report = new ViolationFormatter().apply( violations );
             System.out.println( report );
@@ -118,8 +135,10 @@ class AasToAspectModelGeneratorTest {
             System.out.println( result );
             fail();
          }
-      } catch ( final IOException exception ) {
+      } catch ( final IOException | InvalidFormatException exception ) {
          fail( exception );
+      } catch ( final DeserializationException exception ) {
+         System.err.println( "Could not load AASX file: " + aasxFile.getName() + ". Consider reporting to IDTA or AAS4J project." );
       } catch ( final AspectModelGenerationException aspectModelGenerationException ) {
          if ( aspectModelGenerationException.getCause() instanceof DeserializationException ) {
             System.err.println( "Could not load AASX file: " + aasxFile.getName() + ". Consider reporting to IDTA or AAS4J project." );
@@ -141,7 +160,9 @@ class AasToAspectModelGeneratorTest {
          "IDTA 02007-1-0_Template_Software Nameplate.aasx",
          // [Reason]: Range property with type double. java.lang.NumberFormatException: For input string:
          // "[0;100]"
-         "IDTA 02019-1-0_Template_PlantAssetManagement.aasx"
+         "IDTA 02019-1-0_Template_PlantAssetManagement.aasx",
+         // [Reason]: Range property with type positiveInteger has an invalid negative lower bound.
+         "IDTA 02076_Template_EnergyFlexibilityDataModel.aasx"
    );
 
    protected static Stream<Arguments> idtaSubmodelFiles() throws URISyntaxException, IOException {
@@ -188,6 +209,43 @@ class AasToAspectModelGeneratorTest {
    }
 
    @Test
+   void testDatePropertyWithExampleValueCanBeTranslatedWithoutTypeMappingSetup() {
+      final org.eclipse.digitaltwin.aas4j.v3.model.Property dateProperty = new DefaultProperty.Builder()
+            .idShort( "DateOfManufacture" )
+            .valueType( DataTypeDefXsd.DATE )
+            .value( "2022-01-01" )
+            .build();
+      final AasToAspectModelGenerator aspectModelGenerator =
+            AasToAspectModelGenerator.fromEnvironment( buildTemplateEnvironment( dateProperty ) );
+
+      assertThatCode( () -> aspectModelGenerator.generate().toList() ).doesNotThrowAnyException();
+
+      final Property property = aspectModelGenerator.generate().map( AspectArtifact::getContent ).toList()
+            .getFirst().getProperties().getFirst();
+
+      assertThat( property.getExampleValue() ).isPresent()
+            .get()
+            .satisfies( exampleValue -> {
+               assertThat( exampleValue.getType() ).isEqualTo( SammType.DATE );
+               assertThat( exampleValue.getValue().toString() ).isEqualTo( "2022-01-01" );
+            } );
+      assertThat( property.getCharacteristic() )
+            .flatMap( Characteristic::getDataType )
+            .contains( SammType.DATE );
+   }
+
+   @Test
+   void testXmlFixtureWithDateExampleValueCanBeTranslatedAndValidated() {
+      final Environment environment = loadEnvironment( "DatePropertyWithExampleValue.aas.xml" );
+      final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( environment );
+
+      final List<Aspect> aspects = aspectModelGenerator.generate().map( AspectArtifact::getContent ).toList();
+
+      assertThat( aspects ).isNotEmpty();
+      assertValidSerializedAspect( aspects.getFirst(), URI.create( "urn:test:date-property-with-example-value" ) );
+   }
+
+   @Test
    void testOrderRelevantSubmodelElementListIsMappedToSammList() {
       final SubmodelElementList submodelElementList = buildSubmodelElementList( true );
       final AasToAspectModelGenerator aspectModelGenerator =
@@ -199,6 +257,20 @@ class AasToAspectModelGeneratorTest {
       assertThat( property.getCharacteristic() ).isPresent();
       assertThat( property.getCharacteristic().get() ).isInstanceOf( org.eclipse.esmf.metamodel.characteristic.List.class );
       assertThat( property.getCharacteristic().get().urn().getName() ).endsWith( "List" );
+   }
+
+   @Test
+   void testXmlSubmodelElementListWithSelfClosingDisplayNameCanBeTranslated() {
+      final Environment environment = loadEnvironment( "SubmodelElementListWithEmptyDisplayName.aas.xml" );
+      final SubmodelElementList submodelElementList = (SubmodelElementList) environment.getSubmodels().getFirst()
+            .getSubmodelElements().getFirst();
+      final org.eclipse.digitaltwin.aas4j.v3.model.Property valueElement =
+            (org.eclipse.digitaltwin.aas4j.v3.model.Property) submodelElementList.getValue().getFirst();
+      assertThat( valueElement.getDisplayName() ).isNull();
+
+      final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( environment );
+
+      assertThatCode( () -> aspectModelGenerator.generate().toList() ).doesNotThrowAnyException();
    }
 
    @Test
@@ -378,8 +450,8 @@ class AasToAspectModelGeneratorTest {
       final Aspect aspect = aspectModelGenerator.generate().map( AspectArtifact::getContent ).findFirst().orElseThrow();
 
       final Property property = aspect.getProperties().getFirst();
-      assertThat( property.getName() ).isEqualTo( "testProperty" );
-      assertThat( property.urn().toString() ).isEqualTo( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty" );
+      assertThat( property.getName() ).isEqualTo( "testPropertyProperty" );
+      assertThat( property.urn().toString() ).isEqualTo( "urn:samm:org.eclipse.esmf.test:1.0.0#testPropertyProperty" );
 
       final Entity entity = property.getCharacteristic()
             .flatMap( Characteristic::getDataType )
@@ -388,10 +460,62 @@ class AasToAspectModelGeneratorTest {
       assertThat( entity.getName() ).isEqualTo( "TestEntity" );
       assertThat( entity.urn().toString() ).isEqualTo( entitySemanticId );
 
-      final String result = AspectSerializer.INSTANCE.aspectToString( aspect );
-      final AspectModel aspectModel = new AspectModelLoader().load( new ByteArrayInputStream( result.getBytes() ), URI.create(
-            "urn:samm:org.eclipse.esmf.test:1.0.0#TestAspect" ) );
-      assertThat( new AspectModelValidator().validateModel( aspectModel ) ).isEmpty();
+      assertValidSerializedAspect( aspect, URI.create( "urn:samm:org.eclipse.esmf.test:1.0.0#TestAspect" ) );
+   }
+
+   @Test
+   void testSubmodelElementCollectionPropertyAndEntityNamesDoNotCollide() {
+      final String namespace = "io.admin-shell.idta.batterypass.product_condition";
+      final String entitySemanticId = "urn:samm:%s:1.0.0#numberOfFullCycles".formatted( namespace );
+      final SubmodelElementCollection collection = new DefaultSubmodelElementCollection.Builder()
+            .idShort( "NumberOfFullCycles" )
+            .semanticId( new DefaultReference.Builder()
+                  .type( ReferenceTypes.EXTERNAL_REFERENCE )
+                  .keys( List.of( new DefaultKey.Builder()
+                        .type( KeyTypes.GLOBAL_REFERENCE )
+                        .value( entitySemanticId )
+                        .build() ) )
+                  .build() )
+            .value( List.of( new DefaultProperty.Builder()
+                  .idShort( "cycleCount" )
+                  .valueType( DataTypeDefXsd.INTEGER )
+                  .build() ) )
+            .build();
+      final Submodel submodel = new DefaultSubmodel.Builder()
+            .id( "urn:samm:%s:1.0.0#ProductCondition".formatted( namespace ) )
+            .idShort( "ProductCondition" )
+            .kind( ModellingKind.TEMPLATE )
+            .submodelElements( List.of( collection ) )
+            .build();
+      final Environment environment = new DefaultEnvironment.Builder()
+            .submodels( List.of( submodel ) )
+            .build();
+
+      final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( environment );
+      final Aspect aspect = aspectModelGenerator.generate().map( AspectArtifact::getContent ).findFirst().orElseThrow();
+
+      final String result =
+            assertValidSerializedAspect( aspect, URI.create( "urn:samm:%s:1.0.0#ProductCondition".formatted( namespace ) ) );
+      assertThat( result ).contains( ":numberOfFullCyclesProperty a samm:Property" );
+      assertThat( result ).contains( ":numberOfFullCycles a samm:Entity" );
+      assertThat( result ).doesNotContain( ":numberOfFullCycles a samm:Property" );
+   }
+
+   @ParameterizedTest
+   @MethodSource( "dbpRegressionAasxFiles" )
+   void testDbpRegressionAasxFilesCanBeTranslatedAndValidated( final String aasxResource ) {
+      assertAasxCanBeTranslatedAndValidated( aasxResource );
+   }
+
+   private static Stream<Arguments> dbpRegressionAasxFiles() {
+      return Stream.of(
+            "submodel-templates/published/Digital Battery Passport/"
+                  + "2_Handover Documentation/1/0/IDTA 02035-2_DBP-Part-2_HandoverDocumentation.aasx",
+            "submodel-templates/published/Digital Battery Passport/5_Product Condition/1/0/IDTA 02035-5_DBP-Part-5_ProductCondition.aasx",
+            "submodel-templates/published/Digital Battery Passport/6_Material Composition/1/0/"
+                  + "IDTA 02035-6_DBP-Part-6_MaterialComposition.aasx",
+            "submodel-templates/published/Digital Battery Passport/7_Circularity/1/0/IDTA 02035-7_DBP-Part-7_Circularity.aasx"
+      ).map( Arguments::of );
    }
 
    private static Environment buildTemplateEnvironment( final SubmodelElement submodelElement ) {
@@ -404,6 +528,46 @@ class AasToAspectModelGeneratorTest {
       return new DefaultEnvironment.Builder()
             .submodels( List.of( submodel ) )
             .build();
+   }
+
+   private static Environment loadAasxEnvironment( final File aasxFile )
+         throws IOException, InvalidFormatException, DeserializationException {
+      try ( final InputStream input = new FileInputStream( aasxFile ) ) {
+         final AASXDeserializer deserializer = new AASXDeserializer( input );
+         return new XmlDeserializer().read( deserializer.getResourceString() );
+      }
+   }
+
+   private static java.util.Set<String> submodelElementCollectionSemanticIdNames( final Environment environment ) {
+      return Optional.ofNullable( environment.getSubmodels() ).orElseGet( List::of ).stream()
+            .flatMap( submodel -> Optional.ofNullable( submodel.getSubmodelElements() ).orElseGet( List::of ).stream() )
+            .flatMap( AasToAspectModelGeneratorTest::flattenSubmodelElement )
+            .filter( SubmodelElementCollection.class::isInstance )
+            .flatMap( element -> Optional.ofNullable( element.getSemanticId() ).stream() )
+            .flatMap( SubmodelToAspectUtils::keys )
+            .map( Key::getValue )
+            .flatMap( value -> {
+               try {
+                  return Stream.of( AspectModelUrn.fromUrn( value ).getName() );
+               } catch ( final RuntimeException exception ) {
+                  return Stream.empty();
+               }
+            } )
+            .collect( Collectors.toSet() );
+   }
+
+   private static Stream<SubmodelElement> flattenSubmodelElement( final SubmodelElement submodelElement ) {
+      final Stream<SubmodelElement> nested;
+      if ( submodelElement instanceof final SubmodelElementCollection collection ) {
+         nested = Optional.ofNullable( collection.getValue() ).orElseGet( List::of ).stream()
+               .flatMap( AasToAspectModelGeneratorTest::flattenSubmodelElement );
+      } else if ( submodelElement instanceof final SubmodelElementList list ) {
+         nested = Optional.ofNullable( list.getValue() ).orElseGet( List::of ).stream()
+               .flatMap( AasToAspectModelGeneratorTest::flattenSubmodelElement );
+      } else {
+         nested = Stream.empty();
+      }
+      return Stream.concat( Stream.of( submodelElement ), nested );
    }
 
    private static SubmodelElementList buildSubmodelElementList( final boolean orderRelevant ) {
@@ -426,13 +590,34 @@ class AasToAspectModelGeneratorTest {
    }
 
    private static Stream<Characteristic> allCharacteristics( final Characteristic characteristic ) {
-      final Stream<Characteristic> collectionCharacteristics = characteristic instanceof Collection collection
+      final Stream<Characteristic> collectionCharacteristics = characteristic instanceof final Collection collection
             ? collection.getElementCharacteristic().stream().flatMap( AasToAspectModelGeneratorTest::allCharacteristics )
             : Stream.empty();
-      final Stream<Characteristic> traitCharacteristics = characteristic instanceof Trait trait
+      final Stream<Characteristic> traitCharacteristics = characteristic instanceof final Trait trait
             ? allCharacteristics( trait.getBaseCharacteristic() )
             : Stream.empty();
       return Stream.concat( Stream.of( characteristic ), Stream.concat( collectionCharacteristics, traitCharacteristics ) );
+   }
+
+   private void assertAasxCanBeTranslatedAndValidated( final String aasxResource ) {
+      try ( final InputStream inputStream = AasToAspectModelGeneratorTest.class.getClassLoader().getResourceAsStream( aasxResource ) ) {
+         assertThat( inputStream ).as( aasxResource ).isNotNull();
+         final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromAasx( inputStream );
+         final List<Aspect> aspects = aspectModelGenerator.generate().map( AspectArtifact::getContent ).toList();
+
+         assertThat( aspects ).as( aasxResource ).isNotEmpty();
+         aspects.forEach( aspect -> assertValidSerializedAspect( aspect, URI.create( aspect.urn().toString() ) ) );
+      } catch ( final IOException exception ) {
+         fail( exception );
+      }
+   }
+
+   private String assertValidSerializedAspect( final Aspect aspect, final URI sourceUri ) {
+      final String result = AspectSerializer.INSTANCE.aspectToString( aspect );
+      assertThat( result ).isNotBlank();
+      final AspectModel aspectModel = new AspectModelLoader().load( new ByteArrayInputStream( result.getBytes() ), sourceUri );
+      assertThat( new AspectModelValidator().validateModel( aspectModel ).violations() ).isEmpty();
+      return result;
    }
 
    @Test

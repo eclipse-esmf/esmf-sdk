@@ -84,4 +84,27 @@ public class JansiRdfSyntaxHighlighter implements RdfTextFormatter {
    private String coloredFragment( final Ansi.Color color, final String fragment ) {
       return ansi().fg( color ).a( fragment ).reset().toString();
    }
+
+   @Override
+   public String formatHyperlink( final String text, final String url ) {
+      if ( supportsHyperlinks() ) {
+         // OSC 8 Sequence: ESC ] 8 ; ; URL ESC \ TEXT ESC ] 8 ; ; ESC \
+         // See e.g. https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda
+         return String.format( "\u001B]8;;%s\u001B\\%s\u001B]8;;\u001B\\", url, text );
+      }
+      // Fallback for old Windows CMD / PowerShell windows
+      return text;
+   }
+
+   private boolean supportsHyperlinks() {
+      // Linux/macOS support console hyperlinks almost everywhere
+      final String os = System.getProperty( "os.name" ).toLowerCase();
+      if ( !os.contains( "win" ) ) {
+         return true;
+      }
+
+      // On Windows, check if we're running in a modern Windows Terminal
+      return System.getenv( "WT_SESSION" ) != null;
+   }
+
 }

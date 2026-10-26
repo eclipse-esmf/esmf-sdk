@@ -13,35 +13,48 @@
 
 package org.eclipse.esmf.aspectmodel;
 
+import java.net.URI;
+import java.util.function.Supplier;
+
 import org.apache.jena.rdf.model.RDFNode;
-import org.jspecify.annotations.Nullable;
 
 public class AspectLoadingException extends RuntimeException {
    private static final long serialVersionUID = 7687644022103150329L;
-
-   private final @Nullable RDFNode highlightElement;
-
-   public AspectLoadingException( final Throwable cause ) {
-      super( cause );
-      highlightElement = null;
-   }
+   private final RDFNode highlightElement;
+   private final URI sourceDocument;
+   private final Supplier<String> documentContent;
 
    public AspectLoadingException( final String message ) {
       super( message );
       highlightElement = null;
+      sourceDocument = null;
+      documentContent = null;
    }
 
    public AspectLoadingException( final String message, final Throwable cause ) {
       super( message, cause );
       highlightElement = null;
+      sourceDocument = null;
+      documentContent = null;
    }
 
-   public AspectLoadingException( final String message, final RDFNode highlightElement ) {
+   public AspectLoadingException( final String message, final URI sourceDocument, final Supplier<String> documentContent,
+         final RDFNode highlightElement ) {
       super( message );
+      this.sourceDocument = sourceDocument;
+      this.documentContent = documentContent;
       this.highlightElement = highlightElement;
    }
 
-   public @Nullable RDFNode highlightElement() {
+   public RDFNode highlightElement() {
       return highlightElement;
+   }
+
+   public URI getSourceDocument() {
+      return sourceDocument;
+   }
+
+   public Supplier<String> getDocumentContent() {
+      return documentContent;
    }
 }

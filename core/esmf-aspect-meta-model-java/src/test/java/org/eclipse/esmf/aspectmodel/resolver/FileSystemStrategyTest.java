@@ -191,9 +191,8 @@ class FileSystemStrategyTest {
       assertThatCode( () -> {
          final AspectModelFile result = fileSystemStrategy.apply( sharedPropertyUrn, support );
          assertThat( result ).isNotNull();
-         assertThat( result.sourceLocation() ).isPresent();
          // Verify the file is aspectelements_shared.ttl, not sharedProperty.ttl
-         assertThat( result.sourceLocation().get().toString() ).contains( "aspectelements_shared.ttl" );
+         assertThat( result.sourceUri().toString() ).contains( "aspectelements_shared.ttl" );
       } ).doesNotThrowAnyException();
    }
 

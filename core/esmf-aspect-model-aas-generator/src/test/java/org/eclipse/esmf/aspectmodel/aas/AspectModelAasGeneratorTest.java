@@ -22,18 +22,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.test.TestAspect;
-import org.eclipse.esmf.test.TestResources;
-
-import tools.jackson.databind.JsonNode;
-import io.vavr.control.Try;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.DeserializationException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.xml.XmlDeserializer;
@@ -52,6 +47,7 @@ import org.eclipse.digitaltwin.aas4j.v3.model.MultiLanguageProperty;
 import org.eclipse.digitaltwin.aas4j.v3.model.Property;
 import org.eclipse.digitaltwin.aas4j.v3.model.Qualifier;
 import org.eclipse.digitaltwin.aas4j.v3.model.Reference;
+import org.eclipse.digitaltwin.aas4j.v3.model.ReferenceElement;
 import org.eclipse.digitaltwin.aas4j.v3.model.ReferenceTypes;
 import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
@@ -59,12 +55,20 @@ import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElementCollection;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElementList;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultOperation;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultProperty;
+
+import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.test.TestAspect;
+import org.eclipse.esmf.test.TestResources;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.xml.sax.SAXException;
+
+import io.vavr.control.Try;
+import tools.jackson.databind.JsonNode;
 
 class AspectModelAasGeneratorTest {
 
@@ -120,7 +124,9 @@ class AspectModelAasGeneratorTest {
                                  .anySatisfy( property -> assertThat( property ).asInstanceOf( type( Property.class ) )
                                        .extracting( Property::getValue )
                                        .isEqualTo( "2.25" ) ) );
-                     assertThat( ( (SubmodelElementList) sme ).getOrderRelevant() ).isFalse();
+                     assertThat( ( (SubmodelElementList) sme ).getOrderRelevant() ).isTrue();
+                     assertThat( ( (SubmodelElementList) sme ).getTypeValueListElement() )
+                           .isEqualTo( AasSubmodelElements.SUBMODEL_ELEMENT_COLLECTION );
                   }
                   ) );
    }
@@ -161,7 +167,7 @@ class AspectModelAasGeneratorTest {
       final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_LIST_AND_ADDITIONAL_PROPERTY );
       assertThat( env.getConceptDescriptions() ).hasSize( 3 );
       assertThat( env.getSubmodels() ).hasSize( 1 );
-      assertThat( env.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 2 );
+      assertThat( env.getSubmodels().getFirst().getSubmodelElements() ).hasSize( 2 );
 
       final Set<String> semanticIds =
             Set.of( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty",
@@ -174,17 +180,17 @@ class AspectModelAasGeneratorTest {
    void testGenerateAasxFromAspectModelWithEntity() throws DeserializationException {
       final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_ENTITY );
       assertThat( env.getSubmodels() ).hasSize( 1 );
-      assertThat( env.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
-      final Submodel submodel = env.getSubmodels().get( 0 );
-      assertThat( submodel.getSubmodelElements().get( 0 ) ).isInstanceOfSatisfying( SubmodelElementCollection.class, collection -> {
+      assertThat( env.getSubmodels().getFirst().getSubmodelElements() ).hasSize( 1 );
+      final Submodel submodel = env.getSubmodels().getFirst();
+      assertThat( submodel.getSubmodelElements().getFirst() ).isInstanceOfSatisfying( SubmodelElementCollection.class, collection -> {
          assertThat( collection.getIdShort() ).isEqualTo( "testProperty" );
 
          final SubmodelElement property = collection.getValue().stream().findFirst().get();
          assertThat( property.getIdShort() ).isEqualTo( "entityProperty" );
          assertThat( submodel.getSupplementalSemanticIds() ).anySatisfy( ref -> {
             assertThat( ref.getType() ).isEqualTo( ReferenceTypes.EXTERNAL_REFERENCE );
-            assertThat( ref.getKeys().get( 0 ).getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
-            assertThat( ref.getKeys().get( 0 ).getValue() ).isEqualTo( "http://example.com/" );
+            assertThat( ref.getKeys().getFirst().getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
+            assertThat( ref.getKeys().getFirst().getValue() ).isEqualTo( "http://example.com/" );
          } );
       } );
 
@@ -195,16 +201,17 @@ class AspectModelAasGeneratorTest {
    void testGenerateAasxFromAspectModelWithCollection() throws DeserializationException {
       final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_COLLECTION );
       assertThat( env.getSubmodels() ).hasSize( 1 );
-      assertThat( env.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
-      final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
+      assertThat( env.getSubmodels().getFirst().getSubmodelElements() ).hasSize( 1 );
+      final SubmodelElement submodelElement = env.getSubmodels().getFirst().getSubmodelElements().getFirst();
       assertThat( submodelElement ).asInstanceOf( type( SubmodelElementList.class ) )
             .satisfies( submodelElementList -> {
                assertThat( submodelElementList.getIdShort() ).isEqualTo( "testProperty" );
-               assertThat( submodelElementList.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.SUBMODEL_ELEMENT_COLLECTION );
-               assertThat( ( submodelElementList ).getOrderRelevant() ).isFalse();
+               assertThat( submodelElementList.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.PROPERTY );
+               assertThat( submodelElementList.getValueTypeListElement() ).isEqualTo( DataTypeDefXsd.STRING );
+               assertThat( submodelElementList.getOrderRelevant() ).isFalse();
             } );
 
-      assertThat( submodelElement.getSemanticId().getKeys().get( 0 ).getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
+      assertThat( submodelElement.getSemanticId().getKeys().getFirst().getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
 
       getDataSpecificationIec61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
    }
@@ -213,16 +220,17 @@ class AspectModelAasGeneratorTest {
    void testGenerateAasxFromAspectModelWithList() throws DeserializationException {
       final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_LIST );
       assertThat( env.getSubmodels() ).hasSize( 1 );
-      assertThat( env.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
-      final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
+      assertThat( env.getSubmodels().getFirst().getSubmodelElements() ).hasSize( 1 );
+      final SubmodelElement submodelElement = env.getSubmodels().getFirst().getSubmodelElements().getFirst();
       assertThat( submodelElement ).asInstanceOf( type( SubmodelElementList.class ) )
             .satisfies( submodelElementList -> {
                assertThat( submodelElementList.getIdShort() ).isEqualTo( "testProperty" );
-               assertThat( submodelElementList.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.SUBMODEL_ELEMENT_COLLECTION );
-               assertThat( ( submodelElementList ).getOrderRelevant() ).isFalse();
+               assertThat( submodelElementList.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.PROPERTY );
+               assertThat( submodelElementList.getValueTypeListElement() ).isEqualTo( DataTypeDefXsd.STRING );
+               assertThat( submodelElementList.getOrderRelevant() ).isTrue();
             } );
 
-      assertThat( submodelElement.getSemanticId().getKeys().get( 0 ).getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
+      assertThat( submodelElement.getSemanticId().getKeys().getFirst().getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
 
       getDataSpecificationIec61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
    }
@@ -231,15 +239,16 @@ class AspectModelAasGeneratorTest {
    void testGenerateAasxFromAspectModelWithSet() throws DeserializationException {
       final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_SET );
       assertThat( env.getSubmodels() ).hasSize( 1 );
-      assertThat( env.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
-      final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
+      assertThat( env.getSubmodels().getFirst().getSubmodelElements() ).hasSize( 1 );
+      final SubmodelElement submodelElement = env.getSubmodels().getFirst().getSubmodelElements().getFirst();
       assertThat( submodelElement ).asInstanceOf( type( SubmodelElementList.class ) )
             .satisfies( submodelElementList -> {
                assertThat( submodelElementList.getIdShort() ).isEqualTo( "testProperty" );
-               assertThat( submodelElementList.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.SUBMODEL_ELEMENT_COLLECTION );
-               assertThat( ( submodelElementList ).getOrderRelevant() ).isFalse();
+               assertThat( submodelElementList.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.PROPERTY );
+               assertThat( submodelElementList.getValueTypeListElement() ).isEqualTo( DataTypeDefXsd.STRING );
+               assertThat( submodelElementList.getOrderRelevant() ).isFalse();
             } );
-      assertThat( submodelElement.getSemanticId().getKeys().get( 0 ).getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
+      assertThat( submodelElement.getSemanticId().getKeys().getFirst().getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
 
       getDataSpecificationIec61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
    }
@@ -248,12 +257,12 @@ class AspectModelAasGeneratorTest {
    void testGenerateAasxFromAspectModelWithSortedSet() throws DeserializationException {
       final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_SORTED_SET );
       assertThat( env.getSubmodels() ).hasSize( 1 );
-      assertThat( env.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
-      final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
+      assertThat( env.getSubmodels().getFirst().getSubmodelElements() ).hasSize( 1 );
+      final SubmodelElement submodelElement = env.getSubmodels().getFirst().getSubmodelElements().getFirst();
       assertThat( submodelElement ).as( "SubmodelElement is not a SubmodelElementList" ).isInstanceOf( SubmodelElementList.class );
-      assertThat( ( ( (SubmodelElementList) submodelElement ) ).getOrderRelevant() ).isFalse();
+      assertThat( ( ( (SubmodelElementList) submodelElement ) ).getOrderRelevant() ).isTrue();
       assertThat( submodelElement.getIdShort() ).isEqualTo( "testProperty" );
-      assertThat( submodelElement.getSemanticId().getKeys().get( 0 ).getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
+      assertThat( submodelElement.getSemanticId().getKeys().getFirst().getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
 
       getDataSpecificationIec61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
    }
@@ -280,8 +289,8 @@ class AspectModelAasGeneratorTest {
    void testGenerateAasxFromAspectModelWithQuantifiable() throws DeserializationException {
       final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_QUANTIFIABLE_WITH_UNIT );
       assertThat( env.getSubmodels() ).hasSize( 1 );
-      assertThat( env.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
-      final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
+      assertThat( env.getSubmodels().getFirst().getSubmodelElements() ).hasSize( 1 );
+      final SubmodelElement submodelElement = env.getSubmodels().getFirst().getSubmodelElements().getFirst();
       assertThat( submodelElement.getIdShort() ).isEqualTo( "testProperty" );
 
       final DataSpecificationContent dataSpecificationContent = getDataSpecificationIec61360(
@@ -294,9 +303,9 @@ class AspectModelAasGeneratorTest {
    void testGenerateAasxFromBammWithConstraint() throws DeserializationException {
       final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_CONSTRAINT );
       assertThat( env.getSubmodels() ).hasSize( 1 );
-      assertThat( env.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 6 );
+      assertThat( env.getSubmodels().getFirst().getSubmodelElements() ).hasSize( 6 );
       final SubmodelElement submodelElement =
-            env.getSubmodels().get( 0 ).getSubmodelElements().stream()
+            env.getSubmodels().getFirst().getSubmodelElements().stream()
                   .filter( x -> x.getIdShort().equals( "stringLcProperty" ) )
                   .findFirst()
                   .orElseThrow();
@@ -316,7 +325,7 @@ class AspectModelAasGeneratorTest {
    @Test
    void testOptionalPropertyHasZeroToOneCardinalityQualifier() throws DeserializationException {
       final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_OPTIONAL_PROPERTY );
-      final SubmodelElement element = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
+      final SubmodelElement element = env.getSubmodels().getFirst().getSubmodelElements().getFirst();
       assertThat( element.getQualifiers() )
             .hasSize( 1 )
             .first()
@@ -342,8 +351,8 @@ class AspectModelAasGeneratorTest {
       final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_CODE );
       assertThat( env.getConceptDescriptions() ).hasSize( 2 );
       assertThat( env.getSubmodels() ).hasSize( 1 );
-      assertThat( env.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
-      final Property submodelElement = (Property) env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
+      assertThat( env.getSubmodels().getFirst().getSubmodelElements() ).hasSize( 1 );
+      final Property submodelElement = (Property) env.getSubmodels().getFirst().getSubmodelElements().getFirst();
       assertThat( submodelElement.getValueType() ).isEqualTo( DataTypeDefXsd.INT );
 
       getDataSpecificationIec61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
@@ -367,8 +376,8 @@ class AspectModelAasGeneratorTest {
       assertThat( dataSpecificationContent.getValueList().getValueReferencePairs() ).hasSize( 3 );
 
       assertThat( env.getSubmodels() ).hasSize( 1 );
-      assertThat( env.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
-      final Property submodelElement = (Property) env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
+      assertThat( env.getSubmodels().getFirst().getSubmodelElements() ).hasSize( 1 );
+      final Property submodelElement = (Property) env.getSubmodels().getFirst().getSubmodelElements().getFirst();
       assertThat( submodelElement.getValueType() ).isEqualTo( DataTypeDefXsd.INTEGER );
    }
 
@@ -401,13 +410,18 @@ class AspectModelAasGeneratorTest {
    void testGenerateAasxFromAspectModelWithOperations() throws DeserializationException {
       final Environment environment = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_OPERATION );
 
-      final List<SubmodelElement> operations = environment.getSubmodels().get( 0 ).getSubmodelElements();
-      final DefaultOperation operation1 = (DefaultOperation) operations.get( 0 );
+      final List<SubmodelElement> operations = environment.getSubmodels().getFirst().getSubmodelElements();
+      final DefaultOperation operation1 = (DefaultOperation) operations.getFirst();
       assertThat( operation1.getSemanticId() ).isNotNull();
+      assertThat( operation1.getSemanticId().getType() ).isEqualTo( ReferenceTypes.EXTERNAL_REFERENCE );
+      assertThat( operation1.getSemanticId().getKeys() ).singleElement().satisfies( key -> {
+         assertThat( key.getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
+         assertThat( key.getValue() ).isEqualTo( "urn:samm:org.eclipse.esmf.test:1.0.0#" + operation1.getIdShort() );
+      } );
       assertThat(
             environment.getConceptDescriptions().stream().filter( cd -> cd.getIdShort().equals( operation1.getIdShort() ) ) ).isNotNull();
 
-      final DefaultOperation operation2 = (DefaultOperation) operations.get( 0 );
+      final DefaultOperation operation2 = (DefaultOperation) operations.getFirst();
       assertThat( operation2.getSemanticId() ).isNotNull();
       assertThat(
             environment.getConceptDescriptions().stream().filter( cd -> cd.getIdShort().equals( operation2.getIdShort() ) ) ).isNotNull();
@@ -419,9 +433,9 @@ class AspectModelAasGeneratorTest {
    void testGeneratedAasxFromAspectModelWithPropertiesWithDescriptions() throws DeserializationException {
       final Environment environment = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_PROPERTY_WITH_DESCRIPTIONS );
 
-      final Property property = (Property) environment.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
+      final Property property = (Property) environment.getSubmodels().getFirst().getSubmodelElements().getFirst();
 
-      assertThat( environment.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
+      assertThat( environment.getSubmodels().getFirst().getSubmodelElements() ).hasSize( 1 );
       assertThat( environment.getConceptDescriptions() ).hasSize( 2 );
       assertThat( environment.getConceptDescriptions().get( 1 ).getEmbeddedDataSpecifications() ).hasSize( 1 );
 
@@ -437,23 +451,44 @@ class AspectModelAasGeneratorTest {
    void testGeneratedAasxFromAspectModelSemanticIdsAreGlobalReferences() throws DeserializationException {
       final Environment environment = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_PROPERTY_WITH_DESCRIPTIONS );
 
-      final Property property = (Property) environment.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
+      final Property property = (Property) environment.getSubmodels().getFirst().getSubmodelElements().getFirst();
 
-      assertThat( environment.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
-      assertThat( environment.getSubmodels().get( 0 ).getSemanticId().getKeys().get( 0 ).getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
+      assertThat( environment.getSubmodels().getFirst().getSubmodelElements() ).hasSize( 1 );
+      assertThat( environment.getSubmodels().getFirst().getSemanticId().getKeys().getFirst().getType() )
+            .isEqualTo( KeyTypes.GLOBAL_REFERENCE );
       assertThat( environment.getConceptDescriptions() ).hasSize( 2 );
       assertThat( environment.getConceptDescriptions().get( 1 ).getEmbeddedDataSpecifications() ).hasSize( 1 );
       assertThat( property.getDescription() ).isEmpty();
-      assertThat( property.getSemanticId().getKeys().get( 0 ).getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
+      assertThat( property.getSemanticId().getKeys().getFirst().getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
+   }
+
+   @Test
+   void testReferenceCharacteristicGeneratesReferenceElement() throws DeserializationException {
+      final Environment environment = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_REFERENCE );
+
+      assertThat( environment.getSubmodels().getFirst().getSubmodelElements() )
+            .singleElement( type( ReferenceElement.class ) )
+            .satisfies( referenceElement -> {
+               assertThat( referenceElement.getIdShort() ).isEqualTo( "myRef" );
+               assertThat( referenceElement.getSemanticId().getKeys().getFirst().getValue() )
+                     .isEqualTo( "urn:samm:org.eclipse.esmf.test:1.0.0#myRef" );
+               assertThat( referenceElement.getValue().getType() ).isEqualTo( ReferenceTypes.EXTERNAL_REFERENCE );
+               assertThat( referenceElement.getValue().getKeys() )
+                     .singleElement()
+                     .satisfies( key -> {
+                        assertThat( key.getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
+                        assertThat( key.getValue() ).isEqualTo( "urn:example:target-element" );
+                     } );
+            } );
    }
 
    @Test
    void testAspectWithPayloadName() throws DeserializationException {
       final Environment environment = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_PROPERTY_WITH_PAYLOAD_NAME );
 
-      final Property property = (Property) environment.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
-      assertThat( environment.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
-      assertThat( environment.getSubmodels().get( 0 ).getSubmodelElements().get( 0 ).getIdShort() ).isEqualTo( property.getIdShort() );
+      final Property property = (Property) environment.getSubmodels().getFirst().getSubmodelElements().getFirst();
+      assertThat( environment.getSubmodels().getFirst().getSubmodelElements() ).hasSize( 1 );
+      assertThat( environment.getSubmodels().getFirst().getSubmodelElements().getFirst().getIdShort() ).isEqualTo( property.getIdShort() );
    }
 
    @Test
@@ -465,7 +500,7 @@ class AspectModelAasGeneratorTest {
       assertThat( sml.getIdShort() ).isEqualTo( "PartSources" );
 
       final SubmodelElementCollection smc = (SubmodelElementCollection) sml.getValue().getFirst();
-      assertThat( smc.getIdShort() ).isEqualTo( "PartSupplierEntity" );
+      assertThat( smc.getIdShort() ).isNull();
       assertThat( smc.getValue() )
             .extracting( SubmodelElement::getIdShort )
             .containsExactly( "NameOfSupplier", "EmailAddressOfSupplier" );
@@ -502,6 +537,7 @@ class AspectModelAasGeneratorTest {
 
       final SubmodelElementCollection smc = (SubmodelElementCollection) values.getFirst();
 
+      assertThat( smc.getIdShort() ).isNull();
       assertThat( smc.getSemanticId() ).isNotNull();
       assertThat( smc.getSemanticId().getKeys().getFirst().getValue() )
             .isEqualTo( "urn:samm:org.eclipse.esmf.test:1.0.0#TestEntity" );
@@ -574,7 +610,7 @@ class AspectModelAasGeneratorTest {
       // (1) Identifier of the SML = URN of the property (not the characteristic)
       assertThat( sml.getSemanticId() ).isNotNull();
       assertThat( sml.getSemanticId().getKeys() ).isNotEmpty();
-      assertThat( sml.getSemanticId().getKeys().get( 0 ).getValue() )
+      assertThat( sml.getSemanticId().getKeys().getFirst().getValue() )
             .isEqualTo( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty" );
       assertThat( sml.getSemanticIdListElement() ).isNotNull();
       assertThat( sml.getSemanticIdListElement().getKeys().getFirst().getValue() )
@@ -583,13 +619,33 @@ class AspectModelAasGeneratorTest {
       assertThat( sml.getIdShort() ).isEqualTo( "testProperty" );
 
       assertThat( sml.getValue() ).isNotEmpty();
-      assertThat( sml.getValue().get( 0 ) ).isInstanceOf( SubmodelElementCollection.class );
-      final SubmodelElementCollection smc = (SubmodelElementCollection) sml.getValue().get( 0 );
+      assertThat( sml.getValue().getFirst() ).isInstanceOf( SubmodelElementCollection.class );
+      final SubmodelElementCollection smc = (SubmodelElementCollection) sml.getValue().getFirst();
 
-      assertThat( smc.getIdShort() ).isEqualTo( "TestEntity" );
+      assertThat( smc.getIdShort() ).isNull();
       assertThat( smc.getSemanticId() ).isNotNull();
       assertThat( smc.getSemanticId().getKeys().getFirst().getValue() )
             .isEqualTo( "urn:samm:org.eclipse.esmf.test:1.0.0#TestEntity" );
+   }
+
+   @Test
+   void testSubmodelElementListDirectEntityChildHasNoIdShort() throws DeserializationException {
+      final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_ENTITY_COLLECTION );
+      final SubmodelElementList sml = (SubmodelElementList) env.getSubmodels().getFirst().getSubmodelElements().getFirst();
+
+      assertThat( sml.getValue() )
+            .singleElement()
+            .satisfies( child -> assertThat( child.getIdShort() ).isNull() );
+   }
+
+   @Test
+   void testSubmodelElementListDirectScalarChildHasNoIdShort() throws DeserializationException {
+      final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_COLLECTION_OF_SIMPLE_TYPE );
+      final SubmodelElementList sml = (SubmodelElementList) env.getSubmodels().getFirst().getSubmodelElements().getFirst();
+
+      assertThat( sml.getValue() )
+            .singleElement()
+            .satisfies( child -> assertThat( child.getIdShort() ).isNull() );
    }
 
    @Test
@@ -695,7 +751,7 @@ class AspectModelAasGeneratorTest {
                   .toList();
       assertThat( filteredConceptDescriptions ).hasSize( 1 );
 
-      final List<EmbeddedDataSpecification> embeddedDataSpecifications = filteredConceptDescriptions.get( 0 )
+      final List<EmbeddedDataSpecification> embeddedDataSpecifications = filteredConceptDescriptions.getFirst()
             .getEmbeddedDataSpecifications();
       assertThat( embeddedDataSpecifications ).hasSize( 1 );
 

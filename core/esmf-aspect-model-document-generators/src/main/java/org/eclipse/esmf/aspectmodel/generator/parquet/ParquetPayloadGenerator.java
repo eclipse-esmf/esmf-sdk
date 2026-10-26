@@ -24,6 +24,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import org.eclipse.esmf.aspectmodel.generator.json.JsonPayloadGenerator;
 import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.AbstractEntity;
@@ -55,10 +56,10 @@ import org.eclipse.esmf.metamodel.impl.DefaultProperty;
  * Each {@code visit*} method handles a specific model element type and returns a
  * {@code Map<String, Object>} representing the property names as keys and their corresponding
  * values. This follows the same structural approach as
- * {@link org.eclipse.esmf.aspectmodel.generator.json.JsonPayloadGenerator}.
+ * {@link JsonPayloadGenerator}.
  * </p>
  *
- * @see org.eclipse.esmf.aspectmodel.generator.json.JsonPayloadGenerator
+ * @see JsonPayloadGenerator
  */
 class ParquetPayloadGenerator implements AspectVisitor<Map<String, Object>, ParquetPayloadGenerator.Context> {
 
@@ -137,7 +138,7 @@ class ParquetPayloadGenerator implements AspectVisitor<Map<String, Object>, Parq
 
    @Override
    public Map<String, Object> visitAbstractEntity( final AbstractEntity abstractEntity, final Context context ) {
-      final ComplexType extendingComplexType = abstractEntity.getExtendingElements().get( 0 );
+      final ComplexType extendingComplexType = abstractEntity.getExtendingElements().getFirst();
       final Map<String, Object> generatedProperties = transformProperties( extendingComplexType.getAllProperties(),
             !context.ignoreExampleValue() );
       if ( addTypeAttributeForEntityInheritance ) {
@@ -245,7 +246,7 @@ class ParquetPayloadGenerator implements AspectVisitor<Map<String, Object>, Parq
     * handler based on the property's characteristic type.
     *
     * <p>
-    * A {@link Collection} will be represented as a {@link java.util.List}.
+    * A {@link Collection} will be represented as a {@link List}.
     * {@link Entity} and {@link Either} will be represented as {@link Map}.
     * </p>
     *
@@ -269,7 +270,7 @@ class ParquetPayloadGenerator implements AspectVisitor<Map<String, Object>, Parq
                .toList();
          return !constraints.isEmpty()
                ? toMap( property.getPayloadName(), getCollectionValues( property, collection,
-                     (LengthConstraint) characteristic.as( Trait.class ).getConstraints().get( 0 ) ) )
+                     (LengthConstraint) characteristic.as( Trait.class ).getConstraints().getFirst() ) )
                : toMap( property.getPayloadName(), getCollectionValues( property, collection ) );
       }
 
@@ -344,7 +345,7 @@ class ParquetPayloadGenerator implements AspectVisitor<Map<String, Object>, Parq
          return characteristic.as( State.class ).getDefaultValue();
       }
       if ( characteristic.is( Enumeration.class ) ) {
-         return characteristic.as( Enumeration.class ).getValues().get( 0 );
+         return characteristic.as( Enumeration.class ).getValues().getFirst();
       }
 
       Optional<Characteristic> elementCharacteristics = Optional.empty();

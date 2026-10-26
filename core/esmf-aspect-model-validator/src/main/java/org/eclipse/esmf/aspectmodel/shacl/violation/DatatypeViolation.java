@@ -23,11 +23,11 @@ import org.eclipse.esmf.aspectmodel.resolver.parser.TokenRegistry;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.DatatypeConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.fix.Fix;
 import org.eclipse.esmf.aspectmodel.shacl.fix.ReplaceValue;
+import org.eclipse.esmf.metamodel.datatype.RdfDatatypeUris;
 
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
 
 /**
@@ -39,7 +39,7 @@ import org.apache.jena.vocabulary.XSD;
  */
 public record DatatypeViolation(
       EvaluationContext context, String allowedTypeUri, String actualTypeUri
-) implements Violation {
+) implements ShaclViolation {
    public static final String ERROR_CODE = "ERR_TYPE";
 
    @Override
@@ -50,9 +50,9 @@ public record DatatypeViolation(
    @Override
    public String violationSpecificMessage() {
       if ( context.property().isPresent() ) {
-         if ( allowedTypeUri.equals( RDF.langString.getURI() ) && actualTypeUri.equals( XSD.xstring.getURI() ) ) {
+         if ( allowedTypeUri.equals( RdfDatatypeUris.LANG_STRING ) && actualTypeUri.equals( XSD.xstring.getURI() ) ) {
             return String.format( "Property %s on %s is missing a language tag.", context.propertyName(), context.elementName() );
-         } else if ( allowedTypeUri.equals( XSD.xstring.getURI() ) && actualTypeUri.equals( RDF.langString.getURI() ) ) {
+         } else if ( allowedTypeUri.equals( XSD.xstring.getURI() ) && actualTypeUri.equals( RdfDatatypeUris.LANG_STRING ) ) {
             return String.format( "Property %s on %s must not have a language tag.", context.propertyName(), context.elementName() );
          } else {
             return String.format( "Property %s on %s uses data type %s, but only %s is allowed.",
@@ -87,11 +87,11 @@ public record DatatypeViolation(
       final List<Fix> fixes = new ArrayList<>();
 
       // value is string but should be langString
-      if ( allowedTypeUri.equals( RDF.langString.getURI() ) && actualTypeUri.equals( XSD.xstring.getURI() ) ) {
+      if ( allowedTypeUri.equals( RdfDatatypeUris.LANG_STRING ) && actualTypeUri.equals( XSD.xstring.getURI() ) ) {
          fixes.addAll( replaceStringWithLangString() );
       }
 
-      if ( allowedTypeUri.equals( XSD.xstring.getURI() ) && actualTypeUri.equals( RDF.langString.getURI() ) ) {
+      if ( allowedTypeUri.equals( XSD.xstring.getURI() ) && actualTypeUri.equals( RdfDatatypeUris.LANG_STRING ) ) {
          fixes.addAll( replaceLangStringWithString() );
       }
 

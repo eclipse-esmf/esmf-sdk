@@ -38,7 +38,7 @@ public class OperationAssert<SELF extends OperationAssert<SELF, ACTUAL>, ACTUAL 
    @SuppressWarnings( "unchecked" )
    public <S extends PropertyAssert<S, A>, A extends Property> PropertyAssert<S, A> hasSingleInputThat() {
       assertThat( actual.getInput() ).hasSize( 1 );
-      return new PropertyAssert<>( (A) actual.getInput().get( 0 ) );
+      return new PropertyAssert<>( (A) actual.getInput().getFirst() );
    }
 
    public ListAssert<Property> inputs() {

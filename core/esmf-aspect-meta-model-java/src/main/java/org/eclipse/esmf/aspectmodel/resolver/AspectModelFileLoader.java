@@ -32,8 +32,6 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.jena.rdf.model.Model;
-
 import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
@@ -45,6 +43,7 @@ import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
 import org.eclipse.esmf.util.download.Download;
 
 import io.vavr.control.Try;
+import org.apache.jena.rdf.model.Model;
 
 /**
  * Loads an input source into a {@link RawAspectModelFile}, i.e., an Aspect Model file that does not
@@ -59,19 +58,31 @@ public class AspectModelFileLoader {
     * @return the loaded file content
     */
    public static RawAspectModelFile load( final File file ) {
-      try {
-         final String stringContent = content( new FileInputStream( file ), file.toURI() );
+      try ( final InputStream inputStream = new FileInputStream( file ) ) {
+         final String stringContent = content( inputStream, file.toURI() );
          final RawAspectModelFile fromString = load( stringContent, file.toURI() );
-         return new RawAspectModelFile( stringContent, fromString.sourceModel(), fromString.headerComment(), Optional.of( file.toURI() ) );
+         return new RawAspectModelFile( stringContent, fromString.sourceModel(), fromString.headerComment(), file.toURI() );
       } catch ( final ModelResolutionException exception ) {
          if ( exception.getMessage().startsWith( "Encountered invalid encoding" ) ) {
-            throw new ModelResolutionException( new ModelResolutionException.LoadingFailure(
-                  file.toString(), exception.getMessage(), exception ) );
+            throw new ModelResolutionException( ModelResolutionViolationBuilder.builder()
+                  .location( file.toURI() )
+                  .message( exception.getMessage() )
+                  .cause( Optional.of( exception ) )
+                  .build() );
          }
          throw exception;
       } catch ( final FileNotFoundException exception ) {
-         throw new ModelResolutionException( new ModelResolutionException.LoadingFailure(
-               file.toString(), "File not found: " + file, exception ) );
+         throw new ModelResolutionException( ModelResolutionViolationBuilder.builder()
+               .location( file.toURI() )
+               .message( "File not found: " + file )
+               .cause( Optional.of( exception ) )
+               .build() );
+      } catch ( final IOException exception ) {
+         throw new ModelResolutionException( ModelResolutionViolationBuilder.builder()
+               .location( file.toURI() )
+               .message( "Could not load content from input stream" )
+               .cause( Optional.of( exception ) )
+               .build() );
       }
    }
 
@@ -90,11 +101,11 @@ public class AspectModelFileLoader {
       }
       final Model model = tryModel.getOrElseThrow(
             () -> new ModelResolutionException( "Can not load model", tryModel.getCause() ) );
-      return new RawAspectModelFile( rdfTurtle, model, headerComment, Optional.of( sourceLocation ) );
+      return new RawAspectModelFile( rdfTurtle, model, headerComment, sourceLocation );
    }
 
    public static RawAspectModelFile load( final TurtleSyntaxTree syntaxTree, final URI sourceLocation ) {
-      final String sourceRepresentation = syntaxTree.sourceRepresentationSupplier().get();
+      final String sourceRepresentation = syntaxTree.content();
       final List<String> headerComment = headerComment( syntaxTree );
       final Try<Model> tryModel = TurtleLoader.loadTurtle( syntaxTree, sourceLocation );
       if ( tryModel.isFailure() && tryModel.getCause() instanceof final ParserException parserException ) {
@@ -102,13 +113,13 @@ public class AspectModelFileLoader {
       }
       final Model model = tryModel.getOrElseThrow(
             () -> new ModelResolutionException( "Can not load model", tryModel.getCause() ) );
-      return new RawAspectModelFile( sourceRepresentation, model, headerComment, Optional.of( sourceLocation ) );
+      return new RawAspectModelFile( sourceRepresentation, model, headerComment, sourceLocation );
    }
 
    /**
     * Loads the content of an AspectModelFile from an input stream
     *
-    * @param inputStream the input stream
+    * @param inputStream the caller-owned input stream; this method does not close it
     * @param sourceLocation the logical location of the file source
     * @return the loaded file content
     */
@@ -124,7 +135,7 @@ public class AspectModelFileLoader {
     * @return the loaded file content
     */
    public static RawAspectModelFile load( final Model model, final URI sourceLocation ) {
-      return new RawAspectModelFile( RdfUtil.modelToString( model ), model, List.of(), Optional.of( sourceLocation ) );
+      return new RawAspectModelFile( RdfUtil.modelToString( model ), model, List.of(), sourceLocation );
    }
 
    /**
@@ -161,9 +172,9 @@ public class AspectModelFileLoader {
             throw new ModelResolutionException( "Can not load model from URL", exception );
          }
       }
-      try {
+      try ( final InputStream inputStream = url.openStream() ) {
          // Other URLs (e.g. resource://) we just load using openStream()
-         return load( url.openStream(), url.toURI() );
+         return load( inputStream, url.toURI() );
       } catch ( final IOException | URISyntaxException exception ) {
          throw new ModelResolutionException( "Can not load model from URL", exception );
       }
@@ -188,14 +199,19 @@ public class AspectModelFileLoader {
       try {
          final byte[] bytes = inputStream.readAllBytes();
          final CharsetDecoder charsetDecoder = StandardCharsets.UTF_8.newDecoder();
-         charsetDecoder.decode( ByteBuffer.wrap( bytes ) );
-         return new String( bytes, StandardCharsets.UTF_8 );
+         return charsetDecoder.decode( ByteBuffer.wrap( bytes ) ).toString();
       } catch ( final MalformedInputException | UnmappableCharacterException exception ) {
-         throw new ModelResolutionException( new ModelResolutionException.LoadingFailure(
-               sourceLocation.toString(), "Encountered invalid encoding in input", exception ) );
+         throw new ModelResolutionException( ModelResolutionViolationBuilder.builder()
+               .location( sourceLocation )
+               .message( "Encountered invalid encoding in input" )
+               .cause( Optional.of( exception ) )
+               .build() );
       } catch ( final IOException exception ) {
-         throw new ModelResolutionException( new ModelResolutionException.LoadingFailure(
-               sourceLocation.toString(), "Could not load content from input stream", exception ) );
+         throw new ModelResolutionException( ModelResolutionViolationBuilder.builder()
+               .location( sourceLocation )
+               .message( "Could not load content from input stream" )
+               .cause( Optional.of( exception ) )
+               .build() );
       }
    }
 

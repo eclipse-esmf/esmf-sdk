@@ -21,6 +21,7 @@
    samm:properties (
          :entity
          :collectionEntity
+       [ samm:property :optionalCollectionEntity ; samm:optional "true"^^xsd:boolean ]
        [ samm:property :optionalEntity ; samm:optional "true"^^xsd:boolean ]
          :testProperty
          :collectionTestProperty
@@ -48,6 +49,9 @@
    samm:characteristic :EntityCharacteristic .
 
 :collectionEntity a samm:Property ;
+   samm:characteristic :TestCollection .
+
+:optionalCollectionEntity a samm:Property ;
    samm:characteristic :TestCollection .
 
 :EntityCharacteristic a samm-c:SingleEntity ;

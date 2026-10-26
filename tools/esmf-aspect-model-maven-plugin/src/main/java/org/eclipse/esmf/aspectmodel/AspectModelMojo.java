@@ -52,7 +52,6 @@ import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.github.GitHubStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.github.GithubModelSourceConfig;
 import org.eclipse.esmf.aspectmodel.resolver.github.GithubModelSourceConfigBuilder;
-import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
 import org.eclipse.esmf.aspectmodel.validation.services.DetailedViolationFormatter;
@@ -169,10 +168,10 @@ public abstract class AspectModelMojo extends AbstractMojo {
       final AspectModelLoader aspectModelLoader = createAspectModelLoader();
       for ( final String inputUrn : includes ) {
          final AspectModelUrn urn = AspectModelUrn.fromUrn( inputUrn );
-         final Either<List<Violation>, AspectModel> loadingResult =
+         final Either<ViolationReport, AspectModel> loadingResult =
                new AspectModelValidator().loadModel( () -> aspectModelLoader.load( urn ) );
          if ( loadingResult.isLeft() ) {
-            final List<Violation> violations = loadingResult.getLeft();
+            final ViolationReport violations = loadingResult.getLeft();
             final String errorMessage = detailedValidationMessages
                   ? new DetailedViolationFormatter().apply( violations )
                   : new ViolationFormatter().apply( violations );

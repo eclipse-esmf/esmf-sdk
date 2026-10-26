@@ -15,11 +15,11 @@ package org.eclipse.esmf.metamodel;
 
 import java.util.Map;
 
+import org.eclipse.esmf.metamodel.datatype.RdfDatatypeUris;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
 
 /**
@@ -87,7 +87,7 @@ public interface Scalar extends Type {
             .add( XSD.base64Binary.getURI() )
             .add( XSD.anyURI.getURI() )
             .add( SammNs.SAMM.curie().getURI() )
-            .add( RDF.langString.getURI() )
+            .add( RdfDatatypeUris.LANG_STRING )
             .build()
             .contains( getUrn() );
    }

@@ -36,13 +36,13 @@ import org.eclipse.esmf.metamodel.characteristic.Collection;
 import org.eclipse.esmf.metamodel.characteristic.Either;
 import org.eclipse.esmf.metamodel.characteristic.Trait;
 import org.eclipse.esmf.metamodel.characteristic.impl.DefaultList;
+import org.eclipse.esmf.metamodel.datatype.RdfDatatypeUris;
 import org.eclipse.esmf.metamodel.vocabulary.SAMM;
 import org.eclipse.esmf.samm.KnownVersion;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.collect.ImmutableMap;
 import io.soabase.recordbuilder.core.RecordBuilder;
-import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
 
 /**
@@ -120,7 +120,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
             .put( XSD.base64Binary.getURI(), DatabricksType.BINARY )
             .put( XSD.anyURI.getURI(), DatabricksType.STRING )
             .put( new SAMM( KnownVersion.getLatest() ).resource( "curie" ).getURI(), DatabricksType.STRING )
-            .put( RDF.langString.getURI(), DatabricksType.STRING )
+            .put( RdfDatatypeUris.LANG_STRING, DatabricksType.STRING )
             .build();
    }
 

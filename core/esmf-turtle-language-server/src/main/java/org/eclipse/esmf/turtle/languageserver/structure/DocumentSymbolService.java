@@ -39,7 +39,10 @@ public class DocumentSymbolService extends TurtleService {
    }
 
    public List<DocumentSymbol> symbols( final Document document ) {
-      final ParsedDocument parsedDocument = parserService.apply( document );
+      return parserService.withParsedDocument( document, this::symbols );
+   }
+
+   public List<DocumentSymbol> symbols( final ParsedDocument parsedDocument ) {
       final TurtleSyntaxTree turtleSyntaxTree = parsedDocument.turtleSyntaxTree();
       final List<DocumentSymbol> symbols = new ArrayList<>();
 

@@ -13,6 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.resolver;
 
+import org.eclipse.esmf.annotations.InterfaceVersion;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
@@ -21,6 +22,7 @@ import org.eclipse.esmf.functions.ThrowingBiFunction;
 /**
  * Represents one way to load and resolve an Aspect Model File from a given source.
  */
+@InterfaceVersion( version = 1 )
 public interface ResolutionStrategy
       extends ThrowingBiFunction<AspectModelUrn, ResolutionStrategySupport, AspectModelFile, ModelResolutionException>, ModelSource {
 }

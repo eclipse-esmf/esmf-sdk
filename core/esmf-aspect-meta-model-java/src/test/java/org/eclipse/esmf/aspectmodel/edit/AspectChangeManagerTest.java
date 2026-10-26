@@ -21,6 +21,11 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.vocabulary.RDF;
+
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.VersionNumber;
 import org.eclipse.esmf.aspectmodel.edit.change.AddAspectModelFile;
@@ -48,10 +53,6 @@ import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.rdf.model.StmtIterator;
-import org.apache.jena.vocabulary.RDF;
 import org.junit.jupiter.api.Test;
 
 class AspectChangeManagerTest {
@@ -68,7 +69,7 @@ class AspectChangeManagerTest {
       final Change renameAspect = new RenameElement( aspect, newName );
       changeManager.applyChange( renameAspect );
       assertThat( aspectModel ).hasSingleAspectThat().hasName( newName );
-      assertThat( aspectModel.files().get( 0 ).sourceModel().listStatements( null, RDF.type, SammNs.SAMM.Aspect() )
+      assertThat( aspectModel.files().getFirst().sourceModel().listStatements( null, RDF.type, SammNs.SAMM.Aspect() )
             .nextStatement().getSubject().getURI() ).endsWith( newName );
       assertThat( changeManager.modifiedFiles() ).hasSize( 1 );
 
@@ -106,7 +107,7 @@ class AspectChangeManagerTest {
       final Aspect aspect = aspectModel.aspect();
 
       final AspectModelUrn aspectUrn = aspect.urn();
-      final Property property = aspect.getProperties().get( 0 );
+      final Property property = aspect.getProperties().getFirst();
 
       final String newAspectName = "RenamedAspect";
       final String newPropertyName = "renamedProperty";
@@ -127,7 +128,7 @@ class AspectChangeManagerTest {
       assertThat( aspectModel ).elements().isEmpty();
       final AspectChangeManager changeManager = new AspectChangeManager( aspectModel );
       final AspectModelFile aspectModelFile = RawAspectModelFileBuilder.builder()
-            .sourceLocation( Optional.of( URI.create( "file:///temp/test.ttl" ) ) )
+            .sourceUri( URI.create( "file:///temp/test.ttl" ) )
             .build();
       final Change addFile = new AddAspectModelFile( aspectModelFile );
       changeManager.applyChange( addFile );
@@ -145,13 +146,13 @@ class AspectChangeManagerTest {
    @Test
    void testRemoveFile() {
       final AspectModelFile aspectModelFile = RawAspectModelFileBuilder.builder()
-            .sourceLocation( Optional.of( URI.create( "file:///temp/test.ttl" ) ) )
+            .sourceUri( URI.create( "file:///temp/test.ttl" ) )
             .build();
       final AspectModel aspectModel = new AspectModelLoader().loadAspectModelFiles( List.of( aspectModelFile ) );
       assertThat( aspectModel ).files().hasSize( 1 );
       assertThat( aspectModel ).elements().isEmpty();
       final AspectChangeManager changeManager = new AspectChangeManager( aspectModel );
-      changeManager.applyChange( new RemoveAspectModelFile( aspectModel.files().get( 0 ) ) );
+      changeManager.applyChange( new RemoveAspectModelFile( aspectModel.files().getFirst() ) );
       assertThat( changeManager.removedFiles() ).hasSize( 1 );
       assertThat( aspectModel ).files().isEmpty();
       changeManager.undoChange();
@@ -169,7 +170,7 @@ class AspectChangeManagerTest {
       assertThat( aspectModel ).elements().isEmpty();
       final AspectChangeManager changeManager = new AspectChangeManager( aspectModel );
       final AspectModelFile aspectModelFile = RawAspectModelFileBuilder.builder()
-            .sourceLocation( Optional.of( URI.create( "file:///temp/test.ttl" ) ) )
+            .sourceUri( URI.create( "file:///temp/test.ttl" ) )
             .sourceModel( createModel( """
                @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> .
                @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -203,7 +204,7 @@ class AspectChangeManagerTest {
       assertThat( aspectModel ).elements().isEmpty();
       final AspectChangeManager changeManager = new AspectChangeManager( aspectModel );
       final AspectModelFile aspectModelFile = RawAspectModelFileBuilder.builder()
-            .sourceLocation( Optional.of( URI.create( "file:///temp/test.ttl" ) ) )
+            .sourceUri( URI.create( "file:///temp/test.ttl" ) )
             .build();
 
       final Change changes = new ChangeGroup(
@@ -239,7 +240,7 @@ class AspectChangeManagerTest {
    void testMoveElementToNewFile() {
       final AspectModel aspectModel = TestResources.load( TestAspect.ASPECT );
       assertThat( aspectModel ).files().hasSize( 1 );
-      final URI originalSourceLocation = aspectModel.aspect().getSourceFile().sourceLocation().get();
+      final URI originalSourceLocation = aspectModel.aspect().getSourceFile().sourceUri();
       final AspectChangeManager changeManager = new AspectChangeManager( aspectModel );
       final URI sourceLocation = URI.create( "file:///temp/test.ttl" );
       final Change move = new MoveElementToNewFile( aspectModel.aspect(), sourceLocation );
@@ -248,7 +249,7 @@ class AspectChangeManagerTest {
       assertThat( changeManager.createdFiles() ).hasSize( 1 );
       assertThat( changeManager.modifiedFiles() ).hasSize( 1 );
       assertThat( aspectModel ).files().hasSize( 2 );
-      assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).contains( sourceLocation );
+      assertThat( aspectModel.aspect().getSourceFile().sourceUri() ).isEqualTo( sourceLocation );
       assertThat( aspectModel.aspect().getSourceFile().sourceModel().listStatements( null, RDF.type, SammNs.SAMM.Aspect() ).nextStatement()
             .getSubject().getURI() ).isEqualTo( aspectModel.aspect().urn().toString() );
 
@@ -257,7 +258,7 @@ class AspectChangeManagerTest {
       assertThat( changeManager.removedFiles() ).hasSize( 1 );
       assertThat( changeManager.modifiedFiles() ).hasSize( 1 );
       assertThat( aspectModel ).files().hasSize( 1 );
-      assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).contains( originalSourceLocation );
+      assertThat( aspectModel.aspect().getSourceFile().sourceUri() ).isEqualTo( originalSourceLocation );
       assertThat( aspectModel.aspect().getSourceFile().sourceModel().listStatements( null, RDF.type, SammNs.SAMM.Aspect() ).nextStatement()
             .getSubject().getURI() ).isEqualTo( aspectModel.aspect().urn().toString() );
 
@@ -265,19 +266,19 @@ class AspectChangeManagerTest {
       assertThat( changeManager.createdFiles() ).hasSize( 1 );
       assertThat( changeManager.modifiedFiles() ).hasSize( 1 );
       assertThat( aspectModel ).files().hasSize( 2 );
-      assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).contains( sourceLocation );
+      assertThat( aspectModel.aspect().getSourceFile().sourceUri() ).isEqualTo( sourceLocation );
       assertThat( aspectModel.aspect().getSourceFile().sourceModel().listStatements( null, RDF.type, SammNs.SAMM.Aspect() ).nextStatement()
             .getSubject().getURI() ).isEqualTo( aspectModel.aspect().urn().toString() );
    }
 
    @Test
    void testMoveElementToExistingFile() {
-      final Optional<URI> file1Location = Optional.of( URI.create( "file:///file1.ttl" ) );
-      final Optional<URI> file2Location = Optional.of( URI.create( "file:///file2.ttl" ) );
+      final URI file1Location = URI.create( "file:///file1.ttl" );
+      final URI file2Location = URI.create( "file:///file2.ttl" );
       final AspectModel aspectModel = new AspectModelLoader().emptyModel();
       final AspectChangeManager changeManager = new AspectChangeManager( aspectModel );
       final AspectModelFile file1 = RawAspectModelFileBuilder.builder()
-            .sourceLocation( file1Location )
+            .sourceUri( file1Location )
             .sourceModel( createModel( """
                @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> .
                @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -290,13 +291,13 @@ class AspectChangeManagerTest {
                """.formatted( KnownVersion.getLatest().toVersionString() )
             ) )
             .build();
-      final AspectModelFile file2 = RawAspectModelFileBuilder.builder().sourceLocation( file2Location ).build();
+      final AspectModelFile file2 = RawAspectModelFileBuilder.builder().sourceUri( file2Location ).build();
 
       changeManager.applyChange( new ChangeGroup(
             new AddAspectModelFile( file1 ),
             new AddAspectModelFile( file2 )
       ) );
-      assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).isEqualTo( file1Location );
+      assertThat( aspectModel.aspect().getSourceFile().sourceUri() ).isEqualTo( file1Location );
 
       final Change move = new MoveElementToExistingFile( aspectModel.aspect(), file2 );
       changeManager.applyChange( move );
@@ -304,19 +305,19 @@ class AspectChangeManagerTest {
       assertThat( changeManager.createdFiles() ).isEmpty();
       assertThat( changeManager.removedFiles() ).isEmpty();
 
-      assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).isEqualTo( file2Location );
+      assertThat( aspectModel.aspect().getSourceFile().sourceUri() ).isEqualTo( file2Location );
       changeManager.undoChange();
       assertThat( changeManager.modifiedFiles() ).hasSize( 2 );
       assertThat( changeManager.createdFiles() ).isEmpty();
       assertThat( changeManager.removedFiles() ).isEmpty();
-      assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).isEqualTo( file1Location );
+      assertThat( aspectModel.aspect().getSourceFile().sourceUri() ).isEqualTo( file1Location );
    }
 
    @Test
    void testMoveElementToOtherNamespaceNewFile() {
       final AspectModel aspectModel = TestResources.load( TestAspect.ASPECT );
       assertThat( aspectModel ).files().hasSize( 1 );
-      final URI originalSourceLocation = aspectModel.aspect().getSourceFile().sourceLocation().get();
+      final URI originalSourceLocation = aspectModel.aspect().getSourceFile().sourceUri();
       final AspectChangeManager changeManager = new AspectChangeManager( aspectModel );
       final URI sourceLocation = URI.create( "file:///temp/test.ttl" );
 
@@ -328,7 +329,7 @@ class AspectChangeManagerTest {
       assertThat( changeManager.modifiedFiles() ).hasSize( 1 );
       assertThat( changeManager.createdFiles() ).hasSize( 1 );
       assertThat( aspectModel ).files().hasSize( 2 );
-      assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).contains( sourceLocation );
+      assertThat( aspectModel.aspect().getSourceFile().sourceUri() ).isEqualTo( sourceLocation );
       assertThat( aspectModel.aspect().getSourceFile().sourceModel().listStatements( null, RDF.type, SammNs.SAMM.Aspect() ).nextStatement()
             .getSubject().getURI() ).isEqualTo( aspectModel.aspect().urn().toString() );
       assertThat( aspectModel.aspect().urn() ).isEqualTo( targetUrn );
@@ -338,7 +339,7 @@ class AspectChangeManagerTest {
       assertThat( changeManager.removedFiles() ).hasSize( 1 );
       assertThat( changeManager.createdFiles() ).isEmpty();
       assertThat( aspectModel ).files().hasSize( 1 );
-      assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).contains( originalSourceLocation );
+      assertThat( aspectModel.aspect().getSourceFile().sourceUri() ).isEqualTo( originalSourceLocation );
       assertThat( aspectModel.aspect().getSourceFile().sourceModel().listStatements( null, RDF.type, SammNs.SAMM.Aspect() ).nextStatement()
             .getSubject().getURI() ).isEqualTo( aspectModel.aspect().urn().toString() );
 
@@ -346,19 +347,19 @@ class AspectChangeManagerTest {
       assertThat( changeManager.modifiedFiles() ).hasSize( 1 );
       assertThat( changeManager.createdFiles() ).hasSize( 1 );
       assertThat( aspectModel ).files().hasSize( 2 );
-      assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).contains( sourceLocation );
+      assertThat( aspectModel.aspect().getSourceFile().sourceUri() ).isEqualTo( sourceLocation );
       assertThat( aspectModel.aspect().getSourceFile().sourceModel().listStatements( null, RDF.type, SammNs.SAMM.Aspect() ).nextStatement()
             .getSubject().getURI() ).isEqualTo( aspectModel.aspect().urn().toString() );
    }
 
    @Test
    void testMoveElementToOtherNamespaceExistingFile() {
-      final Optional<URI> file1Location = Optional.of( URI.create( "file:///file1.ttl" ) );
-      final Optional<URI> file2Location = Optional.of( URI.create( "file:///file2.ttl" ) );
+      final URI file1Location = URI.create( "file:///file1.ttl" );
+      final URI file2Location = URI.create( "file:///file2.ttl" );
       final AspectModel aspectModel = new AspectModelLoader().emptyModel();
       final AspectChangeManager changeManager = new AspectChangeManager( aspectModel );
       final AspectModelFile file1 = RawAspectModelFileBuilder.builder()
-            .sourceLocation( file1Location )
+            .sourceUri( file1Location )
             .sourceModel( createModel( """
                @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> .
                @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -371,14 +372,14 @@ class AspectChangeManagerTest {
                """.formatted( KnownVersion.getLatest().toVersionString() )
             ) )
             .build();
-      final AspectModelFile file2 = RawAspectModelFileBuilder.builder().sourceLocation( file2Location ).build();
+      final AspectModelFile file2 = RawAspectModelFileBuilder.builder().sourceUri( file2Location ).build();
 
       changeManager.applyChange( new ChangeGroup(
             new AddAspectModelFile( file1 ),
             new AddAspectModelFile( file2 )
       ) );
       changeManager.resetFileStates();
-      assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).isEqualTo( file1Location );
+      assertThat( aspectModel.aspect().getSourceFile().sourceUri() ).isEqualTo( file1Location );
 
       final AspectModelUrn targetUrn = AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.example.new:1.0.0#Aspect" );
       final Namespace targetNamespace = new DefaultNamespace( targetUrn, List.of(), Optional.empty() );
@@ -388,7 +389,7 @@ class AspectChangeManagerTest {
       assertThat( changeManager.modifiedFiles() ).hasSize( 2 );
       assertThat( changeManager.createdFiles() ).isEmpty();
 
-      assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).isEqualTo( file2Location );
+      assertThat( aspectModel.aspect().getSourceFile().sourceUri() ).isEqualTo( file2Location );
       assertThat( aspectModel.aspect().getSourceFile().sourceModel().listStatements( null, RDF.type, SammNs.SAMM.Aspect() ).nextStatement()
             .getSubject().getURI() ).isEqualTo( aspectModel.aspect().urn().toString() );
       assertThat( aspectModel.aspect().urn() ).isEqualTo( targetUrn );
@@ -396,7 +397,7 @@ class AspectChangeManagerTest {
       changeManager.undoChange();
       assertThat( changeManager.modifiedFiles() ).hasSize( 2 );
       assertThat( changeManager.createdFiles() ).isEmpty();
-      assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).isEqualTo( file1Location );
+      assertThat( aspectModel.aspect().getSourceFile().sourceUri() ).isEqualTo( file1Location );
       assertThat( aspectModel.aspect().getSourceFile().sourceModel().listStatements( null, RDF.type, SammNs.SAMM.Aspect() ).nextStatement()
             .getSubject().getURI() ).isEqualTo( aspectModel.aspect().urn().toString() );
    }
@@ -408,7 +409,7 @@ class AspectChangeManagerTest {
 
       assertThat( aspectModel ).files().hasSize( 1 );
 
-      final URI originalLocation = aspect.getSourceFile().sourceLocation().get();
+      final URI originalLocation = aspect.getSourceFile().sourceUri();
       final AspectChangeManager changeManager = new AspectChangeManager( aspectModel );
       final URI newLocation = URI.create( "file:///temp/test.ttl" );
       final Change renameFile = new MoveRenameAspectModelFile( aspect.getSourceFile(), newLocation );
@@ -418,38 +419,38 @@ class AspectChangeManagerTest {
       assertThat( changeManager.createdFiles() ).hasSize( 1 );
       assertThat( changeManager.removedFiles() ).hasSize( 1 );
       assertThat( aspectModel ).files().hasSize( 1 );
-      assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).contains( newLocation );
+      assertThat( aspectModel.aspect().getSourceFile().sourceUri() ).isEqualTo( newLocation );
 
       changeManager.undoChange();
       assertThat( changeManager.modifiedFiles() ).isEmpty();
       assertThat( changeManager.createdFiles() ).hasSize( 1 );
       assertThat( changeManager.removedFiles() ).hasSize( 1 );
       assertThat( aspectModel ).files().hasSize( 1 );
-      assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).contains( originalLocation );
+      assertThat( aspectModel.aspect().getSourceFile().sourceUri() ).isEqualTo( originalLocation );
 
       changeManager.redoChange();
       assertThat( changeManager.modifiedFiles() ).isEmpty();
       assertThat( changeManager.createdFiles() ).hasSize( 1 );
       assertThat( changeManager.removedFiles() ).hasSize( 1 );
       assertThat( aspectModel ).files().hasSize( 1 );
-      assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).contains( newLocation );
+      assertThat( aspectModel.aspect().getSourceFile().sourceUri() ).isEqualTo( newLocation );
    }
 
    @Test
    void testCopyNamespaceWithIncreasedVersion() {
       final AspectModel aspectModel = TestResources.load( TestAspect.ASPECT );
-      final Namespace namespace = aspectModel.files().get( 0 ).namespace();
+      final Namespace namespace = aspectModel.files().getFirst().namespace();
       final Change copyNamespaceWithIncreasedVersion = new CopyNamespaceWithIncreasedVersion( namespace,
             IncreaseVersion.MAJOR );
 
       final AspectChangeManager changeManager = new AspectChangeManager( aspectModel );
 
       assertThat( aspectModel.namespaces() ).hasSize( 1 );
-      assertThat( aspectModel.namespaces().get( 0 ).version().getMajor() ).isEqualTo( 1 );
+      assertThat( aspectModel.namespaces().getFirst().version().getMajor() ).isEqualTo( 1 );
       assertThat( aspectModel.aspects() ).hasSize( 1 );
       assertThat( aspectModel.aspect().urn().getVersion() ).isEqualTo( "1.0.0" );
       assertThat( aspectModel ).files().hasSize( 1 );
-      assertThat( aspectModel.files().get( 0 ).sourceLocation().get().toString() ).contains( "1.0.0" );
+      assertThat( aspectModel.files().getFirst().sourceUri().toString() ).contains( "1.0.0" );
 
       changeManager.applyChange( copyNamespaceWithIncreasedVersion );
       assertThat( aspectModel.namespaces() ).hasSize( 2 );
@@ -457,7 +458,7 @@ class AspectChangeManagerTest {
       assertThat( aspectModel.aspects() ).hasSize( 2 );
       assertThat( aspectModel.aspects() ).map( aspect -> aspect.urn().getVersion() ).containsExactlyInAnyOrder( "1.0.0", "2.0.0" );
       assertThat( aspectModel ).files().hasSize( 2 );
-      assertThat( aspectModel ).files().map( file -> file.sourceLocation().get().toString() )
+      assertThat( aspectModel ).files().map( file -> file.sourceUri().toString() )
             .anyMatch( location -> location.contains( "1.0.0" ) )
             .anyMatch( location -> location.contains( "2.0.0" ) );
    }
@@ -465,17 +466,17 @@ class AspectChangeManagerTest {
    @Test
    void testCopyFileWithIncreasedVersion() {
       final AspectModel aspectModel = TestResources.load( TestAspect.ASPECT );
-      final Change copyFileWithIncreasedNamespaceVersion = new CopyFileWithIncreasedNamespaceVersion( aspectModel.files().get( 0 ),
+      final Change copyFileWithIncreasedNamespaceVersion = new CopyFileWithIncreasedNamespaceVersion( aspectModel.files().getFirst(),
             IncreaseVersion.MAJOR );
 
       final AspectChangeManager changeManager = new AspectChangeManager( aspectModel );
 
       assertThat( aspectModel.namespaces() ).hasSize( 1 );
-      assertThat( aspectModel.namespaces().get( 0 ).version().getMajor() ).isEqualTo( 1 );
+      assertThat( aspectModel.namespaces().getFirst().version().getMajor() ).isEqualTo( 1 );
       assertThat( aspectModel.aspects() ).hasSize( 1 );
       assertThat( aspectModel.aspect().urn().getVersion() ).isEqualTo( "1.0.0" );
       assertThat( aspectModel ).files().hasSize( 1 );
-      assertThat( aspectModel.files().get( 0 ).sourceLocation().get().toString() ).contains( "1.0.0" );
+      assertThat( aspectModel.files().getFirst().sourceUri().toString() ).contains( "1.0.0" );
 
       changeManager.applyChange( copyFileWithIncreasedNamespaceVersion );
       assertThat( aspectModel.namespaces() ).hasSize( 2 );
@@ -483,7 +484,7 @@ class AspectChangeManagerTest {
       assertThat( aspectModel.aspects() ).hasSize( 2 );
       assertThat( aspectModel.aspects() ).map( aspect -> aspect.urn().getVersion() ).containsExactlyInAnyOrder( "1.0.0", "2.0.0" );
       assertThat( aspectModel ).files().hasSize( 2 );
-      assertThat( aspectModel ).files().map( file -> file.sourceLocation().get().toString() )
+      assertThat( aspectModel ).files().map( file -> file.sourceUri().toString() )
             .anyMatch( location -> location.contains( "1.0.0" ) )
             .anyMatch( location -> location.contains( "2.0.0" ) );
    }
@@ -493,7 +494,7 @@ class AspectChangeManagerTest {
       // Arrange
       final AspectModel aspectModel = TestResources.load( TestAspect.ASPECT_WITH_PROPERTY );
 
-      final AspectModelFile originalFile = aspectModel.files().get( 0 );
+      final AspectModelFile originalFile = aspectModel.files().getFirst();
       final String oldNsPrefix = originalFile.namespace().urn().toString() + "#";
       final String propertyLocalName = "testProperty";
 
@@ -516,7 +517,7 @@ class AspectChangeManagerTest {
 
       // Assert: find the newly created file by computed next version
       final AspectModelFile v2File = aspectModel.files().stream()
-            .filter( f -> f.sourceLocation().map( URI::toString ).orElse( "" ).contains( nextVersionStr ) )
+            .filter( f -> f.sourceUri().toString().contains( nextVersionStr ) )
             .findFirst()
             .orElseThrow( () -> new AssertionError( "Expected a copied file with version " + nextVersionStr + " in sourceLocation" ) );
 

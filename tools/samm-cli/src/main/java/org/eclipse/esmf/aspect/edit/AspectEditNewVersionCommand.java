@@ -119,7 +119,7 @@ public class AspectEditNewVersionCommand extends AbstractCommand {
       final Change copy;
       if ( inputFile.isPresent() ) {
          final AspectModelFile targetFile = aspectModel.files().stream()
-               .filter( file -> file.sourceLocation().equals( inputFile.map( File::toURI ) ) )
+               .filter( file -> file.sourceUri().equals( inputFile.get().toURI() ) )
                .findFirst()
                .orElseThrow( () -> new CommandException( "Could not determine the file to copy" ) );
 

@@ -15,6 +15,8 @@ package org.eclipse.esmf.aspectmodel.resolver.parser;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.net.URI;
+import java.util.Optional;
 
 import org.apache.jena.atlas.web.ContentType;
 import org.apache.jena.riot.Lang;
@@ -26,6 +28,7 @@ import org.apache.jena.riot.tokens.Tokenizer;
 import org.apache.jena.riot.tokens.TokenizerText;
 import org.apache.jena.sparql.util.Context;
 
+import org.eclipse.esmf.aspectmodel.AspectLoadingException;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
 
@@ -42,18 +45,25 @@ public class ReaderRiotTurtle implements ReaderRIOT {
       final TurtleSyntaxTree syntaxTree = context != null && context.get( TurtleLoader.TREE_SITTER_SYNTAX_TREE ) != null
             ? context.get( TurtleLoader.TREE_SITTER_SYNTAX_TREE )
             : null;
-      final ParserProfile wrappedParserProfile = new TurtleParserProfile( parserProfile, syntaxTree );
-      final TurtleTokenizer tokenizer = new TurtleTokenizer( in, wrappedParserProfile.getErrorHandler() );
+      final URI documentUri = Optional.ofNullable( context )
+            .<URI>map( ctx -> ctx.get( TurtleLoader.DOCUMENT_URI ) )
+            .or( () -> Optional.ofNullable( baseUri ).map( URI::create ) )
+            .orElse( URI.create( "inmemory:stream" + in.hashCode() ) );
+      final ParserProfile wrappedParserProfile = new TurtleParserProfile( parserProfile, syntaxTree, documentUri );
+      final TurtleTokenizer tokenizer = new TurtleTokenizer( in, documentUri, wrappedParserProfile.getErrorHandler() );
       final TurtleParser parser = TurtleParser.create( tokenizer, wrappedParserProfile, output );
       parser.parse();
    }
 
    @Override
    public void read( final Reader in, final String baseUri, final ContentType ct, final StreamRDF output, final Context context ) {
-      final TurtleSyntaxTree syntaxTree = context != null && context.get( TurtleLoader.TREE_SITTER_SYNTAX_TREE ) != null
+      final TurtleSyntaxTree syntaxTree = context.get( TurtleLoader.TREE_SITTER_SYNTAX_TREE ) != null
             ? context.get( TurtleLoader.TREE_SITTER_SYNTAX_TREE )
             : null;
-      final ParserProfile wrappedParserProfile = new TurtleParserProfile( parserProfile, syntaxTree );
+      final URI documentUri = Optional.of( context )
+            .<URI>map( ctx -> ctx.get( TurtleLoader.DOCUMENT_URI ) )
+            .orElseThrow( () -> new AspectLoadingException( "Document URI is not set in the context" ) );
+      final ParserProfile wrappedParserProfile = new TurtleParserProfile( parserProfile, syntaxTree, documentUri );
       final Tokenizer tokenizer = TokenizerText.create().source( in ).errorHandler( wrappedParserProfile.getErrorHandler() ).build();
       final TurtleParser parser = TurtleParser.create( tokenizer, wrappedParserProfile, output );
       parser.parse();

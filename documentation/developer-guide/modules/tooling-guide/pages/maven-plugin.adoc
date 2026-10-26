@@ -391,7 +391,10 @@ Configuration Properties:
 | `githubServerId` | The id of the `<server>` entry describing the GitHub repository to resolve models from. | `String` | none | {nok}
 | `outputDirectory` | The path to the directory where the generated AsyncAPI Specification will be written to. | `String` | none | {ok}
 | `applicationId` | Sets the application id, e.g. an identifying URL | `String` | none | {nok}
-| `channelAddress` | Sets the channel address (i.e., for MQTT, the topic's name) | `String` | none | {nok}
+| `channelAddress` | Sets the channel address (i.e., for MQTT, the topic's name). Each of the
+  `tenant-id`, `namespace`, `version` and `aspect-name` placeholders present in the address is
+  rendered as a channel parameter in the generated specification; if a placeholder is missing from
+  the address, its parameter is omitted. | `String` | `/\{tenant-id}/{namespace}/{version}/{aspect-name}` | {nok}
 | `useSemanticApiVersion` | Use the complete semantic version of the Aspect Model as the version of the Aspect API. | `Boolean` | `false` | {nok}
 | `outputFormat` | The format of the resulting AsyncAPI Specification. May be either JSON or YAML. | `String` | none | {ok}
 | `separateFiles` | Create separate files for each schema. | `Boolean` | `false` | {nok}
@@ -672,9 +675,10 @@ Configuration Properties:
 
 === Generating Sample JSON Payload
 
-The `generateJsonPayload` goal generates a valid sample JSON payload for a given Aspect Model as it
-could be returned by an Aspect that implements that Aspect Model. The default life cycle phase for
-the goal is `generate-resources`.
+The `generateJsonPayload` goal generates a valid, pretty-printed sample JSON payload for a given
+Aspect Model, as it could be returned by an Aspect that implements that Aspect Model. When `count`
+is configured, it generates the requested number of records in https://jsonlines.org/[JSON Lines]
+format. The default life cycle phase for the goal is `generate-resources`.
 
 Usage:
 
@@ -716,6 +720,10 @@ Configuration Properties:
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated JSON payload will be written to. | `String` | none | {ok}
 | `addTypeAttribute` | Adds a `@type` attribute for inherited Entities | `Boolean` | `false` | {nok}
+| `count` | Positive number of JSON records to generate in JSON Lines format. | `Integer` | none | {nok}
+| `currentTimestamp` | Generates the current timestamp dynamically instead of using the fixed default timestamp (Unix epoch `1970-01-01T00:00:00.000Z`). | `Boolean` | `false` | {nok}
+| `randomTimestamp` | Generates random date/time values between 1970 (inclusive) and 2100 (exclusive). Takes precedence over `currentTimestamp`. | `Boolean` | `false` | {nok}
+| `ignoreExampleValue` | Ignores example values defined in the Aspect Model and generates random values for all Properties. | `Boolean` | `false` | {nok}
 |===
 
 === Generating Sample Parquet Payload
@@ -764,6 +772,9 @@ Configuration Properties:
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated Parquet payload will be written to. | `String` | none | {ok}
 | `addTypeAttribute` | Adds a `@type` attribute for inherited Entities | `Boolean` | `false` | {nok}
+| `currentTimestamp` | Generates the current timestamp dynamically instead of using the fixed default timestamp (Unix epoch `1970-01-01T00:00:00.000Z`). | `Boolean` | `false` | {nok}
+| `randomTimestamp` | Generates random date/time values between 1970 (inclusive) and 2100 (exclusive). Takes precedence over `currentTimestamp`. | `Boolean` | `false` | {nok}
+| `ignoreExampleValue` | Ignores example values defined in the Aspect Model and generates random values for all Properties. | `Boolean` | `false` | {nok}
 |===
 
 === Generating JSON-LD representation of an Aspect Model

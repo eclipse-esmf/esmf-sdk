@@ -15,14 +15,14 @@ package org.eclipse.esmf.aspectmodel.edit.change;
 
 import java.util.Map;
 
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.Change;
 import org.eclipse.esmf.aspectmodel.edit.ChangeContext;
 import org.eclipse.esmf.aspectmodel.edit.ChangeReport;
 import org.eclipse.esmf.aspectmodel.edit.ModelChangeException;
-
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 
 /**
  * Represents the operation of adding an {@link AspectModelFile} to an AspectModel
@@ -61,7 +61,7 @@ public class AddAspectModelFile extends AbstractChange {
 
          private AspectModelFile fileToRemove( final ChangeContext changeContext ) {
             return changeContext.aspectModelFiles()
-                  .filter( file -> file.sourceLocation().equals( newFile.sourceLocation() ) )
+                  .filter( file -> file.sourceUri().equals( newFile.sourceUri() ) )
                   .findFirst()
                   .orElseThrow( () -> new ModelChangeException( "Unable to remove Aspect Model File" ) );
          }

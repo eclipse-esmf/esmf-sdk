@@ -15,11 +15,14 @@ package org.eclipse.esmf.aspectmodel.generator.json;
 import static org.assertj.core.api.Assertions.anyOf;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.eclipse.esmf.metamodel.DataTypes.xsd;
 import static org.eclipse.esmf.metamodel.Elements.samm_c;
 import static org.eclipse.esmf.metamodel.builder.SammBuilder.aspect;
 import static org.eclipse.esmf.metamodel.builder.SammBuilder.either;
 import static org.eclipse.esmf.metamodel.builder.SammBuilder.list;
 import static org.eclipse.esmf.metamodel.builder.SammBuilder.property;
+import static org.eclipse.esmf.metamodel.builder.SammBuilder.set;
+import static org.eclipse.esmf.metamodel.builder.SammBuilder.value;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -33,6 +36,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -90,6 +95,7 @@ import org.eclipse.esmf.aspectmodel.java.QualifiedName;
 import org.eclipse.esmf.aspectmodel.java.pojo.AspectModelJavaGenerator;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.datatype.SammType;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 import org.eclipse.esmf.test.shared.compiler.JavaCompiler;
@@ -99,15 +105,60 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import tools.jackson.core.StreamReadFeature;
+import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 
 class AspectModelJsonPayloadGeneratorTest {
    private static final String PACKAGE = "org.eclipse.esmf.test.generatedtestclasses";
    private static DatatypeFactory datatypeFactory;
+
+   static Stream<Arguments> timestampTypes() {
+      return Stream.of(
+            Arguments.of( SammType.DATE, "1970-01-01Z" ),
+            Arguments.of( SammType.TIME, "00:00:00.000Z" ),
+            Arguments.of( SammType.DATE_TIME, "1970-01-01T00:00:00.000Z" ),
+            Arguments.of( SammType.DATE_TIME_STAMP, "1970-01-01T00:00:00.000Z" ),
+            Arguments.of( SammType.G_YEAR, "1970" ),
+            Arguments.of( SammType.G_MONTH, "--01" ),
+            Arguments.of( SammType.G_DAY, "---01" ),
+            Arguments.of( SammType.G_YEAR_MONTH, "1970-01" ),
+            Arguments.of( SammType.G_MONTH_DAY, "--01-01" ) );
+   }
+
+   @ParameterizedTest
+   @MethodSource( "timestampTypes" )
+   void testRandomTimestamps( final SammType<?> type, final String defaultValue ) {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
+      final JsonPayloadGenerationConfig config = JsonPayloadGenerationConfigBuilder.builder()
+            .randomTimestamp( true )
+            .randomStrategy( new Random( 0 ) )
+            .build();
+      final JsonPayloadGenerator<Aspect> generator = new JsonPayloadGenerator<>( aspect, config );
+      final List<String> values = IntStream.range( 0, 100 )
+            .mapToObj( i -> type.accept( generator,
+                  new JsonPayloadGenerator.Context( List.of(), Set.of(), Map.of(), false ) ).asText() )
+            .toList();
+
+      assertThat( values ).allMatch( type::isValid );
+      assertThat( values.stream().distinct().count() ).isGreaterThan( 1 );
+      assertThat( values ).anyMatch( value -> !value.equals( defaultValue ) );
+
+      final JsonPayloadGenerationConfig sameSeedConfig = JsonPayloadGenerationConfigBuilder.builder()
+            .randomTimestamp( true )
+            .randomStrategy( new Random( 0 ) )
+            .build();
+      final JsonPayloadGenerator<Aspect> sameSeedGenerator = new JsonPayloadGenerator<>( aspect, sameSeedConfig );
+      assertThat( type.accept( sameSeedGenerator,
+            new JsonPayloadGenerator.Context( List.of(), Set.of(), Map.of(), false ) ).asText() )
+                  .isEqualTo( values.getFirst() );
+   }
 
    @BeforeAll
    static void setup() {
@@ -230,6 +281,80 @@ class AspectModelJsonPayloadGeneratorTest {
    }
 
    @Test
+   void testIgnoreExampleValuesInSimpleProperties() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
+      final JsonPayloadGenerationConfig config = JsonPayloadGenerationConfigBuilder.builder()
+            .randomStrategy( new Random( 0 ) )
+            .ignoreExampleValue( true )
+            .build();
+
+      final String generatedJson = new AspectModelJsonPayloadGenerator( aspect, config ).generateJson();
+      final AspectWithSimpleProperties generatedAspect = parseJson( generatedJson, AspectWithSimpleProperties.class );
+
+      assertThat( generatedAspect.getTestString() ).isNotEqualTo( "Example Value Test" );
+      assertThat( generatedAspect.getTestInt() ).isNotEqualTo( 3 );
+      assertThat( generatedAspect.getTestFloat() ).isNotEqualTo( 2.25f );
+      assertThat( generatedAspect.getTestLocalDateTime() ).isNotEqualTo(
+            datatypeFactory.newXMLGregorianCalendar( "2018-02-28T14:23:32.918" ) );
+   }
+
+   @Test
+   void testUseExampleValuesInSimpleProperties() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
+      final JsonPayloadGenerationConfig config = JsonPayloadGenerationConfigBuilder.builder()
+            .randomStrategy( new Random( 0 ) )
+            .ignoreExampleValue( false )
+            .build();
+
+      final String generatedJson = new AspectModelJsonPayloadGenerator( aspect, config ).generateJson();
+      final AspectWithSimpleProperties generatedAspect = parseJson( generatedJson, AspectWithSimpleProperties.class );
+
+      assertThat( generatedAspect.getTestString() ).isEqualTo( "Example Value Test" );
+      assertThat( generatedAspect.getTestInt() ).isEqualTo( 3 );
+      assertThat( generatedAspect.getTestFloat() ).isEqualTo( 2.25f );
+      assertThat( generatedAspect.getTestLocalDateTime() ).isEqualTo(
+            datatypeFactory.newXMLGregorianCalendar( "2018-02-28T14:23:32.918" ) );
+   }
+
+   @Test
+   void testIgnoreExampleValuesInNestedEntityCollection() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_ENTITY_LIST ).aspect();
+      final JsonPayloadGenerationConfig config = JsonPayloadGenerationConfigBuilder.builder()
+            .randomStrategy( new Random( 0 ) )
+            .ignoreExampleValue( true )
+            .build();
+
+      final String generatedJson = new AspectModelJsonPayloadGenerator( aspect, config ).generateJson();
+      final AspectWithEntityCollection generatedAspect = parseJson( generatedJson, AspectWithEntityCollection.class );
+      final TestEntityWithSimpleTypes generatedEntity = generatedAspect.getTestList().getFirst();
+
+      assertThat( generatedEntity.getTestString() ).isNotEqualTo( "Example Value Test" );
+      assertThat( generatedEntity.getTestInt() ).isNotEqualTo( 3 );
+      assertThat( generatedEntity.getTestFloat() ).isNotEqualTo( 2.25f );
+      assertThat( generatedEntity.getTestLocalDateTime() ).isNotEqualTo(
+            datatypeFactory.newXMLGregorianCalendar( "2018-02-28T14:23:32.918Z" ) );
+   }
+
+   @Test
+   void testUseExampleValuesInNestedEntityCollection() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_ENTITY_LIST ).aspect();
+      final JsonPayloadGenerationConfig config = JsonPayloadGenerationConfigBuilder.builder()
+            .randomStrategy( new Random( 0 ) )
+            .ignoreExampleValue( false )
+            .build();
+
+      final String generatedJson = new AspectModelJsonPayloadGenerator( aspect, config ).generateJson();
+      final AspectWithEntityCollection generatedAspect = parseJson( generatedJson, AspectWithEntityCollection.class );
+      final TestEntityWithSimpleTypes generatedEntity = generatedAspect.getTestList().getFirst();
+
+      assertThat( generatedEntity.getTestString() ).isEqualTo( "Example Value Test" );
+      assertThat( generatedEntity.getTestInt() ).isEqualTo( 3 );
+      assertThat( generatedEntity.getTestFloat() ).isEqualTo( 2.25f );
+      assertThat( generatedEntity.getTestLocalDateTime() ).isEqualTo(
+            datatypeFactory.newXMLGregorianCalendar( "2018-02-28T14:23:32.918Z" ) );
+   }
+
+   @Test
    void testGenerateJsonForAspectWithSimpleProperties() {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES );
 
@@ -245,6 +370,40 @@ class AspectModelJsonPayloadGeneratorTest {
 
       assertThat( aspectWithSimpleProperties.getTestLocalDateTimeWithoutExample() ).isNotNull();
       assertThat( aspectWithSimpleProperties.getTestDurationWithoutExample() ).isNotNull();
+   }
+
+   @Test
+   void testGenerateDiverseValidYearMonthDurations() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
+      final JsonPayloadGenerationConfig config = JsonPayloadGenerationConfigBuilder.builder()
+            .randomStrategy( new Random( 0 ) )
+            .build();
+      final JsonPayloadGenerator<Aspect> generator = new JsonPayloadGenerator<>( aspect, config );
+
+      final Set<String> generatedValues = IntStream.range( 0, 100 )
+            .mapToObj( ignored -> SammType.YEAR_MONTH_DURATION.accept( generator, null ).textValue() )
+            .collect( Collectors.toSet() );
+
+      assertThat( generatedValues )
+            .hasSizeGreaterThan( 10 )
+            .allMatch( SammType.YEAR_MONTH_DURATION::isValid );
+   }
+
+   @Test
+   void testGenerateDiverseValidDayTimeDurations() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
+      final JsonPayloadGenerationConfig config = JsonPayloadGenerationConfigBuilder.builder()
+            .randomStrategy( new Random( 0 ) )
+            .build();
+      final JsonPayloadGenerator<Aspect> generator = new JsonPayloadGenerator<>( aspect, config );
+
+      final Set<String> generatedValues = IntStream.range( 0, 100 )
+            .mapToObj( ignored -> SammType.DAY_TIME_DURATION.accept( generator, null ).textValue() )
+            .collect( Collectors.toSet() );
+
+      assertThat( generatedValues )
+            .hasSizeGreaterThan( 10 )
+            .allMatch( SammType.DAY_TIME_DURATION::isValid );
    }
 
    @Test
@@ -341,6 +500,47 @@ class AspectModelJsonPayloadGeneratorTest {
             .build();
 
       assertThatCode( () -> generateJsonForModel( aspect ) ).doesNotThrowAnyException();
+   }
+
+   @Test
+   void testGenerateJsonForAspectWithSetCharacteristicAndSingleExampleValue() {
+      // A Property whose Characteristic is a Collection (samm-c:Set) but carries only a single scalar
+      // exampleValue must still produce a JSON array in the payload, matching the "type": "array" that
+      // the JSON Schema generator produces for the same property.
+      final AspectModelUrn namespace = TestAspect.ASPECT.getUrn();
+      final Aspect aspect = aspect( TestAspect.ASPECT.getUrn() )
+            .property( property( namespace.withName( "property" ) )
+                  .characteristic( set( namespace.withName( "Set" ) )
+                        .dataType( xsd.string )
+                        .build() )
+                  .exampleValue( value( "foo" ) )
+                  .build() )
+            .build();
+
+      final String generatedJson = generateJsonForModel( aspect );
+      final JsonNode propertyNode = objectMapper().readTree( generatedJson ).get( "property" );
+      assertThat( propertyNode.isArray() ).isTrue();
+      assertThat( propertyNode ).hasSize( 1 );
+      assertThat( propertyNode.get( 0 ).asString() ).isEqualTo( "foo" );
+   }
+
+   @Test
+   void testGenerateJsonForAspectWithListCharacteristicAndSingleExampleValue() {
+      final AspectModelUrn namespace = TestAspect.ASPECT.getUrn();
+      final Aspect aspect = aspect( TestAspect.ASPECT.getUrn() )
+            .property( property( namespace.withName( "property" ) )
+                  .characteristic( list( namespace.withName( "List" ) )
+                        .dataType( xsd.string )
+                        .build() )
+                  .exampleValue( value( "foo" ) )
+                  .build() )
+            .build();
+
+      final String generatedJson = generateJsonForModel( aspect );
+      final JsonNode propertyNode = objectMapper().readTree( generatedJson ).get( "property" );
+      assertThat( propertyNode.isArray() ).isTrue();
+      assertThat( propertyNode ).hasSize( 1 );
+      assertThat( propertyNode.get( 0 ).asString() ).isEqualTo( "foo" );
    }
 
    @Test
@@ -608,6 +808,31 @@ class AspectModelJsonPayloadGeneratorTest {
       assertThat( StringUtils.countMatches( generatedJson, "entity property example" ) ).isEqualTo( 2 );
    }
 
+   @Test
+   void testGenerateJsonWithDefaultTimestamp() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
+      final String generatedJson = new AspectModelJsonPayloadGenerator( aspect ).generateJson();
+
+      final AspectWithSimpleProperties parsed = parseJson( generatedJson, AspectWithSimpleProperties.class );
+
+      assertThat( parsed.getTestLocalDateTimeWithoutExample() ).isEqualTo(
+            datatypeFactory.newXMLGregorianCalendar( "1970-01-01T00:00:00.000Z" ) );
+   }
+
+   @Test
+   void testGenerateJsonWithCurrentTimestamp() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
+      final JsonPayloadGenerationConfig config = JsonPayloadGenerationConfigBuilder.builder()
+            .currentTimestamp( true )
+            .build();
+
+      final String generatedJson = new AspectModelJsonPayloadGenerator( aspect, config ).generateJson();
+      final AspectWithSimpleProperties parsed = parseJson( generatedJson, AspectWithSimpleProperties.class );
+
+      assertThat( parsed.getTestLocalDateTimeWithoutExample() ).isNotNull();
+      assertThat( parsed.getTestLocalDateTimeWithoutExample().getYear() ).isGreaterThanOrEqualTo( 2024 );
+   }
+
    private String generateJsonForModel( final Aspect aspect ) {
       final AspectModelJsonPayloadGenerator jsonGenerator = new AspectModelJsonPayloadGenerator( aspect );
       return jsonGenerator.generateJson();
@@ -632,7 +857,7 @@ class AspectModelJsonPayloadGeneratorTest {
       return JsonMapper.builder()
             .addModule( new AspectModelJacksonModule() )
             .configure( StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION, true )
-            .configure( tools.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS, false )
+            .configure( SerializationFeature.FAIL_ON_EMPTY_BEANS, false )
             .build();
    }
 

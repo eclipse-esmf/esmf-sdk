@@ -4,7 +4,7 @@
   <dependencies>
     <dependency>
       <groupId>org.eclipse.esmf</groupId>
-      <artifactId>esmf-sdk-parent</artifactId>
+      <artifactId>esmf-sdk-bom</artifactId>
       <version>{esmf-sdk-version}</version>
       <type>pom</type>
       <scope>import</scope>

@@ -28,13 +28,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.tika.mime.MediaType;
-
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
-import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.test.InvalidTestAspect;
 import org.eclipse.esmf.test.OrderingTestAspect;
@@ -45,6 +41,8 @@ import org.eclipse.esmf.test.TestSharedModel;
 import org.eclipse.esmf.util.process.ProcessLauncher;
 import org.eclipse.esmf.util.process.ProcessLauncher.ExecutionResult;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.tika.mime.MediaType;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
@@ -55,7 +53,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
@@ -292,6 +289,8 @@ class SammCliTest extends SammCliAbstractTest {
       assertThat( result2.exitStatus() ).isEqualTo( 1 );
       assertThat( result2.stderr() ).isEmpty();
       assertThat( result2.stdout() ).contains( InvalidSyntaxViolation.ERROR_CODE );
+      assertThat( result2.stdout() ).contains( "line 17, column 4" );
+      assertThat( result2.stdout() ).doesNotContain( "message=" );
    }
 
    @Test
@@ -352,7 +351,7 @@ class SammCliTest extends SammCliAbstractTest {
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
       assertThat( targetFile ).exists();
-      assertThat( contentType( targetFile ) ).isEqualTo( MediaType.text( "plain" ) );
+      assertThat( contentType( targetFile ) ).isEqualTo( MediaType.application( "json" ) );
    }
 
    @Test
@@ -724,21 +723,65 @@ class SammCliTest extends SammCliAbstractTest {
    }
 
    @Test
-   void testAspectToJsonToFile( @TempDir final Path outputDirectory ) {
+   void testAspectToJsonToFile( @TempDir final Path outputDirectory ) throws IOException {
       final File targetFile = outputFile( outputDirectory, "output.json" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "json", "-o",
             targetFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
       assertThat( targetFile ).exists();
-      assertThat( targetFile ).content().contains( "\"entityProperty\" :" );
+      final String output = Files.readString( targetFile.toPath() );
+      assertThat( output.lines() ).hasSizeGreaterThan( 1 );
+      assertThat( output ).contains( "\"entityProperty\" :" );
+      final JsonNode json = new ObjectMapper().readTree( output );
+      assertThat( json.isObject() ).isTrue();
+      assertThat( json.get( "testProperty" ).has( "entityProperty" ) ).isTrue();
    }
 
    @Test
-   void testAspectToJsonToStdout() {
+   void testAspectToJsonToStdout() throws IOException {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "json" );
+      assertThat( result.stdout().lines() ).hasSizeGreaterThan( 1 );
       assertThat( result.stdout() ).contains( "\"entityProperty\" :" );
+      final JsonNode json = new ObjectMapper().readTree( result.stdout() );
+      assertThat( json.isObject() ).isTrue();
+      assertThat( json.get( "testProperty" ).has( "entityProperty" ) ).isTrue();
       assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectToJsonWithCount() throws IOException {
+      final ExecutionResult result = sammCli.runAndExpectSuccess(
+            "--disable-color", "aspect", defaultInputFile, "to", "json", "--count", "3" );
+      assertThat( result.stdout() ).endsWith( "\n" );
+      final List<String> records = result.stdout().lines().toList();
+      assertThat( records ).hasSize( 3 );
+      final ObjectMapper objectMapper = new ObjectMapper();
+      for ( final String record : records ) {
+         final JsonNode json = objectMapper.readTree( record );
+         assertThat( json.isObject() ).isTrue();
+         assertThat( json.get( "testProperty" ).has( "entityProperty" ) ).isTrue();
+      }
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectToJsonToStdoutIgnoringExampleValues() throws IOException {
+      final String input = inputFile( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).getAbsolutePath();
+
+      final ExecutionResult resultWithExampleValues = sammCli.runAndExpectSuccess(
+            "--disable-color", "aspect", input, "to", "json" );
+      final ExecutionResult resultIgnoringExampleValues = sammCli.runAndExpectSuccess(
+            "--disable-color", "aspect", input, "to", "json", "--ignore-example-value" );
+
+      final ObjectMapper objectMapper = new ObjectMapper();
+      final JsonNode payloadWithExampleValues = objectMapper.readTree( resultWithExampleValues.stdout() );
+      final JsonNode payloadIgnoringExampleValues = objectMapper.readTree( resultIgnoringExampleValues.stdout() );
+
+      assertThat( payloadWithExampleValues.get( "testString" ).asString() ).isEqualTo( "Example Value Test" );
+      assertThat( payloadIgnoringExampleValues.get( "testString" ).asString() ).isNotEqualTo( "Example Value Test" );
+      assertThat( resultWithExampleValues.stderr() ).isEmpty();
+      assertThat( resultIgnoringExampleValues.stderr() ).isEmpty();
    }
 
    @Test
@@ -747,6 +790,56 @@ class SammCliTest extends SammCliAbstractTest {
             "--custom-resolver", resolverCommand() );
       assertThat( result.stdout() ).contains( "\"entityProperty\" :" );
       assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectToJsonWithDefaultTimestamp() {
+      final String input = inputFile( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).getAbsolutePath();
+      final ExecutionResult result = sammCli.runAndExpectSuccess(
+            "--disable-color", "aspect", input, "to", "json" );
+      assertThat( result.stdout() ).contains( "\"testLocalDateTimeWithoutExample\" : \"1970-01-01T00:00:00.000Z\"" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectToJsonWithCurrentTimestamp() {
+      final String input = inputFile( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).getAbsolutePath();
+      final ExecutionResult result = sammCli.runAndExpectSuccess(
+            "--disable-color", "aspect", input, "to", "json", "--current-timestamp" );
+      assertThat( result.stdout() ).contains( "\"testLocalDateTimeWithoutExample\" :" );
+      assertThat( result.stdout() ).doesNotContain( "\"testLocalDateTimeWithoutExample\" : \"1970-01-01T00:00:00.000Z\"" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectToJsonWithRandomTimestamp() throws IOException {
+      final String input = inputFile( TestAspect.ASPECT_WITH_SIMPLE_TYPES ).getAbsolutePath();
+      final ExecutionResult defaultResult = sammCli.runAndExpectSuccess(
+            "--disable-color", "aspect", input, "to", "json" );
+      final ExecutionResult randomResult = sammCli.runAndExpectSuccess(
+            "--disable-color", "aspect", input, "to", "json", "--random-timestamp" );
+
+      final ObjectMapper objectMapper = new ObjectMapper();
+      final JsonNode defaultPayload = objectMapper.readTree( defaultResult.stdout() );
+      final JsonNode randomPayload = objectMapper.readTree( randomResult.stdout() );
+      assertThat( randomPayload.get( "dateTimeProperty" ) ).isNotEqualTo( defaultPayload.get( "dateTimeProperty" ) );
+      assertThat( randomPayload.get( "dateTimeStampProperty" ) ).isNotEqualTo( defaultPayload.get( "dateTimeStampProperty" ) );
+      assertThat( defaultResult.stderr() ).isEmpty();
+      assertThat( randomResult.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectToParquetWithPayloadGenerationOptions( @TempDir final Path outputDirectory ) {
+      final File targetFile = outputFile( outputDirectory, "output.parquet" );
+      final String input = inputFile( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).getAbsolutePath();
+      final ExecutionResult result = sammCli.runAndExpectSuccess(
+            "--disable-color", "aspect", input, "to", "parquet",
+            "--ignore-example-value", "--current-timestamp", "--random-timestamp",
+            "--output", targetFile.getAbsolutePath() );
+
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( targetFile ).exists().isNotEmpty();
    }
 
    @Test
@@ -1070,7 +1163,7 @@ class SammCliTest extends SammCliAbstractTest {
       assertThat( result.exitStatus() ).isZero();
       assertThat( result.stdout() ).isNotEmpty();
       assertThat( result.stdout() ).contains( "asyncapi: 3.1.0" );
-      assertThat( result.stdout() ).contains( "address: /org.eclipse.esmf.test/1.0.0/AspectWithEntity" );
+      assertThat( result.stdout() ).contains( "address: \"/{tenant-id}/{namespace}/{version}/{aspect-name}\"" );
       assertThat( result.stderr() ).isEmpty();
    }
 
@@ -1211,7 +1304,7 @@ class SammCliTest extends SammCliAbstractTest {
       final File invalidModel = inputFile( InvalidTestAspect.INVALID_ENCODING );
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", invalidModel.getAbsolutePath(), "to", "svg", "--details" );
       assertThat( result.exitStatus() ).isEqualTo( 1 );
-      assertThat( result.stdout() ).contains( ProcessingViolation.ERROR_CODE );
+      assertThat( result.stdout() ).contains( "invalid encoding" );
       assertThat( result.stderr() ).isEmpty();
    }
 
@@ -1510,6 +1603,47 @@ class SammCliTest extends SammCliAbstractTest {
             "--github", "eclipse-esmf/esmf-sdk", "--github-directory", remoteModelsDirectory );
       assertThat( result.stderr() ).isEmpty();
       assertThat( result.stdout() ).contains( TestModel.TEST_NAMESPACE + "testProperty" );
+   }
+
+   @Test
+   void testAspectUsageWithCsvFormat() {
+      final ExecutionResult result =
+            sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "usage", "--format", "csv" );
+      assertThat( result.stderr() ).isEmpty();
+      // CSV output should start with header line
+      assertThat( result.stdout() ).startsWith( "Element,in file,Points to,in file" );
+      // Should contain some data rows in CSV format (with commas, not pipes)
+      assertThat( result.stdout() ).contains( "," );
+      assertThat( result.stdout() ).doesNotContain( "|" );
+   }
+
+   @Test
+   void testAspectUsageWithCsvFormatShortOption() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "usage", "-f", "csv" );
+      assertThat( result.stderr() ).isEmpty();
+      // CSV output should start with header line
+      assertThat( result.stdout() ).startsWith( "Element,in file,Points to,in file" );
+      // Should contain some data rows in CSV format (with commas, not pipes)
+      assertThat( result.stdout() ).contains( "," );
+      assertThat( result.stdout() ).doesNotContain( "|" );
+   }
+
+   @Test
+   void testAspectUsageDefaultFormatIsTable() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "usage" );
+      assertThat( result.stderr() ).isEmpty();
+      // Default table output should contain pipe characters
+      assertThat( result.stdout() ).contains( "|" );
+      // Should not contain commas in the header
+      assertThat( result.stdout() ).doesNotStartWith( "Element,in file,Points to,in file" );
+   }
+
+   @Test
+   void testAspectUsageInvalidFormat() {
+      final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "usage", "--format", "invalid" );
+      assertThat( result.exitStatus() ).isEqualTo( 2 );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).contains( "Invalid value for option '--format'" );
    }
 
    @Test

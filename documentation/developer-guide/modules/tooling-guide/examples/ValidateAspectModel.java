@@ -15,12 +15,10 @@ package examples;
 
 // tag::imports[]
 import java.io.File;
-import java.util.List;
 
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
-import org.eclipse.esmf.aspectmodel.shacl.fix.Fix;
-import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
-import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+import org.eclipse.esmf.aspectmodel.Violation;
+import org.eclipse.esmf.aspectmodel.ViolationReport;
 import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
 import org.eclipse.esmf.aspectmodel.validation.services.DetailedViolationFormatter;
 import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
@@ -38,41 +36,19 @@ public class ValidateAspectModel {
             // end::validate[]
             new AspectModelLoader().load(
                   new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) );
-      // tag::validate[]
-
-      // tag::violations[]
-      final List<Violation> violations = new AspectModelValidator().validateModel( aspectModel );
-      if ( violations.isEmpty() ) {
+      final ViolationReport report = new AspectModelValidator().validateModel( aspectModel );
+      if ( report.isEmpty() ) {
          // Aspect Model is valid!
          return;
       } else {
-         for (Violation violation : violations) {
-            String errorCode = violation.errorCode();
+         for ( Violation violation : report.violations() ) {
+            Violation.Code errorCode = violation.code();
             String message = violation.message();
-            EvaluationContext context = violation.context();
-            List<Fix> fixes = violation.fixes();
          }
       }
-      // end::violations[]
 
-      final String validationReport = new ViolationFormatter().apply( violations ); // <1>
-      final String detailedReport = new DetailedViolationFormatter().apply( violations );
-
-      class MyViolationVisitor implements Violation.Visitor<String> { // <2>
-         // ...
-         // end::validate[]
-         @Override
-         public String visit( final Violation violation ) {
-            return null;
-         }
-         // tag::validate[]
-      }
-
-      // Turn the list of Violations into a list of custom descriptions
-      final Violation.Visitor<String> visitor = new MyViolationVisitor();
-      final List<String> result = violations.stream()
-            .map( violation -> violation.accept( visitor ) )
-            .toList();
+      final String validationReport = new ViolationFormatter().apply( report ); // <1>
+      final String detailedReport = new DetailedViolationFormatter().apply( report );
       // end::validate[]
    }
 }

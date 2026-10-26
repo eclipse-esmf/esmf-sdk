@@ -13,6 +13,12 @@
 
 package org.eclipse.esmf.aspectmodel.shacl;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+
 import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
 
 import org.apache.jena.rdf.model.Property;
@@ -1439,5 +1445,33 @@ public class SHACL implements RdfNamespace {
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource XoneConstraintComponent_xone() {
       return resource( "XoneConstraintComponent-xone" );
+   }
+
+   @Override
+   public List<Resource> allResources() {
+      return allByReturnType( Resource.class );
+   }
+
+   @Override
+   public List<Property> allProperties() {
+      return allByReturnType( Property.class );
+   }
+
+   private <T> List<T> allByReturnType( final Class<T> returnType ) {
+      return Arrays.stream( SHACL.class.getDeclaredMethods() )
+            .filter( method -> method.getParameterCount() == 0 )
+            .filter( method -> !method.isSynthetic() )
+            .filter( method -> method.getReturnType() == returnType )
+            .sorted( Comparator.comparing( Method::getName ) )
+            .map( method -> invoke( method, returnType ) )
+            .toList();
+   }
+
+   private <T> T invoke( final Method method, final Class<T> returnType ) {
+      try {
+         return returnType.cast( method.invoke( this ) );
+      } catch ( final IllegalAccessException | InvocationTargetException exception ) {
+         throw new IllegalStateException( "Could not invoke SHACL vocabulary method: " + method.getName(), exception );
+      }
    }
 }

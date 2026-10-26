@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
 import javax.script.Bindings;
 import javax.script.Invocable;
 import javax.script.ScriptContext;
@@ -25,6 +26,9 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+import org.apache.jena.rdf.model.RDFNode;
+
+import org.eclipse.esmf.aspectmodel.Violation;
 import org.eclipse.esmf.aspectmodel.shacl.JsLibrary;
 import org.eclipse.esmf.aspectmodel.shacl.ShaclValidationException;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.js.JsFactory;
@@ -33,10 +37,8 @@ import org.eclipse.esmf.aspectmodel.shacl.constraint.js.JsTerm;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.js.TermFactory;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.JsConstraintViolation;
-import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
-import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
+import org.eclipse.esmf.aspectmodel.validation.ProcessingViolationBuilder;
 
-import org.apache.jena.rdf.model.RDFNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,15 +70,11 @@ public class JsConstraint implements Constraint {
       }
 
       // The guest application (i.e., the JavaScript) can only be compiled at runtime if either the host
-      // application runs via GraalVM
-      // or, on a regular JVMCI-enabled JDK, the Graal Compiler is set up (additional JIT compilers are
-      // added). Otherwise, the script runs
-      // in interpreted mode, which will be slower and print a corresponding warning. Since in the SHACL
-      // validation only very little
-      // JavaScript
-      // code is executed, this is not a problem. The following the property disables the corresponding
-      // warning.
-      // See
+      // application runs via GraalVM or, on a regular JVMCI-enabled JDK, the Graal Compiler is set up
+      // (additional JIT compilers are added). Otherwise, the script runs in interpreted mode, which
+      // will be slower and print a corresponding warning. Since in the SHACL validation only very
+      // little JavaScript code is executed, this is not a problem. The following the property disables
+      // the corresponding warning. See
       // https://www.graalvm.org/22.3/reference-manual/js/FAQ/#warning-implementation-does-not-support-runtime-compilation
       System.setProperty( "polyglot.engine.WarnInterpreterOnly", "false" );
       engine = new ScriptEngineManager().getEngineByName( "JavaScript" );
@@ -103,7 +101,7 @@ public class JsConstraint implements Constraint {
     * @param doEvaluate configure whether to evaluate JavaScript or not
     */
    public static void setEvaluateJavaScript( final boolean doEvaluate ) {
-      LOG.debug( String.format( "Globally %sabled JavaScript constraint evaluation", doEvaluate ? "en" : "dis" ) );
+      LOG.debug( "Globally {}abled JavaScript constraint evaluation", doEvaluate ? "en" : "dis" );
       JsConstraint.evaluateJavaScript = doEvaluate;
    }
 
@@ -122,33 +120,36 @@ public class JsConstraint implements Constraint {
          final Object this_ = JsFactory.asJsTerm( context.element().asNode() );
          final Object value = JsFactory.asJsTerm( rdfNode.asNode() );
          final Object result = ( (Invocable) engine ).invokeFunction( jsFunctionName, this_, value );
-         if ( result == null ) {
-            return List.of( new JsConstraintViolation( context, "JavaScript evaluation of " + jsFunctionName() + " returned null",
+         return switch ( result ) {
+            case null -> List.of( new JsConstraintViolation( context, "JavaScript evaluation of " + jsFunctionName() + " returned null",
                   jsLibrary(), jsFunctionName(), Collections.emptyMap() ) );
-         }
-         if ( result instanceof final Boolean booleanResult ) {
-            if ( booleanResult ) {
-               return List.of();
+            case final Boolean booleanResult -> booleanResult
+                  ? List.of()
+                  : List.of( new JsConstraintViolation( context, message(), jsLibrary(), jsFunctionName(), Collections.emptyMap() ) );
+            case final Map<?, ?> map -> {
+               final Map<String, Object> resultMap = map.entrySet().stream()
+                     .filter( entry -> entry.getKey() instanceof String )
+                     .collect( Collectors.toMap(
+                           entry -> (String) entry.getKey(),
+                           entry -> entry.getValue() instanceof final JsTerm term ? term.getNode() : entry.getValue() ) );
+               final String resultMessage = resultMap.containsKey( "message" ) && resultMap.containsKey( "value" )
+                     ? resultMap.get( "message" ) + ": " + resultMap.get( "value" )
+                     : message();
+               yield List.of( new JsConstraintViolation( context, resultMessage, jsLibrary(), jsFunctionName(), resultMap ) );
             }
-            return List.of( new JsConstraintViolation( context, message(), jsLibrary(), jsFunctionName(), Collections.emptyMap() ) );
-         }
-         if ( result instanceof final Map<?, ?> map ) {
-            final Map<String, Object> resultMap = map.entrySet().stream()
-                  .filter( entry -> entry.getKey() instanceof String )
-                  .collect( Collectors.toMap(
-                        entry -> (String) entry.getKey(),
-                        entry -> entry.getValue() instanceof final JsTerm term ? term.getNode() : entry.getValue() ) );
-            return List.of( new JsConstraintViolation( context, message(), jsLibrary(), jsFunctionName(), resultMap ) );
-         }
-
-         LOG.debug( "JavaScript evaluation of {} returned invalid result: {}", jsFunctionName(), result );
-         return List.of( new ProcessingViolation( "JavaScript evaluation of " + jsFunctionName() + " returned an invalid result",
-               new IllegalArgumentException() ) );
+            default -> {
+               LOG.debug( "JavaScript evaluation of {} returned invalid result: {}", jsFunctionName(), result );
+               yield List.of( ProcessingViolationBuilder.builder()
+                     .message( "JavaScript evaluation of " + jsFunctionName() + " returned an invalid result: " + result )
+                     .build() );
+            }
+         };
       } catch ( final ScriptException exception ) {
-         LOG.debug( "JavaScript evaluation of {} failed", jsFunctionName(), exception );
-         return List.of( new ProcessingViolation( "JavaScript evaluation of " + jsFunctionName() + " failed", exception ) );
+         LOG.debug( "JavaScript evaluation of {} failed", jsFunctionName() );
+         return List.of();
       } catch ( final NoSuchMethodException exception ) {
-         return List.of( new ProcessingViolation( "JavaScript function " + jsFunctionName() + " was not found", exception ) );
+         LOG.debug( "JavaScript function {} was not found", jsFunctionName(), exception );
+         return List.of();
       }
    }
 

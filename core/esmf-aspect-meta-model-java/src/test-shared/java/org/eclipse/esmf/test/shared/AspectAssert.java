@@ -59,7 +59,7 @@ public class AspectAssert<SELF extends AspectAssert<SELF, ACTUAL>, ACTUAL extend
    @SuppressWarnings( "unchecked" )
    public <S extends PropertyAssert<S, A>, A extends Property> PropertyAssert<S, A> hasSinglePropertyThat() {
       assertThat( actual.getProperties() ).hasSize( 1 );
-      return new PropertyAssert<>( (A) actual.getProperties().get( 0 ) );
+      return new PropertyAssert<>( (A) actual.getProperties().getFirst() );
    }
 
    public ListAssert<Property> properties() {
@@ -87,7 +87,7 @@ public class AspectAssert<SELF extends AspectAssert<SELF, ACTUAL>, ACTUAL extend
    @SuppressWarnings( "unchecked" )
    public <S extends OperationAssert<S, A>, A extends Operation> OperationAssert<S, A> hasSingleOperationThat() {
       assertThat( actual.getOperations() ).hasSize( 1 );
-      return new OperationAssert<>( (A) actual.getOperations().get( 0 ) );
+      return new OperationAssert<>( (A) actual.getOperations().getFirst() );
    }
 
    public ListAssert<Event> events() {
@@ -102,6 +102,6 @@ public class AspectAssert<SELF extends AspectAssert<SELF, ACTUAL>, ACTUAL extend
    @SuppressWarnings( "unchecked" )
    public <S extends EventAssert<S, A>, A extends Event> EventAssert<S, A> hasSingleEventThat() {
       assertThat( actual.getEvents() ).hasSize( 1 );
-      return new EventAssert<>( (A) actual.getEvents().get( 0 ) );
+      return new EventAssert<>( (A) actual.getEvents().getFirst() );
    }
 }

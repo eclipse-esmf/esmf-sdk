@@ -45,7 +45,7 @@ public class EitherStrategy implements ResolutionStrategy {
 
    @Override
    public AspectModelFile apply( final AspectModelUrn input, final ResolutionStrategySupport resolutionStrategySupport ) {
-      final List<ModelResolutionException.LoadingFailure> checkedLocations = new ArrayList<>();
+      final List<ModelResolutionViolation> checkedLocations = new ArrayList<>();
       for ( final ResolutionStrategy strategy : strategies ) {
          final Try<AspectModelFile> tryFile = Try.of( () -> strategy.apply( input, resolutionStrategySupport ) );
          if ( tryFile.isFailure() ) {

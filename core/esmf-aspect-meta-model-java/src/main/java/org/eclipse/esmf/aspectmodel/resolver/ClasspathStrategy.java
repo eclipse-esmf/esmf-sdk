@@ -33,16 +33,18 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Stream;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFile;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
-import io.vavr.control.Try;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.vavr.control.Try;
 
 /**
  * Resolution strategy to resolve Aspect models by URN from a well-defined directory structure from
@@ -167,13 +169,16 @@ public class ClasspathStrategy implements ResolutionStrategy {
             aspectModelUrn.getNamespaceMainPart(), aspectModelUrn.getVersion() );
       final URL namedResourceFile = resourceUrl( directory, aspectModelUrn.getName() + ".ttl" );
 
-      final List<ModelResolutionException.LoadingFailure> checkedLocations = new ArrayList<>();
+      final List<ModelResolutionViolation> checkedLocations = new ArrayList<>();
       final Try<RawAspectModelFile> tryFile = Try.of( () -> AspectModelFileLoader.load( namedResourceFile ) );
       if ( tryFile.isFailure() ) {
-         checkedLocations.add(
-               new ModelResolutionException.LoadingFailure( aspectModelUrn, "Class path file "
-                     + Optional.ofNullable( namedResourceFile ).map( URL::toString ).orElse( aspectModelUrn.getName() + ".ttl" ),
-                     tryFile.getCause().getMessage(), tryFile.getCause() ) );
+         checkedLocations.add( ModelResolutionViolationBuilder.builder()
+               .element( Optional.of( aspectModelUrn ) )
+               .location( Optional.ofNullable( namedResourceFile ).map( f -> URI.create( f.toString() ) )
+                     .orElse( URI.create( aspectModelUrn.getName() + ".ttl" ) ) )
+               .message( tryFile.getCause().getMessage() )
+               .cause( Optional.ofNullable( tryFile.getCause() ) )
+               .build() );
       } else {
          return tryFile.get();
       }
@@ -189,16 +194,23 @@ public class ClasspathStrategy implements ResolutionStrategy {
          final URL url = it.next();
          final Try<RawAspectModelFile> file = Try.of( () -> AspectModelFileLoader.load( url ) );
          if ( file.isFailure() ) {
-            checkedLocations.add( new ModelResolutionException.LoadingFailure( aspectModelUrn, url.toString(),
-                  "Could not load file", file.getCause() ) );
+            checkedLocations.add( ModelResolutionViolationBuilder.builder()
+                  .element( Optional.of( aspectModelUrn ) )
+                  .location( URI.create( url.toString() ) )
+                  .message( "Could not load file" )
+                  .cause( Optional.ofNullable( file.getCause() ) )
+                  .build() );
             continue;
          }
          final AspectModelFile result = file.get();
          if ( resolutionStrategySupport.containsDefinition( result, aspectModelUrn ) ) {
             return result;
          }
-         checkedLocations.add( new ModelResolutionException.LoadingFailure( aspectModelUrn, url.toString(),
-               "File does not contain the element definition" ) );
+         checkedLocations.add( ModelResolutionViolationBuilder.builder()
+               .element( Optional.of( aspectModelUrn ) )
+               .location( URI.create( url.toString() ) )
+               .message( "File does not contain the element definition" )
+               .build() );
       }
       throw new ModelResolutionException( checkedLocations );
    }

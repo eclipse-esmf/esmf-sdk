@@ -26,11 +26,11 @@ import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.Value;
 import org.eclipse.esmf.metamodel.datatype.LangString;
+import org.eclipse.esmf.metamodel.datatype.RdfDatatypeUris;
 import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.vocabulary.RDF;
 
 /**
  * Builds an initializer expression for a {@link Value}. For example:
@@ -39,10 +39,10 @@ import org.apache.jena.vocabulary.RDF;
  * <li>If the value is (String) "hi", it will return "\"hi\""</li>
  * <li>If the value is (LangString) "hi"@en, it will return "new LangString(\"hi\",
  * Locale.forLanguageTag(\"en\"))"</li>
- * <li>If the value is a collection, it will return the corresponding collection, e.g. "new
- * ArrayList<>(){{ add(1); add(2); add(3); }}"</li>
- * <li>If the value is an Entity, it will return the corresponding constructor call, e.g. "new
- * MyEntity(\"foo\", 2, 3)"</li>
+ * <li>If the value is a collection, it will return the corresponding collection, e.g. {@code new
+ * ArrayList<>(){{ add(1); add(2); add(3); }}}</li>
+ * <li>If the value is an Entity, it will return the corresponding constructor call, e.g. {@code new
+ * MyEntity(\"foo\", 2, 3)}</li>
  * </ul>
  */
 public class ValueExpressionVisitor implements AspectVisitor<String, ValueExpressionVisitor.Context> {
@@ -69,7 +69,7 @@ public class ValueExpressionVisitor implements AspectVisitor<String, ValueExpres
 
    private String generateValueExpression( final ScalarValue value, final Context context ) {
       final String typeUri = value.getType().as( Scalar.class ).getUrn();
-      if ( typeUri.equals( RDF.langString.getURI() ) ) {
+      if ( typeUri.equals( RdfDatatypeUris.LANG_STRING ) ) {
          context.codeGenerationConfig().importTracker().importExplicit( LangString.class );
          context.codeGenerationConfig().importTracker().importExplicit( Locale.class );
          final LangString langStringValue = (LangString) value.as( ScalarValue.class ).getValue();

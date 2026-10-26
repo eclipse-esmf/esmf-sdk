@@ -12,6 +12,8 @@
  */
 package org.eclipse.esmf.metamodel.vocabulary;
 
+import java.util.List;
+
 import org.eclipse.esmf.samm.KnownVersion;
 
 import org.apache.jena.rdf.model.Property;
@@ -225,5 +227,19 @@ public class SAMM implements RdfNamespace {
 
    public Property symbol() {
       return property( "symbol" );
+   }
+
+   @Override
+   public List<Resource> allResources() {
+      return List.of( Namespace(), Property(), AbstractProperty(), Characteristic(), Constraint(), Aspect(), Operation(), Event(),
+            Entity(), AbstractEntity(), Value(), Unit(), QuantityKind() );
+   }
+
+   @Override
+   public List<Property> allProperties() {
+      return List.of( listType(), input(), output(), curie(), description(), preferredName(), characteristic(), dataType(),
+            exampleValue(), optional(), notInPayload(), payloadName(), see(), property(), properties(), parameters(),
+            operations(), events(), _extends(), value(), quantityKind(), referenceUnit(), commonCode(), conversionFactor(),
+            numericConversionFactor(), symbol() );
    }
 }

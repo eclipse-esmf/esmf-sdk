@@ -16,15 +16,15 @@ package org.eclipse.esmf.aspectmodel;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
-import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
-import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
-import org.eclipse.esmf.metamodel.AspectModel;
-
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+
+import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
+import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
+import org.eclipse.esmf.metamodel.AspectModel;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,10 +41,10 @@ public class Validate extends AspectModelMojo {
 
       final Set<AspectModel> aspectModels = loadModels();
       final List<Violation> violations = aspectModels.stream()
-            .flatMap( aspectModel -> validator.validateModel( aspectModel ).stream() ).toList();
+            .flatMap( aspectModel -> validator.validateModel( aspectModel ).violations().stream() ).toList();
 
       if ( !violations.isEmpty() ) {
-         throw new MojoFailureException( new ViolationFormatter().apply( violations ) );
+         throw new MojoFailureException( new ViolationFormatter().apply( new ViolationReport( violations ) ) );
       }
 
       LOG.info( "Aspect Models are valid." );

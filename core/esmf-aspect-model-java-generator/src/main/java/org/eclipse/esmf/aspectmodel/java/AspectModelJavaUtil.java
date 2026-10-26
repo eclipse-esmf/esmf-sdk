@@ -29,7 +29,15 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
 import javax.xml.datatype.DatatypeConstants;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
+import org.apache.commons.text.translate.UnicodeUnescaper;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.XSD;
 
 import org.eclipse.esmf.aspectmodel.VersionInfo;
 import org.eclipse.esmf.aspectmodel.generator.exception.CodeGenerationException;
@@ -52,19 +60,15 @@ import org.eclipse.esmf.metamodel.characteristic.Quantifiable;
 import org.eclipse.esmf.metamodel.characteristic.State;
 import org.eclipse.esmf.metamodel.characteristic.Trait;
 import org.eclipse.esmf.metamodel.datatype.LangString;
+import org.eclipse.esmf.metamodel.datatype.RdfDatatypeUris;
 import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Converter;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.StringEscapeUtils;
-import org.apache.commons.text.translate.UnicodeUnescaper;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.XSD;
+
+import jakarta.validation.Valid;
 
 public class AspectModelJavaUtil {
 
@@ -305,9 +309,18 @@ public class AspectModelJavaUtil {
 
    private static Optional<String> buildConstraintForCollectionElements( final Collection collection,
          final JavaCodeGenerationConfig codeGenerationConfig ) {
-      return collection.getElementCharacteristic()
+      final Set<String> constraints = new LinkedHashSet<>();
+      collection.getElementCharacteristic()
             .filter( elementCharacteristic -> elementCharacteristic.is( Trait.class ) )
-            .map( elementCharacteristic -> buildConstraintsForCharacteristic( (Trait) elementCharacteristic, codeGenerationConfig ) );
+            .map( elementCharacteristic -> buildConstraintsForCharacteristic( (Trait) elementCharacteristic, codeGenerationConfig ) )
+            .ifPresent( constraints::add );
+
+      if ( collection.getDataType().filter( type -> type.is( Entity.class ) ).isPresent() ) {
+         codeGenerationConfig.importTracker().importExplicit( Valid.class );
+         constraints.add( "@Valid " );
+      }
+
+      return constraints.isEmpty() ? Optional.empty() : Optional.of( String.join( "", constraints ) );
    }
 
    public static String containerType( final Class<?> containerClass, final String elementType, final Optional<String> elementConstraint ) {
@@ -338,7 +351,7 @@ public class AspectModelJavaUtil {
 
          if ( actualDataType instanceof Scalar ) {
             final Resource typeResource = ResourceFactory.createResource( actualDataType.getUrn() );
-            if ( typeResource.getURI().equals( RDF.langString.getURI() ) ) {
+            if ( typeResource.getURI().equals( RdfDatatypeUris.LANG_STRING ) ) {
                importTracker.importExplicit( LangString.class );
                return "LangString";
             }
@@ -358,7 +371,7 @@ public class AspectModelJavaUtil {
       }
 
       final Resource typeResource = ResourceFactory.createResource( dataType.getUrn() );
-      if ( typeResource.getURI().equals( RDF.langString.getURI() ) ) {
+      if ( typeResource.getURI().equals( RdfDatatypeUris.LANG_STRING ) ) {
          return Map.class;
       }
       final Class<?> result = SammXsdType.getJavaTypeForMetaModelType( typeResource );
@@ -683,12 +696,10 @@ public class AspectModelJavaUtil {
    }
 
    public static String setterName( final Property property, final JavaCodeGenerationConfig codeGenerationConfig ) {
-      switch ( codeGenerationConfig.setterStyle() ) {
-         case FLUENT_COMPACT:
-            return StringUtils.uncapitalize( property.getPayloadName() );
-         default:
-            return "set" + StringUtils.capitalize( property.getPayloadName() );
-      }
+      return switch ( codeGenerationConfig.setterStyle() ) {
+         case FLUENT_COMPACT -> StringUtils.uncapitalize( property.getPayloadName() );
+         default -> "set" + StringUtils.capitalize( property.getPayloadName() );
+      };
    }
 
    public static String codeGeneratorName() {
@@ -702,7 +713,7 @@ public class AspectModelJavaUtil {
       codeGenerationConfig.importTracker().importExplicit( DatatypeConstants.class );
 
       // Enhanced pattern to match both Integer and Long valueOf calls
-      final Pattern pattern = java.util.regex.Pattern.compile(
+      final Pattern pattern = Pattern.compile(
             "(Integer|Long)\\s*\\.\\s*valueOf\\s*\\(\\s*matcher\\s*\\.\\s*group\\s*\\(\\s*(\\d+)\\s*\\)\\s*\\)"
       );
       final Matcher matcher = pattern.matcher( expression );

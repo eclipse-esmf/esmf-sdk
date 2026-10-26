@@ -25,12 +25,6 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.XSD;
-
 import org.eclipse.esmf.aspectmodel.generator.DocumentGenerationException;
 import org.eclipse.esmf.aspectmodel.generator.XsdToJsonTypeMapping;
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
@@ -62,14 +56,19 @@ import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
 import org.eclipse.esmf.metamodel.constraint.RegularExpressionConstraint;
 import org.eclipse.esmf.metamodel.datatype.CurieType;
 import org.eclipse.esmf.metamodel.datatype.LangString;
+import org.eclipse.esmf.metamodel.datatype.RdfDatatypeUris;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
-
 import io.vavr.control.Try;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.XSD;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.node.ArrayNode;
 import tools.jackson.databind.node.JsonNodeFactory;
@@ -268,6 +267,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
    public JsonNode visitProperty( final Property property, final ObjectNode context ) {
       final ObjectNode propertyNode = addDescription( FACTORY.objectNode(), property, config.locale() );
       addSammExtensionAttribute( propertyNode, property );
+      addExampleValue( propertyNode, property );
       final Characteristic characteristic = determineCharacteristic( property );
       final String referenceNodeName = getSchemaNameForModelElement( characteristic, property );
       if ( processedProperties.contains( property ) ) {
@@ -503,7 +503,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       }
 
       return switch ( getSchemaTypeForAspectType( typeResource ) ) {
-         case NUMBER -> getNumberNode( value.getValue() ).getOrElse( FACTORY.numberNode( 0 ) );
+         case NUMBER, INTEGER -> getNumberNode( value.getValue() ).getOrElse( FACTORY.numberNode( 0 ) );
          case STRING -> FACTORY.stringNode( value.getValue().toString() );
          case BOOLEAN -> FACTORY.booleanNode( (boolean) value.getValue() );
          default -> throw new DocumentGenerationException( "Could not convert value " + value + " to JSON" );
@@ -542,7 +542,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
 
    private JsonNode createEnumNodeWithScalarValues( final Enumeration enumeration, final Type type, final ObjectNode context ) {
       final ArrayNode valuesNode = FACTORY.arrayNode();
-      final ObjectNode enumNode = type.getUrn().equals( RDF.langString.getURI() )
+      final ObjectNode enumNode = type.getUrn().equals( RdfDatatypeUris.LANG_STRING )
             ? FACTORY.objectNode().put( "type", "object" )
             : (ObjectNode) type.accept( this, context );
       addSammExtensionAttribute( enumNode, enumeration );
@@ -657,6 +657,21 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       if ( !describedElement.isAnonymous() ) {
          node.put( AspectModelJsonSchemaGenerator.SAMM_EXTENSION, describedElement.urn().toString() );
       }
+   }
+
+   private void addExampleValue( final ObjectNode node, final Property property ) {
+      if ( !config.generateForOpenApi() ) {
+         return;
+      }
+      property.getExampleValue().ifPresent( exampleValue -> {
+         final JsonNode exampleNode = exampleValue.accept( this, node );
+         final boolean isCollection = property.getEffectiveCharacteristic()
+               .map( c -> c.is( Collection.class ) )
+               .orElse( false );
+         node.set( "example", isCollection
+               ? FACTORY.arrayNode().add( exampleNode )
+               : exampleNode );
+      } );
    }
 
    private ObjectNode generateRefOrWrappedRef( final ObjectNode propertyNode, final String referenceNodeName ) {

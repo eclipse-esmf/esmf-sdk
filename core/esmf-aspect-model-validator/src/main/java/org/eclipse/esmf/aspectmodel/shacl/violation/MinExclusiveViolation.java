@@ -27,7 +27,7 @@ import org.apache.jena.rdf.model.RDFNode;
  */
 public record MinExclusiveViolation(
       EvaluationContext context, Literal min, Literal actual
-) implements Violation {
+) implements ShaclViolation {
    public static final String ERROR_CODE = "ERR_MIN_EXCLUSIVE";
 
    @Override

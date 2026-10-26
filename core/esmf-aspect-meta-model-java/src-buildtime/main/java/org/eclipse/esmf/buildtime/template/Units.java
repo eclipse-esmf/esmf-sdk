@@ -14,6 +14,7 @@
 package org.eclipse.esmf.buildtime.template;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -50,6 +51,13 @@ public class Units {
     */
    public AspectModelFile getSourceFile() {
       return MetaModelFile.UNITS;
+   }
+
+   public static Collection<Unit> getUnits() {
+      if ( UNITS_BY_NAME.isEmpty() ) {
+         fromName( "" );
+      }
+      return Collections.unmodifiableCollection( UNITS_BY_NAME.values() );
    }
 
    /**

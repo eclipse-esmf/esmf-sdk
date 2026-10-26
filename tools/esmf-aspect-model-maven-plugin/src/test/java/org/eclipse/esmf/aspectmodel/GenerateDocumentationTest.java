@@ -39,7 +39,7 @@ public class GenerateDocumentationTest extends AspectModelMojoTest {
    public void testGenerateDocumentationInvalidAspectModel( final GenerateDocumentation generateDocumentation ) {
       assertThatCode( generateDocumentation::execute )
             .isInstanceOf( MojoExecutionException.class )
-            .hasMessageContaining( "Error at line 17 column 3" );
+            .hasMessageContaining( "Error at line 17 column 4" );
       assertThat( generatedFilePath( "Aspect_en.html" ) ).doesNotExist();
    }
 }

@@ -16,12 +16,11 @@ package org.eclipse.esmf.aspectmodel.edit.change;
 import java.net.URI;
 import java.util.Map;
 
-import org.eclipse.esmf.aspectmodel.AspectModelFile;
-import org.eclipse.esmf.aspectmodel.edit.Change;
-import org.eclipse.esmf.aspectmodel.edit.ModelChangeException;
-
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+
+import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.edit.Change;
 
 /**
  * RDF-level refactoring operation: Change RDF prefixes in an Aspect Model file
@@ -32,14 +31,12 @@ public class ChangeRdfPrefixes extends EditAspectModel {
    private final Map<String, String> removePrefixes;
 
    public ChangeRdfPrefixes( final AspectModelFile targetFile, final Map<String, String> addPrefixes ) {
-      this( targetFile.sourceLocation().orElseThrow( () -> new ModelChangeException( "Can add prefixes only to named file" ) ),
-            addPrefixes );
+      this( targetFile.sourceUri(), addPrefixes );
    }
 
    public ChangeRdfPrefixes( final AspectModelFile targetFile, final Map<String, String> addPrefixes,
          final Map<String, String> removePrefixes ) {
-      this( targetFile.sourceLocation().orElseThrow( () -> new ModelChangeException( "Can add prefixes only to named file" ) ), addPrefixes,
-            removePrefixes );
+      this( targetFile.sourceUri(), addPrefixes, removePrefixes );
    }
 
    public ChangeRdfPrefixes( final URI targetLocation, final Map<String, String> addPrefixes ) {
@@ -55,7 +52,7 @@ public class ChangeRdfPrefixes extends EditAspectModel {
 
    @Override
    protected ModelChanges calculateChangesForFile( final AspectModelFile aspectModelFile ) {
-      if ( !aspectModelFile.sourceLocation().map( location -> location.equals( targetLocation ) ).orElse( false ) ) {
+      if ( !aspectModelFile.sourceUri().equals( targetLocation ) ) {
          return ModelChanges.NONE;
       }
 

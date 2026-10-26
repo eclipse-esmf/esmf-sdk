@@ -25,12 +25,6 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
-import org.eclipse.esmf.aspectmodel.validation.CycleViolation;
-import org.eclipse.esmf.aspectmodel.validation.RdfBasedValidator;
-import org.eclipse.esmf.metamodel.vocabulary.SAMM;
-import org.eclipse.esmf.metamodel.vocabulary.SammNs;
-
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionDatasetBuilder;
@@ -44,6 +38,13 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.vocabulary.RDF;
 
+import org.eclipse.esmf.aspectmodel.Violation;
+import org.eclipse.esmf.aspectmodel.ViolationReport;
+import org.eclipse.esmf.aspectmodel.validation.CycleViolation;
+import org.eclipse.esmf.aspectmodel.validation.RdfBasedValidator;
+import org.eclipse.esmf.metamodel.vocabulary.SAMM;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
+
 /**
  * Cycle detector for SAMM models. <br/>
  * Because of the limitations of the property paths in SPARQL queries, it is impossible to realize
@@ -53,7 +54,7 @@ import org.apache.jena.vocabulary.RDF;
  * So a depth-first traversal of the "resolved" (via Characteristics/Entities etc.) property
  * references is able to deliver all cycles present in the model.
  */
-public class ModelCycleDetector implements RdfBasedValidator<Violation, List<Violation>> {
+public class ModelCycleDetector implements RdfBasedValidator {
    final Set<Resource> discovered = new LinkedHashSet<>();
    final Set<Resource> discoveredOptionals = new HashSet<>();
    final Set<Resource> finished = new HashSet<>();
@@ -66,7 +67,7 @@ public class ModelCycleDetector implements RdfBasedValidator<Violation, List<Vio
    final List<Violation> cycleDetectionReport = new ArrayList<>();
 
    @Override
-   public List<Violation> validateModel( final Model rawModel ) {
+   public ViolationReport validateModel( final Model rawModel ) {
       discovered.clear();
       discoveredOptionals.clear();
       finished.clear();
@@ -89,7 +90,7 @@ public class ModelCycleDetector implements RdfBasedValidator<Violation, List<Vio
          }
       }
 
-      return cycleDetectionReport;
+      return new ViolationReport( cycleDetectionReport );
    }
 
    private void depthFirstTraversal( final Resource currentProperty, final BiConsumer<Resource, Set<Resource>> cycleHandler ) {

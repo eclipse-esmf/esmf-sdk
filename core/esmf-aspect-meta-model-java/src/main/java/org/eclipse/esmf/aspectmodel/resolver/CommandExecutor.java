@@ -30,7 +30,7 @@ import org.eclipse.esmf.util.process.ProcessLauncher;
 public class CommandExecutor {
    public static String executeCommand( final String command ) {
       final List<String> parts = Arrays.asList( command.split( " " ) );
-      final String executableOrJar = parts.get( 0 );
+      final String executableOrJar = parts.getFirst();
       final ProcessLauncher<Process> processLauncher = executableOrJar.toLowerCase().endsWith( ".jar" )
             ? new ExecutableJarLauncher( new File( executableOrJar ) )
             : new BinaryLauncher( new File( executableOrJar ) );

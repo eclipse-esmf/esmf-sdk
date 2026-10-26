@@ -26,7 +26,7 @@ import org.apache.jena.rdf.model.RDFNode;
  */
 public record MinLengthViolation(
       EvaluationContext context, int min, int actual
-) implements Violation {
+) implements ShaclViolation {
    public static final String ERROR_CODE = "ERR_MIN_LENGTH";
 
    @Override

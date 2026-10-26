@@ -54,7 +54,7 @@ public class ValidateTest extends AspectModelMojoTest {
    public void testValidateInvalidAspectModel( final Validate validate ) {
       assertThatCode( validate::execute )
             .isInstanceOf( MojoExecutionException.class )
-            .hasMessageContaining( "Error at line 17 column 3" );
+            .hasMessageContaining( "Error at line 17 column 4" );
    }
 
    @Test

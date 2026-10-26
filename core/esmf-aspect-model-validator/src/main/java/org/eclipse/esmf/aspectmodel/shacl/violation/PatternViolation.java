@@ -26,7 +26,7 @@ import org.apache.jena.rdf.model.RDFNode;
  */
 public record PatternViolation(
       EvaluationContext context, String actual, String pattern
-) implements Violation {
+) implements ShaclViolation {
    public static final String ERROR_CODE = "ERR_PATTERN";
 
    @Override

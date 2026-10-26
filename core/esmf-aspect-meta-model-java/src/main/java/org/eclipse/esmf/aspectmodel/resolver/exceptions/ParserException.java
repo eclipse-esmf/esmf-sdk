@@ -21,8 +21,8 @@ import java.util.regex.Pattern;
 import org.apache.jena.riot.RiotException;
 
 /**
- * Represents the context information of a parser (syntax) error: The location, source document and
- * description
+ * Represents the context information of a Jena parser (syntax) error: The location, source document
+ * and description
  */
 public class ParserException extends RuntimeException {
    /**

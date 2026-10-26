@@ -19,15 +19,15 @@ import java.net.URI;
 import java.util.List;
 import java.util.function.Predicate;
 
-import org.eclipse.esmf.aspectmodel.AspectModelFile;
-import org.eclipse.esmf.metamodel.ModelElement;
-import org.eclipse.esmf.metamodel.Namespace;
-
 import org.apache.jena.rdf.model.Model;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.AbstractUriAssert;
 import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.OptionalAssert;
+
+import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.metamodel.ModelElement;
+import org.eclipse.esmf.metamodel.Namespace;
 
 /**
  * Assert for {@link AspectModelFile}.
@@ -44,7 +44,7 @@ public class AspectModelFileAssert<SELF extends AspectModelFileAssert<SELF, ACTU
    }
 
    public SELF hasLocation( final URI location ) {
-      assertThat( actual.sourceLocation() ).isNotEmpty().contains( location );
+      assertThat( actual.sourceUri() ).isEqualTo( location );
       return myself;
    }
 
@@ -53,14 +53,12 @@ public class AspectModelFileAssert<SELF extends AspectModelFileAssert<SELF, ACTU
    }
 
    public SELF hasLocationMatching( final Predicate<URI> locationPredicate ) {
-      assertThat( actual.sourceLocation() ).isNotEmpty();
-      assertThat( locationPredicate.test( actual.sourceLocation().orElseThrow() ) ).isTrue();
+      assertThat( locationPredicate.test( actual.sourceUri() ) ).isTrue();
       return myself;
    }
 
    public AbstractUriAssert<?> location() {
-      assertThat( actual.sourceLocation() ).isNotEmpty();
-      return assertThat( actual.sourceLocation().orElseThrow() );
+      return assertThat( actual.sourceUri() );
    }
 
    public SELF hasHeaderComment( final List<String> headerComment ) {

@@ -27,7 +27,7 @@ import org.apache.jena.rdf.model.Resource;
  */
 public record ClassTypeViolation(
       EvaluationContext context, Resource allowedClass, Resource actualClass
-) implements Violation {
+) implements ShaclViolation {
    /**
     * The error code for this violation
     */

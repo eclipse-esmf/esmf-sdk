@@ -1,0 +1,50 @@
+<!--
+  ~ Copyright (c) 2026 Robert Bosch Manufacturing Solutions GmbH
+  ~
+  ~ See the AUTHORS file(s) distributed with this work for additional
+  ~ information regarding authorship.
+  ~
+  ~ This Source Code Form is subject to the terms of the Mozilla Public
+  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~ file, You can obtain one at https://mozilla.org/MPL/2.0/.
+  ~
+  ~ SPDX-License-Identifier: MPL-2.0
+  -->
+
+<aas:environment xmlns:aas="https://admin-shell.io/aas/3/0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="https://admin-shell.io/aas/3/0 AAS.xsd">
+   <aas:assetAdministrationShells>
+      <aas:assetAdministrationShell>
+         <aas:idShort>DateExampleShell</aas:idShort>
+         <aas:id>urn:samm:org.eclipse.esmf.test.date:1.0.0#Shell</aas:id>
+         <aas:assetInformation>
+            <aas:assetKind>Type</aas:assetKind>
+         </aas:assetInformation>
+         <aas:submodels>
+            <aas:reference>
+               <aas:type>ModelReference</aas:type>
+               <aas:keys>
+                  <aas:key>
+                     <aas:type>Submodel</aas:type>
+                     <aas:value>urn:samm:org.eclipse.esmf.test.date:1.0.0#DateExampleAspect</aas:value>
+                  </aas:key>
+               </aas:keys>
+            </aas:reference>
+         </aas:submodels>
+      </aas:assetAdministrationShell>
+   </aas:assetAdministrationShells>
+   <aas:submodels>
+      <aas:submodel>
+         <aas:idShort>DateExampleAspect</aas:idShort>
+         <aas:id>urn:samm:org.eclipse.esmf.test.date:1.0.0#DateExampleAspect</aas:id>
+         <aas:kind>Template</aas:kind>
+         <aas:submodelElements>
+            <aas:property>
+               <aas:idShort>DateOfManufacture</aas:idShort>
+               <aas:valueType>xs:date</aas:valueType>
+               <aas:value>2022-01-01</aas:value>
+            </aas:property>
+         </aas:submodelElements>
+      </aas:submodel>
+   </aas:submodels>
+</aas:environment>

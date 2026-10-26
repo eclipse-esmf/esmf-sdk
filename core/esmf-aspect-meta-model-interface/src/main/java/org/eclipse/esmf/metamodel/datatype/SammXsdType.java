@@ -16,10 +16,10 @@ package org.eclipse.esmf.metamodel.datatype;
 import static org.eclipse.esmf.aspectmodel.StreamUtil.asMap;
 
 import java.util.AbstractList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
@@ -30,8 +30,6 @@ import org.apache.jena.datatypes.TypeMapper;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.graph.impl.LiteralLabel;
 import org.apache.jena.rdf.model.Resource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The custom RDF type implementations that have deterministic and typed parsers and unparsers
@@ -41,8 +39,7 @@ import org.slf4j.LoggerFactory;
  */
 // the order of the variables is required because of the way they reference each other
 public abstract non-sealed class SammXsdType<T> extends XSDDatatype implements SammType<T> {
-   private static final Logger LOG = LoggerFactory.getLogger( SammXsdType.class );
-   protected static DatatypeFactory datatypeFactory;
+   private static volatile DatatypeFactory datatypeFactory;
    private final String uri;
 
    private static boolean checking = true;
@@ -62,6 +59,24 @@ public abstract non-sealed class SammXsdType<T> extends XSDDatatype implements S
    public abstract boolean isValid( final String lexicalForm );
 
    protected abstract T parseTypedValue( final String lexicalForm );
+
+   protected static DatatypeFactory datatypeFactory() {
+      DatatypeFactory local = datatypeFactory;
+      if ( local == null ) {
+         synchronized ( SammXsdType.class ) {
+            local = datatypeFactory;
+            if ( local == null ) {
+               try {
+                  local = DatatypeFactory.newInstance();
+               } catch ( final DatatypeConfigurationException exception ) {
+                  throw new IllegalStateException( "Could not instantiate DatatypeFactory", exception );
+               }
+               datatypeFactory = local;
+            }
+         }
+      }
+      return local;
+   }
 
    @Override
    public String getURI() {
@@ -85,8 +100,7 @@ public abstract non-sealed class SammXsdType<T> extends XSDDatatype implements S
                      SammType.BYTE, SammType.SHORT, SammType.INT, SammType.LONG, SammType.UNSIGNED_BYTE, SammType.UNSIGNED_SHORT,
                      SammType.UNSIGNED_INT, SammType.UNSIGNED_LONG, SammType.POSITIVE_INTEGER, SammType.NON_NEGATIVE_INTEGER,
                      SammType.NEGATIVE_INTEGER, SammType.NON_POSITIVE_INTEGER, SammType.HEX_BINARY, SammType.BASE64_BINARY,
-                     SammType.ANY_URI,
-                     SammType.LANG_STRING, SammType.CURIE
+                     SammType.ANY_URI, SammType.LANG_STRING, SammType.CURIE
                );
                allTypesCache = local;
             }
@@ -111,7 +125,7 @@ public abstract non-sealed class SammXsdType<T> extends XSDDatatype implements S
       }
 
       @Override
-      public java.util.Iterator<SammType<?>> iterator() {
+      public Iterator<SammType<?>> iterator() {
          return allTypesInternal().iterator();
       }
    };
@@ -198,12 +212,7 @@ public abstract non-sealed class SammXsdType<T> extends XSDDatatype implements S
     */
    public static synchronized void setupTypeMapping() {
       if ( !setupPerformed ) {
-         try {
-            datatypeFactory = DatatypeFactory.newInstance();
-         } catch ( final DatatypeConfigurationException exception ) {
-            LOG.error( "Could not instantiate DatatypeFactory", exception );
-         }
-
+         datatypeFactory();
          final TypeMapper typeMapper = TypeMapper.getInstance();
          ALL_TYPES.forEach( typeMapper::registerDatatype );
          setupPerformed = true;
@@ -213,16 +222,27 @@ public abstract non-sealed class SammXsdType<T> extends XSDDatatype implements S
    /**
     * Returns the Java class corresponding to a XSD type in a given meta model version.
     *
+    * @param typeUri the datatype URI
+    * @return the java class
+    */
+   public static Class<?> getJavaTypeForMetaModelType( final String typeUri ) {
+      return ALL_TYPES
+            .stream()
+            .filter( xsdType -> xsdType.getURI().equals( typeUri ) )
+            .map( RDFDatatype::getJavaClass )
+            .findAny()
+            .orElseThrow( () -> new IllegalStateException( "Invalid data type " + typeUri + " found in model." ) );
+
+   }
+
+   /**
+    * Returns the Java class corresponding to a XSD type in a given meta model version.
+    *
     * @param type the resource of the data type
     * @return the java class
     */
    public static Class<?> getJavaTypeForMetaModelType( final Resource type ) {
-      return ALL_TYPES
-            .stream()
-            .filter( xsdType -> xsdType.getURI().equals( type.getURI() ) )
-            .map( RDFDatatype::getJavaClass )
-            .findAny()
-            .orElseThrow( () -> new IllegalStateException( "Invalid data type " + type + " found in model." ) );
+      return getJavaTypeForMetaModelType( type.getURI() );
    }
 
    @Override

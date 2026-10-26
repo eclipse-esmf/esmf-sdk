@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -200,7 +199,7 @@ public class DownloadZig extends ZigContext {
             validateZigReleaseSignature( minisignExe, zigReleaseArchive );
             // exit the loop if we reach this point without any exception
             break;
-         } catch ( Exception e ) {
+         } catch ( final Exception e ) {
             System.out.println( e.getMessage() );
             try {
                // Cache should be removed if it can't be downloaded or its signature is invalid

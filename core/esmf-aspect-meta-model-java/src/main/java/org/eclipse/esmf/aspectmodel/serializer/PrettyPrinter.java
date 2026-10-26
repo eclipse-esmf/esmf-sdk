@@ -27,11 +27,11 @@ import java.util.stream.Collectors;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.RdfUtil;
-import org.eclipse.esmf.aspectmodel.resolver.parser.SmartToken;
 import org.eclipse.esmf.aspectmodel.resolver.parser.TokenRegistry;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.buildtime.template.VersionInfo;
 import org.eclipse.esmf.metamodel.ModelElement;
+import org.eclipse.esmf.metamodel.datatype.RdfDatatypeUris;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import com.google.common.collect.ImmutableList;
@@ -108,7 +108,7 @@ public class PrettyPrinter {
          if ( iterator.hasNext() ) {
             final Statement statement = iterator.next();
             return TokenRegistry.getToken( statement.getSubject().asNode() )
-                  .map( SmartToken::line )
+                  .map( token -> token.location().fromLine() )
                   .orElseGet( () -> {
                      // This happens when the model was not loaded using the esmf-sdk customized RDF parser, e.g.
                      // for programmatically created models.
@@ -261,7 +261,7 @@ public class PrettyPrinter {
          if ( isValueList ) {
             builder.append( INDENT );
          }
-         builder.append( INDENT.repeat( nestedIndendationLevel ) );
+         builder.repeat( INDENT, nestedIndendationLevel );
          builder.append( serialize( listNode, nestedIndendationLevel ) );
          i++;
          if ( i < listContent.size() ) {
@@ -269,7 +269,7 @@ public class PrettyPrinter {
          }
       }
       builder.append( "\n" );
-      builder.append( INDENT.repeat( indentationLevel + 1 ) );
+      builder.repeat( INDENT, indentationLevel + 1 );
       builder.append( ")" );
       return builder.toString();
    }
@@ -353,7 +353,7 @@ public class PrettyPrinter {
          return value;
       }
 
-      if ( type.getURI().equals( RDF.langString.getURI() ) ) {
+      if ( type.getURI().equals( RdfDatatypeUris.LANG_STRING ) ) {
          return quoteValue( value ) + "@" + literal.getLanguage();
       }
 

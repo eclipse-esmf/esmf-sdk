@@ -17,8 +17,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
-import java.util.Collection;
 
+import org.eclipse.esmf.aspectmodel.ViolationReport;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.ClasspathStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
@@ -27,6 +27,7 @@ import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.samm.KnownVersion;
 
 import com.google.common.io.Resources;
+
 import io.vavr.control.Either;
 import io.vavr.control.Try;
 import tools.jackson.databind.JsonNode;
@@ -59,8 +60,7 @@ public class TestResources {
       return new AspectModelLoader( testModelsResolutionStrategy ).load( inputStream.inputStream(), inputStream.location() );
    }
 
-   public static <P, C extends Collection<P>> Either<C, AspectModel> loadWithValidation( final InvalidTestAspect model,
-         final Validator<P, C> validator ) {
+   public static Either<ViolationReport, AspectModel> loadWithValidation( final InvalidTestAspect model, final Validator validator ) {
       final IdentifiedInputStream inputStream = inputStream( model );
       final ResolutionStrategy testModelsResolutionStrategy = new ClasspathStrategy(
             "invalid/" + KnownVersion.getLatest().toString().toLowerCase() );
@@ -75,8 +75,7 @@ public class TestResources {
       return new AspectModelLoader( testModelsResolutionStrategy ).load( inputStream.inputStream(), inputStream.location() );
    }
 
-   public static <P, C extends Collection<P>> Either<C, AspectModel> loadWithValidation( final TestModel model,
-         final Validator<P, C> validator ) {
+   public static Either<ViolationReport, AspectModel> loadWithValidation( final TestModel model, final Validator validator ) {
       final ResolutionStrategy testModelsResolutionStrategy = new ClasspathStrategy( "valid" );
       final IdentifiedInputStream inputStream = inputStream( model );
       return new AspectModelLoader( testModelsResolutionStrategy )

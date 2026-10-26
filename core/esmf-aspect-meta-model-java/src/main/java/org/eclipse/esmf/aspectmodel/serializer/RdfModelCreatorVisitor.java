@@ -67,6 +67,7 @@ import org.eclipse.esmf.metamodel.constraint.LocaleConstraint;
 import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
 import org.eclipse.esmf.metamodel.constraint.RegularExpressionConstraint;
 import org.eclipse.esmf.metamodel.datatype.LangString;
+import org.eclipse.esmf.metamodel.datatype.RdfDatatypeUris;
 import org.eclipse.esmf.metamodel.datatype.SammType;
 import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
@@ -538,7 +539,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       final Model model = ModelFactory.createDefaultModel();
       final Type type = value.getType();
       final Literal literal;
-      if ( type.getUrn().equals( RDF.langString.getURI() ) ) {
+      if ( type.getUrn().equals( RdfDatatypeUris.LANG_STRING ) ) {
          final LangString langString = (LangString) value.getValue();
          literal = ResourceFactory.createLangLiteral( langString.getValue(), langString.getLanguageTag().toLanguageTag() );
       } else {

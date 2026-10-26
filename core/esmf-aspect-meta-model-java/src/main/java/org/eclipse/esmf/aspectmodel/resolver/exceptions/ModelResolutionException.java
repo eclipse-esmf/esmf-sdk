@@ -14,42 +14,18 @@
 package org.eclipse.esmf.aspectmodel.resolver.exceptions;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.aspectmodel.resolver.ModelResolutionViolation;
 
 public class ModelResolutionException extends RuntimeException {
-   public record LoadingFailure(
-         Optional<AspectModelUrn> element,
-         String location,
-         String description,
-         Optional<Throwable> cause
-   ) {
-      public LoadingFailure( final String location, final String description ) {
-         this( Optional.empty(), location, description, Optional.empty() );
-      }
+   private final List<ModelResolutionViolation> checkedLocations;
 
-      public LoadingFailure( final String location, final String description, final Throwable cause ) {
-         this( Optional.empty(), location, description, Optional.of( cause ) );
-      }
-
-      public LoadingFailure( final AspectModelUrn element, final String location, final String description ) {
-         this( Optional.of( element ), location, description, Optional.empty() );
-      }
-
-      public LoadingFailure( final AspectModelUrn element, final String location, final String description, final Throwable cause ) {
-         this( Optional.of( element ), location, description, Optional.of( cause ) );
-      }
-   }
-
-   private final List<LoadingFailure> checkedLocations;
-
-   public ModelResolutionException( final LoadingFailure checkedLocation ) {
+   public ModelResolutionException( final ModelResolutionViolation checkedLocation ) {
       this( List.of( checkedLocation ) );
    }
 
-   public ModelResolutionException( final List<LoadingFailure> checkedLocations ) {
+   public ModelResolutionException( final List<ModelResolutionViolation> checkedLocations ) {
       this.checkedLocations = checkedLocations;
    }
 
@@ -63,7 +39,7 @@ public class ModelResolutionException extends RuntimeException {
       checkedLocations = List.of();
    }
 
-   public List<LoadingFailure> getCheckedLocations() {
+   public List<ModelResolutionViolation> getCheckedLocations() {
       return checkedLocations;
    }
 
@@ -75,7 +51,6 @@ public class ModelResolutionException extends RuntimeException {
          }
          return super.getMessage();
       }
-      return getCheckedLocations().stream().map( failure -> "%s (%s)".formatted( failure.description(), failure.location() ) )
-            .collect( Collectors.joining( "; " ) );
+      return getCheckedLocations().stream().map( ModelResolutionViolation::message ).collect( Collectors.joining( "; " ) );
    }
 }

@@ -18,9 +18,9 @@ import java.util.List;
 import java.util.function.Function;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.ViolationReport;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
-import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.AspectModel;
@@ -77,7 +77,7 @@ public class AspectModelUrnInputHandler extends AbstractInputHandler {
       final boolean urnDenotesNamespace = urn.getName().isEmpty();
       final Function<AspectModelLoader, AspectModel> loaderFunction;
       if ( validate ) {
-         loaderFunction = ( (Function<AspectModelLoader, Either<List<Violation>, AspectModel>>) loader -> ( urnDenotesNamespace
+         loaderFunction = ( (Function<AspectModelLoader, Either<ViolationReport, AspectModel>>) loader -> ( urnDenotesNamespace
                ? loader.withValidation( validator ).loadNamespace( urn )
                : loader.withValidation( validator ).load( urn ) ) )
                      .andThen( this::getAspectModelOrPrintValidationReport );

@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.apache.jena.rdf.model.Model;
+
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
@@ -39,8 +41,6 @@ import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
 import org.eclipse.esmf.metamodel.vocabulary.SimpleRdfNamespace;
-
-import org.apache.jena.rdf.model.Model;
 
 /**
  * Functions to write Aspect Models and Aspect Model files to Strings or their respective source
@@ -82,11 +82,7 @@ public class AspectSerializer {
     *         no URL
     */
    public URL aspectModelFileUrl( final AspectModelFile aspectModelFile ) {
-      if ( aspectModelFile.sourceLocation().isEmpty() ) {
-         throw new SerializationException( "Aspect Model file has no source location" );
-      }
-
-      final URI uri = aspectModelFile.sourceLocation().get();
+      final URI uri = aspectModelFile.sourceUri();
       final URL url;
       try {
          url = uri.toURL();
@@ -111,9 +107,7 @@ public class AspectSerializer {
       }
 
       final String content = aspectModelFileToString( aspectModelFile );
-      try ( final OutputStream out = protocolHandler.apply( aspectModelFile.sourceLocation()
-            .orElseThrow( () -> new SerializationException( "Can not write Aspect Model File: No source location is set"
-                  + aspectModelFile.filename().map( name -> ": " + name ).orElse( "" ) ) ) ) ) {
+      try ( final OutputStream out = protocolHandler.apply( aspectModelFile.sourceUri() ) ) {
          out.write( content.getBytes( StandardCharsets.UTF_8 ) );
       } catch ( final IOException exception ) {
          throw new SerializationException( exception );
@@ -153,7 +147,10 @@ public class AspectSerializer {
       RdfUtil.cleanPrefixes( rdfModel );
       RdfUtil.cleanRedundantTypeAssertions( rdfModel );
       final AspectModel aspectModel = new AspectModelLoader().loadAspectModelFiles(
-            List.of( RawAspectModelFileBuilder.builder().sourceModel( rdfModel ).build() ) );
+            List.of( RawAspectModelFileBuilder.builder()
+                  .sourceModel( rdfModel )
+                  .sourceUri( URI.create( element.urn().toString() ) )
+                  .build() ) );
       final AspectModelFile newSourceFile = aspectModel.files().getFirst();
       return aspectModelFileToString( newSourceFile );
    }

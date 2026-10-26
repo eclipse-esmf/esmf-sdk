@@ -19,9 +19,11 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Base64;
 import java.util.HexFormat;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Stream;
@@ -30,6 +32,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.eclipse.esmf.aspectmodel.generator.Range;
+import org.eclipse.esmf.aspectmodel.generator.json.JsonPayloadGenerator;
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.Constraint;
@@ -59,11 +62,16 @@ import com.github.curiousoddman.rgxgen.RgxGen;
  * XMLGregorianCalendar, etc.) that can be written directly into Parquet groups.
  * </p>
  *
- * @see org.eclipse.esmf.aspectmodel.generator.json.JsonPayloadGenerator
+ * @see JsonPayloadGenerator
  */
 public class ParquetExampleValueGenerator implements AspectVisitor<Object, ParquetExampleValueGenerator.Context> {
 
+   private static final long RANDOM_TIMESTAMP_UPPER_BOUND = LocalDateTime.of( 2100, 1, 1, 0, 0 )
+         .toEpochSecond( ZoneOffset.UTC );
+   private static final LocalDateTime DEFAULT_TIMESTAMP = LocalDateTime.of( 1970, 1, 1, 0, 0, 0 );
    private final Random random;
+   private final boolean currentTimestamp;
+   private final boolean randomTimestamp;
 
    /**
     * Traversal context carrying constraints that apply to the current position.
@@ -82,8 +90,21 @@ public class ParquetExampleValueGenerator implements AspectVisitor<Object, Parqu
       }
    }
 
-   public ParquetExampleValueGenerator( final Random random ) {
+   public ParquetExampleValueGenerator( final Random random, final boolean currentTimestamp, final boolean randomTimestamp ) {
       this.random = random;
+      this.currentTimestamp = currentTimestamp;
+      this.randomTimestamp = randomTimestamp;
+   }
+
+   private LocalDateTime getReferenceDateTime() {
+      if ( randomTimestamp ) {
+         final long epochSecond = random.nextLong( RANDOM_TIMESTAMP_UPPER_BOUND );
+         return LocalDateTime.ofEpochSecond( epochSecond, 0, ZoneOffset.UTC );
+      }
+      if ( currentTimestamp ) {
+         return LocalDateTime.now();
+      }
+      return DEFAULT_TIMESTAMP;
    }
 
    @Override
@@ -191,9 +212,9 @@ public class ParquetExampleValueGenerator implements AspectVisitor<Object, Parqu
 
    @Override
    public Object visitXsdDate( final SammType.XsdDate date, final Context context ) {
-      final LocalDateTime now = LocalDateTime.now();
+      final LocalDateTime reference = getReferenceDateTime();
       final XMLGregorianCalendar calendar = DatatypeFactory.newDefaultInstance()
-            .newXMLGregorianCalendar( now.getYear(), now.getMonthValue(), now.getDayOfMonth(),
+            .newXMLGregorianCalendar( reference.getYear(), reference.getMonthValue(), reference.getDayOfMonth(),
                   DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED,
                   DatatypeConstants.FIELD_UNDEFINED, 0 );
       return calendar.toXMLFormat();
@@ -201,20 +222,20 @@ public class ParquetExampleValueGenerator implements AspectVisitor<Object, Parqu
 
    @Override
    public Object visitXsdTime( final SammType.XsdTime time, final Context context ) {
-      final LocalDateTime now = LocalDateTime.now();
+      final LocalDateTime reference = getReferenceDateTime();
       final XMLGregorianCalendar calendar = DatatypeFactory.newDefaultInstance()
             .newXMLGregorianCalendar( DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED,
                   DatatypeConstants.FIELD_UNDEFINED,
-                  now.getHour(), now.getMinute(), now.getSecond(), 0, 0 );
+                  reference.getHour(), reference.getMinute(), reference.getSecond(), 0, 0 );
       return calendar.toXMLFormat();
    }
 
    @Override
    public Object visitXsdDateTime( final SammType.XsdDateTime dateTime, final Context context ) {
-      final LocalDateTime now = LocalDateTime.now();
+      final LocalDateTime reference = getReferenceDateTime();
       return DatatypeFactory.newDefaultInstance()
-            .newXMLGregorianCalendar( now.getYear(), now.getMonthValue(), now.getDayOfMonth(),
-                  now.getHour(), now.getMinute(), now.getSecond(), 0, 0 );
+            .newXMLGregorianCalendar( reference.getYear(), reference.getMonthValue(), reference.getDayOfMonth(),
+                  reference.getHour(), reference.getMinute(), reference.getSecond(), 0, 0 );
    }
 
    @Override
@@ -224,29 +245,29 @@ public class ParquetExampleValueGenerator implements AspectVisitor<Object, Parqu
 
    @Override
    public Object visitXsdGYear( final SammType.XsdGYear gYear, final Context context ) {
-      return "" + LocalDateTime.now().getYear();
+      return "" + getReferenceDateTime().getYear();
    }
 
    @Override
    public Object visitXsdGMonth( final SammType.XsdGMonth gMonth, final Context context ) {
-      return "--%02d".formatted( LocalDateTime.now().getMonthValue() );
+      return "--%02d".formatted( getReferenceDateTime().getMonthValue() );
    }
 
    @Override
    public Object visitXsdGDay( final SammType.XsdGDay gDay, final Context context ) {
-      return "---%02d".formatted( LocalDateTime.now().getDayOfMonth() );
+      return "---%02d".formatted( getReferenceDateTime().getDayOfMonth() );
    }
 
    @Override
    public Object visitXsdGYearMonth( final SammType.XsdGYearMonth gYearMonth, final Context context ) {
-      final LocalDateTime now = LocalDateTime.now();
-      return "%04d-%02d".formatted( now.getYear(), now.getMonthValue() );
+      final LocalDateTime reference = getReferenceDateTime();
+      return "%04d-%02d".formatted( reference.getYear(), reference.getMonthValue() );
    }
 
    @Override
    public Object visitXsdGMonthDay( final SammType.XsdMonthDay monthDay, final Context context ) {
-      final LocalDateTime now = LocalDateTime.now();
-      return "--%02d-%02d".formatted( now.getMonthValue(), now.getDayOfMonth() );
+      final LocalDateTime reference = getReferenceDateTime();
+      return "--%02d-%02d".formatted( reference.getMonthValue(), reference.getDayOfMonth() );
    }
 
    @Override
@@ -397,7 +418,7 @@ public class ParquetExampleValueGenerator implements AspectVisitor<Object, Parqu
    @Override
    public Object visitRdfLangString( final SammType.RdfLangString langString, final Context context ) {
       final String languageTag = randomValueOf( "en", "de" );
-      return java.util.Map.of( languageTag, randomString( 5, 20 ) );
+      return Map.of( languageTag, randomString( 5, 20 ) );
    }
 
    BigDecimal randomFloatingPointNumber( final BigDecimal start, final BigDecimal end,
@@ -465,7 +486,7 @@ public class ParquetExampleValueGenerator implements AspectVisitor<Object, Parqu
 
    @SuppressWarnings( "FinalMethod" )
    @SafeVarargs
-   private final <T> T randomValueOf( final T... values ) {
+   private <T> T randomValueOf( final T... values ) {
       if ( values.length == 0 ) {
          throw new IndexOutOfBoundsException();
       }

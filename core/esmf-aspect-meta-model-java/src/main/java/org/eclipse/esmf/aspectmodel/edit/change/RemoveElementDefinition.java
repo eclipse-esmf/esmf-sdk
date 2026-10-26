@@ -15,17 +15,16 @@ package org.eclipse.esmf.aspectmodel.edit.change;
 
 import java.net.URI;
 
-import org.eclipse.esmf.aspectmodel.AspectModelFile;
-import org.eclipse.esmf.aspectmodel.RdfUtil;
-import org.eclipse.esmf.aspectmodel.edit.Change;
-import org.eclipse.esmf.aspectmodel.edit.ModelChangeException;
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
+
+import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.RdfUtil;
+import org.eclipse.esmf.aspectmodel.edit.Change;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 /**
  * Removes the definition of a model element from an AspectModelFile. The definition is given as a
@@ -47,13 +46,12 @@ public class RemoveElementDefinition extends EditAspectModel {
    }
 
    public RemoveElementDefinition( final AspectModelUrn elementUrn, final AspectModelFile targetFile ) {
-      this( elementUrn, targetFile.sourceLocation()
-            .orElseThrow( () -> new ModelChangeException( "Can remove element defintion only from named file" ) ) );
+      this( elementUrn, targetFile.sourceUri() );
    }
 
    @Override
    protected ModelChanges calculateChangesForFile( final AspectModelFile aspectModelFile ) {
-      if ( targetLocation != null && !aspectModelFile.sourceLocation().map( targetLocation::equals ).orElse( false ) ) {
+      if ( targetLocation != null && !aspectModelFile.sourceUri().equals( targetLocation ) ) {
          return ModelChanges.NONE;
       }
 
@@ -74,7 +72,7 @@ public class RemoveElementDefinition extends EditAspectModel {
       return new EditAspectModel() {
          @Override
          protected ModelChanges calculateChangesForFile( final AspectModelFile aspectModelFile ) {
-            return aspectModelFile.sourceLocation().equals( fileWithOriginalDefinition.sourceLocation() )
+            return aspectModelFile.sourceUri().equals( fileWithOriginalDefinition.sourceUri() )
                   ? new ModelChanges( "Add back definition of " + elementUrn,
                         definition, ModelFactory.createDefaultModel() )
                   : ModelChanges.NONE;

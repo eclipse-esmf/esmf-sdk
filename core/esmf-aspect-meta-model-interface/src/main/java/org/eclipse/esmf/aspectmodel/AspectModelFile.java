@@ -17,12 +17,12 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.jena.rdf.model.Model;
+
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.ModelElementGroup;
 import org.eclipse.esmf.metamodel.Namespace;
-
-import org.apache.jena.rdf.model.Model;
 
 /**
  * An AspectModelFile is the abstraction of one "code unit". When its source location is in a file
@@ -74,17 +74,30 @@ public interface AspectModelFile extends ModelElementGroup {
     * other words, where was this AspectModelFile loaded from.
     *
     * @return the source location
+    * @deprecated Use {@link #sourceUri()} instead
     */
-   Optional<URI> sourceLocation();
+   @Deprecated( forRemoval = true )
+   default Optional<URI> sourceLocation() {
+      return Optional.of( sourceUri() );
+   }
 
    /**
-    * Convenience method to help printing the location of a file: It returns its source location URI if
-    * present, or "unknown file" if the file does not have a source location.
+    * The URI that denominates the source location. It can be a file:// or https:// URL,
+    * but it could for example also be an Aspect Model URN, if it refers to a file that is part of the
+    * SAMM specification. Generally, this should be the physical location, not a logical identifier, in
+    * other words, where was this AspectModelFile loaded from.
     *
-    * @return the human readable source location
+    * @return the source location
+    */
+   URI sourceUri();
+
+   /**
+    * Convenience method to help printing the location of a file: It returns its source location URI
+    *
+    * @return the human-readable source location
     */
    default String humanReadableLocation() {
-      return sourceLocation().map( URI::toString ).orElse( "(unknown file)" );
+      return sourceUri().toString();
    }
 
    /**
@@ -94,17 +107,15 @@ public interface AspectModelFile extends ModelElementGroup {
     * @return the local Aspect Model file
     */
    default Optional<String> filename() {
-      return sourceLocation().flatMap( uri -> {
-         final String path = uri.toString();
-         if ( !path.contains( "/" ) ) {
-            return Optional.empty();
-         }
-         final String filename = path.substring( path.lastIndexOf( "/" ) + 1 );
-         if ( filename.endsWith( ".ttl" ) && filename.length() >= 5 ) {
-            return Optional.of( filename );
-         }
+      final String path = sourceUri().toString();
+      if ( !path.contains( "/" ) ) {
          return Optional.empty();
-      } );
+      }
+      final String filename = path.substring( path.lastIndexOf( "/" ) + 1 );
+      if ( filename.endsWith( ".ttl" ) && filename.length() >= 5 ) {
+         return Optional.of( filename );
+      }
+      return Optional.empty();
    }
 
    /**

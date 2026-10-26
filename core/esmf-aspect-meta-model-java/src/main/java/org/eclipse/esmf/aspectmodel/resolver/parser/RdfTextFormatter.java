@@ -53,4 +53,8 @@ public interface RdfTextFormatter {
    default String formatError( final String text ) {
       return text;
    }
+
+   default String formatHyperlink( final String text, final String url ) {
+      return text;
+   }
 }

@@ -73,7 +73,7 @@ public class PropertyChain<C, P> extends DefaultProperty implements PropertyType
     * @param properties the properties of the chain
     */
    public PropertyChain( final List<? extends StaticProperty<?, ?>> properties ) {
-      this( properties.subList( 0, properties.size() - 1 ), (StaticProperty<? extends Object, P>) properties.get( properties.size() - 1 ) );
+      this( properties.subList( 0, properties.size() - 1 ), (StaticProperty<? extends Object, P>) properties.getLast() );
    }
 
    /**
@@ -169,7 +169,7 @@ public class PropertyChain<C, P> extends DefaultProperty implements PropertyType
     * @return the first property of the chain
     */
    public <T> StaticProperty<C, T> getFirstProperty() {
-      return (StaticProperty<C, T>) properties.get( 0 );
+      return (StaticProperty<C, T>) properties.getFirst();
    }
 
    /**
@@ -177,7 +177,7 @@ public class PropertyChain<C, P> extends DefaultProperty implements PropertyType
     * @return the last property of the chain
     */
    public <T> StaticProperty<T, P> getLastProperty() {
-      return (StaticProperty<T, P>) properties.get( properties.size() - 1 );
+      return (StaticProperty<T, P>) properties.getLast();
    }
 
    /**

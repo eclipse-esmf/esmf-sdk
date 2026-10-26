@@ -16,14 +16,14 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
         with:
           submodules: recursive
           persist-credentials: false
 
       # Required for Maven
       - name: Set up JDK 25
-        uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e #v5.1.0
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad #v6.1.0
         with:
           distribution: 'temurin'
           java-version: '25.0.1'
@@ -58,26 +58,26 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
         with:
           submodules: recursive
           persist-credentials: false
 
       - name: Configure GPG
-        uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e #v5.1.0
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad #v6.1.0
         with:
           distribution: 'temurin'
           java-version: '25.0.1'
           server-id: central
           # The following variables are defined in https://github.com/eclipse-esmf/.eclipsefdn/blob/main/otterdog/eclipse-esmf.jsonnet
           gpg-private-key: ${{ secrets.PGP_KEY }}
-          gpg-passphrase: PGP_KEY_PASSWORD
-          server-username: CENTRAL_SONATYPE_TOKEN_USERNAME
-          server-password: CENTRAL_SONATYPE_TOKEN_PASSWORD
+          gpg-passphrase-env-var: PGP_KEY_PASSWORD
+          server-username-env-var: CENTRAL_SONATYPE_TOKEN_USERNAME
+          server-password-env-var: CENTRAL_SONATYPE_TOKEN_PASSWORD
           overwrite-settings: false
 
       - name: Cache Maven packages
-        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb #v5.0.1
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 #v6.1.0
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -88,11 +88,12 @@ jobs:
       # that includes all .jars except the CLI jar
       - name: Build and run tests
         run: |
+          set -x
           export MAVEN_OPTS="-Xmx4096m"
           export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
 
           # Required for reactor dependencies
-          mvn clean install -DskipTests -Dmaven.javadoc.skip=true
+          mvn clean install -DskipTests -Dmaven.javadoc.skip=true -Dskip.maven.failsafe
           mvn versions:set -DnewVersion=${RELEASE_VERSION}
           mvn versions:commit
 
@@ -104,6 +105,8 @@ jobs:
           echo "Contents of $(pwd):"
           ls -lR
           rm -rf org/eclipse/esmf/esmf-documentation
+          find . -type f -name maven-metadata* -exec rm -f "{}" \;
+          find . -type f -name "_remote.repositories*" -exec rm -f "{}" \;
           zip -r -9 ../../central-bundle.zip .
           popd
 
@@ -113,10 +116,12 @@ jobs:
 
           # Build native executable with warp-packer
           bundle="samm-cli-${RELEASE_VERSION}"
-          mkdir ${bundle}
+          mkdir -p ${bundle}/runtime
           curl -Lo jre.tar.gz https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.1%2B8/OpenJDK25U-jre_x64_linux_hotspot_25.0.1_8.tar.gz
           tar -xvf jre.tar.gz
-          mv ./jdk-25.0.1+8-jre ./${bundle}/jre
+          mv ./jdk-25.0.1+8-jre ./${bundle}/runtime/jre
+          # The jar must not sit in or next to a directory that ClassGraph probes for
+          # JRE/ext jars (java.home and its parent), hence the jre lives under runtime/
           cp tools/samm-cli/target/samm-cli-${RELEASE_VERSION}.jar ./${bundle}/
           cp tools/samm-cli/scripts/linux/run.sh ./${bundle}/
           chmod +x ./${bundle}/run.sh
@@ -136,7 +141,7 @@ jobs:
           PGP_KEY_PASSWORD: ${{ secrets.PGP_KEY_PASSWORD }}
 
       - name: Upload staging directory and Linux binary
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f #v6.0.0
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 #v7.0.2
         with:
           name: linux-artifacts
           path: |
@@ -155,19 +160,19 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
         with:
           submodules: recursive
           persist-credentials: false
 
       - name: Setup JDK
-        uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad #v6.1.0
         with:
           java-version: '25.0.1'
           distribution: 'temurin'
 
       - name: Cache Maven packages
-        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb #v5.0.1
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 #v6.1.0
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -175,10 +180,11 @@ jobs:
             ${{ runner.os }}-maven-
       - name: Build and run tests
         run: |
+          set -x
           export MAVEN_OPTS="-Xmx4096m"
           export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
           # Required for reactor dependencies
-          mvn clean install -DskipTests -Dmaven.javadoc.skip=true
+          mvn clean install -DskipTests -Dmaven.javadoc.skip=true -Dskip.maven.failsafe
           mvn versions:set -DnewVersion=${RELEASE_VERSION}
           mvn versions:commit
           # Actual build of core SDK
@@ -189,10 +195,12 @@ jobs:
 
           # Build native binary
           bundle="samm-cli-${RELEASE_VERSION}"
-          mkdir ${bundle}
+          mkdir -p ${bundle}/runtime
           curl -Lo jre.tar.gz https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.1%2B8/OpenJDK25U-jre_x64_mac_hotspot_25.0.1_8.tar.gz
           tar -xvf jre.tar.gz
-          mv ./jdk-25.0.1+8-jre ./${bundle}/jre
+          mv ./jdk-25.0.1+8-jre ./${bundle}/runtime/jre
+          # The jar must not sit in or next to a directory that ClassGraph probes for
+          # JRE/ext jars (java.home and its parent), hence the jre lives under runtime/
           cp tools/samm-cli/target/samm-cli-${RELEASE_VERSION}.jar ./${bundle}/
           cp tools/samm-cli/scripts/macos/run.sh ./${bundle}/
           chmod +x ./${bundle}/run.sh
@@ -211,7 +219,7 @@ jobs:
         shell: bash
 
       - name: Upload Mac binary
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f #v6.0.0
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 #v7.0.2
         with:
           name: mac-artifacts
           path: |
@@ -233,7 +241,7 @@ jobs:
         run: |
           git config --global core.longpaths true
       - name: Checkout
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
         env:
           GIT_CONFIG_GLOBAL: ${{ runner.temp }}\.gitconfig
         with:
@@ -241,13 +249,19 @@ jobs:
           persist-credentials: false
 
       - name: Setup JDK
-        uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad #v6.1.0
         with:
           java-version: '25.0.1'
           distribution: 'temurin'
 
+      - name: Setup Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 #v7.0.0
+        with:
+          python-version: '3.13'
+      - run: pip install pefile
+
       - name: Cache Maven packages
-        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb #v5.0.1
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 #v6.1.0
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -256,10 +270,11 @@ jobs:
 
       - name: Build and run tests
         run: |
+          set -x
           export MAVEN_OPTS="-Xmx4096m"
           export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
 
-          mvn clean install -DskipTests -Dmaven.javadoc.skip=true
+          mvn clean install -DskipTests -Dmaven.javadoc.skip=true -Dskip.maven.failsafe
           mvn versions:set -DnewVersion=${RELEASE_VERSION}
           mvn versions:commit
 
@@ -271,10 +286,12 @@ jobs:
 
           # Build native executable
           bundle="samm-cli-${RELEASE_VERSION}"
-          mkdir ${bundle}
+          mkdir -p ${bundle}/runtime
           curl -Lo jre.zip https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.1%2B8/OpenJDK25U-jre_x64_windows_hotspot_25.0.1_8.zip
           7z x jre.zip
-          mv ./jdk-25.0.1+8-jre ./${bundle}/jre
+          mv ./jdk-25.0.1+8-jre ./${bundle}/runtime/jre
+          # The jar must not sit in or next to a directory that ClassGraph probes for
+          # JRE/ext jars (java.home and its parent), hence the jre lives under runtime/
           cp tools/samm-cli/target/samm-cli-${RELEASE_VERSION}.jar ./${bundle}/
           cp tools/samm-cli/scripts/windows/run.bat ./${bundle}/
 
@@ -285,10 +302,11 @@ jobs:
           fi
 
           ./warp-packer.exe pack --arch windows-x64 --input-dir ${bundle} --exec run.bat --output samm.exe --prefix samm-cli-${RELEASE_VERSION}
+          python3 tools/samm-cli/scripts/windows/set_cui_flag.py samm.exe
         shell: bash
 
       - name: Upload Windows binary
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f #v6.0.0
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 #v7.0.2
         with:
           name: windows-artifacts
           path: |
@@ -307,13 +325,13 @@ jobs:
       # Need to checkout here too, so that we have the pom.xml
       # with the deployment info available
       - name: Checkout
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
         with:
           persist-credentials: true
 
       # Required to have Maven settings.xml set up correctly
       - name: Set up JDK 25
-        uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e #v5.1.0
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad #v6.1.0
         with:
           distribution: 'temurin'
           java-version: '25.0.1'
@@ -324,18 +342,18 @@ jobs:
           overwrite-settings: false
 
       - name: Setup JDK
-        uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad #v6.1.0
         with:
           java-version: '25.0.1'
           distribution: 'temurin'
 
       - name: Fetch Linux Artifacts
-        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 #v6.0.0
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 #v8.0.2
         with:
           name: linux-artifacts
 
       - name: Fetch Mac Artifacts
-        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 #v6.0.0
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 #v8.0.2
         with:
           name: mac-artifacts
 
@@ -346,25 +364,25 @@ jobs:
           echo "release_branch_name=$release_branch_name" >> $GITHUB_ENV
 
           # Set version in pom.xml files
-          mvn -B clean install -DskipTests -Dmaven.javadoc.skip=true
+          mvn -B clean install -DskipTests -Dmaven.javadoc.skip=true -Dskip.maven.failsafe
           mvn -B versions:set -DnewVersion=${RELEASE_VERSION}
           mvn -B versions:commit
           # Set version in Antora module
           yq eval -i ".version = \"${RELEASE_VERSION}\"" documentation/developer-guide/antora.yml
 
       - name: Commit version changes and push to upstream repository
-        uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7.1.0
+        uses: stefanzweifel/git-auto-commit-action@4a55954c782fc1ea30b9056cd3e7a2b40ca8887d # v7.2.0
         with:
           branch: ${{ env.release_branch_name }}
           commit_user_name: github-actions
           commit_user_email: github-actions@github.com
-          commit_author: Author <actions@github.com>
+          commit_author: 'Author <actions@github.com>'
           file_pattern: 'documentation/developer-guide/antora.yml pom.xml */pom.xml */*/pom.xml'
 
       # Full release: Github
       - name: "Create Github release (full)"
         if: ${{ !contains( env.RELEASE_VERSION, '-M' ) }}
-        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v0.1.15
+        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           body: "Release version ${{ env.RELEASE_VERSION }}."
           tag_name: v${{ env.RELEASE_VERSION }}
@@ -380,7 +398,8 @@ jobs:
 
       - name: "Notify issues of release their fix is contained in"
         if: ${{ !contains( env.RELEASE_VERSION, '-M' ) }}
-        uses: apexskier/github-release-commenter@3bd413ad5e1d603bfe2282f9f06f2bdcec079327 # v1.3.6
+        continue-on-error: true
+        uses: apexskier/github-release-commenter@e7813a9625eabd79a875b4bc4046cfcae377ab34 # v1.4.1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           comment-template: |
@@ -425,6 +444,12 @@ jobs:
           DATA='{"repository": {"url": "https://github.com/eclipse-esmf/esmf-sdk", "html_url": "https://github.com/eclipse-esmf/esmf-sdk", "owner": { "name": "ESMF"}}, "pusher": { "name": "GitHub Action", "email": "esmf-dev@eclipse.org"}}'
           SHA1="$(echo -n "${DATA}" | openssl dgst -sha1 -hmac "${WEBHOOK_SECRET}" | sed 's/SHA1(stdin)= //')"
           curl -X POST https://ci.eclipse.org/esmf/github-webhook/ -H "Content-Type: application/json" -H "X-GitHub-Event: push" -H "X-Hub-Signature: sha1=${SHA1}" -d "${DATA}"
+
+      - name: Display contents of uploaded bundle
+        run: |
+          ls -lh central-bundle.zip
+          echo "Contents of central-bundle.zip:"
+          unzip -l central-bundle.zip
 
       # Full release: Maven Central
       - name: Release to Maven Central
@@ -473,7 +498,7 @@ jobs:
       # Milestone release: Maven deploy to Github
       - name: Publish to Github
         if: contains( env.RELEASE_VERSION, '-M' )
-        run: mvn -s ./settings.xml -B clean -pl '!documentation,!tools/samm-cli' deploy -DskipTests -Pmilestone-build,sign
+        run: mvn -s ./settings.xml -B clean -pl '!documentation,!tools/samm-cli' deploy -DskipTests -Dskip.maven.failsafe -Pmilestone-build,sign
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
           PGP_KEY_PASSWORD: ${{ secrets.PGP_KEY_PASSWORD }}

@@ -16,14 +16,13 @@ package org.eclipse.esmf.aspectmodel.resolver.modelfile;
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
+
+import org.apache.jena.rdf.model.Model;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Namespace;
-
-import org.apache.jena.rdf.model.Model;
 
 /**
  * Default implementation of an AspectModelFile that not only provides access to the underlying RDF
@@ -32,19 +31,19 @@ import org.apache.jena.rdf.model.Model;
 public final class DefaultAspectModelFile implements AspectModelFile {
    private final Model sourceModel;
    private final List<String> headerComment;
-   private final Optional<URI> sourceLocation;
+   private final URI sourceUri;
    private List<ModelElement> elements;
    private Namespace namespace = null;
 
-   public DefaultAspectModelFile( final Model sourceModel, final List<String> headerComment, final Optional<URI> sourceLocation ) {
+   public DefaultAspectModelFile( final Model sourceModel, final List<String> headerComment, final URI sourceUri ) {
       this.sourceModel = sourceModel;
       this.headerComment = headerComment;
-      this.sourceLocation = sourceLocation;
+      this.sourceUri = sourceUri;
    }
 
-   public DefaultAspectModelFile( final Model sourceModel, final List<String> headerComment, final Optional<URI> sourceLocation,
+   public DefaultAspectModelFile( final Model sourceModel, final List<String> headerComment, final URI sourceUri,
          final List<ModelElement> elements ) {
-      this( sourceModel, headerComment, sourceLocation );
+      this( sourceModel, headerComment, sourceUri );
       this.elements = elements;
    }
 
@@ -64,8 +63,8 @@ public final class DefaultAspectModelFile implements AspectModelFile {
    }
 
    @Override
-   public Optional<URI> sourceLocation() {
-      return sourceLocation;
+   public URI sourceUri() {
+      return sourceUri;
    }
 
    @Override
@@ -89,13 +88,13 @@ public final class DefaultAspectModelFile implements AspectModelFile {
       final DefaultAspectModelFile that = (DefaultAspectModelFile) obj;
       return Objects.equals( sourceModel, that.sourceModel )
             && Objects.equals( headerComment, that.headerComment )
-            && Objects.equals( sourceLocation, that.sourceLocation )
+            && Objects.equals( sourceUri, that.sourceUri )
             && Objects.equals( elements, that.elements );
    }
 
    @Override
    public int hashCode() {
-      return Objects.hash( sourceModel, headerComment, sourceLocation, elements );
+      return Objects.hash( sourceModel, headerComment, sourceUri, elements );
    }
 
    @Override

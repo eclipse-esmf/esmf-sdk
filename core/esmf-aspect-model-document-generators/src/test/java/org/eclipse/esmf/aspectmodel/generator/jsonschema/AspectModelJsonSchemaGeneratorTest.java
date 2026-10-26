@@ -208,7 +208,7 @@ class AspectModelJsonSchemaGeneratorTest {
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
       assertThat( context.<String>read( "$['components']['schemas']['" + characteristicName + "']['description']" ) )
             .isEqualTo( "This is a byteProperty characteristic." );
-      assertThat( context.<String>read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String>read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "integer" );
 
       final String unitReference = SammNs.SAMMC.UnitReference().getLocalName();
       assertThat( context.<String>read( "$['properties']['curieProperty']['allOf'][0]['$ref']" ) )
@@ -296,12 +296,12 @@ class AspectModelJsonSchemaGeneratorTest {
       characteristicReference = context.<String>read( "$['properties']['intProperty']['allOf'][0]['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/IntPropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String>read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String>read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "integer" );
 
       characteristicReference = context.<String>read( "$['properties']['integerProperty']['allOf'][0]['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/IntegerPropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String>read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String>read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "integer" );
 
       final String multiLanguageText = SammNs.SAMMC.MultiLanguageText().getLocalName();
       assertThat( context.<String>read( "$['properties']['langStringProperty']['allOf'][0]['$ref']" ) )
@@ -315,32 +315,32 @@ class AspectModelJsonSchemaGeneratorTest {
       characteristicReference = context.<String>read( "$['properties']['longProperty']['allOf'][0]['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/LongPropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String>read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String>read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "integer" );
 
       characteristicReference = context.<String>read( "$['properties']['negativeIntegerProperty']['allOf'][0]['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/NegativeIntegerPropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String>read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String>read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "integer" );
 
       characteristicReference = context.<String>read( "$['properties']['nonNegativeIntegerProperty']['allOf'][0]['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/NonNegativeIntegerPropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String>read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String>read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "integer" );
 
       characteristicReference = context.<String>read( "$['properties']['nonPositiveInteger']['allOf'][0]['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/NonPositiveIntegerCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String>read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String>read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "integer" );
 
       characteristicReference = context.<String>read( "$['properties']['positiveIntegerProperty']['allOf'][0]['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/PositiveIntegerPropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String>read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String>read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "integer" );
 
       characteristicReference = context.<String>read( "$['properties']['shortProperty']['allOf'][0]['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/ShortPropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String>read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String>read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "integer" );
 
       final String text = SammNs.SAMMC.Text().getLocalName();
       assertThat( context.<String>read( "$['properties']['stringProperty']['allOf'][0]['$ref']" ) )
@@ -359,22 +359,22 @@ class AspectModelJsonSchemaGeneratorTest {
       characteristicReference = context.<String>read( "$['properties']['unsignedByteProperty']['allOf'][0]['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/UnsignedBytePropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String>read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String>read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "integer" );
 
       characteristicReference = context.<String>read( "$['properties']['unsignedIntProperty']['allOf'][0]['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/UnsignedIntPropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String>read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String>read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "integer" );
 
       characteristicReference = context.<String>read( "$['properties']['unsignedLongProperty']['allOf'][0]['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/UnsignedLongPropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String>read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String>read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "integer" );
 
       characteristicReference = context.<String>read( "$['properties']['unsignedShortProperty']['allOf'][0]['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/UnsignedShortPropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String>read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String>read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "integer" );
 
       characteristicReference = context.<String>read( "$['properties']['yearMonthDurationProperty']['allOf'][0]['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/YearMonthDurationPropertyCharacteristic" );
@@ -503,16 +503,16 @@ class AspectModelJsonSchemaGeneratorTest {
       final JsonNode schemaEnglish = new AspectModelJsonSchemaGenerator( aspect,
             JsonSchemaGenerationConfigBuilder.builder().locale( Locale.ENGLISH ).build() ).getContent();
 
-      assertThat( schemaEnglish.get( "description" ).asText() )
+      assertThat( schemaEnglish.get( "description" ).asString() )
             .isEqualTo( "Aspect With Multilingual Descriptions" );
-      assertThat( schemaEnglish.at( "/properties/testString/description" ).asText() )
+      assertThat( schemaEnglish.at( "/properties/testString/description" ).asString() )
             .isEqualTo( "This is a test string" );
 
       final JsonNode schemaGerman = new AspectModelJsonSchemaGenerator( aspect,
             JsonSchemaGenerationConfigBuilder.builder().locale( Locale.GERMAN ).build() ).getContent();
-      assertThat( schemaGerman.get( "description" ).asText() )
+      assertThat( schemaGerman.get( "description" ).asString() )
             .isEqualTo( "Aspekt mit mehrsprachigen Beschreibungen" );
-      assertThat( schemaGerman.at( "/properties/testString/description" ).asText() )
+      assertThat( schemaGerman.at( "/properties/testString/description" ).asString() )
             .isEqualTo( "Es ist ein Test-String" );
    }
 
@@ -538,7 +538,7 @@ class AspectModelJsonSchemaGeneratorTest {
       assertThat( context.<Integer>read( "$['components']['schemas']['TestLengthConstraintWithCollection']['minItems']" ) )
             .isEqualTo( 1 );
       assertThat( context.<String>read( "$['components']['schemas']['TestLengthConstraintWithCollection']['items']['type']" ) )
-            .isEqualTo( "number" );
+            .isEqualTo( "integer" );
 
       final ObjectNode payload = JsonNodeFactory.instance.objectNode();
       final ArrayNode array = JsonNodeFactory.instance.arrayNode();
@@ -577,7 +577,7 @@ class AspectModelJsonSchemaGeneratorTest {
             .isEqualTo( "#/components/schemas/TestRangeConstraint" );
       assertThat( context.<String>read( "$['components']['schemas']['TestRangeConstraint']['description']" ) )
             .isEqualTo( "This is a test range constraint." );
-      assertThat( context.<String>read( "$['components']['schemas']['TestRangeConstraint']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String>read( "$['components']['schemas']['TestRangeConstraint']['type']" ) ).isEqualTo( "integer" );
       assertThat(
             context.<String>read(
                   "$['components']['schemas']['TestRangeConstraint']['" + AspectModelJsonSchemaGenerator.SAMM_EXTENSION + "']" ) )
@@ -645,7 +645,7 @@ class AspectModelJsonSchemaGeneratorTest {
       assertThat(
             context.<String>read( "$['components']['schemas']['IntegerRange']['" + AspectModelJsonSchemaGenerator.SAMM_EXTENSION + "']" ) )
                   .isEqualTo( TestModel.TEST_NAMESPACE + "IntegerRange" );
-      assertThat( context.<String>read( "$['components']['schemas']['IntegerRange']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String>read( "$['components']['schemas']['IntegerRange']['type']" ) ).isEqualTo( "integer" );
       assertThat( context.<Integer>read( "$['components']['schemas']['IntegerRange']['minimum']" ) ).isEqualTo( 12 );
       assertThat( context.<Integer>read( "$['components']['schemas']['IntegerRange']['maximum']" ) ).isEqualTo( 23 );
       assertThat( context.<Boolean>read( "$['components']['schemas']['IntegerRange']['exclusiveMaximum']" ) ).isTrue();
@@ -656,7 +656,7 @@ class AspectModelJsonSchemaGeneratorTest {
       assertThat(
             context.<String>read( "$['components']['schemas']['IntRange']['" + AspectModelJsonSchemaGenerator.SAMM_EXTENSION + "']" ) )
                   .isEqualTo( TestModel.TEST_NAMESPACE + "IntRange" );
-      assertThat( context.<String>read( "$['components']['schemas']['IntRange']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String>read( "$['components']['schemas']['IntRange']['type']" ) ).isEqualTo( "integer" );
       assertThat( context.<Integer>read( "$['components']['schemas']['IntRange']['minimum']" ) ).isEqualTo( 12 );
       assertThat( context.<Integer>read( "$['components']['schemas']['IntRange']['maximum']" ) ).isEqualTo( 23 );
       assertThat( context.<Boolean>read( "$['components']['schemas']['IntRange']['exclusiveMaximum']" ) ).isTrue();
@@ -798,7 +798,7 @@ class AspectModelJsonSchemaGeneratorTest {
             .isEqualTo( "#/components/schemas/TestEnumeration" );
       assertThat( context.<String>read( "$['components']['schemas']['TestEnumeration']['description']" ) )
             .isEqualTo( "This is a test for enumeration." );
-      assertThat( context.<String>read( "$['components']['schemas']['TestEnumeration']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String>read( "$['components']['schemas']['TestEnumeration']['type']" ) ).isEqualTo( "integer" );
       assertThat(
             context.<String>read(
                   "$['components']['schemas']['TestEnumeration']['" + AspectModelJsonSchemaGenerator.SAMM_EXTENSION + "']" ) )
@@ -1015,11 +1015,11 @@ class AspectModelJsonSchemaGeneratorTest {
       final JsonNode schema = buildJsonSchema( aspect );
       final String text = SammNs.SAMMC.Text().getLocalName();
 
-      assertThat( schema.at( "/components/schemas/ExtendingTestEntity/description" ).asText() )
+      assertThat( schema.at( "/components/schemas/ExtendingTestEntity/description" ).asString() )
             .isEqualTo( "This is a test entity" );
-      assertThat( schema.at( "/components/schemas/ExtendingTestEntity/properties/abstractTestProperty/description" ).asText() )
+      assertThat( schema.at( "/components/schemas/ExtendingTestEntity/properties/abstractTestProperty/description" ).asString() )
             .isEqualTo( "This is an abstract test property" );
-      assertThat( schema.at( "/components/schemas/ExtendingTestEntity/properties/abstractTestProperty/allOf/0/$ref" ).asText() )
+      assertThat( schema.at( "/components/schemas/ExtendingTestEntity/properties/abstractTestProperty/allOf/0/$ref" ).asString() )
             .isEqualTo( "#/components/schemas/" + text );
    }
 
@@ -1029,7 +1029,7 @@ class AspectModelJsonSchemaGeneratorTest {
       final JsonNode schema = buildJsonSchema( aspect );
       final DocumentContext context = JsonPath.parse( schema.toString() );
 
-      final var refs = context.<java.util.List<String>>read(
+      final List<String> refs = context.read(
             "$['components']['schemas']['ExtendingTestEntity']['allOf'][*]['$ref']" );
       assertThat( refs ).contains( "#/components/schemas/AbstractTestEntity" );
 

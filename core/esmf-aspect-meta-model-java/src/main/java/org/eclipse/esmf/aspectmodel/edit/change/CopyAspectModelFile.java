@@ -14,16 +14,15 @@
 package org.eclipse.esmf.aspectmodel.edit.change;
 
 import java.net.URI;
-import java.util.Optional;
+
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.Change;
 import org.eclipse.esmf.aspectmodel.edit.ChangeContext;
 import org.eclipse.esmf.aspectmodel.edit.ChangeReport;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFileBuilder;
-
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 
 /**
  * Refactoring operation: Copy an existing Aspect Model file to a new location. Note that this
@@ -59,7 +58,7 @@ public class CopyAspectModelFile extends StructuralChange {
       addFileChange = new AddAspectModelFile(
             RawAspectModelFileBuilder.builder()
                   .sourceModel( newSourceModel )
-                  .sourceLocation( Optional.of( newLocation ) )
+                  .sourceUri( newLocation )
                   .headerComment( sourceFile.headerComment() )
                   .build() );
       return addFileChange.fire( changeContext );

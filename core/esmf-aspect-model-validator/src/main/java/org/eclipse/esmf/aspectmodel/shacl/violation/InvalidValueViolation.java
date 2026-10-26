@@ -26,7 +26,7 @@ import org.apache.jena.rdf.model.RDFNode;
  */
 public record InvalidValueViolation(
       EvaluationContext context, RDFNode allowed, RDFNode actual
-) implements Violation {
+) implements ShaclViolation {
    public static final String ERROR_CODE = "ERR_VALUE";
 
    @Override

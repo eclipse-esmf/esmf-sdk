@@ -60,6 +60,9 @@ public class TurtleLoaderTest {
 
    @Test
    void jenaReaderSucceedsWhenPrefixIsNotDefined() throws IOException {
+      // Make sure the test is run under normal conditions: ReaderRiotTurtle needs to be registered
+      TurtleLoader.init();
+
       final Model streamModel = ModelFactory.createDefaultModel();
       try ( final InputStream turtleInputStream = new ByteArrayInputStream( MODEL.getBytes( StandardCharsets.UTF_8 ) ) ) {
          assertThatThrownBy( () -> streamModel.read( turtleInputStream, "", RDFLanguages.TURTLE.getName() ) )
@@ -75,8 +78,7 @@ public class TurtleLoaderTest {
       try ( final TSParser parser = new TSParser() ) {
          parser.setLanguage( new TreeSitterTurtle() );
          final TSTree tsTree = parser.parseString( null, turtle );
-         final TurtleSyntaxTree turtleSyntaxTree = TurtleSyntaxTree.fromConcreteSyntaxTree( tsTree, () -> turtle,
-               new TurtleSyntaxTree.StringTokenProvider( turtle ) );
+         final TurtleSyntaxTree turtleSyntaxTree = TurtleSyntaxTree.fromConcreteSyntaxTree( tsTree, turtle );
          assertThatCode( () -> {
             final Try<Model> tryModel = TurtleLoader.loadTurtle( turtleSyntaxTree, buildArtificialUri( turtle, "model" ) );
             assertThat( tryModel.isFailure() ).isFalse();
@@ -93,8 +95,7 @@ public class TurtleLoaderTest {
       try ( final TSParser parser = new TSParser() ) {
          parser.setLanguage( new TreeSitterTurtle() );
          final TSTree tsTree = parser.parseString( null, turtle );
-         final TurtleSyntaxTree turtleSyntaxTree = TurtleSyntaxTree.fromConcreteSyntaxTree( tsTree, () -> turtle,
-               new TurtleSyntaxTree.StringTokenProvider( turtle ) );
+         final TurtleSyntaxTree turtleSyntaxTree = TurtleSyntaxTree.fromConcreteSyntaxTree( tsTree, turtle );
          final Try<Model> tryModel = TurtleLoader.loadTurtle( turtleSyntaxTree, buildArtificialUri( turtle, "model" ) );
          assertThat( tryModel.isFailure() ).isTrue();
       }

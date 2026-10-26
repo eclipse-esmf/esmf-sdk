@@ -26,12 +26,32 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.jena.datatypes.RDFDatatype;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.XSD;
+import org.apache.parquet.column.page.PageReadStore;
+import org.apache.parquet.example.data.Group;
+import org.apache.parquet.example.data.simple.convert.GroupRecordConverter;
+import org.apache.parquet.hadoop.ParquetFileReader;
+import org.apache.parquet.io.ColumnIOFactory;
+import org.apache.parquet.io.LocalInputFile;
+import org.apache.parquet.io.MessageColumnIO;
+import org.apache.parquet.io.RecordReader;
+import org.apache.parquet.schema.MessageType;
 
 import org.eclipse.esmf.aspectmodel.generator.ParquetArtifact;
 import org.eclipse.esmf.metamodel.Aspect;
@@ -48,22 +68,14 @@ import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
 import org.eclipse.esmf.test.TestResources;
 
-import com.google.common.collect.Lists;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.jena.datatypes.RDFDatatype;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.vocabulary.XSD;
-import org.apache.parquet.example.data.Group;
-import org.apache.parquet.hadoop.ParquetFileReader;
-import org.apache.parquet.io.LocalInputFile;
-import org.apache.parquet.schema.MessageType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import com.google.common.collect.Lists;
 
 /**
  * Test suite for AspectModelParquetPayloadGenerator.
@@ -131,6 +143,64 @@ class AspectModelParquetPayloadGeneratorTest {
       final Group intRecord = findRecordWithField( records, "testInt" );
       assertThat( intRecord ).isNotNull();
       assertThat( intRecord.getInteger( "testInt", 0 ) ).isEqualTo( 3 );
+   }
+
+   @Test
+   void testGenerateParquetIgnoringExampleValues() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
+      final ParquetGenerationConfig config = ParquetGenerationConfigBuilder.builder()
+            .randomStrategy( new Random( 0 ) )
+            .ignoreExampleValue( true )
+            .build();
+
+      final List<Group> records = readAllRecords( generateParquetForModel( aspect, config ) );
+      final Group stringRecord = findRecordWithField( records, "testString" );
+
+      assertThat( stringRecord ).isNotNull();
+      assertThat( stringRecord.getString( "testString", 0 ) ).isNotEqualTo( "Example Value Test" );
+   }
+
+   @Test
+   void testGenerateParquetWithDefaultTimestamp() throws IOException {
+      final List<Group> records = readAllRecords( generateParquetForModel( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ) );
+      final Group timestampRecord = findRecordWithField( records, "testLocalDateTimeWithoutExample" );
+
+      assertThat( timestampRecord ).isNotNull();
+      assertThat( timestampRecord.getLong( "testLocalDateTimeWithoutExample", 0 ) ).isZero();
+   }
+
+   @Test
+   void testGenerateParquetWithCurrentTimestamp() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
+      final ParquetGenerationConfig config = ParquetGenerationConfigBuilder.builder()
+            .currentTimestamp( true )
+            .build();
+      final long earliestExpectedTimestamp = LocalDateTime.now().toEpochSecond( ZoneOffset.UTC ) * 1_000_000;
+
+      final List<Group> records = readAllRecords( generateParquetForModel( aspect, config ) );
+      final long latestExpectedTimestamp = LocalDateTime.now().toEpochSecond( ZoneOffset.UTC ) * 1_000_000;
+      final Group timestampRecord = findRecordWithField( records, "testLocalDateTimeWithoutExample" );
+
+      assertThat( timestampRecord ).isNotNull();
+      assertThat( timestampRecord.getLong( "testLocalDateTimeWithoutExample", 0 ) )
+            .isBetween( earliestExpectedTimestamp, latestExpectedTimestamp );
+   }
+
+   @Test
+   void testGenerateParquetWithRandomTimestamp() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
+      final ParquetGenerationConfig config = ParquetGenerationConfigBuilder.builder()
+            .randomStrategy( new Random( 0 ) )
+            .randomTimestamp( true )
+            .build();
+
+      final List<Group> records = readAllRecords( generateParquetForModel( aspect, config ) );
+      final Group timestampRecord = findRecordWithField( records, "testLocalDateTimeWithoutExample" );
+      final long upperBound = LocalDateTime.of( 2100, 1, 1, 0, 0 ).toEpochSecond( ZoneOffset.UTC ) * 1_000_000;
+
+      assertThat( timestampRecord ).isNotNull();
+      assertThat( timestampRecord.getLong( "testLocalDateTimeWithoutExample", 0 ) )
+            .isBetween( 0L, upperBound - 1 );
    }
 
    @Test
@@ -585,7 +655,7 @@ class AspectModelParquetPayloadGeneratorTest {
    void testGenerateParquetWithCustomConfig() throws IOException {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
       final ParquetGenerationConfig config = ParquetGenerationConfigBuilder.builder()
-            .randomStrategy( new java.util.Random( 42 ) )
+            .randomStrategy( new Random( 0 ) )
             .build();
 
       final Path parquetFile = generateParquetForModel( aspect, config );
@@ -877,13 +947,12 @@ class AspectModelParquetPayloadGeneratorTest {
       final LocalInputFile inputFile = new LocalInputFile( parquetFile );
       try ( final ParquetFileReader fileReader = ParquetFileReader.open( inputFile ) ) {
          final MessageType schema = fileReader.getFooter().getFileMetaData().getSchema();
-         final org.apache.parquet.io.ColumnIOFactory columnIoFactory = new org.apache.parquet.io.ColumnIOFactory();
-         final org.apache.parquet.io.MessageColumnIO columnIo = columnIoFactory.getColumnIO( schema );
-         org.apache.parquet.column.page.PageReadStore pages;
+         final ColumnIOFactory columnIoFactory = new ColumnIOFactory();
+         final MessageColumnIO columnIo = columnIoFactory.getColumnIO( schema );
+         PageReadStore pages;
          while ( ( pages = fileReader.readNextRowGroup() ) != null ) {
             final long rowCount = pages.getRowCount();
-            final org.apache.parquet.io.RecordReader<Group> recordReader =
-                  columnIo.getRecordReader( pages, new org.apache.parquet.example.data.simple.convert.GroupRecordConverter( schema ) );
+            final RecordReader<Group> recordReader = columnIo.getRecordReader( pages, new GroupRecordConverter( schema ) );
             for ( long i = 0; i < rowCount; i++ ) {
                records.add( recordReader.read() );
             }
@@ -1064,7 +1133,7 @@ class AspectModelParquetPayloadGeneratorTest {
       return range;
    }
 
-   private static final java.util.Map<Class<?>, Pair<Number, Number>> TEST_RANGES = java.util.Map.of(
+   private static final Map<Class<?>, Pair<Number, Number>> TEST_RANGES = Map.of(
          Byte.class, Pair.of( (byte) -34, (byte) 112 ),
          Short.class, Pair.of( (short) -11856, (short) 27856 ),
          Integer.class, Pair.of( -118560, 278560 ),
@@ -1087,7 +1156,7 @@ class AspectModelParquetPayloadGeneratorTest {
       return SammXsdType.ALL_TYPES.stream()
             .filter( dataType -> dataType.getJavaClass() != null )
             .filter( dataType -> Number.class.isAssignableFrom( dataType.getJavaClass() ) )
-            .collect( java.util.stream.Collectors.toList() );
+            .collect( Collectors.toList() );
    }
 
    private static final List<Optional<BoundDefinition>> RANGE_CONSTRAINTS_TO_TEST = Arrays.asList(

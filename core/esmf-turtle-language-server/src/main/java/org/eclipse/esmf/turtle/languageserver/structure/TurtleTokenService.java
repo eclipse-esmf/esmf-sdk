@@ -20,13 +20,18 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.eclipse.esmf.aspectmodel.Location;
+import org.eclipse.esmf.aspectmodel.RdfUtil;
+import org.eclipse.esmf.metamodel.datatype.SammType;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.treesitterturtle.ParserTokenType;
+import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
-import org.eclipse.esmf.turtle.languageserver.lsp.text.TreeSitterTurtleParserService;
+import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 
 import org.eclipse.lsp4j.SemanticTokenModifiers;
 import org.eclipse.lsp4j.SemanticTokenTypes;
@@ -34,10 +39,6 @@ import org.eclipse.lsp4j.SemanticTokens;
 import org.eclipse.lsp4j.SemanticTokensLegend;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.treesitter.TSNode;
-import org.treesitter.TSTree;
-
-import com.google.common.collect.ImmutableMap;
 
 /**
  * Service that maps parser tokens to LSP semantic tokens
@@ -62,27 +63,6 @@ public class TurtleTokenService {
          )
    );
 
-   private static final Map<String, String> PARSER_TOKEN_TO_SEMANTIC_TOKEN = ImmutableMap.<String, String>builder()
-         .put( ParserTokenType.COMMENT, SemanticTokenTypes.Comment )
-         .put( ParserTokenType.AT_BASE, SemanticTokenTypes.Keyword )
-         .put( ParserTokenType.AT_PREFIX, SemanticTokenTypes.Keyword )
-         .put( ParserTokenType.SPARQL_BASE, SemanticTokenTypes.Keyword )
-         .put( ParserTokenType.SPARQL_PREFIX, SemanticTokenTypes.Keyword )
-         .put( ParserTokenType.A, SemanticTokenTypes.Keyword )
-         .put( ParserTokenType.STRING, SemanticTokenTypes.String )
-         .put( ParserTokenType.INTEGER, SemanticTokenTypes.Number )
-         .put( ParserTokenType.DECIMAL, SemanticTokenTypes.Number )
-         .put( ParserTokenType.DOUBLE, SemanticTokenTypes.Number )
-         .put( ParserTokenType.BOOLEAN_LITERAL, SemanticTokenTypes.Keyword )
-         .put( ParserTokenType.LANG_TAG, SemanticTokenTypes.Decorator )
-         .put( ParserTokenType.PN_PREFIX, SemanticTokenTypes.Function )
-         .put( ParserTokenType.PN_LOCAL, SemanticTokenTypes.Property )
-         .put( ParserTokenType.SYMBOL_DOUBLE_CARET, SemanticTokenTypes.Decorator )
-         .put( ParserTokenType.SYMBOL_FULL_STOP, SemanticTokenTypes.Decorator )
-         .put( ParserTokenType.SYMBOL_SEMICOLON, SemanticTokenTypes.Decorator )
-         .build();
-   private final TreeSitterTurtleParserService parserService;
-
    private final Map<String, Integer> tokenTypeIds = IntStream.range( 0, SUPPORTED_TOKEN_TYPES.getTokenTypes().size() )
          .boxed()
          .collect( Collectors.toMap( i -> SUPPORTED_TOKEN_TYPES.getTokenTypes().get( i ), Function.identity() ) );
@@ -90,23 +70,18 @@ public class TurtleTokenService {
          .boxed()
          .collect( Collectors.toMap( i -> SUPPORTED_TOKEN_TYPES.getTokenModifiers().get( i ), Function.identity() ) );
 
-   public TurtleTokenService( final TreeSitterTurtleParserService parserService ) {
-      this.parserService = parserService;
-   }
+   public TurtleTokenService() {}
 
    /**
     * Represents a single token over a given range
     *
-    * @param line the line where the token appears
-    * @param column the column in the line
-    * @param length the length of the token in characters
+    * @param location the location of the token
     * @param tokenType the token type
     * @param tokenModifiers the token modifiers bit set
     */
    private record TokenRange(
-         int line,
-         int column,
-         int length,
+         Location location,
+         String content,
          int tokenType,
          int tokenModifiers
    ) {}
@@ -116,30 +91,54 @@ public class TurtleTokenService {
     *
     * @param document the document
     */
-   public SemanticTokens buildSemanticTokens( final Document document ) {
+   public SemanticTokens buildSemanticTokens( final ParsedDocument document ) {
       final List<TokenRange> tokenRanges = new ArrayList<>();
-      final TSTree concreteSyntaxTree = parserService.apply( document ).concreteSyntaxTree();
-      final Deque<TSNode> nodes = new ArrayDeque<>();
-      TSNode node;
-      nodes.push( concreteSyntaxTree.getRootNode() );
+      final Deque<TurtleSyntaxTree.Node> nodes = new ArrayDeque<>();
+      TurtleSyntaxTree.Node node;
+      nodes.push( document.turtleSyntaxTree().rootNode() );
       while ( !nodes.isEmpty() ) {
          node = nodes.pop();
-         for ( int i = 0; i < node.getChildCount(); i++ ) {
-            nodes.push( node.getChild( i ) );
-         }
+         node.children().forEach( nodes::push );
 
          final int tokenId = tokenIdForNode( node );
          if ( tokenId == -1 ) {
             continue;
          }
 
-         final int line = node.getStartPoint().getRow();
-         final int column = node.getStartPoint().getColumn();
-         final int length = node.getEndByte() - node.getStartByte();
-         tokenRanges.add( new TokenRange( line, column, length, tokenId, tokenModifierBitSetForNode( node, document ) ) );
+         final Location location = node.location();
+         final TokenRange tokenRange = new TokenRange( location,
+               document.sourceDocument().subSequence( location.fromLine(), location.fromColumn(), location.toLine(), location.toColumn() ),
+               tokenId, tokenModifierBitSetForNode( node ) );
+         tokenRanges.addAll( splitIntoSingleLineTokens( tokenRange ) );
       }
 
-      return buildSemanticTokens( tokenRanges );
+      return buildSemanticTokens( tokenRanges, document.sourceDocument() );
+   }
+
+   private List<TokenRange> splitIntoSingleLineTokens( final TokenRange tokenRange ) {
+      if ( !tokenRange.content().contains( "\n" ) ) {
+         return List.of( tokenRange );
+      }
+
+      final List<TokenRange> result = new ArrayList<>();
+      final String[] lines = tokenRange.content().split( "\n", -1 );
+      int currentLine = tokenRange.location().fromLine();
+      int currentColumn = tokenRange.location().fromColumn();
+
+      for ( int i = 0; i < lines.length; i++ ) {
+         final String lineContent = lines[i];
+         if ( i == lines.length - 1 && lineContent.isEmpty() ) {
+            // Skip the last empty line if content ends with \n
+            break;
+         }
+
+         final Location lineLocation = new Location( currentLine, currentColumn, currentLine, currentColumn + lineContent.length() );
+         result.add( new TokenRange( lineLocation, lineContent, tokenRange.tokenType(), tokenRange.tokenModifiers() ) );
+         currentLine++;
+         currentColumn = 0;
+      }
+
+      return result;
    }
 
    /**
@@ -152,14 +151,16 @@ public class TurtleTokenService {
     *      Tokens at LSP specification</a>
     * @return the SemanticTokens representation
     */
-   private SemanticTokens buildSemanticTokens( final List<TokenRange> tokenRanges ) {
-      tokenRanges.sort( Comparator.comparingInt( TokenRange::line ).thenComparingInt( TokenRange::column ) );
+   private SemanticTokens buildSemanticTokens( final List<TokenRange> tokenRanges, final Document document ) {
+      final ToIntFunction<TokenRange> lineExtractor = tokenRange -> tokenRange.location().fromLine();
+      final ToIntFunction<TokenRange> columnExtractor = tokenRange -> tokenRange.location().fromColumn();
+      tokenRanges.sort( Comparator.comparingInt( lineExtractor ).thenComparingInt( columnExtractor ) );
       final List<Integer> data = new ArrayList<>();
       int lastLine = -1;
       int lastColumn = -1;
       for ( final TokenRange tokenRange : tokenRanges ) {
-         final int line = tokenRange.line();
-         final int column = tokenRange.column();
+         final int line = tokenRange.location().fromLine();
+         final int column = tokenRange.location().fromColumn();
          if ( lastLine == -1 ) {
             data.add( line );
             data.add( column );
@@ -167,7 +168,9 @@ public class TurtleTokenService {
             data.add( line - lastLine );
             data.add( lastLine == line ? column - lastColumn : column );
          }
-         data.add( tokenRange.length() );
+         final int length = document.subSequence( tokenRange.location().fromLine(), tokenRange.location().fromColumn(),
+               tokenRange.location().toLine(), tokenRange.location().toColumn() ).length();
+         data.add( length );
          data.add( tokenRange.tokenType() );
          data.add( tokenRange.tokenModifiers() );
          lastLine = line;
@@ -184,9 +187,47 @@ public class TurtleTokenService {
     * @see TurtleTokenService#SUPPORTED_TOKEN_TYPES
     * @return the corresponding tokenId
     */
-   private int tokenIdForNode( final TSNode node ) {
-      final String semanticToken = PARSER_TOKEN_TO_SEMANTIC_TOKEN.get( node.getGrammarType() );
-      if ( semanticToken == null ) {
+   private int tokenIdForNode( final TurtleSyntaxTree.Node node ) {
+      final String semanticToken = switch ( node.type() ) {
+         case ParserTokenType.COMMENT -> SemanticTokenTypes.Comment;
+         case ParserTokenType.AT_BASE -> SemanticTokenTypes.Keyword;
+         case ParserTokenType.AT_PREFIX -> SemanticTokenTypes.Keyword;
+         case ParserTokenType.SPARQL_BASE -> SemanticTokenTypes.Keyword;
+         case ParserTokenType.SPARQL_PREFIX -> SemanticTokenTypes.Keyword;
+         case ParserTokenType.A -> SemanticTokenTypes.Keyword;
+         case ParserTokenType.STRING -> SemanticTokenTypes.String;
+         case ParserTokenType.INTEGER -> SemanticTokenTypes.Number;
+         case ParserTokenType.DECIMAL -> SemanticTokenTypes.Number;
+         case ParserTokenType.DOUBLE -> SemanticTokenTypes.Number;
+         case ParserTokenType.BOOLEAN_LITERAL -> SemanticTokenTypes.Keyword;
+         case ParserTokenType.LANG_TAG -> SemanticTokenTypes.Decorator;
+         case ParserTokenType.PN_PREFIX -> SemanticTokenTypes.Function;
+         case ParserTokenType.PN_LOCAL -> SemanticTokenTypes.Property;
+         case ParserTokenType.SYMBOL_DOUBLE_CARET -> SemanticTokenTypes.Decorator;
+         case ParserTokenType.SYMBOL_FULL_STOP -> SemanticTokenTypes.Decorator;
+         case ParserTokenType.SYMBOL_SEMICOLON -> SemanticTokenTypes.Decorator;
+         case ParserTokenType.RDF_LITERAL -> {
+            if ( node.childWithType( ParserTokenType.SYMBOL_DOUBLE_CARET ).isPresent() ) {
+               // Typed literal
+               yield node.childWithType( ParserTokenType.PREFIXED_NAME )
+                     .map( TurtleSyntaxTree.Node::content )
+                     .map( RdfUtil::fullUri )
+                     .map( typeUri -> SammType.forUri( typeUri )
+                           .filter( sammType -> sammType instanceof SammType.NumericType<?> )
+                           .map( _ -> SemanticTokenTypes.Number )
+                           .orElse( SemanticTokenTypes.String ) )
+                     .orElse( "" );
+            } else if ( node.childWithType( ParserTokenType.LANG_TAG ).isPresent() ) {
+               // rdf:langString
+               yield SemanticTokenTypes.String;
+            } else {
+               // plain string
+               yield SemanticTokenTypes.String;
+            }
+         }
+         default -> "";
+      };
+      if ( semanticToken.isEmpty() ) {
          return -1;
       }
 
@@ -198,11 +239,10 @@ public class TurtleTokenService {
       return semanticTokenId;
    }
 
-   private int tokenModifierBitSetForNode( final TSNode node, final Document document ) {
+   private int tokenModifierBitSetForNode( final TurtleSyntaxTree.Node node ) {
       int bitSet = 0;
-      if ( node.getGrammarType().equals( ParserTokenType.PN_PREFIX ) ) {
-         final String token = document.subSequence( node.getStartPoint().getRow(), node.getStartPoint().getColumn(),
-               node.getEndPoint().getRow(), node.getEndPoint().getColumn() );
+      if ( node.type().equals( ParserTokenType.PN_PREFIX ) ) {
+         final String token = node.content();
          if ( token.equals( SammNs.SAMM.getShortForm() ) || token.equals( SammNs.SAMMC.getShortForm() ) ) {
             bitSet = bitSet | ( 1 << tokenModifierTypeIds.get( SemanticTokenModifiers.DefaultLibrary ) );
          }

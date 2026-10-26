@@ -14,6 +14,7 @@
 package org.eclipse.esmf.aspectmodel.shacl;
 
 import org.apache.jena.query.Query;
+import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 
 /**
@@ -35,7 +36,7 @@ public sealed interface Target permits Target.Class, Target.Node, Target.Objects
    ) implements Target {}
 
    record ObjectsOf(
-         org.apache.jena.rdf.model.Property property
+         Property property
    ) implements Target {}
 
    /**
@@ -45,7 +46,7 @@ public sealed interface Target permits Target.Class, Target.Node, Target.Objects
     * @param property the given property
     */
    record SubjectsOf(
-         org.apache.jena.rdf.model.Property property
+         Property property
    ) implements Target {}
 
    /**

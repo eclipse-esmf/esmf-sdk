@@ -13,9 +13,9 @@
 
 package org.eclipse.esmf.aspectmodel.validation;
 
-import java.util.Collection;
 import java.util.function.Supplier;
 
+import org.eclipse.esmf.aspectmodel.ViolationReport;
 import org.eclipse.esmf.metamodel.AspectModel;
 
 import io.vavr.control.Either;
@@ -24,11 +24,8 @@ import io.vavr.control.Try;
 /**
  * Generic validator for Aspect Models, either on the raw RDF input or on the already loaded Aspect
  * Model
- *
- * @param <P> the "problem" type that describes loading or validation failures
- * @param <C> the "collection of problem" type that constitutes a validation report
  */
-public interface Validator<P, C extends Collection<? super P>> extends RdfBasedValidator<P, C>, AspectModelBasedValidator<P, C> {
+public interface Validator extends RdfBasedValidator, AspectModelBasedValidator {
    /**
     * Convenience function that takes an Aspect Model loading function as an input and returns the
     * resulting Aspect Model on success, or a validation report describing the loading failures on
@@ -38,7 +35,7 @@ public interface Validator<P, C extends Collection<? super P>> extends RdfBasedV
     * @return the validation report on failure ({@link Try.Failure}) or the Aspect Model on success
     *         ({@link Try.Success})
     */
-   Either<C, AspectModel> loadModel( Supplier<AspectModel> aspectModelLoader );
+   Either<ViolationReport, AspectModel> loadModel( Supplier<AspectModel> aspectModelLoader );
 
    /**
     * If {@link #loadModel(Supplier)} is called with a loading function that itself makes use of the
@@ -49,5 +46,15 @@ public interface Validator<P, C extends Collection<? super P>> extends RdfBasedV
     * @param <E> the type of exception that is thrown
     * @return the exception
     */
-   <E extends RuntimeException> E cancelValidation( C violations );
+   <E extends RuntimeException> E cancelValidation( ViolationReport violations );
+
+   /**
+    * Validates an Aspect Model provided by a Supplier. This can be used to make the validator also
+    * catch and handle loading and resolution errors, such as RDF/Turtle syntax errors or missing
+    * references. In those cases, corresponding violations are created.
+    *
+    * @param aspectModelSupplier the Aspect Model supplier
+    * @return a collection of problems. An empty collection indicates that the model is valid.
+    */
+   ViolationReport validateModel( Supplier<AspectModel> aspectModelSupplier );
 }

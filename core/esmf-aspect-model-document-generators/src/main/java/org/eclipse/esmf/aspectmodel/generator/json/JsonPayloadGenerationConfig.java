@@ -28,12 +28,21 @@ import io.soabase.recordbuilder.core.RecordBuilder;
  *        for inherited entities
  * @param failOnInvalidRegularExpressions if a sample value for a regex can not be generated, fail
  *        instead of creating a fallback
+ * @param currentTimestamp if set to true, generates current timestamp dynamically using
+ *        LocalDateTime.now() instead of the fixed default timestamp (start of Unix epoch).
+ * @param ignoreExampleValue if a random value is generated for each property,
+ *        even if an example value is defined in the Aspect Model
+ * @param randomTimestamp whether to generate random date/time values between 1970 (inclusive) and
+ *        2100 (exclusive) in UTC instead of using the Unix epoch
  */
 @RecordBuilder
 public record JsonPayloadGenerationConfig(
       Random randomStrategy,
       boolean addTypeAttributeForEntityInheritance,
-      boolean failOnInvalidRegularExpressions
+      boolean failOnInvalidRegularExpressions,
+      boolean ignoreExampleValue,
+      boolean currentTimestamp,
+      boolean randomTimestamp
 ) implements JsonGenerationConfig {
    public JsonPayloadGenerationConfig {
       if ( randomStrategy == null ) {

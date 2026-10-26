@@ -139,8 +139,7 @@ public class PropertyPredicateBuilder<P extends PropertyAccessor<?, T>, T> {
        */
       public Predicate<C> withinClosed( final T lower, final T upper ) {
          return object -> {
-            final var propertyValue = property.getValue( object );
-
+            final T propertyValue = property.getValue( object );
             return upper.compareTo( propertyValue ) >= 0 && lower.compareTo( propertyValue ) <= 0;
          };
       }
@@ -155,8 +154,7 @@ public class PropertyPredicateBuilder<P extends PropertyAccessor<?, T>, T> {
        */
       public Predicate<C> withinClosedOpen( final T lower, final T upper ) {
          return object -> {
-            final var propertyValue = property.getValue( object );
-
+            final T propertyValue = property.getValue( object );
             return upper.compareTo( propertyValue ) > 0 && lower.compareTo( propertyValue ) <= 0;
          };
       }
@@ -171,8 +169,7 @@ public class PropertyPredicateBuilder<P extends PropertyAccessor<?, T>, T> {
        */
       public Predicate<C> withinOpen( final T lower, final T upper ) {
          return object -> {
-            final var propertyValue = property.getValue( object );
-
+            final T propertyValue = property.getValue( object );
             return upper.compareTo( propertyValue ) > 0 && lower.compareTo( propertyValue ) < 0;
          };
       }
@@ -187,8 +184,7 @@ public class PropertyPredicateBuilder<P extends PropertyAccessor<?, T>, T> {
        */
       public Predicate<C> withinOpenClosed( final T lower, final T upper ) {
          return object -> {
-            final var propertyValue = property.getValue( object );
-
+            final T propertyValue = property.getValue( object );
             return upper.compareTo( propertyValue ) >= 0 && lower.compareTo( propertyValue ) < 0;
          };
       }

@@ -21,7 +21,7 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.ClassTypeViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.MissingTypeViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.NodeKindViolation;
-import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+import org.eclipse.esmf.aspectmodel.Violation;
 
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;

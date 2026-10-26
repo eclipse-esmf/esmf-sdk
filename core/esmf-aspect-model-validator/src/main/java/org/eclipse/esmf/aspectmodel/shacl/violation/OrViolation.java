@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.eclipse.esmf.aspectmodel.Violation;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.OrConstraint;
 
 /**
@@ -27,7 +28,7 @@ import org.eclipse.esmf.aspectmodel.shacl.constraint.OrConstraint;
  */
 public record OrViolation(
       EvaluationContext context, List<Violation> violations
-) implements Violation {
+) implements ShaclViolation {
    public static final String ERROR_CODE = "ERR_OR";
 
    @Override

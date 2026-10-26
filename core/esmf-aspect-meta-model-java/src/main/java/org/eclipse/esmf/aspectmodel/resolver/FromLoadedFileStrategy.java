@@ -14,6 +14,7 @@
 package org.eclipse.esmf.aspectmodel.resolver;
 
 import java.net.URI;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
@@ -36,22 +37,23 @@ public class FromLoadedFileStrategy implements ResolutionStrategy {
       if ( resolutionStrategySupport.containsDefinition( aspectModelFile, aspectModelUrn ) ) {
          return aspectModelFile;
       }
-      final ModelResolutionException.LoadingFailure failure = new ModelResolutionException.LoadingFailure(
-            aspectModelUrn,
-            aspectModelFile.sourceLocation().map( uri -> "In-memory file " + uri ).orElse( "Anonymous in-memory file" ),
-            "File does not contain element definition" );
+      final ModelResolutionViolation failure = ModelResolutionViolationBuilder.builder()
+            .element( Optional.of( aspectModelUrn ) )
+            .location( aspectModelFile.sourceUri() )
+            .message( "File does not contain element definition" )
+            .build();
       throw new ModelResolutionException( failure );
    }
 
    @Override
    public Stream<URI> listContents() {
-      return aspectModelFile.sourceLocation().stream();
+      return Stream.of( aspectModelFile.sourceUri() );
    }
 
    @Override
    public Stream<URI> listContentsForNamespace( final AspectModelUrn namespace ) {
       return aspectModelFile.namespace().urn().equals( namespace )
-            ? aspectModelFile.sourceLocation().stream()
+            ? Stream.of( aspectModelFile.sourceUri() )
             : Stream.empty();
    }
 

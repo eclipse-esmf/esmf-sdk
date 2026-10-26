@@ -15,6 +15,9 @@ package org.eclipse.esmf.aspectmodel.edit.change;
 
 import java.net.URI;
 
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Resource;
+
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.aspectmodel.edit.Change;
@@ -24,9 +27,6 @@ import org.eclipse.esmf.aspectmodel.edit.ChangeReport;
 import org.eclipse.esmf.aspectmodel.edit.ModelChangeException;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.ModelElement;
-
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.Resource;
 
 /**
  * Refactoring operation: Moves a model element to another, existing file in the same namespace.
@@ -56,8 +56,7 @@ public class MoveElementToExistingFile extends StructuralChange {
    }
 
    public MoveElementToExistingFile( final AspectModelUrn elementUrn, final AspectModelFile targetFile ) {
-      this( elementUrn, targetFile.sourceLocation().orElseThrow( () -> new ModelChangeException( "Can move element only to named file" )
-      ) );
+      this( elementUrn, targetFile.sourceUri() );
    }
 
    @Override

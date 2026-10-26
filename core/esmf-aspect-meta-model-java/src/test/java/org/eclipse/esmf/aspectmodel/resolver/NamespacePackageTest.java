@@ -30,13 +30,14 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.assertj.core.api.Assertions;
+
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.HasDescription;
 import org.eclipse.esmf.samm.KnownVersion;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class NamespacePackageTest {
@@ -65,7 +66,7 @@ class NamespacePackageTest {
          Assertions.assertThat( aspectsNames ).contains( aspectModelFile.aspect().getName() );
       } );
 
-      assertThat( aspectModel ).files().allMatch( file -> file.sourceLocation().orElseThrow().toString().matches(
+      assertThat( aspectModel ).files().allMatch( file -> file.sourceUri().toString().matches(
             "^jar:file:[^!]*namespaces\\.zip!/org\\.eclipse\\.esmf\\.examples/\\d\\.\\d\\.\\d/" + file.filename().orElseThrow() ) );
    }
 

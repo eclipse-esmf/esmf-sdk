@@ -15,15 +15,16 @@ package org.eclipse.esmf.aspectmodel.resolver.modelfile;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+
+import org.eclipse.esmf.aspectmodel.AspectLoadingException;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 import io.soabase.recordbuilder.core.RecordBuilder;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 
 /**
  * An implementation of an {@link AspectModelFile} that knows about the RDF model content and source
@@ -33,7 +34,7 @@ import org.apache.jena.rdf.model.ModelFactory;
  *
  * @param sourceModel the source RDF model
  * @param headerComment the header comment
- * @param sourceLocation the source location
+ * @param sourceUri the source location
  */
 @SuppressWarnings( "OptionalUsedAsFieldOrParameterType" )
 @RecordBuilder
@@ -41,9 +42,8 @@ public record RawAspectModelFile(
       String sourceRepresentation,
       Model sourceModel,
       List<String> headerComment,
-      Optional<URI> sourceLocation
-)
-      implements AspectModelFile {
+      URI sourceUri
+) implements AspectModelFile {
    public RawAspectModelFile {
       if ( sourceModel == null ) {
          sourceModel = ModelFactory.createDefaultModel();
@@ -51,8 +51,8 @@ public record RawAspectModelFile(
       if ( headerComment == null ) {
          headerComment = List.of();
       }
-      if ( sourceLocation == null ) {
-         sourceLocation = Optional.empty();
+      if ( sourceUri == null ) {
+         throw new AspectLoadingException( "Can not create Aspect Model file without source location" );
       }
    }
 

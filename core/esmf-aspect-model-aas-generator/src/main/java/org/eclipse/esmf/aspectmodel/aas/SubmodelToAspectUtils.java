@@ -24,19 +24,17 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.esmf.metamodel.datatype.LangString;
+
+import com.google.common.base.CaseFormat;
 import org.eclipse.digitaltwin.aas4j.v3.model.AasSubmodelElements;
 import org.eclipse.digitaltwin.aas4j.v3.model.AbstractLangString;
 import org.eclipse.digitaltwin.aas4j.v3.model.Key;
 import org.eclipse.digitaltwin.aas4j.v3.model.KeyTypes;
 import org.eclipse.digitaltwin.aas4j.v3.model.Reference;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
-
-import org.eclipse.esmf.metamodel.datatype.LangString;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.CaseFormat;
 
 final class SubmodelToAspectUtils {
    private static final Logger LOG = LoggerFactory.getLogger( SubmodelToAspectUtils.class );
@@ -45,7 +43,7 @@ final class SubmodelToAspectUtils {
 
    static Set<LangString> langStringSet( final List<? extends AbstractLangString> stringList ) {
       final Map<Locale, String> stringsByLanguage = new LinkedHashMap<>();
-      stringList.forEach( abstractLangString -> {
+      Optional.ofNullable( stringList ).orElseGet( List::of ).forEach( abstractLangString -> {
          final Locale locale = Locale.forLanguageTag( abstractLangString.getLanguage() );
          final String existing = stringsByLanguage.putIfAbsent( locale, abstractLangString.getText() );
          if ( existing != null ) {

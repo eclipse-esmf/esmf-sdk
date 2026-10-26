@@ -17,10 +17,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.apache.jena.rdf.model.RDFNode;
+
+import org.eclipse.esmf.aspectmodel.Violation;
 import org.eclipse.esmf.aspectmodel.shacl.ShapeSummarizer;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.XoneConstraint;
-
-import org.apache.jena.rdf.model.RDFNode;
 
 /**
  * Violation of a {@link XoneConstraint}
@@ -30,7 +31,7 @@ import org.apache.jena.rdf.model.RDFNode;
  */
 public record XoneViolation(
       EvaluationContext context, List<Violation> violations, XoneConstraint constraint
-) implements Violation {
+) implements ShaclViolation {
    public static final String ERROR_CODE = "ERR_XONE";
 
    @Override
@@ -41,7 +42,7 @@ public record XoneViolation(
    @Override
    public String violationSpecificMessage() {
       if ( violations().size() == 1 ) {
-         return violations.get( 0 ).message();
+         return violations.getFirst().message();
       }
 
       if ( !violations().isEmpty() ) {

@@ -39,7 +39,9 @@ public class AspectModelAasGenerator extends AspectGenerator<String, byte[], Aas
 
    @Override
    public Stream<AasArtifact> generate() {
-      final AspectModelAasVisitor visitor = new AspectModelAasVisitor().withPropertyMapper( new LangStringPropertyMapper() );
+      final AspectModelAasVisitor visitor = new AspectModelAasVisitor()
+            .withPropertyMapper( new ReferencePropertyMapper() )
+            .withPropertyMapper( new LangStringPropertyMapper() );
       config.propertyMappers().forEach( visitor::withPropertyMapper );
       final Context context;
       if ( config.aspectData() != null ) {

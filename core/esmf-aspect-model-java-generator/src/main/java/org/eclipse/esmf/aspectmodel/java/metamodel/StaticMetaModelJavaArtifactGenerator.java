@@ -20,11 +20,18 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
+
 import javax.annotation.processing.Generated;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
+
+import org.apache.commons.text.StringEscapeUtils;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.XSD;
+import org.apache.velocity.runtime.RuntimeConstants;
 
 import org.eclipse.esmf.aspectmodel.generator.ArtifactGenerator;
 import org.eclipse.esmf.aspectmodel.generator.TemplateEngine;
@@ -103,13 +110,10 @@ import org.eclipse.esmf.staticmetamodel.constraint.StaticConstraintContainerProp
 import org.eclipse.esmf.staticmetamodel.constraint.StaticConstraintProperty;
 import org.eclipse.esmf.staticmetamodel.constraint.StaticConstraintUnitProperty;
 
+import org.jboss.forge.roaster.Roaster;
+
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableMap;
-import org.apache.commons.text.StringEscapeUtils;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.vocabulary.XSD;
-import org.apache.velocity.runtime.RuntimeConstants;
-import org.jboss.forge.roaster.Roaster;
 
 /**
  * A {@link ArtifactGenerator} that generates static meta classes for {@link StructureElement}s in
@@ -121,7 +125,7 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
    @Override
    public JavaArtifact apply( final E element, final JavaCodeGenerationConfig config ) {
       final ImportTracker importTracker = config.importTracker();
-      importTracker.importExplicit( java.util.Optional.class );
+      importTracker.importExplicit( Optional.class );
       importTracker.importExplicit( java.util.List.class );
       importTracker.importExplicit( PropertyContainer.class );
       importTracker.importExplicit( StaticMetaClass.class );
@@ -140,7 +144,7 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
       final String characteristicBaseUrn = matchHash.trimTrailingFrom( SammNs.SAMMC.getNamespace() );
 
       final Map<String, Object> context = ImmutableMap.<String, Object>builder()
-            .put( "Arrays", java.util.Arrays.class )
+            .put( "Arrays", Arrays.class )
             .put( "BoundDefinition", BoundDefinition.class )
             .put( "characteristicBaseUrn", characteristicBaseUrn )
             .put( "Charset", Charset.class )

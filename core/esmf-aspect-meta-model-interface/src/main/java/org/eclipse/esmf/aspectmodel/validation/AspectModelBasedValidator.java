@@ -13,22 +13,18 @@
 
 package org.eclipse.esmf.aspectmodel.validation;
 
-import java.util.Collection;
-
+import org.eclipse.esmf.aspectmodel.ViolationReport;
 import org.eclipse.esmf.metamodel.AspectModel;
 
 /**
  * Generic validator for Aspect Models on an already loaded Aspect Model
- *
- * @param <P> the "problem" type that describes loading or validation failures
- * @param <C> the "collection of problem" type that constitutes a validation report
  */
-public interface AspectModelBasedValidator<P, C extends Collection<? super P>> {
+public interface AspectModelBasedValidator {
    /**
     * Validates a loaded Aspect Model
     *
     * @param aspectModel the Aspect Model
     * @return the validation report
     */
-   C validateModel( AspectModel aspectModel );
+   ViolationReport validateModel( AspectModel aspectModel );
 }

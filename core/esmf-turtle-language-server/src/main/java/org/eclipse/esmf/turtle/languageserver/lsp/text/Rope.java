@@ -99,7 +99,7 @@ public class Rope implements CharSequence {
     * @param rope the other rope
     * @return the new rope representing the concatenated result
     */
-   public Rope concat( final Rope rope ) {
+   public Rope concat( final @Nullable Rope rope ) {
       return rope == null ? this : concat( this, rope );
    }
 
@@ -175,15 +175,27 @@ public class Rope implements CharSequence {
    }
 
    /**
-    * Returns the subsequence of characters between to indices
+    * Returns the subsequence of characters between two indices
     *
     * @param start the start index, inclusive
     * @param end the end index, exclusive
     * @return the subsequence of characters
+    * @throws IllegalArgumentException if the start index is negative or bigger than end index
     */
    @Override
    public @NonNull Rope subSequence( final int start, final int end ) {
-      final Rope result = split( start )[1].split( end - start )[0];
+      // Don't check if end index is beyond length because we'd have to calculate the Rope's length.
+      if ( start < 0 || start > end ) {
+         throw new IllegalArgumentException();
+      }
+      if ( start == end ) {
+         return EMPTY;
+      }
+      final Rope part1 = split( start )[1];
+      if ( part1 == null ) {
+         return EMPTY;
+      }
+      final Rope result = part1.split( end - start )[0];
       return result == null ? EMPTY : result;
    }
 

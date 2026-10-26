@@ -29,7 +29,7 @@ import org.apache.jena.rdf.model.RDFNode;
 public record EqualsViolation(
       EvaluationContext context, Property otherProperty, RDFNode allowedValue, RDFNode actualValue
 )
-      implements Violation {
+      implements ShaclViolation {
    public static final String ERROR_CODE = "ERR_EQUALS";
 
    @Override

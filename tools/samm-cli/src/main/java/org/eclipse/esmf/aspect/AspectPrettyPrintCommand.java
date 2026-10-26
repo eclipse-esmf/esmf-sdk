@@ -77,7 +77,7 @@ public class AspectPrettyPrintCommand extends AbstractCommand {
       } else if ( overwrite ) {
          AspectSerializer.INSTANCE.write( aspectModelFile );
       } else {
-         final File inputFile = absoluteFile( new File( aspectModelFile.sourceLocation().orElseThrow() ) );
+         final File inputFile = absoluteFile( new File( aspectModelFile.sourceUri() ) );
          final File outputFile = absoluteFile( new File( outputFilePath ) );
          if ( inputFile.equals( outputFile ) ) {
             throw new CommandException( "Can't overwrite existing file. To force overwrite, use --overwrite." );

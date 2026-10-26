@@ -33,10 +33,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.collections4.IterableUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.stream.Streams;
-
 import org.eclipse.esmf.aspectmodel.VersionNumber;
 import org.eclipse.esmf.aspectmodel.generator.JsonGenerator;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
@@ -48,11 +44,12 @@ import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Operation;
 import org.eclipse.esmf.metamodel.Property;
 
+import com.google.common.base.CaseFormat;
+import org.apache.commons.collections4.IterableUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.stream.Streams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.CaseFormat;
-
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.node.ArrayNode;
 import tools.jackson.databind.node.JsonNodeFactory;
@@ -87,6 +84,7 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
    private static final String FIELD_REQUEST_BODY = "requestBody";
    private static final String FIELD_REQUIRED = "required";
    private static final String FIELD_RESPONSES = "responses";
+   private static final String FIELD_GENERATE_SUCCESS_RESPONSE = "x-esmf-generate-success-response";
    private static final String FIELD_ALL_OF = "allOf";
    private static final String FIELD_SCHEMA = "schema";
    private static final String FIELD_SCHEMAS = "schemas";
@@ -111,6 +109,7 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
    private static final AspectModelJsonSchemaVisitor SCHEMA_VISITOR = new AspectModelJsonSchemaVisitor(
          JsonSchemaGenerationConfigBuilder.builder()
                .useExtendedTypes( false )
+               .generateForOpenApi( true )
                .build() );
    private static final AspectModelPagingGenerator PAGING_GENERATOR = new AspectModelPagingGenerator();
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelOpenApiGenerator.class );
@@ -383,7 +382,7 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
       }
 
       pathNode.set( FIELD_GET,
-            merge( getRequestEndpointsRead( aspect, propertiesNode, config.resourcePath() ),
+            mergeOperationTemplate( getRequestEndpointsRead( aspect, propertiesNode, config.resourcePath() ),
                   queriesTemplate, FIELD_GET ) );
 
       final boolean includeCrud = config.includeCrud();
@@ -403,7 +402,8 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
       if ( config.includeQueryApi() ) {
          final ObjectNode includeQueryPathNode = FACTORY.objectNode();
          includeQueryPathNode.set( FIELD_POST,
-               merge( getRequestEndpointFilter( aspect, propertiesNode, config.baseUrl(), apiVersion, config.resourcePath() ),
+               mergeOperationTemplate(
+                     getRequestEndpointFilter( aspect, propertiesNode, config.baseUrl(), apiVersion, config.resourcePath() ),
                      queriesTemplate, FIELD_POST ) );
          final String queryApiPath = Optional.ofNullable( config.queryApiPath() )
                .orElse( QUERY_SERVER_PATH.formatted( apiVersion ) + finalResourcePath );
@@ -438,10 +438,48 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
          setErrorResponses( responseNode );
 
          final ObjectNode postNode = FACTORY.objectNode();
-         postNode.set( FIELD_POST, merge( objectNode, queriesTemplate, FIELD_POST ) );
+         postNode.set( FIELD_POST, mergeOperationTemplate( objectNode, queriesTemplate, FIELD_POST ) );
          return Optional.of( postNode );
       }
       return Optional.empty();
+   }
+
+   private ObjectNode mergeOperationTemplate( final ObjectNode operationNode, final ObjectNode queriesTemplate,
+         final String method ) {
+      final ObjectNode mergedOperation = merge( operationNode, queriesTemplate, method );
+      if ( queriesTemplate == null ) {
+         return mergedOperation;
+      }
+
+      final JsonNode methodTemplate = queriesTemplate.get( method );
+      if ( methodTemplate == null || !methodTemplate.isObject() ) {
+         return mergedOperation;
+      }
+
+      final JsonNode responsesTemplate = methodTemplate.get( FIELD_RESPONSES );
+      if ( responsesTemplate != null ) {
+         mergedOperation.set( FIELD_RESPONSES, mergeOperationTemplateResponses( operationNode, methodTemplate, responsesTemplate ) );
+      }
+      return mergedOperation;
+   }
+
+   private ObjectNode mergeOperationTemplateResponses( final ObjectNode operationNode, final JsonNode methodTemplate,
+         final JsonNode responsesTemplate ) {
+      final ObjectNode mergedResponses = FACTORY.objectNode();
+      final boolean hasTemplateSuccessResponse = responsesTemplate.has( "200" );
+      if ( shouldGenerateSuccessResponse( methodTemplate ) && !hasTemplateSuccessResponse ) {
+         final JsonNode generatedSuccessResponse = operationNode.get( FIELD_RESPONSES ).get( "200" );
+         if ( generatedSuccessResponse != null ) {
+            mergedResponses.set( "200", generatedSuccessResponse.deepCopy() );
+         }
+      }
+      responsesTemplate.properties().forEach( response -> mergedResponses.set( response.getKey(), response.getValue().deepCopy() ) );
+      return mergedResponses;
+   }
+
+   private boolean shouldGenerateSuccessResponse( final JsonNode methodTemplate ) {
+      final JsonNode generateSuccessResponse = methodTemplate.get( FIELD_GENERATE_SUCCESS_RESPONSE );
+      return generateSuccessResponse == null || !generateSuccessResponse.isBoolean() || generateSuccessResponse.asBoolean();
    }
 
    private JsonNode getRequestBodyForPropertyList( final Map.Entry<String, List<Property>> propertyEntry ) {

@@ -14,14 +14,12 @@
 package org.eclipse.esmf.aspectmodel.edit.change;
 
 import java.net.URI;
-import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.Change;
 import org.eclipse.esmf.aspectmodel.edit.ChangeContext;
 import org.eclipse.esmf.aspectmodel.edit.ChangeGroup;
 import org.eclipse.esmf.aspectmodel.edit.ChangeReport;
-import org.eclipse.esmf.aspectmodel.edit.ModelChangeException;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFileBuilder;
 
 /**
@@ -38,14 +36,14 @@ public class MoveRenameAspectModelFile extends StructuralChange {
    }
 
    public MoveRenameAspectModelFile( final AspectModelFile file, final URI newLocation ) {
-      this( file.sourceLocation().orElseThrow( () -> new ModelChangeException( "Can rename only a named file" ) ), newLocation );
+      this( file.sourceUri(), newLocation );
    }
 
    @Override
    public ChangeReport fire( final ChangeContext changeContext ) {
       final AspectModelFile sourceFile = sourceFile( changeContext, sourceLocation );
       final AspectModelFile replacementFile = RawAspectModelFileBuilder.builder()
-            .sourceLocation( Optional.of( newLocation ) )
+            .sourceUri( newLocation )
             .headerComment( sourceFile.headerComment() )
             .sourceModel( sourceFile.sourceModel() )
             .build();

@@ -15,170 +15,236 @@ package org.eclipse.esmf.aspectmodel.validation.services;
 
 import static org.eclipse.esmf.aspectmodel.StreamUtil.asMap;
 
+import java.io.File;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
+import org.eclipse.esmf.aspectmodel.DocumentLocationViolation;
+import org.eclipse.esmf.aspectmodel.DocumentViolation;
+import org.eclipse.esmf.aspectmodel.ElementFocussedViolation;
+import org.eclipse.esmf.aspectmodel.Violation;
+import org.eclipse.esmf.aspectmodel.ViolationReport;
+import org.eclipse.esmf.aspectmodel.resolver.ModelResolutionViolation;
 import org.eclipse.esmf.aspectmodel.resolver.parser.PlainTextFormatter;
 import org.eclipse.esmf.aspectmodel.resolver.parser.RdfTextFormatter;
 import org.eclipse.esmf.aspectmodel.shacl.RustLikeFormatter;
-import org.eclipse.esmf.aspectmodel.shacl.fix.Fix;
-import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+import org.eclipse.esmf.aspectmodel.shacl.violation.ShaclViolation;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.aspectmodel.validation.CycleViolation;
 import org.eclipse.esmf.aspectmodel.validation.InvalidLexicalValueViolation;
-import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
 import org.eclipse.esmf.aspectmodel.validation.ProcessingViolation;
-import org.eclipse.esmf.aspectmodel.validation.RegularExpressionConstraintViolation;
 
-/**
- * Formats one or multiple {@link Violation}s in a human-readable way. Note that this is intended
- * only for places with raw textual output, such as a text console. For a more sensible
- * representation of violations in other contexts, implement {@link Violation.Visitor}.
- */
-public class ViolationFormatter implements Function<List<Violation>, String>, Violation.Visitor<String> {
+public class ViolationFormatter implements Function<ViolationReport, String> {
    protected final RdfTextFormatter textFormatter;
-   protected final String additionalHints;
    protected final RustLikeFormatter formatter;
+   protected final LinkedHashMap<Class<? extends Violation>, Function<Violation, String>> handlers = new LinkedHashMap<>();
 
-   protected static final String ERROR_CODES_DOC_LINK =
-         "https://eclipse-esmf.github.io/esmf-developer-guide/tooling-guide/error-codes.html#";
-   private static final String ERROR_CODES_DOC_STRING = "For more information, see documentation: " + ERROR_CODES_DOC_LINK;
+   public ViolationFormatter( final RdfTextFormatter textFormatter, final String additionalHints ) {
+      this.textFormatter = textFormatter;
+      formatter = new RustLikeFormatter( textFormatter );
 
-   public ViolationFormatter( final String additionalHints ) {
-      this( new PlainTextFormatter(), additionalHints );
-   }
-
-   public ViolationFormatter() {
-      this( new PlainTextFormatter(), "" );
+      // Order matters: Handlers for the classes or their interfaces are tried top to bottom.
+      // So more specific at the top, more generic at the bottom.
+      // Not all violation types need to be included here, if they can appropriately be rendered using a
+      // given interface, such as DocumentLocationViolation.
+      handlers.put( ProcessingViolation.class, v -> handleProcessingViolation( (ProcessingViolation) v ) );
+      handlers.put( ShaclViolation.class, v -> handleShaclViolation( (ShaclViolation) v ) );
+      handlers.put( ElementFocussedViolation.class, v -> handleElementFocussedViolation( (ElementFocussedViolation) v ) );
+      // No need to handle DocumentViolation separately, since it only provides the information about the
+      // file context
+      handlers.put( InvalidLexicalValueViolation.class, v -> handleInvalidLexicalValueViolation( (InvalidLexicalValueViolation) v ) );
+      handlers.put( DocumentLocationViolation.class, v -> handleDocumentLocationViolation( (DocumentLocationViolation) v ) );
+      handlers.put( Violation.class, this::handleViolation );
    }
 
    public ViolationFormatter( final RdfTextFormatter textFormatter ) {
       this( textFormatter, "" );
    }
 
-   public ViolationFormatter( final RdfTextFormatter textFormatter, final String additionalHints ) {
-      this.textFormatter = textFormatter;
-      this.additionalHints = additionalHints;
-      formatter = new RustLikeFormatter( textFormatter );
+   public ViolationFormatter() {
+      this( new PlainTextFormatter() );
    }
 
-   protected String indent( final String string, final int indentation ) {
-      return string.lines().map( line -> " ".repeat( indentation ) + line ).collect( Collectors.joining( "\n", "", "\n" ) );
-   }
-
-   @Override
-   public String apply( final List<Violation> violations ) {
-      if ( violations.isEmpty() ) {
-         return String.format( "Input model is valid%n" );
-      }
-
-      final Map<String, List<Violation>> violationsByElement = violations.stream()
-            .filter( violation -> violation.context() != null )
-            .collect( Collectors.groupingBy( violation -> violation.context().elementName() ) );
-      final List<Violation> contextFreeViolations = violations.stream()
-            .filter( violation -> violation.context() == null )
-            .toList();
-
-      final StringBuilder builder = new StringBuilder();
-      builder.append( String.format( "Validation errors were found:%n%n" ) );
-      for ( final Map.Entry<String, List<Violation>> entry : violationsByElement.entrySet() ) {
-         final String elementName = entry.getKey();
-         final List<Violation> elementViolations = entry.getValue();
-         builder.append( String.format( "> %s :%n", textFormatter.formatName( elementName ) ) );
-         for ( final Violation violation : elementViolations ) {
-            // Include error code in the violation message
-            final String errorCode = violation.errorCode();
-            final String enhancedMessage = String.format( "[%s] %s", errorCode, violation.message() );
-            builder.append( String.format( "> %s: %n", enhancedMessage ) );
-            builder.append( indent( violation.accept( this ), 2 ) );
-            builder.append( System.lineSeparator() );
-            for ( final Fix possibleFix : violation.fixes() ) {
-               builder.append( "  > Possible fix: " )
-                     .append( possibleFix.description() );
-            }
-            // Add documentation link
-            builder.append( String.format( ERROR_CODES_DOC_STRING + "%s%n",
-                  errorCode.toLowerCase().replace( "_", "-" ) ) );
-            builder.append( System.lineSeparator() );
-         }
-         builder.append( System.lineSeparator() );
-      }
-
-      for ( final Violation violation : contextFreeViolations ) {
-         if ( violation instanceof final ProcessingViolation processingViolation ) {
-            builder.append( processingViolation.accept( this ) );
-         } else if ( violation.violationSpecificMessage() == null || violation.violationSpecificMessage().equals( violation.message() ) ) {
-            final String errorCode = violation.errorCode();
-            final String enhancedMessage = String.format( "[%s] %s", errorCode, violation.message() );
-            builder.append( String.format( "> %s%n", enhancedMessage ) );
-            // Add documentation link for context-free violations
-            builder.append( ERROR_CODES_DOC_STRING
-                  + errorCode.toLowerCase().replace( "_", "-" ) );
-         } else {
-            final String errorCode = violation.errorCode();
-            final String enhancedMessage = String.format( "[%s] %s", errorCode, violation.message() );
-            builder.append( String.format( "> %s: %n", enhancedMessage ) );
-            builder.append( indent( violation.accept( this ), 2 ) ).append( System.lineSeparator() );
-            // Add documentation link
-            builder.append( ERROR_CODES_DOC_STRING
-                  + errorCode.toLowerCase().replace( "_", "-" ) );
-         }
-         builder.append( System.lineSeparator() );
-      }
-
-      return builder.toString();
-   }
-
-   @Override
-   public String visit( final Violation violation ) {
-      final String errorCode = violation.errorCode();
-      final String enhancedMessage = String.format( "[%s] %s", errorCode, violation.message() );
+   protected String handleShaclViolation( final ShaclViolation violation ) {
+      final String code = violation.code().href().isPresent()
+            ? textFormatter.formatHyperlink( violation.errorCode(), violation.code().href().get() )
+            : violation.errorCode();
+      final String enhancedMessage =
+            String.format( "[%s] %s : %s", code, textFormatter.formatName( violation.context().elementName() ), violation.message() );
       return formatter.constructDetailedMessage( violation.highlight(), enhancedMessage, violation.context().element().getModel() );
    }
 
-   @Override
-   public String visitProcessingViolation( final ProcessingViolation violation ) {
-      if ( violation.cause() != null
-            && violation.cause() instanceof final ModelResolutionException modelResolutionException
-            && !modelResolutionException.getCheckedLocations().isEmpty() ) {
+   protected String handleViolation( final Violation violation ) {
+      final String code = violation.code().href().isPresent()
+            ? textFormatter.formatHyperlink( violation.code().code(), violation.code().href().get() )
+            : violation.code().code();
+      return String.format( "[%s] %s", code, violation.message() );
+   }
 
-         final Map<AspectModelUrn, List<ModelResolutionException.LoadingFailure>> failuresByElement =
-               modelResolutionException.getCheckedLocations()
-                     .stream()
-                     .filter( failure -> failure.element().isPresent() )
-                     .collect( Collectors.groupingBy( failure -> failure.element().get() ) );
-         final String elementFailure = failuresByElement.keySet().stream().sorted().findFirst().map( element -> {
-            final List<ModelResolutionException.LoadingFailure> loadingFailures = failuresByElement.get( element );
-            return loadingFailures.stream()
-                  .map( failure -> "- %s (%s)".formatted( failure.location(),
-                        textFormatter.formatError( failure.description() ) ) )
-                  .collect( Collectors.joining( "\n",
-                        "No file containing the definition of " + textFormatter.formatIri( element.toString() )
-                              + " could be resolved. Checked locations:\n",
-                        "" ) );
-         } ).map( message -> modelResolutionException.getCheckedLocations().size() > 1
-               ? "%s%n%n%s additional elements could not be resolved. %s%n".formatted(
-                     message, textFormatter.formatIri( "" + ( modelResolutionException.getCheckedLocations().size() - 1 ) ),
-                     additionalHints )
-               : message ).orElse( "" );
+   protected String handleDocumentLocationViolation( final DocumentLocationViolation violation ) {
+      final Map<Integer, String> sourceContext = sourceContext( violation.documentContent().get(),
+            violation.location().fromLine() + 1 );
+      final String code = violation.code().href().isPresent()
+            ? textFormatter.formatHyperlink( violation.code().code(), violation.code().href().get() )
+            : violation.code().code();
+      return "[%s] %s".formatted( code,
+            formatter.formatError( 1, sourceContext, violation.location().fromLine() + 1,
+                  violation.location().fromColumn() + 1, violation.message(), violation.sourceDocument() ) );
+   }
 
-         final String fileLoadingFailure = modelResolutionException.getCheckedLocations()
-               .stream()
-               .filter( failure -> failure.element().isEmpty() )
-               .findFirst()
-               .map( failure -> "Aspect Model file %s could not be loaded: %s".formatted(
-                     textFormatter.formatName( failure.location() ), failure.description() ) )
-               .orElse( "" );
+   protected String handleInvalidLexicalValueViolation( final InvalidLexicalValueViolation violation ) {
+      final Map<Integer, String> sourceContext = sourceContext( violation.documentContent().get(),
+            violation.location().fromLine() + 1 );
+      final String code = violation.code().href().isPresent()
+            ? textFormatter.formatHyperlink( violation.code().code(), violation.code().href().get() )
+            : violation.code().code();
+      return "[%s] %s".formatted( code,
+            formatter.formatError( violation.value().toString().length(), sourceContext, violation.location().fromLine() + 1,
+                  violation.location().fromColumn() + 1, violation.message(), violation.sourceDocument() ) );
+   }
 
-         return elementFailure.isEmpty()
-               ? fileLoadingFailure
-               : elementFailure + "\n" + fileLoadingFailure;
+   protected String handleElementFocussedViolation( final ElementFocussedViolation violation ) {
+      final String code = violation.code().href().isPresent()
+            ? textFormatter.formatHyperlink( violation.code().code(), violation.code().href().get() )
+            : violation.code().code();
+      final String enhancedMessage = String.format( "[%s] %s", code, violation.message() );
+      return formatter.constructDetailedMessage( violation.highlight(), enhancedMessage, violation.highlight().getModel() );
+   }
+
+   protected String handleProcessingViolation( final ProcessingViolation processingViolation ) {
+      return processingViolation.message();
+   }
+
+   protected String handleModelResolutionViolations( final List<ModelResolutionViolation> violations ) {
+      if ( violations.isEmpty() ) {
+         return "";
       }
-      return violation.message();
+      if ( violations.size() == 1 && violations.getFirst().element().isEmpty() ) {
+         final ModelResolutionViolation violation = violations.getFirst();
+         return "In %s: %s.".formatted( textFormatter.formatIri( violation.location().toString() ), violation.message() );
+      }
+      final StringBuilder result = new StringBuilder();
+      final Map<String, List<ModelResolutionViolation>> violationsByElement = violations.stream()
+            .collect( Collectors.groupingBy( violation -> violation.element().map( AspectModelUrn::toString ).orElse( "" ) ) );
+      violationsByElement.entrySet().stream().filter( entry -> !entry.getKey().isEmpty() ).findFirst().ifPresent( entry -> {
+         result.append(
+               "Could not resolve %s. Tried to look at the following locations:%n".formatted( textFormatter.formatIri( entry.getKey() ) ) );
+         for ( final ModelResolutionViolation violation : entry.getValue() ) {
+            result.append( "- %s: %s%n".formatted( textFormatter.formatIri( violation.location().toString() ), violation.message() ) );
+         }
+         if ( violationsByElement.size() > 1 ) {
+            result.append( "%s additional elements could not be resolved.".formatted(
+                  textFormatter.formatIri( "" + ( violationsByElement.size() - 1 ) ) ) );
+         }
+      } );
+      return result.toString();
+   }
+
+   private Function<Violation, String> handlerForViolation( final Violation violation ) {
+      return handlers.entrySet().stream()
+            .filter( entry -> entry.getKey().isAssignableFrom( violation.getClass() ) )
+            .map( Map.Entry::getValue )
+            .findFirst()
+            .orElse( this::handleViolation );
+   }
+
+   protected String formatUri( final URI sourceDocument ) {
+      return sourceDocument.getScheme().equals( "file" )
+            ? new File( sourceDocument ).getAbsolutePath()
+            : sourceDocument.toString();
+   }
+
+   protected String indent( final String string, final int indentation ) {
+      return string.lines()
+            .map( line -> " ".repeat( indentation ) + line )
+            .collect( Collectors.joining( "\n", "", "\n" ) );
+   }
+
+   protected String noViolationsFound() {
+      return String.format( "Input model is valid%n" );
+   }
+
+   protected String violationsFound() {
+      return String.format( "Validation errors were found:%n%n" );
+   }
+
+   protected String startOfFileSection( final String fileName ) {
+      return String.format( "> In %s:%n", textFormatter.formatName( fileName ) );
+   }
+
+   /**
+    * Convenience wrapper for {@link #apply(ViolationReport)}
+    *
+    * @param violation the single violation
+    * @return the violation formatted as a string
+    */
+   public String apply( final Violation violation ) {
+      return apply( new ViolationReport( List.of( violation ) ) );
+   }
+
+   @Override
+   public String apply( final ViolationReport violations ) {
+      if ( violations.isEmpty() ) {
+         return noViolationsFound();
+      }
+      final StringBuilder builder = new StringBuilder();
+      builder.append( violationsFound() );
+
+      // Different categories of violations to handle:
+      // ModelResolutionViolations are handled together, since failure to resolve one
+      // element often times also means many other elements can't be resolved. Don't
+      // overwhelm the user with all findings at once.
+      final List<ModelResolutionViolation> modelResolutionViolations = new ArrayList<>();
+      // Violations specific to a certain file
+      final Map<URI, List<DocumentViolation>> documentViolations = new HashMap<>();
+      // Other, non-file specific violations
+      final List<Violation> otherViolations = new ArrayList<>();
+
+      for ( final Violation violation : violations.violations() ) {
+         if ( violation instanceof final ModelResolutionViolation modelResolutionViolation ) {
+            modelResolutionViolations.add( modelResolutionViolation );
+         } else if ( violation instanceof final DocumentViolation documentViolation ) {
+            documentViolations.computeIfAbsent( documentViolation.sourceDocument(),
+                  _ -> new ArrayList<>() ).add( documentViolation );
+         } else {
+            otherViolations.add( violation );
+         }
+      }
+      modelResolutionViolations.sort( Comparator.comparing( ModelResolutionViolation::location )
+            .thenComparing( violation -> violation.element().map( AspectModelUrn::toString ).orElse( "" ) ) );
+      otherViolations.sort( Comparator.comparing( violation -> violation.getClass().getName() ) );
+      documentViolations.values().forEach( list -> list.sort( Comparator.comparing( DocumentViolation::sourceDocument ) ) );
+
+      builder.append( handleModelResolutionViolations( modelResolutionViolations ) );
+
+      // file-related violations
+      for ( final Map.Entry<URI, List<DocumentViolation>> entry : documentViolations.entrySet() ) {
+         final String fileName = formatUri( entry.getKey() );
+         builder.append( startOfFileSection( fileName ) );
+         for ( final Violation violation : entry.getValue() ) {
+            final Function<Violation, String> processor = handlerForViolation( violation );
+            final String result = indent( processor.apply( violation ), 2 );
+            builder.append( result );
+            builder.append( "\n" );
+         }
+      }
+
+      // non-file related violations
+      for ( final Violation violation : otherViolations ) {
+         final Function<Violation, String> processor = handlerForViolation( violation );
+         final String result = processor.apply( violation );
+         builder.append( result );
+         builder.append( "\n" );
+      }
+
+      return builder.toString();
    }
 
    /**
@@ -187,7 +253,7 @@ public class ViolationFormatter implements Function<List<Violation>, String>, Vi
     *
     * @param sourceDocument the source document
     * @param line the line to focus on
-    * @return the lines in in the context of the focus line
+    * @return the lines in the context of the focus line
     */
    protected Map<Integer, String> sourceContext( final String sourceDocument, final long line ) {
       final List<String> listOfLines = sourceDocument.lines().toList();
@@ -195,30 +261,5 @@ public class ViolationFormatter implements Function<List<Violation>, String>, Vi
             .filter( i -> Math.abs( line - i ) <= 3 )
             .mapToObj( i -> Map.entry( i + 1, listOfLines.get( i ) ) )
             .collect( asMap() );
-   }
-
-   @Override
-   public String visitInvalidSyntaxViolation( final InvalidSyntaxViolation violation ) {
-      return formatter.formatError( 1, sourceContext( violation.source(), violation.line() ),
-            (int) violation.line(), (int) violation.column() - 1,
-            violation.violationSpecificMessage(), violation.sourceLocation() );
-   }
-
-   @Override
-   public String visitInvalidLexicalValueViolation( final InvalidLexicalValueViolation violation ) {
-      return formatter.formatError( violation.value().toString(), violation.sourceLine(), violation.line(), violation.column(),
-            violation.violationSpecificMessage(), violation.sourceLocation() );
-   }
-
-   @Override
-   public String visitCycleViolation( final CycleViolation violation ) {
-      return formatter.constructDetailedMessage( violation.highlight(), violation.violationSpecificMessage(),
-            violation.highlight().getModel() );
-   }
-
-   @Override
-   public String visitRegularExpressionConstraint( final RegularExpressionConstraintViolation violation ) {
-      return formatter.constructDetailedMessage( violation.highlight(), violation.violationSpecificMessage(),
-            violation.highlight().getModel() );
    }
 }

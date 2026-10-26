@@ -26,6 +26,34 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
+import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.Characteristic;
+import org.eclipse.esmf.metamodel.CollectionValue;
+import org.eclipse.esmf.metamodel.Entity;
+import org.eclipse.esmf.metamodel.EntityInstance;
+import org.eclipse.esmf.metamodel.ModelElement;
+import org.eclipse.esmf.metamodel.Property;
+import org.eclipse.esmf.metamodel.Scalar;
+import org.eclipse.esmf.metamodel.ScalarValue;
+import org.eclipse.esmf.metamodel.Type;
+import org.eclipse.esmf.metamodel.characteristic.Code;
+import org.eclipse.esmf.metamodel.characteristic.Collection;
+import org.eclipse.esmf.metamodel.characteristic.Duration;
+import org.eclipse.esmf.metamodel.characteristic.Either;
+import org.eclipse.esmf.metamodel.characteristic.Enumeration;
+import org.eclipse.esmf.metamodel.characteristic.Measurement;
+import org.eclipse.esmf.metamodel.characteristic.Quantifiable;
+import org.eclipse.esmf.metamodel.characteristic.SingleEntity;
+import org.eclipse.esmf.metamodel.characteristic.SortedSet;
+import org.eclipse.esmf.metamodel.characteristic.State;
+import org.eclipse.esmf.metamodel.characteristic.StructuredValue;
+import org.eclipse.esmf.metamodel.characteristic.Trait;
+import org.eclipse.esmf.metamodel.datatype.LangString;
+import org.eclipse.esmf.metamodel.datatype.RdfDatatypeUris;
+
+import com.google.common.collect.ImmutableMap;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
@@ -75,38 +103,8 @@ import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodelElementCollect
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodelElementList;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultValueList;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultValueReferencePair;
-
-import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
-import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
-import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.Characteristic;
-import org.eclipse.esmf.metamodel.CollectionValue;
-import org.eclipse.esmf.metamodel.Entity;
-import org.eclipse.esmf.metamodel.EntityInstance;
-import org.eclipse.esmf.metamodel.ModelElement;
-import org.eclipse.esmf.metamodel.Property;
-import org.eclipse.esmf.metamodel.Scalar;
-import org.eclipse.esmf.metamodel.ScalarValue;
-import org.eclipse.esmf.metamodel.Type;
-import org.eclipse.esmf.metamodel.characteristic.Code;
-import org.eclipse.esmf.metamodel.characteristic.Collection;
-import org.eclipse.esmf.metamodel.characteristic.Duration;
-import org.eclipse.esmf.metamodel.characteristic.Either;
-import org.eclipse.esmf.metamodel.characteristic.Enumeration;
-import org.eclipse.esmf.metamodel.characteristic.Measurement;
-import org.eclipse.esmf.metamodel.characteristic.Quantifiable;
-import org.eclipse.esmf.metamodel.characteristic.SingleEntity;
-import org.eclipse.esmf.metamodel.characteristic.SortedSet;
-import org.eclipse.esmf.metamodel.characteristic.State;
-import org.eclipse.esmf.metamodel.characteristic.StructuredValue;
-import org.eclipse.esmf.metamodel.characteristic.Trait;
-import org.eclipse.esmf.metamodel.datatype.LangString;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.ImmutableMap;
-
 import tools.jackson.databind.node.ArrayNode;
 
 public class AspectModelAasVisitor implements AspectVisitor<Environment, Context> {
@@ -174,6 +172,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       return this.<T>tryFindPropertyMapper( property ).orElse( (PropertyMapper<T>) DEFAULT_MAPPER );
    }
 
+   @SuppressWarnings( "unchecked" )
    protected <T extends SubmodelElement> Optional<PropertyMapper<T>> tryFindPropertyMapper( final Property property ) {
       return getCustomPropertyMappers().stream()
             .filter( mapper -> mapper.canHandle( property ) )
@@ -453,10 +452,10 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
 
    private Reference buildReferenceToOperation( final org.eclipse.esmf.metamodel.Operation operation ) {
       final Key key = new DefaultKey.Builder()
-            .type( KeyTypes.OPERATION )
+            .type( KeyTypes.GLOBAL_REFERENCE )
             .value( DEFAULT_MAPPER.determineIdentifierFor( operation ) )
             .build();
-      return new DefaultReference.Builder().type( ReferenceTypes.MODEL_REFERENCE ).keys( key ).build();
+      return new DefaultReference.Builder().type( ReferenceTypes.EXTERNAL_REFERENCE ).keys( key ).build();
    }
 
    private OperationVariable mapOperationVariable( final Property property, final Context context ) {
@@ -642,7 +641,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
 
    private DataTypeIec61360 mapIec61360DataType( final Optional<Characteristic> characteristic ) {
       return mapIec61360DataType(
-            characteristic.flatMap( Characteristic::getDataType ).map( Type::getUrn ).orElse( RDF.langString.getURI() ) );
+            characteristic.flatMap( Characteristic::getDataType ).map( Type::getUrn ).orElse( RdfDatatypeUris.LANG_STRING ) );
    }
 
    private DataTypeIec61360 mapIec61360DataType( final Characteristic characteristic ) {
@@ -689,24 +688,32 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
    }
 
    private <T extends Collection> Environment visitCollectionProperty( final T collection, final Context context ) {
-      final String listIdShort = collection.getDataType()
+      final Optional<Type> dataType = collection.getDataType();
+      final DataTypeDefXsd dataTypeDefXsd = dataType
+            .filter( Type::isScalar )
+            .map( Type::getUrn )
+            .map( AasDataTypeMapper::mapAspectTypeToAasXsdDataType )
+            .orElse( null );
+      final String listIdShort = dataType
             .filter( Entity.class::isInstance )
             .map( DEFAULT_MAPPER::determineIdShortFor )
             .orElse( null );
-      final Optional<Reference> semanticIdListElement = collection.getDataType()
+      final Optional<Reference> semanticIdListElement = dataType
             .filter( Entity.class::isInstance )
             .map( Entity.class::cast )
             .map( entity -> buildReferenceForCollection( DEFAULT_MAPPER.determineIdentifierFor( entity ) ) );
 
       final SubmodelElementBuilder defaultBuilder = property -> {
+         final SubmodelElement value = decideOnMapping( property, context );
          final DefaultSubmodelElementList.Builder submodelBuilder = new DefaultSubmodelElementList.Builder()
                .idShort( AasIdShort.from( listIdShort != null ? listIdShort : property.getName() ) )
                .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
                .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
-               .value( List.of( decideOnMapping( property, context ) ) )
-               .typeValueListElement( AasSubmodelElements.SUBMODEL_ELEMENT_COLLECTION )
+               .value( List.of( clearDirectListChildIdShort( value ) ) )
+               .typeValueListElement( SubmodelToAspectUtils.submodelElementType( value ) )
+               .valueTypeListElement( dataTypeDefXsd )
                .supplementalSemanticIds( buildGlobalReferenceForSeeReferences( collection ) )
-               .orderRelevant( false );
+               .orderRelevant( collection.isOrdered() );
 
          semanticIdListElement.ifPresent( submodelBuilder::semanticIdListElement );
 
@@ -720,21 +727,24 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
 
       final SubmodelElementBuilder listBuilder =
             tryFindPropertyMapper( context.getProperty() )
-                  .flatMap( mapper -> collection.getDataType().map(
+                  .flatMap( mapper -> dataType.map(
                         type -> (SubmodelElementBuilder) ( Property property ) -> mapper.mapToAasProperty( type, property, context ) ) )
                   .or( () -> context.getRawPropertyValue()
                         .filter( ArrayNode.class::isInstance )
                         .map( ArrayNode.class::cast )
                         .map( arrayNode -> ( final Property property ) -> {
-                           final List<SubmodelElement> values = getValues( collection, property, context, arrayNode );
+                           final List<SubmodelElement> values =
+                                 clearDirectListChildIdShorts( getValues( collection, property, context, arrayNode ) );
                            final String propertyUrn = DEFAULT_MAPPER.determineIdentifierFor( property );
                            return new DefaultSubmodelElementList.Builder()
                                  .idShort( AasIdShort.from( listIdShort != null ? listIdShort : property.getName() ) )
                                  .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
                                  .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
                                  .value( values )
-                                 .typeValueListElement( AasSubmodelElements.SUBMODEL_ELEMENT )
-                                 .orderRelevant( false )
+                                 .typeValueListElement(
+                                       values.isEmpty() ? null : SubmodelToAspectUtils.submodelElementType( values.getFirst() ) )
+                                 .valueTypeListElement( dataTypeDefXsd )
+                                 .orderRelevant( collection.isOrdered() )
                                  .semanticId( buildReferenceForCollection( propertyUrn ) )
                                  .semanticIdListElement( semanticIdListElement.orElse( null ) )
                                  .build();
@@ -746,13 +756,23 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       return context.getEnvironment();
    }
 
+   private SubmodelElement clearDirectListChildIdShort( final SubmodelElement submodelElement ) {
+      submodelElement.setIdShort( null );
+      return submodelElement;
+   }
+
+   private List<SubmodelElement> clearDirectListChildIdShorts( final List<SubmodelElement> submodelElements ) {
+      submodelElements.forEach( this::clearDirectListChildIdShort );
+      return submodelElements;
+   }
+
    private <T extends Collection> List<SubmodelElement> getValues( final T collection, final Property property, final Context context,
          final ArrayNode arrayNode ) {
       return collection.getDataType()
             .map( dataType -> {
                if ( Scalar.class.isAssignableFrom( dataType.getClass() ) ) {
                   return List.of( (SubmodelElement) new DefaultBlob.Builder().value( StreamSupport.stream( arrayNode.spliterator(), false )
-                        .map( node -> node.isValueNode() ? node.asText() : node.toString() )
+                        .map( node -> node.isValueNode() ? node.asString() : node.toString() )
                         .collect( Collectors.joining( "," ) )
                         .getBytes( StandardCharsets.UTF_8 ) )
                         .contentType( "text/plain" ).build() );

@@ -44,10 +44,10 @@ class AspectStreamTraversalVisitorTest {
    void testLoadAspectExpectSuccess( final TestAspect testAspect ) {
       final AspectModel aspectModel = TestResources.load( testAspect );
       assertThat( aspectModel.files() ).hasSize( 1 );
-      final AspectModelFile file = aspectModel.files().iterator().next();
+      final AspectModelFile file = aspectModel.files().getFirst();
       final Model model = file.sourceModel();
       assertThat( file.aspects() ).hasSize( 1 );
-      final Aspect aspect = file.aspects().iterator().next();
+      final Aspect aspect = file.aspects().getFirst();
 
       final Set<String> modelElementUris = Streams.stream( model.listStatements( null, RDF.type, (RDFNode) null ) )
             .map( Statement::getSubject )
