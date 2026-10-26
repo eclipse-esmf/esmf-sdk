@@ -42,6 +42,8 @@ import org.eclipse.esmf.util.process.ProcessLauncher;
 import org.eclipse.esmf.util.process.ProcessLauncher.ExecutionResult;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.parquet.hadoop.ParquetFileReader;
+import org.apache.parquet.io.LocalInputFile;
 import org.apache.tika.mime.MediaType;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.RepeatedTest;
@@ -840,6 +842,21 @@ class SammCliTest extends SammCliAbstractTest {
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
       assertThat( targetFile ).exists().isNotEmpty();
+   }
+
+   @Test
+   void testAspectToParquetWithCount( @TempDir final Path outputDirectory ) throws IOException {
+      final File targetFile = outputFile( outputDirectory, "output.parquet" );
+      final String input = inputFile( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).getAbsolutePath();
+      final ExecutionResult result = sammCli.runAndExpectSuccess(
+            "--disable-color", "aspect", input, "to", "parquet", "--count", "3",
+            "--output", targetFile.getAbsolutePath() );
+
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      try ( final ParquetFileReader reader = ParquetFileReader.open( new LocalInputFile( targetFile.toPath() ) ) ) {
+         assertThat( reader.getRecordCount() ).isEqualTo( 3 );
+      }
    }
 
    @Test

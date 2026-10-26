@@ -47,9 +47,16 @@ public class GenerateParquetPayload extends AspectModelMojo {
    @Parameter( defaultValue = "false" )
    private boolean randomTimestamp;
 
+   @Parameter( defaultValue = "1" )
+   private int count;
+
    @Override
    public void executeGeneration() throws MojoExecutionException, MojoFailureException {
       validateParameters();
+
+      if ( count < 1 ) {
+         throw new MojoExecutionException( "The value for count must be greater than zero." );
+      }
 
       final Set<Aspect> aspects = loadAspects();
       for ( final Aspect context : aspects ) {
@@ -58,6 +65,7 @@ public class GenerateParquetPayload extends AspectModelMojo {
                .currentTimestamp( currentTimestamp )
                .ignoreExampleValue( ignoreExampleValue )
                .randomTimestamp( randomTimestamp )
+               .count( count )
                .build();
          final AspectModelParquetPayloadGenerator generator = new AspectModelParquetPayloadGenerator( context, config );
          for ( final ParquetArtifact artifact : generator.generate().toList() ) {

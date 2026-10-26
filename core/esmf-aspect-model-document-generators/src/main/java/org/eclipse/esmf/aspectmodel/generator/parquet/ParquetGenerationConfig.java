@@ -34,6 +34,7 @@ import io.soabase.recordbuilder.core.RecordBuilder;
  *        fixed default timestamp (start of Unix epoch)
  * @param randomTimestamp whether to generate random date/time values between 1970 (inclusive) and
  *        2100 (exclusive) in UTC instead of using the Unix epoch
+ * @param count the number of records to generate
  */
 @RecordBuilder
 public record ParquetGenerationConfig(
@@ -42,7 +43,8 @@ public record ParquetGenerationConfig(
       CompressionCodecName compressionCodec,
       boolean ignoreExampleValue,
       boolean currentTimestamp,
-      boolean randomTimestamp
+      boolean randomTimestamp,
+      int count
 ) implements GenerationConfig {
    public ParquetGenerationConfig {
       if ( randomStrategy == null ) {
@@ -50,6 +52,9 @@ public record ParquetGenerationConfig(
       }
       if ( compressionCodec == null ) {
          compressionCodec = CompressionCodecName.SNAPPY;
+      }
+      if ( count < 1 ) {
+         count = 1;
       }
    }
 }
