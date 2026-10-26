@@ -13,13 +13,19 @@
 
 package org.eclipse.esmf.aspect.to;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.ResolverConfigurationMixin;
 import org.eclipse.esmf.aspect.AspectToCommand;
 import org.eclipse.esmf.aspectmodel.generator.json.AspectModelJsonPayloadGenerator;
+import org.eclipse.esmf.aspectmodel.generator.json.JsonPayloadArtifact;
 import org.eclipse.esmf.aspectmodel.generator.json.JsonPayloadGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.json.JsonPayloadGenerationConfigBuilder;
+import org.eclipse.esmf.exception.CommandException;
 
 import picocli.CommandLine;
 
@@ -73,6 +79,11 @@ public class AspectToJsonCommand extends AbstractCommand {
       description = "Ignore example values defined in the Aspect Model and always generate random values." )
    private boolean ignoreExampleValue = false;
 
+   @CommandLine.Option(
+      names = { "--count" },
+      description = "Number of JSON records to generate in JSON Lines format" )
+   private Integer count;
+
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
 
@@ -87,6 +98,10 @@ public class AspectToJsonCommand extends AbstractCommand {
       setDetails( details );
       setResolverConfig( resolverConfiguration );
 
+      if ( count != null && count < 1 ) {
+         throw new CommandException( "The value for --count must be greater than zero." );
+      }
+
       final JsonPayloadGenerationConfig config = JsonPayloadGenerationConfigBuilder.builder()
             .addTypeAttributeForEntityInheritance( addTypeAttribute )
             .failOnInvalidRegularExpressions( failOnEmptyExampleValue )
@@ -97,9 +112,25 @@ public class AspectToJsonCommand extends AbstractCommand {
 
       final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator(
             getInputHandler( parentCommand.parentCommand.getInput() ).loadAspect(), config );
+
       // we intentionally override the name of the generated artifact here to the name explicitly desired
       // by the user (outputFilePath),
       // as opposed to what the model thinks it should be called (name)
-      generator.generate( name -> getStreamForFile( outputFilePath ) );
+      if ( count == null ) {
+         generator.generate( name -> getStreamForFile( outputFilePath ) );
+         return;
+      }
+
+      try ( final OutputStream output = getStreamForFile( outputFilePath ) ) {
+         for ( int i = 0; i < count; i++ ) {
+            for ( final JsonPayloadArtifact artifact : generator.generate().toList() ) {
+               output.write( artifact.getContent().toString().getBytes( StandardCharsets.UTF_8 ) );
+               output.write( '\n' );
+            }
+         }
+         output.flush();
+      } catch ( final IOException exception ) {
+         throw new CommandException( exception );
+      }
    }
 }
