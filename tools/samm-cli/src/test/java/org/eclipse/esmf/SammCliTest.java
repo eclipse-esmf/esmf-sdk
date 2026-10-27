@@ -1342,6 +1342,16 @@ class SammCliTest extends SammCliAbstractTest {
    }
 
    @Test
+   void testAspectToPostgreSqlWithCustomColumnToStdout() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "sql",
+            "--dialect", "postgresql", "--custom-column", "custom TEXT[] NOT NULL" );
+      assertThat( result.stdout() ).contains( "CREATE TABLE" );
+      assertThat( result.stdout() ).contains( "custom TEXT[] NOT NULL" );
+      assertThat( result.stdout() ).doesNotContain( "TBLPROPERTIES" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
    void testAspectEditMoveExistingFile( @TempDir final Path outputDirectory ) throws IOException {
       // Set up file system structure of writable files
       final Path modelLocation = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )

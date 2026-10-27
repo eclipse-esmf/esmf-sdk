@@ -560,16 +560,14 @@ Configuration Properties:
 | `githubServerIds` | A list of `githubServerId` values, each referring to a `<server>` entry in the Maven `settings.xml`, defining the GitHub repositories to resolve models from. | `List<String>` | none | {nok}
 | `githubServerId` | The id of the `<server>` entry describing the GitHub repository to resolve models from. | `String` | none | {nok}
 | `outputDirectory` | The path to the directory where the generated SQL script will be written to. | `String` | none | {ok}
-| `dialect` | The SQL dialect to generate for. | `String` | `databricks` | {nok}
+| `dialect` | The SQL dialect to generate for: `databricks` or `postgresql`. | `String` | `databricks` | {nok}
 | `strategy` | The mapping strategy to use. | `String` | `denormalized` | {nok}
 | `language` | The language from the model to use for generated comments. | `String` | en | {nok}
 | `includeTableComment` | Include table comment in the generated SQL script. | `Boolean` | `true` | {nok}
 | `includeColumnComments` | Include column comments in the generated SQL script. | `Boolean` | `true` | {nok}
-| `tableCommandPrefix` | The prefix to use for Databricks table creation commands. | `String` | `CREATE TABLE IF NOT EXISTS` | {nok}
-| `decimalPrecision` | The precision to use for Databricks decimal columns, between 1 and 38. See also notes in
-  the xref:java-code-generation.adoc#databricks-type-mapping[Databricks type mapping]. | `Integer` | 10 | {nok}
-| `decimalScale` | The scale to use for Databricks decimal columns, between 0 and the precision. See also notes in
-the xref:java-code-generation.adoc#databricks-type-mapping[Databricks type mapping]. | `Integer` | 0 | {nok}
+| `tableCommandPrefix` | The prefix to use for table creation commands. | `String` | `CREATE TABLE IF NOT EXISTS` | {nok}
+| `decimalPrecision` | The precision to use for decimal columns. Databricks supports up to 38 and PostgreSQL up to 1000. | `Integer` | 10 | {nok}
+| `decimalScale` | The scale to use for decimal columns, between 0 and the precision. | `Integer` | 0 | {nok}
 | `customColumns` | Contains `<column>` elements, each of which defines a custom column to add. Column defintions follow the pattern `column_name DATATYPE [NOT NULL] [COMMENT 'custom']`. | `<column>`... | | {nok}
 |===
 

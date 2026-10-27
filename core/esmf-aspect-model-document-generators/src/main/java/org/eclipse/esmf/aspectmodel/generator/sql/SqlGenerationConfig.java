@@ -31,7 +31,8 @@ public record SqlGenerationConfig(
       DialectSpecificConfig dialectSpecificConfig
 ) implements GenerationConfig {
    public enum Dialect {
-      DATABRICKS
+      DATABRICKS,
+      POSTGRESQL
    }
 
    public enum MappingStrategy {
