@@ -20,6 +20,7 @@ import org.eclipse.esmf.aspect.AspectToCommand;
 import org.eclipse.esmf.aspectmodel.generator.parquet.AspectModelParquetPayloadGenerator;
 import org.eclipse.esmf.aspectmodel.generator.parquet.ParquetGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.parquet.ParquetGenerationConfigBuilder;
+import org.eclipse.esmf.exception.CommandException;
 
 import picocli.CommandLine;
 
@@ -66,6 +67,12 @@ public class AspectToParquetCommand extends AbstractCommand {
       description = "Ignore example values defined in the Aspect Model and always generate random values." )
    private boolean ignoreExampleValue = false;
 
+   @CommandLine.Option(
+      names = { "--count" },
+      description = "Number of Parquet records to generate",
+      defaultValue = "1" )
+   private int count;
+
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
 
@@ -80,11 +87,16 @@ public class AspectToParquetCommand extends AbstractCommand {
       setDetails( details );
       setResolverConfig( resolverConfiguration );
 
+      if ( count < 1 ) {
+         throw new CommandException( "The value for --count must be greater than zero." );
+      }
+
       final ParquetGenerationConfig config = ParquetGenerationConfigBuilder.builder()
             .addTypeAttributeForEntityInheritance( addTypeAttribute )
             .currentTimestamp( currentTimestamp )
             .randomTimestamp( randomTimestamp )
             .ignoreExampleValue( ignoreExampleValue )
+            .count( count )
             .build();
       final AspectModelParquetPayloadGenerator generator = new AspectModelParquetPayloadGenerator(
             getInputHandler( parentCommand.parentCommand.getInput() ).loadAspect(), config );

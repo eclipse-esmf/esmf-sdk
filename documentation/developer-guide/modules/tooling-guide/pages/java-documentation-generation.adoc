@@ -84,7 +84,8 @@ The sample JSON payload generator is used to create a valid JSON payload for an 
 an Aspect that implements that Aspect model. This follows the
 xref:samm-specification:ROOT:payloads.adoc#mapping-to-json[mapping rules] as defined in the Meta Model specification.
 The generator uses `samm:exampleValue`s of Properties if present, otherwise random values corresponding to the
-respective data types are generated.
+respective data types are generated. Use `ParquetGenerationConfigBuilder.count()` to generate multiple records in
+one Parquet file. Values without an example value are generated separately for each record.
 
 ++++
 <details>

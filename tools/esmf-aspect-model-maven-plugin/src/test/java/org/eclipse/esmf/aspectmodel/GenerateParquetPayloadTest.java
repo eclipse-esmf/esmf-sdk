@@ -13,6 +13,12 @@
 
 package org.eclipse.esmf.aspectmodel;
 
+import java.io.IOException;
+import java.nio.file.Path;
+
+import org.apache.parquet.hadoop.ParquetFileReader;
+import org.apache.parquet.io.LocalInputFile;
+
 import org.apache.maven.api.plugin.testing.InjectMojo;
 import org.apache.maven.api.plugin.testing.MojoTest;
 import org.junit.jupiter.api.Test;
@@ -36,8 +42,12 @@ public class GenerateParquetPayloadTest extends AspectModelMojoTest {
       goal = GenerateParquetPayload.MAVEN_GOAL,
       pom = "src/test/resources/test-pom-valid-aspect-model-parquet-options/pom.xml" )
    public void testGenerateParquetPayloadWithPayloadGenerationOptions(
-         final GenerateParquetPayload generateParquetPayload ) {
+         final GenerateParquetPayload generateParquetPayload ) throws IOException {
       assertThatCode( generateParquetPayload::execute ).doesNotThrowAnyException();
-      assertThat( generatedFilePath( "AspectWithSimpleTypes.parquet" ) ).exists().isNotEmptyFile();
+      final Path generatedFile = generatedFilePath( "AspectWithSimpleTypes.parquet" );
+      assertThat( generatedFile ).exists().isNotEmptyFile();
+      try ( final ParquetFileReader reader = ParquetFileReader.open( new LocalInputFile( generatedFile ) ) ) {
+         assertThat( reader.getRecordCount() ).isEqualTo( 3 );
+      }
    }
 }
