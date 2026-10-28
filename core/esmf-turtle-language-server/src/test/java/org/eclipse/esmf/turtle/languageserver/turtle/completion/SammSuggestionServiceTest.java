@@ -67,7 +67,7 @@ class SammSuggestionServiceTest {
       assertThat( item.getInsertTextFormat() ).isEqualTo( InsertTextFormat.Snippet );
       assertThat( item.getTextEdit().getLeft().getNewText() ).isEqualTo( """
          :${1:propertyName} a samm:Property ;
-             samm:characteristic :${2:CharacteristicName} .$0""" );
+            samm:characteristic :${2:CharacteristicName} .$0""" );
       assertThat( item.getTextEdit().getLeft().getRange().getStart() ).isEqualTo( request.position );
       assertThat( item.getTextEdit().getLeft().getRange().getEnd() ).isEqualTo( request.position );
       assertValid( apply( request, item ) );
@@ -123,7 +123,7 @@ class SammSuggestionServiceTest {
       final Request request = request( HEADER.replace( "\n", "\r\n" ) + "# 😀\r\n\t|" );
       final CompletionItem item = snippetNamed( request, "SAMM Property" );
       assertThat( item.getTextEdit().getLeft().getRange().getStart() ).isEqualTo( new Position( 4, 1 ) );
-      assertThat( item.getTextEdit().getLeft().getNewText() ).contains( "\r\n\t    samm:characteristic" );
+      assertThat( item.getTextEdit().getLeft().getNewText() ).contains( "\r\n\t   samm:characteristic" );
       final Request unicode = request( HEADER + ":p a samm:Property ; samm:preferredName \"😀\"@en ; samm:des| ." );
       final CompletionItem description = snippetNamed( unicode, "SAMM description" );
       assertThat( description.getTextEdit().getLeft().getRange().getEnd() ).isEqualTo( unicode.position );
@@ -274,7 +274,7 @@ class SammSuggestionServiceTest {
 
    static Stream<SnippetDefinition> allTopLevelSnippets() {
       return new SammSnippetCatalog().allSnippets().stream()
-            .filter( snippet -> snippet.targetPosition() == SammSuggestionContextDetector.TargetPosition.TOP_LEVEL_SUBJECT );
+            .filter( snippet -> snippet.targetPosition() == SammCompletionContext.TargetPosition.TOP_LEVEL_SUBJECT );
    }
 
    @ParameterizedTest
@@ -318,7 +318,7 @@ class SammSuggestionServiceTest {
             .doesNotContain( "SAMM SingleEntity", "SAMM Measurement", "SAMM Enumeration" );
    }
 
-   static Stream<String> excludedContexts() {
+   static Stream<String> nonSnippetContexts() {
       return Stream.of(
             HEADER + "# temperature.prop|",
             HEADER + "# comment 😀 |\n",
@@ -329,14 +329,6 @@ class SammSuggestionServiceTest {
             HEADER + ":p a samm:Property ; samm:see <urn:example:unterminated|",
             HEADER + ":p a samm:Property ; samm:characteristic samm:des|",
             HEADER + ":p a :CustomNonSammType ; samm:des|",
-            HEADER + ":p a samm:Property ; samm:description \"existing\"@en ; samm:des|",
-            HEADER + ":p a samm:Property ; samm:des| ; samm:description \"later\"@en .",
-            HEADER + ":p a samm:Property ; samm:des| .\n:p samm:description \"other statement\"@en .",
-            HEADER + ":p a samm:Property ; samm:des| .\n@prefix later: <urn:samm:example.snippets:1.0.0#> .\n"
-                  + "later:p samm:description \"later alias\"@en .",
-            HEADER + "@prefix model: <urn:samm:example.snippets:1.0.0#> .\n"
-                  + ":p a samm:Property ; samm:des| .\nmodel:p samm:description \"alias\"@en .",
-            HEADER + ":p a samm:Property ; samm:des| .\n:p <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#description> \"full IRI\"@en .",
             HEADER + ":p a samm:Property ; samm:characteristic [ samm:des| ] .",
             HEADER + ":p a samm:Property ; samm:see ( samm:des| ) .",
             HEADER + ":p a samm:Property ; samm:characteristic [\n temperature.prop|",
@@ -359,15 +351,45 @@ class SammSuggestionServiceTest {
             "@prefix : <urn:samm:example.snippets:1.0.0#> .\n|",
             "@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .\n|",
             HEADER + "@prefix other: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#> .\n|",
-            HEADER + "@prefix samm: <urn:example:redefined#> .\\n|" );
+            HEADER + "@prefix samm: <urn:example:redefined#> .\n|" );
    }
 
    @ParameterizedTest
-   @MethodSource( "excludedContexts" )
-   void suppressesIneligibleOrAmbiguousSuggestions( final String source ) {
+   @MethodSource( "nonSnippetContexts" )
+   void returnsNoSnippetsOutsideEligibleContexts( final String source ) {
       final Request request = request( source );
-      assertThat( snippets.complete( request.document, request.position )
-            .stream().filter( item -> item.getLabel().equals( "SAMM description" ) ) ).isEmpty();
+      assertThat( snippets.complete( request.document, request.position ) ).isEmpty();
+   }
+
+   static Stream<String> duplicateDescriptionContexts() {
+      return Stream.of(
+            HEADER + ":p a samm:Property ; samm:description \"existing\"@en ; samm:des|",
+            HEADER + ":p a samm:Property ; samm:des| ; samm:description \"later\"@en .",
+            HEADER + ":p a samm:Property ; samm:des| .\n:p samm:description \"other statement\"@en .",
+            HEADER + ":p a samm:Property ; samm:des| .\n@prefix later: <urn:samm:example.snippets:1.0.0#> .\n"
+                  + "later:p samm:description \"later alias\"@en .",
+            HEADER + "@prefix model: <urn:samm:example.snippets:1.0.0#> .\n"
+                  + ":p a samm:Property ; samm:des| .\nmodel:p samm:description \"alias\"@en .",
+            HEADER + ":p a samm:Property ; samm:des| .\n:p <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#description>"
+                  + " \"full IRI\"@en ." );
+   }
+
+   @ParameterizedTest
+   @MethodSource( "duplicateDescriptionContexts" )
+   void suppressesDescriptionAlreadyDeclaredForTheSameSubject( final String source ) {
+      final Request request = request( source );
+      assertThat( snippets.complete( request.document, request.position ) ).isEmpty();
+   }
+
+   @Test
+   void existingDescriptionKeepsOtherEligiblePredicates() {
+      final Request request = request( HEADER + ":p a samm:Property ; samm:description \"existing\"@en ; | ." );
+      final List<CompletionItem> items = snippets.complete( request.document, request.position );
+      assertThat( items ).extracting( CompletionItem::getLabel )
+            .containsExactly( "SAMM preferredName", "SAMM see", "SAMM exampleValue" );
+      for ( final CompletionItem item : items ) {
+         assertValid( apply( request, item ) );
+      }
    }
 
    @Test
@@ -381,7 +403,8 @@ class SammSuggestionServiceTest {
 
    @Test
    void ordersSnippetsFromMostMatchedToLessMatchedCaseInsensitively() {
-      // 1. Top-level typed "prop": "SAMM Property" (prefix match) before "SAMM AbstractProperty" (CamelCase match),
+      // 1. Top-level typed "prop": "SAMM Property" (prefix match) before "SAMM AbstractProperty"
+      // (CamelCase match),
       // other non-matching snippets excluded, and sortText assigned in order
       final Request topLevelProp = request( HEADER + "\nprop|" );
       final List<CompletionItem> propItems = snippets.complete( topLevelProp.document, topLevelProp.position );
@@ -396,7 +419,8 @@ class SammSuggestionServiceTest {
             .extracting( CompletionItem::getLabel )
             .containsExactly( "SAMM Property", "SAMM AbstractProperty" );
 
-      // 2. Top-level typed "entity": "SAMM Entity" (exact) > "SAMM SingleEntity" (shorter) > "SAMM AbstractEntity" (longer)
+      // 2. Top-level typed "entity": "SAMM Entity" (exact) > "SAMM SingleEntity" (shorter) > "SAMM
+      // AbstractEntity" (longer)
       final Request topLevelEntity = request( FULL_HEADER + "\nentity|" );
       final List<CompletionItem> entityItems = snippets.complete( topLevelEntity.document, topLevelEntity.position );
       assertThat( entityItems ).extracting( CompletionItem::getLabel )
@@ -410,7 +434,8 @@ class SammSuggestionServiceTest {
       assertThat( desItems ).extracting( CompletionItem::getLabel )
             .contains( "SAMM description" );
 
-      // 4. Predicate typed "samm:p" on Aspect: prefix match "preferredName" (Tier 1) comes before substring match "description" (Tier 3)
+      // 4. Predicate typed "samm:p" on Aspect: prefix match "preferredName" (Tier 1) comes before
+      // substring match "description" (Tier 3)
       final Request predicateP = request( FULL_HEADER + ":A a samm:Aspect ;\n    samm:p|" );
       final List<CompletionItem> pItems = snippets.complete( predicateP.document, predicateP.position );
       assertThat( pItems ).extracting( CompletionItem::getLabel )
@@ -430,6 +455,50 @@ class SammSuggestionServiceTest {
       final List<CompletionItem> anonItems = snippets.complete( anonLen.document, anonLen.position );
       assertThat( anonItems ).extracting( CompletionItem::getLabel )
             .containsExactly( "SAMM Anonymous LengthConstraint" );
+   }
+
+   @Test
+   void seeSnippetUsesVendorNeutralExampleUri() {
+      final Request request = request( HEADER + ":p a samm:Property ;\n    samm:se| .\n" );
+      final CompletionItem item = snippetNamed( request, "SAMM see" );
+      assertThat( item.getTextEdit().getLeft().getNewText() ).contains( "https://example.com/term/" )
+            .doesNotContain( "bosch.com" );
+      assertValid( apply( request, item ) );
+   }
+
+   @Test
+   void filterTextIncludesKeywordsAndTypedPrefixForEditorFiltering() {
+      final Request request = request( HEADER + ":p a samm:Property ;\n    samm:des|\n" );
+      final CompletionItem item = snippetNamed( request, "SAMM description" );
+      assertThat( item.getFilterText() ).contains( "samm:des" )
+            .contains( "samm:description" )
+            .contains( "description" );
+   }
+
+   @Test
+   void positionAtHandlesBothLfAndCrlfLineEndings() {
+      final String sourceLf = "abc\ndef\nxyz";
+      assertThat( SammSuggestionContextDetector.positionAt( sourceLf, 0 ) ).isEqualTo( new Position( 0, 0 ) );
+      assertThat( SammSuggestionContextDetector.positionAt( sourceLf, 4 ) ).isEqualTo( new Position( 1, 0 ) );
+      assertThat( SammSuggestionContextDetector.positionAt( sourceLf, 6 ) ).isEqualTo( new Position( 1, 2 ) );
+
+      final String sourceCrlf = "abc\r\ndef\r\nxyz";
+      assertThat( SammSuggestionContextDetector.positionAt( sourceCrlf, 0 ) ).isEqualTo( new Position( 0, 0 ) );
+      assertThat( SammSuggestionContextDetector.positionAt( sourceCrlf, 5 ) ).isEqualTo( new Position( 1, 0 ) );
+      assertThat( SammSuggestionContextDetector.positionAt( sourceCrlf, 7 ) ).isEqualTo( new Position( 1, 2 ) );
+   }
+
+   @Test
+   void anonymousSnippetRenderingOmitsServerBaseIndentation() {
+      final Request request = request( FULL_HEADER + ":T a samm-c:Trait ;\n   samm-c:constraint [Len|] ." );
+      final CompletionItem item = snippetNamed( request, "SAMM Anonymous LengthConstraint" );
+      assertThat( item.getTextEdit().getLeft().getNewText() ).isEqualTo( """
+         [
+            a samm-c:LengthConstraint ;
+            samm-c:minValue "${1:2}"^^xsd:nonNegativeInteger ;
+            samm-c:maxValue "${2:2}"^^xsd:nonNegativeInteger
+         ]$0""" );
+      assertValid( apply( request, item ) );
    }
 
    private CompletionItem snippetNamed( final Request request, final String label ) {

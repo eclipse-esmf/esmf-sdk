@@ -45,7 +45,9 @@ import org.eclipse.esmf.turtle.languageserver.turtle.ValidationCoordinator;
 import org.eclipse.esmf.turtle.languageserver.turtle.navigation.TurtleDefinitionService;
 
 import com.google.common.collect.Streams;
+import org.eclipse.lsp4j.ClientCapabilities;
 import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.CompletionItemCapabilities;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.CompletionParams;
 import org.eclipse.lsp4j.DefinitionParams;
@@ -55,6 +57,7 @@ import org.eclipse.lsp4j.DidOpenTextDocumentParams;
 import org.eclipse.lsp4j.DidSaveTextDocumentParams;
 import org.eclipse.lsp4j.DocumentSymbol;
 import org.eclipse.lsp4j.DocumentSymbolParams;
+import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.LocationLink;
 import org.eclipse.lsp4j.SemanticTokens;
@@ -157,8 +160,8 @@ public class TurtleTextDocumentService implements TextDocumentService {
       return validationCoordinator.validateAsync( parsedDocument );
    }
 
-   public void setSnippetSupport( final boolean snippetSupport ) {
-      this.snippetSupport = snippetSupport;
+   public void initialize( final InitializeParams params ) {
+      snippetSupport = supportsSnippets( params );
    }
 
    @Override
@@ -279,5 +282,17 @@ public class TurtleTextDocumentService implements TextDocumentService {
                parsedDocument -> Either
                      .forLeft( turtleCompletionService.complete( parsedDocument, position, snippetSupport ) ) );
       }, asyncExecutor );
+   }
+
+   private boolean supportsSnippets( final InitializeParams params ) {
+      if ( params == null || params.getCapabilities() == null ) {
+         return false;
+      }
+      final ClientCapabilities client = params.getCapabilities();
+      if ( client.getTextDocument() == null || client.getTextDocument().getCompletion() == null ) {
+         return false;
+      }
+      final CompletionItemCapabilities item = client.getTextDocument().getCompletion().getCompletionItem();
+      return item != null && Boolean.TRUE.equals( item.getSnippetSupport() );
    }
 }

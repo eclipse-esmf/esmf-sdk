@@ -15,21 +15,30 @@ package org.eclipse.esmf.turtle.languageserver.turtle.completion;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.net.URI;
 import java.util.List;
+import java.util.stream.Stream;
 
+import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TreeSitterTurtleParserService;
 import org.eclipse.esmf.turtle.languageserver.turtle.TurtleCompletionService;
 
+import org.apache.jena.rdf.model.Model;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionItemKind;
 import org.eclipse.lsp4j.CompletionParams;
+import org.eclipse.lsp4j.InsertTextFormat;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
+import org.eclipse.lsp4j.TextEdit;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class SammAttributeValueCompletionServiceTest {
    private static final String FULL_HEADER = """
@@ -39,7 +48,12 @@ class SammAttributeValueCompletionServiceTest {
       @prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.2.0#> .
       @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.2.0#> .
       @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+      @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
       """;
+
+   private static final String ALIASED_HEADER = FULL_HEADER.replace( "@prefix samm:", "@prefix meta:" )
+         .replace( "@prefix samm-c:", "@prefix c:" ).replace( "@prefix samm-e:", "@prefix e:" )
+         .replace( "@prefix unit:", "@prefix u:" ).replace( "@prefix xsd:", "@prefix xs:" ).replace( "@prefix rdf:", "@prefix r:" );
 
    private final TreeSitterTurtleParserService parser = new TreeSitterTurtleParserService();
    private final SammAttributeValueCompletionService attributeService = new SammAttributeValueCompletionService();
@@ -272,6 +286,11 @@ class SammAttributeValueCompletionServiceTest {
             .contains( "unit:length", "unit:mass", "unit:time" );
       assertThat( items ).extracting( CompletionItem::getKind )
             .containsOnly( CompletionItemKind.Reference );
+      assertThat( items ).allSatisfy( item -> {
+         assertThat( item.getSortText() ).isNull();
+         assertThat( item.getDetail() ).isEqualTo( "QuantityKind" );
+         assertThat( item.getFilterText() ).isEqualTo( item.getLabel() + " " + item.getLabel().substring( "unit:".length() ) );
+      } );
    }
 
    @Test
@@ -298,15 +317,18 @@ class SammAttributeValueCompletionServiceTest {
       final List<CompletionItem> items = attributeService.complete( req.document, req.position );
       assertThat( items ).isNotEmpty();
       assertThat( items ).extracting( CompletionItem::getLabel )
-            .contains( "samm-c:Text", "samm-c:Boolean", "samm-c:Timestamp", ":MyTrait" );
+            .containsExactly( "samm-c:Text", "samm-c:Boolean", "samm-c:Timestamp", "samm-c:MultiLanguageText", "samm-c:Language",
+                  "samm-c:Locale", "samm-c:MimeType", "samm-c:ResourcePath", "samm-c:UnitReference", ":MyTrait" );
 
       final CompletionItem textItem = items.stream().filter( i -> "samm-c:Text".equals( i.getLabel() ) ).findFirst().orElseThrow();
       assertThat( textItem.getDetail() ).isEqualTo( "Predefined Characteristic" );
-      assertThat( textItem.getSortText() ).startsWith( "01_" );
+      assertThat( textItem.getSortText() ).isEqualTo( "01_01_Text" );
+      assertThat( textItem.getFilterText() ).isEqualTo( "samm-c:Text Text" );
 
       final CompletionItem localItem = items.stream().filter( i -> ":MyTrait".equals( i.getLabel() ) ).findFirst().orElseThrow();
       assertThat( localItem.getDetail() ).isEqualTo( "Local Characteristic" );
-      assertThat( localItem.getSortText() ).startsWith( "02_" );
+      assertThat( localItem.getSortText() ).isEqualTo( "02_01_:MyTrait" );
+      assertThat( localItem.getFilterText() ).isEqualTo( ":MyTrait MyTrait" );
    }
 
    @Test
@@ -345,10 +367,15 @@ class SammAttributeValueCompletionServiceTest {
             .contains( "xsd:string", "xsd:integer", "xsd:boolean", "rdf:langString", "samm:curie", ":LocalEntity" );
 
       final CompletionItem stringItem = items.stream().filter( i -> "xsd:string".equals( i.getLabel() ) ).findFirst().orElseThrow();
-      assertThat( stringItem.getSortText() ).startsWith( "01_" );
+      assertThat( stringItem.getSortText() ).isEqualTo( "01_01_string" );
+      assertThat( stringItem.getFilterText() ).isEqualTo( "xsd:string string" );
+      final CompletionItem intItem = items.stream().filter( i -> "xsd:int".equals( i.getLabel() ) ).findFirst().orElseThrow();
+      assertThat( intItem.getSortText() ).isEqualTo( "02_int" );
+      assertThat( intItem.getFilterText() ).isEqualTo( "xsd:int int" );
 
       final CompletionItem localEntityItem = items.stream().filter( i -> ":LocalEntity".equals( i.getLabel() ) ).findFirst().orElseThrow();
-      assertThat( localEntityItem.getSortText() ).startsWith( "03_" );
+      assertThat( localEntityItem.getSortText() ).isEqualTo( "03_01_:LocalEntity" );
+      assertThat( localEntityItem.getFilterText() ).isEqualTo( ":LocalEntity LocalEntity" );
    }
 
    @Test
@@ -381,9 +408,13 @@ class SammAttributeValueCompletionServiceTest {
       final List<CompletionItem> items = attributeService.complete( req.document, req.position );
       assertThat( items ).isNotEmpty();
       assertThat( items ).extracting( CompletionItem::getLabel )
-            .contains( "samm-e:TimeSeriesEntity", ":TsExt" );
-      assertThat( items ).extracting( CompletionItem::getLabel )
-            .doesNotContain( "xsd:string" );
+            .containsExactly( "samm-e:TimeSeriesEntity", ":TsExt" );
+      assertThat( items ).extracting( CompletionItem::getSortText )
+            .containsExactly( "01_TimeSeriesEntity", "02_01_:TsExt" );
+      assertThat( items ).extracting( CompletionItem::getFilterText )
+            .containsExactly( "samm-e:TimeSeriesEntity TimeSeriesEntity", ":TsExt TsExt" );
+      assertThat( items ).extracting( CompletionItem::getDetail )
+            .containsExactly( "SAMM Predefined Entity", "Local Entity (extends TimeSeriesEntity)" );
    }
 
    @Test
@@ -563,6 +594,112 @@ class SammAttributeValueCompletionServiceTest {
       assertThat( items ).isNotEmpty();
       assertThat( items ).extracting( CompletionItem::getLabel )
             .contains( "unit:kilometre", "unit:secondUnitOfTime", "unit:volt" );
+   }
+
+   @ParameterizedTest
+   @MethodSource( "attributeEdits" )
+   void appliesAttributeEditsToCompleteTurtle( final String header, final String body, final String label, final String replaced ) {
+      final Request req = request( header + body );
+      final List<CompletionItem> items = attributeService.complete( req.document, req.position );
+      assertThat( items ).extracting( CompletionItem::getLabel ).contains( label );
+      for ( final CompletionItem item : items ) {
+         final TextEdit edit = item.getTextEdit().getLeft();
+         assertThat( substring( req.source, edit.getRange() ) ).isEqualTo( replaced );
+         assertThat( edit.getNewText() ).isEqualTo( item.getLabel() );
+         assertThat( item.getInsertText() ).isEqualTo( edit.getNewText() );
+         assertThat( item.getInsertTextFormat() ).isEqualTo( InsertTextFormat.PlainText );
+         final String completed = req.source.substring( 0, offset( req.source, edit.getRange().getStart() ) )
+               + edit.getNewText() + req.source.substring( offset( req.source, edit.getRange().getEnd() ) );
+         final Model model = TurtleLoader.loadTurtle( completed, URI.create( "file:///test.ttl" ) ).get();
+         try {
+            assertThat( model.isEmpty() ).isFalse();
+         } finally {
+            model.close();
+         }
+      }
+   }
+
+   private static Stream<Arguments> attributeEdits() {
+      record EditCase(
+            String body, String label, String replaced
+      ) {}
+
+      return Stream.of(
+            new EditCase( ":R a samm-c:RangeConstraint ; samm-c:lowerBoundDefinition | .", "samm-c:AT_LEAST", "" ),
+            new EditCase( ":R a samm-c:RangeConstraint ; samm-c:upperBoundDefinition samm-c:AT_|MOST .",
+                  "samm-c:AT_MOST", "samm-c:AT_MOST" ),
+            new EditCase( ":E a samm-c:EncodingConstraint ; samm:value samm:UTF|-16 .", "samm:UTF-8", "samm:UTF-16" ),
+            new EditCase( ":A a samm:Aspect ; samm:properties ( [ samm:property :p ; samm:optional tr|ue ] ) .", "true", "true" ),
+            new EditCase( ":A a samm:Entity ; samm:properties ( [ samm:property :p ; samm:notInPayload | ] ) .", "false", "" ),
+            new EditCase( ":L a samm-c:LanguageConstraint ; samm-c:languageCode \"e|s\" .", "\"en\"", "\"es\"" ),
+            new EditCase( ":L a samm-c:LocaleConstraint ; samm-c:localeCode \"en|-GB\" .", "\"en-US\"", "\"en-GB\"" ),
+            new EditCase( ":F a samm-e:FileResource ; samm-e:mimeType \"app|lication/xml\" .",
+                  "\"application/json\"", "\"application/xml\"" ),
+            new EditCase( ":M a samm-c:Measurement ; samm-c:unit unit:met|re .", "unit:metre", "unit:metre" ),
+            new EditCase( ":D a samm-c:Duration ; samm-c:unit | .", "unit:secondUnitOfTime", "" ),
+            new EditCase( ":Q a samm:QuantityKind ; samm:referenceUnit | .", "unit:metre", "" ),
+            new EditCase( ":U a samm:Unit ; samm:quantityKind | .", "unit:length", "" ),
+            new EditCase( ":C a samm:Characteristic . :p a samm:Property ; samm:characteristic :|C .", ":C", ":C" ),
+            new EditCase( ":T a samm-c:Trait ; samm-c:baseCharacteristic | .", "samm-c:Text", "" ),
+            new EditCase( ":L a samm-c:List ; samm-c:elementCharacteristic | .", "samm-c:Boolean", "" ),
+            new EditCase( ":E a samm-c:Either ; samm-c:left | ; samm-c:right samm-c:Text .", "samm-c:Text", "" ),
+            new EditCase( ":E a samm-c:Either ; samm-c:left samm-c:Text ; samm-c:right | .", "samm-c:Text", "" ),
+            new EditCase( ":C a samm:Characteristic ; samm:dataType xsd:str|ing .", "xsd:string", "xsd:string" ),
+            new EditCase( ":Local a samm:Entity . :C a samm:Characteristic ; samm:dataType | .", ":Local", "" ),
+            new EditCase( ":Local a samm:Entity . :S a samm-c:SingleEntity ; samm:dataType | .", ":Local", "" ),
+            new EditCase( ":Local a samm:Entity ; samm:extends samm-e:TimeSeriesEntity . "
+                  + ":T a samm-c:TimeSeries ; samm:dataType | .", ":Local", "" ),
+            new EditCase( ":Parent a samm:AbstractEntity . :Child a samm:Entity ; samm:extends :Par|ent .", ":Parent", ":Parent" ),
+            new EditCase( ":A a samm:As|pect .", "samm:Aspect", "samm:Aspect" ),
+            new EditCase( ":p a samm:Property ; samm:characteristic [ a | ] .", "samm-c:Trait", "" ),
+            new EditCase( ":T a samm-c:Trait ; samm-c:constraint [ a | ] .", "samm-c:RangeConstraint", "" )
+      ).flatMap( testCase -> Stream.of(
+            Arguments.of( FULL_HEADER, testCase.body(), testCase.label(), testCase.replaced() ),
+            Arguments.of( ALIASED_HEADER, withAliases( testCase.body() ),
+                  withAliases( testCase.label() ), withAliases( testCase.replaced() ) ) ) );
+   }
+
+   private static String withAliases( final String source ) {
+      return source.replace( "samm:", "meta:" ).replace( "samm-c:", "c:" ).replace( "samm-e:", "e:" )
+            .replace( "unit:", "u:" ).replace( "xsd:", "xs:" ).replace( "rdf:", "r:" );
+   }
+
+   @Test
+   void preservesOrderedSingleEntityCompletionMetadata() {
+      final Request req = request( FULL_HEADER + """
+         :Z a samm:Entity .
+         :A a samm:AbstractEntity .
+         :S a samm-c:SingleEntity ; samm:dataType | .
+         """ );
+      final List<CompletionItem> items = attributeService.complete( req.document, req.position );
+      assertThat( items ).extracting( CompletionItem::getLabel ).containsExactly(
+            "samm-e:FileResource", "samm-e:Point3d", "samm-e:Quantity", "samm-e:TimeSeriesEntity", ":A", ":Z" );
+      assertThat( items ).extracting( CompletionItem::getSortText ).containsExactly(
+            "01_01_FileResource", "01_02_Point3d", "01_03_Quantity", "01_04_TimeSeriesEntity", "02_01_:A", "02_02_:Z" );
+      assertThat( items ).extracting( CompletionItem::getFilterText ).containsExactly(
+            "samm-e:FileResource FileResource", "samm-e:Point3d Point3d", "samm-e:Quantity Quantity",
+            "samm-e:TimeSeriesEntity TimeSeriesEntity", ":A A", ":Z Z" );
+      assertThat( items ).extracting( CompletionItem::getDetail ).containsExactly(
+            "SAMM Predefined Entity", "SAMM Predefined Entity", "SAMM Predefined Entity", "SAMM Predefined Entity",
+            "Local Entity", "Local Entity" );
+      assertThat( items ).extracting( CompletionItem::getKind ).containsOnly( CompletionItemKind.Class );
+   }
+
+   @Test
+   void preservesOriginalLocalIndicesWhenExtendsSkipsAbstractEntities() {
+      final Request req = request( FULL_HEADER + """
+         :A a samm:AbstractEntity .
+         :Z a samm:Entity .
+         :Child a samm:Entity ; samm:extends | .
+         """ );
+      final List<CompletionItem> items = attributeService.complete( req.document, req.position );
+      assertThat( items ).extracting( CompletionItem::getLabel ).containsExactly(
+            "samm-e:FileResource", "samm-e:Point3d", "samm-e:Quantity", "samm-e:TimeSeriesEntity", ":A", ":Child", ":Z" );
+      assertThat( items ).extracting( CompletionItem::getSortText ).containsExactly(
+            "01_01_FileResource", "01_02_Point3d", "01_03_Quantity", "01_04_TimeSeriesEntity", "02_01_:A", "03_02_:Child", "03_03_:Z" );
+      assertThat( items ).extracting( CompletionItem::getDetail ).containsExactly(
+            "SAMM Base Entity", "SAMM Base Entity", "SAMM Base Entity", "SAMM Base Entity",
+            "Local Abstract Entity", "Local Entity", "Local Entity" );
    }
 
    private Request request( final String markedSource ) {

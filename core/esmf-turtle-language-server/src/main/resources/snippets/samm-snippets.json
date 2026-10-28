@@ -4,10 +4,6 @@
     "label": "SAMM Prefix Header",
     "defaultFilterText": "prefix",
     "targetPosition": "DOCUMENT_HEADER",
-    "requiresModelPrefix": false,
-    "requiresCharacteristicPrefix": false,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "@prefix : <urn:samm:${1:com.example.namespace}:${2:1.0.0}#> .",
       "@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:${3:{{sammVersion}}}#> .",
@@ -24,17 +20,13 @@
     "label": "SAMM Aspect",
     "defaultFilterText": "Aspect",
     "targetPosition": "TOP_LEVEL_SUBJECT",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": false,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "{{modelPrefix}}${1:AspectName} a {{sammPrefix}}Aspect ;",
-      "    {{sammPrefix}}preferredName \"${2}\"@en ;",
-      "    {{sammPrefix}}description \"${3}\"@en ;",
-      "    {{sammPrefix}}properties ( {{modelPrefix}}${4:property} ) ;",
-      "    {{sammPrefix}}operations ( ) ;",
-      "    {{sammPrefix}}events ( ) .$0"
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammPrefix}}properties ( {{modelPrefix}}${4:property} ) ;",
+      "   {{sammPrefix}}operations ( ) ;",
+      "   {{sammPrefix}}events ( ) .$0"
     ]
   },
   {
@@ -42,13 +34,9 @@
     "label": "SAMM Property",
     "defaultFilterText": "property",
     "targetPosition": "TOP_LEVEL_SUBJECT",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": false,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "{{modelPrefix}}${1:propertyName} a {{sammPrefix}}Property ;",
-      "    {{sammPrefix}}characteristic {{modelPrefix}}${2:CharacteristicName} .$0"
+      "   {{sammPrefix}}characteristic {{modelPrefix}}${2:CharacteristicName} .$0"
     ]
   },
   {
@@ -56,13 +44,9 @@
     "label": "SAMM AbstractProperty",
     "defaultFilterText": "AbstractProperty",
     "targetPosition": "TOP_LEVEL_SUBJECT",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": false,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "{{modelPrefix}}${1:propertyName} a {{sammPrefix}}AbstractProperty ;",
-      "    {{sammPrefix}}description \"${2}\"@en .$0"
+      "   {{sammPrefix}}description \"${2}\"@en .$0"
     ]
   },
   {
@@ -70,15 +54,11 @@
     "label": "SAMM Entity",
     "defaultFilterText": "Entity",
     "targetPosition": "TOP_LEVEL_SUBJECT",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": false,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "{{modelPrefix}}${1:EntityName} a {{sammPrefix}}Entity ;",
-      "    {{sammPrefix}}preferredName \"${2}\"@en ;",
-      "    {{sammPrefix}}description \"${3}\"@en ;",
-      "    {{sammPrefix}}properties ( {{modelPrefix}}${4:property} ) .$0"
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammPrefix}}properties ( {{modelPrefix}}${4:property} ) .$0"
     ]
   },
   {
@@ -86,15 +66,11 @@
     "label": "SAMM AbstractEntity",
     "defaultFilterText": "AbstractEntity",
     "targetPosition": "TOP_LEVEL_SUBJECT",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": false,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "{{modelPrefix}}${1:AbstractEntityName} a {{sammPrefix}}AbstractEntity ;",
-      "    {{sammPrefix}}preferredName \"${2}\"@en ;",
-      "    {{sammPrefix}}description \"${3}\"@en ;",
-      "    {{sammPrefix}}properties ( {{modelPrefix}}${4:abstractProperty} ) .$0"
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammPrefix}}properties ( {{modelPrefix}}${4:abstractProperty} ) .$0"
     ]
   },
   {
@@ -102,13 +78,9 @@
     "label": "SAMM Characteristic",
     "defaultFilterText": "Characteristic",
     "targetPosition": "TOP_LEVEL_SUBJECT",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": false,
-    "requiresXsdPrefix": true,
-    "requiresUnitPrefix": false,
     "body": [
       "{{modelPrefix}}${1:CharacteristicName} a {{sammPrefix}}Characteristic ;",
-      "    {{sammPrefix}}dataType {{xsdPrefix}}${2|string,integer,boolean,decimal,float,double|} .$0"
+      "   {{sammPrefix}}dataType {{xsdPrefix}}${2|string,integer,boolean,decimal,float,double|} .$0"
     ]
   },
   {
@@ -116,14 +88,10 @@
     "label": "SAMM Enumeration",
     "defaultFilterText": "Enumeration",
     "targetPosition": "TOP_LEVEL_SUBJECT",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": true,
-    "requiresUnitPrefix": false,
     "body": [
       "{{modelPrefix}}${1:EnumName} a {{sammCPrefix}}Enumeration ;",
-      "    {{sammPrefix}}dataType {{xsdPrefix}}${2|string,integer,int,float,double,boolean|} ;",
-      "    {{sammCPrefix}}values ( ${3:\"value1\" \"value2\"} ) .$0"
+      "   {{sammPrefix}}dataType {{xsdPrefix}}${2|string,integer,int,float,double,boolean|} ;",
+      "   {{sammCPrefix}}values ( ${3:\"value1\" \"value2\"} ) .$0"
     ]
   },
   {
@@ -131,15 +99,11 @@
     "label": "SAMM State",
     "defaultFilterText": "State",
     "targetPosition": "TOP_LEVEL_SUBJECT",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": true,
-    "requiresUnitPrefix": false,
     "body": [
       "{{modelPrefix}}${1:StateName} a {{sammCPrefix}}State ;",
-      "    {{sammPrefix}}dataType {{xsdPrefix}}${2|string,integer,int,float,double,boolean|} ;",
-      "    {{sammCPrefix}}values ( ${3:\"state1\" \"state2\"} ) ;",
-      "    {{sammCPrefix}}defaultValue \"${4:state1}\" .$0"
+      "   {{sammPrefix}}dataType {{xsdPrefix}}${2|string,integer,int,float,double,boolean|} ;",
+      "   {{sammCPrefix}}values ( ${3:\"state1\" \"state2\"} ) ;",
+      "   {{sammCPrefix}}defaultValue \"${4:state1}\" .$0"
     ]
   },
   {
@@ -147,15 +111,11 @@
     "label": "SAMM Value",
     "defaultFilterText": "Value",
     "targetPosition": "TOP_LEVEL_SUBJECT",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": false,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "{{modelPrefix}}${1:ValueName} a {{sammPrefix}}Value ;",
-      "    {{sammPrefix}}value \"${2:code}\" ;",
-      "    {{sammPrefix}}preferredName \"${3}\"@en ;",
-      "    {{sammPrefix}}description \"${4}\"@en .$0"
+      "   {{sammPrefix}}value \"${2:code}\" ;",
+      "   {{sammPrefix}}preferredName \"${3}\"@en ;",
+      "   {{sammPrefix}}description \"${4}\"@en .$0"
     ]
   },
   {
@@ -163,14 +123,10 @@
     "label": "SAMM Measurement",
     "defaultFilterText": "Measurement",
     "targetPosition": "TOP_LEVEL_SUBJECT",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": true,
-    "requiresUnitPrefix": true,
     "body": [
       "{{modelPrefix}}${1:MeasurementName} a {{sammCPrefix}}Measurement ;",
-      "    {{sammPrefix}}dataType {{xsdPrefix}}${2|float,double,decimal,integer|} ;",
-      "    {{sammCPrefix}}unit {{unitPrefix}}${3:kilometrePerHour} .$0"
+      "   {{sammPrefix}}dataType {{xsdPrefix}}${2|float,double,decimal,integer|} ;",
+      "   {{sammCPrefix}}unit {{unitPrefix}}${3:kilometrePerHour} .$0"
     ]
   },
   {
@@ -178,14 +134,10 @@
     "label": "SAMM Quantifiable",
     "defaultFilterText": "Quantifiable",
     "targetPosition": "TOP_LEVEL_SUBJECT",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": true,
-    "requiresUnitPrefix": true,
     "body": [
       "{{modelPrefix}}${1:QuantifiableName} a {{sammCPrefix}}Quantifiable ;",
-      "    {{sammPrefix}}dataType {{xsdPrefix}}${2|float,double,decimal,integer|} ;",
-      "    {{sammCPrefix}}unit {{unitPrefix}}${3:percent} .$0"
+      "   {{sammPrefix}}dataType {{xsdPrefix}}${2|float,double,decimal,integer|} ;",
+      "   {{sammCPrefix}}unit {{unitPrefix}}${3:percent} .$0"
     ]
   },
   {
@@ -193,14 +145,10 @@
     "label": "SAMM Duration",
     "defaultFilterText": "Duration",
     "targetPosition": "TOP_LEVEL_SUBJECT",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": true,
-    "requiresUnitPrefix": true,
     "body": [
       "{{modelPrefix}}${1:DurationName} a {{sammCPrefix}}Duration ;",
-      "    {{sammPrefix}}dataType {{xsdPrefix}}${2|integer,int,long,short,byte|} ;",
-      "    {{sammCPrefix}}unit {{unitPrefix}}${3:secondUnitOfTime} .$0"
+      "   {{sammPrefix}}dataType {{xsdPrefix}}${2|integer,int,long,short,byte|} ;",
+      "   {{sammCPrefix}}unit {{unitPrefix}}${3:secondUnitOfTime} .$0"
     ]
   },
   {
@@ -208,13 +156,9 @@
     "label": "SAMM Code",
     "defaultFilterText": "Code",
     "targetPosition": "TOP_LEVEL_SUBJECT",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": true,
-    "requiresUnitPrefix": false,
     "body": [
       "{{modelPrefix}}${1:CodeName} a {{sammCPrefix}}Code ;",
-      "    {{sammPrefix}}dataType {{xsdPrefix}}${2:string} .$0"
+      "   {{sammPrefix}}dataType {{xsdPrefix}}${2:string} .$0"
     ]
   },
   {
@@ -222,13 +166,9 @@
     "label": "SAMM SingleEntity",
     "defaultFilterText": "SingleEntity",
     "targetPosition": "TOP_LEVEL_SUBJECT",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "{{modelPrefix}}${1:SingleEntityName} a {{sammCPrefix}}SingleEntity ;",
-      "    {{sammPrefix}}dataType {{modelPrefix}}${2:EntityName} .$0"
+      "   {{sammPrefix}}dataType {{modelPrefix}}${2:EntityName} .$0"
     ]
   },
   {
@@ -236,13 +176,9 @@
     "label": "SAMM Collection",
     "defaultFilterText": "Collection",
     "targetPosition": "TOP_LEVEL_SUBJECT",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "{{modelPrefix}}${1:CollectionName} a {{sammCPrefix}}Collection ;",
-      "    {{sammCPrefix}}elementCharacteristic {{modelPrefix}}${2:ElementCharacteristic} .$0"
+      "   {{sammCPrefix}}elementCharacteristic {{modelPrefix}}${2:ElementCharacteristic} .$0"
     ]
   },
   {
@@ -250,13 +186,9 @@
     "label": "SAMM List",
     "defaultFilterText": "List",
     "targetPosition": "TOP_LEVEL_SUBJECT",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "{{modelPrefix}}${1:ListName} a {{sammCPrefix}}List ;",
-      "    {{sammCPrefix}}elementCharacteristic {{modelPrefix}}${2:ElementCharacteristic} .$0"
+      "   {{sammCPrefix}}elementCharacteristic {{modelPrefix}}${2:ElementCharacteristic} .$0"
     ]
   },
   {
@@ -264,13 +196,9 @@
     "label": "SAMM Set",
     "defaultFilterText": "Set",
     "targetPosition": "TOP_LEVEL_SUBJECT",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "{{modelPrefix}}${1:SetName} a {{sammCPrefix}}Set ;",
-      "    {{sammCPrefix}}elementCharacteristic {{modelPrefix}}${2:ElementCharacteristic} .$0"
+      "   {{sammCPrefix}}elementCharacteristic {{modelPrefix}}${2:ElementCharacteristic} .$0"
     ]
   },
   {
@@ -278,13 +206,9 @@
     "label": "SAMM SortedSet",
     "defaultFilterText": "SortedSet",
     "targetPosition": "TOP_LEVEL_SUBJECT",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "{{modelPrefix}}${1:SortedSetName} a {{sammCPrefix}}SortedSet ;",
-      "    {{sammCPrefix}}elementCharacteristic {{modelPrefix}}${2:ElementCharacteristic} .$0"
+      "   {{sammCPrefix}}elementCharacteristic {{modelPrefix}}${2:ElementCharacteristic} .$0"
     ]
   },
   {
@@ -292,13 +216,9 @@
     "label": "SAMM TimeSeries",
     "defaultFilterText": "TimeSeries",
     "targetPosition": "TOP_LEVEL_SUBJECT",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "{{modelPrefix}}${1:TimeSeriesName} a {{sammCPrefix}}TimeSeries ;",
-      "    {{sammPrefix}}dataType {{modelPrefix}}${2:TimeSeriesEntity} .$0"
+      "   {{sammPrefix}}dataType {{modelPrefix}}${2:TimeSeriesEntity} .$0"
     ]
   },
   {
@@ -306,14 +226,10 @@
     "label": "SAMM Trait",
     "defaultFilterText": "Trait",
     "targetPosition": "TOP_LEVEL_SUBJECT",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "{{modelPrefix}}${1:TraitName} a {{sammCPrefix}}Trait ;",
-      "    {{sammCPrefix}}baseCharacteristic {{modelPrefix}}${2:BaseCharacteristic} ;",
-      "    {{sammCPrefix}}constraint {{modelPrefix}}${3:ConstraintName} .$0"
+      "   {{sammCPrefix}}baseCharacteristic {{modelPrefix}}${2:BaseCharacteristic} ;",
+      "   {{sammCPrefix}}constraint {{modelPrefix}}${3:ConstraintName} .$0"
     ]
   },
   {
@@ -321,14 +237,10 @@
     "label": "SAMM Either",
     "defaultFilterText": "Either",
     "targetPosition": "TOP_LEVEL_SUBJECT",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "{{modelPrefix}}${1:EitherName} a {{sammCPrefix}}Either ;",
-      "    {{sammCPrefix}}left {{modelPrefix}}${2:LeftCharacteristic} ;",
-      "    {{sammCPrefix}}right {{modelPrefix}}${3:RightCharacteristic} .$0"
+      "   {{sammCPrefix}}left {{modelPrefix}}${2:LeftCharacteristic} ;",
+      "   {{sammCPrefix}}right {{modelPrefix}}${3:RightCharacteristic} .$0"
     ]
   },
   {
@@ -336,15 +248,11 @@
     "label": "SAMM StructuredValue",
     "defaultFilterText": "StructuredValue",
     "targetPosition": "TOP_LEVEL_SUBJECT",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": true,
-    "requiresUnitPrefix": false,
     "body": [
       "{{modelPrefix}}${1:StructuredValueName} a {{sammCPrefix}}StructuredValue ;",
-      "    {{sammPrefix}}dataType {{xsdPrefix}}${2:string} ;",
-      "    {{sammCPrefix}}deconstructionRule \"${3:(.*)}\" ;",
-      "    {{sammCPrefix}}elements ( {{modelPrefix}}${4:elementProperty} ) .$0"
+      "   {{sammPrefix}}dataType {{xsdPrefix}}${2:string} ;",
+      "   {{sammCPrefix}}deconstructionRule \"${3:(.*)}\" ;",
+      "   {{sammCPrefix}}elements ( {{modelPrefix}}${4:elementProperty} ) .$0"
     ]
   },
   {
@@ -352,14 +260,10 @@
     "label": "SAMM LengthConstraint",
     "defaultFilterText": "LengthConstraint",
     "targetPosition": "TOP_LEVEL_SUBJECT",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": true,
-    "requiresUnitPrefix": false,
     "body": [
       "{{modelPrefix}}${1:ConstraintName} a {{sammCPrefix}}LengthConstraint ;",
-      "    {{sammCPrefix}}minValue \"${2:0}\"^^{{xsdPrefix}}nonNegativeInteger ;",
-      "    {{sammCPrefix}}maxValue \"${3:10}\"^^{{xsdPrefix}}nonNegativeInteger .$0"
+      "   {{sammCPrefix}}minValue \"${2:0}\"^^{{xsdPrefix}}nonNegativeInteger ;",
+      "   {{sammCPrefix}}maxValue \"${3:10}\"^^{{xsdPrefix}}nonNegativeInteger .$0"
     ]
   },
   {
@@ -367,16 +271,12 @@
     "label": "SAMM RangeConstraint",
     "defaultFilterText": "RangeConstraint",
     "targetPosition": "TOP_LEVEL_SUBJECT",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": true,
-    "requiresUnitPrefix": false,
     "body": [
       "{{modelPrefix}}${1:ConstraintName} a {{sammCPrefix}}RangeConstraint ;",
-      "    {{sammCPrefix}}minValue \"${2:0}\"^^{{xsdPrefix}}${3:float} ;",
-      "    {{sammCPrefix}}maxValue \"${4:100}\"^^{{xsdPrefix}}${3:float} ;",
-      "    {{sammCPrefix}}lowerBoundDefinition {{sammCPrefix}}${5:AT_LEAST} ;",
-      "    {{sammCPrefix}}upperBoundDefinition {{sammCPrefix}}${6:AT_MOST} .$0"
+      "   {{sammCPrefix}}minValue \"${2:0}\"^^{{xsdPrefix}}${3:float} ;",
+      "   {{sammCPrefix}}maxValue \"${4:100}\"^^{{xsdPrefix}}${3:float} ;",
+      "   {{sammCPrefix}}lowerBoundDefinition {{sammCPrefix}}${5:AT_LEAST} ;",
+      "   {{sammCPrefix}}upperBoundDefinition {{sammCPrefix}}${6:AT_MOST} .$0"
     ]
   },
   {
@@ -384,13 +284,9 @@
     "label": "SAMM RegularExpressionConstraint",
     "defaultFilterText": "RegularExpressionConstraint",
     "targetPosition": "TOP_LEVEL_SUBJECT",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "{{modelPrefix}}${1:ConstraintName} a {{sammCPrefix}}RegularExpressionConstraint ;",
-      "    {{sammPrefix}}value \"${2:^[A-Z0-9]+$}\" .$0"
+      "   {{sammPrefix}}value \"${2:^[A-Z0-9]+$}\" .$0"
     ]
   },
   {
@@ -398,13 +294,9 @@
     "label": "SAMM EncodingConstraint",
     "defaultFilterText": "EncodingConstraint",
     "targetPosition": "TOP_LEVEL_SUBJECT",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "{{modelPrefix}}${1:ConstraintName} a {{sammCPrefix}}EncodingConstraint ;",
-      "    {{sammPrefix}}value {{sammPrefix}}${2:UTF-8} .$0"
+      "   {{sammPrefix}}value {{sammPrefix}}${2:UTF-8} .$0"
     ]
   },
   {
@@ -412,13 +304,9 @@
     "label": "SAMM LanguageConstraint",
     "defaultFilterText": "LanguageConstraint",
     "targetPosition": "TOP_LEVEL_SUBJECT",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "{{modelPrefix}}${1:ConstraintName} a {{sammCPrefix}}LanguageConstraint ;",
-      "    {{sammCPrefix}}languageCode \"${2:en}\" .$0"
+      "   {{sammCPrefix}}languageCode \"${2:en}\" .$0"
     ]
   },
   {
@@ -426,13 +314,9 @@
     "label": "SAMM LocaleConstraint",
     "defaultFilterText": "LocaleConstraint",
     "targetPosition": "TOP_LEVEL_SUBJECT",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "{{modelPrefix}}${1:ConstraintName} a {{sammCPrefix}}LocaleConstraint ;",
-      "    {{sammCPrefix}}localeCode \"${2:de-DE}\" .$0"
+      "   {{sammCPrefix}}localeCode \"${2:de-DE}\" .$0"
     ]
   },
   {
@@ -440,14 +324,10 @@
     "label": "SAMM FixedPointConstraint",
     "defaultFilterText": "FixedPointConstraint",
     "targetPosition": "TOP_LEVEL_SUBJECT",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": true,
-    "requiresUnitPrefix": false,
     "body": [
       "{{modelPrefix}}${1:ConstraintName} a {{sammCPrefix}}FixedPointConstraint ;",
-      "    {{sammCPrefix}}scale \"${2:2}\"^^{{xsdPrefix}}positiveInteger ;",
-      "    {{sammCPrefix}}integer \"${3:5}\"^^{{xsdPrefix}}positiveInteger .$0"
+      "   {{sammCPrefix}}scale \"${2:2}\"^^{{xsdPrefix}}positiveInteger ;",
+      "   {{sammCPrefix}}integer \"${3:5}\"^^{{xsdPrefix}}positiveInteger .$0"
     ]
   },
   {
@@ -455,16 +335,12 @@
     "label": "SAMM Operation",
     "defaultFilterText": "Operation",
     "targetPosition": "TOP_LEVEL_SUBJECT",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": false,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "{{modelPrefix}}${1:operationName} a {{sammPrefix}}Operation ;",
-      "    {{sammPrefix}}preferredName \"${2}\"@en ;",
-      "    {{sammPrefix}}description \"${3}\"@en ;",
-      "    {{sammPrefix}}input ( ) ;",
-      "    {{sammPrefix}}output {{modelPrefix}}${4:outputProperty} .$0"
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammPrefix}}input ( ) ;",
+      "   {{sammPrefix}}output {{modelPrefix}}${4:outputProperty} .$0"
     ]
   },
   {
@@ -472,15 +348,11 @@
     "label": "SAMM Event",
     "defaultFilterText": "Event",
     "targetPosition": "TOP_LEVEL_SUBJECT",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": false,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "{{modelPrefix}}${1:eventName} a {{sammPrefix}}Event ;",
-      "    {{sammPrefix}}preferredName \"${2}\"@en ;",
-      "    {{sammPrefix}}description \"${3}\"@en ;",
-      "    {{sammPrefix}}parameters ( {{modelPrefix}}${4:parameterProperty} ) .$0"
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammPrefix}}parameters ( {{modelPrefix}}${4:parameterProperty} ) .$0"
     ]
   },
   {
@@ -488,11 +360,6 @@
     "label": "SAMM description",
     "defaultFilterText": "description",
     "targetPosition": "PREDICATE",
-    "requiresModelPrefix": false,
-    "requiresCharacteristicPrefix": false,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
-    "targetPredicate": "description",
     "body": [
       "{{sammPrefix}}description \"${1}\"@en{{separator}}"
     ]
@@ -502,11 +369,6 @@
     "label": "SAMM preferredName",
     "defaultFilterText": "preferredName",
     "targetPosition": "PREDICATE",
-    "requiresModelPrefix": false,
-    "requiresCharacteristicPrefix": false,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
-    "targetPredicate": "preferredName",
     "body": [
       "{{sammPrefix}}preferredName \"${1}\"@en{{separator}}"
     ]
@@ -516,14 +378,9 @@
     "label": "SAMM see",
     "defaultFilterText": "see",
     "targetPosition": "PREDICATE",
-    "requiresModelPrefix": false,
-    "requiresCharacteristicPrefix": false,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "allowMultiple": true,
-    "targetPredicate": "see",
     "body": [
-      "{{sammPrefix}}see <${1:http://semantic.bosch.com/term/}>{{separator}}"
+      "{{sammPrefix}}see <${1:https://example.com/term/}>{{separator}}"
     ]
   },
   {
@@ -531,12 +388,7 @@
     "label": "SAMM exampleValue",
     "defaultFilterText": "exampleValue",
     "targetPosition": "PREDICATE",
-    "requiresModelPrefix": false,
-    "requiresCharacteristicPrefix": false,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
-    "requiredSubjectType": "Property",
-    "targetPredicate": "exampleValue",
+    "requiredSubjectTypes": [ "Property" ],
     "body": [
       "{{sammPrefix}}exampleValue \"${1}\"{{separator}}"
     ]
@@ -546,10 +398,6 @@
     "label": "SAMM Optional Property",
     "defaultFilterText": "optional",
     "targetPosition": "OBJECT_PROPERTIES_LIST",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": false,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "[ {{sammPrefix}}property {{modelPrefix}}${1:propertyName} ; {{sammPrefix}}optional true ]$0"
     ]
@@ -559,10 +407,6 @@
     "label": "SAMM Property with Payload Name",
     "defaultFilterText": "payloadName",
     "targetPosition": "OBJECT_PROPERTIES_LIST",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": false,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "[ {{sammPrefix}}property {{modelPrefix}}${1:propertyName} ; {{sammPrefix}}payloadName \"${2:payloadKey}\" ]$0"
     ]
@@ -572,10 +416,6 @@
     "label": "SAMM Property Not In Payload",
     "defaultFilterText": "notInPayload",
     "targetPosition": "OBJECT_PROPERTIES_LIST",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": false,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "requiredSubjectTypes": [ "Entity", "AbstractEntity" ],
     "body": [
       "[ {{sammPrefix}}property {{modelPrefix}}${1:propertyName} ; {{sammPrefix}}notInPayload true ]$0"
@@ -586,10 +426,6 @@
     "label": "SAMM Extended AbstractProperty",
     "defaultFilterText": "extends",
     "targetPosition": "OBJECT_PROPERTIES_LIST",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": false,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "requiredSubjectPredicate": "extends",
     "body": [
       "[ {{sammPrefix}}extends {{modelPrefix}}${1:abstractProperty} ; {{sammPrefix}}characteristic {{modelPrefix}}${2:CharacteristicName} ]$0"
@@ -600,15 +436,11 @@
     "label": "SAMM Anonymous LengthConstraint",
     "defaultFilterText": "LengthConstraint",
     "targetPosition": "OBJECT_CONSTRAINT",
-    "requiresModelPrefix": false,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": true,
-    "requiresUnitPrefix": false,
     "body": [
       "[",
-      "    a {{sammCPrefix}}LengthConstraint ;",
-      "    {{sammCPrefix}}minValue \"${1:2}\"^^{{xsdPrefix}}nonNegativeInteger ;",
-      "    {{sammCPrefix}}maxValue \"${2:2}\"^^{{xsdPrefix}}nonNegativeInteger",
+      "   a {{sammCPrefix}}LengthConstraint ;",
+      "   {{sammCPrefix}}minValue \"${1:2}\"^^{{xsdPrefix}}nonNegativeInteger ;",
+      "   {{sammCPrefix}}maxValue \"${2:2}\"^^{{xsdPrefix}}nonNegativeInteger",
       "]$0"
     ]
   },
@@ -617,17 +449,13 @@
     "label": "SAMM Anonymous RangeConstraint",
     "defaultFilterText": "RangeConstraint",
     "targetPosition": "OBJECT_CONSTRAINT",
-    "requiresModelPrefix": false,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": true,
-    "requiresUnitPrefix": false,
     "body": [
       "[",
-      "    a {{sammCPrefix}}RangeConstraint ;",
-      "    {{sammCPrefix}}minValue \"${1:0}\"^^{{xsdPrefix}}${2:float} ;",
-      "    {{sammCPrefix}}maxValue \"${3:100}\"^^{{xsdPrefix}}${2:float} ;",
-      "    {{sammCPrefix}}lowerBoundDefinition {{sammCPrefix}}${4:AT_LEAST} ;",
-      "    {{sammCPrefix}}upperBoundDefinition {{sammCPrefix}}${5:AT_MOST}",
+      "   a {{sammCPrefix}}RangeConstraint ;",
+      "   {{sammCPrefix}}minValue \"${1:0}\"^^{{xsdPrefix}}${2:float} ;",
+      "   {{sammCPrefix}}maxValue \"${3:100}\"^^{{xsdPrefix}}${2:float} ;",
+      "   {{sammCPrefix}}lowerBoundDefinition {{sammCPrefix}}${4:AT_LEAST} ;",
+      "   {{sammCPrefix}}upperBoundDefinition {{sammCPrefix}}${5:AT_MOST}",
       "]$0"
     ]
   },
@@ -636,14 +464,10 @@
     "label": "SAMM Anonymous RegularExpressionConstraint",
     "defaultFilterText": "RegularExpressionConstraint",
     "targetPosition": "OBJECT_CONSTRAINT",
-    "requiresModelPrefix": false,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "[",
-      "    a {{sammCPrefix}}RegularExpressionConstraint ;",
-      "    {{sammPrefix}}value \"${1:^[A-Z0-9]+$}\"",
+      "   a {{sammCPrefix}}RegularExpressionConstraint ;",
+      "   {{sammPrefix}}value \"${1:^[A-Z0-9]+$}\"",
       "]$0"
     ]
   },
@@ -652,14 +476,10 @@
     "label": "SAMM Anonymous EncodingConstraint",
     "defaultFilterText": "EncodingConstraint",
     "targetPosition": "OBJECT_CONSTRAINT",
-    "requiresModelPrefix": false,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "[",
-      "    a {{sammCPrefix}}EncodingConstraint ;",
-      "    {{sammPrefix}}value {{sammPrefix}}${1:UTF-8}",
+      "   a {{sammCPrefix}}EncodingConstraint ;",
+      "   {{sammPrefix}}value {{sammPrefix}}${1:UTF-8}",
       "]$0"
     ]
   },
@@ -668,14 +488,10 @@
     "label": "SAMM Anonymous LanguageConstraint",
     "defaultFilterText": "LanguageConstraint",
     "targetPosition": "OBJECT_CONSTRAINT",
-    "requiresModelPrefix": false,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "[",
-      "    a {{sammCPrefix}}LanguageConstraint ;",
-      "    {{sammCPrefix}}languageCode \"${1:en}\"",
+      "   a {{sammCPrefix}}LanguageConstraint ;",
+      "   {{sammCPrefix}}languageCode \"${1:en}\"",
       "]$0"
     ]
   },
@@ -684,14 +500,10 @@
     "label": "SAMM Anonymous LocaleConstraint",
     "defaultFilterText": "LocaleConstraint",
     "targetPosition": "OBJECT_CONSTRAINT",
-    "requiresModelPrefix": false,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "[",
-      "    a {{sammCPrefix}}LocaleConstraint ;",
-      "    {{sammCPrefix}}localeCode \"${1:de-DE}\"",
+      "   a {{sammCPrefix}}LocaleConstraint ;",
+      "   {{sammCPrefix}}localeCode \"${1:de-DE}\"",
       "]$0"
     ]
   },
@@ -700,15 +512,11 @@
     "label": "SAMM Anonymous FixedPointConstraint",
     "defaultFilterText": "FixedPointConstraint",
     "targetPosition": "OBJECT_CONSTRAINT",
-    "requiresModelPrefix": false,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": true,
-    "requiresUnitPrefix": false,
     "body": [
       "[",
-      "    a {{sammCPrefix}}FixedPointConstraint ;",
-      "    {{sammCPrefix}}scale \"${1:2}\"^^{{xsdPrefix}}positiveInteger ;",
-      "    {{sammCPrefix}}integer \"${2:5}\"^^{{xsdPrefix}}positiveInteger",
+      "   a {{sammCPrefix}}FixedPointConstraint ;",
+      "   {{sammCPrefix}}scale \"${1:2}\"^^{{xsdPrefix}}positiveInteger ;",
+      "   {{sammCPrefix}}integer \"${2:5}\"^^{{xsdPrefix}}positiveInteger",
       "]$0"
     ]
   },
@@ -717,14 +525,10 @@
     "label": "SAMM Anonymous Characteristic",
     "defaultFilterText": "Characteristic",
     "targetPosition": "OBJECT_CHARACTERISTIC",
-    "requiresModelPrefix": false,
-    "requiresCharacteristicPrefix": false,
-    "requiresXsdPrefix": true,
-    "requiresUnitPrefix": false,
     "body": [
       "[",
-      "    a {{sammPrefix}}Characteristic ;",
-      "    {{sammPrefix}}dataType {{xsdPrefix}}${1|string,integer,boolean,decimal,float,double|}",
+      "   a {{sammPrefix}}Characteristic ;",
+      "   {{sammPrefix}}dataType {{xsdPrefix}}${1|string,integer,boolean,decimal,float,double|}",
       "]$0"
     ]
   },
@@ -733,15 +537,11 @@
     "label": "SAMM Anonymous Enumeration",
     "defaultFilterText": "Enumeration",
     "targetPosition": "OBJECT_CHARACTERISTIC",
-    "requiresModelPrefix": false,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": true,
-    "requiresUnitPrefix": false,
     "body": [
       "[",
-      "    a {{sammCPrefix}}Enumeration ;",
-      "    {{sammPrefix}}dataType {{xsdPrefix}}${1|string,integer,int,float,double,boolean|} ;",
-      "    {{sammCPrefix}}values ( ${2:\"value1\" \"value2\"} )",
+      "   a {{sammCPrefix}}Enumeration ;",
+      "   {{sammPrefix}}dataType {{xsdPrefix}}${1|string,integer,int,float,double,boolean|} ;",
+      "   {{sammCPrefix}}values ( ${2:\"value1\" \"value2\"} )",
       "]$0"
     ]
   },
@@ -750,16 +550,12 @@
     "label": "SAMM Anonymous State",
     "defaultFilterText": "State",
     "targetPosition": "OBJECT_CHARACTERISTIC",
-    "requiresModelPrefix": false,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": true,
-    "requiresUnitPrefix": false,
     "body": [
       "[",
-      "    a {{sammCPrefix}}State ;",
-      "    {{sammPrefix}}dataType {{xsdPrefix}}${1|string,integer,int,float,double,boolean|} ;",
-      "    {{sammCPrefix}}values ( ${2:\"state1\" \"state2\"} ) ;",
-      "    {{sammCPrefix}}defaultValue \"${3:state1}\"",
+      "   a {{sammCPrefix}}State ;",
+      "   {{sammPrefix}}dataType {{xsdPrefix}}${1|string,integer,int,float,double,boolean|} ;",
+      "   {{sammCPrefix}}values ( ${2:\"state1\" \"state2\"} ) ;",
+      "   {{sammCPrefix}}defaultValue \"${3:state1}\"",
       "]$0"
     ]
   },
@@ -768,15 +564,11 @@
     "label": "SAMM Anonymous Measurement",
     "defaultFilterText": "Measurement",
     "targetPosition": "OBJECT_CHARACTERISTIC",
-    "requiresModelPrefix": false,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": true,
-    "requiresUnitPrefix": true,
     "body": [
       "[",
-      "    a {{sammCPrefix}}Measurement ;",
-      "    {{sammPrefix}}dataType {{xsdPrefix}}${1|float,double,decimal,integer|} ;",
-      "    {{sammCPrefix}}unit {{unitPrefix}}${2:kilometrePerHour}",
+      "   a {{sammCPrefix}}Measurement ;",
+      "   {{sammPrefix}}dataType {{xsdPrefix}}${1|float,double,decimal,integer|} ;",
+      "   {{sammCPrefix}}unit {{unitPrefix}}${2:kilometrePerHour}",
       "]$0"
     ]
   },
@@ -785,15 +577,11 @@
     "label": "SAMM Anonymous Quantifiable",
     "defaultFilterText": "Quantifiable",
     "targetPosition": "OBJECT_CHARACTERISTIC",
-    "requiresModelPrefix": false,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": true,
-    "requiresUnitPrefix": true,
     "body": [
       "[",
-      "    a {{sammCPrefix}}Quantifiable ;",
-      "    {{sammPrefix}}dataType {{xsdPrefix}}${1|float,double,decimal,integer|} ;",
-      "    {{sammCPrefix}}unit {{unitPrefix}}${2:percent}",
+      "   a {{sammCPrefix}}Quantifiable ;",
+      "   {{sammPrefix}}dataType {{xsdPrefix}}${1|float,double,decimal,integer|} ;",
+      "   {{sammCPrefix}}unit {{unitPrefix}}${2:percent}",
       "]$0"
     ]
   },
@@ -802,15 +590,11 @@
     "label": "SAMM Anonymous Duration",
     "defaultFilterText": "Duration",
     "targetPosition": "OBJECT_CHARACTERISTIC",
-    "requiresModelPrefix": false,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": true,
-    "requiresUnitPrefix": true,
     "body": [
       "[",
-      "    a {{sammCPrefix}}Duration ;",
-      "    {{sammPrefix}}dataType {{xsdPrefix}}${1|integer,int,long,short,byte|} ;",
-      "    {{sammCPrefix}}unit {{unitPrefix}}${2:secondUnitOfTime}",
+      "   a {{sammCPrefix}}Duration ;",
+      "   {{sammPrefix}}dataType {{xsdPrefix}}${1|integer,int,long,short,byte|} ;",
+      "   {{sammCPrefix}}unit {{unitPrefix}}${2:secondUnitOfTime}",
       "]$0"
     ]
   },
@@ -819,14 +603,10 @@
     "label": "SAMM Anonymous Code",
     "defaultFilterText": "Code",
     "targetPosition": "OBJECT_CHARACTERISTIC",
-    "requiresModelPrefix": false,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": true,
-    "requiresUnitPrefix": false,
     "body": [
       "[",
-      "    a {{sammCPrefix}}Code ;",
-      "    {{sammPrefix}}dataType {{xsdPrefix}}${1:string}",
+      "   a {{sammCPrefix}}Code ;",
+      "   {{sammPrefix}}dataType {{xsdPrefix}}${1:string}",
       "]$0"
     ]
   },
@@ -835,14 +615,10 @@
     "label": "SAMM Anonymous SingleEntity",
     "defaultFilterText": "SingleEntity",
     "targetPosition": "OBJECT_CHARACTERISTIC",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "[",
-      "    a {{sammCPrefix}}SingleEntity ;",
-      "    {{sammPrefix}}dataType {{modelPrefix}}${1:EntityName}",
+      "   a {{sammCPrefix}}SingleEntity ;",
+      "   {{sammPrefix}}dataType {{modelPrefix}}${1:EntityName}",
       "]$0"
     ]
   },
@@ -851,14 +627,10 @@
     "label": "SAMM Anonymous Collection",
     "defaultFilterText": "Collection",
     "targetPosition": "OBJECT_CHARACTERISTIC",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "[",
-      "    a {{sammCPrefix}}Collection ;",
-      "    {{sammCPrefix}}elementCharacteristic {{modelPrefix}}${1:ElementCharacteristic}",
+      "   a {{sammCPrefix}}Collection ;",
+      "   {{sammCPrefix}}elementCharacteristic {{modelPrefix}}${1:ElementCharacteristic}",
       "]$0"
     ]
   },
@@ -867,14 +639,10 @@
     "label": "SAMM Anonymous List",
     "defaultFilterText": "List",
     "targetPosition": "OBJECT_CHARACTERISTIC",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "[",
-      "    a {{sammCPrefix}}List ;",
-      "    {{sammCPrefix}}elementCharacteristic {{modelPrefix}}${1:ElementCharacteristic}",
+      "   a {{sammCPrefix}}List ;",
+      "   {{sammCPrefix}}elementCharacteristic {{modelPrefix}}${1:ElementCharacteristic}",
       "]$0"
     ]
   },
@@ -883,14 +651,10 @@
     "label": "SAMM Anonymous Set",
     "defaultFilterText": "Set",
     "targetPosition": "OBJECT_CHARACTERISTIC",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "[",
-      "    a {{sammCPrefix}}Set ;",
-      "    {{sammCPrefix}}elementCharacteristic {{modelPrefix}}${1:ElementCharacteristic}",
+      "   a {{sammCPrefix}}Set ;",
+      "   {{sammCPrefix}}elementCharacteristic {{modelPrefix}}${1:ElementCharacteristic}",
       "]$0"
     ]
   },
@@ -899,14 +663,10 @@
     "label": "SAMM Anonymous SortedSet",
     "defaultFilterText": "SortedSet",
     "targetPosition": "OBJECT_CHARACTERISTIC",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "[",
-      "    a {{sammCPrefix}}SortedSet ;",
-      "    {{sammCPrefix}}elementCharacteristic {{modelPrefix}}${1:ElementCharacteristic}",
+      "   a {{sammCPrefix}}SortedSet ;",
+      "   {{sammCPrefix}}elementCharacteristic {{modelPrefix}}${1:ElementCharacteristic}",
       "]$0"
     ]
   },
@@ -915,14 +675,10 @@
     "label": "SAMM Anonymous TimeSeries",
     "defaultFilterText": "TimeSeries",
     "targetPosition": "OBJECT_CHARACTERISTIC",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "[",
-      "    a {{sammCPrefix}}TimeSeries ;",
-      "    {{sammPrefix}}dataType {{modelPrefix}}${1:TimeSeriesEntity}",
+      "   a {{sammCPrefix}}TimeSeries ;",
+      "   {{sammPrefix}}dataType {{modelPrefix}}${1:TimeSeriesEntity}",
       "]$0"
     ]
   },
@@ -931,15 +687,11 @@
     "label": "SAMM Anonymous Trait",
     "defaultFilterText": "Trait",
     "targetPosition": "OBJECT_CHARACTERISTIC",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "[",
-      "    a {{sammCPrefix}}Trait ;",
-      "    {{sammCPrefix}}baseCharacteristic {{modelPrefix}}${1:BaseCharacteristic} ;",
-      "    {{sammCPrefix}}constraint {{modelPrefix}}${2:ConstraintName}",
+      "   a {{sammCPrefix}}Trait ;",
+      "   {{sammCPrefix}}baseCharacteristic {{modelPrefix}}${1:BaseCharacteristic} ;",
+      "   {{sammCPrefix}}constraint {{modelPrefix}}${2:ConstraintName}",
       "]$0"
     ]
   },
@@ -948,15 +700,11 @@
     "label": "SAMM Anonymous Either",
     "defaultFilterText": "Either",
     "targetPosition": "OBJECT_CHARACTERISTIC",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": false,
-    "requiresUnitPrefix": false,
     "body": [
       "[",
-      "    a {{sammCPrefix}}Either ;",
-      "    {{sammCPrefix}}left {{modelPrefix}}${1:LeftCharacteristic} ;",
-      "    {{sammCPrefix}}right {{modelPrefix}}${2:RightCharacteristic}",
+      "   a {{sammCPrefix}}Either ;",
+      "   {{sammCPrefix}}left {{modelPrefix}}${1:LeftCharacteristic} ;",
+      "   {{sammCPrefix}}right {{modelPrefix}}${2:RightCharacteristic}",
       "]$0"
     ]
   },
@@ -965,16 +713,12 @@
     "label": "SAMM Anonymous StructuredValue",
     "defaultFilterText": "StructuredValue",
     "targetPosition": "OBJECT_CHARACTERISTIC",
-    "requiresModelPrefix": true,
-    "requiresCharacteristicPrefix": true,
-    "requiresXsdPrefix": true,
-    "requiresUnitPrefix": false,
     "body": [
       "[",
-      "    a {{sammCPrefix}}StructuredValue ;",
-      "    {{sammPrefix}}dataType {{xsdPrefix}}${1:string} ;",
-      "    {{sammCPrefix}}deconstructionRule \"${2:(.*)}\" ;",
-      "    {{sammCPrefix}}elements ( {{modelPrefix}}${3:elementProperty} )",
+      "   a {{sammCPrefix}}StructuredValue ;",
+      "   {{sammPrefix}}dataType {{xsdPrefix}}${1:string} ;",
+      "   {{sammCPrefix}}deconstructionRule \"${2:(.*)}\" ;",
+      "   {{sammCPrefix}}elements ( {{modelPrefix}}${3:elementProperty} )",
       "]$0"
     ]
   }

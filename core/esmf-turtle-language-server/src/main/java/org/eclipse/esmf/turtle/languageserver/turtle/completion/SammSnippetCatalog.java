@@ -21,8 +21,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-import org.eclipse.esmf.turtle.languageserver.turtle.completion.SammSuggestionContextDetector.CursorContext;
-import org.eclipse.esmf.turtle.languageserver.turtle.completion.SammSuggestionContextDetector.TargetPosition;
+import org.eclipse.esmf.turtle.languageserver.turtle.completion.SammCompletionContext.TargetPosition;
 
 import org.jspecify.annotations.Nullable;
 import tools.jackson.core.type.TypeReference;
@@ -39,21 +38,14 @@ public final class SammSnippetCatalog {
          int matchIndex,
          int catalogIndex
    ) implements Comparable<MatchScore> {
+      private static final Comparator<MatchScore> ORDER = Comparator.comparingInt( MatchScore::tier )
+            .thenComparingInt( MatchScore::lengthDiff )
+            .thenComparingInt( MatchScore::matchIndex )
+            .thenComparingInt( MatchScore::catalogIndex );
+
       @Override
       public int compareTo( final MatchScore other ) {
-         int cmp = Integer.compare( this.tier, other.tier );
-         if ( cmp != 0 ) {
-            return cmp;
-         }
-         cmp = Integer.compare( this.lengthDiff, other.lengthDiff );
-         if ( cmp != 0 ) {
-            return cmp;
-         }
-         cmp = Integer.compare( this.matchIndex, other.matchIndex );
-         if ( cmp != 0 ) {
-            return cmp;
-         }
-         return Integer.compare( this.catalogIndex, other.catalogIndex );
+         return ORDER.compare( this, other );
       }
    }
 
@@ -62,18 +54,16 @@ public final class SammSnippetCatalog {
          String label,
          String defaultFilterText,
          TargetPosition targetPosition,
-         boolean requiresModelPrefix,
-         boolean requiresCharacteristicPrefix,
-         boolean requiresXsdPrefix,
-         boolean requiresUnitPrefix,
          boolean allowMultiple,
-         @Nullable String requiredSubjectType,
-         @Nullable List<String> requiredSubjectTypes,
+         List<String> requiredSubjectTypes,
          @Nullable String requiredSubjectPredicate,
-         @Nullable String targetPredicate,
          List<String> body
    ) {
-      public boolean isApplicable( final CursorContext context ) {
+      public SnippetDefinition {
+         requiredSubjectTypes = requiredSubjectTypes == null ? List.of() : List.copyOf( requiredSubjectTypes );
+      }
+
+      public boolean isApplicable( final SammCompletionContext context ) {
          if ( context.targetPosition() != targetPosition ) {
             return false;
          }
@@ -86,87 +76,91 @@ public final class SammSnippetCatalog {
          };
       }
 
-      public String render( final CursorContext context ) {
-         final String sammPrefix = targetPosition == TargetPosition.PREDICATE ? context.resolvedSammPrefix() : context.sammPrefix();
-         final String charPrefix = context.characteristicPrefix().orElse( "samm-c:" );
-         final String xsdPrefix = context.xsdPrefix().orElse( "xsd:" );
-         final String unitPrefix = context.unitPrefix().orElse( "unit:" );
-         final String latestVersion = context.version().toVersionString();
+      public String render( final SammCompletionContext context ) {
+         final String sammPrefix =
+               targetPosition == TargetPosition.PREDICATE ? context.resolvedSammPrefix() : context.namespaces().sammPrefix();
+         final String charPrefix = context.namespaces().characteristicPrefix().orElse( "" );
+         final String xsdPrefix = context.namespaces().xsdPrefix().orElse( "" );
+         final String unitPrefix = context.namespaces().unitPrefix().orElse( "" );
+         final String latestVersion = context.namespaces().version().toVersionString();
+         final String baseIndent = targetPosition.isAnonymousObject() ? "" : context.edit().indentation();
          return String.join( "\n", body )
-               .replace( "{{modelPrefix}}", context.modelPrefix().orElse( "" ) )
+               .replace( "{{modelPrefix}}", context.namespaces().modelPrefix().orElse( "" ) )
                .replace( "{{sammPrefix}}", sammPrefix )
                .replace( "{{sammCPrefix}}", charPrefix )
                .replace( "{{xsdPrefix}}", xsdPrefix )
                .replace( "{{unitPrefix}}", unitPrefix )
                .replace( "{{sammVersion}}", latestVersion )
                .replace( "{{separator}}", context.predicateSeparator().orElse( "" ) )
-               .replace( "\n", context.lineEnding() + context.indentation() );
+               .replace( "\r\n", "\n" )
+               .replace( "\n", context.edit().lineEnding() + baseIndent );
       }
 
-      private boolean hasRequiredNamespaces( final CursorContext context ) {
-         if ( requiresModelPrefix && context.modelPrefix().isEmpty() ) {
-            return false;
-         }
-         if ( requiresCharacteristicPrefix && context.characteristicPrefix().isEmpty() ) {
-            return false;
-         }
-         if ( requiresXsdPrefix && context.xsdPrefix().isEmpty() ) {
-            return false;
-         }
-         return !requiresUnitPrefix || context.unitPrefix().isPresent();
+      private boolean usesPlaceholder( final String placeholder ) {
+         return body.stream().anyMatch( line -> line.contains( placeholder ) );
       }
 
-      private boolean hasRequiredSubjectConstraints( final CursorContext context ) {
-         if ( requiredSubjectType != null && !context.hasSubjectType( requiredSubjectType ) ) {
+      private boolean hasRequiredNamespaces( final SammCompletionContext context ) {
+         if ( usesPlaceholder( "{{modelPrefix}}" ) && context.namespaces().modelPrefix().isEmpty() ) {
             return false;
          }
-         if ( requiredSubjectTypes != null && !requiredSubjectTypes.isEmpty()
+         if ( usesPlaceholder( "{{sammCPrefix}}" ) && context.namespaces().characteristicPrefix().isEmpty() ) {
+            return false;
+         }
+         if ( usesPlaceholder( "{{xsdPrefix}}" ) && context.namespaces().xsdPrefix().isEmpty() ) {
+            return false;
+         }
+         return !usesPlaceholder( "{{unitPrefix}}" ) || context.namespaces().unitPrefix().isPresent();
+      }
+
+      private boolean hasRequiredSubjectConstraints( final SammCompletionContext context ) {
+         if ( !requiredSubjectTypes.isEmpty()
                && requiredSubjectTypes.stream().noneMatch( context::hasSubjectType ) ) {
             return false;
          }
          return requiredSubjectPredicate == null || context.hasSubjectPredicate( requiredSubjectPredicate );
       }
 
-      private boolean isEligibleDocumentHeader( final CursorContext context ) {
-         if ( !context.blankRestOfLine() ) {
+      private boolean isEligibleDocumentHeader( final SammCompletionContext context ) {
+         if ( !context.edit().blankRestOfLine() ) {
             return false;
          }
-         final String typed = context.typedText().toLowerCase( Locale.ROOT );
+         final String typed = context.edit().typedText().toLowerCase( Locale.ROOT );
          return typed.isEmpty()
-               ? context.namespaces().isEmpty()
+               ? context.namespaces().declarations().isEmpty()
                : "@prefix".startsWith( typed ) || "prefix".startsWith( typed );
       }
 
-      private boolean isEligibleTopLevel( final CursorContext context ) {
-         if ( !hasRequiredNamespaces( context ) || !context.blankRestOfLine() ) {
+      private boolean isEligibleTopLevel( final SammCompletionContext context ) {
+         if ( !hasRequiredNamespaces( context ) || !context.edit().blankRestOfLine() ) {
             return false;
          }
-         final String typed = context.typedText();
+         final String typed = context.edit().typedText();
          return typed.isEmpty() || IDENTIFIER.matcher( typed ).matches();
       }
 
-      private boolean isEligiblePredicate( final CursorContext context ) {
+      private boolean isEligiblePredicate( final SammCompletionContext context ) {
          if ( !hasRequiredNamespaces( context )
                || !context.hasAnySammSubjectType()
                || !hasRequiredSubjectConstraints( context )
-               || targetPredicate != null && !allowMultiple && context.hasSubjectPredicate( targetPredicate )
+               || !allowMultiple && context.hasSubjectPredicate( defaultFilterText )
                || context.predicateSeparator().isEmpty() ) {
             return false;
          }
-         final String typed = context.typedText();
+         final String typed = context.edit().typedText();
          if ( typed.isEmpty() ) {
             return true;
          }
          final String actualPrefix = context.resolvedSammPrefix();
          return typed.startsWith( actualPrefix )
-               && context.sammNamespace().equals( context.namespaces().get( actualPrefix ) );
+               && context.namespaces().sammNamespace().equals( context.namespaces().declarations().get( actualPrefix ) );
       }
 
-      private boolean isEligibleAnonymousObject( final CursorContext context ) {
+      private boolean isEligibleAnonymousObject( final SammCompletionContext context ) {
          if ( !hasRequiredNamespaces( context ) || !hasRequiredSubjectConstraints( context ) ) {
             return false;
          }
-         final String typed = context.typedText();
+         final String typed = context.edit().typedText();
          if ( !typed.startsWith( "[" ) ) {
             return false;
          }
@@ -179,29 +173,19 @@ public final class SammSnippetCatalog {
       return SNIPPETS;
    }
 
-   public List<SnippetDefinition> matchingSnippets( final CursorContext context ) {
-      final List<SnippetDefinition> applicable = new ArrayList<>();
-      final List<Integer> catalogIndices = new ArrayList<>();
-      for ( int i = 0; i < SNIPPETS.size(); i++ ) {
-         final SnippetDefinition snippet = SNIPPETS.get( i );
-         if ( snippet.isApplicable( context ) ) {
-            applicable.add( snippet );
-            catalogIndices.add( i );
-         }
-      }
+   public List<SnippetDefinition> matchingSnippets( final SammCompletionContext context ) {
+      record ScoredSnippet(
+            SnippetDefinition snippet, MatchScore score
+      ) {}
 
       final String query = extractQuery( context );
-      if ( query.isEmpty() ) {
-         return applicable;
-      }
-
-      record ScoredSnippet( SnippetDefinition snippet, MatchScore score ) {}
-
       final List<ScoredSnippet> scored = new ArrayList<>();
-      for ( int i = 0; i < applicable.size(); i++ ) {
-         final SnippetDefinition snippet = applicable.get( i );
-         final int catalogIndex = catalogIndices.get( i );
-         final MatchScore score = calculateBestScore( snippet, query, catalogIndex, context );
+      for ( int i = 0; i < SNIPPETS.size(); i++ ) {
+         final SnippetDefinition snippet = SNIPPETS.get( i );
+         if ( !snippet.isApplicable( context ) ) {
+            continue;
+         }
+         final MatchScore score = query.isEmpty() ? new MatchScore( 0, 0, 0, i ) : calculateBestScore( snippet, query, i, context );
          if ( score != null ) {
             scored.add( new ScoredSnippet( snippet, score ) );
          }
@@ -213,32 +197,18 @@ public final class SammSnippetCatalog {
             .toList();
    }
 
-   public static String extractQuery( final CursorContext context ) {
-      final String typed = context.typedText();
+   public static String extractQuery( final SammCompletionContext context ) {
+      final String typed = context.edit().typedText();
       return switch ( context.targetPosition() ) {
-         case DOCUMENT_HEADER -> typed.trim();
-         case TOP_LEVEL_SUBJECT -> typed.trim();
          case PREDICATE -> {
-            if ( typed.isEmpty() ) {
-               yield "";
-            }
             final String actualPrefix = context.resolvedSammPrefix();
-            if ( typed.startsWith( actualPrefix ) ) {
-               yield typed.substring( actualPrefix.length() ).trim();
-            }
-            final int colon = typed.indexOf( ':' );
-            if ( colon >= 0 ) {
-               yield typed.substring( colon + 1 ).trim();
-            }
-            yield typed.trim();
+            yield typed.startsWith( actualPrefix )
+                  ? typed.substring( actualPrefix.length() ).trim()
+                  : typed.trim();
          }
-         case OBJECT_PROPERTIES_LIST, OBJECT_CONSTRAINT, OBJECT_CHARACTERISTIC -> {
-            if ( typed.startsWith( "[" ) ) {
-               yield typed.substring( 1 ).trim();
-            }
-            yield typed.trim();
-         }
-         case OBJECT_VALUE -> typed.trim();
+         case OBJECT_PROPERTIES_LIST, OBJECT_CONSTRAINT, OBJECT_CHARACTERISTIC ->
+               typed.startsWith( "[" ) ? typed.substring( 1 ).trim() : typed.trim();
+         case DOCUMENT_HEADER, TOP_LEVEL_SUBJECT, OBJECT_VALUE -> typed.trim();
       };
    }
 
@@ -246,14 +216,11 @@ public final class SammSnippetCatalog {
          final SnippetDefinition snippet,
          final String query,
          final int catalogIndex,
-         final CursorContext context ) {
+         final SammCompletionContext context ) {
       final List<String> candidates = new ArrayList<>();
       if ( context.targetPosition() == TargetPosition.DOCUMENT_HEADER ) {
          candidates.add( "@prefix" );
          candidates.add( "prefix" );
-      }
-      if ( snippet.targetPredicate() != null ) {
-         candidates.add( snippet.targetPredicate() );
       }
       candidates.add( snippet.defaultFilterText() );
       candidates.add( snippet.label() );
