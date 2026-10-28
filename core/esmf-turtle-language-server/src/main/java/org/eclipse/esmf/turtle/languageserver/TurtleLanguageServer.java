@@ -19,6 +19,7 @@ import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.Channels;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
@@ -37,6 +38,9 @@ import org.eclipse.esmf.turtle.languageserver.lsp.text.TurtleTextDocumentService
 import org.eclipse.esmf.turtle.languageserver.lsp.workspace.TurtleWorkspaceService;
 import org.eclipse.esmf.turtle.languageserver.structure.TurtleTokenService;
 
+import org.eclipse.lsp4j.ClientCapabilities;
+import org.eclipse.lsp4j.CompletionCapabilities;
+import org.eclipse.lsp4j.CompletionItemCapabilities;
 import org.eclipse.lsp4j.CompletionOptions;
 import org.eclipse.lsp4j.DocumentSymbolOptions;
 import org.eclipse.lsp4j.InitializeParams;
@@ -44,6 +48,7 @@ import org.eclipse.lsp4j.InitializeResult;
 import org.eclipse.lsp4j.SaveOptions;
 import org.eclipse.lsp4j.SemanticTokensWithRegistrationOptions;
 import org.eclipse.lsp4j.ServerCapabilities;
+import org.eclipse.lsp4j.TextDocumentClientCapabilities;
 import org.eclipse.lsp4j.TextDocumentSyncKind;
 import org.eclipse.lsp4j.TextDocumentSyncOptions;
 import org.eclipse.lsp4j.jsonrpc.Launcher;
@@ -63,7 +68,7 @@ public class TurtleLanguageServer implements LanguageServer, LanguageClientAware
    // R=18, D=4, F=6
    public static final int DEFAULT_PORT = 1846;
 
-   private static final List<String> COMPLETION_TRIGGER_SYMBOLS = List.of( ":" );
+   private static final List<String> COMPLETION_TRIGGER_SYMBOLS = List.of( ":", "[" );
    private static final Logger LOG = LoggerFactory.getLogger( TurtleLanguageServer.class );
    private static volatile boolean serverRunning = true;
    private final TurtleTextDocumentService textDocumentService;
@@ -77,6 +82,14 @@ public class TurtleLanguageServer implements LanguageServer, LanguageClientAware
    @Override
    public CompletableFuture<InitializeResult> initialize( final InitializeParams params ) {
       final ServerCapabilities capabilities = new ServerCapabilities();
+      final Optional<TextDocumentClientCapabilities> textCapabilities = Optional.ofNullable( params.getCapabilities() )
+            .map( ClientCapabilities::getTextDocument );
+      final boolean snippetSupport = textCapabilities
+            .map( TextDocumentClientCapabilities::getCompletion )
+            .map( CompletionCapabilities::getCompletionItem )
+            .map( CompletionItemCapabilities::getSnippetSupport )
+            .orElse( false );
+      textDocumentService.setSnippetSupport( snippetSupport );
       final TextDocumentSyncOptions syncOptions = new TextDocumentSyncOptions();
       syncOptions.setOpenClose( true );
       syncOptions.setChange( TextDocumentSyncKind.Full );

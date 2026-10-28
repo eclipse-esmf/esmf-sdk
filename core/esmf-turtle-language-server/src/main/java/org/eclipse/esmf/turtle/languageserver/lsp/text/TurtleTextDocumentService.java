@@ -88,6 +88,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
             return t;
          } );
    private final AtomicBoolean closed = new AtomicBoolean();
+   private volatile boolean snippetSupport;
 
    public TurtleTextDocumentService() {
       clientNotifier = new TextDocumentClientNotifier( new DiagnosticMapper() );
@@ -154,6 +155,10 @@ public class TurtleTextDocumentService implements TextDocumentService {
       }
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
       return validationCoordinator.validateAsync( parsedDocument );
+   }
+
+   public void setSnippetSupport( final boolean snippetSupport ) {
+      this.snippetSupport = snippetSupport;
    }
 
    @Override
@@ -271,7 +276,8 @@ public class TurtleTextDocumentService implements TextDocumentService {
       }
       return CompletableFuture.supplyAsync( () -> {
          return turtleParserService.withParsedDocument( document,
-               parsedDocument -> Either.forLeft( turtleCompletionService.complete( parsedDocument, position ) ) );
+               parsedDocument -> Either
+                     .forLeft( turtleCompletionService.complete( parsedDocument, position, snippetSupport ) ) );
       }, asyncExecutor );
    }
 }

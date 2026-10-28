@@ -1,5 +1,14 @@
 /*
- * Copyright (c) 2026 Robert Bosch Manufacturing Solutions GmbH, Germany. All rights reserved.
+ * Copyright (c) 2026 Robert Bosch Manufacturing Solutions GmbH
+ *
+ * See the AUTHORS file(s) distributed with this work for additional
+ * information regarding authorship.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * SPDX-License-Identifier: MPL-2.0
  */
 
 package org.eclipse.esmf.turtle.languageserver.turtle;
@@ -7,6 +16,7 @@ package org.eclipse.esmf.turtle.languageserver.turtle;
 import static org.eclipse.esmf.aspectmodel.StreamUtil.asMap;
 import static org.eclipse.esmf.metamodel.vocabulary.SammNs.UNIT;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +30,8 @@ import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.treesitterturtle.ParserTokenType;
 import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
+import org.eclipse.esmf.turtle.languageserver.turtle.completion.SammAttributeValueCompletionService;
+import org.eclipse.esmf.turtle.languageserver.turtle.completion.SammSnippetCompletionService;
 
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionParams;
@@ -27,8 +39,29 @@ import org.eclipse.lsp4j.Position;
 
 public class TurtleCompletionService extends TurtleService {
    static final Map<String, List<CompletionItem>> SAMM_PREFIXES_COMPLETION_MAP = initSammPrefixesCompletionMap();
+   private final SammSnippetCompletionService snippetCompletionService = new SammSnippetCompletionService();
+   private final SammAttributeValueCompletionService attributeValueCompletionService = new SammAttributeValueCompletionService();
 
    public List<CompletionItem> complete( final ParsedDocument parsedDocument, final CompletionParams completionParams ) {
+      return complete( parsedDocument, completionParams, false );
+   }
+
+   public List<CompletionItem> complete( final ParsedDocument parsedDocument, final CompletionParams completionParams,
+         final boolean snippetSupport ) {
+      final List<CompletionItem> attributeCompletions = attributeValueCompletionService.complete( parsedDocument,
+            completionParams.getPosition() );
+      if ( !attributeCompletions.isEmpty() ) {
+         return attributeCompletions;
+      }
+
+      final List<CompletionItem> result = new ArrayList<>( vocabularyCompletions( parsedDocument, completionParams ) );
+      if ( snippetSupport ) {
+         result.addAll( snippetCompletionService.complete( parsedDocument, completionParams.getPosition() ) );
+      }
+      return result;
+   }
+
+   private List<CompletionItem> vocabularyCompletions( final ParsedDocument parsedDocument, final CompletionParams completionParams ) {
       final Position position = completionParams.getPosition();
       final long targetLine = position.getLine();
       final long targetColumn = position.getCharacter() - 1L; // character one entry before cursor position is relevant
