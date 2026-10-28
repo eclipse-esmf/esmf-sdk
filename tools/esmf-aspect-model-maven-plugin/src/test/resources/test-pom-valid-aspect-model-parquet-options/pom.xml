@@ -33,6 +33,7 @@
                </includes>
                <outputDirectory>${basedir}/target/test-artifacts</outputDirectory>
                <currentTimestamp>true</currentTimestamp>
+               <count>3</count>
                <ignoreExampleValue>true</ignoreExampleValue>
                <randomTimestamp>true</randomTimestamp>
             </configuration>

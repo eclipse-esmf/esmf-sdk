@@ -79,12 +79,14 @@ class ParquetFileWriter {
 
    private final ParquetExampleValueGenerator parquetValueGenerator;
    private final boolean ignoreExampleValue;
+   private final int count;
    private final List<String> columnNames = new ArrayList<>();
    private MessageType messageTypeSchema;
 
-   ParquetFileWriter( final ParquetExampleValueGenerator parquetValueGenerator, final boolean ignoreExampleValue ) {
+   ParquetFileWriter( final ParquetExampleValueGenerator parquetValueGenerator, final boolean ignoreExampleValue, final int count ) {
       this.parquetValueGenerator = parquetValueGenerator;
       this.ignoreExampleValue = ignoreExampleValue;
+      this.count = count;
    }
 
    /**
@@ -114,8 +116,7 @@ class ParquetFileWriter {
       // Create MessageType from flattened data
       createMessageTypeSchemaFromFlattenedData( flattenedExampleData );
 
-      // Generate denormalized rows based on collections
-      final List<Map<String, Object>> denormalizedRows = createDenormalizedRows( aspect, flattenedExampleData );
+      final List<Map<String, Object>> denormalizedRows = createRecords( aspect, flattenedExampleData );
 
       try ( final ParquetWriter<Group> writer = ExampleParquetWriter.builder( outputFile )
             .withType( messageTypeSchema )
@@ -141,6 +142,17 @@ class ParquetFileWriter {
          } );
       }
       return outputFile.toByteArray();
+   }
+
+   private List<Map<String, Object>> createRecords( final Aspect aspect,
+         final Map<String, Tuple2<Object, PrimitiveType>> firstRecordData ) {
+      final List<Map<String, Object>> records = new ArrayList<>( createDenormalizedRows( aspect, firstRecordData ) );
+      for ( int i = 1; i < count; i++ ) {
+         final Map<String, Tuple2<Object, PrimitiveType>> recordData = new LinkedHashMap<>();
+         extractAspectProperties( aspect, "", recordData, new HashSet<>() );
+         records.addAll( createDenormalizedRows( aspect, recordData ) );
+      }
+      return records;
    }
 
    private void createMessageTypeSchemaFromFlattenedData( final Map<String, Tuple2<Object, PrimitiveType>> data ) {

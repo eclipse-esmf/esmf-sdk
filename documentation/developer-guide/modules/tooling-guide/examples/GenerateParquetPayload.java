@@ -18,6 +18,8 @@ import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.esmf.aspectmodel.generator.parquet.AspectModelParquetPayloadGenerator;
+import org.eclipse.esmf.aspectmodel.generator.parquet.ParquetGenerationConfig;
+import org.eclipse.esmf.aspectmodel.generator.parquet.ParquetGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.metamodel.AspectModel;
 // end::imports[]
@@ -34,7 +36,10 @@ public class GenerateParquetPayload extends AbstractGenerator {
             new AspectModelLoader().load(
                   new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) );
       // tag::generate[]
-      final AspectModelParquetPayloadGenerator generator = new AspectModelParquetPayloadGenerator( aspectModel.aspect() );
+      final ParquetGenerationConfig config = ParquetGenerationConfigBuilder.builder()
+            .count( 10 )
+            .build();
+      final AspectModelParquetPayloadGenerator generator = new AspectModelParquetPayloadGenerator( aspectModel.aspect(), config );
       // Direct generation of Apache Parquet payload
       generator.generate().findFirst().orElseThrow( () -> new IOException( "Failed to generate parquet artifact" ) );
       // end::generate[]

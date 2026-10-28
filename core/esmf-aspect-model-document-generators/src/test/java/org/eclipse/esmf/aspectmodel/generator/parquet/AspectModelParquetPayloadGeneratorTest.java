@@ -161,6 +161,40 @@ class AspectModelParquetPayloadGeneratorTest {
    }
 
    @Test
+   void testGenerateMultipleParquetRecordsWithFreshRandomValues() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
+      final ParquetGenerationConfig config = ParquetGenerationConfigBuilder.builder()
+            .randomStrategy( new Random( 0 ) )
+            .count( 3 )
+            .build();
+
+      final List<Group> records = readAllRecords( generateParquetForModel( aspect, config ) );
+
+      assertThat( records ).hasSize( 3 );
+      assertThat( records ).extracting( record -> record.getString( "testString", 0 ) )
+            .containsOnly( "Example Value Test" );
+      assertThat( records ).extracting( record -> record.getString( "randomValue", 0 ) )
+            .doesNotHaveDuplicates();
+   }
+
+   @Test
+   void testGenerateMultipleParquetRecordsIgnoringExampleValues() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
+      final ParquetGenerationConfig config = ParquetGenerationConfigBuilder.builder()
+            .randomStrategy( new Random( 0 ) )
+            .ignoreExampleValue( true )
+            .count( 3 )
+            .build();
+
+      final List<Group> records = readAllRecords( generateParquetForModel( aspect, config ) );
+
+      assertThat( records ).hasSize( 3 );
+      assertThat( records ).extracting( record -> record.getString( "testString", 0 ) )
+            .doesNotContain( "Example Value Test" )
+            .doesNotHaveDuplicates();
+   }
+
+   @Test
    void testGenerateParquetWithDefaultTimestamp() throws IOException {
       final List<Group> records = readAllRecords( generateParquetForModel( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ) );
       final Group timestampRecord = findRecordWithField( records, "testLocalDateTimeWithoutExample" );
