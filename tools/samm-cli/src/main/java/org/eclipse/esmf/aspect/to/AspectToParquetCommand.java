@@ -21,6 +21,7 @@ import org.eclipse.esmf.aspectmodel.generator.parquet.AspectModelParquetPayloadG
 import org.eclipse.esmf.aspectmodel.generator.parquet.ParquetGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.parquet.ParquetGenerationConfigBuilder;
 import org.eclipse.esmf.exception.CommandException;
+import org.apache.parquet.hadoop.metadata.CompressionCodecName;
 
 import picocli.CommandLine;
 
@@ -73,6 +74,12 @@ public class AspectToParquetCommand extends AbstractCommand {
       defaultValue = "1" )
    private int count;
 
+   @CommandLine.Option(
+      names = { "--compression-codec" },
+      defaultValue = "SNAPPY",
+      description = "Compression codec for the Parquet file (default: ${DEFAULT-VALUE}). Valid values: ${COMPLETION-CANDIDATES}" )
+   private CompressionCodecName compressionCodec;
+
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
 
@@ -97,6 +104,7 @@ public class AspectToParquetCommand extends AbstractCommand {
             .randomTimestamp( randomTimestamp )
             .ignoreExampleValue( ignoreExampleValue )
             .count( count )
+            .compressionCodec( compressionCodec )
             .build();
       final AspectModelParquetPayloadGenerator generator = new AspectModelParquetPayloadGenerator(
             getInputHandler( parentCommand.parentCommand.getInput() ).loadAspect(), config );

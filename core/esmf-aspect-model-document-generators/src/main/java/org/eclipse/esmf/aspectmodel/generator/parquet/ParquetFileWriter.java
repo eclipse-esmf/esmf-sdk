@@ -54,6 +54,7 @@ import org.apache.parquet.example.data.Group;
 import org.apache.parquet.example.data.simple.SimpleGroupFactory;
 import org.apache.parquet.hadoop.ParquetWriter;
 import org.apache.parquet.hadoop.example.ExampleParquetWriter;
+import org.apache.parquet.hadoop.metadata.CompressionCodecName;
 import org.apache.parquet.io.api.Binary;
 import org.apache.parquet.schema.LogicalTypeAnnotation;
 import org.apache.parquet.schema.MessageType;
@@ -80,13 +81,16 @@ class ParquetFileWriter {
    private final ParquetExampleValueGenerator parquetValueGenerator;
    private final boolean ignoreExampleValue;
    private final int count;
+   private final CompressionCodecName compressionCodec;
    private final List<String> columnNames = new ArrayList<>();
    private MessageType messageTypeSchema;
 
-   ParquetFileWriter( final ParquetExampleValueGenerator parquetValueGenerator, final boolean ignoreExampleValue, final int count ) {
+   ParquetFileWriter( final ParquetExampleValueGenerator parquetValueGenerator, final boolean ignoreExampleValue, final int count,
+         final CompressionCodecName compressionCodec ) {
       this.parquetValueGenerator = parquetValueGenerator;
       this.ignoreExampleValue = ignoreExampleValue;
       this.count = count;
+      this.compressionCodec = compressionCodec;
    }
 
    /**
@@ -120,6 +124,7 @@ class ParquetFileWriter {
 
       try ( final ParquetWriter<Group> writer = ExampleParquetWriter.builder( outputFile )
             .withType( messageTypeSchema )
+            .withCompressionCodec( compressionCodec )
             .build() ) {
 
          final SimpleGroupFactory simpleGroupFactory = new SimpleGroupFactory( messageTypeSchema );

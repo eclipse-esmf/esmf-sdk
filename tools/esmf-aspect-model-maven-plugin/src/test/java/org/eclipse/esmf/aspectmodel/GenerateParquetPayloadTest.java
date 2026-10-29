@@ -16,11 +16,11 @@ package org.eclipse.esmf.aspectmodel;
 import java.io.IOException;
 import java.nio.file.Path;
 
-import org.apache.parquet.hadoop.ParquetFileReader;
-import org.apache.parquet.io.LocalInputFile;
-
 import org.apache.maven.api.plugin.testing.InjectMojo;
 import org.apache.maven.api.plugin.testing.MojoTest;
+import org.apache.parquet.hadoop.ParquetFileReader;
+import org.apache.parquet.hadoop.metadata.CompressionCodecName;
+import org.apache.parquet.io.LocalInputFile;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,9 +32,10 @@ public class GenerateParquetPayloadTest extends AspectModelMojoTest {
    @InjectMojo(
       goal = GenerateParquetPayload.MAVEN_GOAL,
       pom = "src/test/resources/test-pom-valid-aspect-model-output-directory/pom.xml" )
-   public void testGenerateParquetPayload( final GenerateParquetPayload generateParquetPayload ) {
+   public void testGenerateParquetPayload( final GenerateParquetPayload generateParquetPayload ) throws IOException {
       assertThatCode( generateParquetPayload::execute ).doesNotThrowAnyException();
       assertThat( generatedFilePath( "Aspect.parquet" ) ).exists();
+      assertCompressionCodec( "Aspect.parquet", CompressionCodecName.SNAPPY );
    }
 
    @Test
@@ -48,6 +49,14 @@ public class GenerateParquetPayloadTest extends AspectModelMojoTest {
       assertThat( generatedFile ).exists().isNotEmptyFile();
       try ( final ParquetFileReader reader = ParquetFileReader.open( new LocalInputFile( generatedFile ) ) ) {
          assertThat( reader.getRecordCount() ).isEqualTo( 3 );
+         assertThat( reader.getFooter().getBlocks().getFirst().getColumns().getFirst().getCodec() )
+               .isEqualTo( CompressionCodecName.GZIP );
+      }
+   }
+
+   private void assertCompressionCodec( final String fileName, final CompressionCodecName expectedCodec ) throws IOException {
+      try ( final ParquetFileReader reader = ParquetFileReader.open( new LocalInputFile( generatedFilePath( fileName ) ) ) ) {
+         assertThat( reader.getFooter().getBlocks().getFirst().getColumns().getFirst().getCodec() ).isEqualTo( expectedCodec );
       }
    }
 }
