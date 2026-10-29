@@ -36,6 +36,7 @@
                <count>3</count>
                <ignoreExampleValue>true</ignoreExampleValue>
                <randomTimestamp>true</randomTimestamp>
+               <compressionCodec>gzip</compressionCodec>
             </configuration>
          </plugin>
       </plugins>

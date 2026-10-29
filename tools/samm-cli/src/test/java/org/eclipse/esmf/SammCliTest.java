@@ -45,6 +45,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.parquet.hadoop.ParquetFileReader;
 import org.apache.parquet.io.LocalInputFile;
 import org.apache.tika.mime.MediaType;
+import org.apache.parquet.hadoop.ParquetFileReader;
+import org.apache.parquet.hadoop.metadata.CompressionCodecName;
+import org.apache.parquet.io.LocalInputFile;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
@@ -831,17 +834,22 @@ class SammCliTest extends SammCliAbstractTest {
    }
 
    @Test
-   void testAspectToParquetWithPayloadGenerationOptions( @TempDir final Path outputDirectory ) {
+   void testAspectToParquetWithPayloadGenerationOptions( @TempDir final Path outputDirectory ) throws IOException {
       final File targetFile = outputFile( outputDirectory, "output.parquet" );
       final String input = inputFile( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).getAbsolutePath();
       final ExecutionResult result = sammCli.runAndExpectSuccess(
             "--disable-color", "aspect", input, "to", "parquet",
             "--ignore-example-value", "--current-timestamp", "--random-timestamp",
+            "--compression-codec", "gzip",
             "--output", targetFile.getAbsolutePath() );
 
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
       assertThat( targetFile ).exists().isNotEmpty();
+      try ( final ParquetFileReader reader = ParquetFileReader.open( new LocalInputFile( targetFile.toPath() ) ) ) {
+         assertThat( reader.getFooter().getBlocks().getFirst().getColumns().getFirst().getCodec() )
+               .isEqualTo( CompressionCodecName.GZIP );
+      }
    }
 
    @Test
