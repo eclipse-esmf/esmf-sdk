@@ -207,7 +207,7 @@ public final class SammSnippetCatalog {
                   : typed.trim();
          }
          case OBJECT_PROPERTIES_LIST, OBJECT_CONSTRAINT, OBJECT_CHARACTERISTIC ->
-               typed.startsWith( "[" ) ? typed.substring( 1 ).trim() : typed.trim();
+            typed.startsWith( "[" ) ? typed.substring( 1 ).trim() : typed.trim();
          case DOCUMENT_HEADER, TOP_LEVEL_SUBJECT, OBJECT_VALUE -> typed.trim();
       };
    }

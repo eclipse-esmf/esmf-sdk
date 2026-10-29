@@ -74,7 +74,9 @@ public final class SammAttributeValueCompletionService {
          .sorted()
          .toList();
 
-   private record MimeTypeEntry( String mimeType, String description, boolean priority ) {}
+   private record MimeTypeEntry(
+         String mimeType, String description, boolean priority
+   ) {}
 
    private static final List<MimeTypeEntry> MIME_TYPES = List.of(
          // Application formats - structured data
@@ -195,7 +197,7 @@ public final class SammAttributeValueCompletionService {
          case "referenceUnit", "unit" -> unitCompletions( context );
          case "quantityKind" -> quantityKindCompletions( context );
          case "characteristic", "baseCharacteristic", "elementCharacteristic", "left", "right" ->
-               characteristicCompletions( context );
+            characteristicCompletions( context );
          case "dataType" -> dataTypeCompletions( context );
          case "type", "a" -> rdfTypeCompletions( context );
          case "extends" -> extendsCompletions( context );
@@ -450,7 +452,7 @@ public final class SammAttributeValueCompletionService {
       if ( enclosing.isPresent() ) {
          final List<CompletionItem> scoped = switch ( localName( enclosing.get() ) ) {
             case "characteristic", "baseCharacteristic", "elementCharacteristic", "left", "right" ->
-                  characteristicClassesCompletions( context, charPrefix, "01" );
+               characteristicClassesCompletions( context, charPrefix, "01" );
             case "constraint" -> constraintClassesCompletions( context, charPrefix, "01" );
             case "properties" -> List.of( singleClassCompletion( context, sammPrefix, "Property" ) );
             case "operations" -> List.of( singleClassCompletion( context, sammPrefix, "Operation" ) );

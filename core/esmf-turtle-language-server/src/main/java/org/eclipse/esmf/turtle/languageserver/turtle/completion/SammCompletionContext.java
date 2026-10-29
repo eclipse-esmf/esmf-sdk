@@ -153,9 +153,8 @@ public record SammCompletionContext(
       if ( predicateUri.equals( sammNamespace + "characteristic" ) ) {
          return true;
       }
-      return characteristicNamespace.map( charNs ->
-            predicateUri.startsWith( charNs )
-                  && CHARACTERISTIC_PREDICATES.contains( predicateUri.substring( charNs.length() ) )
+      return characteristicNamespace.map( charNs -> predicateUri.startsWith( charNs )
+            && CHARACTERISTIC_PREDICATES.contains( predicateUri.substring( charNs.length() ) )
       ).orElse( false );
    }
 
@@ -166,20 +165,17 @@ public record SammCompletionContext(
    }
 
    public List<String> localEntities() {
-      return matchingSubjects( subject.allSubjectTypes(), types ->
-            types.contains( namespaces.sammNamespace() + "Entity" )
-                  || types.contains( namespaces.sammNamespace() + "AbstractEntity" ) );
+      return matchingSubjects( subject.allSubjectTypes(), types -> types.contains( namespaces.sammNamespace() + "Entity" )
+            || types.contains( namespaces.sammNamespace() + "AbstractEntity" ) );
    }
 
    public List<String> localAbstractEntities() {
-      return matchingSubjects( subject.allSubjectTypes(), types ->
-            types.contains( namespaces.sammNamespace() + "AbstractEntity" ) );
+      return matchingSubjects( subject.allSubjectTypes(), types -> types.contains( namespaces.sammNamespace() + "AbstractEntity" ) );
    }
 
    public List<String> localCharacteristics() {
-      return matchingSubjects( subject.allSubjectTypes(), types ->
-            types.contains( namespaces.sammNamespace() + "Characteristic" )
-                  || namespaces.characteristicNamespace().map( ns -> types.stream().anyMatch( t -> t.startsWith( ns ) ) ).orElse( false ) );
+      return matchingSubjects( subject.allSubjectTypes(), types -> types.contains( namespaces.sammNamespace() + "Characteristic" )
+            || namespaces.characteristicNamespace().map( ns -> types.stream().anyMatch( t -> t.startsWith( ns ) ) ).orElse( false ) );
    }
 
    public List<String> localEntitiesExtending( final String parentUri ) {
