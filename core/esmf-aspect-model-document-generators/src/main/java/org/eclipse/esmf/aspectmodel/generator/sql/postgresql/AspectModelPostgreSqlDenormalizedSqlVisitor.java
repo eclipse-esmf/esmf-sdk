@@ -117,7 +117,7 @@ public class AspectModelPostgreSqlDenormalizedSqlVisitor
             .put( XSD.unsignedByte.getURI(), PostgreSqlType.SMALLINT )
             .put( XSD.unsignedShort.getURI(), PostgreSqlType.INTEGER )
             .put( XSD.unsignedInt.getURI(), PostgreSqlType.BIGINT )
-            .put( XSD.unsignedLong.getURI(), new PostgreSqlType.PostgreSqlNumeric( 20 ) )
+            .put( XSD.unsignedLong.getURI(), new PostgreSqlType.PostgreSqlNumeric( Optional.of( 20 ) ) )
             .put( XSD.positiveInteger.getURI(), new PostgreSqlType.PostgreSqlNumeric( Optional.of( config.decimalPrecision() ) ) )
             .put( XSD.nonNegativeInteger.getURI(), new PostgreSqlType.PostgreSqlNumeric( Optional.of( config.decimalPrecision() ) ) )
             .put( XSD.negativeInteger.getURI(), new PostgreSqlType.PostgreSqlNumeric( Optional.of( config.decimalPrecision() ) ) )
