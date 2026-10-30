@@ -18,6 +18,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.parquet.hadoop.metadata.CompressionCodecName;
 import org.eclipse.esmf.aspectmodel.generator.ParquetArtifact;
 import org.eclipse.esmf.aspectmodel.generator.parquet.AspectModelParquetPayloadGenerator;
 import org.eclipse.esmf.aspectmodel.generator.parquet.ParquetGenerationConfig;
@@ -38,14 +39,38 @@ public class GenerateParquetPayload extends AspectModelMojo {
    @Parameter( defaultValue = "false" )
    private boolean addTypeAttribute;
 
+   @Parameter( defaultValue = "false" )
+   private boolean currentTimestamp;
+
+   @Parameter( defaultValue = "false" )
+   private boolean ignoreExampleValue;
+
+   @Parameter( defaultValue = "false" )
+   private boolean randomTimestamp;
+
+   @Parameter( defaultValue = "1" )
+   private int count;
+
+   @Parameter( defaultValue = "snappy" )
+   private String compressionCodec;
+
    @Override
    public void executeGeneration() throws MojoExecutionException, MojoFailureException {
       validateParameters();
+
+      if ( count < 1 ) {
+         throw new MojoExecutionException( "The value for count must be greater than zero." );
+      }
 
       final Set<Aspect> aspects = loadAspects();
       for ( final Aspect context : aspects ) {
          final ParquetGenerationConfig config = ParquetGenerationConfigBuilder.builder()
                .addTypeAttributeForEntityInheritance( addTypeAttribute )
+               .currentTimestamp( currentTimestamp )
+               .ignoreExampleValue( ignoreExampleValue )
+               .randomTimestamp( randomTimestamp )
+               .count( count )
+               .compressionCodec( CompressionCodecName.fromConf( compressionCodec ) )
                .build();
          final AspectModelParquetPayloadGenerator generator = new AspectModelParquetPayloadGenerator( context, config );
          for ( final ParquetArtifact artifact : generator.generate().toList() ) {

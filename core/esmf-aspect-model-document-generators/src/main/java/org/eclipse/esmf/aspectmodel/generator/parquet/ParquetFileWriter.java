@@ -54,6 +54,7 @@ import org.apache.parquet.example.data.Group;
 import org.apache.parquet.example.data.simple.SimpleGroupFactory;
 import org.apache.parquet.hadoop.ParquetWriter;
 import org.apache.parquet.hadoop.example.ExampleParquetWriter;
+import org.apache.parquet.hadoop.metadata.CompressionCodecName;
 import org.apache.parquet.io.api.Binary;
 import org.apache.parquet.schema.LogicalTypeAnnotation;
 import org.apache.parquet.schema.MessageType;
@@ -78,11 +79,18 @@ import org.apache.parquet.schema.Types;
 class ParquetFileWriter {
 
    private final ParquetExampleValueGenerator parquetValueGenerator;
+   private final boolean ignoreExampleValue;
+   private final int count;
+   private final CompressionCodecName compressionCodec;
    private final List<String> columnNames = new ArrayList<>();
    private MessageType messageTypeSchema;
 
-   ParquetFileWriter( final ParquetExampleValueGenerator parquetValueGenerator ) {
+   ParquetFileWriter( final ParquetExampleValueGenerator parquetValueGenerator, final boolean ignoreExampleValue, final int count,
+         final CompressionCodecName compressionCodec ) {
       this.parquetValueGenerator = parquetValueGenerator;
+      this.ignoreExampleValue = ignoreExampleValue;
+      this.count = count;
+      this.compressionCodec = compressionCodec;
    }
 
    /**
@@ -112,11 +120,11 @@ class ParquetFileWriter {
       // Create MessageType from flattened data
       createMessageTypeSchemaFromFlattenedData( flattenedExampleData );
 
-      // Generate denormalized rows based on collections
-      final List<Map<String, Object>> denormalizedRows = createDenormalizedRows( aspect, flattenedExampleData );
+      final List<Map<String, Object>> denormalizedRows = createRecords( aspect, flattenedExampleData );
 
       try ( final ParquetWriter<Group> writer = ExampleParquetWriter.builder( outputFile )
             .withType( messageTypeSchema )
+            .withCompressionCodec( compressionCodec )
             .build() ) {
 
          final SimpleGroupFactory simpleGroupFactory = new SimpleGroupFactory( messageTypeSchema );
@@ -139,6 +147,17 @@ class ParquetFileWriter {
          } );
       }
       return outputFile.toByteArray();
+   }
+
+   private List<Map<String, Object>> createRecords( final Aspect aspect,
+         final Map<String, Tuple2<Object, PrimitiveType>> firstRecordData ) {
+      final List<Map<String, Object>> records = new ArrayList<>( createDenormalizedRows( aspect, firstRecordData ) );
+      for ( int i = 1; i < count; i++ ) {
+         final Map<String, Tuple2<Object, PrimitiveType>> recordData = new LinkedHashMap<>();
+         extractAspectProperties( aspect, "", recordData, new HashSet<>() );
+         records.addAll( createDenormalizedRows( aspect, recordData ) );
+      }
+      return records;
    }
 
    private void createMessageTypeSchemaFromFlattenedData( final Map<String, Tuple2<Object, PrimitiveType>> data ) {
@@ -441,7 +460,7 @@ class ParquetFileWriter {
    }
 
    private Object extractExampleValueFromProperty( final Property property, final Characteristic characteristic ) {
-      if ( property.getExampleValue().isPresent() ) {
+      if ( !ignoreExampleValue && property.getExampleValue().isPresent() ) {
          final Value exampleValue = property.getExampleValue().orElse( null );
          return extractActualValue( exampleValue );
       }

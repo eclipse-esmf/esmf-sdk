@@ -19,6 +19,9 @@ import org.eclipse.esmf.aspectmodel.generator.AspectGenerator;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.AspectModelDatabricksDenormalizedSqlVisitor;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.AspectModelDatabricksDenormalizedSqlVisitorContextBuilder;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfig;
+import org.eclipse.esmf.aspectmodel.generator.sql.postgresql.AspectModelPostgreSqlDenormalizedSqlVisitor;
+import org.eclipse.esmf.aspectmodel.generator.sql.postgresql.AspectModelPostgreSqlDenormalizedSqlVisitorContextBuilder;
+import org.eclipse.esmf.aspectmodel.generator.sql.postgresql.PostgreSqlGenerationConfig;
 import org.eclipse.esmf.metamodel.Aspect;
 
 /**
@@ -46,6 +49,16 @@ public class AspectModelSqlGenerator extends AspectGenerator<String, String, Sql
                            : new DatabricksSqlGenerationConfig();
                yield aspect().accept( new AspectModelDatabricksDenormalizedSqlVisitor( dataBricksConfig ),
                      AspectModelDatabricksDenormalizedSqlVisitorContextBuilder.builder().build() );
+            }
+         };
+         case POSTGRESQL -> switch ( config.mappingStrategy() ) {
+            case DENORMALIZED -> {
+               final PostgreSqlGenerationConfig postgreSqlConfig =
+                     config.dialectSpecificConfig() instanceof final PostgreSqlGenerationConfig postgresConfig
+                           ? postgresConfig
+                           : new PostgreSqlGenerationConfig();
+               yield aspect().accept( new AspectModelPostgreSqlDenormalizedSqlVisitor( postgreSqlConfig ),
+                     AspectModelPostgreSqlDenormalizedSqlVisitorContextBuilder.builder().build() );
             }
          };
       };

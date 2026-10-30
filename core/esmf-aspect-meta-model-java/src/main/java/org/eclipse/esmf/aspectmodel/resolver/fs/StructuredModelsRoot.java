@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * (Aspect, Characteristic, ...).
  *
  * <pre>
- * models   <-- this is the modelsRoot
+ * models   -- this is the modelsRoot
  * └── com.example
  *     ├── 1.0.0
  *     │   ├── ExampleAspect.ttl

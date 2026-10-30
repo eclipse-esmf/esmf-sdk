@@ -20,6 +20,7 @@ import java.util.Locale;
 
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfigBuilder;
+import org.eclipse.esmf.aspectmodel.generator.sql.postgresql.PostgreSqlGenerationConfig;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
@@ -91,6 +92,23 @@ public class AspectModelSqlGeneratorTest {
          final String result = sqlArtifact.getContent();
 
          assertThat( result ).contains( "DECIMAL(38,38)" );
+      } ).doesNotThrowAnyException();
+   }
+
+   @ParameterizedTest
+   @Execution( ExecutionMode.CONCURRENT )
+   @EnumSource( value = TestAspect.class )
+   void testPostgreSqlGeneration( final TestAspect testAspect ) {
+      final Aspect aspect = TestResources.load( testAspect ).aspect();
+      assertThatCode( () -> {
+         final SqlArtifact sqlArtifact = new AspectModelSqlGenerator( aspect, SqlGenerationConfigBuilder.builder()
+               .dialect( SqlGenerationConfig.Dialect.POSTGRESQL )
+               .dialectSpecificConfig( new PostgreSqlGenerationConfig() )
+               .build() ).singleResult();
+         final String result = sqlArtifact.getContent();
+
+         assertThat( result ).contains( "-- x-samm-aspect-model-urn: " + aspect.urn() );
+         assertThat( result ).doesNotContain( "TBLPROPERTIES", "ARRAY<", " STRING" );
       } ).doesNotThrowAnyException();
    }
 }

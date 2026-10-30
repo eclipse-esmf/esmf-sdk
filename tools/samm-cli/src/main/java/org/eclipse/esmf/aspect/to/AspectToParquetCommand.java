@@ -20,6 +20,8 @@ import org.eclipse.esmf.aspect.AspectToCommand;
 import org.eclipse.esmf.aspectmodel.generator.parquet.AspectModelParquetPayloadGenerator;
 import org.eclipse.esmf.aspectmodel.generator.parquet.ParquetGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.parquet.ParquetGenerationConfigBuilder;
+import org.eclipse.esmf.exception.CommandException;
+import org.apache.parquet.hadoop.metadata.CompressionCodecName;
 
 import picocli.CommandLine;
 
@@ -49,6 +51,35 @@ public class AspectToParquetCommand extends AbstractCommand {
       description = "Print detailed reports on errors" )
    private boolean details = false;
 
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+      names = { "--current-timestamp" },
+      description = "Generate current timestamp dynamically instead of using the fixed default timestamp." )
+   private boolean currentTimestamp = false;
+
+   @SuppressWarnings( "FieldCanBeLocal" )
+   @CommandLine.Option(
+      names = { "--random-timestamp" },
+      description = "Generate random date/time values instead of using the fixed default timestamp." )
+   private boolean randomTimestamp = false;
+
+   @CommandLine.Option(
+      names = { "--ignore-example-value" },
+      description = "Ignore example values defined in the Aspect Model and always generate random values." )
+   private boolean ignoreExampleValue = false;
+
+   @CommandLine.Option(
+      names = { "--count" },
+      description = "Number of Parquet records to generate",
+      defaultValue = "1" )
+   private int count;
+
+   @CommandLine.Option(
+      names = { "--compression-codec" },
+      defaultValue = "SNAPPY",
+      description = "Compression codec for the Parquet file (default: ${DEFAULT-VALUE}). Valid values: ${COMPLETION-CANDIDATES}" )
+   private CompressionCodecName compressionCodec;
+
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
 
@@ -63,8 +94,17 @@ public class AspectToParquetCommand extends AbstractCommand {
       setDetails( details );
       setResolverConfig( resolverConfiguration );
 
+      if ( count < 1 ) {
+         throw new CommandException( "The value for --count must be greater than zero." );
+      }
+
       final ParquetGenerationConfig config = ParquetGenerationConfigBuilder.builder()
             .addTypeAttributeForEntityInheritance( addTypeAttribute )
+            .currentTimestamp( currentTimestamp )
+            .randomTimestamp( randomTimestamp )
+            .ignoreExampleValue( ignoreExampleValue )
+            .count( count )
+            .compressionCodec( compressionCodec )
             .build();
       final AspectModelParquetPayloadGenerator generator = new AspectModelParquetPayloadGenerator(
             getInputHandler( parentCommand.parentCommand.getInput() ).loadAspect(), config );

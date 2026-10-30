@@ -28,12 +28,23 @@ import io.soabase.recordbuilder.core.RecordBuilder;
  *        for inherited entities
  * @param compressionCodec the compression codec to use for Parquet file generation (default:
  *        SNAPPY)
+ * @param ignoreExampleValue if a random value is generated for each property, even if an example
+ *        value is defined in the Aspect Model
+ * @param currentTimestamp if set to true, generates current timestamp dynamically instead of the
+ *        fixed default timestamp (start of Unix epoch)
+ * @param randomTimestamp whether to generate random date/time values between 1970 (inclusive) and
+ *        2100 (exclusive) in UTC instead of using the Unix epoch
+ * @param count the number of records to generate
  */
 @RecordBuilder
 public record ParquetGenerationConfig(
       Random randomStrategy,
       boolean addTypeAttributeForEntityInheritance,
-      CompressionCodecName compressionCodec
+      CompressionCodecName compressionCodec,
+      boolean ignoreExampleValue,
+      boolean currentTimestamp,
+      boolean randomTimestamp,
+      int count
 ) implements GenerationConfig {
    public ParquetGenerationConfig {
       if ( randomStrategy == null ) {
@@ -41,6 +52,9 @@ public record ParquetGenerationConfig(
       }
       if ( compressionCodec == null ) {
          compressionCodec = CompressionCodecName.SNAPPY;
+      }
+      if ( count < 1 ) {
+         count = 1;
       }
    }
 }

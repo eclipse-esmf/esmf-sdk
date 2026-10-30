@@ -560,16 +560,14 @@ Configuration Properties:
 | `githubServerIds` | A list of `githubServerId` values, each referring to a `<server>` entry in the Maven `settings.xml`, defining the GitHub repositories to resolve models from. | `List<String>` | none | {nok}
 | `githubServerId` | The id of the `<server>` entry describing the GitHub repository to resolve models from. | `String` | none | {nok}
 | `outputDirectory` | The path to the directory where the generated SQL script will be written to. | `String` | none | {ok}
-| `dialect` | The SQL dialect to generate for. | `String` | `databricks` | {nok}
+| `dialect` | The SQL dialect to generate for: `databricks` or `postgresql`. | `String` | `databricks` | {nok}
 | `strategy` | The mapping strategy to use. | `String` | `denormalized` | {nok}
 | `language` | The language from the model to use for generated comments. | `String` | en | {nok}
 | `includeTableComment` | Include table comment in the generated SQL script. | `Boolean` | `true` | {nok}
 | `includeColumnComments` | Include column comments in the generated SQL script. | `Boolean` | `true` | {nok}
-| `tableCommandPrefix` | The prefix to use for Databricks table creation commands. | `String` | `CREATE TABLE IF NOT EXISTS` | {nok}
-| `decimalPrecision` | The precision to use for Databricks decimal columns, between 1 and 38. See also notes in
-  the xref:java-code-generation.adoc#databricks-type-mapping[Databricks type mapping]. | `Integer` | 10 | {nok}
-| `decimalScale` | The scale to use for Databricks decimal columns, between 0 and the precision. See also notes in
-the xref:java-code-generation.adoc#databricks-type-mapping[Databricks type mapping]. | `Integer` | 0 | {nok}
+| `tableCommandPrefix` | The prefix to use for table creation commands. | `String` | `CREATE TABLE IF NOT EXISTS` | {nok}
+| `decimalPrecision` | The precision to use for decimal columns. Databricks supports up to 38 and PostgreSQL up to 1000. | `Integer` | 10 | {nok}
+| `decimalScale` | The scale to use for decimal columns, between 0 and the precision. | `Integer` | 0 | {nok}
 | `customColumns` | Contains `<column>` elements, each of which defines a custom column to add. Column defintions follow the pattern `column_name DATATYPE [NOT NULL] [COMMENT 'custom']`. | `<column>`... | | {nok}
 |===
 
@@ -675,9 +673,10 @@ Configuration Properties:
 
 === Generating Sample JSON Payload
 
-The `generateJsonPayload` goal generates a valid sample JSON payload for a given Aspect Model as it
-could be returned by an Aspect that implements that Aspect Model. The default life cycle phase for
-the goal is `generate-resources`.
+The `generateJsonPayload` goal generates a valid, pretty-printed sample JSON payload for a given
+Aspect Model, as it could be returned by an Aspect that implements that Aspect Model. When `count`
+is configured, it generates the requested number of records in https://jsonlines.org/[JSON Lines]
+format. The default life cycle phase for the goal is `generate-resources`.
 
 Usage:
 
@@ -719,6 +718,7 @@ Configuration Properties:
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated JSON payload will be written to. | `String` | none | {ok}
 | `addTypeAttribute` | Adds a `@type` attribute for inherited Entities | `Boolean` | `false` | {nok}
+| `count` | Positive number of JSON records to generate in JSON Lines format. | `Integer` | none | {nok}
 | `currentTimestamp` | Generates the current timestamp dynamically instead of using the fixed default timestamp (Unix epoch `1970-01-01T00:00:00.000Z`). | `Boolean` | `false` | {nok}
 | `randomTimestamp` | Generates random date/time values between 1970 (inclusive) and 2100 (exclusive). Takes precedence over `currentTimestamp`. | `Boolean` | `false` | {nok}
 | `ignoreExampleValue` | Ignores example values defined in the Aspect Model and generates random values for all Properties. | `Boolean` | `false` | {nok}
@@ -727,8 +727,8 @@ Configuration Properties:
 === Generating Sample Parquet Payload
 
 The `generateParquetPayload` goal generates a valid sample Apache Parquet payload for a given Aspect Model as it
-could be returned by an Aspect that implements that Aspect Model. The default life cycle phase for
-the goal is `generate-resources`.
+could be returned by an Aspect that implements that Aspect Model. The number of generated records can be configured
+using `count`. The default life cycle phase for the goal is `generate-resources`.
 
 Usage:
 
@@ -770,6 +770,11 @@ Configuration Properties:
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated Parquet payload will be written to. | `String` | none | {ok}
 | `addTypeAttribute` | Adds a `@type` attribute for inherited Entities | `Boolean` | `false` | {nok}
+| `count` | Positive number of Parquet records to generate. | `Integer` | `1` | {nok}
+| `currentTimestamp` | Generates the current timestamp dynamically instead of using the fixed default timestamp (Unix epoch `1970-01-01T00:00:00.000Z`). | `Boolean` | `false` | {nok}
+| `randomTimestamp` | Generates random date/time values between 1970 (inclusive) and 2100 (exclusive). Takes precedence over `currentTimestamp`. | `Boolean` | `false` | {nok}
+| `ignoreExampleValue` | Ignores example values defined in the Aspect Model and generates random values for all Properties. | `Boolean` | `false` | {nok}
+| `compressionCodec` | Compression codec for the Parquet file. Valid values are `uncompressed`, `snappy`, `gzip`, `lzo`, `brotli`, `lz4`, `zstd`, and `lz4_raw`. See the https://parquet.apache.org/docs/file-format/data-pages/compression/#codecs[Apache Parquet codec reference] for details. | `String` | `snappy` | {nok}
 |===
 
 === Generating JSON-LD representation of an Aspect Model

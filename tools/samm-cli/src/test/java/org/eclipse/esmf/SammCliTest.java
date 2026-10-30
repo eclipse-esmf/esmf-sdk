@@ -42,7 +42,12 @@ import org.eclipse.esmf.util.process.ProcessLauncher;
 import org.eclipse.esmf.util.process.ProcessLauncher.ExecutionResult;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.parquet.hadoop.ParquetFileReader;
+import org.apache.parquet.io.LocalInputFile;
 import org.apache.tika.mime.MediaType;
+import org.apache.parquet.hadoop.ParquetFileReader;
+import org.apache.parquet.hadoop.metadata.CompressionCodecName;
+import org.apache.parquet.io.LocalInputFile;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
@@ -723,20 +728,45 @@ class SammCliTest extends SammCliAbstractTest {
    }
 
    @Test
-   void testAspectToJsonToFile( @TempDir final Path outputDirectory ) {
+   void testAspectToJsonToFile( @TempDir final Path outputDirectory ) throws IOException {
       final File targetFile = outputFile( outputDirectory, "output.json" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "json", "-o",
             targetFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
       assertThat( targetFile ).exists();
-      assertThat( targetFile ).content().contains( "\"entityProperty\" :" );
+      final String output = Files.readString( targetFile.toPath() );
+      assertThat( output.lines() ).hasSizeGreaterThan( 1 );
+      assertThat( output ).contains( "\"entityProperty\" :" );
+      final JsonNode json = new ObjectMapper().readTree( output );
+      assertThat( json.isObject() ).isTrue();
+      assertThat( json.get( "testProperty" ).has( "entityProperty" ) ).isTrue();
    }
 
    @Test
-   void testAspectToJsonToStdout() {
+   void testAspectToJsonToStdout() throws IOException {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "json" );
+      assertThat( result.stdout().lines() ).hasSizeGreaterThan( 1 );
       assertThat( result.stdout() ).contains( "\"entityProperty\" :" );
+      final JsonNode json = new ObjectMapper().readTree( result.stdout() );
+      assertThat( json.isObject() ).isTrue();
+      assertThat( json.get( "testProperty" ).has( "entityProperty" ) ).isTrue();
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectToJsonWithCount() throws IOException {
+      final ExecutionResult result = sammCli.runAndExpectSuccess(
+            "--disable-color", "aspect", defaultInputFile, "to", "json", "--count", "3" );
+      assertThat( result.stdout() ).endsWith( "\n" );
+      final List<String> records = result.stdout().lines().toList();
+      assertThat( records ).hasSize( 3 );
+      final ObjectMapper objectMapper = new ObjectMapper();
+      for ( final String record : records ) {
+         final JsonNode json = objectMapper.readTree( record );
+         assertThat( json.isObject() ).isTrue();
+         assertThat( json.get( "testProperty" ).has( "entityProperty" ) ).isTrue();
+      }
       assertThat( result.stderr() ).isEmpty();
    }
 
@@ -801,6 +831,40 @@ class SammCliTest extends SammCliAbstractTest {
       assertThat( randomPayload.get( "dateTimeStampProperty" ) ).isNotEqualTo( defaultPayload.get( "dateTimeStampProperty" ) );
       assertThat( defaultResult.stderr() ).isEmpty();
       assertThat( randomResult.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectToParquetWithPayloadGenerationOptions( @TempDir final Path outputDirectory ) throws IOException {
+      final File targetFile = outputFile( outputDirectory, "output.parquet" );
+      final String input = inputFile( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).getAbsolutePath();
+      final ExecutionResult result = sammCli.runAndExpectSuccess(
+            "--disable-color", "aspect", input, "to", "parquet",
+            "--ignore-example-value", "--current-timestamp", "--random-timestamp",
+            "--compression-codec", "gzip",
+            "--output", targetFile.getAbsolutePath() );
+
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( targetFile ).exists().isNotEmpty();
+      try ( final ParquetFileReader reader = ParquetFileReader.open( new LocalInputFile( targetFile.toPath() ) ) ) {
+         assertThat( reader.getFooter().getBlocks().getFirst().getColumns().getFirst().getCodec() )
+               .isEqualTo( CompressionCodecName.GZIP );
+      }
+   }
+
+   @Test
+   void testAspectToParquetWithCount( @TempDir final Path outputDirectory ) throws IOException {
+      final File targetFile = outputFile( outputDirectory, "output.parquet" );
+      final String input = inputFile( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).getAbsolutePath();
+      final ExecutionResult result = sammCli.runAndExpectSuccess(
+            "--disable-color", "aspect", input, "to", "parquet", "--count", "3",
+            "--output", targetFile.getAbsolutePath() );
+
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      try ( final ParquetFileReader reader = ParquetFileReader.open( new LocalInputFile( targetFile.toPath() ) ) ) {
+         assertThat( reader.getRecordCount() ).isEqualTo( 3 );
+      }
    }
 
    @Test
@@ -1282,6 +1346,16 @@ class SammCliTest extends SammCliAbstractTest {
             "--custom-column", "custom ARRAY<STRING> NOT NULL COMMENT 'Custom column'" );
       assertThat( result.stdout() ).contains( "CREATE TABLE" );
       assertThat( result.stdout() ).contains( "custom ARRAY<STRING> NOT NULL COMMENT 'Custom column'" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectToPostgreSqlWithCustomColumnToStdout() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "sql",
+            "--dialect", "postgresql", "--custom-column", "custom TEXT[] NOT NULL" );
+      assertThat( result.stdout() ).contains( "CREATE TABLE" );
+      assertThat( result.stdout() ).contains( "custom TEXT[] NOT NULL" );
+      assertThat( result.stdout() ).doesNotContain( "TBLPROPERTIES" );
       assertThat( result.stderr() ).isEmpty();
    }
 

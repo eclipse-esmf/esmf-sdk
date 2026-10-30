@@ -53,4 +53,19 @@ public class GenerateSqlTest extends AspectModelMojoTest {
       assertThat( sqlContent ).contains( "custom_column ARRAY<STRING> NOT NULL COMMENT 'Custom column'" );
       assertThat( sqlContent ).contains( "DECIMAL(23,14)" );
    }
+
+   @Test
+   @InjectMojo(
+      goal = GenerateSql.MAVEN_GOAL,
+      pom = "src/test/resources/generate-sql-pom-valid-aspect-model-postgresql/pom.xml" )
+   public void testGeneratePostgreSql( final GenerateSql generateSql ) throws IOException {
+      assertThatCode( generateSql::execute ).doesNotThrowAnyException();
+      final Path generatedFile = generatedFilePath( "AspectWithSimpleTypes.sql" );
+      assertThat( generatedFile ).exists();
+      final String sqlContent = new String( Files.readAllBytes( generatedFile ) );
+
+      assertThat( sqlContent ).contains( "string_property TEXT NOT NULL" );
+      assertThat( sqlContent ).contains( "custom_column TEXT[] NOT NULL" );
+      assertThat( sqlContent ).doesNotContain( "TBLPROPERTIES" );
+   }
 }

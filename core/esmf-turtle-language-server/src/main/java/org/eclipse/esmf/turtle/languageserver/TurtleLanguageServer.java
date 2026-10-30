@@ -32,6 +32,7 @@ import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRe
 import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewResolveTargetParams;
 import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewResolveTargetResult;
 import org.eclipse.esmf.turtle.languageserver.lsp.request.ValidateDocumentParams;
+import org.eclipse.esmf.turtle.languageserver.lsp.response.ValidateDocumentResponse;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TurtleTextDocumentService;
 import org.eclipse.esmf.turtle.languageserver.lsp.workspace.TurtleWorkspaceService;
 import org.eclipse.esmf.turtle.languageserver.structure.TurtleTokenService;
@@ -46,6 +47,9 @@ import org.eclipse.lsp4j.ServerCapabilities;
 import org.eclipse.lsp4j.TextDocumentSyncKind;
 import org.eclipse.lsp4j.TextDocumentSyncOptions;
 import org.eclipse.lsp4j.jsonrpc.Launcher;
+import org.eclipse.lsp4j.jsonrpc.ResponseErrorException;
+import org.eclipse.lsp4j.jsonrpc.messages.ResponseError;
+import org.eclipse.lsp4j.jsonrpc.messages.ResponseErrorCode;
 import org.eclipse.lsp4j.jsonrpc.services.JsonRequest;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.LanguageClientAware;
@@ -112,12 +116,24 @@ public class TurtleLanguageServer implements LanguageServer, LanguageClientAware
       textDocumentService.connect( client );
    }
 
+   @Deprecated
    @JsonRequest( "turtle/aspectValidation/validateDocument" )
    public CompletableFuture<ViolationReport> validateDocument( final ValidateDocumentParams params ) {
       if ( params == null || params.uri() == null ) {
          return CompletableFuture.completedFuture( ViolationReport.EMPTY );
       }
       return textDocumentService.validateDocument( params.uri() );
+   }
+
+   @JsonRequest( "turtle/aspectValidation/validateDocumentV2" )
+   public CompletableFuture<String> validateDocumentV2( final ValidateDocumentParams params ) {
+      if ( params == null || params.uri() == null || params.uri().isEmpty() ) {
+         throw new ResponseErrorException(
+               new ResponseError( ResponseErrorCode.InvalidParams, "Missing or invalid parameters", params ) );
+      }
+      return textDocumentService.validateDocument( params.uri() )
+            .thenApply( report -> report.isEmpty() ? ValidateDocumentResponse.SUCCESS : ValidateDocumentResponse.FAILURE )
+            .thenApply( ValidateDocumentResponse::wireValue );
    }
 
    @JsonRequest( "turtle/graphicalView/render" )

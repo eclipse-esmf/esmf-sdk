@@ -179,10 +179,11 @@ of model resolution] for more information.
                                        be generated (default: en)                                                            | `samm aspect AspectModel.ttl to asyncapi -l de`
                                    | _--separate-files, -sf_ : Create separate files for each schema                         |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
-.7+| [[aspect-to-json]] aspect <model> to json | Generate example JSON payload data for an Aspect Model                      | `samm aspect AspectModel.ttl to json`
+.8+| [[aspect-to-json]] aspect <model> to json | Generate pretty-printed example JSON payload data for an Aspect Model. When `--count` is specified, generate https://jsonlines.org/[JSON Lines] instead. | `samm aspect AspectModel.ttl to json`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
                                    | _--add-type-attribute_, _-ta_ : Add `@type` attribute for inherited Entities            |
+                                   | _--count_ : Positive number of JSON records to generate in JSON Lines format            | `samm aspect AspectModel.ttl to json --count 10`
                                    | _--current-timestamp_ : Generate current timestamp dynamically instead of using the fixed default timestamp (Unix epoch `1970-01-01T00:00:00.000Z`). | `samm aspect AspectModel.ttl to json --current-timestamp`
                                    | _--random-timestamp_ : Generate random date/time values between 1970 (inclusive) and 2100
                                        (exclusive), in UTC. By default, date/time values use `1970-01-01T00:00:00.000Z`.
@@ -191,10 +192,24 @@ of model resolution] for more information.
                                        `--ignore-example-value` is also set.                                                  | `samm aspect AspectModel.ttl to json --random-timestamp`
                                    | _--ignore-example-value_ : Ignore example values defined in the Aspect Model and generate
                                        random values for all Properties                                                      |
-.4+| [[aspect-to-parquet]] aspect <model> to parquet | Generate example Apache Parquet payload data for an Aspect Model      | `samm aspect AspectModel.ttl to parquet`
+.9+| [[aspect-to-parquet]] aspect <model> to parquet | Generate example Apache Parquet payload data for an Aspect Model      | `samm aspect AspectModel.ttl to parquet`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
                                    | _--add-type-attribute_, _-ta_ : Add `@type` attribute for inherited Entities            |
+                                   | _--count_ : Positive number of Parquet records to generate                              | `samm aspect AspectModel.ttl to parquet --count 10`
+                                   | _--current-timestamp_ : Generate current timestamp dynamically instead of using the fixed default timestamp (Unix epoch `1970-01-01T00:00:00.000Z`). | `samm aspect AspectModel.ttl to parquet --current-timestamp`
+                                   | _--random-timestamp_ : Generate random date/time values between 1970 (inclusive) and 2100
+                                       (exclusive), in UTC. By default, date/time values use `1970-01-01T00:00:00.000Z`.
+                                       Applies to `date`, `time`, `dateTime`, `dateTimeStamp`, `gYear`, `gMonth`, `gDay`,
+                                       `gYearMonth`, and `gMonthDay`. Model example values take precedence unless
+                                       `--ignore-example-value` is also set.                                                  | `samm aspect AspectModel.ttl to parquet --random-timestamp`
+                                   | _--ignore-example-value_ : Ignore example values defined in the Aspect Model and generate
+                                       random values for all Properties                                                      |
+                                   | _--compression-codec_ : Compression codec for the Parquet file. Valid values are
+                                       `uncompressed`, `snappy`, `gzip`, `lzo`, `brotli`, `lz4`, `zstd`, and `lz4_raw`
+                                       (default: `snappy`). See the
+                                       https://parquet.apache.org/docs/file-format/data-pages/compression/#codecs[Apache Parquet codec reference]
+                                       for details.                                                                         | `samm aspect AspectModel.ttl to parquet --compression-codec gzip`
 .3+| [[aspect-to-jsonld]] aspect <model> to jsonld | Generate JSON-LD representation of an Aspect Model                      | `samm aspect AspectModel.ttl to jsonld`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
@@ -206,21 +221,18 @@ of model resolution] for more information.
 .11+| [[aspect-to-sql]] aspect <model> to sql | Generate SQL script that sets up a table for data for this Aspect            | `samm aspect AspectModel.ttl to sql`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--language, -l_ : The language from the model to use for generated comments            |
-                                   | _--dialect, -d_ : The SQL dialect to generate for (default: `databricks`)               |
+                                   | _--dialect, -d_ : The SQL dialect to generate for: `databricks` or `postgresql`
+                                     (default: `databricks`)                                                               |
                                    | _--mapping-strategy, -s_ : The mapping strategy to use (default: `denormalized`)        |
                                    | _--include-table-comment, -tc_ : Include table comment in the generated SQL script
                                      (default: `true`)                                                                       |
                                    | _--include-column-comments, -cc_ : Include column comments in the generated SQL
                                      script (default: `true`)                                                                |
-                                   | _--table-command-prefix, -tcp_ : The prefix to use for Databricks table creation
+                                   | _--table-command-prefix, -tcp_ : The prefix to use for table creation
                                      commands (default: `CREATE TABLE IF NOT EXISTS`)                                        |
-                                   | _--decimal-precision, -dp_ : The precision to use for Databricks decimal columns
-                                     (default: 10). See also notes in
-                                     the xref:java-aspect-tooling.adoc#databricks-type-mapping[Databricks type mapping].     |
-                                   | _--decimal-scale, -ds_ : The scale to use for Databricks decimal columns
-                                     (default: 0). See also notes in
-                                     the xref:java-aspect-tooling.adoc#databricks-type-mapping[Databricks type mapping].     |
-                                   | _--custom-column, -col_ : Additional custom column definition, e.g. for databricks
+                                   | _--decimal-precision, -dp_ : The precision to use for decimal columns (default: 10).    |
+                                   | _--decimal-scale, -ds_ : The scale to use for decimal columns (default: 0).             |
+                                   | _--custom-column, -col_ : Additional custom column definition
                                      following the pattern `column_name DATATYPE [NOT NULL] [COMMENT 'custom']`. This
                                      parameter can be repeated for multiple columns.                                         | `samm aspect AspectModel.ttl to sql --custom-column "column_name STRING NOT NULL COMMENT 'custom'"`
 .5+| [[aspect-to-aas]] aspect <model> to aas | Generate an Asset Administration Shell (AAS) submodel template from an

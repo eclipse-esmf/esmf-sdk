@@ -26,6 +26,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,6 +37,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.datatypes.RDFDatatype;
@@ -45,6 +48,7 @@ import org.apache.parquet.column.page.PageReadStore;
 import org.apache.parquet.example.data.Group;
 import org.apache.parquet.example.data.simple.convert.GroupRecordConverter;
 import org.apache.parquet.hadoop.ParquetFileReader;
+import org.apache.parquet.hadoop.metadata.CompressionCodecName;
 import org.apache.parquet.io.ColumnIOFactory;
 import org.apache.parquet.io.LocalInputFile;
 import org.apache.parquet.io.MessageColumnIO;
@@ -116,6 +120,24 @@ class AspectModelParquetPayloadGeneratorTest {
    }
 
    @Test
+   void testDefaultCompressionCodec() throws IOException {
+      final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES );
+
+      assertThat( compressionCodecs( parquetFile ) ).containsExactly( CompressionCodecName.SNAPPY );
+   }
+
+   @Test
+   void testConfiguredCompressionCodec() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
+      final ParquetGenerationConfig config = ParquetGenerationConfigBuilder.builder()
+            .compressionCodec( CompressionCodecName.GZIP )
+            .build();
+      final Path parquetFile = generateParquetForModel( aspect, config );
+
+      assertThat( compressionCodecs( parquetFile ) ).containsExactly( CompressionCodecName.GZIP );
+   }
+
+   @Test
    void testGenerateParquetForAspectWithSimpleProperties() throws IOException {
       final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES );
       assertThat( parquetFile ).exists();
@@ -141,6 +163,98 @@ class AspectModelParquetPayloadGeneratorTest {
       final Group intRecord = findRecordWithField( records, "testInt" );
       assertThat( intRecord ).isNotNull();
       assertThat( intRecord.getInteger( "testInt", 0 ) ).isEqualTo( 3 );
+   }
+
+   @Test
+   void testGenerateParquetIgnoringExampleValues() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
+      final ParquetGenerationConfig config = ParquetGenerationConfigBuilder.builder()
+            .randomStrategy( new Random( 0 ) )
+            .ignoreExampleValue( true )
+            .build();
+
+      final List<Group> records = readAllRecords( generateParquetForModel( aspect, config ) );
+      final Group stringRecord = findRecordWithField( records, "testString" );
+
+      assertThat( stringRecord ).isNotNull();
+      assertThat( stringRecord.getString( "testString", 0 ) ).isNotEqualTo( "Example Value Test" );
+   }
+
+   @Test
+   void testGenerateMultipleParquetRecordsWithFreshRandomValues() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
+      final ParquetGenerationConfig config = ParquetGenerationConfigBuilder.builder()
+            .randomStrategy( new Random( 0 ) )
+            .count( 3 )
+            .build();
+
+      final List<Group> records = readAllRecords( generateParquetForModel( aspect, config ) );
+
+      assertThat( records ).hasSize( 3 );
+      assertThat( records ).extracting( record -> record.getString( "testString", 0 ) )
+            .containsOnly( "Example Value Test" );
+      assertThat( records ).extracting( record -> record.getString( "randomValue", 0 ) )
+            .doesNotHaveDuplicates();
+   }
+
+   @Test
+   void testGenerateMultipleParquetRecordsIgnoringExampleValues() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
+      final ParquetGenerationConfig config = ParquetGenerationConfigBuilder.builder()
+            .randomStrategy( new Random( 0 ) )
+            .ignoreExampleValue( true )
+            .count( 3 )
+            .build();
+
+      final List<Group> records = readAllRecords( generateParquetForModel( aspect, config ) );
+
+      assertThat( records ).hasSize( 3 );
+      assertThat( records ).extracting( record -> record.getString( "testString", 0 ) )
+            .doesNotContain( "Example Value Test" )
+            .doesNotHaveDuplicates();
+   }
+
+   @Test
+   void testGenerateParquetWithDefaultTimestamp() throws IOException {
+      final List<Group> records = readAllRecords( generateParquetForModel( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ) );
+      final Group timestampRecord = findRecordWithField( records, "testLocalDateTimeWithoutExample" );
+
+      assertThat( timestampRecord ).isNotNull();
+      assertThat( timestampRecord.getLong( "testLocalDateTimeWithoutExample", 0 ) ).isZero();
+   }
+
+   @Test
+   void testGenerateParquetWithCurrentTimestamp() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
+      final ParquetGenerationConfig config = ParquetGenerationConfigBuilder.builder()
+            .currentTimestamp( true )
+            .build();
+      final long earliestExpectedTimestamp = LocalDateTime.now().toEpochSecond( ZoneOffset.UTC ) * 1_000_000;
+
+      final List<Group> records = readAllRecords( generateParquetForModel( aspect, config ) );
+      final long latestExpectedTimestamp = LocalDateTime.now().toEpochSecond( ZoneOffset.UTC ) * 1_000_000;
+      final Group timestampRecord = findRecordWithField( records, "testLocalDateTimeWithoutExample" );
+
+      assertThat( timestampRecord ).isNotNull();
+      assertThat( timestampRecord.getLong( "testLocalDateTimeWithoutExample", 0 ) )
+            .isBetween( earliestExpectedTimestamp, latestExpectedTimestamp );
+   }
+
+   @Test
+   void testGenerateParquetWithRandomTimestamp() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
+      final ParquetGenerationConfig config = ParquetGenerationConfigBuilder.builder()
+            .randomStrategy( new Random( 0 ) )
+            .randomTimestamp( true )
+            .build();
+
+      final List<Group> records = readAllRecords( generateParquetForModel( aspect, config ) );
+      final Group timestampRecord = findRecordWithField( records, "testLocalDateTimeWithoutExample" );
+      final long upperBound = LocalDateTime.of( 2100, 1, 1, 0, 0 ).toEpochSecond( ZoneOffset.UTC ) * 1_000_000;
+
+      assertThat( timestampRecord ).isNotNull();
+      assertThat( timestampRecord.getLong( "testLocalDateTimeWithoutExample", 0 ) )
+            .isBetween( 0L, upperBound - 1 );
    }
 
    @Test
@@ -587,6 +701,32 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
+   @Test
+   void testGenerateDiverseValidYearMonthDurations() {
+      final ParquetExampleValueGenerator generator = new ParquetExampleValueGenerator( new Random( 0 ), false, false );
+
+      final Set<String> generatedValues = IntStream.range( 0, 100 )
+            .mapToObj( ignored -> (String) SammType.YEAR_MONTH_DURATION.accept( generator, null ) )
+            .collect( Collectors.toSet() );
+
+      assertThat( generatedValues )
+            .hasSizeGreaterThan( 10 )
+            .allMatch( SammType.YEAR_MONTH_DURATION::isValid );
+   }
+
+   @Test
+   void testGenerateDiverseValidDayTimeDurations() {
+      final ParquetExampleValueGenerator generator = new ParquetExampleValueGenerator( new Random( 0 ), false, false );
+
+      final Set<String> generatedValues = IntStream.range( 0, 100 )
+            .mapToObj( ignored -> (String) SammType.DAY_TIME_DURATION.accept( generator, null ) )
+            .collect( Collectors.toSet() );
+
+      assertThat( generatedValues )
+            .hasSizeGreaterThan( 10 )
+            .allMatch( SammType.DAY_TIME_DURATION::isValid );
+   }
+
    /**
     * Verifies Parquet generation with a custom configuration using a fixed random seed for
     * reproducibility.
@@ -595,7 +735,7 @@ class AspectModelParquetPayloadGeneratorTest {
    void testGenerateParquetWithCustomConfig() throws IOException {
       final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
       final ParquetGenerationConfig config = ParquetGenerationConfigBuilder.builder()
-            .randomStrategy( new Random( 42 ) )
+            .randomStrategy( new Random( 0 ) )
             .build();
 
       final Path parquetFile = generateParquetForModel( aspect, config );
@@ -899,6 +1039,15 @@ class AspectModelParquetPayloadGeneratorTest {
          }
       }
       return records;
+   }
+
+   private Set<CompressionCodecName> compressionCodecs( final Path parquetFile ) throws IOException {
+      try ( final ParquetFileReader fileReader = ParquetFileReader.open( new LocalInputFile( parquetFile ) ) ) {
+         return fileReader.getFooter().getBlocks().stream()
+               .flatMap( block -> block.getColumns().stream() )
+               .map( column -> column.getCodec() )
+               .collect( Collectors.toSet() );
+      }
    }
 
    /**
