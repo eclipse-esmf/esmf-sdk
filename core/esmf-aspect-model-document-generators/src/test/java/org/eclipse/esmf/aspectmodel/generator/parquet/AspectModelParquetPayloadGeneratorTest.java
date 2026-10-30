@@ -37,6 +37,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.datatypes.RDFDatatype;
@@ -698,6 +699,32 @@ class AspectModelParquetPayloadGeneratorTest {
 
       final Group group = readFirstRecord( parquetFile );
       assertThat( group ).isNotNull();
+   }
+
+   @Test
+   void testGenerateDiverseValidYearMonthDurations() {
+      final ParquetExampleValueGenerator generator = new ParquetExampleValueGenerator( new Random( 0 ), false, false );
+
+      final Set<String> generatedValues = IntStream.range( 0, 100 )
+            .mapToObj( ignored -> (String) SammType.YEAR_MONTH_DURATION.accept( generator, null ) )
+            .collect( Collectors.toSet() );
+
+      assertThat( generatedValues )
+            .hasSizeGreaterThan( 10 )
+            .allMatch( SammType.YEAR_MONTH_DURATION::isValid );
+   }
+
+   @Test
+   void testGenerateDiverseValidDayTimeDurations() {
+      final ParquetExampleValueGenerator generator = new ParquetExampleValueGenerator( new Random( 0 ), false, false );
+
+      final Set<String> generatedValues = IntStream.range( 0, 100 )
+            .mapToObj( ignored -> (String) SammType.DAY_TIME_DURATION.accept( generator, null ) )
+            .collect( Collectors.toSet() );
+
+      assertThat( generatedValues )
+            .hasSizeGreaterThan( 10 )
+            .allMatch( SammType.DAY_TIME_DURATION::isValid );
    }
 
    /**
