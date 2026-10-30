@@ -26,6 +26,9 @@ import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksColumnDef
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksColumnDefinitionParser;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfigBuilder;
+import org.eclipse.esmf.aspectmodel.generator.sql.postgresql.PostgreSqlColumnDefinition;
+import org.eclipse.esmf.aspectmodel.generator.sql.postgresql.PostgreSqlColumnDefinitionParser;
+import org.eclipse.esmf.aspectmodel.generator.sql.postgresql.PostgreSqlGenerationConfigBuilder;
 import org.eclipse.esmf.metamodel.Aspect;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -72,23 +75,12 @@ public class GenerateSql extends AspectModelMojo {
    public void executeGeneration() throws MojoExecutionException {
       validateParameters();
 
-      final List<DatabricksColumnDefinition> customColumnDefinitions = customColumns.stream()
-            .map( columnDefinition -> new DatabricksColumnDefinitionParser( columnDefinition ).get() )
-            .toList();
+      final SqlGenerationConfig.Dialect sqlDialect = SqlGenerationConfig.Dialect.valueOf( dialect.toUpperCase() );
+      final SqlGenerationConfig.DialectSpecificConfig generatorConfig = dialectSpecificConfig( sqlDialect );
 
       final Set<Aspect> aspectModels = loadAspects();
       for ( final Aspect aspect : aspectModels ) {
-         final DatabricksSqlGenerationConfig generatorConfig =
-               DatabricksSqlGenerationConfigBuilder.builder()
-                     .commentLanguage( Locale.forLanguageTag( language ) )
-                     .includeTableComment( includeTableComment )
-                     .includeColumnComments( includeColumnComments )
-                     .createTableCommandPrefix( tableCommandPrefix )
-                     .decimalPrecision( decimalPrecision )
-                     .decimalScale( decimalScale )
-                     .customColumns( customColumnDefinitions )
-                     .build();
-         final SqlGenerationConfig sqlConfig = new SqlGenerationConfig( SqlGenerationConfig.Dialect.valueOf( dialect.toUpperCase() ),
+         final SqlGenerationConfig sqlConfig = new SqlGenerationConfig( sqlDialect,
                SqlGenerationConfig.MappingStrategy.valueOf( strategy.toUpperCase() ), generatorConfig );
          final SqlArtifact result = new AspectModelSqlGenerator( aspect, sqlConfig ).singleResult();
 
@@ -99,5 +91,38 @@ public class GenerateSql extends AspectModelMojo {
          }
       }
       LOG.info( "Successfully generated SQL script." );
+   }
+
+   private SqlGenerationConfig.DialectSpecificConfig dialectSpecificConfig( final SqlGenerationConfig.Dialect sqlDialect ) {
+      return switch ( sqlDialect ) {
+         case DATABRICKS -> {
+            final List<DatabricksColumnDefinition> columns = customColumns.stream()
+                  .map( column -> new DatabricksColumnDefinitionParser( column ).get() )
+                  .toList();
+            yield DatabricksSqlGenerationConfigBuilder.builder()
+                  .commentLanguage( Locale.forLanguageTag( language ) )
+                  .includeTableComment( includeTableComment )
+                  .includeColumnComments( includeColumnComments )
+                  .createTableCommandPrefix( tableCommandPrefix )
+                  .decimalPrecision( decimalPrecision )
+                  .decimalScale( decimalScale )
+                  .customColumns( columns )
+                  .build();
+         }
+         case POSTGRESQL -> {
+            final List<PostgreSqlColumnDefinition> columns = customColumns.stream()
+                  .map( column -> new PostgreSqlColumnDefinitionParser( column ).get() )
+                  .toList();
+            yield PostgreSqlGenerationConfigBuilder.builder()
+                  .commentLanguage( Locale.forLanguageTag( language ) )
+                  .includeTableComment( includeTableComment )
+                  .includeColumnComments( includeColumnComments )
+                  .createTableCommandPrefix( tableCommandPrefix )
+                  .decimalPrecision( decimalPrecision )
+                  .decimalScale( decimalScale )
+                  .customColumns( columns )
+                  .build();
+         }
+      };
    }
 }
