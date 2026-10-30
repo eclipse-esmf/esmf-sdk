@@ -18,6 +18,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.parquet.hadoop.metadata.CompressionCodecName;
 import org.eclipse.esmf.aspectmodel.generator.ParquetArtifact;
 import org.eclipse.esmf.aspectmodel.generator.parquet.AspectModelParquetPayloadGenerator;
 import org.eclipse.esmf.aspectmodel.generator.parquet.ParquetGenerationConfig;
@@ -50,6 +51,9 @@ public class GenerateParquetPayload extends AspectModelMojo {
    @Parameter( defaultValue = "1" )
    private int count;
 
+   @Parameter( defaultValue = "snappy" )
+   private String compressionCodec;
+
    @Override
    public void executeGeneration() throws MojoExecutionException, MojoFailureException {
       validateParameters();
@@ -66,6 +70,7 @@ public class GenerateParquetPayload extends AspectModelMojo {
                .ignoreExampleValue( ignoreExampleValue )
                .randomTimestamp( randomTimestamp )
                .count( count )
+               .compressionCodec( CompressionCodecName.fromConf( compressionCodec ) )
                .build();
          final AspectModelParquetPayloadGenerator generator = new AspectModelParquetPayloadGenerator( context, config );
          for ( final ParquetArtifact artifact : generator.generate().toList() ) {

@@ -37,6 +37,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.datatypes.RDFDatatype;
@@ -47,6 +48,7 @@ import org.apache.parquet.column.page.PageReadStore;
 import org.apache.parquet.example.data.Group;
 import org.apache.parquet.example.data.simple.convert.GroupRecordConverter;
 import org.apache.parquet.hadoop.ParquetFileReader;
+import org.apache.parquet.hadoop.metadata.CompressionCodecName;
 import org.apache.parquet.io.ColumnIOFactory;
 import org.apache.parquet.io.LocalInputFile;
 import org.apache.parquet.io.MessageColumnIO;
@@ -115,6 +117,24 @@ class AspectModelParquetPayloadGeneratorTest {
             assertThat( reader.getRecordCount() ).isEqualTo( 1 );
          }
       } ).doesNotThrowAnyException();
+   }
+
+   @Test
+   void testDefaultCompressionCodec() throws IOException {
+      final Path parquetFile = generateParquetForModel( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES );
+
+      assertThat( compressionCodecs( parquetFile ) ).containsExactly( CompressionCodecName.SNAPPY );
+   }
+
+   @Test
+   void testConfiguredCompressionCodec() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).aspect();
+      final ParquetGenerationConfig config = ParquetGenerationConfigBuilder.builder()
+            .compressionCodec( CompressionCodecName.GZIP )
+            .build();
+      final Path parquetFile = generateParquetForModel( aspect, config );
+
+      assertThat( compressionCodecs( parquetFile ) ).containsExactly( CompressionCodecName.GZIP );
    }
 
    @Test
@@ -681,6 +701,32 @@ class AspectModelParquetPayloadGeneratorTest {
       assertThat( group ).isNotNull();
    }
 
+   @Test
+   void testGenerateDiverseValidYearMonthDurations() {
+      final ParquetExampleValueGenerator generator = new ParquetExampleValueGenerator( new Random( 0 ), false, false );
+
+      final Set<String> generatedValues = IntStream.range( 0, 100 )
+            .mapToObj( ignored -> (String) SammType.YEAR_MONTH_DURATION.accept( generator, null ) )
+            .collect( Collectors.toSet() );
+
+      assertThat( generatedValues )
+            .hasSizeGreaterThan( 10 )
+            .allMatch( SammType.YEAR_MONTH_DURATION::isValid );
+   }
+
+   @Test
+   void testGenerateDiverseValidDayTimeDurations() {
+      final ParquetExampleValueGenerator generator = new ParquetExampleValueGenerator( new Random( 0 ), false, false );
+
+      final Set<String> generatedValues = IntStream.range( 0, 100 )
+            .mapToObj( ignored -> (String) SammType.DAY_TIME_DURATION.accept( generator, null ) )
+            .collect( Collectors.toSet() );
+
+      assertThat( generatedValues )
+            .hasSizeGreaterThan( 10 )
+            .allMatch( SammType.DAY_TIME_DURATION::isValid );
+   }
+
    /**
     * Verifies Parquet generation with a custom configuration using a fixed random seed for
     * reproducibility.
@@ -993,6 +1039,15 @@ class AspectModelParquetPayloadGeneratorTest {
          }
       }
       return records;
+   }
+
+   private Set<CompressionCodecName> compressionCodecs( final Path parquetFile ) throws IOException {
+      try ( final ParquetFileReader fileReader = ParquetFileReader.open( new LocalInputFile( parquetFile ) ) ) {
+         return fileReader.getFooter().getBlocks().stream()
+               .flatMap( block -> block.getColumns().stream() )
+               .map( column -> column.getCodec() )
+               .collect( Collectors.toSet() );
+      }
    }
 
    /**

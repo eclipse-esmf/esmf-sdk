@@ -776,6 +776,7 @@ Configuration Properties:
 | `currentTimestamp` | Generates the current timestamp dynamically instead of using the fixed default timestamp (Unix epoch `1970-01-01T00:00:00.000Z`). | `Boolean` | `false` | {nok}
 | `randomTimestamp` | Generates random date/time values between 1970 (inclusive) and 2100 (exclusive). Takes precedence over `currentTimestamp`. | `Boolean` | `false` | {nok}
 | `ignoreExampleValue` | Ignores example values defined in the Aspect Model and generates random values for all Properties. | `Boolean` | `false` | {nok}
+| `compressionCodec` | Compression codec for the Parquet file. Valid values are `uncompressed`, `snappy`, `gzip`, `lzo`, `brotli`, `lz4`, `zstd`, and `lz4_raw`. See the https://parquet.apache.org/docs/file-format/data-pages/compression/#codecs[Apache Parquet codec reference] for details. | `String` | `snappy` | {nok}
 |===
 
 === Generating JSON-LD representation of an Aspect Model
