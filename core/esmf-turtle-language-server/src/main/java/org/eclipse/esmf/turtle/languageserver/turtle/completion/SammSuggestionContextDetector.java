@@ -233,12 +233,12 @@ public final class SammSuggestionContextDetector {
          final Optional<String> characteristicNamespace ) {
       final Frame top = cursorState.top();
       final Frame parent = cursorState.parent();
-      if ( parent != null && parent.isList() && top.enclosingPredicate().equals( sammNamespace + "properties" ) ) {
+      if ( parent != null && parent.isList() && top.enclosingPredicate().equals( sammNamespace + SAMM.PROPERTIES ) ) {
          return Optional.of( TargetPosition.OBJECT_PROPERTIES_LIST );
       }
       if ( parent != null && !parent.isList() ) {
          if ( characteristicNamespace.isPresent()
-               && top.enclosingPredicate().equals( characteristicNamespace.get() + "constraint" ) ) {
+               && top.enclosingPredicate().equals( characteristicNamespace.get() + SAMMC.CONSTRAINT ) ) {
             return Optional.of( TargetPosition.OBJECT_CONSTRAINT );
          }
          if ( SammCompletionContext.isCharacteristicPredicate( top.enclosingPredicate(), sammNamespace, characteristicNamespace ) ) {

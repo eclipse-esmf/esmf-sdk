@@ -19,6 +19,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import org.eclipse.esmf.metamodel.vocabulary.SAMM;
+import org.eclipse.esmf.metamodel.vocabulary.SAMMC;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.samm.KnownVersion;
 
@@ -144,14 +146,14 @@ public record SammCompletionContext(
    }
 
    public static final Set<String> CHARACTERISTIC_PREDICATES = Set.of(
-         "characteristic", "baseCharacteristic", "elementCharacteristic", "left", "right"
+         SAMM.CHARACTERISTIC, SAMMC.BASE_CHARACTERISTIC, SAMMC.ELEMENT_CHARACTERISTIC, SAMMC.LEFT, SAMMC.RIGHT
    );
 
    public static boolean isCharacteristicPredicate(
          final String predicateUri,
          final String sammNamespace,
          final Optional<String> characteristicNamespace ) {
-      if ( predicateUri.equals( sammNamespace + "characteristic" ) ) {
+      if ( predicateUri.equals( sammNamespace + SAMM.CHARACTERISTIC ) ) {
          return true;
       }
       return characteristicNamespace.map( charNs -> predicateUri.startsWith( charNs )
@@ -166,17 +168,20 @@ public record SammCompletionContext(
    }
 
    public List<String> localEntities() {
-      return matchingSubjects( subject.allSubjectTypes(), types -> types.contains( namespaces.sammNamespace() + "Entity" )
-            || types.contains( namespaces.sammNamespace() + "AbstractEntity" ) );
+      return matchingSubjects( subject.allSubjectTypes(), types -> types.contains( namespaces.sammNamespace() + SAMM.ENTITY )
+            || types.contains( namespaces.sammNamespace() + SAMM.ABSTRACT_ENTITY ) );
    }
 
    public List<String> localAbstractEntities() {
-      return matchingSubjects( subject.allSubjectTypes(), types -> types.contains( namespaces.sammNamespace() + "AbstractEntity" ) );
+      return matchingSubjects( subject.allSubjectTypes(),
+            types -> types.contains( namespaces.sammNamespace() + SAMM.ABSTRACT_ENTITY ) );
    }
 
    public List<String> localCharacteristics() {
-      return matchingSubjects( subject.allSubjectTypes(), types -> types.contains( namespaces.sammNamespace() + "Characteristic" )
-            || namespaces.characteristicNamespace().map( ns -> types.stream().anyMatch( t -> t.startsWith( ns ) ) ).orElse( false ) );
+      return matchingSubjects( subject.allSubjectTypes(),
+            types -> types.contains( namespaces.sammNamespace() + SAMM.CHARACTERISTIC_CLASS )
+                  || namespaces.characteristicNamespace().map( ns -> types.stream().anyMatch( t -> t.startsWith( ns ) ) )
+                        .orElse( false ) );
    }
 
    public List<String> localEntitiesExtending( final String parentUri ) {

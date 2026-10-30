@@ -60,14 +60,16 @@ class SammSuggestionServiceTest {
    }
 
    @Test
-   void topLevelPropertyHasTwoEditableFieldsAndFinalTabStop() {
+   void topLevelPropertyHasFourEditableFieldsAndFinalTabStop() {
       final Request request = request( HEADER + "\n|" );
       final CompletionItem item = snippetNamed( request, "SAMM Property" );
       assertThat( item.getKind() ).isEqualTo( CompletionItemKind.Snippet );
       assertThat( item.getInsertTextFormat() ).isEqualTo( InsertTextFormat.Snippet );
       assertThat( item.getTextEdit().getLeft().getNewText() ).isEqualTo( """
          :${1:propertyName} a samm:Property ;
-            samm:characteristic :${2:CharacteristicName} .$0""" );
+            samm:preferredName "${2}"@en ;
+            samm:description "${3}"@en ;
+            samm:characteristic :${4:CharacteristicName} .$0""" );
       assertThat( item.getTextEdit().getLeft().getRange().getStart() ).isEqualTo( request.position );
       assertThat( item.getTextEdit().getLeft().getRange().getEnd() ).isEqualTo( request.position );
       assertValid( apply( request, item ) );
@@ -87,7 +89,7 @@ class SammSuggestionServiceTest {
       final CompletionItem item = snippetNamed( request( header + "\n|" ), "SAMM Property" );
       assertThat( item.getDetail() ).isEqualTo( "SAMM " + version );
       assertThat( item.getTextEdit().getLeft().getNewText() ).startsWith( "model:${1:propertyName} a meta:Property" )
-            .contains( "meta:characteristic model:${2:CharacteristicName}" );
+            .contains( "meta:characteristic model:${4:CharacteristicName}" );
    }
 
    @Test

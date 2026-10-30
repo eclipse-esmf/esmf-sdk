@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.eclipse.esmf.metamodel.vocabulary.SAMM;
 import org.eclipse.esmf.turtle.languageserver.turtle.completion.SammCompletionContext.SubjectFacts;
 
 import org.apache.jena.vocabulary.RDF;
@@ -454,7 +455,8 @@ final class TurtleCompletionScanner {
                      typesBySubject.computeIfAbsent( top.subject, ignored -> new HashSet<>() ).add( expandedObject );
                   }
                }
-               if ( ( top.predicate.endsWith( "#extends" ) || top.predicate.endsWith( "/extends" ) ) && !top.subject.isEmpty() ) {
+               if ( ( top.predicate.endsWith( "#" + SAMM.EXTENDS ) || top.predicate.endsWith( "/" + SAMM.EXTENDS ) )
+                     && !top.subject.isEmpty() ) {
                   final String expandedObject = expand( text, namespaces );
                   if ( !expandedObject.isEmpty() ) {
                      extendedBySubject.computeIfAbsent( top.subject, ignored -> new HashSet<>() ).add( expandedObject );
