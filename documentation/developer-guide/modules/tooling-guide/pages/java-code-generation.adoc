@@ -165,7 +165,8 @@ include::example$sample-file-header.vm[]
 
 Using the Aspect Model SQL generator, an SQL script can be generated that sets up a table for data
 corresponding to the Aspect. The current implementation provides support for the
-https://docs.databricks.com/en/sql/language-manual/index.html[Databricks SQL] dialect and a mapping
+https://docs.databricks.com/en/sql/language-manual/index.html[Databricks SQL] and
+https://www.postgresql.org/docs/current/sql.html[PostgreSQL] dialects and a mapping
 strategy that uses a denormalized table, i.e., the table contains one column for each Property used
 in the Aspect Model (or any of its transitively referenced Entities).
 
@@ -230,4 +231,38 @@ in the data, the Aspect Models using xsd:decimal should also use a xref:samm-spe
 | `xsd:base64Binary` | `BINARY` |
 | `xsd:anyURI` | `STRING` |
 | `samm:curie` | `STRING` |
+|===
+
+[[postgresql-type-mapping]]
+=== PostgreSQL Type Mapping
+
+To generate PostgreSQL, use `SqlGenerationConfig.Dialect.POSTGRESQL` and a
+`PostgreSqlGenerationConfig`. Collections of scalar values are represented as PostgreSQL arrays.
+Table and column descriptions are emitted using `COMMENT ON TABLE` and `COMMENT ON COLUMN`.
+
+[width="100%", options="header", cols="33,33,33"]
+|===
+| Aspect model type | PostgreSQL type | Note
+| `xsd:string` | `TEXT` |
+| `xsd:boolean` | `BOOLEAN` |
+| `xsd:decimal` | `NUMERIC` | The configured precision and scale are used.
+| `xsd:integer` | `NUMERIC` | The configured precision is used.
+| `xsd:double` | `DOUBLE PRECISION` |
+| `xsd:float` | `REAL` |
+| `xsd:date` | `DATE` |
+| `xsd:time` | `TIME` |
+| `xsd:dateTime` | `TIMESTAMP` |
+| `xsd:dateTimeStamp` | `TIMESTAMP WITH TIME ZONE` |
+| `xsd:gYear`, `xsd:gMonth`, `xsd:gDay`, `xsd:gYearMonth`, `xsd:gMonthDay` | `TEXT` |
+| `xsd:duration`, `xsd:yearMonthDuration`, `xsd:dayTimeDuration` | `TEXT` |
+| `xsd:byte`, `xsd:short` | `SMALLINT` |
+| `xsd:int` | `INTEGER` |
+| `xsd:long` | `BIGINT` |
+| `xsd:unsignedByte` | `SMALLINT` |
+| `xsd:unsignedShort` | `INTEGER` |
+| `xsd:unsignedInt` | `BIGINT` |
+| `xsd:unsignedLong` | `NUMERIC(20,0)` |
+| `xsd:positiveInteger`, `xsd:nonNegativeInteger`, `xsd:negativeInteger`, `xsd:nonPositiveInteger` | `NUMERIC` | The configured precision is used.
+| `xsd:hexBinary`, `xsd:base64Binary` | `BYTEA` |
+| `xsd:anyURI`, `samm:curie` | `TEXT` |
 |===

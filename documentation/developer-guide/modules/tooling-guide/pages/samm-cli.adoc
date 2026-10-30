@@ -221,21 +221,18 @@ of model resolution] for more information.
 .11+| [[aspect-to-sql]] aspect <model> to sql | Generate SQL script that sets up a table for data for this Aspect            | `samm aspect AspectModel.ttl to sql`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--language, -l_ : The language from the model to use for generated comments            |
-                                   | _--dialect, -d_ : The SQL dialect to generate for (default: `databricks`)               |
+                                   | _--dialect, -d_ : The SQL dialect to generate for: `databricks` or `postgresql`
+                                     (default: `databricks`)                                                               |
                                    | _--mapping-strategy, -s_ : The mapping strategy to use (default: `denormalized`)        |
                                    | _--include-table-comment, -tc_ : Include table comment in the generated SQL script
                                      (default: `true`)                                                                       |
                                    | _--include-column-comments, -cc_ : Include column comments in the generated SQL
                                      script (default: `true`)                                                                |
-                                   | _--table-command-prefix, -tcp_ : The prefix to use for Databricks table creation
+                                   | _--table-command-prefix, -tcp_ : The prefix to use for table creation
                                      commands (default: `CREATE TABLE IF NOT EXISTS`)                                        |
-                                   | _--decimal-precision, -dp_ : The precision to use for Databricks decimal columns
-                                     (default: 10). See also notes in
-                                     the xref:java-aspect-tooling.adoc#databricks-type-mapping[Databricks type mapping].     |
-                                   | _--decimal-scale, -ds_ : The scale to use for Databricks decimal columns
-                                     (default: 0). See also notes in
-                                     the xref:java-aspect-tooling.adoc#databricks-type-mapping[Databricks type mapping].     |
-                                   | _--custom-column, -col_ : Additional custom column definition, e.g. for databricks
+                                   | _--decimal-precision, -dp_ : The precision to use for decimal columns (default: 10).    |
+                                   | _--decimal-scale, -ds_ : The scale to use for decimal columns (default: 0).             |
+                                   | _--custom-column, -col_ : Additional custom column definition
                                      following the pattern `column_name DATATYPE [NOT NULL] [COMMENT 'custom']`. This
                                      parameter can be repeated for multiple columns.                                         | `samm aspect AspectModel.ttl to sql --custom-column "column_name STRING NOT NULL COMMENT 'custom'"`
 .5+| [[aspect-to-aas]] aspect <model> to aas | Generate an Asset Administration Shell (AAS) submodel template from an

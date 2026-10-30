@@ -29,6 +29,9 @@ import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksColumnDef
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksColumnDefinitionParser;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfigBuilder;
+import org.eclipse.esmf.aspectmodel.generator.sql.postgresql.PostgreSqlColumnDefinition;
+import org.eclipse.esmf.aspectmodel.generator.sql.postgresql.PostgreSqlColumnDefinitionParser;
+import org.eclipse.esmf.aspectmodel.generator.sql.postgresql.PostgreSqlGenerationConfigBuilder;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.Aspect;
 
@@ -79,25 +82,24 @@ public class AspectToSqlCommand extends AbstractCommand {
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
       names = { "--table-command-prefix", "-tcp" },
-      description = "The prefix to use for Databricks table creation commands (default: ${DEFAULT-VALUE})" )
+      description = "The prefix to use for table creation commands (default: ${DEFAULT-VALUE})" )
    private String tableCommandPrefix = DatabricksSqlGenerationConfig.DEFAULT_TABLE_COMMAND_PREFIX;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
       names = { "--decimal-precision", "-dp" },
-      description = "The precision to use for Databricks decimal columns, between 1 and 38. (default: ${DEFAULT-VALUE})" )
+      description = "The precision to use for decimal columns (default: ${DEFAULT-VALUE})" )
    private int decimalPrecision = DatabricksSqlGenerationConfig.DECIMAL_DEFAULT_PRECISION;
 
    @CommandLine.Option(
       names = { "--decimal-scale", "-ds" },
-      description = "The scale to use for Databricks decimal columns, between 0 and the value of precision. (default: ${DEFAULT-VALUE})" )
+      description = "The scale to use for decimal columns, between 0 and the value of precision. (default: ${DEFAULT-VALUE})" )
    private int decimalScale = DatabricksSqlGenerationConfig.DECIMAL_DEFAULT_SCALE;
 
    @CommandLine.Option(
       names = { "--custom-column", "-col" },
-      description = "Custom column to add to the table, can be repeated for multiple columns",
-      converter = DatabricksColumnDefinitionTypeConverter.class )
-   private List<DatabricksColumnDefinition> customColumns;
+      description = "Custom column to add to the table, can be repeated for multiple columns" )
+   private List<String> customColumns = List.of();
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
@@ -114,29 +116,13 @@ public class AspectToSqlCommand extends AbstractCommand {
    @CommandLine.Mixin
    private LoggingMixin loggingMixin;
 
-   static class DatabricksColumnDefinitionTypeConverter implements CommandLine.ITypeConverter<DatabricksColumnDefinition> {
-      @Override
-      public DatabricksColumnDefinition convert( final String value ) throws Exception {
-         return new DatabricksColumnDefinitionParser( value ).get();
-      }
-   }
-
    @Override
    public void run() {
       setDetails( details );
       setResolverConfig( resolverConfiguration );
 
       final Aspect aspect = getInputHandler( parentCommand.parentCommand.getInput() ).loadAspect();
-      final DatabricksSqlGenerationConfig generatorConfig =
-            DatabricksSqlGenerationConfigBuilder.builder()
-                  .commentLanguage( Locale.forLanguageTag( language ) )
-                  .includeTableComment( includeTableComment )
-                  .includeColumnComments( includeColumnComments )
-                  .createTableCommandPrefix( tableCommandPrefix )
-                  .decimalPrecision( decimalPrecision )
-                  .decimalScale( decimalScale )
-                  .customColumns( customColumns )
-                  .build();
+      final SqlGenerationConfig.DialectSpecificConfig generatorConfig = dialectSpecificConfig();
       final SqlGenerationConfig sqlConfig = new SqlGenerationConfig( dialect, strategy, generatorConfig );
       final SqlArtifact result = new AspectModelSqlGenerator( aspect, sqlConfig ).singleResult();
 
@@ -145,5 +131,38 @@ public class AspectToSqlCommand extends AbstractCommand {
       } catch ( final IOException exception ) {
          throw new CommandException( exception );
       }
+   }
+
+   private SqlGenerationConfig.DialectSpecificConfig dialectSpecificConfig() {
+      return switch ( dialect ) {
+         case DATABRICKS -> {
+            final List<DatabricksColumnDefinition> columns = customColumns.stream()
+                  .map( column -> new DatabricksColumnDefinitionParser( column ).get() )
+                  .toList();
+            yield DatabricksSqlGenerationConfigBuilder.builder()
+                  .commentLanguage( Locale.forLanguageTag( language ) )
+                  .includeTableComment( includeTableComment )
+                  .includeColumnComments( includeColumnComments )
+                  .createTableCommandPrefix( tableCommandPrefix )
+                  .decimalPrecision( decimalPrecision )
+                  .decimalScale( decimalScale )
+                  .customColumns( columns )
+                  .build();
+         }
+         case POSTGRESQL -> {
+            final List<PostgreSqlColumnDefinition> columns = customColumns.stream()
+                  .map( column -> new PostgreSqlColumnDefinitionParser( column ).get() )
+                  .toList();
+            yield PostgreSqlGenerationConfigBuilder.builder()
+                  .commentLanguage( Locale.forLanguageTag( language ) )
+                  .includeTableComment( includeTableComment )
+                  .includeColumnComments( includeColumnComments )
+                  .createTableCommandPrefix( tableCommandPrefix )
+                  .decimalPrecision( decimalPrecision )
+                  .decimalScale( decimalScale )
+                  .customColumns( columns )
+                  .build();
+         }
+      };
    }
 }
