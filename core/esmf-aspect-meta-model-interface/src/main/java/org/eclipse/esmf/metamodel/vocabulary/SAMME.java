@@ -44,60 +44,80 @@ public class SAMME implements RdfNamespace {
       return samm.getBaseUri() + "entity:" + metaModelVersion.toVersionString();
    }
 
+   /*
+    * Resource constants
+    */
+   public static final String TIME_SERIES_ENTITY = "TimeSeriesEntity";
+   public static final String POINT_3D = "Point3d";
+   public static final String FILE_RESOURCE = "FileResource";
+   public static final String QUANTITY = "Quantity";
+
+   /*
+    * Property constants
+    */
+   public static final String RESOURCE = "resource";
+   public static final String MIME_TYPE = "mimeType";
+   public static final String TIMESTAMP = "timestamp";
+   public static final String VALUE = "value";
+   public static final String X = "x";
+   public static final String Y = "y";
+   public static final String Z = "z";
+   public static final String UNIT = "unit";
+
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource TimeSeriesEntity() {
-      return resource( "TimeSeriesEntity" );
+      return resource( TIME_SERIES_ENTITY );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Point3d() {
-      return resource( "Point3d" );
+      return resource( POINT_3D );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource FileResource() {
-      return resource( "FileResource" );
+      return resource( FILE_RESOURCE );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Quantity() {
-      return resource( "Quantity" );
+      return resource( QUANTITY );
    }
 
    public Property resource() {
-      return property( "resource" );
+      return property( RESOURCE );
    }
 
    public Property mimeType() {
-      return property( "mimeType" );
+      return property( MIME_TYPE );
    }
 
    public Property timestamp() {
-      return property( "timestamp" );
+      return property( TIMESTAMP );
    }
 
    public Property value() {
-      return property( "value" );
+      return property( VALUE );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Property x() {
-      return property( "x" );
+      return property( X );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Property y() {
-      return property( "y" );
+      return property( Y );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Property z() {
-      return property( "z" );
+      return property( Z );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Property unit() {
-      return property( "unit" );
+      return property( UNIT );
    }
 
    public Stream<Resource> allEntities() {

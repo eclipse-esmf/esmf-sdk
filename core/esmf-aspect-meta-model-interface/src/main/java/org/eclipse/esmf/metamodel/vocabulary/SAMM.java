@@ -53,33 +53,90 @@ public class SAMM implements RdfNamespace {
       return getUri() + "#";
    }
 
+   /*
+    * Resource constants (classes, encodings)
+    */
+   public static final String NAMESPACE = "Namespace";
+   public static final String ASPECT = "Aspect";
+   public static final String OPERATION = "Operation";
+   public static final String EVENT = "Event";
+   public static final String ENTITY = "Entity";
+   public static final String ABSTRACT_ENTITY = "AbstractEntity";
+   public static final String VALUE_CLASS = "Value";
+   public static final String UNIT = "Unit";
+   public static final String QUANTITY_KIND_CLASS = "QuantityKind";
+   public static final String UTF_8 = "UTF-8";
+   public static final String US_ASCII = "US-ASCII";
+   public static final String ISO_8859_1 = "ISO-8859-1";
+   public static final String UTF_16 = "UTF-16";
+   public static final String UTF_16BE = "UTF-16BE";
+   public static final String UTF_16LE = "UTF-16LE";
+
+   /*
+    * Disambiguated resource classes where property with same name exists
+    */
+   public static final String PROPERTY_CLASS = "Property";
+   public static final String ABSTRACT_PROPERTY = "AbstractProperty";
+   public static final String CHARACTERISTIC_CLASS = "Characteristic";
+   public static final String CONSTRAINT_CLASS = "Constraint";
+
+   /*
+    * Property constants (predicates)
+    */
+   public static final String CHARACTERISTIC = "characteristic";
+   public static final String PROPERTY = "property";
+   public static final String DATA_TYPE = "dataType";
+   public static final String OPTIONAL = "optional";
+   public static final String NOT_IN_PAYLOAD = "notInPayload";
+   public static final String VALUE = "value";
+   public static final String EXTENDS = "extends";
+   public static final String PROPERTIES = "properties";
+   public static final String OPERATIONS = "operations";
+   public static final String EVENTS = "events";
+   public static final String QUANTITY_KIND = "quantityKind";
+   public static final String REFERENCE_UNIT = "referenceUnit";
+   public static final String PREFERRED_NAME = "preferredName";
+   public static final String DESCRIPTION = "description";
+   public static final String CURIE = "curie";
+   public static final String INPUT = "input";
+   public static final String OUTPUT = "output";
+   public static final String PARAMETERS = "parameters";
+   public static final String PAYLOAD_NAME = "payloadName";
+   public static final String SEE = "see";
+   public static final String LIST_TYPE = "listType";
+   public static final String EXAMPLE_VALUE = "exampleValue";
+   public static final String COMMON_CODE = "commonCode";
+   public static final String CONVERSION_FACTOR = "conversionFactor";
+   public static final String NUMERIC_CONVERSION_FACTOR = "numericConversionFactor";
+   public static final String SYMBOL = "symbol";
+
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Namespace() {
-      return resource( "Namespace" );
+      return resource( NAMESPACE );
    }
 
    public Property listType() {
-      return property( "listType" );
+      return property( LIST_TYPE );
    }
 
    public Property input() {
-      return property( "input" );
+      return property( INPUT );
    }
 
    public Property output() {
-      return property( "output" );
+      return property( OUTPUT );
    }
 
    public Property curie() {
-      return property( "curie" );
+      return property( CURIE );
    }
 
    public Property description() {
-      return property( "description" );
+      return property( DESCRIPTION );
    }
 
    public Property preferredName() {
-      return property( "preferredName" );
+      return property( PREFERRED_NAME );
    }
 
    /**
@@ -87,152 +144,191 @@ public class SAMM implements RdfNamespace {
     */
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Property() {
-      return resource( "Property" );
+      return resource( PROPERTY_CLASS );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource AbstractProperty() {
-      return resource( "AbstractProperty" );
+      return resource( ABSTRACT_PROPERTY );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Characteristic() {
-      return resource( "Characteristic" );
+      return resource( CHARACTERISTIC_CLASS );
    }
 
    public Property characteristic() {
-      return property( "characteristic" );
+      return property( CHARACTERISTIC );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Constraint() {
-      return resource( "Constraint" );
+      return resource( CONSTRAINT_CLASS );
    }
 
    public Property dataType() {
-      return property( "dataType" );
+      return property( DATA_TYPE );
    }
 
    public Property exampleValue() {
-      return property( "exampleValue" );
+      return property( EXAMPLE_VALUE );
    }
 
    public Property optional() {
-      return property( "optional" );
+      return property( OPTIONAL );
    }
 
    public Property notInPayload() {
-      return property( "notInPayload" );
+      return property( NOT_IN_PAYLOAD );
    }
 
    public Property payloadName() {
-      return property( "payloadName" );
+      return property( PAYLOAD_NAME );
    }
 
    public Property see() {
-      return property( "see" );
+      return property( SEE );
    }
 
    /**
     * @return a {@link Property} for the samm:property RDF Property definition
     */
    public Property property() {
-      return property( "property" );
+      return property( PROPERTY );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Aspect() {
-      return resource( "Aspect" );
+      return resource( ASPECT );
    }
 
    public Property properties() {
-      return property( "properties" );
+      return property( PROPERTIES );
    }
 
    public Property parameters() {
-      return property( "parameters" );
+      return property( PARAMETERS );
    }
 
    public Property operations() {
-      return property( "operations" );
+      return property( OPERATIONS );
    }
 
    public Property events() {
-      return property( "events" );
+      return property( EVENTS );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Operation() {
-      return resource( "Operation" );
+      return resource( OPERATION );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Event() {
-      return resource( "Event" );
+      return resource( EVENT );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Entity() {
-      return resource( "Entity" );
+      return resource( ENTITY );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource AbstractEntity() {
-      return resource( "AbstractEntity" );
+      return resource( ABSTRACT_ENTITY );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Value() {
-      return resource( "Value" );
+      return resource( VALUE_CLASS );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Property _extends() {
-      return property( "extends" );
+      return property( EXTENDS );
    }
 
    public Property value() {
-      return property( "value" );
+      return property( VALUE );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Unit() {
-      return resource( "Unit" );
+      return resource( UNIT );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource QuantityKind() {
-      return resource( "QuantityKind" );
+      return resource( QUANTITY_KIND_CLASS );
    }
 
    public Property quantityKind() {
-      return property( "quantityKind" );
+      return property( QUANTITY_KIND );
    }
 
    public Property referenceUnit() {
-      return property( "referenceUnit" );
+      return property( REFERENCE_UNIT );
    }
 
    public Property commonCode() {
-      return property( "commonCode" );
+      return property( COMMON_CODE );
    }
 
    public Property conversionFactor() {
-      return property( "conversionFactor" );
+      return property( CONVERSION_FACTOR );
    }
 
    public Property numericConversionFactor() {
-      return property( "numericConversionFactor" );
+      return property( NUMERIC_CONVERSION_FACTOR );
    }
 
    public Property symbol() {
-      return property( "symbol" );
+      return property( SYMBOL );
+   }
+
+   /*
+    * Encodings
+    */
+
+   @SuppressWarnings( "checkstyle:MethodName" )
+   public Resource UTF_8() {
+      return resource( UTF_8 );
+   }
+
+   @SuppressWarnings( "checkstyle:MethodName" )
+   public Resource US_ASCII() {
+      return resource( US_ASCII );
+   }
+
+   @SuppressWarnings( "checkstyle:MethodName" )
+   public Resource ISO_8859_1() {
+      return resource( ISO_8859_1 );
+   }
+
+   @SuppressWarnings( "checkstyle:MethodName" )
+   public Resource UTF_16() {
+      return resource( UTF_16 );
+   }
+
+   @SuppressWarnings( "checkstyle:MethodName" )
+   public Resource UTF_16BE() {
+      return resource( UTF_16BE );
+   }
+
+   @SuppressWarnings( "checkstyle:MethodName" )
+   public Resource UTF_16LE() {
+      return resource( UTF_16LE );
+   }
+
+   public List<Resource> allEncodings() {
+      return List.of( UTF_8(), US_ASCII(), ISO_8859_1(), UTF_16(), UTF_16BE(), UTF_16LE() );
    }
 
    @Override
    public List<Resource> allResources() {
       return List.of( Namespace(), Property(), AbstractProperty(), Characteristic(), Constraint(), Aspect(), Operation(), Event(),
-            Entity(), AbstractEntity(), Value(), Unit(), QuantityKind() );
+            Entity(), AbstractEntity(), Value(), Unit(), QuantityKind(), UTF_8(), US_ASCII(), ISO_8859_1(), UTF_16(), UTF_16BE(),
+            UTF_16LE() );
    }
 
    @Override
