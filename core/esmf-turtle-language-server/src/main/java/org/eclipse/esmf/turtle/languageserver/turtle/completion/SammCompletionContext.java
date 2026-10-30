@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.samm.KnownVersion;
 
 import org.eclipse.lsp4j.Range;
@@ -81,7 +82,7 @@ public record SammCompletionContext(
    }
 
    public static SammCompletionContext header( final Map<String, String> declarations, final CursorEdit edit ) {
-      final Namespaces namespaces = new Namespaces( "", "samm:", Optional.empty(), Optional.empty(),
+      final Namespaces namespaces = new Namespaces( "", SammNs.SAMM.getShortForm() + ":", Optional.empty(), Optional.empty(),
             Optional.empty(), Optional.empty(), KnownVersion.getLatest(), Map.copyOf( declarations ),
             Optional.empty(), Optional.empty() );
 

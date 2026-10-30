@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import org.eclipse.esmf.metamodel.QuantityKind;
 import org.eclipse.esmf.metamodel.Unit;
@@ -30,10 +31,13 @@ import org.eclipse.esmf.metamodel.datatype.SammType;
 import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 import org.eclipse.esmf.metamodel.vocabulary.SAMM;
 import org.eclipse.esmf.metamodel.vocabulary.SAMME;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 import org.eclipse.esmf.turtle.languageserver.turtle.completion.SammCompletionContext.TargetPosition;
 
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.XSD;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionItemKind;
 import org.eclipse.lsp4j.InsertTextFormat;
@@ -42,6 +46,8 @@ import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
 public final class SammAttributeValueCompletionService {
+   private static final String XSD_NAMESPACE = XSD.getURI();
+
    private static final List<String> ISO_639_1_LANGUAGES = Arrays.stream( Locale.getISOLanguages() ).sorted().toList();
 
    private static final Set<String> PRIORITY_LANGUAGES = Set.of( "en", "de", "fr", "es", "it", "zh", "ja" );
@@ -59,8 +65,9 @@ public final class SammAttributeValueCompletionService {
          "ja-JP", "zh-CN", "zh-TW", "zh-HK", "ko-KR",
          "ar-SA", "ar-AE", "ar-EG", "hi-IN" );
 
-   private static final List<String> ENCODINGS = List.of(
-         "UTF-8", "US-ASCII", "ISO-8859-1", "UTF-16", "UTF-16BE", "UTF-16LE" );
+   private static final List<String> ENCODINGS = SammNs.SAMM.allEncodings().stream()
+         .map( Resource::getLocalName )
+         .toList();
 
    private static final List<String> UNIT_NAMES = Units.getUnits().stream()
          .map( Unit::getName )
@@ -139,12 +146,14 @@ public final class SammAttributeValueCompletionService {
          "secondUnitOfTime", "minuteUnitOfTime", "hour", "day", "week", "month", "year",
          "millisecond", "microsecond", "nanosecond" );
 
-   private static final List<String> PREDEFINED_CHARACTERISTICS = List.of(
-         "Text", "Boolean", "Timestamp", "MultiLanguageText", "Language", "Locale",
-         "MimeType", "ResourcePath", "UnitReference" );
+   private static final List<String> PREDEFINED_CHARACTERISTICS = SammNs.SAMMC.allCharacteristicInstances().stream()
+         .map( Resource::getLocalName )
+         .toList();
 
-   private static final List<String> PREDEFINED_ENTITIES = List.of(
-         "FileResource", "Point3d", "Quantity", "TimeSeriesEntity" );
+   private static final List<String> PREDEFINED_ENTITIES = SammNs.SAMME.allResources().stream()
+         .map( Resource::getLocalName )
+         .sorted()
+         .toList();
 
    private static final List<String> COMMON_PRIMITIVE_TYPES = List.of(
          "string", "integer", "boolean", "decimal", "double", "float",
@@ -152,23 +161,24 @@ public final class SammAttributeValueCompletionService {
 
    private static final List<String> ALL_XSD_LOCAL_NAMES = SammXsdType.ALL_TYPES.stream()
          .map( SammType::getURI )
-         .filter( uri -> uri.startsWith( "http://www.w3.org/2001/XMLSchema#" ) )
-         .map( uri -> uri.substring( "http://www.w3.org/2001/XMLSchema#".length() ) )
+         .filter( uri -> uri.startsWith( XSD_NAMESPACE ) )
+         .map( uri -> uri.substring( XSD_NAMESPACE.length() ) )
          .sorted()
          .toList();
 
-   private static final List<String> TOP_LEVEL_CORE_CLASSES = List.of(
-         "Aspect", "Property", "Characteristic", "Entity", "AbstractEntity",
-         "AbstractProperty", "Operation", "Event" );
+   private static final List<String> TOP_LEVEL_CORE_CLASSES = Stream.of(
+         SammNs.SAMM.Aspect(), SammNs.SAMM.Property(), SammNs.SAMM.Characteristic(),
+         SammNs.SAMM.Entity(), SammNs.SAMM.AbstractEntity(), SammNs.SAMM.AbstractProperty(),
+         SammNs.SAMM.Operation(), SammNs.SAMM.Event()
+   ).map( Resource::getLocalName ).toList();
 
-   private static final List<String> CHARACTERISTIC_CLASSES = List.of(
-         "Trait", "Enumeration", "State", "Code", "Measurement", "Quantifiable", "Duration",
-         "SingleEntity", "Collection", "List", "Set", "SortedSet", "TimeSeries",
-         "StructuredValue", "Either" );
+   private static final List<String> CHARACTERISTIC_CLASSES = SammNs.SAMMC.allCharacteristicClasses().stream()
+         .map( Resource::getLocalName )
+         .toList();
 
-   private static final List<String> CONSTRAINT_CLASSES = List.of(
-         "RangeConstraint", "LengthConstraint", "RegularExpressionConstraint",
-         "FixedPointConstraint", "EncodingConstraint", "LanguageConstraint", "LocaleConstraint" );
+   private static final List<String> CONSTRAINT_CLASSES = SammNs.SAMMC.allConstraints()
+         .map( Resource::getLocalName )
+         .toList();
 
    private final SammSuggestionContextDetector detector = new SammSuggestionContextDetector();
 
@@ -210,7 +220,7 @@ public final class SammAttributeValueCompletionService {
    }
 
    private List<CompletionItem> lowerBoundCompletions( final SammCompletionContext context ) {
-      final String prefix = context.namespaces().characteristicPrefix().orElse( "samm-c:" );
+      final String prefix = context.namespaces().characteristicPrefix().orElse( SammNs.SAMMC.getShortForm() + ":" );
       return List.of(
             createCompletionItem( prefix + "AT_LEAST", context,
                   CompletionItemKind.EnumMember, "Inclusive lower bound (default)", "01", prefix + "AT_LEAST AT_LEAST" ),
@@ -220,7 +230,7 @@ public final class SammAttributeValueCompletionService {
    }
 
    private List<CompletionItem> upperBoundCompletions( final SammCompletionContext context ) {
-      final String prefix = context.namespaces().characteristicPrefix().orElse( "samm-c:" );
+      final String prefix = context.namespaces().characteristicPrefix().orElse( SammNs.SAMMC.getShortForm() + ":" );
       return List.of(
             createCompletionItem( prefix + "AT_MOST", context,
                   CompletionItemKind.EnumMember, "Inclusive upper bound (default)", "01", prefix + "AT_MOST AT_MOST" ),
@@ -288,7 +298,7 @@ public final class SammAttributeValueCompletionService {
    }
 
    private List<CompletionItem> unitCompletions( final SammCompletionContext context ) {
-      final String prefix = context.namespaces().unitPrefix().orElse( "unit:" );
+      final String prefix = context.namespaces().unitPrefix().orElse( SammNs.UNIT.getShortForm() + ":" );
       final boolean isDuration = context.hasSubjectType( "Duration" );
       final List<String> units = isDuration ? DURATION_TIME_UNITS : UNIT_NAMES;
       final List<CompletionItem> result = new ArrayList<>( units.size() );
@@ -335,7 +345,7 @@ public final class SammAttributeValueCompletionService {
    }
 
    private List<CompletionItem> quantityKindCompletions( final SammCompletionContext context ) {
-      final String prefix = context.namespaces().unitPrefix().orElse( "unit:" );
+      final String prefix = context.namespaces().unitPrefix().orElse( SammNs.UNIT.getShortForm() + ":" );
       final List<CompletionItem> result = new ArrayList<>( QUANTITY_KIND_NAMES.size() );
       for ( final String qkName : QUANTITY_KIND_NAMES ) {
          final String prefixed = prefix + qkName;
@@ -346,7 +356,7 @@ public final class SammAttributeValueCompletionService {
    }
 
    private List<CompletionItem> characteristicCompletions( final SammCompletionContext context ) {
-      final String prefix = context.namespaces().characteristicPrefix().orElse( "samm-c:" );
+      final String prefix = context.namespaces().characteristicPrefix().orElse( SammNs.SAMMC.getShortForm() + ":" );
       if ( context.hasSubjectType( "SingleEntity" ) ) {
          return characteristicEntityCompletions( context, prefix );
       }
@@ -391,7 +401,7 @@ public final class SammAttributeValueCompletionService {
    }
 
    private List<CompletionItem> singleEntityDataTypeCompletions( final SammCompletionContext context ) {
-      final String prefix = context.namespaces().entityPrefix().orElse( "samm-e:" );
+      final String prefix = context.namespaces().entityPrefix().orElse( SammNs.SAMME.getShortForm() + ":" );
       final List<CompletionItem> result = prefixedResourceCompletions( context, PREDEFINED_ENTITIES, prefix,
             CompletionItemKind.Class, "SAMM Predefined Entity", indexedSort( "01" ) );
       result.addAll( localResourceCompletions( context, context.localEntities(), CompletionItemKind.Class, "Local Entity", "02" ) );
@@ -399,7 +409,7 @@ public final class SammAttributeValueCompletionService {
    }
 
    private List<CompletionItem> timeSeriesDataTypeCompletions( final SammCompletionContext context ) {
-      final String prefix = context.namespaces().entityPrefix().orElse( "samm-e:" );
+      final String prefix = context.namespaces().entityPrefix().orElse( SammNs.SAMME.getShortForm() + ":" );
       final List<CompletionItem> result = new ArrayList<>();
       final String tsEntity = prefix + "TimeSeriesEntity";
       result.add( createCompletionItem( tsEntity, context, CompletionItemKind.Class,
@@ -413,15 +423,15 @@ public final class SammAttributeValueCompletionService {
    }
 
    private List<CompletionItem> generalDataTypeCompletions( final SammCompletionContext context ) {
-      final String xsdPrefix = context.namespaces().xsdPrefix().orElse( "xsd:" );
+      final String xsdPrefix = context.namespaces().xsdPrefix().orElse( SammNs.XSD().getShortForm() + ":" );
       final String sammPrefix = context.namespaces().sammPrefix();
-      final String rdfPrefix = resolveNamespacePrefix( context, RDF.getURI(), "rdf:" );
+      final String rdfPrefix = resolveNamespacePrefix( context, RDF.getURI(), SammNs.RDF().getShortForm() + ":" );
       final List<CompletionItem> result = prefixedResourceCompletions( context, COMMON_PRIMITIVE_TYPES, xsdPrefix,
             CompletionItemKind.Class, "XSD Datatype", indexedSort( "01" ) );
       final String langString = rdfPrefix + "langString";
       result.add( createCompletionItem( langString, context, CompletionItemKind.Class,
             "RDF Datatype", "01_98_langString", langString + " langString" ) );
-      final String curie = sammPrefix + "curie";
+      final String curie = sammPrefix + SammNs.SAMM.curie().getLocalName();
       result.add( createCompletionItem( curie, context, CompletionItemKind.Class,
             "SAMM Datatype", "01_99_curie", curie + " curie" ) );
 
@@ -434,7 +444,7 @@ public final class SammAttributeValueCompletionService {
    }
 
    private List<CompletionItem> extendsCompletions( final SammCompletionContext context ) {
-      final String prefix = context.namespaces().entityPrefix().orElse( "samm-e:" );
+      final String prefix = context.namespaces().entityPrefix().orElse( SammNs.SAMME.getShortForm() + ":" );
       final List<CompletionItem> result = prefixedResourceCompletions( context, PREDEFINED_ENTITIES, prefix,
             CompletionItemKind.Class, "SAMM Base Entity", indexedSort( "01" ) );
       final List<String> localAbstract = context.localAbstractEntities();
@@ -446,7 +456,7 @@ public final class SammAttributeValueCompletionService {
 
    private List<CompletionItem> rdfTypeCompletions( final SammCompletionContext context ) {
       final String sammPrefix = context.namespaces().sammPrefix();
-      final String charPrefix = context.namespaces().characteristicPrefix().orElse( "samm-c:" );
+      final String charPrefix = context.namespaces().characteristicPrefix().orElse( SammNs.SAMMC.getShortForm() + ":" );
       final Optional<String> enclosing = context.enclosingPredicate();
 
       if ( enclosing.isPresent() ) {
@@ -469,10 +479,10 @@ public final class SammAttributeValueCompletionService {
       result.addAll( characteristicClassesCompletions( context, charPrefix, "02" ) );
       result.addAll( constraintClassesCompletions( context, charPrefix, "03" ) );
 
-      final String unitClass = sammPrefix + "Unit";
+      final String unitClass = sammPrefix + SammNs.SAMM.Unit().getLocalName();
       result.add( createCompletionItem( unitClass, context, CompletionItemKind.Class,
             "SAMM Unit Class", "04_01_Unit", unitClass + " Unit" ) );
-      final String qkClass = sammPrefix + "QuantityKind";
+      final String qkClass = sammPrefix + SammNs.SAMM.QuantityKind().getLocalName();
       result.add( createCompletionItem( qkClass, context, CompletionItemKind.Class,
             "SAMM QuantityKind Class", "04_02_QuantityKind", qkClass + " QuantityKind" ) );
 

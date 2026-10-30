@@ -284,9 +284,27 @@ public class SAMMC implements RdfNamespace {
       return resource( "UnitReference" );
    }
 
+   @SuppressWarnings( "checkstyle:MethodName" )
+   public Resource Reference() {
+      return resource( "Reference" );
+   }
+
    /*
     * Convenience methods
     */
+
+   public List<Resource> allCharacteristicInstances() {
+      return List.of( Text(), Boolean(), Timestamp(), MultiLanguageText(), Language(), Locale(),
+            MimeType(), ResourcePath(), Reference(), UnitReference() );
+   }
+
+   public List<Resource> allCharacteristicClasses() {
+      return Stream.concat(
+            allCollections(),
+            Stream.of( Code(), Duration(), Either(), Enumeration(), Measurement(), Quantifiable(),
+                  SingleEntity(), State(), StructuredValue(), Trait() )
+      ).toList();
+   }
 
    public Stream<Resource> allCollections() {
       return Stream.of( Collection(), Set(), SortedSet(), List(), TimeSeries() );
@@ -309,7 +327,7 @@ public class SAMMC implements RdfNamespace {
       return List.of( RangeConstraint(), EncodingConstraint(), RegularExpressionConstraint(), LengthConstraint(), LanguageConstraint(),
             LocaleConstraint(), StructuredValue(), Quantifiable(), Measurement(), Duration(), State(), Enumeration(), Collection(),
             Set(), SortedSet(), List(), TimeSeries(), SingleEntity(), Code(), FixedPointConstraint(), Trait(), Either(), Timestamp(),
-            Text(), MultiLanguageText(), Language(), Locale(), Boolean(), ResourcePath(), MimeType(), UnitReference() );
+            Text(), MultiLanguageText(), Language(), Locale(), Boolean(), ResourcePath(), MimeType(), Reference(), UnitReference() );
    }
 
    @Override

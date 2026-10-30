@@ -318,7 +318,7 @@ class SammAttributeValueCompletionServiceTest {
       assertThat( items ).isNotEmpty();
       assertThat( items ).extracting( CompletionItem::getLabel )
             .containsExactly( "samm-c:Text", "samm-c:Boolean", "samm-c:Timestamp", "samm-c:MultiLanguageText", "samm-c:Language",
-                  "samm-c:Locale", "samm-c:MimeType", "samm-c:ResourcePath", "samm-c:UnitReference", ":MyTrait" );
+                  "samm-c:Locale", "samm-c:MimeType", "samm-c:ResourcePath", "samm-c:Reference", "samm-c:UnitReference", ":MyTrait" );
 
       final CompletionItem textItem = items.stream().filter( i -> "samm-c:Text".equals( i.getLabel() ) ).findFirst().orElseThrow();
       assertThat( textItem.getDetail() ).isEqualTo( "Predefined Characteristic" );

@@ -229,10 +229,48 @@ public class SAMM implements RdfNamespace {
       return property( "symbol" );
    }
 
+   /*
+    * Encodings
+    */
+
+   @SuppressWarnings( "checkstyle:MethodName" )
+   public Resource UTF_8() {
+      return resource( "UTF-8" );
+   }
+
+   @SuppressWarnings( "checkstyle:MethodName" )
+   public Resource US_ASCII() {
+      return resource( "US-ASCII" );
+   }
+
+   @SuppressWarnings( "checkstyle:MethodName" )
+   public Resource ISO_8859_1() {
+      return resource( "ISO-8859-1" );
+   }
+
+   @SuppressWarnings( "checkstyle:MethodName" )
+   public Resource UTF_16() {
+      return resource( "UTF-16" );
+   }
+
+   @SuppressWarnings( "checkstyle:MethodName" )
+   public Resource UTF_16BE() {
+      return resource( "UTF-16BE" );
+   }
+
+   @SuppressWarnings( "checkstyle:MethodName" )
+   public Resource UTF_16LE() {
+      return resource( "UTF-16LE" );
+   }
+
+   public List<Resource> allEncodings() {
+      return List.of( UTF_8(), US_ASCII(), ISO_8859_1(), UTF_16(), UTF_16BE(), UTF_16LE() );
+   }
+
    @Override
    public List<Resource> allResources() {
       return List.of( Namespace(), Property(), AbstractProperty(), Characteristic(), Constraint(), Aspect(), Operation(), Event(),
-            Entity(), AbstractEntity(), Value(), Unit(), QuantityKind() );
+            Entity(), AbstractEntity(), Value(), Unit(), QuantityKind(), UTF_8(), US_ASCII(), ISO_8859_1(), UTF_16(), UTF_16BE(), UTF_16LE() );
    }
 
    @Override

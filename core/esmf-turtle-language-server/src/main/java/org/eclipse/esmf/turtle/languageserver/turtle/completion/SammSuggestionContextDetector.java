@@ -28,6 +28,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.aspectmodel.urn.ElementType;
 import org.eclipse.esmf.metamodel.vocabulary.SAMM;
 import org.eclipse.esmf.metamodel.vocabulary.SAMMC;
 import org.eclipse.esmf.metamodel.vocabulary.SAMME;
@@ -52,12 +54,12 @@ import org.eclipse.lsp4j.Range;
 
 public final class SammSuggestionContextDetector {
    private static final String XSD_NAMESPACE = XSD.getURI();
-   private static final String SAMM_URN_PREFIX = "urn:samm:";
+   private static final String SAMM_URN_PREFIX = AspectModelUrn.PROTOCOL_AND_NAMESPACE_PREFIX;
    private static final String SAMM_SYSTEM_NAMESPACE_PREFIX = SammNs.SAMM.getBaseUri();
-   private static final String SAMM_META_MODEL_NAMESPACE_PREFIX = SAMM_SYSTEM_NAMESPACE_PREFIX + "meta-model:";
-   private static final String SAMM_CHARACTERISTIC_NAMESPACE_PREFIX = SAMM_SYSTEM_NAMESPACE_PREFIX + "characteristic:";
-   private static final String SAMM_ENTITY_NAMESPACE_PREFIX = SAMM_SYSTEM_NAMESPACE_PREFIX + "entity:";
-   private static final String SAMM_UNIT_NAMESPACE_PREFIX = SAMM_SYSTEM_NAMESPACE_PREFIX + "unit:";
+   private static final String SAMM_META_MODEL_NAMESPACE_PREFIX = SAMM_SYSTEM_NAMESPACE_PREFIX + ElementType.META_MODEL.getValue() + ":";
+   private static final String SAMM_CHARACTERISTIC_NAMESPACE_PREFIX = SAMM_SYSTEM_NAMESPACE_PREFIX + ElementType.CHARACTERISTIC.getValue() + ":";
+   private static final String SAMM_ENTITY_NAMESPACE_PREFIX = SAMM_SYSTEM_NAMESPACE_PREFIX + ElementType.ENTITY.getValue() + ":";
+   private static final String SAMM_UNIT_NAMESPACE_PREFIX = SAMM_SYSTEM_NAMESPACE_PREFIX + ElementType.UNIT.getValue() + ":";
    private static final Pattern NON_INDENTATION = Pattern.compile( "[^\\t ].*$" );
    private static final Pattern LINE_BREAK = Pattern.compile( "\\R" );
    private static final Pattern ANON_TRAILING_ALLOWED = Pattern.compile( "[\\t \\]\\).;,]*+(?:#.*)?$" );

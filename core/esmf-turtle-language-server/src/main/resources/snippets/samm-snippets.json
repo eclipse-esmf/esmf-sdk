@@ -10,6 +10,7 @@
       "@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:${3:{{sammVersion}}}#> .",
       "@prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:${3:{{sammVersion}}}#> .",
       "@prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:${3:{{sammVersion}}}#> .",
+      "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .",
       "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .",
       "",
       "$0"
@@ -36,7 +37,9 @@
     "targetPosition": "TOP_LEVEL_SUBJECT",
     "body": [
       "{{modelPrefix}}${1:propertyName} a {{sammPrefix}}Property ;",
-      "   {{sammPrefix}}characteristic {{modelPrefix}}${2:CharacteristicName} .$0"
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammPrefix}}characteristic {{modelPrefix}}${4:CharacteristicName} .$0"
     ]
   },
   {
@@ -46,7 +49,8 @@
     "targetPosition": "TOP_LEVEL_SUBJECT",
     "body": [
       "{{modelPrefix}}${1:propertyName} a {{sammPrefix}}AbstractProperty ;",
-      "   {{sammPrefix}}description \"${2}\"@en .$0"
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en .$0"
     ]
   },
   {
@@ -80,7 +84,9 @@
     "targetPosition": "TOP_LEVEL_SUBJECT",
     "body": [
       "{{modelPrefix}}${1:CharacteristicName} a {{sammPrefix}}Characteristic ;",
-      "   {{sammPrefix}}dataType {{xsdPrefix}}${2|string,integer,boolean,decimal,float,double|} .$0"
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammPrefix}}dataType ${4|{{xsdPrefix}}string,{{xsdPrefix}}integer,{{xsdPrefix}}int,{{xsdPrefix}}long,{{xsdPrefix}}short,{{xsdPrefix}}byte,{{xsdPrefix}}decimal,{{xsdPrefix}}float,{{xsdPrefix}}double,{{xsdPrefix}}boolean,{{xsdPrefix}}dateTime,{{xsdPrefix}}date,{{xsdPrefix}}time,{{xsdPrefix}}duration,{{xsdPrefix}}anyURI,rdf:langString,{{sammPrefix}}curie|} .$0"
     ]
   },
   {
@@ -90,8 +96,10 @@
     "targetPosition": "TOP_LEVEL_SUBJECT",
     "body": [
       "{{modelPrefix}}${1:EnumName} a {{sammCPrefix}}Enumeration ;",
-      "   {{sammPrefix}}dataType {{xsdPrefix}}${2|string,integer,int,float,double,boolean|} ;",
-      "   {{sammCPrefix}}values ( ${3:\"value1\" \"value2\"} ) .$0"
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammPrefix}}dataType ${4|{{xsdPrefix}}string,{{xsdPrefix}}integer,{{xsdPrefix}}int,{{xsdPrefix}}long,{{xsdPrefix}}short,{{xsdPrefix}}byte,{{xsdPrefix}}decimal,{{xsdPrefix}}float,{{xsdPrefix}}double,{{xsdPrefix}}boolean,{{xsdPrefix}}dateTime,{{xsdPrefix}}date,{{xsdPrefix}}time,{{xsdPrefix}}duration,{{xsdPrefix}}anyURI,rdf:langString,{{sammPrefix}}curie|} ;",
+      "   {{sammCPrefix}}values ( ${5:\"value1\" \"value2\"} ) .$0"
     ]
   },
   {
@@ -101,9 +109,11 @@
     "targetPosition": "TOP_LEVEL_SUBJECT",
     "body": [
       "{{modelPrefix}}${1:StateName} a {{sammCPrefix}}State ;",
-      "   {{sammPrefix}}dataType {{xsdPrefix}}${2|string,integer,int,float,double,boolean|} ;",
-      "   {{sammCPrefix}}values ( ${3:\"state1\" \"state2\"} ) ;",
-      "   {{sammCPrefix}}defaultValue \"${4:state1}\" .$0"
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammPrefix}}dataType ${4|{{xsdPrefix}}string,{{xsdPrefix}}integer,{{xsdPrefix}}int,{{xsdPrefix}}long,{{xsdPrefix}}short,{{xsdPrefix}}byte,{{xsdPrefix}}decimal,{{xsdPrefix}}float,{{xsdPrefix}}double,{{xsdPrefix}}boolean,{{xsdPrefix}}dateTime,{{xsdPrefix}}date,{{xsdPrefix}}time,{{xsdPrefix}}duration,{{xsdPrefix}}anyURI,rdf:langString,{{sammPrefix}}curie|} ;",
+      "   {{sammCPrefix}}values ( ${5:\"state1\" \"state2\"} ) ;",
+      "   {{sammCPrefix}}defaultValue \"${6:state1}\" .$0"
     ]
   },
   {
@@ -125,8 +135,10 @@
     "targetPosition": "TOP_LEVEL_SUBJECT",
     "body": [
       "{{modelPrefix}}${1:MeasurementName} a {{sammCPrefix}}Measurement ;",
-      "   {{sammPrefix}}dataType {{xsdPrefix}}${2|float,double,decimal,integer|} ;",
-      "   {{sammCPrefix}}unit {{unitPrefix}}${3:kilometrePerHour} .$0"
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammPrefix}}dataType {{xsdPrefix}}${4|float,double,decimal,integer,long,int,short,byte,nonNegativeInteger,positiveInteger,nonPositiveInteger,negativeInteger,unsignedLong,unsignedInt,unsignedShort,unsignedByte|} ;",
+      "   {{sammCPrefix}}unit {{unitPrefix}}${5:kilometrePerHour} .$0"
     ]
   },
   {
@@ -136,8 +148,10 @@
     "targetPosition": "TOP_LEVEL_SUBJECT",
     "body": [
       "{{modelPrefix}}${1:QuantifiableName} a {{sammCPrefix}}Quantifiable ;",
-      "   {{sammPrefix}}dataType {{xsdPrefix}}${2|float,double,decimal,integer|} ;",
-      "   {{sammCPrefix}}unit {{unitPrefix}}${3:percent} .$0"
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammPrefix}}dataType {{xsdPrefix}}${4|float,double,decimal,integer,long,int,short,byte,nonNegativeInteger,positiveInteger,nonPositiveInteger,negativeInteger,unsignedLong,unsignedInt,unsignedShort,unsignedByte|} ;",
+      "   {{sammCPrefix}}unit {{unitPrefix}}${5:percent} .$0"
     ]
   },
   {
@@ -147,8 +161,10 @@
     "targetPosition": "TOP_LEVEL_SUBJECT",
     "body": [
       "{{modelPrefix}}${1:DurationName} a {{sammCPrefix}}Duration ;",
-      "   {{sammPrefix}}dataType {{xsdPrefix}}${2|integer,int,long,short,byte|} ;",
-      "   {{sammCPrefix}}unit {{unitPrefix}}${3:secondUnitOfTime} .$0"
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammPrefix}}dataType {{xsdPrefix}}${4|duration,dayTimeDuration,yearMonthDuration,float,double,decimal,integer,long,int,short,byte,nonNegativeInteger,positiveInteger,unsignedLong,unsignedInt|} ;",
+      "   {{sammCPrefix}}unit {{unitPrefix}}${5:secondUnitOfTime} .$0"
     ]
   },
   {
