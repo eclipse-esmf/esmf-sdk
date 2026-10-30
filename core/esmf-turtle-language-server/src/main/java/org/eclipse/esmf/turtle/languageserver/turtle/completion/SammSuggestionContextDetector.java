@@ -57,7 +57,8 @@ public final class SammSuggestionContextDetector {
    private static final String SAMM_URN_PREFIX = AspectModelUrn.PROTOCOL_AND_NAMESPACE_PREFIX;
    private static final String SAMM_SYSTEM_NAMESPACE_PREFIX = SammNs.SAMM.getBaseUri();
    private static final String SAMM_META_MODEL_NAMESPACE_PREFIX = SAMM_SYSTEM_NAMESPACE_PREFIX + ElementType.META_MODEL.getValue() + ":";
-   private static final String SAMM_CHARACTERISTIC_NAMESPACE_PREFIX = SAMM_SYSTEM_NAMESPACE_PREFIX + ElementType.CHARACTERISTIC.getValue() + ":";
+   private static final String SAMM_CHARACTERISTIC_NAMESPACE_PREFIX =
+         SAMM_SYSTEM_NAMESPACE_PREFIX + ElementType.CHARACTERISTIC.getValue() + ":";
    private static final String SAMM_ENTITY_NAMESPACE_PREFIX = SAMM_SYSTEM_NAMESPACE_PREFIX + ElementType.ENTITY.getValue() + ":";
    private static final String SAMM_UNIT_NAMESPACE_PREFIX = SAMM_SYSTEM_NAMESPACE_PREFIX + ElementType.UNIT.getValue() + ":";
    private static final Pattern NON_INDENTATION = Pattern.compile( "[^\\t ].*$" );

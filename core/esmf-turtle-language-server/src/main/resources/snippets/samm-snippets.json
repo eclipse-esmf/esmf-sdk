@@ -174,7 +174,9 @@
     "targetPosition": "TOP_LEVEL_SUBJECT",
     "body": [
       "{{modelPrefix}}${1:CodeName} a {{sammCPrefix}}Code ;",
-      "   {{sammPrefix}}dataType {{xsdPrefix}}${2:string} .$0"
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammPrefix}}dataType {{xsdPrefix}}${4:string} .$0"
     ]
   },
   {
@@ -184,7 +186,9 @@
     "targetPosition": "TOP_LEVEL_SUBJECT",
     "body": [
       "{{modelPrefix}}${1:SingleEntityName} a {{sammCPrefix}}SingleEntity ;",
-      "   {{sammPrefix}}dataType {{modelPrefix}}${2:EntityName} .$0"
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammPrefix}}dataType {{modelPrefix}}${4:EntityName} .$0"
     ]
   },
   {
@@ -194,7 +198,9 @@
     "targetPosition": "TOP_LEVEL_SUBJECT",
     "body": [
       "{{modelPrefix}}${1:CollectionName} a {{sammCPrefix}}Collection ;",
-      "   {{sammCPrefix}}elementCharacteristic {{modelPrefix}}${2:ElementCharacteristic} .$0"
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammCPrefix}}elementCharacteristic {{modelPrefix}}${4:ElementCharacteristic} .$0"
     ]
   },
   {
@@ -204,7 +210,9 @@
     "targetPosition": "TOP_LEVEL_SUBJECT",
     "body": [
       "{{modelPrefix}}${1:ListName} a {{sammCPrefix}}List ;",
-      "   {{sammCPrefix}}elementCharacteristic {{modelPrefix}}${2:ElementCharacteristic} .$0"
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammCPrefix}}elementCharacteristic {{modelPrefix}}${4:ElementCharacteristic} .$0"
     ]
   },
   {
@@ -214,7 +222,9 @@
     "targetPosition": "TOP_LEVEL_SUBJECT",
     "body": [
       "{{modelPrefix}}${1:SetName} a {{sammCPrefix}}Set ;",
-      "   {{sammCPrefix}}elementCharacteristic {{modelPrefix}}${2:ElementCharacteristic} .$0"
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammCPrefix}}elementCharacteristic {{modelPrefix}}${4:ElementCharacteristic} .$0"
     ]
   },
   {
@@ -224,7 +234,9 @@
     "targetPosition": "TOP_LEVEL_SUBJECT",
     "body": [
       "{{modelPrefix}}${1:SortedSetName} a {{sammCPrefix}}SortedSet ;",
-      "   {{sammCPrefix}}elementCharacteristic {{modelPrefix}}${2:ElementCharacteristic} .$0"
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammCPrefix}}elementCharacteristic {{modelPrefix}}${4:ElementCharacteristic} .$0"
     ]
   },
   {
@@ -234,7 +246,9 @@
     "targetPosition": "TOP_LEVEL_SUBJECT",
     "body": [
       "{{modelPrefix}}${1:TimeSeriesName} a {{sammCPrefix}}TimeSeries ;",
-      "   {{sammPrefix}}dataType {{modelPrefix}}${2:TimeSeriesEntity} .$0"
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammPrefix}}dataType {{modelPrefix}}${4:TimeSeriesEntity} .$0"
     ]
   },
   {
@@ -244,8 +258,10 @@
     "targetPosition": "TOP_LEVEL_SUBJECT",
     "body": [
       "{{modelPrefix}}${1:TraitName} a {{sammCPrefix}}Trait ;",
-      "   {{sammCPrefix}}baseCharacteristic {{modelPrefix}}${2:BaseCharacteristic} ;",
-      "   {{sammCPrefix}}constraint {{modelPrefix}}${3:ConstraintName} .$0"
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammCPrefix}}baseCharacteristic {{modelPrefix}}${4:BaseCharacteristic} ;",
+      "   {{sammCPrefix}}constraint {{modelPrefix}}${5:ConstraintName} .$0"
     ]
   },
   {
@@ -255,8 +271,10 @@
     "targetPosition": "TOP_LEVEL_SUBJECT",
     "body": [
       "{{modelPrefix}}${1:EitherName} a {{sammCPrefix}}Either ;",
-      "   {{sammCPrefix}}left {{modelPrefix}}${2:LeftCharacteristic} ;",
-      "   {{sammCPrefix}}right {{modelPrefix}}${3:RightCharacteristic} .$0"
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammCPrefix}}left {{modelPrefix}}${4:LeftCharacteristic} ;",
+      "   {{sammCPrefix}}right {{modelPrefix}}${5:RightCharacteristic} .$0"
     ]
   },
   {
@@ -266,9 +284,11 @@
     "targetPosition": "TOP_LEVEL_SUBJECT",
     "body": [
       "{{modelPrefix}}${1:StructuredValueName} a {{sammCPrefix}}StructuredValue ;",
-      "   {{sammPrefix}}dataType {{xsdPrefix}}${2:string} ;",
-      "   {{sammCPrefix}}deconstructionRule \"${3:(.*)}\" ;",
-      "   {{sammCPrefix}}elements ( {{modelPrefix}}${4:elementProperty} ) .$0"
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammPrefix}}dataType {{xsdPrefix}}${4:string} ;",
+      "   {{sammCPrefix}}deconstructionRule \"${5:(.*)}\" ;",
+      "   {{sammCPrefix}}elements ( {{modelPrefix}}${6:elementProperty} ) .$0"
     ]
   },
   {
@@ -355,8 +375,8 @@
       "{{modelPrefix}}${1:operationName} a {{sammPrefix}}Operation ;",
       "   {{sammPrefix}}preferredName \"${2}\"@en ;",
       "   {{sammPrefix}}description \"${3}\"@en ;",
-      "   {{sammPrefix}}input ( ) ;",
-      "   {{sammPrefix}}output {{modelPrefix}}${4:outputProperty} .$0"
+      "   {{sammPrefix}}input ( {{modelPrefix}}${4:inputProperty} ) ;",
+      "   {{sammPrefix}}output {{modelPrefix}}${5:outputProperty} .$0"
     ]
   },
   {

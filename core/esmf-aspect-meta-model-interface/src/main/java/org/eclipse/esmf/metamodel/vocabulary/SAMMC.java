@@ -46,37 +46,95 @@ public class SAMMC implements RdfNamespace {
    }
 
    /*
+    * Resource constants (classes, constraints, and characteristic instances)
+    */
+   public static final String RANGE_CONSTRAINT = "RangeConstraint";
+   public static final String ENCODING_CONSTRAINT = "EncodingConstraint";
+   public static final String REGULAR_EXPRESSION_CONSTRAINT = "RegularExpressionConstraint";
+   public static final String LENGTH_CONSTRAINT = "LengthConstraint";
+   public static final String LANGUAGE_CONSTRAINT = "LanguageConstraint";
+   public static final String LOCALE_CONSTRAINT = "LocaleConstraint";
+   public static final String FIXED_POINT_CONSTRAINT = "FixedPointConstraint";
+   public static final String STRUCTURED_VALUE = "StructuredValue";
+   public static final String QUANTIFIABLE = "Quantifiable";
+   public static final String MEASUREMENT = "Measurement";
+   public static final String DURATION = "Duration";
+   public static final String STATE = "State";
+   public static final String ENUMERATION = "Enumeration";
+   public static final String COLLECTION = "Collection";
+   public static final String SET = "Set";
+   public static final String SORTED_SET = "SortedSet";
+   public static final String LIST = "List";
+   public static final String TIME_SERIES = "TimeSeries";
+   public static final String SINGLE_ENTITY = "SingleEntity";
+   public static final String CODE = "Code";
+   public static final String TRAIT = "Trait";
+   public static final String EITHER = "Either";
+   public static final String TIMESTAMP = "Timestamp";
+   public static final String TEXT = "Text";
+   public static final String MULTI_LANGUAGE_TEXT = "MultiLanguageText";
+   public static final String LANGUAGE = "Language";
+   public static final String LOCALE = "Locale";
+   public static final String BOOLEAN = "Boolean";
+   public static final String RESOURCE_PATH = "ResourcePath";
+   public static final String MIME_TYPE = "MimeType";
+   public static final String UNIT_REFERENCE = "UnitReference";
+   public static final String REFERENCE = "Reference";
+
+   /*
+    * Property constants
+    */
+   public static final String MIN_VALUE = "minValue";
+   public static final String MAX_VALUE = "maxValue";
+   public static final String UNIT = "unit";
+   public static final String BASE_CHARACTERISTIC = "baseCharacteristic";
+   public static final String VALUES = "values";
+   public static final String DEFAULT_VALUE = "defaultValue";
+   public static final String LEFT = "left";
+   public static final String RIGHT = "right";
+   public static final String LOWER_BOUND_DEFINITION = "lowerBoundDefinition";
+   public static final String UPPER_BOUND_DEFINITION = "upperBoundDefinition";
+   public static final String ELEMENTS = "elements";
+   public static final String DECONSTRUCTION_RULE = "deconstructionRule";
+   public static final String SCALE = "scale";
+   public static final String INTEGER = "integer";
+   public static final String ELEMENT_CHARACTERISTIC = "elementCharacteristic";
+   public static final String CONSTRAINT = "constraint";
+   public static final String LANGUAGE_CODE = "languageCode";
+   public static final String LOCALE_CODE = "localeCode";
+
+   /*
     * Constraints
     */
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource RangeConstraint() {
-      return resource( "RangeConstraint" );
+      return resource( RANGE_CONSTRAINT );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource EncodingConstraint() {
-      return resource( "EncodingConstraint" );
+      return resource( ENCODING_CONSTRAINT );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource RegularExpressionConstraint() {
-      return resource( "RegularExpressionConstraint" );
+      return resource( REGULAR_EXPRESSION_CONSTRAINT );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource LengthConstraint() {
-      return resource( "LengthConstraint" );
+      return resource( LENGTH_CONSTRAINT );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource LanguageConstraint() {
-      return resource( "LanguageConstraint" );
+      return resource( LANGUAGE_CONSTRAINT );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource LocaleConstraint() {
-      return resource( "LocaleConstraint" );
+      return resource( LOCALE_CONSTRAINT );
    }
 
    /*
@@ -85,154 +143,154 @@ public class SAMMC implements RdfNamespace {
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource StructuredValue() {
-      return resource( "StructuredValue" );
+      return resource( STRUCTURED_VALUE );
    }
 
    public Property minValue() {
-      return property( "minValue" );
+      return property( MIN_VALUE );
    }
 
    public Property maxValue() {
-      return property( "maxValue" );
+      return property( MAX_VALUE );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Quantifiable() {
-      return resource( "Quantifiable" );
+      return resource( QUANTIFIABLE );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Measurement() {
-      return resource( "Measurement" );
+      return resource( MEASUREMENT );
    }
 
    public Property unit() {
-      return property( "unit" );
+      return property( UNIT );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Duration() {
-      return resource( "Duration" );
+      return resource( DURATION );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource State() {
-      return resource( "State" );
+      return resource( STATE );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Enumeration() {
-      return resource( "Enumeration" );
+      return resource( ENUMERATION );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Collection() {
-      return resource( "Collection" );
+      return resource( COLLECTION );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Set() {
-      return resource( "Set" );
+      return resource( SET );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource SortedSet() {
-      return resource( "SortedSet" );
+      return resource( SORTED_SET );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource List() {
-      return resource( "List" );
+      return resource( LIST );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource TimeSeries() {
-      return resource( "TimeSeries" );
+      return resource( TIME_SERIES );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource SingleEntity() {
-      return resource( "SingleEntity" );
+      return resource( SINGLE_ENTITY );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Code() {
-      return resource( "Code" );
+      return resource( CODE );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource FixedPointConstraint() {
-      return resource( "FixedPointConstraint" );
+      return resource( FIXED_POINT_CONSTRAINT );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Trait() {
-      return resource( "Trait" );
+      return resource( TRAIT );
    }
 
    public Property baseCharacteristic() {
-      return property( "baseCharacteristic" );
+      return property( BASE_CHARACTERISTIC );
    }
 
    public Property values() {
-      return property( "values" );
+      return property( VALUES );
    }
 
    public Property defaultValue() {
-      return property( "defaultValue" );
+      return property( DEFAULT_VALUE );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Either() {
-      return resource( "Either" );
+      return resource( EITHER );
    }
 
    public Property left() {
-      return property( "left" );
+      return property( LEFT );
    }
 
    public Property right() {
-      return property( "right" );
+      return property( RIGHT );
    }
 
    public Property lowerBoundDefinition() {
-      return property( "lowerBoundDefinition" );
+      return property( LOWER_BOUND_DEFINITION );
    }
 
    public Property upperBoundDefinition() {
-      return property( "upperBoundDefinition" );
+      return property( UPPER_BOUND_DEFINITION );
    }
 
    public Property elements() {
-      return property( "elements" );
+      return property( ELEMENTS );
    }
 
    public Property deconstructionRule() {
-      return property( "deconstructionRule" );
+      return property( DECONSTRUCTION_RULE );
    }
 
    public Property scale() {
-      return property( "scale" );
+      return property( SCALE );
    }
 
    public Property integer() {
-      return property( "integer" );
+      return property( INTEGER );
    }
 
    public Property elementCharacteristic() {
-      return property( "elementCharacteristic" );
+      return property( ELEMENT_CHARACTERISTIC );
    }
 
    public Property constraint() {
-      return property( "constraint" );
+      return property( CONSTRAINT );
    }
 
    public Property languageCode() {
-      return property( "languageCode" );
+      return property( LANGUAGE_CODE );
    }
 
    public Property localeCode() {
-      return property( "localeCode" );
+      return property( LOCALE_CODE );
    }
 
    /*
@@ -241,52 +299,52 @@ public class SAMMC implements RdfNamespace {
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Timestamp() {
-      return resource( "Timestamp" );
+      return resource( TIMESTAMP );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Text() {
-      return resource( "Text" );
+      return resource( TEXT );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource MultiLanguageText() {
-      return resource( "MultiLanguageText" );
+      return resource( MULTI_LANGUAGE_TEXT );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Language() {
-      return resource( "Language" );
+      return resource( LANGUAGE );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Locale() {
-      return resource( "Locale" );
+      return resource( LOCALE );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Boolean() {
-      return resource( "Boolean" );
+      return resource( BOOLEAN );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource ResourcePath() {
-      return resource( "ResourcePath" );
+      return resource( RESOURCE_PATH );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource MimeType() {
-      return resource( "MimeType" );
+      return resource( MIME_TYPE );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource UnitReference() {
-      return resource( "UnitReference" );
+      return resource( UNIT_REFERENCE );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Reference() {
-      return resource( "Reference" );
+      return resource( REFERENCE );
    }
 
    /*

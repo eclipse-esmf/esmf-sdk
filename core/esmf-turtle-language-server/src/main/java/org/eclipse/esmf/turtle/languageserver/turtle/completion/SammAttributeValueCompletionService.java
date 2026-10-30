@@ -30,6 +30,7 @@ import org.eclipse.esmf.metamodel.Units;
 import org.eclipse.esmf.metamodel.datatype.SammType;
 import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 import org.eclipse.esmf.metamodel.vocabulary.SAMM;
+import org.eclipse.esmf.metamodel.vocabulary.SAMMC;
 import org.eclipse.esmf.metamodel.vocabulary.SAMME;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
@@ -47,6 +48,8 @@ import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
 public final class SammAttributeValueCompletionService {
    private static final String XSD_NAMESPACE = XSD.getURI();
+   private static final String RDF_TYPE = "type";
+   private static final String TURTLE_A = "a";
 
    private static final List<String> ISO_639_1_LANGUAGES = Arrays.stream( Locale.getISOLanguages() ).sorted().toList();
 
@@ -197,20 +200,20 @@ public final class SammAttributeValueCompletionService {
 
    private List<CompletionItem> generateCompletions( final SammCompletionContext context ) {
       return switch ( localName( context.activePredicate().orElse( "" ) ) ) {
-         case "lowerBoundDefinition" -> lowerBoundCompletions( context );
-         case "upperBoundDefinition" -> upperBoundCompletions( context );
-         case "value" -> context.hasSubjectType( "EncodingConstraint" ) ? encodingCompletions( context ) : List.of();
-         case "optional", "notInPayload" -> booleanCompletions( context );
-         case "languageCode" -> languageCodeCompletions( context );
-         case "localeCode" -> localeCodeCompletions( context );
-         case "mimeType" -> mimeTypeCompletions( context );
-         case "referenceUnit", "unit" -> unitCompletions( context );
-         case "quantityKind" -> quantityKindCompletions( context );
-         case "characteristic", "baseCharacteristic", "elementCharacteristic", "left", "right" ->
+         case SAMMC.LOWER_BOUND_DEFINITION -> lowerBoundCompletions( context );
+         case SAMMC.UPPER_BOUND_DEFINITION -> upperBoundCompletions( context );
+         case SAMM.VALUE -> context.hasSubjectType( SAMMC.ENCODING_CONSTRAINT ) ? encodingCompletions( context ) : List.of();
+         case SAMM.OPTIONAL, SAMM.NOT_IN_PAYLOAD -> booleanCompletions( context );
+         case SAMMC.LANGUAGE_CODE -> languageCodeCompletions( context );
+         case SAMMC.LOCALE_CODE -> localeCodeCompletions( context );
+         case SAMME.MIME_TYPE -> mimeTypeCompletions( context );
+         case SAMM.REFERENCE_UNIT, SAMMC.UNIT -> unitCompletions( context );
+         case SAMM.QUANTITY_KIND -> quantityKindCompletions( context );
+         case SAMM.CHARACTERISTIC, SAMMC.BASE_CHARACTERISTIC, SAMMC.ELEMENT_CHARACTERISTIC, SAMMC.LEFT, SAMMC.RIGHT ->
             characteristicCompletions( context );
-         case "dataType" -> dataTypeCompletions( context );
-         case "type", "a" -> rdfTypeCompletions( context );
-         case "extends" -> extendsCompletions( context );
+         case SAMM.DATA_TYPE -> dataTypeCompletions( context );
+         case RDF_TYPE, TURTLE_A -> rdfTypeCompletions( context );
+         case SAMM.EXTENDS -> extendsCompletions( context );
          default -> List.of();
       };
    }
@@ -299,13 +302,13 @@ public final class SammAttributeValueCompletionService {
 
    private List<CompletionItem> unitCompletions( final SammCompletionContext context ) {
       final String prefix = context.namespaces().unitPrefix().orElse( SammNs.UNIT.getShortForm() + ":" );
-      final boolean isDuration = context.hasSubjectType( "Duration" );
+      final boolean isDuration = context.hasSubjectType( SAMMC.DURATION );
       final List<String> units = isDuration ? DURATION_TIME_UNITS : UNIT_NAMES;
       final List<CompletionItem> result = new ArrayList<>( units.size() );
       for ( int i = 0; i < units.size(); i++ ) {
          final String unitName = units.get( i );
          final String prefixed = prefix + unitName;
-         final String detail = isDuration ? durationUnitDetail( unitName ) : "Unit";
+         final String detail = isDuration ? durationUnitDetail( unitName ) : SAMM.UNIT;
          final String sort = isDuration ? durationUnitSort( unitName, i ) : null;
          final String filter = isDuration
                ? prefixed + " " + unitName + " " + durationUnitFilter( unitName )
@@ -350,17 +353,17 @@ public final class SammAttributeValueCompletionService {
       for ( final String qkName : QUANTITY_KIND_NAMES ) {
          final String prefixed = prefix + qkName;
          result.add( createCompletionItem( prefixed, context, CompletionItemKind.Reference,
-               "QuantityKind", null, prefixed + " " + qkName ) );
+               SAMM.QUANTITY_KIND_CLASS, null, prefixed + " " + qkName ) );
       }
       return result;
    }
 
    private List<CompletionItem> characteristicCompletions( final SammCompletionContext context ) {
       final String prefix = context.namespaces().characteristicPrefix().orElse( SammNs.SAMMC.getShortForm() + ":" );
-      if ( context.hasSubjectType( "SingleEntity" ) ) {
+      if ( context.hasSubjectType( SAMMC.SINGLE_ENTITY ) ) {
          return characteristicEntityCompletions( context, prefix );
       }
-      if ( context.hasSubjectType( "Duration" ) ) {
+      if ( context.hasSubjectType( SAMMC.DURATION ) ) {
          return characteristicDurationCompletions( context, prefix );
       }
       final List<CompletionItem> result = prefixedResourceCompletions( context, PREDEFINED_CHARACTERISTICS, prefix,
@@ -372,9 +375,9 @@ public final class SammAttributeValueCompletionService {
 
    private List<CompletionItem> characteristicEntityCompletions( final SammCompletionContext context, final String prefix ) {
       final List<CompletionItem> result = new ArrayList<>();
-      final String entity = prefix + "SingleEntity";
+      final String entity = prefix + SAMMC.SINGLE_ENTITY;
       result.add( createCompletionItem( entity, context, CompletionItemKind.Reference,
-            "Predefined Characteristic", "01_SingleEntity", entity + " SingleEntity" ) );
+            "Predefined Characteristic", "01_SingleEntity", entity + " " + SAMMC.SINGLE_ENTITY ) );
       result.addAll( localResourceCompletions( context, context.localCharacteristics(),
             CompletionItemKind.Reference, "Local Characteristic", "02" ) );
       return result;
@@ -382,19 +385,19 @@ public final class SammAttributeValueCompletionService {
 
    private List<CompletionItem> characteristicDurationCompletions( final SammCompletionContext context, final String prefix ) {
       final List<CompletionItem> result = new ArrayList<>();
-      final String dur = prefix + "Duration";
+      final String dur = prefix + SAMMC.DURATION;
       result.add( createCompletionItem( dur, context, CompletionItemKind.Reference,
-            "Predefined Characteristic", "01_Duration", dur + " Duration" ) );
+            "Predefined Characteristic", "01_Duration", dur + " " + SAMMC.DURATION ) );
       result.addAll( localResourceCompletions( context, context.localCharacteristics(),
             CompletionItemKind.Reference, "Local Characteristic", "02" ) );
       return result;
    }
 
    private List<CompletionItem> dataTypeCompletions( final SammCompletionContext context ) {
-      if ( context.hasSubjectType( "SingleEntity" ) ) {
+      if ( context.hasSubjectType( SAMMC.SINGLE_ENTITY ) ) {
          return singleEntityDataTypeCompletions( context );
       }
-      if ( context.hasSubjectType( "TimeSeries" ) ) {
+      if ( context.hasSubjectType( SAMMC.TIME_SERIES ) ) {
          return timeSeriesDataTypeCompletions( context );
       }
       return generalDataTypeCompletions( context );
@@ -411,12 +414,12 @@ public final class SammAttributeValueCompletionService {
    private List<CompletionItem> timeSeriesDataTypeCompletions( final SammCompletionContext context ) {
       final String prefix = context.namespaces().entityPrefix().orElse( SammNs.SAMME.getShortForm() + ":" );
       final List<CompletionItem> result = new ArrayList<>();
-      final String tsEntity = prefix + "TimeSeriesEntity";
+      final String tsEntity = prefix + SAMME.TIME_SERIES_ENTITY;
       result.add( createCompletionItem( tsEntity, context, CompletionItemKind.Class,
-            "SAMM Predefined Entity", "01_TimeSeriesEntity", tsEntity + " TimeSeriesEntity" ) );
+            "SAMM Predefined Entity", "01_TimeSeriesEntity", tsEntity + " " + SAMME.TIME_SERIES_ENTITY ) );
 
       final String entityNs = new SAMME( context.namespaces().version(), new SAMM( context.namespaces().version() ) ).getNamespace();
-      final String fullTsEntityUri = context.namespaces().declarations().getOrDefault( prefix, entityNs ) + "TimeSeriesEntity";
+      final String fullTsEntityUri = context.namespaces().declarations().getOrDefault( prefix, entityNs ) + SAMME.TIME_SERIES_ENTITY;
       result.addAll( localResourceCompletions( context, context.localEntitiesExtending( fullTsEntityUri ), CompletionItemKind.Class,
             "Local Entity (extends TimeSeriesEntity)", "02" ) );
       return result;
@@ -461,12 +464,12 @@ public final class SammAttributeValueCompletionService {
 
       if ( enclosing.isPresent() ) {
          final List<CompletionItem> scoped = switch ( localName( enclosing.get() ) ) {
-            case "characteristic", "baseCharacteristic", "elementCharacteristic", "left", "right" ->
+            case SAMM.CHARACTERISTIC, SAMMC.BASE_CHARACTERISTIC, SAMMC.ELEMENT_CHARACTERISTIC, SAMMC.LEFT, SAMMC.RIGHT ->
                characteristicClassesCompletions( context, charPrefix, "01" );
-            case "constraint" -> constraintClassesCompletions( context, charPrefix, "01" );
-            case "properties" -> List.of( singleClassCompletion( context, sammPrefix, "Property" ) );
-            case "operations" -> List.of( singleClassCompletion( context, sammPrefix, "Operation" ) );
-            case "events" -> List.of( singleClassCompletion( context, sammPrefix, "Event" ) );
+            case SAMMC.CONSTRAINT -> constraintClassesCompletions( context, charPrefix, "01" );
+            case SAMM.PROPERTIES -> List.of( singleClassCompletion( context, sammPrefix, SAMM.PROPERTY_CLASS ) );
+            case SAMM.OPERATIONS -> List.of( singleClassCompletion( context, sammPrefix, SAMM.OPERATION ) );
+            case SAMM.EVENTS -> List.of( singleClassCompletion( context, sammPrefix, SAMM.EVENT ) );
             default -> List.of();
          };
          if ( !scoped.isEmpty() ) {
@@ -479,12 +482,12 @@ public final class SammAttributeValueCompletionService {
       result.addAll( characteristicClassesCompletions( context, charPrefix, "02" ) );
       result.addAll( constraintClassesCompletions( context, charPrefix, "03" ) );
 
-      final String unitClass = sammPrefix + SammNs.SAMM.Unit().getLocalName();
+      final String unitClass = sammPrefix + SAMM.UNIT;
       result.add( createCompletionItem( unitClass, context, CompletionItemKind.Class,
-            "SAMM Unit Class", "04_01_Unit", unitClass + " Unit" ) );
-      final String qkClass = sammPrefix + SammNs.SAMM.QuantityKind().getLocalName();
+            "SAMM Unit Class", "04_01_Unit", unitClass + " " + SAMM.UNIT ) );
+      final String qkClass = sammPrefix + SAMM.QUANTITY_KIND_CLASS;
       result.add( createCompletionItem( qkClass, context, CompletionItemKind.Class,
-            "SAMM QuantityKind Class", "04_02_QuantityKind", qkClass + " QuantityKind" ) );
+            "SAMM QuantityKind Class", "04_02_QuantityKind", qkClass + " " + SAMM.QUANTITY_KIND_CLASS ) );
 
       return result;
    }
