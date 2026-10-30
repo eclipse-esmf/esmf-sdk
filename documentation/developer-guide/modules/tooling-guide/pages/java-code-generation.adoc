@@ -261,7 +261,8 @@ Table and column descriptions are emitted using `COMMENT ON TABLE` and `COMMENT 
 | `xsd:unsignedByte` | `SMALLINT` |
 | `xsd:unsignedShort` | `INTEGER` |
 | `xsd:unsignedInt` | `BIGINT` |
-| `xsd:unsignedLong`, `xsd:positiveInteger`, `xsd:nonNegativeInteger`, `xsd:negativeInteger`, `xsd:nonPositiveInteger` | `NUMERIC` |
+| `xsd:unsignedLong` | `NUMERIC(20,0)` |
+| `xsd:positiveInteger`, `xsd:nonNegativeInteger`, `xsd:negativeInteger`, `xsd:nonPositiveInteger` | `NUMERIC` | The configured precision is used.
 | `xsd:hexBinary`, `xsd:base64Binary` | `BYTEA` |
 | `xsd:anyURI`, `samm:curie` | `TEXT` |
 |===
