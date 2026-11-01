@@ -25,6 +25,7 @@ import org.eclipse.esmf.aspect.to.AspectToJsonSchemaCommand;
 import org.eclipse.esmf.aspect.to.AspectToOpenapiCommand;
 import org.eclipse.esmf.aspect.to.AspectToParquetCommand;
 import org.eclipse.esmf.aspect.to.AspectToPngCommand;
+import org.eclipse.esmf.aspect.to.AspectToProtobufCommand;
 import org.eclipse.esmf.aspect.to.AspectToSqlCommand;
 import org.eclipse.esmf.aspect.to.AspectToSvgCommand;
 import org.eclipse.esmf.exception.SubCommandException;
@@ -47,6 +48,7 @@ import picocli.CommandLine;
          AspectToSvgCommand.class,
          AspectToAasCommand.class,
          AspectToSqlCommand.class,
+         AspectToProtobufCommand.class,
          AspectToParquetCommand.class
    },
    descriptionHeading = "%n@|bold Description|@:%n%n",
