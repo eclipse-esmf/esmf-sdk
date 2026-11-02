@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,20 +33,31 @@ import org.eclipse.esmf.treesitterturtle.ParserTokenType;
 import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 import org.eclipse.esmf.turtle.languageserver.turtle.completion.SammAttributeValueCompletionService;
+import org.eclipse.esmf.turtle.languageserver.turtle.completion.SammCompletionContext;
 import org.eclipse.esmf.turtle.languageserver.turtle.completion.SammSnippetCompletionService;
 import org.eclipse.esmf.turtle.languageserver.turtle.completion.SammSuggestionContextDetector;
-import org.eclipse.esmf.turtle.languageserver.turtle.completion.SammCompletionContext;
 
+import org.apache.jena.rdf.model.Resource;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionParams;
 import org.eclipse.lsp4j.Position;
 
-public class TurtleCompletionService extends TurtleService {
+public class TurtleCompletionService extends AbstractTurtleCompletionService {
    static final Map<String, List<CompletionItem>> SAMM_PREFIXES_COMPLETION_MAP = initSammPrefixesCompletionMap();
    private final SammSuggestionContextDetector contextDetector = new SammSuggestionContextDetector();
    private final SammSnippetCompletionService snippetCompletionService = new SammSnippetCompletionService();
    private final SammAttributeValueCompletionService attributeValueCompletionService = new SammAttributeValueCompletionService();
 
+   /**
+    * Dropdown completion for the prefixed name at the cursor. Returns the full list of candidates for
+    * the client to filter, so client features like fuzzy match are supported.
+    * <ul>
+    * <li>{@code :} prefix: the local names of the document subjects that fit the expected type of the
+    * predicate</li>
+    * <li>after {@code samm:dataType}: all XSD data types of the typed prefix</li>
+    * <li>otherwise: all names of the typed SAMM, unit or SHACL namespace</li>
+    * </ul>
+    */
    public List<CompletionItem> complete( final ParsedDocument parsedDocument, final CompletionParams completionParams ) {
       return complete( parsedDocument, completionParams, false );
    }
@@ -69,47 +81,60 @@ public class TurtleCompletionService extends TurtleService {
 
    private List<CompletionItem> vocabularyCompletions( final ParsedDocument parsedDocument, final CompletionParams completionParams ) {
       final Position position = completionParams.getPosition();
-      final long targetLine = position.getLine();
-      final long targetColumn = position.getCharacter() - 1L; // character one entry before cursor position is relevant
-
-      // First try: cursor is right after the colon of a namespace prefix (e.g. user typed "ex:")
-      // This is important for incomplete trees with error nodes, when PREFIXED_NAME is not parsed
-      TurtleSyntaxTree.Node namespaceAtCursor = parsedDocument.turtleSyntaxTree()
-            .findMatchingTreeSitterToken( List.of( ParserTokenType.NAMESPACE ), targetLine, targetColumn );
-
-      if ( namespaceAtCursor == null ) {
-         // Second try: cursor is inside the local-name part of a prefixed name (e.g. "ex:sub|ject").
-         // Find the enclosing prefixed_name node and retrieve its namespace child.
-         // Relevant when user re-triggers completion manually
-         final TurtleSyntaxTree.Node prefixedNameAtCursor = parsedDocument.turtleSyntaxTree()
-               .findMatchingTreeSitterToken( List.of( ParserTokenType.PREFIXED_NAME ), targetLine, targetColumn );
-         if ( prefixedNameAtCursor == null ) {
-            return List.of();
-         }
-         namespaceAtCursor = prefixedNameAtCursor.children().stream()
-               .filter( n -> ParserTokenType.NAMESPACE.equals( n.type() ) )
-               .filter( TurtleSyntaxTree.Node::isToken )
-               .findFirst()
-               .orElse( null );
-         if ( namespaceAtCursor == null ) {
-            return List.of();
-         }
+      final Optional<TurtleSyntaxTree.Node> namespaceAtCursor = namespaceAtCursor( parsedDocument, position );
+      if ( namespaceAtCursor.isEmpty() ) {
+         return List.of();
       }
-      final String prefix = namespaceAtCursor.content();
+      final TurtleSyntaxTree.Node typedNamespace = namespaceAtCursor.get();
+      final String prefix = typedNamespace.content();
+      final TurtleSyntaxTree tree = parsedDocument.turtleSyntaxTree();
+      final TypedStatement statement = typedStatement( tree, position );
 
       if ( ":".equals( prefix ) ) {
-         return parsedDocument.turtleSyntaxTree().nodes()
+         final Optional<TurtleSyntaxTree.Node> typedNode = localNameAtCursor( parsedDocument, position );
+         final Set<Resource> expectedClasses = closestPredicateExpectedClasses( statement.predicateIri() );
+         final Set<String> expectedTypesSet = expectedTypes( tree, expectedClasses ).collect( Collectors.toSet() );
+         return parsedDocument.turtleSyntaxTree().tokens()
                .filter( t -> ParserTokenType.PREFIXED_NAME.equals( t.type() ) )
                .filter( n -> isPrefixedBy( n, prefix ) )
                .flatMap( n -> n.children().stream() )
                .filter( t -> ParserTokenType.PN_LOCAL.equals( t.type() ) )
-               .filter( TurtleSyntaxTree.Node::isToken )
+               // The name being typed is part of the tree, but must not suggest itself
+               .filter( t -> typedNode.isEmpty() || !t.location().equals( typedNode.get().location() ) )
                .map( TurtleSyntaxTree.Node::content )
+               .filter( content -> expectedClasses.isEmpty() || expectedTypesSet.contains( ":" + content ) )
+               // The subject of the statement being edited must not be suggested as its own object
+               .filter( content -> !( ":" + content ).equals( statement.subject() ) )
                .map( CompletionItem::new )
                .collect( Collectors.toSet() ).stream().toList();
       }
 
+      if ( statement.predicateIri().filter( SammNs.SAMM.dataType().getURI()::equals ).isPresent() ) {
+         return dataTypeLocalNames( prefix ).map( CompletionItem::new ).toList();
+      }
+
       return SAMM_PREFIXES_COMPLETION_MAP.getOrDefault( prefix, List.of() );
+   }
+
+   /**
+    * All subjects of the document whose type is (a subclass of) one of the expected classes; the
+    * client filters them
+    */
+   private Stream<String> expectedTypes( final TurtleSyntaxTree tree, final Set<Resource> expectedClasses ) {
+      return declaredSubjectNames( tree, expectedClasses ).map( TurtleSyntaxTree.Node::content );
+   }
+
+   private static Set<Resource> closestPredicateExpectedClasses( final Optional<String> closestPredicateIri ) {
+      return closestPredicateIri.map( iri -> EXPECTED_CLASSES.getOrDefault( iri, Set.of() ) )
+            .orElse( Set.of() );
+   }
+
+   /**
+    * The local names of all data types with the given prefix, e.g. {@code int}. The client filters
+    * them by the typed text.
+    */
+   private static Stream<String> dataTypeLocalNames( final String prefix ) {
+      return DATA_TYPE_NAMES.stream().filter( name -> name.startsWith( prefix ) ).map( name -> name.substring( prefix.length() ) );
    }
 
    private static HashMap<String, List<CompletionItem>> initSammPrefixesCompletionMap() {

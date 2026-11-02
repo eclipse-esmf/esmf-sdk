@@ -70,7 +70,43 @@ class TurtleCompletionServiceTest {
                      :subject :otherPredicate :object .
                      :subject :predicate :obj""",
                   new Position( 4, 21 ),
-                  List.of( "subject", "predicate", "object", "otherPredicate", "obj" )
+                  List.of( "predicate", "object", "otherPredicate", "obj" )
+            ),
+            Arguments.of(
+                  "typing a partial entity after samm:dataType returns the matching entity",
+                  """
+                     @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+                     @prefix : <urn:test#> .
+
+                     :SpatialEntity a samm:Entity .
+                     :Speed samm:dataType :Sp""",
+                  new Position( 4, 24 ),
+                  List.of( "SpatialEntity" )
+            ),
+            Arguments.of(
+                  "typing colon after samm:characteristic filters only allowed types",
+                  """
+                     @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+                     @prefix : <urn:test#> .
+
+                     :Speed a samm:Characteristic .
+                     :Range a samm:Constraint .
+                     :Aspect samm:characteristic :""",
+                  new Position( 5, 29 ),
+                  List.of( "Speed" )
+            ),
+            Arguments.of(
+                  "typing colon after samm-c:constraint returns the constraint instances",
+                  """
+                     @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+                     @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#> .
+                     @prefix : <urn:test#> .
+
+                     :Speed a samm:Characteristic .
+                     :Range a samm:Constraint .
+                     :Aspect samm-c:constraint :""",
+                  new Position( 6, 27 ),
+                  List.of( "Range" )
             )
       );
    }
@@ -81,14 +117,77 @@ class TurtleCompletionServiceTest {
          final String content,
          final Position position,
          final List<String> expectedLabels ) {
+      assertThat( completionLabels( content, position ) ).containsExactlyInAnyOrder( expectedLabels.toArray( String[]::new ) );
+   }
+
+   @Test
+   void typingColonAfterFinishedStatementDoesNotUseItsPredicateExpectedClasses() {
+      assertThat( completionLabels( """
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+         @prefix : <urn:test#> .
+
+         :Characteristic a samm:Characteristic .
+         :weight a samm:Property ;
+            samm:see <https://schema.org/weight> ;
+            samm:characteristic :Weight .
+         :""", new Position( 7, 1 ) ) ).contains( "Characteristic", "weight", "Weight" );
+   }
+
+   @Test
+   void partialXsdDataTypeAfterDataTypeReturnsAllXsdDataTypes() {
+      assertThat( completionLabels( """
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         @prefix : <urn:test#> .
+
+         :Speed samm:dataType xsd:in""", new Position( 4, 27 ) ) ).contains( "int", "integer", "float" );
+   }
+
+   @Test
+   void completeXsdDataTypeAfterDataTypeStillReturnsAllXsdDataTypesForDropdown() {
+      assertThat( completionLabels( """
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         @prefix : <urn:test#> .
+
+         :Speed samm:dataType xsd:int""", new Position( 4, 28 ) ) ).contains( "int", "integer", "string" );
+   }
+
+   @Test
+   void partialEntityAfterDataTypeReturnsAllEntities() {
+      assertThat( completionLabels( """
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+         @prefix : <urn:test#> .
+
+         :SpatialEntity a samm:Entity .
+         :Other a samm:Entity .
+         :Speed samm:dataType :Sp""", new Position( 5, 24 ) ) ).contains( "SpatialEntity", "Other" );
+   }
+
+   @Test
+   void partialRdfDataTypeAfterDataTypeReturnsAllRdfDataTypes() {
+      assertThat( completionLabels( """
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+         @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+         @prefix : <urn:test#> .
+
+         :Speed samm:dataType rdf:langS""", new Position( 4, 30 ) ) ).contains( "langString" );
+   }
+
+   @Test
+   void unitPrefixReturnsAllUnitNames() {
+      assertThat( completionLabels( """
+         @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.2.0#> .
+         @prefix : <urn:test#> .
+
+         :Speed samm-c:unit unit:pi""", new Position( 3, 26 ) ) ).contains( "metre", "gram" );
+   }
+
+   private List<String> completionLabels( final String content, final Position position ) {
       final Document document = new Document( "test.ttl", content );
       final ParsedDocument parsedDocument = parserService.apply( document );
       final CompletionParams params = new CompletionParams( new TextDocumentIdentifier( "test.ttl" ), position );
-
-      final List<CompletionItem> completions = completionService.complete( parsedDocument, params );
-
-      final List<String> labels = completions.stream().map( CompletionItem::getLabel ).toList();
-      assertThat( labels ).containsExactlyInAnyOrder( expectedLabels.toArray( String[]::new ) );
+      return completionService.complete( parsedDocument, params ).stream().map( CompletionItem::getLabel ).toList();
    }
 
    static Stream<Arguments> nonEmptyKnownPrefixScenarios() {
