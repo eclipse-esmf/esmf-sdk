@@ -43,11 +43,12 @@ class AspectModelPostgreSqlDenormalizedSqlVisitorTest {
 
       assertThat( result )
             .contains( "base64_binary_property BYTEA NOT NULL" )
-            .contains( "date_property DATE NOT NULL" )
+            .contains( "date_property TEXT NOT NULL" )
             .contains( "date_time_stamp_property TIMESTAMP WITH TIME ZONE NOT NULL" )
             .contains( "decimal_property NUMERIC(10,0) NOT NULL" )
             .contains( "double_property DOUBLE PRECISION NOT NULL" )
-            .contains( "string_property TEXT NOT NULL" );
+            .contains( "string_property TEXT NOT NULL" )
+            .contains( "time_property TEXT NOT NULL" );
    }
 
    @Test
