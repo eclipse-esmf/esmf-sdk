@@ -22,6 +22,8 @@ import java.util.Optional;
 import org.eclipse.esmf.test.TestAspect;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 @SuppressWarnings( "checkstyle:LineLength" )
 class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase {
@@ -371,7 +373,7 @@ class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase
    void testAspectWithOptionalProperties() {
       assertThat( sql( TestAspect.ASPECT_WITH_OPTIONAL_PROPERTIES ) ).isEqualTo( """
          CREATE TABLE IF NOT EXISTS aspect_with_optional_properties (
-           number_property DECIMAL(10),
+           number_property DECIMAL(20),
            timestamp_property TIMESTAMP NOT NULL
          )
          TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithOptionalProperties');
@@ -472,12 +474,26 @@ class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase
            time_property STRING NOT NULL,
            unsigned_byte_property SMALLINT NOT NULL,
            unsigned_int_property BIGINT NOT NULL,
-           unsigned_long_property DECIMAL(10) NOT NULL,
+           unsigned_long_property DECIMAL(20) NOT NULL,
            unsigned_short_property INT NOT NULL,
            year_month_duration_property STRING NOT NULL
          )
          TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithSimpleTypes');
          """ );
+   }
+
+   @ParameterizedTest
+   @ValueSource( ints = { 10, 20, 38 } )
+   void testUnsignedLongPrecisionIsIndependentOfDecimalConfig( final int precision ) {
+      final DatabricksSqlGenerationConfig config = DatabricksSqlGenerationConfigBuilder.builder()
+            .decimalPrecision( precision )
+            .decimalScale( 2 )
+            .build();
+
+      assertThat( sql( TestAspect.ASPECT_WITH_SIMPLE_TYPES, config ) )
+            .contains( "unsigned_long_property DECIMAL(20) NOT NULL" )
+            .contains( "decimal_property DECIMAL(%d,2) NOT NULL".formatted( precision ) )
+            .contains( "integer_property DECIMAL(%d) NOT NULL".formatted( precision ) );
    }
 
    @Test

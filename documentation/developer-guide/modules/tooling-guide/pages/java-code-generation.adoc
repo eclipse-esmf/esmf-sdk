@@ -204,7 +204,7 @@ in the data, the Aspect Models using xsd:decimal should also use a xref:samm-spe
 | `xsd:double` | `DOUBLE` |
 | `xsd:float` | `FLOAT` |
 | `xsd:date` | `STRING` | `DATE` can not be used, because it does not retain timezone information.
-| `xsd:time` | `STRING` |
+| `xsd:time` | `STRING` | `TIME` can not be used, because it does not retain timezone information.
 | `xsd:dateTime` | `STRING` |
 | `xsd:dateTimeStamp` | `TIMESTAMP` |
 | `xsd:gYear` | `STRING` |
@@ -222,7 +222,7 @@ in the data, the Aspect Models using xsd:decimal should also use a xref:samm-spe
 | `xsd:unsignedByte` | `SMALLINT` |
 | `xsd:unsignedShort` | `INT` |
 | `xsd:unsignedInt` | `BIGINT` |
-| `xsd:unsignedLong` | `DECIMAL` |
+| `xsd:unsignedLong` | `DECIMAL(20)` | The fixed precision of 20 accommodates the maximum value 18446744073709551615, independently of the configured decimal precision.
 | `xsd:positiveInteger` | `DECIMAL` |
 | `xsd:nonNegativeInteger` | `DECIMAL` |
 | `xsd:negativeInteger` | `DECIMAL` |
@@ -249,8 +249,8 @@ Table and column descriptions are emitted using `COMMENT ON TABLE` and `COMMENT 
 | `xsd:integer` | `NUMERIC` | The configured precision is used.
 | `xsd:double` | `DOUBLE PRECISION` |
 | `xsd:float` | `REAL` |
-| `xsd:date` | `DATE` |
-| `xsd:time` | `TIME` |
+| `xsd:date` | `TEXT` | `DATE` can not be used, because it does not retain timezone information.
+| `xsd:time` | `TEXT` | `TIME` can not be used, because it does not retain timezone information. Although `TIME WITH TIME ZONE` can preserve this information, `TEXT` is used here for consistency and simplicity.
 | `xsd:dateTime` | `TIMESTAMP` |
 | `xsd:dateTimeStamp` | `TIMESTAMP WITH TIME ZONE` |
 | `xsd:gYear`, `xsd:gMonth`, `xsd:gDay`, `xsd:gYearMonth`, `xsd:gMonthDay` | `TEXT` |
@@ -261,7 +261,7 @@ Table and column descriptions are emitted using `COMMENT ON TABLE` and `COMMENT 
 | `xsd:unsignedByte` | `SMALLINT` |
 | `xsd:unsignedShort` | `INTEGER` |
 | `xsd:unsignedInt` | `BIGINT` |
-| `xsd:unsignedLong` | `NUMERIC(20,0)` |
+| `xsd:unsignedLong` | `NUMERIC(20)` | The fixed precision of 20 accommodates the maximum value 18446744073709551615, independently of the configured decimal precision.
 | `xsd:positiveInteger`, `xsd:nonNegativeInteger`, `xsd:negativeInteger`, `xsd:nonPositiveInteger` | `NUMERIC` | The configured precision is used.
 | `xsd:hexBinary`, `xsd:base64Binary` | `BYTEA` |
 | `xsd:anyURI`, `samm:curie` | `TEXT` |

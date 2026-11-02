@@ -111,7 +111,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
             .put( XSD.unsignedByte.getURI(), DatabricksType.SMALLINT )
             .put( XSD.unsignedShort.getURI(), DatabricksType.INT )
             .put( XSD.unsignedInt.getURI(), DatabricksType.BIGINT )
-            .put( XSD.unsignedLong.getURI(), new DatabricksType.DatabricksDecimal( Optional.of( config.decimalPrecision() ) ) )
+            .put( XSD.unsignedLong.getURI(), new DatabricksType.DatabricksDecimal( Optional.of( 20 ) ) )
             .put( XSD.positiveInteger.getURI(), new DatabricksType.DatabricksDecimal( Optional.of( config.decimalPrecision() ) ) )
             .put( XSD.nonNegativeInteger.getURI(), new DatabricksType.DatabricksDecimal( Optional.of( config.decimalPrecision() ) ) )
             .put( XSD.negativeInteger.getURI(), new DatabricksType.DatabricksDecimal( Optional.of( config.decimalPrecision() ) ) )
