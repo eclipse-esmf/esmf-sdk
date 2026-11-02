@@ -153,7 +153,8 @@ class SammSuggestionServiceTest {
 
    @ParameterizedTest
    @ValueSource( strings = { "\"label\"@en", "\"label\"^^<http://www.w3.org/2001/XMLSchema#string>",
-         "\"label\"^^xsd:string", "3.14", "true", "[ samm:preferredName \"nested\"@en ]", "( :one :two )" } )
+         "\"label\"^^xsd:string", "3.14", "true", "[ samm:preferredName \"nested\"@en ]", "( :one :two )",
+         ":reference\\;part", ":reference\\#part", ":reference\\(part\\)" } )
    void recognizesPredicateSlotsFollowingDifferentObjectForms( final String object ) {
       final Request request = request( HEADER + "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n"
             + ":p a samm:Property ; samm:see " + object + " ;\n    samm:des| ." );
@@ -173,6 +174,19 @@ class SammSuggestionServiceTest {
    void descriptionOnAnotherSubjectDoesNotSuppressSuggestion() {
       final Request request = request( HEADER + ":other samm:description \"other\"@en .\n:p a samm:Property ; samm:des| ." );
       assertValid( apply( request, snippetNamed( request, "SAMM description" ) ) );
+   }
+
+   @Test
+   void recognizesEscapedSubjectBeforeIncompletePredicate() {
+      final Request request = request( HEADER + ":p\\;name a samm:Property ; samm:des| ." );
+      assertValid( apply( request, snippetNamed( request, "SAMM description" ) ) );
+   }
+
+   @Test
+   void recognizesStandaloneSubjectRecoveredWithoutSubjectWrapper() {
+      final Request request = request( HEADER + ":p a samm:Property .\n:p |" );
+      assertThat( snippetNamed( request, "SAMM description" ).getTextEdit().getLeft().getRange().getStart() )
+            .isEqualTo( request.position );
    }
 
    @Test
@@ -347,6 +361,8 @@ class SammSuggestionServiceTest {
             HEADER + ":p a samm:Property ; other:des|",
             HEADER + ":p a samm:Property ; samm:characteristic [ ) ; samm:des|",
             HEADER + ":p a samm:Property ; samm:characteristic invalid ; samm:des|",
+            HEADER + ":p a samm:Property ; samm:characteristic other:Unknown ; samm:des|",
+            HEADER + ":A a samm:Aspect ; samm:properties ( ( [|] ) ) .",
             HEADER + ":p a samm:Property ; samm:des| :C .",
             HEADER.replace( "2.2.0", "99.0.0" ) + "|",
             HEADER.replace( "urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#", "urn:example:not-samm#" ) + "|",

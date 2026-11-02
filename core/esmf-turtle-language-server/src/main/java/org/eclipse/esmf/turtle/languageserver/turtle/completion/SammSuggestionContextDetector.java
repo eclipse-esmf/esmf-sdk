@@ -13,10 +13,9 @@
 
 package org.eclipse.esmf.turtle.languageserver.turtle.completion;
 
-import static org.eclipse.esmf.turtle.languageserver.turtle.completion.TurtleCompletionScanner.collectDocumentFacts;
-import static org.eclipse.esmf.turtle.languageserver.turtle.completion.TurtleCompletionScanner.expand;
-import static org.eclipse.esmf.turtle.languageserver.turtle.completion.TurtleCompletionScanner.scanBefore;
-import static org.eclipse.esmf.turtle.languageserver.turtle.completion.TurtleCompletionScanner.tokenize;
+import static org.eclipse.esmf.turtle.languageserver.turtle.completion.TurtleCompletionTree.collectDocumentFacts;
+import static org.eclipse.esmf.turtle.languageserver.turtle.completion.TurtleCompletionTree.expand;
+import static org.eclipse.esmf.turtle.languageserver.turtle.completion.TurtleCompletionTree.scanBefore;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
@@ -43,10 +42,10 @@ import org.eclipse.esmf.turtle.languageserver.turtle.completion.SammCompletionCo
 import org.eclipse.esmf.turtle.languageserver.turtle.completion.SammCompletionContext.Namespaces;
 import org.eclipse.esmf.turtle.languageserver.turtle.completion.SammCompletionContext.SubjectFacts;
 import org.eclipse.esmf.turtle.languageserver.turtle.completion.SammCompletionContext.TargetPosition;
-import org.eclipse.esmf.turtle.languageserver.turtle.completion.TurtleCompletionScanner.Frame;
-import org.eclipse.esmf.turtle.languageserver.turtle.completion.TurtleCompletionScanner.Lexeme;
-import org.eclipse.esmf.turtle.languageserver.turtle.completion.TurtleCompletionScanner.State;
-import org.eclipse.esmf.turtle.languageserver.turtle.completion.TurtleCompletionScanner.TokenKind;
+import org.eclipse.esmf.turtle.languageserver.turtle.completion.TurtleCompletionTree.Frame;
+import org.eclipse.esmf.turtle.languageserver.turtle.completion.TurtleCompletionTree.Lexeme;
+import org.eclipse.esmf.turtle.languageserver.turtle.completion.TurtleCompletionTree.State;
+import org.eclipse.esmf.turtle.languageserver.turtle.completion.TurtleCompletionTree.TokenKind;
 
 import org.apache.jena.vocabulary.XSD;
 import org.eclipse.lsp4j.Position;
@@ -71,7 +70,7 @@ public final class SammSuggestionContextDetector {
       if ( cursor < 0 ) {
          return Optional.empty();
       }
-      final List<Lexeme> tokens = tokenize( source );
+      final List<Lexeme> tokens = TurtleCompletionTree.tokens( document.turtleSyntaxTree() );
       if ( tokens.stream().anyMatch( token -> token.protectedAt( cursor ) ) ) {
          return Optional.empty();
       }
