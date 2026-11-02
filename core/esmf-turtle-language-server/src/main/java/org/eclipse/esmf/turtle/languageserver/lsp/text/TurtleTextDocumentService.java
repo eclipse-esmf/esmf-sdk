@@ -41,6 +41,7 @@ import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.ViolationProvider;
 import org.eclipse.esmf.turtle.languageserver.structure.DocumentSymbolService;
 import org.eclipse.esmf.turtle.languageserver.structure.TurtleTokenService;
 import org.eclipse.esmf.turtle.languageserver.turtle.TurtleCompletionService;
+import org.eclipse.esmf.turtle.languageserver.turtle.TurtleInlineCompletionService;
 import org.eclipse.esmf.turtle.languageserver.turtle.ValidationCoordinator;
 import org.eclipse.esmf.turtle.languageserver.turtle.navigation.TurtleDefinitionService;
 
@@ -55,6 +56,9 @@ import org.eclipse.lsp4j.DidOpenTextDocumentParams;
 import org.eclipse.lsp4j.DidSaveTextDocumentParams;
 import org.eclipse.lsp4j.DocumentSymbol;
 import org.eclipse.lsp4j.DocumentSymbolParams;
+import org.eclipse.lsp4j.InlineCompletionItem;
+import org.eclipse.lsp4j.InlineCompletionList;
+import org.eclipse.lsp4j.InlineCompletionParams;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.LocationLink;
 import org.eclipse.lsp4j.SemanticTokens;
@@ -74,6 +78,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
    private final TurtleDefinitionService turtleDefinitionService;
    private final AspectCrossFileDefinitionService aspectCrossFileDefinitionService;
    private final TurtleCompletionService turtleCompletionService;
+   private final TurtleInlineCompletionService turtleInlineCompletionService;
    private final ValidationCoordinator validationCoordinator;
    private final TreeSitterTurtleParserService turtleParserService;
    private final TurtleTokenService tokenService;
@@ -93,6 +98,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
       clientNotifier = new TextDocumentClientNotifier( new DiagnosticMapper() );
       turtleDefinitionService = new TurtleDefinitionService();
       turtleCompletionService = new TurtleCompletionService();
+      turtleInlineCompletionService = new TurtleInlineCompletionService();
       turtleParserService = new TreeSitterTurtleParserService();
       tokenService = new TurtleTokenService();
       aspectCrossFileDefinitionService = new AspectCrossFileDefinitionService( turtleParserService, documents, resolutionStrategyService );
@@ -269,9 +275,19 @@ public class TurtleTextDocumentService implements TextDocumentService {
       if ( document == null ) {
          return CompletableFuture.completedFuture( Either.forLeft( List.of() ) );
       }
-      return CompletableFuture.supplyAsync( () -> {
-         return turtleParserService.withParsedDocument( document,
-               parsedDocument -> Either.forLeft( turtleCompletionService.complete( parsedDocument, position ) ) );
-      }, asyncExecutor );
+      return CompletableFuture.supplyAsync( () -> turtleParserService.withParsedDocument( document,
+            parsedDocument -> Either.forLeft( turtleCompletionService.complete( parsedDocument, position ) ) ), asyncExecutor );
+   }
+
+   @Override
+   public CompletableFuture<Either<List<InlineCompletionItem>, InlineCompletionList>> inlineCompletion(
+         final InlineCompletionParams params ) {
+      final String uri = params.getTextDocument().getUri();
+      final Document document = documents.get( uri );
+      if ( document == null ) {
+         return CompletableFuture.completedFuture( Either.forLeft( List.of() ) );
+      }
+      return CompletableFuture.supplyAsync( () -> turtleParserService.withParsedDocument( document,
+            parsedDocument -> Either.forLeft( turtleInlineCompletionService.inlineComplete( parsedDocument, params ) ) ), asyncExecutor );
    }
 }
