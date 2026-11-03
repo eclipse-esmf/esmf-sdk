@@ -531,6 +531,15 @@ class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase
    }
 
    @Test
+   void testTableConstraints() {
+      final DatabricksSqlGenerationConfig config = DatabricksSqlGenerationConfigBuilder.builder()
+            .tableConstraints( List.of( "PRIMARY KEY (test)", "UNIQUE (test)", "CHECK (test <> 'x')" ) )
+            .build();
+      assertThat( sql( TestAspect.ASPECT_WITH_PROPERTY_WITH_PAYLOAD_NAME, config ) )
+            .contains( "PRIMARY KEY (test),\n  UNIQUE (test),\n  CHECK (test <> 'x')\n)" );
+   }
+
+   @Test
    void testAspectWithCustomColumn() {
       final DatabricksSqlGenerationConfig config = DatabricksSqlGenerationConfigBuilder.builder()
             .includeTableComment( true )

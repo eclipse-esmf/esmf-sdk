@@ -218,7 +218,7 @@ of model resolution] for more information.
                                    | _--language, -l_ : The language from the model for which a JSON schema should be
                                        generated (default: en)                                                               | `samm aspect AspectModel.ttl to schema -l de`
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
-.11+| [[aspect-to-sql]] aspect <model> to sql | Generate SQL script that sets up a table for data for this Aspect            | `samm aspect AspectModel.ttl to sql`
+.12+| [[aspect-to-sql]] aspect <model> to sql | Generate SQL script that sets up a table for data for this Aspect            | `samm aspect AspectModel.ttl to sql`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--language, -l_ : The language from the model to use for generated comments            |
                                    | _--dialect, -d_ : The SQL dialect to generate for: `databricks` or `postgresql`
@@ -235,6 +235,8 @@ of model resolution] for more information.
                                    | _--custom-column, -col_ : Additional custom column definition
                                      following the pattern `column_name DATATYPE [NOT NULL] [COMMENT 'custom']`. This
                                      parameter can be repeated for multiple columns.                                         | `samm aspect AspectModel.ttl to sql --custom-column "column_name STRING NOT NULL COMMENT 'custom'"`
+                                   | _--table-constraint_ : SQL table constraint inserted verbatim into the CREATE TABLE definition.
+                                     Repeat for multiple constraints. Syntax and referenced columns are not validated; use syntax supported by the selected dialect. | `samm aspect AspectModel.ttl to sql --dialect postgresql --table-constraint "PRIMARY KEY (id)" --table-constraint "CHECK (amount > 0)"`
 .5+| [[aspect-to-aas]] aspect <model> to aas | Generate an Asset Administration Shell (AAS) submodel template from an
                                      Aspect Model                                                                            | `samm aspect AspectModel.ttl to aas`
                                    | _--output, -o_ : output file path (default: stdout)                                     | `samm aspect AspectModel.ttl to aas -o="somewhere\new-file-name.extension"`

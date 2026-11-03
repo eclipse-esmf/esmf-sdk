@@ -187,6 +187,11 @@ include::example$GenerateSql.java[tags=imports]
 include::example$GenerateSql.java[tags=generate]
 ----
 
+The dialect-specific generation configuration accepts `tableConstraints`, a list of SQL table
+constraint definitions. Each definition is inserted verbatim after the column definitions. The
+caller is responsible for using valid syntax and column names for the selected dialect; the
+generator does not validate them.
+
 [[databricks-type-mapping]]
 === Databricks Type Mapping
 

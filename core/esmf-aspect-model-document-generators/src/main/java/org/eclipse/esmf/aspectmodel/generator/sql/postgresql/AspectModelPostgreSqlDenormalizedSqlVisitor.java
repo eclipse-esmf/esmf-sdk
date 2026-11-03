@@ -170,6 +170,7 @@ public class AspectModelPostgreSqlDenormalizedSqlVisitor
                      new ColumnComment( columnDefinition.name(), comment ) ) );
             }
          }
+         config.tableConstraints().forEach( appendLine );
       }
       return result.toString();
    }
