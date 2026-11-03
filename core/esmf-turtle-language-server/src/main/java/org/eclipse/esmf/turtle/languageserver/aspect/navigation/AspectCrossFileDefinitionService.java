@@ -127,11 +127,6 @@ public class AspectCrossFileDefinitionService extends TurtleService {
       return targetDocument.flatMap( doc -> findByLocalName( localName.get(), doc ) );
    }
 
-   @Override
-   protected Optional<String> getPrefixIri( final String prefixName, final TurtleSyntaxTree tree ) {
-      return super.getPrefixIri( prefixName, tree );
-   }
-
    Optional<AspectModelUrn> buildUrn( final String prefixIri, final String localName ) {
       final String fullUrn = prefixIri + localName;
       return AspectModelUrn.from( fullUrn ).toJavaOptional();
