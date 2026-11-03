@@ -506,6 +506,7 @@ class SammSuggestionServiceTest {
             HEADER + ":p a samm:Property ; samm:see <urn:example:unterminated|",
             HEADER + ":p a samm:Property ; samm:characteristic samm:des|",
             HEADER + ":p a :CustomNonSammType ; samm:des|",
+            HEADER + ":p a :CustomNonSammType ; pref|",
             HEADER + ":p a samm:Property ; samm:characteristic [ samm:des| ] .",
             HEADER + ":p a samm:Property ; samm:see ( samm:des| ) .",
             HEADER + ":p a samm:Property ; samm:characteristic [\n temperature.prop|",
@@ -652,6 +653,70 @@ class SammSuggestionServiceTest {
       assertThat( item.getFilterText() ).contains( "samm:des" )
             .contains( "samm:description" )
             .contains( "description" );
+   }
+
+   @Test
+   void labelPrefixDoesNotMatchEverySnippetAtTopLevel() {
+      final Request request = request( HEADER + "\ns|" );
+      final List<CompletionItem> items = snippets.complete( request.document, request.position );
+      // Names starting with "s" come first; the common "SAMM " label prefix must not match the query
+      assertThat( items ).extracting( CompletionItem::getLabel ).startsWith(
+            "SAMM Set", "SAMM SortedSet", "SAMM SingleEntity" );
+      assertThat( items ).extracting( CompletionItem::getLabel ).doesNotContain( "SAMM Property", "SAMM Entity", "SAMM Operation" );
+   }
+
+   @ParameterizedTest
+   @ValueSource( strings = {
+         ":Test a samm:Aspect ;\npref| .\n",
+         ":Test a samm:Aspect ;\n   pref| .\n",
+         ":Test a samm:Aspect ; pref| .\n",
+         ":Test a samm:Aspect ;\nPREF| .\n" } )
+   void plainWordWithoutPrefixOffersPredicateSnippet( final String source ) {
+      final Request request = request( HEADER + source );
+      assertThat( snippets.complete( request.document, request.position ) ).extracting( CompletionItem::getLabel )
+            .containsExactly( "SAMM preferredName" );
+      final CompletionItem item = snippetNamed( request, "SAMM preferredName" );
+      assertThat( item.getTextEdit().getLeft().getNewText() ).startsWith( "samm:preferredName" );
+      assertValid( apply( request, item ) );
+   }
+
+   @Test
+   void plainWordMatchesAtWordBoundaryButNotInTheMiddleOfName() {
+      assertThat( plainWordLabels( "name" ) ).containsExactly( "SAMM preferredName" );
+      assertThat( plainWordLabels( "s" ) ).containsExactly( "SAMM see" );
+      assertThat( plainWordLabels( "p" ) ).containsExactly( "SAMM preferredName" );
+      assertThat( plainWordLabels( "a" ) ).isEmpty();
+      assertThat( plainWordLabels( "ri" ) ).isEmpty();
+   }
+
+   @Test
+   void plainWordDoesNotOfferSnippetAlreadyDeclaredForTheSubject() {
+      final Request request = request( HEADER + ":p a samm:Property ; samm:description \"existing\"@en ;\ndesc| ." );
+      assertThat( snippets.complete( request.document, request.position ) ).isEmpty();
+   }
+
+   @Test
+   void prefixedWordStillMatchesInTheMiddleOfName() {
+      assertThat( plainWordLabels( "samm:ri" ) ).containsExactly( "SAMM description" );
+   }
+
+   private List<String> plainWordLabels( final String typed ) {
+      final Request request = request( HEADER + ":Test a samm:Aspect ;\n" + typed + "| .\n" );
+      return snippets.complete( request.document, request.position ).stream().map( CompletionItem::getLabel ).toList();
+   }
+
+   @Test
+   void keywordsFindSnippetsByAdditionalTerms() {
+      final Request request = request( FULL_HEADER + ":A a samm:Aspect ;\n    samm:properties ( [prop|] ) ." );
+      assertThat( snippets.complete( request.document, request.position ) ).extracting( CompletionItem::getLabel )
+            .containsExactly( "SAMM Optional Property", "SAMM Property with Payload Name" );
+   }
+
+   @Test
+   void filterTextContainsKeywordsAndNotTheLabel() {
+      final Request request = request( FULL_HEADER + ":A a samm:Aspect ;\n    samm:properties ( [|] ) ." );
+      final CompletionItem item = snippetNamed( request, "SAMM Optional Property" );
+      assertThat( item.getFilterText() ).contains( "optional" ).contains( "property" ).doesNotContain( "SAMM" );
    }
 
    @Test

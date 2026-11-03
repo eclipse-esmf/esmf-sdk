@@ -66,6 +66,13 @@ class SammSnippetCatalogTest {
    }
 
    @Test
+   void substringMatchCanBeDisabled() {
+      assertThat( SammSnippetCatalog.scoreCandidate( "description", "rip", 7, true ) ).isEqualTo( new MatchScore( 3, 8, 4, 7 ) );
+      assertThat( SammSnippetCatalog.scoreCandidate( "description", "rip", 7, false ) ).isNull();
+      assertThat( SammSnippetCatalog.scoreCandidate( "preferredName", "name", 7, false ) ).isEqualTo( new MatchScore( 2, 9, 9, 7 ) );
+   }
+
+   @Test
    void normalizesMissingSubjectTypesAndLoadsSingleAndMultipleTypeConstraints() {
       assertThat( catalog.allSnippets() ).allSatisfy( snippet -> assertThat( snippet.requiredSubjectTypes() ).isNotNull() );
       assertThat( catalog.allSnippets().stream().filter( snippet -> snippet.id().equals( "samm-description" ) ).findFirst().orElseThrow()

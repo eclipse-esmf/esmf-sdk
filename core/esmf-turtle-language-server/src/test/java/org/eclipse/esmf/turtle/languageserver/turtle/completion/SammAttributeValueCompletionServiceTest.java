@@ -518,7 +518,7 @@ class SammAttributeValueCompletionServiceTest {
    }
 
    @Test
-   void suggestsOnlyAbstractPropertiesWhenAPropertyExtends() {
+   void suggestsOnlyAbstractPropertiesWhenPropertyExtends() {
       final Request req = request( FULL_HEADER + """
          :MyAbstractProp a samm:AbstractProperty .
          :OtherProp a samm:Property ; samm:characteristic samm-c:Text .
@@ -537,7 +537,7 @@ class SammAttributeValueCompletionServiceTest {
    }
 
    @Test
-   void suggestsOnlyAbstractPropertiesInsideAPropertiesListElement() {
+   void suggestsOnlyAbstractPropertiesInsidePropertiesListElement() {
       final Request req = request( FULL_HEADER + """
          :MyAbstractProp a samm:AbstractProperty .
          :Parent a samm:AbstractEntity .
@@ -638,7 +638,7 @@ class SammAttributeValueCompletionServiceTest {
    }
 
    @Test
-   void classesAreScopedByTheEnclosingSammPredicateButNotByAPredicateOfAnotherVocabulary() {
+   void classesAreScopedByTheEnclosingSammPredicateButNotByPredicateOfAnotherVocabulary() {
       final Request scoped = request( FULL_HEADER + ":p a samm:Property ;\n    samm:characteristic [ a | ] ." );
       assertThat( attributeService.complete( scoped.document, scoped.position ) )
             .extracting( CompletionItem::getLabel ).contains( "samm-c:Enumeration" ).doesNotContain( "samm:Aspect" );

@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.apache.jena.rdf.model.Resource;
 import org.junit.jupiter.api.Test;
 
-class SAMMTest {
+class SammTest {
    private final SAMM samm = SammNs.SAMM;
 
    @Test

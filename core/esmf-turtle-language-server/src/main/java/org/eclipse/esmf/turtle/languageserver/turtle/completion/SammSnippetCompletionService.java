@@ -60,12 +60,15 @@ public final class SammSnippetCompletionService {
    private static String computeFilterText( final SnippetDefinition snippet, final SammCompletionContext context ) {
       final String typed = context.edit().typedText();
       final String prefix = context.targetPosition() == TargetPosition.PREDICATE ? context.resolvedSammPrefix() : "";
-      final String qualifiedName = prefix + snippet.defaultFilterText();
-      if ( typed.isEmpty() ) {
-         return qualifiedName.equals( snippet.defaultFilterText() )
-               ? snippet.defaultFilterText() + " " + snippet.label()
-               : qualifiedName + " " + snippet.defaultFilterText() + " " + snippet.label();
+      final String qualifiedName = prefix + snippet.localName();
+      final List<String> parts = new ArrayList<>();
+      if ( !typed.isEmpty() ) {
+         parts.add( typed );
       }
-      return typed + " " + qualifiedName + " " + snippet.defaultFilterText() + " " + snippet.label();
+      if ( !qualifiedName.equals( snippet.localName() ) ) {
+         parts.add( qualifiedName );
+      }
+      parts.addAll( snippet.searchTerms() );
+      return String.join( " ", parts );
    }
 }

@@ -79,7 +79,8 @@ public final class SammSnippetCatalog {
    public record SnippetDefinition(
          String id,
          String label,
-         String defaultFilterText,
+         String localName,
+         List<String> keywords,
          TargetPosition targetPosition,
          boolean allowMultiple,
          List<String> requiredSubjectTypes,
@@ -87,7 +88,18 @@ public final class SammSnippetCatalog {
          List<String> body
    ) {
       public SnippetDefinition {
+         keywords = keywords == null ? List.of() : List.copyOf( keywords );
          requiredSubjectTypes = requiredSubjectTypes == null ? List.of() : List.copyOf( requiredSubjectTypes );
+      }
+
+      /**
+       * @return the terms a user can type to find this snippet: the local name of the inserted SAMM
+       *         element, followed by the additional
+       *         keywords. The label is intentionally not part of it, because it only repeats the
+       *         {@code SAMM} prefix for every snippet.
+       */
+      public List<String> searchTerms() {
+         return Stream.concat( Stream.of( localName ), keywords.stream() ).toList();
       }
 
       public boolean isApplicable( final SammCompletionContext context ) {
@@ -175,12 +187,16 @@ public final class SammSnippetCatalog {
          if ( !hasRequiredNamespaces( context )
                || !context.hasAnySammSubjectType()
                || !hasRequiredSubjectConstraints( context )
-               || !allowMultiple && context.hasSubjectPredicate( defaultFilterText )
+               || !allowMultiple && context.hasSubjectPredicate( localName )
                || context.predicateSeparator().isEmpty() ) {
             return false;
          }
          final String typed = context.edit().typedText();
          if ( typed.isEmpty() ) {
+            return true;
+         }
+         if ( IDENTIFIER.matcher( typed ).matches() ) {
+            // A plain word without prefix, e.g. "pref" for samm:preferredName
             return true;
          }
          final String actualPrefix = context.resolvedSammPrefix();
@@ -276,12 +292,15 @@ public final class SammSnippetCatalog {
          candidates.add( "@prefix" );
          candidates.add( "prefix" );
       }
-      candidates.add( snippet.defaultFilterText() );
-      candidates.add( snippet.label() );
+      candidates.addAll( snippet.searchTerms() );
 
+      // A plain word without prefix is no explicit request for a SAMM term, so it must not match in the
+      // middle of a name
+      final boolean allowSubstring = !( context.targetPosition() == TargetPosition.PREDICATE
+            && !context.edit().typedText().contains( ":" ) );
       MatchScore best = null;
       for ( final String candidate : candidates ) {
-         final MatchScore score = scoreCandidate( candidate, query, catalogIndex );
+         final MatchScore score = scoreCandidate( candidate, query, catalogIndex, allowSubstring );
          if ( score != null && ( best == null || score.compareTo( best ) < 0 ) ) {
             best = score;
          }
@@ -293,6 +312,14 @@ public final class SammSnippetCatalog {
          final String candidate,
          final String query,
          final int catalogIndex ) {
+      return scoreCandidate( candidate, query, catalogIndex, true );
+   }
+
+   static @Nullable MatchScore scoreCandidate(
+         final String candidate,
+         final String query,
+         final int catalogIndex,
+         final boolean allowSubstring ) {
       if ( query.length() > candidate.length() ) {
          return null;
       }
@@ -320,6 +347,9 @@ public final class SammSnippetCatalog {
       }
 
       // Tier 3: Substring match (case-insensitive)
+      if ( !allowSubstring ) {
+         return null;
+      }
       final int substringIndex = indexOfIgnoreCase( candidate, query );
       if ( substringIndex >= 0 ) {
          return new MatchScore( 3, candidate.length() - query.length(), substringIndex, catalogIndex );
