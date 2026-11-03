@@ -166,7 +166,7 @@ class TurtleInlineCompletionServiceTest {
    }
 
    @Test
-   void singlePredicateIriIsReturnedOnlyForAUniqueMatch() {
+   void singlePredicateIriIsReturnedOnlyForUniqueMatch() {
       assertThat( TurtleInlineCompletionService.singlePredicateIri( "samm:", "characteristi" )
             .flatMap( AbstractTurtleCompletionService::prefixedName ) ).contains( "samm:characteristic" );
       assertThat( TurtleInlineCompletionService.singlePredicateIri( "samm:", "" ) ).isEmpty();
@@ -184,7 +184,7 @@ class TurtleInlineCompletionServiceTest {
    }
 
    @Test
-   void singleObjectIsReturnedForASingleSubject() {
+   void singleObjectIsReturnedForSingleSubject() {
       final String content = HEADER + """
          :Speed a samm:Characteristic .
          """;
