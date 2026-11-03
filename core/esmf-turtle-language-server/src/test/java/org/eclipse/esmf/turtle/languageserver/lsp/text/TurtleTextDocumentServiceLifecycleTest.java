@@ -65,7 +65,8 @@ class TurtleTextDocumentServiceLifecycleTest {
       assertThat( ownedThreads() ).isNotEmpty();
 
       service.shutdown();
-      // Executor termination only guarantees that tasks have finished; worker threads may still be alive for a moment while they exit.
+      // Executor termination only guarantees that tasks have finished; worker threads may still be alive
+      // for a moment while they exit.
       awaitCondition( () -> ownedThreads().isEmpty(), Duration.ofSeconds( 5 ) );
 
       assertThat( ownedThreads() ).isEmpty();
