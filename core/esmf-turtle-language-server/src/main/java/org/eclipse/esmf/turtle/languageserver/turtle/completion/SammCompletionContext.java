@@ -18,12 +18,16 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.eclipse.esmf.metamodel.vocabulary.SAMM;
 import org.eclipse.esmf.metamodel.vocabulary.SAMMC;
+import org.eclipse.esmf.metamodel.vocabulary.SAMME;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.samm.KnownVersion;
 
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
 import org.eclipse.lsp4j.Range;
 
 /** The document facts and edit location needed to produce a completion. */
@@ -59,6 +63,7 @@ public record SammCompletionContext(
          Optional<String> characteristicNamespace,
          Optional<String> characteristicPrefix,
          Optional<String> xsdPrefix,
+         Optional<String> rdfPrefix,
          Optional<String> unitPrefix,
          KnownVersion version,
          Map<String, String> declarations,
@@ -85,7 +90,7 @@ public record SammCompletionContext(
 
    public static SammCompletionContext header( final Map<String, String> declarations, final CursorEdit edit ) {
       final Namespaces namespaces = new Namespaces( "", SammNs.SAMM.getShortForm() + ":", Optional.empty(), Optional.empty(),
-            Optional.empty(), Optional.empty(), KnownVersion.getLatest(), Map.copyOf( declarations ),
+            Optional.empty(), Optional.empty(), Optional.empty(), KnownVersion.getLatest(), Map.copyOf( declarations ),
             Optional.empty(), Optional.empty() );
 
       return new SammCompletionContext( TargetPosition.DOCUMENT_HEADER, namespaces, edit,
@@ -140,10 +145,34 @@ public record SammCompletionContext(
             || namespaces.characteristicNamespace().map( ns -> subject.predicates().contains( ns + localPredicateName ) ).orElse( false );
    }
 
+   /**
+    * @return the {@code rdf:langString} datatype as a Turtle term: prefixed if the document declares a
+    *         prefix for the RDF namespace,
+    *         otherwise as a full IRI, so that the result is valid Turtle in both cases
+    */
+   public String rdfLangString() {
+      return namespaces.rdfPrefix().map( prefix -> prefix + RDF_LANG_STRING )
+            .orElse( "<" + RDF.getURI() + RDF_LANG_STRING + ">" );
+   }
+
+   /**
+    * @return the namespace of the predefined SAMM entities ({@code samm-e:}) in the SAMM version of
+    *         the document
+    */
+   public String entityNamespace() {
+      return new SAMME( namespaces.version(), new SAMM( namespaces.version() ) ).getNamespace();
+   }
+
    public String resolvedSammPrefix() {
       return edit.typedText().contains( ":" ) ? edit.typedText().substring( 0, edit.typedText().indexOf( ':' ) + 1 )
             : namespaces.sammPrefix();
    }
+
+   private static final String RDF_LANG_STRING = "langString";
+
+   private static final Set<String> CHARACTERISTIC_CLASS_NAMES = SammNs.SAMMC.allCharacteristicClasses().stream()
+         .map( Resource::getLocalName )
+         .collect( Collectors.toUnmodifiableSet() );
 
    public static final Set<String> CHARACTERISTIC_PREDICATES = Set.of(
          SAMM.CHARACTERISTIC, SAMMC.BASE_CHARACTERISTIC, SAMMC.ELEMENT_CHARACTERISTIC, SAMMC.LEFT, SAMMC.RIGHT
@@ -161,12 +190,6 @@ public record SammCompletionContext(
       ).orElse( false );
    }
 
-   public static String localName( final String uriOrCurie ) {
-      final int sep = Math.max( uriOrCurie.lastIndexOf( '#' ),
-            Math.max( uriOrCurie.lastIndexOf( '/' ), uriOrCurie.lastIndexOf( ':' ) ) );
-      return sep >= 0 ? uriOrCurie.substring( sep + 1 ) : uriOrCurie;
-   }
-
    public List<String> localEntities() {
       return matchingSubjects( subject.allSubjectTypes(), types -> types.contains( namespaces.sammNamespace() + SAMM.ENTITY )
             || types.contains( namespaces.sammNamespace() + SAMM.ABSTRACT_ENTITY ) );
@@ -177,11 +200,22 @@ public record SammCompletionContext(
             types -> types.contains( namespaces.sammNamespace() + SAMM.ABSTRACT_ENTITY ) );
    }
 
+   public List<String> localAbstractProperties() {
+      return matchingSubjects( subject.allSubjectTypes(),
+            types -> types.contains( namespaces.sammNamespace() + SAMM.ABSTRACT_PROPERTY ) );
+   }
+
+   /**
+    * @return the local subjects that are Characteristics. Only {@code samm:Characteristic} and the
+    *         Characteristic classes of the
+    *         {@code samm-c:} namespace count. Other {@code samm-c:} types, such as the Constraint
+    *         classes, are not Characteristics.
+    */
    public List<String> localCharacteristics() {
       return matchingSubjects( subject.allSubjectTypes(),
             types -> types.contains( namespaces.sammNamespace() + SAMM.CHARACTERISTIC_CLASS )
-                  || namespaces.characteristicNamespace().map( ns -> types.stream().anyMatch( t -> t.startsWith( ns ) ) )
-                        .orElse( false ) );
+                  || namespaces.characteristicNamespace().map( ns -> types.stream().anyMatch( type -> type.startsWith( ns )
+                        && CHARACTERISTIC_CLASS_NAMES.contains( type.substring( ns.length() ) ) ) ).orElse( false ) );
    }
 
    public List<String> localEntitiesExtending( final String parentUri ) {

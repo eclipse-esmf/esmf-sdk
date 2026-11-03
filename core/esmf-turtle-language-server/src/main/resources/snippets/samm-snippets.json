@@ -86,7 +86,7 @@
       "{{modelPrefix}}${1:CharacteristicName} a {{sammPrefix}}Characteristic ;",
       "   {{sammPrefix}}preferredName \"${2}\"@en ;",
       "   {{sammPrefix}}description \"${3}\"@en ;",
-      "   {{sammPrefix}}dataType ${4|{{xsdPrefix}}string,{{xsdPrefix}}integer,{{xsdPrefix}}int,{{xsdPrefix}}long,{{xsdPrefix}}short,{{xsdPrefix}}byte,{{xsdPrefix}}decimal,{{xsdPrefix}}float,{{xsdPrefix}}double,{{xsdPrefix}}boolean,{{xsdPrefix}}dateTime,{{xsdPrefix}}date,{{xsdPrefix}}time,{{xsdPrefix}}duration,{{xsdPrefix}}anyURI,rdf:langString,{{sammPrefix}}curie|} .$0"
+      "   {{sammPrefix}}dataType ${4|{{allDataTypes}}|} .$0"
     ]
   },
   {
@@ -98,8 +98,8 @@
       "{{modelPrefix}}${1:EnumName} a {{sammCPrefix}}Enumeration ;",
       "   {{sammPrefix}}preferredName \"${2}\"@en ;",
       "   {{sammPrefix}}description \"${3}\"@en ;",
-      "   {{sammPrefix}}dataType ${4|{{xsdPrefix}}string,{{xsdPrefix}}integer,{{xsdPrefix}}int,{{xsdPrefix}}long,{{xsdPrefix}}short,{{xsdPrefix}}byte,{{xsdPrefix}}decimal,{{xsdPrefix}}float,{{xsdPrefix}}double,{{xsdPrefix}}boolean,{{xsdPrefix}}dateTime,{{xsdPrefix}}date,{{xsdPrefix}}time,{{xsdPrefix}}duration,{{xsdPrefix}}anyURI,rdf:langString,{{sammPrefix}}curie|} ;",
-      "   {{sammCPrefix}}values ( ${5:\"value1\" \"value2\"} ) .$0"
+      "   {{sammPrefix}}dataType ${4|{{allDataTypes}}|} ;",
+      "   {{sammCPrefix}}values ( ${5} ) .$0"
     ]
   },
   {
@@ -111,9 +111,9 @@
       "{{modelPrefix}}${1:StateName} a {{sammCPrefix}}State ;",
       "   {{sammPrefix}}preferredName \"${2}\"@en ;",
       "   {{sammPrefix}}description \"${3}\"@en ;",
-      "   {{sammPrefix}}dataType ${4|{{xsdPrefix}}string,{{xsdPrefix}}integer,{{xsdPrefix}}int,{{xsdPrefix}}long,{{xsdPrefix}}short,{{xsdPrefix}}byte,{{xsdPrefix}}decimal,{{xsdPrefix}}float,{{xsdPrefix}}double,{{xsdPrefix}}boolean,{{xsdPrefix}}dateTime,{{xsdPrefix}}date,{{xsdPrefix}}time,{{xsdPrefix}}duration,{{xsdPrefix}}anyURI,rdf:langString,{{sammPrefix}}curie|} ;",
-      "   {{sammCPrefix}}values ( ${5:\"state1\" \"state2\"} ) ;",
-      "   {{sammCPrefix}}defaultValue \"${6:state1}\" .$0"
+      "   {{sammPrefix}}dataType ${4|{{allDataTypes}}|} ;",
+      "   {{sammCPrefix}}values ( ${5} ) ;",
+      "   {{sammCPrefix}}defaultValue ${6} .$0"
     ]
   },
   {
@@ -137,7 +137,7 @@
       "{{modelPrefix}}${1:MeasurementName} a {{sammCPrefix}}Measurement ;",
       "   {{sammPrefix}}preferredName \"${2}\"@en ;",
       "   {{sammPrefix}}description \"${3}\"@en ;",
-      "   {{sammPrefix}}dataType {{xsdPrefix}}${4|float,double,decimal,integer,long,int,short,byte,nonNegativeInteger,positiveInteger,nonPositiveInteger,negativeInteger,unsignedLong,unsignedInt,unsignedShort,unsignedByte|} ;",
+      "   {{sammPrefix}}dataType ${4|{{numericDataTypes}}|} ;",
       "   {{sammCPrefix}}unit {{unitPrefix}}${5:kilometrePerHour} .$0"
     ]
   },
@@ -150,7 +150,7 @@
       "{{modelPrefix}}${1:QuantifiableName} a {{sammCPrefix}}Quantifiable ;",
       "   {{sammPrefix}}preferredName \"${2}\"@en ;",
       "   {{sammPrefix}}description \"${3}\"@en ;",
-      "   {{sammPrefix}}dataType {{xsdPrefix}}${4|float,double,decimal,integer,long,int,short,byte,nonNegativeInteger,positiveInteger,nonPositiveInteger,negativeInteger,unsignedLong,unsignedInt,unsignedShort,unsignedByte|} ;",
+      "   {{sammPrefix}}dataType ${4|{{numericDataTypes}}|} ;",
       "   {{sammCPrefix}}unit {{unitPrefix}}${5:percent} .$0"
     ]
   },
@@ -163,7 +163,7 @@
       "{{modelPrefix}}${1:DurationName} a {{sammCPrefix}}Duration ;",
       "   {{sammPrefix}}preferredName \"${2}\"@en ;",
       "   {{sammPrefix}}description \"${3}\"@en ;",
-      "   {{sammPrefix}}dataType {{xsdPrefix}}${4|duration,dayTimeDuration,yearMonthDuration,float,double,decimal,integer,long,int,short,byte,nonNegativeInteger,positiveInteger,unsignedLong,unsignedInt|} ;",
+      "   {{sammPrefix}}dataType ${4|{{durationDataTypes}}|} ;",
       "   {{sammCPrefix}}unit {{unitPrefix}}${5:secondUnitOfTime} .$0"
     ]
   },
@@ -564,7 +564,7 @@
     "body": [
       "[",
       "   a {{sammPrefix}}Characteristic ;",
-      "   {{sammPrefix}}dataType {{xsdPrefix}}${1|string,integer,boolean,decimal,float,double|}",
+      "   {{sammPrefix}}dataType ${1|{{allDataTypes}}|}",
       "]$0"
     ]
   },
@@ -576,8 +576,8 @@
     "body": [
       "[",
       "   a {{sammCPrefix}}Enumeration ;",
-      "   {{sammPrefix}}dataType {{xsdPrefix}}${1|string,integer,int,float,double,boolean|} ;",
-      "   {{sammCPrefix}}values ( ${2:\"value1\" \"value2\"} )",
+      "   {{sammPrefix}}dataType ${1|{{allDataTypes}}|} ;",
+      "   {{sammCPrefix}}values ( ${2} )",
       "]$0"
     ]
   },
@@ -589,9 +589,9 @@
     "body": [
       "[",
       "   a {{sammCPrefix}}State ;",
-      "   {{sammPrefix}}dataType {{xsdPrefix}}${1|string,integer,int,float,double,boolean|} ;",
-      "   {{sammCPrefix}}values ( ${2:\"state1\" \"state2\"} ) ;",
-      "   {{sammCPrefix}}defaultValue \"${3:state1}\"",
+      "   {{sammPrefix}}dataType ${1|{{allDataTypes}}|} ;",
+      "   {{sammCPrefix}}values ( ${2} ) ;",
+      "   {{sammCPrefix}}defaultValue ${3}",
       "]$0"
     ]
   },
@@ -603,7 +603,7 @@
     "body": [
       "[",
       "   a {{sammCPrefix}}Measurement ;",
-      "   {{sammPrefix}}dataType {{xsdPrefix}}${1|float,double,decimal,integer|} ;",
+      "   {{sammPrefix}}dataType ${1|{{numericDataTypes}}|} ;",
       "   {{sammCPrefix}}unit {{unitPrefix}}${2:kilometrePerHour}",
       "]$0"
     ]
@@ -616,7 +616,7 @@
     "body": [
       "[",
       "   a {{sammCPrefix}}Quantifiable ;",
-      "   {{sammPrefix}}dataType {{xsdPrefix}}${1|float,double,decimal,integer|} ;",
+      "   {{sammPrefix}}dataType ${1|{{numericDataTypes}}|} ;",
       "   {{sammCPrefix}}unit {{unitPrefix}}${2:percent}",
       "]$0"
     ]
@@ -629,7 +629,7 @@
     "body": [
       "[",
       "   a {{sammCPrefix}}Duration ;",
-      "   {{sammPrefix}}dataType {{xsdPrefix}}${1|integer,int,long,short,byte|} ;",
+      "   {{sammPrefix}}dataType ${1|{{durationDataTypes}}|} ;",
       "   {{sammCPrefix}}unit {{unitPrefix}}${2:secondUnitOfTime}",
       "]$0"
     ]

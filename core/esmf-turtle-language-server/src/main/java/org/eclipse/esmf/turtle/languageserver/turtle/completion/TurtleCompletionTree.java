@@ -24,8 +24,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.esmf.metamodel.vocabulary.SAMM;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.treesitterturtle.ParserTokenType;
 import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
 import org.eclipse.esmf.turtle.languageserver.turtle.completion.SammCompletionContext.SubjectFacts;
@@ -35,6 +37,13 @@ import org.apache.jena.vocabulary.RDF;
 /** Projects Tree-sitter's syntactic roles, including recovered nodes, into completion context. */
 final class TurtleCompletionTree {
    private static final String RDF_TYPE = RDF.type.getURI();
+   /**
+    * {@code samm:extends} in every known SAMM version. Predicates of other vocabularies that are also
+    * named extends do not count.
+    */
+   private static final Set<String> SAMM_EXTENDS_PREDICATES = KnownVersion.getVersions().stream()
+         .map( version -> new SAMM( version ).getNamespace() + SAMM.EXTENDS )
+         .collect( Collectors.toUnmodifiableSet() );
    private static final Set<String> ATOMIC_TYPES = Set.of(
          ParserTokenType.SUBJECT, ParserTokenType.PREDICATE, ParserTokenType.PREFIXED_NAME,
          ParserTokenType.IRI_REFERENCE, ParserTokenType.BLANK_NODE_LABEL, ParserTokenType.STRING,
@@ -97,6 +106,11 @@ final class TurtleCompletionTree {
             .anyMatch( child -> Set.of( ParserTokenType.COLLECTION, ParserTokenType.ANON ).contains( child.type() ) );
       if ( ATOMIC_TYPES.contains( type ) && !groupedSubject ) {
          final String text = source.substring( start, end );
+         if ( isRecoveredTermSequence( type, text ) ) {
+            // Error recovery can merge a half-typed name with the following statement, e.g. "prop\n:Aspect".
+            splitAtWhitespace( start, text, type );
+            return;
+         }
          final TokenKind kind = annotation ? TokenKind.ANNOTATION
                : DIRECTIVE_TYPES.contains( type ) ? TokenKind.DIRECTIVE
                      : ParserTokenType.STRING.equals( type ) ? TokenKind.STRING
@@ -146,6 +160,29 @@ final class TurtleCompletionTree {
       }
       if ( node.isError() ) {
          addErrorGap( consumed, end );
+      }
+   }
+
+   private static boolean isRecoveredTermSequence( final String type, final String text ) {
+      return Set.of( ParserTokenType.SUBJECT, ParserTokenType.PREDICATE, ParserTokenType.PREFIXED_NAME ).contains( type )
+            && text.chars().anyMatch( Character::isWhitespace )
+            && text.indexOf( '<' ) < 0 && text.indexOf( '"' ) < 0 && text.indexOf( '\'' ) < 0;
+   }
+
+   private void splitAtWhitespace( final int offset, final String text, final String type ) {
+      int index = 0;
+      while ( index < text.length() ) {
+         while ( index < text.length() && Character.isWhitespace( text.charAt( index ) ) ) {
+            index++;
+         }
+         final int wordStart = index;
+         while ( index < text.length() && !Character.isWhitespace( text.charAt( index ) ) ) {
+            index++;
+         }
+         if ( wordStart < index ) {
+            tokens.add( new Lexeme( text.substring( wordStart, index ), offset + wordStart, offset + index, TokenKind.TERM,
+                  type, true, Optional.empty() ) );
+         }
       }
    }
 
@@ -429,8 +466,7 @@ final class TurtleCompletionTree {
             if ( frame.predicate.equals( RDF_TYPE ) && !object.isEmpty() ) {
                typesBySubject.computeIfAbsent( frame.subject, ignored -> new HashSet<>() ).add( object );
             }
-            if ( ( frame.predicate.endsWith( "#" + SAMM.EXTENDS ) || frame.predicate.endsWith( "/" + SAMM.EXTENDS ) )
-                  && !object.isEmpty() ) {
+            if ( SAMM_EXTENDS_PREDICATES.contains( frame.predicate ) && !object.isEmpty() ) {
                extendedBySubject.computeIfAbsent( frame.subject, ignored -> new HashSet<>() ).add( object );
             }
             frame.slot = frame.isList() ? Slot.OBJECT : Slot.NONE;

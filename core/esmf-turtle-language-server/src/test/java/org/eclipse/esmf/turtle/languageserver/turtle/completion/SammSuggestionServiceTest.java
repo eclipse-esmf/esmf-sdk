@@ -17,9 +17,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.URI;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import org.eclipse.esmf.aspectmodel.Violation;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
+import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
+import org.eclipse.esmf.metamodel.datatype.SammType;
+import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TreeSitterTurtleParserService;
@@ -27,6 +34,8 @@ import org.eclipse.esmf.turtle.languageserver.turtle.TurtleCompletionService;
 import org.eclipse.esmf.turtle.languageserver.turtle.completion.SammSnippetCatalog.SnippetDefinition;
 
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.XSD;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionItemKind;
 import org.eclipse.lsp4j.CompletionParams;
@@ -73,6 +82,17 @@ class SammSuggestionServiceTest {
       assertThat( item.getTextEdit().getLeft().getRange().getStart() ).isEqualTo( request.position );
       assertThat( item.getTextEdit().getLeft().getRange().getEnd() ).isEqualTo( request.position );
       assertValid( apply( request, item ) );
+   }
+
+   @Test
+   void topLevelSnippetIsOfferedWhenTypedTextIsDirectlyFollowedByAnotherStatement() {
+      final Request request = request( HEADER + "\nprop|\n:Existing a samm:Aspect ;\n   samm:properties ( ) .\n" );
+      assertThat( snippets.complete( request.document, request.position ) )
+            .extracting( CompletionItem::getLabel )
+            .contains( "SAMM Property" );
+      final TextEdit edit = snippetNamed( request, "SAMM Property" ).getTextEdit().getLeft();
+      assertThat( edit.getRange().getStart() ).isEqualTo( new Position( 4, 0 ) );
+      assertThat( edit.getRange().getEnd() ).isEqualTo( request.position );
    }
 
    @Test
@@ -316,6 +336,147 @@ class SammSuggestionServiceTest {
       assertValid( apply( request, item ) );
    }
 
+   /**
+    * An empty tab stop between whitespace, such as in {@code values ( ${5} )}: the user types a whole
+    * Turtle value here.
+    */
+   private static final Pattern VALUE_TAB_STOP = Pattern.compile( "(?<=\\s)\\$\\{\\d+}(?=\\s|$)" );
+   /** A rendered choice group, for example {@code ${4|xsd:string,xsd:integer|}}. */
+   private static final Pattern CHOICE_GROUP = Pattern.compile( "\\$\\{\\d+\\|([^}]*)\\|}" );
+   /**
+    * The start of a choice group in an unrendered snippet body, whose choices may contain
+    * {{placeholders}}.
+    */
+   private static final Pattern CHOICE_GROUP_START = Pattern.compile( "\\$\\{\\d+\\|" );
+
+   static Stream<SnippetDefinition> snippetsWithChoices() {
+      return new SammSnippetCatalog().allSnippets().stream()
+            .filter( snippet -> CHOICE_GROUP_START.matcher( String.join( "\n", snippet.body() ) ).find() );
+   }
+
+   @ParameterizedTest
+   @MethodSource( "snippetsWithChoices" )
+   void everyChoiceOfEverySnippetExpandsToValidTurtleWithoutRdfPrefix( final SnippetDefinition definition ) {
+      // FULL_HEADER declares no rdf: prefix
+      final Request request = definition.targetPosition() == SammCompletionContext.TargetPosition.TOP_LEVEL_SUBJECT
+            ? request( FULL_HEADER + "\n|" )
+            : request( FULL_HEADER + ":p a samm:Property ;\n    samm:characteristic [|] ." );
+      final CompletionItem item = snippetNamed( request, definition.label() );
+      final String text = item.getTextEdit().getLeft().getNewText();
+      assertThat( text ).doesNotContain( "rdf:" );
+
+      final Matcher groups = CHOICE_GROUP.matcher( text );
+      int groupIndex = 0;
+      int expandedChoices = 0;
+      while ( groups.find() ) {
+         for ( final String choice : groups.group( 1 ).split( "," ) ) {
+            assertValid( applyText( request, item, expandChoice( text, groupIndex, choice ) ) );
+            expandedChoices++;
+         }
+         groupIndex++;
+      }
+      assertThat( expandedChoices ).isGreaterThan( 0 );
+   }
+
+   @Test
+   void langStringChoiceUsesFullIriWhenRdfPrefixIsNotDeclared() {
+      final Request request = request( FULL_HEADER + "\n|" );
+      final CompletionItem item = snippetNamed( request, "SAMM Characteristic" );
+      final String text = item.getTextEdit().getLeft().getNewText();
+
+      assertThat( text ).contains( "<http://www.w3.org/1999/02/22-rdf-syntax-ns#langString>" ).doesNotContain( "rdf:langString" );
+   }
+
+   @Test
+   void langStringChoiceUsesDeclaredRdfPrefix() {
+      final String header = FULL_HEADER + "@prefix r: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\n";
+      final Request request = request( header + "\n|" );
+      for ( final String label : List.of( "SAMM Characteristic", "SAMM Enumeration", "SAMM State" ) ) {
+         final String text = snippetNamed( request, label ).getTextEdit().getLeft().getNewText();
+
+         assertThat( text ).contains( ",r:langString," ).doesNotContain( "rdf:langString" ).doesNotContain( "<http://www.w3.org" );
+      }
+   }
+
+   static Stream<String> enumerationAndStateSnippets() {
+      return Stream.of( "SAMM Enumeration", "SAMM State", "SAMM Anonymous Enumeration", "SAMM Anonymous State" );
+   }
+
+   @ParameterizedTest
+   @MethodSource( "enumerationAndStateSnippets" )
+   void enumerationAndStateSnippetsInsertNoTypedValues( final String label ) {
+      final String text = snippetNamed( requestFor( label ), label ).getTextEdit().getLeft().getNewText();
+
+      // The values (and the default value of a State) depend on the data type. So they are left empty for
+      // the user.
+      assertThat( text ).doesNotContain( "value1", "state1", "state2" );
+      assertThat( VALUE_TAB_STOP.matcher( text ).results().count() ).isEqualTo( label.contains( "State" ) ? 2 : 1 );
+   }
+
+   static Stream<String> dataTypeSnippets() {
+      return Stream.of( "Characteristic", "Enumeration", "State", "Measurement", "Quantifiable", "Duration" )
+            .flatMap( name -> Stream.of( "SAMM " + name, "SAMM Anonymous " + name ) );
+   }
+
+   @ParameterizedTest
+   @MethodSource( "dataTypeSnippets" )
+   void dataTypeChoicesAreGeneratedFromTheSammDataTypes( final String label ) {
+      final String text = snippetNamed( requestFor( label ), label ).getTextEdit().getLeft().getNewText();
+      final Matcher dataTypeChoices = CHOICE_GROUP.matcher( text );
+      assertThat( dataTypeChoices.find() ).isTrue();
+
+      final List<String> offered = Stream.of( dataTypeChoices.group( 1 ).split( "," ) ).toList();
+      final List<SammType<?>> expected = label.endsWith( "Measurement" ) || label.endsWith( "Quantifiable" )
+            ? SammSnippetCatalog.NUMERIC_DATA_TYPES
+            : label.endsWith( "Duration" ) ? SammSnippetCatalog.DURATION_DATA_TYPES : SammXsdType.ALL_TYPES;
+      assertThat( offered ).containsExactlyElementsOf( expected.stream().map( type -> prefixed( type.getURI() ) ).toList() );
+   }
+
+   @Test
+   void numericAndDurationDataTypeListsMatchTheSammSpecification() {
+      final List<String> numeric = List.of( "decimal", "integer", "double", "float", "byte", "short", "int", "long", "unsignedByte",
+            "unsignedShort", "unsignedInt", "unsignedLong", "positiveInteger", "nonNegativeInteger", "negativeInteger",
+            "nonPositiveInteger" );
+      assertThat( SammSnippetCatalog.NUMERIC_DATA_TYPES ).extracting( type -> prefixed( type.getURI() ) )
+            .containsExactlyElementsOf( numeric.stream().map( name -> "xsd:" + name ).toList() );
+      assertThat( SammSnippetCatalog.DURATION_DATA_TYPES ).extracting( type -> prefixed( type.getURI() ) )
+            .containsExactlyElementsOf( Stream.concat( Stream.of( "duration", "yearMonthDuration", "dayTimeDuration" ), numeric.stream() )
+                  .map( name -> "xsd:" + name ).toList() );
+      assertThat( SammXsdType.ALL_TYPES ).hasSize( 35 );
+   }
+
+   /** The data type URI written with the prefixes of {@link #FULL_HEADER}, as the snippets do. */
+   private static String prefixed( final String uri ) {
+      if ( uri.startsWith( XSD.getURI() ) ) {
+         return "xsd:" + uri.substring( XSD.getURI().length() );
+      }
+      if ( uri.equals( RDF.langString.getURI() ) ) {
+         return "<" + uri + ">";
+      }
+      return "samm:" + uri.substring( uri.indexOf( '#' ) + 1 );
+   }
+
+   @ParameterizedTest
+   @MethodSource( "dataTypeSnippets" )
+   void dataTypeSnippetsAreValidForEveryDataTypeChoice( final String label ) {
+      final Request request = requestFor( label );
+      final CompletionItem item = snippetNamed( request, label );
+      final String text = item.getTextEdit().getLeft().getNewText();
+      final Matcher dataTypeChoices = CHOICE_GROUP.matcher( text );
+      assertThat( dataTypeChoices.find() ).isTrue();
+
+      final AspectModelValidator validator = new AspectModelValidator();
+      for ( final String choice : dataTypeChoices.group( 1 ).split( "," ) ) {
+         // Like a user, fill the empty values and the empty preferred name and description
+         final String filled = expandChoice( text, 0, choice, sampleLiteral( choice ) ).replace( "\"\"@en", "\"text\"@en" );
+         final String source = applyText( request, item, filled );
+         final List<String> violations = validator
+               .validateModel( () -> new AspectModelLoader().load( source, URI.create( "file:///test.ttl" ) ) )
+               .violations().stream().map( Violation::message ).toList();
+         assertThat( violations ).as( "%s with data type %s%n%s", label, choice, source ).isEmpty();
+      }
+   }
+
    @Test
    void suppressesSnippetsWhenRequiredNamespacesAreMissingOrVersionMismatched() {
       // HEADER lacks xsd: and unit:, so Measurement and Characteristic are suppressed
@@ -519,6 +680,90 @@ class SammSuggestionServiceTest {
       assertValid( apply( request, item ) );
    }
 
+   private Request requestFor( final String label ) {
+      return label.contains( "Anonymous" )
+            ? request( FULL_HEADER + ":p a samm:Property ;\n    samm:characteristic [|] ." )
+            : request( FULL_HEADER + "\n|" );
+   }
+
+   /**
+    * @return a Turtle literal of the given data type, as a user would type it as a value of an
+    *         Enumeration or State
+    */
+   private static String sampleLiteral( final String dataTypeChoice ) {
+      final String name = dataTypeChoice.replaceAll( ".*[#:]", "" ).replace( ">", "" );
+      return switch ( name ) {
+         case "string" -> "\"a\"";
+         case "langString" -> "\"a\"@en";
+         case "curie" -> "\"samm:Aspect\"^^samm:curie";
+         case "boolean" -> "true";
+         case "integer", "int", "long", "short", "byte", "unsignedLong", "unsignedInt", "unsignedShort", "unsignedByte",
+               "positiveInteger", "nonNegativeInteger" ->
+            "\"1\"^^xsd:" + name;
+         case "negativeInteger", "nonPositiveInteger" -> "\"-1\"^^xsd:" + name;
+         case "decimal", "float", "double" -> "\"1.5\"^^xsd:" + name;
+         case "dateTime" -> "\"2020-01-01T00:00:00\"^^xsd:dateTime";
+         case "dateTimeStamp" -> "\"2020-01-01T00:00:00Z\"^^xsd:dateTimeStamp";
+         case "date" -> "\"2020-01-01\"^^xsd:date";
+         case "time" -> "\"12:00:00\"^^xsd:time";
+         case "gYear" -> "\"2020\"^^xsd:gYear";
+         case "gMonth" -> "\"--01\"^^xsd:gMonth";
+         case "gYearMonth" -> "\"2020-01\"^^xsd:gYearMonth";
+         case "gDay" -> "\"---01\"^^xsd:gDay";
+         case "gMonthDay" -> "\"--01-01\"^^xsd:gMonthDay";
+         case "duration" -> "\"P1D\"^^xsd:duration";
+         case "yearMonthDuration" -> "\"P1Y\"^^xsd:yearMonthDuration";
+         case "dayTimeDuration" -> "\"P1D\"^^xsd:dayTimeDuration";
+         case "hexBinary" -> "\"0FB7\"^^xsd:hexBinary";
+         case "base64Binary" -> "\"AQID\"^^xsd:base64Binary";
+         case "anyURI" -> "\"http://example.com\"^^xsd:anyURI";
+         default -> throw new AssertionError( "No sample literal for data type " + dataTypeChoice );
+      };
+   }
+
+   private String applyText( final Request request, final CompletionItem item, final String plainText ) {
+      final TextEdit edit = item.getTextEdit().getLeft();
+      final int start =
+            request.document.sourceDocument().index( edit.getRange().getStart().getLine(), edit.getRange().getStart().getCharacter() );
+      final int end =
+            request.document.sourceDocument().index( edit.getRange().getEnd().getLine(), edit.getRange().getEnd().getCharacter() );
+      return request.source.substring( 0, start ) + plainText + request.source.substring( end );
+   }
+
+   /**
+    * Replaces choice group number {@code selectedGroup} with {@code choice}, other groups with their
+    * first choice.
+    */
+   private String expandChoice( final String snippet, final int selectedGroup, final String choice ) {
+      return expandChoice( snippet, selectedGroup, choice, "\"x\"" );
+   }
+
+   private String expandChoice( final String snippet, final int selectedGroup, final String choice, final String valueLiteral ) {
+      final Matcher matcher = CHOICE_GROUP.matcher( snippet );
+      final StringBuilder result = new StringBuilder();
+      int group = 0;
+      while ( matcher.find() ) {
+         final String replacement = group == selectedGroup ? choice : matcher.group( 1 ).split( "," )[0];
+         matcher.appendReplacement( result, Matcher.quoteReplacement( replacement ) );
+         group++;
+      }
+      matcher.appendTail( result );
+      return plainText( result.toString(), valueLiteral );
+   }
+
+   /**
+    * Turns snippet syntax into plain text. An empty tab stop that stands for a whole Turtle value,
+    * such as in
+    * {@code values ( ${5} )}, is filled with {@code valueLiteral}, like a user who types a value.
+    * Other empty tab stops stay empty.
+    */
+   private static String plainText( final String snippet, final String valueLiteral ) {
+      return VALUE_TAB_STOP.matcher( snippet.replaceAll( "\\$\\{\\d+:([^}]+)}", "$1" ) )
+            .replaceAll( Matcher.quoteReplacement( valueLiteral ) )
+            .replaceAll( "\\$\\{\\d+}", "" )
+            .replace( "$0", "" );
+   }
+
    private CompletionItem snippetNamed( final Request request, final String label ) {
       final List<CompletionItem> result = snippets.complete( request.document, request.position );
       return result.stream()
@@ -541,11 +786,7 @@ class SammSuggestionServiceTest {
             request.document.sourceDocument().index( edit.getRange().getStart().getLine(), edit.getRange().getStart().getCharacter() );
       final int end =
             request.document.sourceDocument().index( edit.getRange().getEnd().getLine(), edit.getRange().getEnd().getCharacter() );
-      final String plainText = edit.getNewText()
-            .replaceAll( "\\$\\{\\d+\\|([^,|]+)[^}]*\\|}", "$1" )
-            .replaceAll( "\\$\\{\\d+:([^}]+)}", "$1" )
-            .replaceAll( "\\$\\{\\d+}", "" )
-            .replace( "$0", "" );
+      final String plainText = plainText( edit.getNewText().replaceAll( "\\$\\{\\d+\\|([^,|]+)[^}]*\\|}", "$1" ), "\"x\"" );
       return request.source.substring( 0, start ) + plainText + request.source.substring( end );
    }
 

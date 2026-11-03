@@ -324,11 +324,13 @@ public class SAMM implements RdfNamespace {
       return List.of( UTF_8(), US_ASCII(), ISO_8859_1(), UTF_16(), UTF_16BE(), UTF_16LE() );
    }
 
+   /**
+    * Returns the SAMM classes. The encodings are instances, not classes: see {@link #allEncodings()}.
+    */
    @Override
    public List<Resource> allResources() {
       return List.of( Namespace(), Property(), AbstractProperty(), Characteristic(), Constraint(), Aspect(), Operation(), Event(),
-            Entity(), AbstractEntity(), Value(), Unit(), QuantityKind(), UTF_8(), US_ASCII(), ISO_8859_1(), UTF_16(), UTF_16BE(),
-            UTF_16LE() );
+            Entity(), AbstractEntity(), Value(), Unit(), QuantityKind() );
    }
 
    @Override

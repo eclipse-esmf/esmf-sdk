@@ -47,12 +47,14 @@ import org.eclipse.esmf.turtle.languageserver.turtle.completion.TurtleCompletion
 import org.eclipse.esmf.turtle.languageserver.turtle.completion.TurtleCompletionTree.State;
 import org.eclipse.esmf.turtle.languageserver.turtle.completion.TurtleCompletionTree.TokenKind;
 
+import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 
 public final class SammSuggestionContextDetector {
    private static final String XSD_NAMESPACE = XSD.getURI();
+   private static final String RDF_NAMESPACE = RDF.getURI();
    private static final String SAMM_URN_PREFIX = AspectModelUrn.PROTOCOL_AND_NAMESPACE_PREFIX;
    private static final String SAMM_SYSTEM_NAMESPACE_PREFIX = SammNs.SAMM.getBaseUri();
    private static final String SAMM_META_MODEL_NAMESPACE_PREFIX = SAMM_SYSTEM_NAMESPACE_PREFIX + ElementType.META_MODEL.getValue() + ":";
@@ -192,13 +194,16 @@ public final class SammSuggestionContextDetector {
       final Optional<String> entityPrefix = resolveVersionedPrefix(
             namespaces, SAMM_ENTITY_NAMESPACE_PREFIX, expectedEntityNs );
 
-      final Optional<String> xsdPrefix = namespaces.entrySet().stream()
-            .filter( entry -> entry.getValue().equals( XSD_NAMESPACE ) )
+      return Optional.of( new Namespaces( sammNamespace, sammPrefix, characteristicNamespace, characteristicPrefix,
+            prefixOf( namespaces, XSD_NAMESPACE ), prefixOf( namespaces, RDF_NAMESPACE ), unitPrefix, ver, Map.copyOf( namespaces ),
+            modelPrefix( namespaces ), entityPrefix ) );
+   }
+
+   private static Optional<String> prefixOf( final Map<String, String> namespaces, final String namespace ) {
+      return namespaces.entrySet().stream()
+            .filter( entry -> entry.getValue().equals( namespace ) )
             .map( Map.Entry::getKey )
             .findFirst();
-
-      return Optional.of( new Namespaces( sammNamespace, sammPrefix, characteristicNamespace, characteristicPrefix,
-            xsdPrefix, unitPrefix, ver, Map.copyOf( namespaces ), modelPrefix( namespaces ), entityPrefix ) );
    }
 
    private static boolean isHeaderPrefixTrigger( final Map<String, String> namespaces, final String typed ) {

@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
@@ -48,8 +47,6 @@ import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
 public final class SammAttributeValueCompletionService {
    private static final String XSD_NAMESPACE = XSD.getURI();
-   private static final String RDF_TYPE = "type";
-   private static final String TURTLE_A = "a";
 
    private static final List<String> ISO_639_1_LANGUAGES = Arrays.stream( Locale.getISOLanguages() ).sorted().toList();
 
@@ -198,28 +195,60 @@ public final class SammAttributeValueCompletionService {
       return generateCompletions( context );
    }
 
+   /**
+    * Chooses the completions for the object of the active predicate. The predicate is a full URI. Its
+    * namespace has to match, so
+    * that predicates of other vocabularies that only share a local name, such as {@code ex:optional},
+    * get no SAMM completions.
+    */
    private List<CompletionItem> generateCompletions( final SammCompletionContext context ) {
-      return switch ( localName( context.activePredicate().orElse( "" ) ) ) {
-         case SAMMC.LOWER_BOUND_DEFINITION -> lowerBoundCompletions( context );
-         case SAMMC.UPPER_BOUND_DEFINITION -> upperBoundCompletions( context );
+      final String predicate = context.activePredicate().orElse( "" );
+      if ( RDF.type.getURI().equals( predicate ) ) {
+         return rdfTypeCompletions( context );
+      }
+      final String sammName = localNameIn( predicate, context.namespaces().sammNamespace() );
+      if ( !sammName.isEmpty() ) {
+         return sammPredicateCompletions( context, sammName );
+      }
+      final String characteristicName = context.namespaces().characteristicNamespace()
+            .map( namespace -> localNameIn( predicate, namespace ) ).orElse( "" );
+      if ( !characteristicName.isEmpty() ) {
+         return characteristicPredicateCompletions( context, characteristicName );
+      }
+      return SAMME.MIME_TYPE.equals( localNameIn( predicate, context.entityNamespace() ) ) ? mimeTypeCompletions( context ) : List.of();
+   }
+
+   private List<CompletionItem> sammPredicateCompletions( final SammCompletionContext context, final String name ) {
+      return switch ( name ) {
          case SAMM.VALUE -> context.hasSubjectType( SAMMC.ENCODING_CONSTRAINT ) ? encodingCompletions( context ) : List.of();
          case SAMM.OPTIONAL, SAMM.NOT_IN_PAYLOAD -> booleanCompletions( context );
-         case SAMMC.LANGUAGE_CODE -> languageCodeCompletions( context );
-         case SAMMC.LOCALE_CODE -> localeCodeCompletions( context );
-         case SAMME.MIME_TYPE -> mimeTypeCompletions( context );
-         case SAMM.REFERENCE_UNIT, SAMMC.UNIT -> unitCompletions( context );
+         case SAMM.REFERENCE_UNIT -> unitCompletions( context );
          case SAMM.QUANTITY_KIND -> quantityKindCompletions( context );
-         case SAMM.CHARACTERISTIC, SAMMC.BASE_CHARACTERISTIC, SAMMC.ELEMENT_CHARACTERISTIC, SAMMC.LEFT, SAMMC.RIGHT ->
-            characteristicCompletions( context );
+         case SAMM.CHARACTERISTIC -> characteristicCompletions( context );
          case SAMM.DATA_TYPE -> dataTypeCompletions( context );
-         case RDF_TYPE, TURTLE_A -> rdfTypeCompletions( context );
          case SAMM.EXTENDS -> extendsCompletions( context );
          default -> List.of();
       };
    }
 
-   private static String localName( final String uriOrCurie ) {
-      return SammCompletionContext.localName( uriOrCurie );
+   private List<CompletionItem> characteristicPredicateCompletions( final SammCompletionContext context, final String name ) {
+      return switch ( name ) {
+         case SAMMC.LOWER_BOUND_DEFINITION -> lowerBoundCompletions( context );
+         case SAMMC.UPPER_BOUND_DEFINITION -> upperBoundCompletions( context );
+         case SAMMC.LANGUAGE_CODE -> languageCodeCompletions( context );
+         case SAMMC.LOCALE_CODE -> localeCodeCompletions( context );
+         case SAMMC.UNIT -> unitCompletions( context );
+         case SAMMC.BASE_CHARACTERISTIC, SAMMC.ELEMENT_CHARACTERISTIC, SAMMC.LEFT, SAMMC.RIGHT -> characteristicCompletions( context );
+         default -> List.of();
+      };
+   }
+
+   /**
+    * @return the part of the URI after the namespace, or an empty string if the URI is not in that
+    *         namespace
+    */
+   private static String localNameIn( final String uri, final String namespace ) {
+      return !namespace.isEmpty() && uri.startsWith( namespace ) ? uri.substring( namespace.length() ) : "";
    }
 
    private List<CompletionItem> lowerBoundCompletions( final SammCompletionContext context ) {
@@ -418,8 +447,8 @@ public final class SammAttributeValueCompletionService {
       result.add( createCompletionItem( tsEntity, context, CompletionItemKind.Class,
             "SAMM Predefined Entity", "01_TimeSeriesEntity", tsEntity + " " + SAMME.TIME_SERIES_ENTITY ) );
 
-      final String entityNs = new SAMME( context.namespaces().version(), new SAMM( context.namespaces().version() ) ).getNamespace();
-      final String fullTsEntityUri = context.namespaces().declarations().getOrDefault( prefix, entityNs ) + SAMME.TIME_SERIES_ENTITY;
+      final String fullTsEntityUri = context.namespaces().declarations().getOrDefault( prefix, context.entityNamespace() )
+            + SAMME.TIME_SERIES_ENTITY;
       result.addAll( localResourceCompletions( context, context.localEntitiesExtending( fullTsEntityUri ), CompletionItemKind.Class,
             "Local Entity (extends TimeSeriesEntity)", "02" ) );
       return result;
@@ -428,10 +457,9 @@ public final class SammAttributeValueCompletionService {
    private List<CompletionItem> generalDataTypeCompletions( final SammCompletionContext context ) {
       final String xsdPrefix = context.namespaces().xsdPrefix().orElse( SammNs.XSD().getShortForm() + ":" );
       final String sammPrefix = context.namespaces().sammPrefix();
-      final String rdfPrefix = resolveNamespacePrefix( context, RDF.getURI(), SammNs.RDF().getShortForm() + ":" );
       final List<CompletionItem> result = prefixedResourceCompletions( context, COMMON_PRIMITIVE_TYPES, xsdPrefix,
             CompletionItemKind.Class, "XSD Datatype", indexedSort( "01" ) );
-      final String langString = rdfPrefix + "langString";
+      final String langString = context.rdfLangString();
       result.add( createCompletionItem( langString, context, CompletionItemKind.Class,
             "RDF Datatype", "01_98_langString", langString + " langString" ) );
       final String curie = sammPrefix + SammNs.SAMM.curie().getLocalName();
@@ -446,7 +474,25 @@ public final class SammAttributeValueCompletionService {
       return result;
    }
 
+   /**
+    * A Property, or an element of a {@code samm:properties} list, extends an AbstractProperty. An
+    * Entity or AbstractEntity extends
+    * another Entity. If the kind of the subject is not known, both kinds of targets are suggested.
+    */
    private List<CompletionItem> extendsCompletions( final SammCompletionContext context ) {
+      final boolean extendsProperty = context.hasSubjectType( SAMM.PROPERTY_CLASS ) || isPropertiesListElement( context );
+      final List<CompletionItem> result = new ArrayList<>();
+      if ( !extendsProperty ) {
+         result.addAll( entityExtendsCompletions( context ) );
+      }
+      if ( extendsProperty || !isEntitySubject( context ) ) {
+         result.addAll( localResourceCompletions( context, context.localAbstractProperties(), CompletionItemKind.Property,
+               "Local Abstract Property", extendsProperty ? "01" : "04" ) );
+      }
+      return result;
+   }
+
+   private List<CompletionItem> entityExtendsCompletions( final SammCompletionContext context ) {
       final String prefix = context.namespaces().entityPrefix().orElse( SammNs.SAMME.getShortForm() + ":" );
       final List<CompletionItem> result = prefixedResourceCompletions( context, PREDEFINED_ENTITIES, prefix,
             CompletionItemKind.Class, "SAMM Base Entity", indexedSort( "01" ) );
@@ -457,21 +503,22 @@ public final class SammAttributeValueCompletionService {
       return result;
    }
 
+   private static boolean isEntitySubject( final SammCompletionContext context ) {
+      return context.hasSubjectType( SAMM.ENTITY ) || context.hasSubjectType( SAMM.ABSTRACT_ENTITY );
+   }
+
+   private static boolean isPropertiesListElement( final SammCompletionContext context ) {
+      final String propertiesPredicate = context.namespaces().sammNamespace() + SAMM.PROPERTIES;
+      return context.enclosingPredicate().filter( propertiesPredicate::equals ).isPresent();
+   }
+
    private List<CompletionItem> rdfTypeCompletions( final SammCompletionContext context ) {
       final String sammPrefix = context.namespaces().sammPrefix();
       final String charPrefix = context.namespaces().characteristicPrefix().orElse( SammNs.SAMMC.getShortForm() + ":" );
       final Optional<String> enclosing = context.enclosingPredicate();
 
       if ( enclosing.isPresent() ) {
-         final List<CompletionItem> scoped = switch ( localName( enclosing.get() ) ) {
-            case SAMM.CHARACTERISTIC, SAMMC.BASE_CHARACTERISTIC, SAMMC.ELEMENT_CHARACTERISTIC, SAMMC.LEFT, SAMMC.RIGHT ->
-               characteristicClassesCompletions( context, charPrefix, "01" );
-            case SAMMC.CONSTRAINT -> constraintClassesCompletions( context, charPrefix, "01" );
-            case SAMM.PROPERTIES -> List.of( singleClassCompletion( context, sammPrefix, SAMM.PROPERTY_CLASS ) );
-            case SAMM.OPERATIONS -> List.of( singleClassCompletion( context, sammPrefix, SAMM.OPERATION ) );
-            case SAMM.EVENTS -> List.of( singleClassCompletion( context, sammPrefix, SAMM.EVENT ) );
-            default -> List.of();
-         };
+         final List<CompletionItem> scoped = scopedClassCompletions( context, enclosing.get(), sammPrefix, charPrefix );
          if ( !scoped.isEmpty() ) {
             return scoped;
          }
@@ -490,6 +537,32 @@ public final class SammAttributeValueCompletionService {
             "SAMM QuantityKind Class", "04_02_QuantityKind", qkClass + " " + SAMM.QUANTITY_KIND_CLASS ) );
 
       return result;
+   }
+
+   /**
+    * The classes that fit the enclosing predicate of an anonymous node, for example Characteristic
+    * classes for samm:characteristic.
+    */
+   private List<CompletionItem> scopedClassCompletions( final SammCompletionContext context, final String enclosingPredicate,
+         final String sammPrefix, final String charPrefix ) {
+      final String sammName = localNameIn( enclosingPredicate, context.namespaces().sammNamespace() );
+      if ( !sammName.isEmpty() ) {
+         return switch ( sammName ) {
+            case SAMM.CHARACTERISTIC -> characteristicClassesCompletions( context, charPrefix, "01" );
+            case SAMM.PROPERTIES -> List.of( singleClassCompletion( context, sammPrefix, SAMM.PROPERTY_CLASS ) );
+            case SAMM.OPERATIONS -> List.of( singleClassCompletion( context, sammPrefix, SAMM.OPERATION ) );
+            case SAMM.EVENTS -> List.of( singleClassCompletion( context, sammPrefix, SAMM.EVENT ) );
+            default -> List.of();
+         };
+      }
+      final String characteristicName = context.namespaces().characteristicNamespace()
+            .map( namespace -> localNameIn( enclosingPredicate, namespace ) ).orElse( "" );
+      return switch ( characteristicName ) {
+         case SAMMC.BASE_CHARACTERISTIC, SAMMC.ELEMENT_CHARACTERISTIC, SAMMC.LEFT, SAMMC.RIGHT ->
+            characteristicClassesCompletions( context, charPrefix, "01" );
+         case SAMMC.CONSTRAINT -> constraintClassesCompletions( context, charPrefix, "01" );
+         default -> List.of();
+      };
    }
 
    private static CompletionItem singleClassCompletion(
@@ -544,15 +617,6 @@ public final class SammAttributeValueCompletionService {
 
    private static BiFunction<Integer, String, String> indexedSort( final String sortPrefix ) {
       return ( index, name ) -> String.format( "%s_%02d_%s", sortPrefix, index + 1, name );
-   }
-
-   private static String resolveNamespacePrefix( final SammCompletionContext context, final String namespaceUri,
-         final String defaultPrefix ) {
-      return context.namespaces().declarations().entrySet().stream()
-            .filter( entry -> entry.getValue().equals( namespaceUri ) )
-            .map( Map.Entry::getKey )
-            .findFirst()
-            .orElse( defaultPrefix );
    }
 
    private static CompletionItem createCompletionItem(

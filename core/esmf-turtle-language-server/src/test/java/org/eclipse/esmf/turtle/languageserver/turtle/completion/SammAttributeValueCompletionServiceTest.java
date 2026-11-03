@@ -39,6 +39,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class SammAttributeValueCompletionServiceTest {
    private static final String FULL_HEADER = """
@@ -488,6 +489,186 @@ class SammAttributeValueCompletionServiceTest {
       assertThat( items ).isNotEmpty();
       assertThat( items ).extracting( CompletionItem::getLabel )
             .contains( "samm-e:TimeSeriesEntity", "samm-e:Point3d", "samm-e:Quantity", "samm-e:FileResource", ":AbstractParent" );
+   }
+
+   @ParameterizedTest
+   @ValueSource( strings = { "samm:characteristic", "samm-c:baseCharacteristic", "samm-c:elementCharacteristic", "samm-c:left",
+         "samm-c:right" } )
+   void localCharacteristicSuggestionsExcludeConstraints( final String predicate ) {
+      final Request req = request( FULL_HEADER + """
+         :MyChar a samm:Characteristic ; samm:dataType xsd:string .
+         :MyEnum a samm-c:Enumeration ; samm:dataType xsd:string ; samm-c:values ( "a" ) .
+         :MyTrait a samm-c:Trait ; samm-c:baseCharacteristic :MyChar ; samm-c:constraint :MyLength .
+         :MyLength a samm-c:LengthConstraint ; samm-c:minValue "1"^^xsd:nonNegativeInteger .
+         :MyRange a samm-c:RangeConstraint ; samm-c:minValue 1 .
+         :MyRegex a samm-c:RegularExpressionConstraint ; samm:value "a" .
+         :MyEncoding a samm-c:EncodingConstraint ; samm:value samm:UTF-8 .
+         :MyLanguage a samm-c:LanguageConstraint ; samm-c:languageCode "en" .
+         :MyLocale a samm-c:LocaleConstraint ; samm-c:localeCode "en-US" .
+         :MyFixedPoint a samm-c:FixedPointConstraint ; samm-c:scale 2 .
+         :subject a samm:Property ;
+             %s |
+         """.formatted( predicate ) );
+
+      final List<CompletionItem> items = attributeService.complete( req.document, req.position );
+
+      assertThat( items ).filteredOn( item -> "Local Characteristic".equals( item.getDetail() ) )
+            .extracting( CompletionItem::getLabel )
+            .containsExactlyInAnyOrder( ":MyChar", ":MyEnum", ":MyTrait" );
+   }
+
+   @Test
+   void suggestsOnlyAbstractPropertiesWhenAPropertyExtends() {
+      final Request req = request( FULL_HEADER + """
+         :MyAbstractProp a samm:AbstractProperty .
+         :OtherProp a samm:Property ; samm:characteristic samm-c:Text .
+         :AbstractEntity a samm:AbstractEntity .
+         :Entity a samm:Entity .
+
+         :p a samm:Property ;
+             samm:extends |
+         """ );
+
+      final List<CompletionItem> items = attributeService.complete( req.document, req.position );
+
+      assertThat( items ).extracting( CompletionItem::getLabel ).containsExactly( ":MyAbstractProp" );
+      assertThat( items ).extracting( CompletionItem::getDetail ).containsExactly( "Local Abstract Property" );
+      assertThat( items ).extracting( CompletionItem::getKind ).containsExactly( CompletionItemKind.Property );
+   }
+
+   @Test
+   void suggestsOnlyAbstractPropertiesInsideAPropertiesListElement() {
+      final Request req = request( FULL_HEADER + """
+         :MyAbstractProp a samm:AbstractProperty .
+         :Parent a samm:AbstractEntity .
+
+         :E a samm:Entity ;
+             samm:extends :Parent ;
+             samm:properties ( [ samm:extends | ] ) .
+         """ );
+
+      final List<CompletionItem> items = attributeService.complete( req.document, req.position );
+
+      assertThat( items ).extracting( CompletionItem::getLabel ).containsExactly( ":MyAbstractProp" );
+   }
+
+   @Test
+   void doesNotSuggestAbstractPropertiesWhenAnEntityExtends() {
+      final Request req = request( FULL_HEADER + """
+         :MyAbstractProp a samm:AbstractProperty .
+         :Parent a samm:AbstractEntity .
+
+         :E a samm:Entity ;
+             samm:extends |
+         """ );
+
+      final List<CompletionItem> items = attributeService.complete( req.document, req.position );
+
+      assertThat( items ).extracting( CompletionItem::getLabel )
+            .contains( "samm-e:TimeSeriesEntity", ":Parent" )
+            .doesNotContain( ":MyAbstractProp" );
+   }
+
+   @Test
+   void suggestsEntitiesAndAbstractPropertiesWhenTheSubjectKindIsUnknown() {
+      final Request req = request( FULL_HEADER + """
+         :MyAbstractProp a samm:AbstractProperty .
+         :Parent a samm:AbstractEntity .
+
+         :unknown samm:extends |
+         """ );
+
+      final List<CompletionItem> items = attributeService.complete( req.document, req.position );
+
+      assertThat( items ).extracting( CompletionItem::getLabel )
+            .contains( "samm-e:TimeSeriesEntity", ":Parent", ":MyAbstractProp" );
+      assertThat( items ).filteredOn( item -> ":MyAbstractProp".equals( item.getLabel() ) )
+            .extracting( CompletionItem::getDetail ).containsExactly( "Local Abstract Property" );
+   }
+
+   @Test
+   void langStringDataTypeUsesFullIriWhenRdfPrefixIsNotDeclared() {
+      final Request req = request( FULL_HEADER.replace( "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\n", "" ) + """
+         :c a samm:Characteristic ;
+             samm:dataType |
+         """ );
+
+      final List<CompletionItem> items = attributeService.complete( req.document, req.position );
+
+      assertThat( items ).extracting( CompletionItem::getLabel )
+            .contains( "<http://www.w3.org/1999/02/22-rdf-syntax-ns#langString>" )
+            .doesNotContain( "rdf:langString" );
+   }
+
+   @ParameterizedTest
+   @ValueSource( strings = { "ex:optional", "ex:notInPayload", "ex:type", "ex:a", "ex:unit", "ex:referenceUnit", "ex:quantityKind",
+         "ex:dataType", "ex:characteristic", "ex:baseCharacteristic", "ex:extends", "ex:value", "ex:mimeType", "ex:languageCode",
+         "ex:localeCode", "ex:lowerBoundDefinition", "ex:upperBoundDefinition" } )
+   void predicatesOfOtherVocabulariesGetNoSammCompletions( final String predicate ) {
+      final Request req = request( FULL_HEADER + """
+         @prefix ex: <http://example.com/vocab#> .
+         :s a samm-c:EncodingConstraint ;
+             %s |
+         """.formatted( predicate ) );
+
+      assertThat( attributeService.complete( req.document, req.position ) ).isEmpty();
+   }
+
+   @ParameterizedTest
+   @ValueSource( strings = { "samm-c:value", "samm-c:optional", "samm-c:dataType", "samm-c:characteristic", "samm:unit",
+         "samm:left", "samm:languageCode", "samm:lowerBoundDefinition", "samm-e:characteristic", "samm-e:unit" } )
+   void sammPredicatesInTheWrongSammNamespaceGetNoCompletions( final String predicate ) {
+      final Request req = request( FULL_HEADER + """
+         :s a samm-c:EncodingConstraint ;
+             %s |
+         """.formatted( predicate ) );
+
+      assertThat( attributeService.complete( req.document, req.position ) ).isEmpty();
+   }
+
+   @Test
+   void rdfTypeIsRecognizedByItsNamespaceAndNotByItsPrefix() {
+      final Request viaPrefix = request( FULL_HEADER + ":s rdf:type |\n" );
+      assertThat( attributeService.complete( viaPrefix.document, viaPrefix.position ) )
+            .extracting( CompletionItem::getLabel ).contains( "samm:Aspect", "samm:Property" );
+
+      final Request viaAlias = request( ALIASED_HEADER + ":s r:type |\n" );
+      assertThat( attributeService.complete( viaAlias.document, viaAlias.position ) )
+            .extracting( CompletionItem::getLabel ).contains( "meta:Aspect", "meta:Property" );
+   }
+
+   @Test
+   void classesAreScopedByTheEnclosingSammPredicateButNotByAPredicateOfAnotherVocabulary() {
+      final Request scoped = request( FULL_HEADER + ":p a samm:Property ;\n    samm:characteristic [ a | ] ." );
+      assertThat( attributeService.complete( scoped.document, scoped.position ) )
+            .extracting( CompletionItem::getLabel ).contains( "samm-c:Enumeration" ).doesNotContain( "samm:Aspect" );
+
+      final Request foreign = request( FULL_HEADER + """
+         @prefix ex: <http://example.com/vocab#> .
+         :p a samm:Property ;
+             ex:characteristic [ a | ] .
+         """ );
+      assertThat( attributeService.complete( foreign.document, foreign.position ) )
+            .extracting( CompletionItem::getLabel ).contains( "samm:Aspect", "samm-c:Enumeration" );
+   }
+
+   @Test
+   void extendsOfOtherVocabulariesIsNotTreatedAsSammExtends() {
+      final Request req = request( FULL_HEADER + """
+         @prefix ex: <http://example.com/vocab#> .
+         @prefix other: <http://example.com/vocab/> .
+         :ByHash a samm:Entity ; ex:extends samm-e:TimeSeriesEntity .
+         :BySlash a samm:Entity ; other:extends samm-e:TimeSeriesEntity .
+         :BySamm a samm:Entity ; samm:extends samm-e:TimeSeriesEntity .
+
+         :ts a samm-c:TimeSeries ;
+             samm:dataType |
+         """ );
+
+      final List<CompletionItem> items = attributeService.complete( req.document, req.position );
+
+      assertThat( items ).filteredOn( item -> item.getDetail().startsWith( "Local Entity" ) )
+            .extracting( CompletionItem::getLabel ).containsExactly( ":BySamm" );
    }
 
    @Test

@@ -20,9 +20,17 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import javax.xml.datatype.Duration;
+
+import org.eclipse.esmf.metamodel.datatype.SammType;
+import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 import org.eclipse.esmf.turtle.languageserver.turtle.completion.SammCompletionContext.TargetPosition;
 
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.XSD;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
@@ -31,6 +39,25 @@ public final class SammSnippetCatalog {
    private static final String SNIPPETS_RESOURCE_PATH = "/snippets/samm-snippets.json";
    private static final Pattern IDENTIFIER = Pattern.compile( "[A-Za-z_][A-Za-z0-9_]*" );
    private static final List<SnippetDefinition> SNIPPETS = loadSnippets();
+
+   /** All SAMM data types: the allowed XSD types, {@code rdf:langString} and {@code samm:curie}. */
+   static final List<SammType<?>> ALL_DATA_TYPES = List.copyOf( SammXsdType.ALL_TYPES );
+   /**
+    * The numeric data types (decimal, float, double and all integer types), for Quantifiable and
+    * Measurement.
+    */
+   static final List<SammType<?>> NUMERIC_DATA_TYPES = ALL_DATA_TYPES.stream()
+         .filter( type -> Number.class.isAssignableFrom( type.getJavaClass() ) )
+         .toList();
+   /** The XSD duration types followed by the numeric data types, for Duration. */
+   static final List<SammType<?>> DURATION_DATA_TYPES = Stream.concat(
+         ALL_DATA_TYPES.stream().filter( type -> Duration.class.isAssignableFrom( type.getJavaClass() ) ),
+         NUMERIC_DATA_TYPES.stream() ).toList();
+   private static final String ALL_DATA_TYPES_PLACEHOLDER = "{{allDataTypes}}";
+   private static final String NUMERIC_DATA_TYPES_PLACEHOLDER = "{{numericDataTypes}}";
+   private static final String DURATION_DATA_TYPES_PLACEHOLDER = "{{durationDataTypes}}";
+   private static final List<String> DATA_TYPE_PLACEHOLDERS =
+         List.of( ALL_DATA_TYPES_PLACEHOLDER, NUMERIC_DATA_TYPES_PLACEHOLDER, DURATION_DATA_TYPES_PLACEHOLDER );
 
    public record MatchScore(
          int tier,
@@ -85,10 +112,14 @@ public final class SammSnippetCatalog {
          final String latestVersion = context.namespaces().version().toVersionString();
          final String baseIndent = targetPosition.isAnonymousObject() ? "" : context.edit().indentation();
          return String.join( "\n", body )
+               .replace( ALL_DATA_TYPES_PLACEHOLDER, dataTypeChoices( ALL_DATA_TYPES, context, sammPrefix ) )
+               .replace( NUMERIC_DATA_TYPES_PLACEHOLDER, dataTypeChoices( NUMERIC_DATA_TYPES, context, sammPrefix ) )
+               .replace( DURATION_DATA_TYPES_PLACEHOLDER, dataTypeChoices( DURATION_DATA_TYPES, context, sammPrefix ) )
                .replace( "{{modelPrefix}}", context.namespaces().modelPrefix().orElse( "" ) )
                .replace( "{{sammPrefix}}", sammPrefix )
                .replace( "{{sammCPrefix}}", charPrefix )
                .replace( "{{xsdPrefix}}", xsdPrefix )
+               .replace( "{{rdfLangString}}", context.rdfLangString() )
                .replace( "{{unitPrefix}}", unitPrefix )
                .replace( "{{sammVersion}}", latestVersion )
                .replace( "{{separator}}", context.predicateSeparator().orElse( "" ) )
@@ -107,7 +138,8 @@ public final class SammSnippetCatalog {
          if ( usesPlaceholder( "{{sammCPrefix}}" ) && context.namespaces().characteristicPrefix().isEmpty() ) {
             return false;
          }
-         if ( usesPlaceholder( "{{xsdPrefix}}" ) && context.namespaces().xsdPrefix().isEmpty() ) {
+         final boolean needsXsd = usesPlaceholder( "{{xsdPrefix}}" ) || DATA_TYPE_PLACEHOLDERS.stream().anyMatch( this::usesPlaceholder );
+         if ( needsXsd && context.namespaces().xsdPrefix().isEmpty() ) {
             return false;
          }
          return !usesPlaceholder( "{{unitPrefix}}" ) || context.namespaces().unitPrefix().isPresent();
@@ -171,6 +203,28 @@ public final class SammSnippetCatalog {
 
    public List<SnippetDefinition> allSnippets() {
       return SNIPPETS;
+   }
+
+   /**
+    * @return the data types as the choices of a snippet choice group, separated by commas and written
+    *         with the prefixes of the document
+    */
+   private static String dataTypeChoices( final List<SammType<?>> types, final SammCompletionContext context,
+         final String sammPrefix ) {
+      final String xsdPrefix = context.namespaces().xsdPrefix().orElse( "" );
+      return types.stream()
+            .map( SammType::getURI )
+            .map( uri -> {
+               if ( uri.startsWith( XSD.getURI() ) ) {
+                  return xsdPrefix + uri.substring( XSD.getURI().length() );
+               }
+               if ( uri.equals( RDF.langString.getURI() ) ) {
+                  return context.rdfLangString();
+               }
+               // samm:curie, written with the SAMM prefix and therefore the SAMM version of the document
+               return sammPrefix + uri.substring( uri.indexOf( '#' ) + 1 );
+            } )
+            .collect( Collectors.joining( "," ) );
    }
 
    public List<SnippetDefinition> matchingSnippets( final SammCompletionContext context ) {
