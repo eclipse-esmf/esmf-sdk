@@ -18,11 +18,8 @@ import static org.eclipse.esmf.aspectmodel.generator.sql.databricks.AspectModelD
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
-import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.ComplexType;
@@ -36,24 +33,16 @@ import org.eclipse.esmf.metamodel.characteristic.Collection;
 import org.eclipse.esmf.metamodel.characteristic.Either;
 import org.eclipse.esmf.metamodel.characteristic.Trait;
 import org.eclipse.esmf.metamodel.characteristic.impl.DefaultList;
-import org.eclipse.esmf.metamodel.datatype.RdfDatatypeUris;
-import org.eclipse.esmf.metamodel.vocabulary.SAMM;
-import org.eclipse.esmf.samm.KnownVersion;
 
-import com.google.common.base.CaseFormat;
-import com.google.common.collect.ImmutableMap;
 import io.soabase.recordbuilder.core.RecordBuilder;
-import org.apache.jena.vocabulary.XSD;
 
 /**
  * Generates Databricks SQL with a denormalized schema from an Aspect Model.
  */
 public class AspectModelDatabricksDenormalizedSqlVisitor
-      implements AspectVisitor<String, AspectModelDatabricksDenormalizedSqlVisitor.Context> {
+      extends AspectModelDatabricksVisitor<AspectModelDatabricksDenormalizedSqlVisitor.Context> {
    private static final String LEVEL_DELIMITER = "__";
    private static final int MAX_RECURSION_DEPTH = 20;
-   private final DatabricksSqlGenerationConfig config;
-   private final Map<String, DatabricksType> databricksTypeMap;
 
    @RecordBuilder
    public record Context(
@@ -83,45 +72,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
    }
 
    public AspectModelDatabricksDenormalizedSqlVisitor( final DatabricksSqlGenerationConfig config ) {
-      this.config = config;
-      databricksTypeMap = ImmutableMap.<String, DatabricksType>builder()
-            .put( XSD.xstring.getURI(), DatabricksType.STRING )
-            .put( XSD.xboolean.getURI(), DatabricksType.BOOLEAN )
-            .put( XSD.decimal.getURI(), new DatabricksType.DatabricksDecimal( Optional.of( config.decimalPrecision() ),
-                  Optional.of( config.decimalScale() ) ) )
-            .put( XSD.integer.getURI(), new DatabricksType.DatabricksDecimal( Optional.of( config.decimalPrecision() ) ) )
-            .put( XSD.xdouble.getURI(), DatabricksType.DOUBLE )
-            .put( XSD.xfloat.getURI(), DatabricksType.FLOAT )
-            .put( XSD.date.getURI(), DatabricksType.STRING )
-            .put( XSD.time.getURI(), DatabricksType.STRING )
-            .put( XSD.dateTime.getURI(), DatabricksType.TIMESTAMP )
-            .put( XSD.dateTimeStamp.getURI(), DatabricksType.TIMESTAMP )
-            .put( XSD.gYear.getURI(), DatabricksType.STRING )
-            .put( XSD.gMonth.getURI(), DatabricksType.STRING )
-            .put( XSD.gDay.getURI(), DatabricksType.STRING )
-            .put( XSD.gYearMonth.getURI(), DatabricksType.STRING )
-            .put( XSD.gMonthDay.getURI(), DatabricksType.STRING )
-            .put( XSD.duration.getURI(), DatabricksType.STRING )
-            .put( XSD.yearMonthDuration.getURI(), DatabricksType.STRING )
-            .put( XSD.dayTimeDuration.getURI(), DatabricksType.STRING )
-            .put( XSD.xbyte.getURI(), DatabricksType.TINYINT )
-            .put( XSD.xshort.getURI(), DatabricksType.SMALLINT )
-            .put( XSD.xint.getURI(), DatabricksType.INT )
-            .put( XSD.xlong.getURI(), DatabricksType.BIGINT )
-            .put( XSD.unsignedByte.getURI(), DatabricksType.SMALLINT )
-            .put( XSD.unsignedShort.getURI(), DatabricksType.INT )
-            .put( XSD.unsignedInt.getURI(), DatabricksType.BIGINT )
-            .put( XSD.unsignedLong.getURI(), new DatabricksType.DatabricksDecimal( Optional.of( 20 ) ) )
-            .put( XSD.positiveInteger.getURI(), new DatabricksType.DatabricksDecimal( Optional.of( config.decimalPrecision() ) ) )
-            .put( XSD.nonNegativeInteger.getURI(), new DatabricksType.DatabricksDecimal( Optional.of( config.decimalPrecision() ) ) )
-            .put( XSD.negativeInteger.getURI(), new DatabricksType.DatabricksDecimal( Optional.of( config.decimalPrecision() ) ) )
-            .put( XSD.nonPositiveInteger.getURI(), new DatabricksType.DatabricksDecimal( Optional.of( config.decimalPrecision() ) ) )
-            .put( XSD.hexBinary.getURI(), DatabricksType.BINARY )
-            .put( XSD.base64Binary.getURI(), DatabricksType.BINARY )
-            .put( XSD.anyURI.getURI(), DatabricksType.STRING )
-            .put( new SAMM( KnownVersion.getLatest() ).resource( "curie" ).getURI(), DatabricksType.STRING )
-            .put( RdfDatatypeUris.LANG_STRING, DatabricksType.STRING )
-            .build();
+      super( config );
    }
 
    @Override
@@ -129,42 +80,15 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
       return "";
    }
 
-   private String tableName( final Aspect aspect ) {
-      return CaseFormat.UPPER_CAMEL.to( CaseFormat.LOWER_UNDERSCORE, aspect.getName() );
-   }
-
-   private String columnName( final Property property ) {
-      return CaseFormat.LOWER_CAMEL.to( CaseFormat.LOWER_UNDERSCORE, property.getPayloadName() );
-   }
-
    @Override
    public String visitStructureElement( final StructureElement structureElement, final Context context ) {
       final StringBuilder result = new StringBuilder();
-      final Consumer<String> appendLine = line -> {
-         if ( !line.isBlank() ) {
-            // Turning entire result into String for checking its contents can be ineffective,
-            // so we pick up the minimum substring here though it's verbose a bit.
-            if ( !result.isEmpty() && !result.substring( result.length() < 4 ? 0 : result.length() - 4 ).stripTrailing().endsWith( "," ) ) {
-               result.append( ",\n" );
-            }
-            if ( !line.startsWith( "  " ) && ( result.length() < 2 || !result.substring( result.length() - 2 ).equals( "  " ) ) ) {
-               result.append( "  " );
-            }
-            result.append( line );
-         }
-      };
-      for ( final Property property : structureElement.getProperties() ) {
-         if ( property.isNotInPayload() ) {
-            continue;
-         }
-         final String propertyResult = property.accept( this, context );
-         appendLine.accept( propertyResult );
-      }
+      structureElement.getProperties().stream()
+            .filter( property -> !property.isNotInPayload() )
+            .forEach( property -> appendLine( result, property.accept( this, context ) ) );
       if ( structureElement instanceof Aspect ) {
-         for ( final DatabricksColumnDefinition columnDefinition : config.customColumns() ) {
-            appendLine.accept( columnDefinition.toString() );
-         }
-         config.tableConstraints().forEach( appendLine );
+         config.customColumns().forEach( columnDefinition -> appendLine( result, columnDefinition.toString() ) );
+         config.tableConstraints().forEach( constraint -> appendLine( result, constraint ) );
       }
       return result.toString();
    }
@@ -228,8 +152,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
             return "";
          }
          // If the property is optional but points to an Entity with mandatory properties, the columns for
-         // those
-         // properties still need to be optional (i.e. nullable), so we force optionality here.
+         // those properties still need to be optional (i.e. nullable), so we force optionality here.
          final Context contextForComplexType = property.isOptional()
                ? context.copy().forceOptional( true ).build()
                : context;
@@ -317,30 +240,6 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
       } );
 
       return columns.toString();
-   }
-
-   private DatabricksType.DatabricksStruct entityToStruct( final ComplexType entity, final boolean isInsideNestedType ) {
-      return new DatabricksType.DatabricksStruct( entity.getAllProperties().stream()
-            .flatMap( property -> {
-               if ( property.getDataType().isEmpty() || property.isNotInPayload() ) {
-                  return Stream.empty();
-               }
-               final Type type = property.getDataType().get();
-               final DatabricksType databricksType;
-               if ( type instanceof final Scalar scalar ) {
-                  databricksType = databricksTypeMap.get( scalar.getUrn() );
-               } else if ( type instanceof final Entity entityType ) {
-                  databricksType = entityToStruct( entityType, true );
-               } else {
-                  return Stream.empty();
-               }
-
-               final boolean isOptional = isInsideNestedType || property.isOptional();
-
-               return Stream.of( new DatabricksType.DatabricksStructEntry( columnName( property ), databricksType,
-                     isOptional, Optional.ofNullable( property.getDescription( config.commentLanguage() ) ) ) );
-            } )
-            .toList() );
    }
 
    @Override

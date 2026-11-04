@@ -20,9 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Consumer;
 
-import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.ComplexType;
@@ -36,24 +34,16 @@ import org.eclipse.esmf.metamodel.characteristic.Collection;
 import org.eclipse.esmf.metamodel.characteristic.Either;
 import org.eclipse.esmf.metamodel.characteristic.Trait;
 import org.eclipse.esmf.metamodel.characteristic.impl.DefaultList;
-import org.eclipse.esmf.metamodel.datatype.RdfDatatypeUris;
-import org.eclipse.esmf.metamodel.vocabulary.SAMM;
-import org.eclipse.esmf.samm.KnownVersion;
 
-import com.google.common.base.CaseFormat;
-import com.google.common.collect.ImmutableMap;
 import io.soabase.recordbuilder.core.RecordBuilder;
-import org.apache.jena.vocabulary.XSD;
 
 /**
  * Generates PostgreSQL with a denormalized schema from an Aspect Model.
  */
 public class AspectModelPostgreSqlDenormalizedSqlVisitor
-      implements AspectVisitor<String, AspectModelPostgreSqlDenormalizedSqlVisitor.Context> {
+      extends AspectModelPostgreSqlVisitor<AspectModelPostgreSqlDenormalizedSqlVisitor.Context> {
    private static final String LEVEL_DELIMITER = "__";
    private static final int MAX_RECURSION_DEPTH = 20;
-   private final PostgreSqlGenerationConfig config;
-   private final Map<String, PostgreSqlType> postgreSqlTypeMap;
    private final List<ColumnComment> columnComments = new ArrayList<>();
    private String currentTableName;
 
@@ -89,45 +79,7 @@ public class AspectModelPostgreSqlDenormalizedSqlVisitor
    }
 
    public AspectModelPostgreSqlDenormalizedSqlVisitor( final PostgreSqlGenerationConfig config ) {
-      this.config = config;
-      postgreSqlTypeMap = ImmutableMap.<String, PostgreSqlType>builder()
-            .put( XSD.xstring.getURI(), PostgreSqlType.TEXT )
-            .put( XSD.xboolean.getURI(), PostgreSqlType.BOOLEAN )
-            .put( XSD.decimal.getURI(), new PostgreSqlType.PostgreSqlNumeric( Optional.of( config.decimalPrecision() ),
-                  Optional.of( config.decimalScale() ) ) )
-            .put( XSD.integer.getURI(), new PostgreSqlType.PostgreSqlNumeric( Optional.of( config.decimalPrecision() ) ) )
-            .put( XSD.xdouble.getURI(), PostgreSqlType.DOUBLE_PRECISION )
-            .put( XSD.xfloat.getURI(), PostgreSqlType.REAL )
-            .put( XSD.date.getURI(), PostgreSqlType.TEXT )
-            .put( XSD.time.getURI(), PostgreSqlType.TEXT )
-            .put( XSD.dateTime.getURI(), PostgreSqlType.TIMESTAMP )
-            .put( XSD.dateTimeStamp.getURI(), PostgreSqlType.TIMESTAMP_WITH_TIME_ZONE )
-            .put( XSD.gYear.getURI(), PostgreSqlType.TEXT )
-            .put( XSD.gMonth.getURI(), PostgreSqlType.TEXT )
-            .put( XSD.gDay.getURI(), PostgreSqlType.TEXT )
-            .put( XSD.gYearMonth.getURI(), PostgreSqlType.TEXT )
-            .put( XSD.gMonthDay.getURI(), PostgreSqlType.TEXT )
-            .put( XSD.duration.getURI(), PostgreSqlType.TEXT )
-            .put( XSD.yearMonthDuration.getURI(), PostgreSqlType.TEXT )
-            .put( XSD.dayTimeDuration.getURI(), PostgreSqlType.TEXT )
-            .put( XSD.xbyte.getURI(), PostgreSqlType.SMALLINT )
-            .put( XSD.xshort.getURI(), PostgreSqlType.SMALLINT )
-            .put( XSD.xint.getURI(), PostgreSqlType.INTEGER )
-            .put( XSD.xlong.getURI(), PostgreSqlType.BIGINT )
-            .put( XSD.unsignedByte.getURI(), PostgreSqlType.SMALLINT )
-            .put( XSD.unsignedShort.getURI(), PostgreSqlType.INTEGER )
-            .put( XSD.unsignedInt.getURI(), PostgreSqlType.BIGINT )
-            .put( XSD.unsignedLong.getURI(), new PostgreSqlType.PostgreSqlNumeric( Optional.of( 20 ) ) )
-            .put( XSD.positiveInteger.getURI(), new PostgreSqlType.PostgreSqlNumeric( Optional.of( config.decimalPrecision() ) ) )
-            .put( XSD.nonNegativeInteger.getURI(), new PostgreSqlType.PostgreSqlNumeric( Optional.of( config.decimalPrecision() ) ) )
-            .put( XSD.negativeInteger.getURI(), new PostgreSqlType.PostgreSqlNumeric( Optional.of( config.decimalPrecision() ) ) )
-            .put( XSD.nonPositiveInteger.getURI(), new PostgreSqlType.PostgreSqlNumeric( Optional.of( config.decimalPrecision() ) ) )
-            .put( XSD.hexBinary.getURI(), PostgreSqlType.BYTEA )
-            .put( XSD.base64Binary.getURI(), PostgreSqlType.BYTEA )
-            .put( XSD.anyURI.getURI(), PostgreSqlType.TEXT )
-            .put( new SAMM( KnownVersion.getLatest() ).resource( "curie" ).getURI(), PostgreSqlType.TEXT )
-            .put( RdfDatatypeUris.LANG_STRING, PostgreSqlType.TEXT )
-            .build();
+      super( config );
    }
 
    @Override
@@ -135,42 +87,21 @@ public class AspectModelPostgreSqlDenormalizedSqlVisitor
       return "";
    }
 
-   private String tableName( final Aspect aspect ) {
-      return CaseFormat.UPPER_CAMEL.to( CaseFormat.LOWER_UNDERSCORE, aspect.getName() );
-   }
-
-   private String columnName( final Property property ) {
-      return CaseFormat.LOWER_CAMEL.to( CaseFormat.LOWER_UNDERSCORE, property.getPayloadName() );
-   }
-
    @Override
    public String visitStructureElement( final StructureElement structureElement, final Context context ) {
       final StringBuilder result = new StringBuilder();
-      final Consumer<String> appendLine = line -> {
-         if ( !line.isBlank() ) {
-            if ( !result.isEmpty() && !result.substring( result.length() < 4 ? 0 : result.length() - 4 ).stripTrailing().endsWith( "," ) ) {
-               result.append( ",\n" );
-            }
-            if ( !line.startsWith( "  " ) && ( result.length() < 2 || !result.substring( result.length() - 2 ).equals( "  " ) ) ) {
-               result.append( "  " );
-            }
-            result.append( line );
-         }
-      };
-      for ( final Property property : structureElement.getProperties() ) {
-         if ( !property.isNotInPayload() ) {
-            appendLine.accept( property.accept( this, context ) );
-         }
-      }
+      structureElement.getProperties().stream()
+            .filter( property -> !property.isNotInPayload() )
+            .forEach( property -> appendLine( result, property.accept( this, context ) ) );
       if ( structureElement instanceof Aspect ) {
-         for ( final PostgreSqlColumnDefinition columnDefinition : config.customColumns() ) {
-            appendLine.accept( columnDefinition.toString() );
+         config.customColumns().forEach( columnDefinition -> {
+            appendLine( result, columnDefinition.toString() );
             if ( config.includeColumnComments() ) {
                columnDefinition.comment().ifPresent( comment -> columnComments.add(
                      new ColumnComment( columnDefinition.name(), comment ) ) );
             }
-         }
-         config.tableConstraints().forEach( appendLine );
+         } );
+         config.tableConstraints().forEach( constraint -> appendLine( result, constraint ) );
       }
       return result.toString();
    }
