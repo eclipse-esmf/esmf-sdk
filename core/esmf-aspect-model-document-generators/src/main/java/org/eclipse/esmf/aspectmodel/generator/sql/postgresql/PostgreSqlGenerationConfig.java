@@ -30,6 +30,7 @@ import io.soabase.recordbuilder.core.RecordBuilder;
  * @param decimalPrecision the precision to use for numeric columns
  * @param decimalScale the scale to use for decimal columns
  * @param customColumns custom columns to add to the table
+ * @param tableConstraints SQL table constraints to add to the table
  */
 @RecordBuilder
 public record PostgreSqlGenerationConfig(
@@ -39,7 +40,8 @@ public record PostgreSqlGenerationConfig(
       Locale commentLanguage,
       int decimalPrecision,
       int decimalScale,
-      List<PostgreSqlColumnDefinition> customColumns
+      List<PostgreSqlColumnDefinition> customColumns,
+      List<String> tableConstraints
 ) implements SqlGenerationConfig.DialectSpecificConfig {
    public static final String DEFAULT_TABLE_COMMAND_PREFIX = "CREATE TABLE IF NOT EXISTS";
    public static final int DECIMAL_DEFAULT_PRECISION = 10;
@@ -51,7 +53,17 @@ public record PostgreSqlGenerationConfig(
 
    public PostgreSqlGenerationConfig() {
       this( DEFAULT_TABLE_COMMAND_PREFIX, DEFAULT_INCLUDE_TABLE_COMMENT, DEFAULT_INCLUDE_COLUMN_COMMENTS, DEFAULT_COMMENT_LANGUAGE,
-            DECIMAL_DEFAULT_PRECISION, DECIMAL_DEFAULT_SCALE, List.of() );
+            DECIMAL_DEFAULT_PRECISION, DECIMAL_DEFAULT_SCALE, List.of(), List.of() );
+   }
+
+   /**
+    * Creates a configuration without additional table constraints.
+    */
+   public PostgreSqlGenerationConfig( final String createTableCommandPrefix, final boolean includeTableComment,
+         final boolean includeColumnComments, final Locale commentLanguage, final int decimalPrecision,
+         final int decimalScale, final List<PostgreSqlColumnDefinition> customColumns ) {
+      this( createTableCommandPrefix, includeTableComment, includeColumnComments, commentLanguage, decimalPrecision,
+            decimalScale, customColumns, List.of() );
    }
 
    public PostgreSqlGenerationConfig {
@@ -72,6 +84,9 @@ public record PostgreSqlGenerationConfig(
       }
       if ( commentLanguage == null ) {
          commentLanguage = DEFAULT_COMMENT_LANGUAGE;
+      }
+      if ( tableConstraints == null ) {
+         tableConstraints = List.of();
       }
       if ( customColumns == null ) {
          customColumns = List.of();

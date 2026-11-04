@@ -37,6 +37,7 @@ public class GenerateSqlTest extends AspectModelMojoTest {
       final String sqlContent = new String( Files.readAllBytes( generatedFile ) );
 
       assertThat( sqlContent ).contains( "CREATE TABLE IF NOT EXISTS aspect_with_simple_types" );
+      assertThat( sqlContent ).doesNotContain( "PRIMARY KEY", "CHECK (" );
    }
 
    @Test
@@ -52,6 +53,7 @@ public class GenerateSqlTest extends AspectModelMojoTest {
       assertThat( sqlContent ).contains( "CREATE TABLE aspect_with_simple_types" );
       assertThat( sqlContent ).contains( "custom_column ARRAY<STRING> NOT NULL COMMENT 'Custom column'" );
       assertThat( sqlContent ).contains( "DECIMAL(23,14)" );
+      assertThat( sqlContent ).contains( "PRIMARY KEY (string_property),\n  CHECK (string_property <> 'invalid')\n)" );
    }
 
    @Test
@@ -66,6 +68,7 @@ public class GenerateSqlTest extends AspectModelMojoTest {
 
       assertThat( sqlContent ).contains( "string_property TEXT NOT NULL" );
       assertThat( sqlContent ).contains( "custom_column TEXT[] NOT NULL" );
+      assertThat( sqlContent ).contains( "PRIMARY KEY (string_property),\n  CHECK (string_property <> 'invalid')\n)" );
       assertThat( sqlContent ).doesNotContain( "TBLPROPERTIES" );
    }
 }

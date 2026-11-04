@@ -101,6 +101,11 @@ public class AspectToSqlCommand extends AbstractCommand {
       description = "Custom column to add to the table, can be repeated for multiple columns" )
    private List<String> customColumns = List.of();
 
+   @CommandLine.Option(
+      names = { "--table-constraint" },
+      description = "SQL table constraint to add, repeatable for multiple constraints" )
+   private List<String> tableConstraints = List.of();
+
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option(
       names = { "--details" },
@@ -147,6 +152,7 @@ public class AspectToSqlCommand extends AbstractCommand {
                   .decimalPrecision( decimalPrecision )
                   .decimalScale( decimalScale )
                   .customColumns( columns )
+                  .tableConstraints( tableConstraints )
                   .build();
          }
          case POSTGRESQL -> {
@@ -161,6 +167,7 @@ public class AspectToSqlCommand extends AbstractCommand {
                   .decimalPrecision( decimalPrecision )
                   .decimalScale( decimalScale )
                   .customColumns( columns )
+                  .tableConstraints( tableConstraints )
                   .build();
          }
       };

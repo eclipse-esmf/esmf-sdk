@@ -569,7 +569,19 @@ Configuration Properties:
 | `decimalPrecision` | The precision to use for decimal columns. Databricks supports up to 38 and PostgreSQL up to 1000. | `Integer` | 10 | {nok}
 | `decimalScale` | The scale to use for decimal columns, between 0 and the precision. | `Integer` | 0 | {nok}
 | `customColumns` | Contains `<column>` elements, each of which defines a custom column to add. Column defintions follow the pattern `column_name DATATYPE [NOT NULL] [COMMENT 'custom']`. | `<column>`... | | {nok}
+| `tableConstraints` | Contains `<constraint>` elements inserted verbatim, in order, into the `CREATE TABLE` definition. The generator does not validate SQL syntax or referenced columns; use constraints supported by the selected dialect. | `<constraint>`... | none | {nok}
 |===
+
+For example, configure table constraints as follows, using the generated SQL column names:
+
+[source,xml]
+----
+<tableConstraints>
+  <constraint>PRIMARY KEY (id)</constraint>
+  <constraint>UNIQUE (serial_number)</constraint>
+  <constraint>CHECK (amount &gt; 0)</constraint>
+</tableConstraints>
+----
 
 == Generate Documentation for an Aspect Model
 

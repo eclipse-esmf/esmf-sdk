@@ -164,6 +164,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
          for ( final DatabricksColumnDefinition columnDefinition : config.customColumns() ) {
             appendLine.accept( columnDefinition.toString() );
          }
+         config.tableConstraints().forEach( appendLine );
       }
       return result.toString();
    }

@@ -71,6 +71,9 @@ public class GenerateSql extends AspectModelMojo {
    @Parameter( property = "column" )
    private List<String> customColumns = List.of();
 
+   @Parameter
+   private List<String> tableConstraints = List.of();
+
    @Override
    public void executeGeneration() throws MojoExecutionException {
       validateParameters();
@@ -107,6 +110,7 @@ public class GenerateSql extends AspectModelMojo {
                   .decimalPrecision( decimalPrecision )
                   .decimalScale( decimalScale )
                   .customColumns( columns )
+                  .tableConstraints( tableConstraints )
                   .build();
          }
          case POSTGRESQL -> {
@@ -121,6 +125,7 @@ public class GenerateSql extends AspectModelMojo {
                   .decimalPrecision( decimalPrecision )
                   .decimalScale( decimalScale )
                   .customColumns( columns )
+                  .tableConstraints( tableConstraints )
                   .build();
          }
       };

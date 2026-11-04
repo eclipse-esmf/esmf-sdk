@@ -37,6 +37,10 @@
                <customColumns>
                   <column>custom_column ARRAY&lt;STRING&gt; NOT NULL COMMENT 'Custom column'</column>
                </customColumns>
+               <tableConstraints>
+                  <constraint>PRIMARY KEY (string_property)</constraint>
+                  <constraint>CHECK (string_property &lt;&gt; 'invalid')</constraint>
+               </tableConstraints>
                <outputDirectory>${basedir}/target/test-artifacts</outputDirectory>
             </configuration>
          </plugin>

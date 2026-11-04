@@ -52,6 +52,15 @@ class AspectModelPostgreSqlDenormalizedSqlVisitorTest {
    }
 
    @Test
+   void testTableConstraints() {
+      final PostgreSqlGenerationConfig config = PostgreSqlGenerationConfigBuilder.builder()
+            .tableConstraints( List.of( "PRIMARY KEY (test)", "UNIQUE (test)", "CHECK (test <> 'x')" ) )
+            .build();
+      assertThat( sql( TestAspect.ASPECT_WITH_PROPERTY_WITH_PAYLOAD_NAME, config ) )
+            .contains( "PRIMARY KEY (test),\n  UNIQUE (test),\n  CHECK (test <> 'x')\n)" );
+   }
+
+   @Test
    void testCustomColumn() {
       final PostgreSqlColumnDefinition customColumn = new PostgreSqlColumnDefinition(
             "custom_column", new PostgreSqlType.PostgreSqlArray( PostgreSqlType.TEXT ), false, Optional.of( "Custom column" ) );

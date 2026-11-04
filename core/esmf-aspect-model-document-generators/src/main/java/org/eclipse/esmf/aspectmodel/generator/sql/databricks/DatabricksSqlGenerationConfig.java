@@ -35,6 +35,7 @@ import io.soabase.recordbuilder.core.RecordBuilder;
  *        "https://docs.databricks.com/en/sql/language-manual/data-types/decimal-type.html">DECIMAL
  *        type</a> for more info.
  * @param customColumns custom columns to add to the table
+ * @param tableConstraints SQL table constraints to add to the table
  */
 @RecordBuilder
 public record DatabricksSqlGenerationConfig(
@@ -44,7 +45,8 @@ public record DatabricksSqlGenerationConfig(
       Locale commentLanguage,
       int decimalPrecision,
       int decimalScale,
-      List<DatabricksColumnDefinition> customColumns
+      List<DatabricksColumnDefinition> customColumns,
+      List<String> tableConstraints
 ) implements SqlGenerationConfig.DialectSpecificConfig {
    public static final String DEFAULT_TABLE_COMMAND_PREFIX = "CREATE TABLE IF NOT EXISTS";
    // As defined in https://docs.databricks.com/en/sql/language-manual/data-types/decimal-type.html
@@ -59,7 +61,17 @@ public record DatabricksSqlGenerationConfig(
 
    public DatabricksSqlGenerationConfig() {
       this( DEFAULT_TABLE_COMMAND_PREFIX, DEFAULT_INCLUDE_TABLE_COMMENT, DEFAULT_INCLUDE_COLUMN_COMMENTS, DEFAULT_COMMENT_LANGUAGE,
-            DECIMAL_DEFAULT_PRECISION, DECIMAL_DEFAULT_SCALE, List.of() );
+            DECIMAL_DEFAULT_PRECISION, DECIMAL_DEFAULT_SCALE, List.of(), List.of() );
+   }
+
+   /**
+    * Creates a configuration without additional table constraints.
+    */
+   public DatabricksSqlGenerationConfig( final String createTableCommandPrefix, final boolean includeTableComment,
+         final boolean includeColumnComments, final Locale commentLanguage, final int decimalPrecision,
+         final int decimalScale, final List<DatabricksColumnDefinition> customColumns ) {
+      this( createTableCommandPrefix, includeTableComment, includeColumnComments, commentLanguage, decimalPrecision,
+            decimalScale, customColumns, List.of() );
    }
 
    public DatabricksSqlGenerationConfig {
@@ -80,6 +92,9 @@ public record DatabricksSqlGenerationConfig(
       }
       if ( commentLanguage == null ) {
          commentLanguage = DEFAULT_COMMENT_LANGUAGE;
+      }
+      if ( tableConstraints == null ) {
+         tableConstraints = List.of();
       }
       if ( customColumns == null ) {
          customColumns = List.of();
