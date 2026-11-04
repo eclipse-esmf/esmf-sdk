@@ -127,38 +127,6 @@ public class AspectCrossFileDefinitionService extends TurtleService {
       return targetDocument.flatMap( doc -> findByLocalName( localName.get(), doc ) );
    }
 
-   Optional<String> getPrefixIri( final String prefixName, final TurtleSyntaxTree tree ) {
-      return tree.nodes()
-            .filter( n -> ParserTokenType.DIRECTIVE.equals( n.type() ) )
-            .flatMap( n -> n.children().stream() )
-            .filter( n -> ParserTokenType.PREFIX_ID.equals( n.type() ) )
-            .filter( prefixIdNode -> matchesPrefixName( prefixIdNode, prefixName ) )
-            .findFirst()
-            .flatMap( prefixIdNode -> prefixIdNode.childWithType( ParserTokenType.IRI_REFERENCE ) )
-            .map( iriNode -> {
-               final String iri = iriNode.content();
-               // IRI_REFERENCE content includes angle brackets: <urn:samm:...#>
-               if ( iri.startsWith( "<" ) && iri.endsWith( ">" ) ) {
-                  return iri.substring( 1, iri.length() - 1 );
-               }
-               return iri;
-            } );
-   }
-
-   private boolean matchesPrefixName( final TurtleSyntaxTree.Node prefixIdNode, final String prefixName ) {
-      final Optional<TurtleSyntaxTree.Node> namespaceNode = prefixIdNode.childWithType( ParserTokenType.NAMESPACE );
-      if ( namespaceNode.isEmpty() ) {
-         // Default prefix (:) has no pn_prefix child; empty prefixName matches it
-         return prefixName.isEmpty();
-      }
-      final Optional<String> pnPrefix = namespaceNode.get().children().stream()
-            .filter( n -> ParserTokenType.PN_PREFIX.equals( n.type() ) && n.isToken() )
-            .map( TurtleSyntaxTree.Node::content )
-            .findFirst();
-      // If there is no PN_PREFIX token, it's the default prefix (@prefix : <iri>)
-      return pnPrefix.map( p -> p.equals( prefixName ) ).orElse( prefixName.isEmpty() );
-   }
-
    Optional<AspectModelUrn> buildUrn( final String prefixIri, final String localName ) {
       final String fullUrn = prefixIri + localName;
       return AspectModelUrn.from( fullUrn ).toJavaOptional();
