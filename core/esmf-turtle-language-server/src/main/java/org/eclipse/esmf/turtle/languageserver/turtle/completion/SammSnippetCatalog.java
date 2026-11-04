@@ -292,12 +292,20 @@ public final class SammSnippetCatalog {
          candidates.add( "@prefix" );
          candidates.add( "prefix" );
       }
-      candidates.addAll( snippet.searchTerms() );
+      final boolean plainPredicateWord = context.targetPosition() == TargetPosition.PREDICATE
+            && !context.edit().typedText().contains( ":" );
+      if ( context.targetPosition() == TargetPosition.PREDICATE && !plainPredicateWord ) {
+         // The SAMM prefix is already typed, so the rest of the query is matched against the local name
+         // only. The keywords,
+         // e.g. "samm" to find the snippet while the prefix is still being typed, would only add noise.
+         candidates.add( snippet.localName() );
+      } else {
+         candidates.addAll( snippet.searchTerms() );
+      }
 
       // A plain word without prefix is no explicit request for a SAMM term, so it must not match in the
       // middle of a name
-      final boolean allowSubstring = !( context.targetPosition() == TargetPosition.PREDICATE
-            && !context.edit().typedText().contains( ":" ) );
+      final boolean allowSubstring = !plainPredicateWord;
       MatchScore best = null;
       for ( final String candidate : candidates ) {
          final MatchScore score = scoreCandidate( candidate, query, catalogIndex, allowSubstring );

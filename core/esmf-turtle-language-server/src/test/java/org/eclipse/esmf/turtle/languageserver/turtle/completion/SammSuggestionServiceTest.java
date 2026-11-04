@@ -683,7 +683,11 @@ class SammSuggestionServiceTest {
    @Test
    void plainWordMatchesAtWordBoundaryButNotInTheMiddleOfName() {
       assertThat( plainWordLabels( "name" ) ).containsExactly( "SAMM preferredName" );
-      assertThat( plainWordLabels( "s" ) ).containsExactly( "SAMM see" );
+      // The keyword "samm" matches the start of the SAMM prefix, so every predicate snippet is offered;
+      // "see" ranks first
+      // because its name starts with "s".
+      assertThat( plainWordLabels( "s" ) ).containsExactly( "SAMM see", "SAMM description", "SAMM preferredName" );
+      assertThat( plainWordLabels( "sam" ) ).containsExactly( "SAMM description", "SAMM preferredName", "SAMM see" );
       assertThat( plainWordLabels( "p" ) ).containsExactly( "SAMM preferredName" );
       assertThat( plainWordLabels( "a" ) ).isEmpty();
       assertThat( plainWordLabels( "ri" ) ).isEmpty();

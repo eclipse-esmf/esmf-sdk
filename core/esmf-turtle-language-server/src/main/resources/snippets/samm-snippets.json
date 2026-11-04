@@ -319,6 +319,7 @@
     "id": "samm-c-regex-constraint",
     "label": "SAMM RegularExpressionConstraint",
     "localName": "RegularExpressionConstraint",
+    "keywords": [ "regex" ],
     "targetPosition": "TOP_LEVEL_SUBJECT",
     "body": [
       "{{modelPrefix}}${1:ConstraintName} a {{sammCPrefix}}RegularExpressionConstraint ;",
@@ -395,6 +396,7 @@
     "id": "samm-description",
     "label": "SAMM description",
     "localName": "description",
+    "keywords": [ "samm", "summary", "documentation" ],
     "targetPosition": "PREDICATE",
     "body": [
       "{{sammPrefix}}description \"${1}\"@en{{separator}}"
@@ -404,6 +406,7 @@
     "id": "samm-preferred-name",
     "label": "SAMM preferredName",
     "localName": "preferredName",
+    "keywords": [ "samm", "title", "label", "display name" ],
     "targetPosition": "PREDICATE",
     "body": [
       "{{sammPrefix}}preferredName \"${1}\"@en{{separator}}"
@@ -413,6 +416,7 @@
     "id": "samm-see",
     "label": "SAMM see",
     "localName": "see",
+    "keywords": [ "samm", "reference", "link", "url" ],
     "targetPosition": "PREDICATE",
     "allowMultiple": true,
     "body": [
@@ -423,6 +427,7 @@
     "id": "samm-example-value",
     "label": "SAMM exampleValue",
     "localName": "exampleValue",
+    "keywords": [ "samm", "sample" ],
     "targetPosition": "PREDICATE",
     "requiredSubjectTypes": [ "Property" ],
     "body": [
@@ -503,6 +508,7 @@
     "id": "samm-anon-c-regex-constraint",
     "label": "SAMM Anonymous RegularExpressionConstraint",
     "localName": "RegularExpressionConstraint",
+    "keywords": [ "regex" ],
     "targetPosition": "OBJECT_CONSTRAINT",
     "body": [
       "[",

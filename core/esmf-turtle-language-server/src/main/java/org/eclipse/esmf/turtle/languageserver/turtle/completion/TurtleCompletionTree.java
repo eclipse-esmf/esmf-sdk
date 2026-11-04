@@ -45,7 +45,7 @@ final class TurtleCompletionTree {
          .map( version -> new SAMM( version ).getNamespace() + SAMM.EXTENDS )
          .collect( Collectors.toUnmodifiableSet() );
    private static final Set<String> ATOMIC_TYPES = Set.of(
-         ParserTokenType.SUBJECT, ParserTokenType.PREDICATE, ParserTokenType.PREFIXED_NAME,
+         ParserTokenType.SUBJECT, ParserTokenType.PREDICATE, ParserTokenType.PREFIXED_NAME, ParserTokenType.NAMESPACE,
          ParserTokenType.IRI_REFERENCE, ParserTokenType.BLANK_NODE_LABEL, ParserTokenType.STRING,
          ParserTokenType.BOOLEAN_LITERAL, ParserTokenType.INTEGER, ParserTokenType.DECIMAL,
          ParserTokenType.DOUBLE, ParserTokenType.LANG_TAG,
@@ -221,7 +221,25 @@ final class TurtleCompletionTree {
 
    static State collectDocumentFacts( final List<Lexeme> tokens, final Lexeme current, final Map<String, String> namespaces ) {
       final State state = new State( namespaces, true );
-      for ( final Lexeme token : tokens ) {
+      for ( int i = 0; i < tokens.size(); i++ ) {
+         final Lexeme token = tokens.get( i );
+         // An unfinished predicate can make the following statement lose its SUBJECT wrapper.
+         // Recover at a resource followed by a predicate, before later semicolons reuse the old subject.
+         if ( state.isTopLevelStatement() && i + 1 < tokens.size() && token.kind == TokenKind.TERM ) {
+            final Lexeme next = tokens.get( i + 1 );
+            final boolean declaresType = next.text.equals( "a" ) || expand( next.text, namespaces ).equals( RDF_TYPE );
+            // "a" can never be an object, so the term before it must be a subject, even if the parser called it
+            // a predicate.
+            final boolean startsStatement = declaresType && ( REFERENCE_TYPES.contains( token.type )
+                  || Set.of( ParserTokenType.SUBJECT, ParserTokenType.PREDICATE ).contains( token.type ) )
+                  || REFERENCE_TYPES.contains( token.type ) && ( ParserTokenType.PREDICATE.equals( next.type )
+                        || Set.of( ParserTokenType.PREFIXED_NAME, ParserTokenType.IRI_REFERENCE ).contains( next.type ) );
+            if ( next.kind != TokenKind.ANNOTATION && startsStatement ) {
+               state.top().slot = Slot.SUBJECT;
+               state.top().subject = "";
+               state.top().predicate = "";
+            }
+         }
          if ( token != current ) {
             state.accept( token );
          }
@@ -451,13 +469,17 @@ final class TurtleCompletionTree {
                && ( ParserTokenType.SUBJECT.equals( token.type ) || REFERENCE_TYPES.contains( token.type ) ) ) {
             frame.subject = token.text.startsWith( "_:" ) ? token.text : expand( token.text, namespaces );
             frame.slot = frame.hasSubject() ? Slot.PREDICATE : Slot.INVALID;
-         } else if ( ParserTokenType.PREDICATE.equals( token.type ) && frame.slot == Slot.PREDICATE ) {
+         } else if ( frame.slot == Slot.PREDICATE && ( ParserTokenType.PREDICATE.equals( token.type )
+               || recoverAtSeparator && ( token.text.equals( "a" )
+                     || expand( token.text, namespaces ).equals( RDF_TYPE )
+                     || Set.of( ParserTokenType.PREFIXED_NAME, ParserTokenType.IRI_REFERENCE ).contains( token.type ) ) ) ) {
             frame.predicate = token.text.equals( "a" ) ? RDF_TYPE : expand( token.text, namespaces );
             if ( frame.hasPredicate() && frame.hasSubject() ) {
                predicatesBySubject.computeIfAbsent( frame.subject, ignored -> new HashSet<>() ).add( frame.predicate );
             }
             frame.slot = frame.hasPredicate() ? Slot.OBJECT : Slot.INVALID;
-         } else if ( frame.slot == Slot.OBJECT && OBJECT_TYPES.contains( token.type ) ) {
+         } else if ( frame.slot == Slot.OBJECT && ( OBJECT_TYPES.contains( token.type )
+               || recoverAtSeparator && ParserTokenType.PREDICATE.equals( token.type ) ) ) {
             final String object = expand( token.text, namespaces );
             if ( REFERENCE_TYPES.contains( token.type ) && object.isEmpty() && !token.text.startsWith( "_:" ) ) {
                frame.slot = Slot.INVALID;
