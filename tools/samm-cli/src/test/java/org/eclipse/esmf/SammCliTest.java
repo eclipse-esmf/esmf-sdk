@@ -1360,6 +1360,20 @@ class SammCliTest extends SammCliAbstractTest {
    }
 
    @Test
+   void testAspectToSqlWithTableConstraints() {
+      for ( final String dialect : List.of( "databricks", "postgresql" ) ) {
+         final List<String> constraints = List.of( "PRIMARY KEY (id)", "CHECK (custom > 0)" );
+         final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile,
+               "to", "sql", "--dialect", dialect, "--custom-column", "custom BIGINT NOT NULL",
+               "--table-constraint", constraints.get( 0 ), "--table-constraint", constraints.get( 1 ) );
+         assertThat( result.stdout() ).contains( "custom BIGINT NOT NULL," );
+         assertThat( result.stdout() ).contains( constraints.get( 0 ) );
+         assertThat( result.stdout() ).contains( constraints.get( 1 ) );
+         assertThat( result.stderr() ).isEmpty();
+      }
+   }
+
+   @Test
    void testAspectEditMoveExistingFile( @TempDir final Path outputDirectory ) throws IOException {
       // Set up file system structure of writable files
       final Path modelLocation = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
