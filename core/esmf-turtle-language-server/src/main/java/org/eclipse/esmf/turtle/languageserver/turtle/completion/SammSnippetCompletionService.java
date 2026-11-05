@@ -59,7 +59,7 @@ public final class SammSnippetCompletionService {
 
    private static String computeFilterText( final SnippetDefinition snippet, final SammCompletionContext context ) {
       final String typed = context.edit().typedText();
-      final String prefix = context.targetPosition() == TargetPosition.PREDICATE ? context.resolvedSammPrefix() : "";
+      final String prefix = context.targetPosition() == TargetPosition.PREDICATE ? snippet.predicatePrefix( context ) : "";
       final String qualifiedName = prefix + snippet.localName();
       final List<String> parts = new ArrayList<>();
       if ( !typed.isEmpty() ) {

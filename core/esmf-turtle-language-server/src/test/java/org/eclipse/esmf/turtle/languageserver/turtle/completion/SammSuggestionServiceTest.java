@@ -46,6 +46,8 @@ import org.eclipse.lsp4j.TextEdit;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -259,6 +261,181 @@ class SammSuggestionServiceTest {
    }
 
    @Test
+   void offersTheFullPredicateMenuForAnAspectAndInsertsValidTurtle() {
+      final Request request = request( HEADER + ":A a samm:Aspect ;\n   |" );
+      final List<CompletionItem> items = snippets.complete( request.document, request.position );
+      assertThat( items ).extracting( CompletionItem::getLabel ).containsExactly(
+            "SAMM description", "SAMM preferredName", "SAMM see", "SAMM properties", "SAMM operations", "SAMM events" );
+      for ( final CompletionItem item : items ) {
+         assertValid( apply( request, item ) );
+      }
+      assertThat( snippetNamed( request, "SAMM operations" ).getTextEdit().getLeft().getNewText() )
+            .isEqualTo( "samm:operations ( :${1:operation} ) ;" );
+   }
+
+   @ParameterizedTest
+   @ValueSource( strings = { "s", "sa", "samm", "samm:" } )
+   void offersAllAspectPredicatesWhileTheSammPrefixIsBeingTyped( final String typed ) {
+      final Request request = request( HEADER + ":Machine a samm:Aspect ;\n  " + typed + "|" );
+      final List<CompletionItem> items = snippets.complete( request.document, request.position );
+      assertThat( items ).extracting( CompletionItem::getLabel ).containsExactly(
+            "SAMM description", "SAMM preferredName", "SAMM see", "SAMM properties", "SAMM operations", "SAMM events" );
+      for ( final CompletionItem item : items ) {
+         assertValid( apply( request, item ) );
+      }
+   }
+
+   @ParameterizedTest
+   @CsvSource( {
+         "pre, SAMM preferredName",
+         "des, SAMM description",
+         "prop, SAMM properties",
+         "op, SAMM operations",
+         "ev, SAMM events",
+         "samm:ev, SAMM events" } )
+   void offersAspectPredicateWhileItsNameIsBeingTypedWithoutPrefix( final String typed, final String expectedFirst ) {
+      final Request request = request( HEADER + ":Machine a samm:Aspect ;\n  " + typed + "|" );
+      final List<CompletionItem> items = snippets.complete( request.document, request.position );
+      assertThat( items ).isNotEmpty();
+      assertThat( items.getFirst().getLabel() ).isEqualTo( expectedFirst );
+      final String expanded = apply( request, items.getFirst() );
+      assertValid( expanded );
+      assertThat( expanded ).doesNotContain( "  " + typed + "samm" ).contains( "  samm:" );
+   }
+
+   @Test
+   void doesNotOfferPredicatesForOtherPrefixesOrUnknownWords() {
+      assertThat( snippets.complete( request( HEADER + ":A a samm:Aspect ;\n  rdf:ty|" ).document,
+            request( HEADER + ":A a samm:Aspect ;\n  rdf:ty|" ).position ) ).isEmpty();
+      final Request unknown = request( HEADER + ":A a samm:Aspect ;\n  xyz|" );
+      assertThat( snippets.complete( unknown.document, unknown.position ) ).isEmpty();
+   }
+
+   @Test
+   void doesNotOfferAspectOnlyPredicatesForOtherElements() {
+      final Request request = request( HEADER + ":p a samm:Property ;\n   |" );
+      assertThat( snippets.complete( request.document, request.position ) ).extracting( CompletionItem::getLabel )
+            .doesNotContain( "SAMM properties", "SAMM operations", "SAMM events" );
+   }
+
+   private static final List<String> COMMON_PREDICATES = List.of( "SAMM description", "SAMM preferredName", "SAMM see" );
+
+   static Stream<Arguments> predicateMenuPerElement() {
+      return Stream.of(
+            Arguments.of( "samm:Aspect", List.of( "SAMM properties", "SAMM operations", "SAMM events" ) ),
+            Arguments.of( "samm:Property", List.of( "SAMM characteristic", "SAMM exampleValue" ) ),
+            Arguments.of( "samm:AbstractProperty", List.of() ),
+            Arguments.of( "samm:Entity", List.of( "SAMM properties", "SAMM extends" ) ),
+            Arguments.of( "samm:AbstractEntity", List.of( "SAMM properties", "SAMM extends" ) ),
+            Arguments.of( "samm:Operation", List.of( "SAMM input", "SAMM output" ) ),
+            Arguments.of( "samm:Event", List.of( "SAMM parameters" ) ),
+            Arguments.of( "samm:Value", List.of( "SAMM value" ) ),
+            Arguments.of( "samm:Unit", List.of( "SAMM commonCode", "SAMM symbol", "SAMM referenceUnit", "SAMM conversionFactor",
+                  "SAMM numericConversionFactor", "SAMM quantityKind" ) ),
+            Arguments.of( "samm:Characteristic", List.of( "SAMM dataType" ) ),
+            Arguments.of( "samm-c:Trait", List.of( "SAMM baseCharacteristic", "SAMM constraint" ) ),
+            Arguments.of( "samm-c:Quantifiable", List.of( "SAMM dataType", "SAMM unit" ) ),
+            Arguments.of( "samm-c:Measurement", List.of( "SAMM dataType", "SAMM unit" ) ),
+            Arguments.of( "samm-c:Duration", List.of( "SAMM dataType", "SAMM unit" ) ),
+            Arguments.of( "samm-c:Enumeration", List.of( "SAMM dataType", "SAMM values" ) ),
+            Arguments.of( "samm-c:State", List.of( "SAMM dataType", "SAMM values", "SAMM defaultValue" ) ),
+            Arguments.of( "samm-c:Collection", List.of( "SAMM dataType", "SAMM elementCharacteristic" ) ),
+            Arguments.of( "samm-c:List", List.of( "SAMM dataType", "SAMM elementCharacteristic" ) ),
+            Arguments.of( "samm-c:Set", List.of( "SAMM dataType", "SAMM elementCharacteristic" ) ),
+            Arguments.of( "samm-c:SortedSet", List.of( "SAMM dataType", "SAMM elementCharacteristic" ) ),
+            Arguments.of( "samm-c:TimeSeries", List.of( "SAMM dataType" ) ),
+            Arguments.of( "samm-c:Code", List.of( "SAMM dataType" ) ),
+            Arguments.of( "samm-c:SingleEntity", List.of( "SAMM dataType" ) ),
+            Arguments.of( "samm-c:Either", List.of( "SAMM left", "SAMM right" ) ),
+            Arguments.of( "samm-c:StructuredValue", List.of( "SAMM dataType", "SAMM deconstructionRule", "SAMM elements" ) ),
+            Arguments.of( "samm-c:LengthConstraint", List.of( "SAMM minValue", "SAMM maxValue" ) ),
+            Arguments.of( "samm-c:RangeConstraint", List.of( "SAMM minValue", "SAMM maxValue", "SAMM lowerBoundDefinition",
+                  "SAMM upperBoundDefinition" ) ),
+            Arguments.of( "samm-c:RegularExpressionConstraint", List.of( "SAMM value" ) ),
+            Arguments.of( "samm-c:EncodingConstraint", List.of( "SAMM value" ) ),
+            Arguments.of( "samm-c:LanguageConstraint", List.of( "SAMM languageCode" ) ),
+            Arguments.of( "samm-c:LocaleConstraint", List.of( "SAMM localeCode" ) ),
+            Arguments.of( "samm-c:FixedPointConstraint", List.of( "SAMM scale", "SAMM integer" ) ) );
+   }
+
+   @ParameterizedTest
+   @MethodSource( "predicateMenuPerElement" )
+   void offersEveryAttributeOfCoreElementAndInsertsValidTurtle( final String type, final List<String> specific ) {
+      final Request request = request( FULL_HEADER + ":X a " + type + " ;\n   |" );
+      final List<CompletionItem> items = snippets.complete( request.document, request.position );
+      assertThat( items ).extracting( CompletionItem::getLabel )
+            .containsExactlyInAnyOrderElementsOf( Stream.concat( COMMON_PREDICATES.stream(), specific.stream() ).toList() );
+      for ( final CompletionItem item : items ) {
+         assertValid( apply( request, item ) );
+      }
+   }
+
+   @ParameterizedTest
+   @MethodSource( "predicateMenuPerElement" )
+   void doesNotOfferAnAttributeThatTheElementAlreadyHas( final String type, final List<String> specific ) {
+      for ( final String label : specific ) {
+         final String predicate = label.substring( "SAMM ".length() );
+         final Request request = request( FULL_HEADER + ":X a " + type + " ; samm:" + predicate + " ( ) ;\n   |" );
+         final List<String> offered = snippets.complete( request.document, request.position ).stream()
+               .map( CompletionItem::getLabel ).toList();
+         // A Trait can have several constraints, so that one stays in the menu
+         if ( label.equals( "SAMM constraint" ) ) {
+            assertThat( offered ).contains( label );
+         } else {
+            assertThat( offered ).doesNotContain( label );
+         }
+      }
+   }
+
+   @Test
+   void completesCharacteristicNamespaceAttributesWithTheirOwnPrefix() {
+      final String measurement = FULL_HEADER + ":M a samm-c:Measurement ;\n   ";
+      // the samm-c: prefix typed completely or partly
+      for ( final String typed : List.of( "samm-c:un", "samm-c:", "samm-c", "un" ) ) {
+         final Request request = request( measurement + typed + "|" );
+         final CompletionItem unit = snippetNamed( request, "SAMM unit" );
+         assertThat( unit.getTextEdit().getLeft().getNewText() ).startsWith( "samm-c:unit " );
+         assertValid( apply( request, unit ) );
+      }
+      // samm:dataType and samm-c:unit are both offered while only the start of a prefix is typed
+      assertThat( snippets.complete( request( measurement + "samm|" ).document, request( measurement + "samm|" ).position ) )
+            .extracting( CompletionItem::getLabel ).contains( "SAMM dataType", "SAMM unit" );
+      // a predicate of the other namespace is not offered under a typed prefix
+      final Request sammPrefix = request( measurement + "samm:|" );
+      assertThat( snippets.complete( sammPrefix.document, sammPrefix.position ) ).extracting( CompletionItem::getLabel )
+            .contains( "SAMM dataType" ).doesNotContain( "SAMM unit" );
+      final Request characteristicNamespacePrefix = request( measurement + "samm-c:|" );
+      assertThat( snippets.complete( characteristicNamespacePrefix.document, characteristicNamespacePrefix.position ) )
+            .extracting( CompletionItem::getLabel )
+            .contains( "SAMM unit" ).doesNotContain( "SAMM dataType", "SAMM description" );
+   }
+
+   @Test
+   void offersTheUnitSnippetAtTheTopLevel() {
+      final Request request = request( FULL_HEADER + "\nUni|" );
+      final CompletionItem item = snippetNamed( request, "SAMM Unit" );
+      assertValid( apply( request, item ) );
+      assertThat( item.getTextEdit().getLeft().getNewText() ).contains( "a samm:Unit ;" )
+            .contains( "samm:referenceUnit unit:${4:metre}" );
+   }
+
+   @Test
+   void insertsTheDocumentedShapeOfReferenceAttributes() {
+      assertThat( newText( ":P a samm:Property ;\n   |", "SAMM characteristic" ) )
+            .isEqualTo( "samm:characteristic :${1:CharacteristicName} ;" );
+      assertThat( newText( ":E a samm:Entity ;\n   |", "SAMM extends" ) ).isEqualTo( "samm:extends :${1:ParentEntityName} ;" );
+      assertThat( newText( ":O a samm:Operation ;\n   |", "SAMM input" ) ).isEqualTo( "samm:input ( :${1:inputProperty} ) ;" );
+      assertThat( newText( ":O a samm:Operation ;\n   |", "SAMM output" ) ).isEqualTo( "samm:output :${1:outputProperty} ;" );
+      assertThat( newText( ":E a samm:Event ;\n   |", "SAMM parameters" ) )
+            .isEqualTo( "samm:parameters ( :${1:parameterProperty} ) ;" );
+      assertThat( newText( ":V a samm:Value ;\n   |", "SAMM value" ) ).isEqualTo( "samm:value \"${1}\" ;" );
+   }
+
+   private String newText( final String markedBody, final String label ) {
+      return snippetNamed( request( HEADER + markedBody ), label ).getTextEdit().getLeft().getNewText();
+   }
+
+   @Test
    void supportsAnonymousBracketTriggerAcrossAllFourObjectContexts() {
       // Context 1: samm:properties list on Aspect (with auto-closed [])
       final Request aspectProps = request( FULL_HEADER + ":A a samm:Aspect ;\n    samm:properties ( [|] ) ." );
@@ -358,9 +535,12 @@ class SammSuggestionServiceTest {
    @MethodSource( "snippetsWithChoices" )
    void everyChoiceOfEverySnippetExpandsToValidTurtleWithoutRdfPrefix( final SnippetDefinition definition ) {
       // FULL_HEADER declares no rdf: prefix
-      final Request request = definition.targetPosition() == SammCompletionContext.TargetPosition.TOP_LEVEL_SUBJECT
-            ? request( FULL_HEADER + "\n|" )
-            : request( FULL_HEADER + ":p a samm:Property ;\n    samm:characteristic [|] ." );
+      final Request request = switch ( definition.targetPosition() ) {
+         case TOP_LEVEL_SUBJECT -> request( FULL_HEADER + "\n|" );
+         // The subject must have a type for which the predicate is offered
+         case PREDICATE -> request( FULL_HEADER + ":x a samm-c:" + definition.requiredSubjectTypes().getFirst() + " ;\n    |" );
+         default -> request( FULL_HEADER + ":p a samm:Property ;\n    samm:characteristic [|] ." );
+      };
       final CompletionItem item = snippetNamed( request, definition.label() );
       final String text = item.getTextEdit().getLeft().getNewText();
       assertThat( text ).doesNotContain( "rdf:" );
@@ -566,7 +746,7 @@ class SammSuggestionServiceTest {
       final Request request = request( HEADER + ":p a samm:Property ; samm:description \"existing\"@en ; | ." );
       final List<CompletionItem> items = snippets.complete( request.document, request.position );
       assertThat( items ).extracting( CompletionItem::getLabel )
-            .containsExactly( "SAMM preferredName", "SAMM see", "SAMM exampleValue" );
+            .containsExactly( "SAMM preferredName", "SAMM see", "SAMM characteristic", "SAMM exampleValue" );
       for ( final CompletionItem item : items ) {
          assertValid( apply( request, item ) );
       }
@@ -614,12 +794,12 @@ class SammSuggestionServiceTest {
       assertThat( desItems ).extracting( CompletionItem::getLabel )
             .contains( "SAMM description" );
 
-      // 4. Predicate typed "samm:p" on Aspect: prefix match "preferredName" (Tier 1) comes before
-      // substring match "description" (Tier 3)
+      // 4. Predicate typed "samm:p" on Aspect: prefix matches "properties" and "preferredName" (Tier 1,
+      // shorter first) come before the substring matches "operations" and "description" (Tier 3)
       final Request predicateP = request( FULL_HEADER + ":A a samm:Aspect ;\n    samm:p|" );
       final List<CompletionItem> pItems = snippets.complete( predicateP.document, predicateP.position );
       assertThat( pItems ).extracting( CompletionItem::getLabel )
-            .containsExactly( "SAMM preferredName", "SAMM description" );
+            .containsExactly( "SAMM properties", "SAMM preferredName", "SAMM operations", "SAMM description" );
       assertThat( pItems.get( 0 ).getSortText() ).isEqualTo( "0000" );
       assertThat( pItems.get( 1 ).getSortText() ).isEqualTo( "0001" );
 

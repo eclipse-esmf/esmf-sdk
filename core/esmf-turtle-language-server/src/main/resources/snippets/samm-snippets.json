@@ -393,6 +393,20 @@
     ]
   },
   {
+    "id": "samm-unit",
+    "label": "SAMM Unit",
+    "defaultFilterText": "Unit",
+    "targetPosition": "TOP_LEVEL_SUBJECT",
+    "body": [
+      "{{modelPrefix}}${1:unitName} a {{sammPrefix}}Unit ;",
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}symbol \"${3}\" ;",
+      "   {{sammPrefix}}referenceUnit {{unitPrefix}}${4:metre} ;",
+      "   {{sammPrefix}}conversionFactor \"${5:10⁻² m}\" ;",
+      "   {{sammPrefix}}numericConversionFactor \"${6:0.01}\"^^{{xsdPrefix}}double .$0"
+    ]
+  },
+  {
     "id": "samm-description",
     "label": "SAMM description",
     "localName": "description",
@@ -421,6 +435,562 @@
     "allowMultiple": true,
     "body": [
       "{{sammPrefix}}see <${1:https://example.com/term/}>{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-properties",
+    "label": "SAMM properties",
+    "defaultFilterText": "properties",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Aspect",
+      "Entity",
+      "AbstractEntity"
+    ],
+    "body": [
+      "{{sammPrefix}}properties ( {{modelPrefix}}${1:property} ){{separator}}"
+    ]
+  },
+  {
+    "id": "samm-operations",
+    "label": "SAMM operations",
+    "defaultFilterText": "operations",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Aspect"
+    ],
+    "body": [
+      "{{sammPrefix}}operations ( {{modelPrefix}}${1:operation} ){{separator}}"
+    ]
+  },
+  {
+    "id": "samm-events",
+    "label": "SAMM events",
+    "defaultFilterText": "events",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Aspect"
+    ],
+    "body": [
+      "{{sammPrefix}}events ( {{modelPrefix}}${1:event} ){{separator}}"
+    ]
+  },
+  {
+    "id": "samm-characteristic-attribute",
+    "label": "SAMM characteristic",
+    "defaultFilterText": "characteristic",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Property"
+    ],
+    "body": [
+      "{{sammPrefix}}characteristic {{modelPrefix}}${1:CharacteristicName}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-extends",
+    "label": "SAMM extends",
+    "defaultFilterText": "extends",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Entity",
+      "AbstractEntity"
+    ],
+    "body": [
+      "{{sammPrefix}}extends {{modelPrefix}}${1:ParentEntityName}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-input",
+    "label": "SAMM input",
+    "defaultFilterText": "input",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Operation"
+    ],
+    "body": [
+      "{{sammPrefix}}input ( {{modelPrefix}}${1:inputProperty} ){{separator}}"
+    ]
+  },
+  {
+    "id": "samm-output",
+    "label": "SAMM output",
+    "defaultFilterText": "output",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Operation"
+    ],
+    "body": [
+      "{{sammPrefix}}output {{modelPrefix}}${1:outputProperty}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-parameters",
+    "label": "SAMM parameters",
+    "defaultFilterText": "parameters",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Event"
+    ],
+    "body": [
+      "{{sammPrefix}}parameters ( {{modelPrefix}}${1:parameterProperty} ){{separator}}"
+    ]
+  },
+  {
+    "id": "samm-value-attribute",
+    "label": "SAMM value",
+    "defaultFilterText": "value",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Value"
+    ],
+    "body": [
+      "{{sammPrefix}}value \"${1}\"{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-data-type",
+    "label": "SAMM dataType",
+    "defaultFilterText": "dataType",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Characteristic",
+      "Enumeration",
+      "State",
+      "Collection",
+      "List",
+      "Set",
+      "SortedSet"
+    ],
+    "body": [
+      "{{sammPrefix}}dataType ${1|{{allDataTypes}}|}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-data-type-numeric",
+    "label": "SAMM dataType",
+    "defaultFilterText": "dataType",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Quantifiable",
+      "Measurement"
+    ],
+    "body": [
+      "{{sammPrefix}}dataType ${1|{{numericDataTypes}}|}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-data-type-duration",
+    "label": "SAMM dataType",
+    "defaultFilterText": "dataType",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Duration"
+    ],
+    "body": [
+      "{{sammPrefix}}dataType ${1|{{durationDataTypes}}|}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-data-type-string",
+    "label": "SAMM dataType",
+    "defaultFilterText": "dataType",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Code",
+      "StructuredValue"
+    ],
+    "body": [
+      "{{sammPrefix}}dataType {{xsdPrefix}}${1:string}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-data-type-entity",
+    "label": "SAMM dataType",
+    "defaultFilterText": "dataType",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "SingleEntity"
+    ],
+    "body": [
+      "{{sammPrefix}}dataType {{modelPrefix}}${1:EntityName}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-data-type-time-series-entity",
+    "label": "SAMM dataType",
+    "defaultFilterText": "dataType",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "TimeSeries"
+    ],
+    "body": [
+      "{{sammPrefix}}dataType {{modelPrefix}}${1:TimeSeriesEntity}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-unit-measurement",
+    "label": "SAMM unit",
+    "defaultFilterText": "unit",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Measurement"
+    ],
+    "body": [
+      "{{sammCPrefix}}unit {{unitPrefix}}${1:kilometrePerHour}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-unit-quantifiable",
+    "label": "SAMM unit",
+    "defaultFilterText": "unit",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Quantifiable"
+    ],
+    "body": [
+      "{{sammCPrefix}}unit {{unitPrefix}}${1:percent}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-unit-duration",
+    "label": "SAMM unit",
+    "defaultFilterText": "unit",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Duration"
+    ],
+    "body": [
+      "{{sammCPrefix}}unit {{unitPrefix}}${1:secondUnitOfTime}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-values",
+    "label": "SAMM values",
+    "defaultFilterText": "values",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Enumeration",
+      "State"
+    ],
+    "body": [
+      "{{sammCPrefix}}values ( ${1} ){{separator}}"
+    ]
+  },
+  {
+    "id": "samm-default-value",
+    "label": "SAMM defaultValue",
+    "defaultFilterText": "defaultValue",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "State"
+    ],
+    "body": [
+      "{{sammCPrefix}}defaultValue ${1}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-element-characteristic",
+    "label": "SAMM elementCharacteristic",
+    "defaultFilterText": "elementCharacteristic",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Collection",
+      "List",
+      "Set",
+      "SortedSet"
+    ],
+    "body": [
+      "{{sammCPrefix}}elementCharacteristic {{modelPrefix}}${1:ElementCharacteristic}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-base-characteristic",
+    "label": "SAMM baseCharacteristic",
+    "defaultFilterText": "baseCharacteristic",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Trait"
+    ],
+    "body": [
+      "{{sammCPrefix}}baseCharacteristic {{modelPrefix}}${1:BaseCharacteristic}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-constraint",
+    "label": "SAMM constraint",
+    "defaultFilterText": "constraint",
+    "targetPosition": "PREDICATE",
+    "allowMultiple": true,
+    "requiredSubjectTypes": [
+      "Trait"
+    ],
+    "body": [
+      "{{sammCPrefix}}constraint {{modelPrefix}}${1:ConstraintName}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-left",
+    "label": "SAMM left",
+    "defaultFilterText": "left",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Either"
+    ],
+    "body": [
+      "{{sammCPrefix}}left {{modelPrefix}}${1:LeftCharacteristic}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-right",
+    "label": "SAMM right",
+    "defaultFilterText": "right",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Either"
+    ],
+    "body": [
+      "{{sammCPrefix}}right {{modelPrefix}}${1:RightCharacteristic}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-deconstruction-rule",
+    "label": "SAMM deconstructionRule",
+    "defaultFilterText": "deconstructionRule",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "StructuredValue"
+    ],
+    "body": [
+      "{{sammCPrefix}}deconstructionRule \"${1:(.*)}\"{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-elements",
+    "label": "SAMM elements",
+    "defaultFilterText": "elements",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "StructuredValue"
+    ],
+    "body": [
+      "{{sammCPrefix}}elements ( {{modelPrefix}}${1:elementProperty} ){{separator}}"
+    ]
+  },
+  {
+    "id": "samm-min-value-length",
+    "label": "SAMM minValue",
+    "defaultFilterText": "minValue",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "LengthConstraint"
+    ],
+    "body": [
+      "{{sammCPrefix}}minValue \"${1:0}\"^^{{xsdPrefix}}nonNegativeInteger{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-max-value-length",
+    "label": "SAMM maxValue",
+    "defaultFilterText": "maxValue",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "LengthConstraint"
+    ],
+    "body": [
+      "{{sammCPrefix}}maxValue \"${1:10}\"^^{{xsdPrefix}}nonNegativeInteger{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-min-value-range",
+    "label": "SAMM minValue",
+    "defaultFilterText": "minValue",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "RangeConstraint"
+    ],
+    "body": [
+      "{{sammCPrefix}}minValue \"${1:0}\"^^{{xsdPrefix}}${2:float}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-max-value-range",
+    "label": "SAMM maxValue",
+    "defaultFilterText": "maxValue",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "RangeConstraint"
+    ],
+    "body": [
+      "{{sammCPrefix}}maxValue \"${1:100}\"^^{{xsdPrefix}}${2:float}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-lower-bound-definition",
+    "label": "SAMM lowerBoundDefinition",
+    "defaultFilterText": "lowerBoundDefinition",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "RangeConstraint"
+    ],
+    "body": [
+      "{{sammCPrefix}}lowerBoundDefinition ${1|{{sammCPrefix}}AT_LEAST,{{sammCPrefix}}GREATER_THAN|}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-upper-bound-definition",
+    "label": "SAMM upperBoundDefinition",
+    "defaultFilterText": "upperBoundDefinition",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "RangeConstraint"
+    ],
+    "body": [
+      "{{sammCPrefix}}upperBoundDefinition ${1|{{sammCPrefix}}AT_MOST,{{sammCPrefix}}LESS_THAN|}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-value-regex",
+    "label": "SAMM value",
+    "defaultFilterText": "value",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "RegularExpressionConstraint"
+    ],
+    "body": [
+      "{{sammPrefix}}value \"${1:^[A-Z0-9]+$}\"{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-value-encoding",
+    "label": "SAMM value",
+    "defaultFilterText": "value",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "EncodingConstraint"
+    ],
+    "body": [
+      "{{sammPrefix}}value ${1|{{sammPrefix}}US-ASCII,{{sammPrefix}}ISO-8859-1,{{sammPrefix}}UTF-8,{{sammPrefix}}UTF-16,{{sammPrefix}}UTF-16BE,{{sammPrefix}}UTF-16LE|}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-language-code",
+    "label": "SAMM languageCode",
+    "defaultFilterText": "languageCode",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "LanguageConstraint"
+    ],
+    "body": [
+      "{{sammCPrefix}}languageCode \"${1:en}\"{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-locale-code",
+    "label": "SAMM localeCode",
+    "defaultFilterText": "localeCode",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "LocaleConstraint"
+    ],
+    "body": [
+      "{{sammCPrefix}}localeCode \"${1:de-DE}\"{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-scale",
+    "label": "SAMM scale",
+    "defaultFilterText": "scale",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "FixedPointConstraint"
+    ],
+    "body": [
+      "{{sammCPrefix}}scale \"${1:2}\"^^{{xsdPrefix}}positiveInteger{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-integer",
+    "label": "SAMM integer",
+    "defaultFilterText": "integer",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "FixedPointConstraint"
+    ],
+    "body": [
+      "{{sammCPrefix}}integer \"${1:5}\"^^{{xsdPrefix}}positiveInteger{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-common-code",
+    "label": "SAMM commonCode",
+    "defaultFilterText": "commonCode",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Unit"
+    ],
+    "body": [
+      "{{sammPrefix}}commonCode \"${1}\"{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-symbol",
+    "label": "SAMM symbol",
+    "defaultFilterText": "symbol",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Unit"
+    ],
+    "body": [
+      "{{sammPrefix}}symbol \"${1}\"{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-reference-unit",
+    "label": "SAMM referenceUnit",
+    "defaultFilterText": "referenceUnit",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Unit"
+    ],
+    "body": [
+      "{{sammPrefix}}referenceUnit {{unitPrefix}}${1:metre}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-conversion-factor",
+    "label": "SAMM conversionFactor",
+    "defaultFilterText": "conversionFactor",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Unit"
+    ],
+    "body": [
+      "{{sammPrefix}}conversionFactor \"${1:10⁻² m}\"{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-numeric-conversion-factor",
+    "label": "SAMM numericConversionFactor",
+    "defaultFilterText": "numericConversionFactor",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Unit"
+    ],
+    "body": [
+      "{{sammPrefix}}numericConversionFactor \"${1:0.01}\"^^{{xsdPrefix}}double{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-quantity-kind",
+    "label": "SAMM quantityKind",
+    "defaultFilterText": "quantityKind",
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Unit"
+    ],
+    "body": [
+      "{{sammPrefix}}quantityKind {{unitPrefix}}${1:length}{{separator}}"
     ]
   },
   {

@@ -75,7 +75,29 @@ final class TurtleCompletionTree {
    }
 
    static List<Lexeme> tokens( final TurtleSyntaxTree tree ) {
-      return List.copyOf( new TurtleCompletionTree( tree ).tokens );
+      return List.copyOf( joinUnfinishedPrefixedNames( new TurtleCompletionTree( tree ).tokens ) );
+   }
+
+   /**
+    * While the user types a prefixed name, the parser reports the prefix and the colon as two tokens
+    * until the local name
+    * starts, e.g. {@code samm} and {@code :} for {@code samm:}. This joins such neighbours into one
+    * term, as the parser
+    * does for {@code samm:p}.
+    */
+   private static List<Lexeme> joinUnfinishedPrefixedNames( final List<Lexeme> tokens ) {
+      final List<Lexeme> joined = new ArrayList<>( tokens.size() );
+      for ( final Lexeme token : tokens ) {
+         final Lexeme previous = joined.isEmpty() ? null : joined.getLast();
+         if ( previous != null && ParserTokenType.PN_PREFIX.equals( previous.type() ) && ParserTokenType.SYMBOL_COLON.equals( token.type() )
+               && previous.end() == token.start() ) {
+            joined.set( joined.size() - 1, new Lexeme( previous.text() + token.text(), previous.start(), token.end(),
+                  TokenKind.TERM, ParserTokenType.PREFIXED_NAME, previous.valid() && token.valid(), Optional.empty() ) );
+         } else {
+            joined.add( token );
+         }
+      }
+      return joined;
    }
 
    private int start( final TurtleSyntaxTree.Node node ) {

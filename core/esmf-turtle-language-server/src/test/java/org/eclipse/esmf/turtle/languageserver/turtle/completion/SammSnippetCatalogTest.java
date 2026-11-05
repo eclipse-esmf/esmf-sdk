@@ -131,8 +131,12 @@ class SammSnippetCatalogTest {
    private static Stream<Arguments> snippetMatches() {
       return Stream.of(
             Arguments.of( ":p a samm:Property ;\n   | .",
-                  List.of( "samm-description", "samm-preferred-name", "samm-see", "samm-example-value" ) ),
-            Arguments.of( ":A a samm:Aspect ;\n   | .", List.of( "samm-description", "samm-preferred-name", "samm-see" ) ),
+                  List.of( "samm-description", "samm-preferred-name", "samm-see", "samm-characteristic-attribute",
+                        "samm-example-value" ) ),
+            Arguments.of( ":A a samm:Aspect ;\n   | .",
+                  List.of( "samm-description", "samm-preferred-name", "samm-see", "samm-properties", "samm-operations", "samm-events" ) ),
+            Arguments.of( ":A a samm:Aspect ; samm:properties ( :p ) ; samm:events ( ) ;\n   | .",
+                  List.of( "samm-description", "samm-preferred-name", "samm-see", "samm-operations" ) ),
             Arguments.of( ":Test a samm:Aspect ;\n   samm:|", List.of( "samm-description", "samm-preferred-name", "samm-see" ) ),
             Arguments.of( ":Test a samm:Aspect ;\n   samm:|\n", List.of( "samm-description", "samm-preferred-name", "samm-see" ) ),
             Arguments.of( ":Test a samm:Aspect ;\n   samm:|\n\n"
@@ -152,8 +156,9 @@ class SammSnippetCatalogTest {
                   + ":vin a samm:Property ;\n   samm:preferredName \"Vin\"@en ;\n   samm:description \"Vin\"@en .",
                   List.of( "samm-description", "samm-preferred-name", "samm-see" ) ),
             Arguments.of( ":p a samm:Property ; samm:exampleValue \"value\" ;\n   | .",
-                  List.of( "samm-description", "samm-preferred-name", "samm-see" ) ),
-            Arguments.of( ":A a samm:Aspect ;\n   samm:p| .", List.of( "samm-preferred-name", "samm-description" ) ),
+                  List.of( "samm-description", "samm-preferred-name", "samm-see", "samm-characteristic-attribute" ) ),
+            Arguments.of( ":A a samm:Aspect ;\n   samm:p| .",
+                  List.of( "samm-properties", "samm-preferred-name", "samm-operations", "samm-description" ) ),
             // The keyword "samm" shows all predicate snippets while the prefix is still being typed; real name
             // matches rank first.
             Arguments.of( ":A a samm:Aspect ;\n   s| .", List.of( "samm-see", "samm-description", "samm-preferred-name" ) ),

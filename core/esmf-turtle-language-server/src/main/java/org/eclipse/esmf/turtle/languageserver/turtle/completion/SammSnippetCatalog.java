@@ -38,6 +38,8 @@ import tools.jackson.databind.ObjectMapper;
 public final class SammSnippetCatalog {
    private static final String SNIPPETS_RESOURCE_PATH = "/snippets/samm-snippets.json";
    private static final Pattern IDENTIFIER = Pattern.compile( "[A-Za-z_][A-Za-z0-9_]*" );
+   /** A start of a prefix such as {@code samm-c} or of a predicate name. */
+   private static final Pattern PREFIX_OR_NAME = Pattern.compile( "[A-Za-z_][A-Za-z0-9_-]*" );
    private static final List<SnippetDefinition> SNIPPETS = loadSnippets();
 
    /** All SAMM data types: the allowed XSD types, {@code rdf:langString} and {@code samm:curie}. */
@@ -53,6 +55,7 @@ public final class SammSnippetCatalog {
    static final List<SammType<?>> DURATION_DATA_TYPES = Stream.concat(
          ALL_DATA_TYPES.stream().filter( type -> Duration.class.isAssignableFrom( type.getJavaClass() ) ),
          NUMERIC_DATA_TYPES.stream() ).toList();
+   private static final String CHARACTERISTIC_PREFIX_PLACEHOLDER = "{{sammCPrefix}}";
    private static final String ALL_DATA_TYPES_PLACEHOLDER = "{{allDataTypes}}";
    private static final String NUMERIC_DATA_TYPES_PLACEHOLDER = "{{numericDataTypes}}";
    private static final String DURATION_DATA_TYPES_PLACEHOLDER = "{{durationDataTypes}}";
@@ -116,9 +119,11 @@ public final class SammSnippetCatalog {
       }
 
       public String render( final SammCompletionContext context ) {
-         final String sammPrefix =
-               targetPosition == TargetPosition.PREDICATE ? context.resolvedSammPrefix() : context.namespaces().sammPrefix();
-         final String charPrefix = context.namespaces().characteristicPrefix().orElse( "" );
+         final boolean predicate = targetPosition == TargetPosition.PREDICATE;
+         final String sammPrefix = predicate && !isCharacteristicPredicate() ? predicatePrefix( context )
+               : context.namespaces().sammPrefix();
+         final String charPrefix = predicate && isCharacteristicPredicate() ? predicatePrefix( context )
+               : context.namespaces().characteristicPrefix().orElse( "" );
          final String xsdPrefix = context.namespaces().xsdPrefix().orElse( "" );
          final String unitPrefix = context.namespaces().unitPrefix().orElse( "" );
          final String latestVersion = context.namespaces().version().toVersionString();
@@ -137,6 +142,27 @@ public final class SammSnippetCatalog {
                .replace( "{{separator}}", context.predicateSeparator().orElse( "" ) )
                .replace( "\r\n", "\n" )
                .replace( "\n", context.edit().lineEnding() + baseIndent );
+      }
+
+      /**
+       * @return whether the predicate of this snippet is in the {@code samm-c:} namespace instead of the
+       *         {@code samm:} namespace
+       */
+      private boolean isCharacteristicPredicate() {
+         return !body.isEmpty() && body.getFirst().startsWith( CHARACTERISTIC_PREFIX_PLACEHOLDER );
+      }
+
+      /**
+       * @return the prefix to write the predicate with: the one that the user has already typed,
+       *         otherwise the declared prefix
+       *         of the namespace of the predicate
+       */
+      String predicatePrefix( final SammCompletionContext context ) {
+         if ( context.edit().typedText().contains( ":" ) ) {
+            return context.resolvedSammPrefix();
+         }
+         return isCharacteristicPredicate() ? context.namespaces().characteristicPrefix().orElse( "" )
+               : context.namespaces().sammPrefix();
       }
 
       private boolean usesPlaceholder( final String placeholder ) {
@@ -199,9 +225,15 @@ public final class SammSnippetCatalog {
             // A plain word without prefix, e.g. "pref" for samm:preferredName
             return true;
          }
+         if ( !typed.contains( ":" ) ) {
+            // The start of a SAMM prefix or of a predicate name, e.g. "sa", "samm-c" or "desc"
+            return PREFIX_OR_NAME.matcher( typed ).matches();
+         }
          final String actualPrefix = context.resolvedSammPrefix();
-         return typed.startsWith( actualPrefix )
-               && context.namespaces().sammNamespace().equals( context.namespaces().declarations().get( actualPrefix ) );
+         final String namespace = isCharacteristicPredicate()
+               ? context.namespaces().characteristicNamespace().orElse( "" )
+               : context.namespaces().sammNamespace();
+         return typed.startsWith( actualPrefix ) && namespace.equals( context.namespaces().declarations().get( actualPrefix ) );
       }
 
       private boolean isEligibleAnonymousObject( final SammCompletionContext context ) {
@@ -272,9 +304,14 @@ public final class SammSnippetCatalog {
       return switch ( context.targetPosition() ) {
          case PREDICATE -> {
             final String actualPrefix = context.resolvedSammPrefix();
-            yield typed.startsWith( actualPrefix )
-                  ? typed.substring( actualPrefix.length() ).trim()
-                  : typed.trim();
+            if ( typed.startsWith( actualPrefix ) ) {
+               yield typed.substring( actualPrefix.length() ).trim();
+            }
+            // The user is still typing a SAMM prefix itself (e.g. "sa" for "samm:"): offer all predicates
+            final boolean typingPrefix = !typed.isEmpty() && !typed.contains( ":" )
+                  && Stream.of( context.namespaces().sammPrefix(), context.namespaces().characteristicPrefix().orElse( "" ) )
+                        .anyMatch( prefix -> prefix.regionMatches( true, 0, typed, 0, typed.length() ) );
+            yield typingPrefix ? "" : typed.trim();
          }
          case OBJECT_PROPERTIES_LIST, OBJECT_CONSTRAINT, OBJECT_CHARACTERISTIC ->
             typed.startsWith( "[" ) ? typed.substring( 1 ).trim() : typed.trim();
