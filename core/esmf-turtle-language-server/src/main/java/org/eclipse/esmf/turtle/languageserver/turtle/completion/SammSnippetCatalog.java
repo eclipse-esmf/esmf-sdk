@@ -221,12 +221,9 @@ public final class SammSnippetCatalog {
          if ( typed.isEmpty() ) {
             return true;
          }
-         if ( IDENTIFIER.matcher( typed ).matches() ) {
-            // A plain word without prefix, e.g. "pref" for samm:preferredName
-            return true;
-         }
          if ( !typed.contains( ":" ) ) {
-            // The start of a SAMM prefix or of a predicate name, e.g. "sa", "samm-c" or "desc"
+            // A plain word without prefix, e.g. "pref" for samm:preferredName, or the start of a prefix such as
+            // "samm-c"
             return PREFIX_OR_NAME.matcher( typed ).matches();
          }
          final String actualPrefix = context.resolvedSammPrefix();
@@ -304,14 +301,9 @@ public final class SammSnippetCatalog {
       return switch ( context.targetPosition() ) {
          case PREDICATE -> {
             final String actualPrefix = context.resolvedSammPrefix();
-            if ( typed.startsWith( actualPrefix ) ) {
-               yield typed.substring( actualPrefix.length() ).trim();
-            }
-            // The user is still typing a SAMM prefix itself (e.g. "sa" for "samm:"): offer all predicates
-            final boolean typingPrefix = !typed.isEmpty() && !typed.contains( ":" )
-                  && Stream.of( context.namespaces().sammPrefix(), context.namespaces().characteristicPrefix().orElse( "" ) )
-                        .anyMatch( prefix -> prefix.regionMatches( true, 0, typed, 0, typed.length() ) );
-            yield typingPrefix ? "" : typed.trim();
+            yield typed.startsWith( actualPrefix )
+                  ? typed.substring( actualPrefix.length() ).trim()
+                  : typed.trim();
          }
          case OBJECT_PROPERTIES_LIST, OBJECT_CONSTRAINT, OBJECT_CHARACTERISTIC ->
             typed.startsWith( "[" ) ? typed.substring( 1 ).trim() : typed.trim();

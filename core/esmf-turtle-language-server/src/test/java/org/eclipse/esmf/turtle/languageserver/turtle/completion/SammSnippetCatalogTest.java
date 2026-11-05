@@ -84,13 +84,22 @@ class SammSnippetCatalogTest {
    }
 
    @Test
-   void predicateSnippetsInsertingSammTermHaveTheSammKeyword() {
+   void predicateSnippetsHaveTheKeywordOfTheirNamespace() {
       assertThat( catalog.allSnippets().stream()
             .filter( snippet -> snippet.targetPosition() == SammCompletionContext.TargetPosition.PREDICATE ) )
                   .isNotEmpty()
                   .allSatisfy( snippet -> {
-                     assertThat( snippet.body().getFirst() ).startsWith( "{{sammPrefix}}" );
+                     final String firstLine = snippet.body().getFirst();
+                     assertThat( firstLine ).startsWith( "{{samm" );
+                     // "samm" finds every predicate while the prefix is still typed, "samm-c" only the
+                     // ones of the samm-c namespace
                      assertThat( snippet.keywords() ).contains( "samm" );
+                     if ( firstLine.startsWith( "{{sammCPrefix}}" ) ) {
+                        assertThat( snippet.keywords() ).contains( "samm-c" );
+                     } else {
+                        assertThat( firstLine ).startsWith( "{{sammPrefix}}" );
+                        assertThat( snippet.keywords() ).doesNotContain( "samm-c" );
+                     }
                   } );
    }
 
@@ -128,6 +137,10 @@ class SammSnippetCatalogTest {
       assertThat( catalog.matchingSnippets( context ) ).extracting( SnippetDefinition::id ).containsExactlyElementsOf( expectedIds );
    }
 
+   /** The predicate snippets of an Aspect, in catalog order. */
+   private static final List<String> ASPECT_PREDICATE_IDS = List.of( "samm-description", "samm-preferred-name", "samm-see",
+         "samm-properties", "samm-operations", "samm-events" );
+
    private static Stream<Arguments> snippetMatches() {
       return Stream.of(
             Arguments.of( ":p a samm:Property ;\n   | .",
@@ -137,37 +150,40 @@ class SammSnippetCatalogTest {
                   List.of( "samm-description", "samm-preferred-name", "samm-see", "samm-properties", "samm-operations", "samm-events" ) ),
             Arguments.of( ":A a samm:Aspect ; samm:properties ( :p ) ; samm:events ( ) ;\n   | .",
                   List.of( "samm-description", "samm-preferred-name", "samm-see", "samm-operations" ) ),
-            Arguments.of( ":Test a samm:Aspect ;\n   samm:|", List.of( "samm-description", "samm-preferred-name", "samm-see" ) ),
-            Arguments.of( ":Test a samm:Aspect ;\n   samm:|\n", List.of( "samm-description", "samm-preferred-name", "samm-see" ) ),
+            Arguments.of( ":Test a samm:Aspect ;\n   samm:|", ASPECT_PREDICATE_IDS ),
+            Arguments.of( ":Test a samm:Aspect ;\n   samm:|\n", ASPECT_PREDICATE_IDS ),
             Arguments.of( ":Test a samm:Aspect ;\n   samm:|\n\n"
                   + ":vin a samm:Property ;\n   samm:preferredName \"Vin\"@en ;\n   samm:description \"Vin\"@en .",
-                  List.of( "samm-description", "samm-preferred-name", "samm-see" ) ),
+                  ASPECT_PREDICATE_IDS ),
             Arguments.of( ":Test a samm:Aspect ;\n   samm:|\n\n"
                   + ":vin <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> samm:Property ;\n"
                   + "   samm:preferredName \"Vin\"@en ;\n   samm:description \"Vin\"@en .",
-                  List.of( "samm-description", "samm-preferred-name", "samm-see" ) ),
+                  ASPECT_PREDICATE_IDS ),
             Arguments.of( ":Test a samm:Aspect ;\n   samm:|\n\n"
                   + ":vin samm:preferredName \"Vin\"@en ;\n   samm:description \"Vin\"@en .",
-                  List.of( "samm-description", "samm-preferred-name", "samm-see" ) ),
+                  ASPECT_PREDICATE_IDS ),
             Arguments.of( ":Test a samm:Aspect ;\n   |\n\n"
                   + ":vin a samm:Property ;\n   samm:preferredName \"Vin\"@en ;\n   samm:description \"Vin\"@en .",
-                  List.of( "samm-description", "samm-preferred-name", "samm-see" ) ),
+                  ASPECT_PREDICATE_IDS ),
             Arguments.of( ":Test a samm:Aspect ;\n   |\n"
                   + ":vin a samm:Property ;\n   samm:preferredName \"Vin\"@en ;\n   samm:description \"Vin\"@en .",
-                  List.of( "samm-description", "samm-preferred-name", "samm-see" ) ),
+                  ASPECT_PREDICATE_IDS ),
             Arguments.of( ":p a samm:Property ; samm:exampleValue \"value\" ;\n   | .",
                   List.of( "samm-description", "samm-preferred-name", "samm-see", "samm-characteristic-attribute" ) ),
             Arguments.of( ":A a samm:Aspect ;\n   samm:p| .",
                   List.of( "samm-properties", "samm-preferred-name", "samm-operations", "samm-description" ) ),
             // The keyword "samm" shows all predicate snippets while the prefix is still being typed; real name
             // matches rank first.
-            Arguments.of( ":A a samm:Aspect ;\n   s| .", List.of( "samm-see", "samm-description", "samm-preferred-name" ) ),
-            Arguments.of( ":A a samm:Aspect ;\n   sam| .", List.of( "samm-description", "samm-preferred-name", "samm-see" ) ),
-            Arguments.of( ":A a samm:Aspect ;\n   samm| .", List.of( "samm-description", "samm-preferred-name", "samm-see" ) ),
+            Arguments.of( ":A a samm:Aspect ;\n   s| .", List.of( "samm-see", "samm-description", "samm-preferred-name", "samm-properties",
+                  "samm-operations", "samm-events" ) ),
+            Arguments.of( ":A a samm:Aspect ;\n   sam| .", ASPECT_PREDICATE_IDS ),
+            Arguments.of( ":A a samm:Aspect ;\n   samm| .", ASPECT_PREDICATE_IDS ),
             Arguments.of( ":p a samm:Property ;\n   s| .",
-                  List.of( "samm-see", "samm-description", "samm-preferred-name", "samm-example-value" ) ),
+                  List.of( "samm-see", "samm-description", "samm-preferred-name", "samm-characteristic-attribute",
+                        "samm-example-value" ) ),
             Arguments.of( ":A a samm:Aspect ;\n   s|\n\n:vin a samm:Property ;\n   samm:preferredName \"Vin\"@en .",
-                  List.of( "samm-see", "samm-description", "samm-preferred-name" ) ),
+                  List.of( "samm-see", "samm-description", "samm-preferred-name", "samm-properties",
+                        "samm-operations", "samm-events" ) ),
             Arguments.of( ":A a samm:Aspect ;\n   d| .", List.of( "samm-description", "samm-preferred-name" ) ),
             // Synonyms: the keyword is not part of the local name
             Arguments.of( ":A a samm:Aspect ;\n   sum| .", List.of( "samm-description" ) ),
@@ -184,7 +200,8 @@ class SammSnippetCatalogTest {
             Arguments.of( ":T a samm-c:Trait ; samm-c:constraint [regex|] .", List.of( "samm-anon-c-regex-constraint" ) ),
             Arguments.of( ":A a samm:Aspect ;\n   a| .", List.of() ),
             // After the prefix, only the local name is matched
-            Arguments.of( ":A a samm:Aspect ;\n   samm:s| .", List.of( "samm-see", "samm-description" ) ),
+            Arguments.of( ":A a samm:Aspect ;\n   samm:s| .",
+                  List.of( "samm-see", "samm-events", "samm-properties", "samm-operations", "samm-description" ) ),
             Arguments.of( ":A a samm:Aspect ;\n   samm:m| .", List.of( "samm-preferred-name" ) ),
             Arguments.of( "\nPROP|", List.of( "samm-property", "samm-abstract-property" ) ),
             Arguments.of( "\nentity|", List.of( "samm-entity", "samm-c-single-entity", "samm-abstract-entity" ) ),

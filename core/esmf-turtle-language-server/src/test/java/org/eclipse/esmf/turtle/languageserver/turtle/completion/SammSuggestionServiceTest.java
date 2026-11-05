@@ -278,7 +278,9 @@ class SammSuggestionServiceTest {
    void offersAllAspectPredicatesWhileTheSammPrefixIsBeingTyped( final String typed ) {
       final Request request = request( HEADER + ":Machine a samm:Aspect ;\n  " + typed + "|" );
       final List<CompletionItem> items = snippets.complete( request.document, request.position );
-      assertThat( items ).extracting( CompletionItem::getLabel ).containsExactly(
+      // The order depends on the typed text, e.g. "see" ranks first for "s"; the ranking itself is tested
+      // elsewhere
+      assertThat( items ).extracting( CompletionItem::getLabel ).containsExactlyInAnyOrder(
             "SAMM description", "SAMM preferredName", "SAMM see", "SAMM properties", "SAMM operations", "SAMM events" );
       for ( final CompletionItem item : items ) {
          assertValid( apply( request, item ) );
@@ -397,9 +399,14 @@ class SammSuggestionServiceTest {
          assertThat( unit.getTextEdit().getLeft().getNewText() ).startsWith( "samm-c:unit " );
          assertValid( apply( request, unit ) );
       }
-      // samm:dataType and samm-c:unit are both offered while only the start of a prefix is typed
-      assertThat( snippets.complete( request( measurement + "samm|" ).document, request( measurement + "samm|" ).position ) )
-            .extracting( CompletionItem::getLabel ).contains( "SAMM dataType", "SAMM unit" );
+      // The keyword "samm" finds the attributes of both namespaces, the keyword "samm-c" only the samm-c
+      // ones
+      final Request sammWord = request( measurement + "samm|" );
+      assertThat( snippets.complete( sammWord.document, sammWord.position ) ).extracting( CompletionItem::getLabel )
+            .containsExactlyInAnyOrder( "SAMM description", "SAMM preferredName", "SAMM see", "SAMM dataType", "SAMM unit" );
+      final Request characteristicNamespaceWord = request( measurement + "samm-c|" );
+      assertThat( snippets.complete( characteristicNamespaceWord.document, characteristicNamespaceWord.position ) )
+            .extracting( CompletionItem::getLabel ).containsExactly( "SAMM unit" );
       // a predicate of the other namespace is not offered under a typed prefix
       final Request sammPrefix = request( measurement + "samm:|" );
       assertThat( snippets.complete( sammPrefix.document, sammPrefix.position ) ).extracting( CompletionItem::getLabel )
@@ -866,9 +873,12 @@ class SammSuggestionServiceTest {
       // The keyword "samm" matches the start of the SAMM prefix, so every predicate snippet is offered;
       // "see" ranks first
       // because its name starts with "s".
-      assertThat( plainWordLabels( "s" ) ).containsExactly( "SAMM see", "SAMM description", "SAMM preferredName" );
-      assertThat( plainWordLabels( "sam" ) ).containsExactly( "SAMM description", "SAMM preferredName", "SAMM see" );
-      assertThat( plainWordLabels( "p" ) ).containsExactly( "SAMM preferredName" );
+      assertThat( plainWordLabels( "s" ) ).containsExactly( "SAMM see", "SAMM description", "SAMM preferredName", "SAMM properties",
+            "SAMM operations", "SAMM events" );
+      assertThat( plainWordLabels( "sam" ) ).containsExactly( "SAMM description", "SAMM preferredName", "SAMM see", "SAMM properties",
+            "SAMM operations", "SAMM events" );
+      // Two names start with "p"; the shorter one ranks first
+      assertThat( plainWordLabels( "p" ) ).containsExactly( "SAMM properties", "SAMM preferredName" );
       assertThat( plainWordLabels( "a" ) ).isEmpty();
       assertThat( plainWordLabels( "ri" ) ).isEmpty();
    }
