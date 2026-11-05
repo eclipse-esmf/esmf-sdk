@@ -1,0 +1,1386 @@
+[
+  {
+    "id": "samm-prefixes",
+    "label": "SAMM Prefix Header",
+    "localName": "prefix",
+    "targetPosition": "DOCUMENT_HEADER",
+    "body": [
+      "@prefix : <urn:samm:${1:com.example.namespace}:${2:1.0.0}#> .",
+      "@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:${3:{{sammVersion}}}#> .",
+      "@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:${3:{{sammVersion}}}#> .",
+      "@prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:${3:{{sammVersion}}}#> .",
+      "@prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:${3:{{sammVersion}}}#> .",
+      "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .",
+      "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .",
+      "",
+      "$0"
+    ]
+  },
+  {
+    "id": "samm-aspect",
+    "label": "SAMM Aspect",
+    "localName": "Aspect",
+    "targetPosition": "TOP_LEVEL_SUBJECT",
+    "body": [
+      "{{modelPrefix}}${1:AspectName} a {{sammPrefix}}Aspect ;",
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammPrefix}}properties ( {{modelPrefix}}${4:property} ) ;",
+      "   {{sammPrefix}}operations ( ) ;",
+      "   {{sammPrefix}}events ( ) .$0"
+    ]
+  },
+  {
+    "id": "samm-property",
+    "label": "SAMM Property",
+    "localName": "property",
+    "targetPosition": "TOP_LEVEL_SUBJECT",
+    "body": [
+      "{{modelPrefix}}${1:propertyName} a {{sammPrefix}}Property ;",
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammPrefix}}characteristic {{modelPrefix}}${4:CharacteristicName} .$0"
+    ]
+  },
+  {
+    "id": "samm-abstract-property",
+    "label": "SAMM AbstractProperty",
+    "localName": "AbstractProperty",
+    "targetPosition": "TOP_LEVEL_SUBJECT",
+    "body": [
+      "{{modelPrefix}}${1:propertyName} a {{sammPrefix}}AbstractProperty ;",
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en .$0"
+    ]
+  },
+  {
+    "id": "samm-entity",
+    "label": "SAMM Entity",
+    "localName": "Entity",
+    "targetPosition": "TOP_LEVEL_SUBJECT",
+    "body": [
+      "{{modelPrefix}}${1:EntityName} a {{sammPrefix}}Entity ;",
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammPrefix}}properties ( {{modelPrefix}}${4:property} ) .$0"
+    ]
+  },
+  {
+    "id": "samm-abstract-entity",
+    "label": "SAMM AbstractEntity",
+    "localName": "AbstractEntity",
+    "targetPosition": "TOP_LEVEL_SUBJECT",
+    "body": [
+      "{{modelPrefix}}${1:AbstractEntityName} a {{sammPrefix}}AbstractEntity ;",
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammPrefix}}properties ( {{modelPrefix}}${4:abstractProperty} ) .$0"
+    ]
+  },
+  {
+    "id": "samm-characteristic",
+    "label": "SAMM Characteristic",
+    "localName": "Characteristic",
+    "targetPosition": "TOP_LEVEL_SUBJECT",
+    "body": [
+      "{{modelPrefix}}${1:CharacteristicName} a {{sammPrefix}}Characteristic ;",
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammPrefix}}dataType ${4|{{allDataTypes}}|} .$0"
+    ]
+  },
+  {
+    "id": "samm-c-enumeration",
+    "label": "SAMM Enumeration",
+    "localName": "Enumeration",
+    "targetPosition": "TOP_LEVEL_SUBJECT",
+    "body": [
+      "{{modelPrefix}}${1:EnumName} a {{sammCPrefix}}Enumeration ;",
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammPrefix}}dataType ${4|{{allDataTypes}}|} ;",
+      "   {{sammCPrefix}}values ( ${5} ) .$0"
+    ]
+  },
+  {
+    "id": "samm-c-state",
+    "label": "SAMM State",
+    "localName": "State",
+    "targetPosition": "TOP_LEVEL_SUBJECT",
+    "body": [
+      "{{modelPrefix}}${1:StateName} a {{sammCPrefix}}State ;",
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammPrefix}}dataType ${4|{{allDataTypes}}|} ;",
+      "   {{sammCPrefix}}values ( ${5} ) ;",
+      "   {{sammCPrefix}}defaultValue ${6} .$0"
+    ]
+  },
+  {
+    "id": "samm-value",
+    "label": "SAMM Value",
+    "localName": "Value",
+    "targetPosition": "TOP_LEVEL_SUBJECT",
+    "body": [
+      "{{modelPrefix}}${1:ValueName} a {{sammPrefix}}Value ;",
+      "   {{sammPrefix}}value \"${2:code}\" ;",
+      "   {{sammPrefix}}preferredName \"${3}\"@en ;",
+      "   {{sammPrefix}}description \"${4}\"@en .$0"
+    ]
+  },
+  {
+    "id": "samm-c-measurement",
+    "label": "SAMM Measurement",
+    "localName": "Measurement",
+    "targetPosition": "TOP_LEVEL_SUBJECT",
+    "body": [
+      "{{modelPrefix}}${1:MeasurementName} a {{sammCPrefix}}Measurement ;",
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammPrefix}}dataType ${4|{{numericDataTypes}}|} ;",
+      "   {{sammCPrefix}}unit {{unitPrefix}}${5:kilometrePerHour} .$0"
+    ]
+  },
+  {
+    "id": "samm-c-quantifiable",
+    "label": "SAMM Quantifiable",
+    "localName": "Quantifiable",
+    "targetPosition": "TOP_LEVEL_SUBJECT",
+    "body": [
+      "{{modelPrefix}}${1:QuantifiableName} a {{sammCPrefix}}Quantifiable ;",
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammPrefix}}dataType ${4|{{numericDataTypes}}|} ;",
+      "   {{sammCPrefix}}unit {{unitPrefix}}${5:percent} .$0"
+    ]
+  },
+  {
+    "id": "samm-c-duration",
+    "label": "SAMM Duration",
+    "localName": "Duration",
+    "targetPosition": "TOP_LEVEL_SUBJECT",
+    "body": [
+      "{{modelPrefix}}${1:DurationName} a {{sammCPrefix}}Duration ;",
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammPrefix}}dataType ${4|{{durationDataTypes}}|} ;",
+      "   {{sammCPrefix}}unit {{unitPrefix}}${5:secondUnitOfTime} .$0"
+    ]
+  },
+  {
+    "id": "samm-c-code",
+    "label": "SAMM Code",
+    "localName": "Code",
+    "targetPosition": "TOP_LEVEL_SUBJECT",
+    "body": [
+      "{{modelPrefix}}${1:CodeName} a {{sammCPrefix}}Code ;",
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammPrefix}}dataType {{xsdPrefix}}${4:string} .$0"
+    ]
+  },
+  {
+    "id": "samm-c-single-entity",
+    "label": "SAMM SingleEntity",
+    "localName": "SingleEntity",
+    "targetPosition": "TOP_LEVEL_SUBJECT",
+    "body": [
+      "{{modelPrefix}}${1:SingleEntityName} a {{sammCPrefix}}SingleEntity ;",
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammPrefix}}dataType {{modelPrefix}}${4:EntityName} .$0"
+    ]
+  },
+  {
+    "id": "samm-c-collection",
+    "label": "SAMM Collection",
+    "localName": "Collection",
+    "targetPosition": "TOP_LEVEL_SUBJECT",
+    "body": [
+      "{{modelPrefix}}${1:CollectionName} a {{sammCPrefix}}Collection ;",
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammCPrefix}}elementCharacteristic {{modelPrefix}}${4:ElementCharacteristic} .$0"
+    ]
+  },
+  {
+    "id": "samm-c-list",
+    "label": "SAMM List",
+    "localName": "List",
+    "targetPosition": "TOP_LEVEL_SUBJECT",
+    "body": [
+      "{{modelPrefix}}${1:ListName} a {{sammCPrefix}}List ;",
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammCPrefix}}elementCharacteristic {{modelPrefix}}${4:ElementCharacteristic} .$0"
+    ]
+  },
+  {
+    "id": "samm-c-set",
+    "label": "SAMM Set",
+    "localName": "Set",
+    "targetPosition": "TOP_LEVEL_SUBJECT",
+    "body": [
+      "{{modelPrefix}}${1:SetName} a {{sammCPrefix}}Set ;",
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammCPrefix}}elementCharacteristic {{modelPrefix}}${4:ElementCharacteristic} .$0"
+    ]
+  },
+  {
+    "id": "samm-c-sorted-set",
+    "label": "SAMM SortedSet",
+    "localName": "SortedSet",
+    "targetPosition": "TOP_LEVEL_SUBJECT",
+    "body": [
+      "{{modelPrefix}}${1:SortedSetName} a {{sammCPrefix}}SortedSet ;",
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammCPrefix}}elementCharacteristic {{modelPrefix}}${4:ElementCharacteristic} .$0"
+    ]
+  },
+  {
+    "id": "samm-c-time-series",
+    "label": "SAMM TimeSeries",
+    "localName": "TimeSeries",
+    "targetPosition": "TOP_LEVEL_SUBJECT",
+    "body": [
+      "{{modelPrefix}}${1:TimeSeriesName} a {{sammCPrefix}}TimeSeries ;",
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammPrefix}}dataType {{modelPrefix}}${4:TimeSeriesEntity} .$0"
+    ]
+  },
+  {
+    "id": "samm-c-trait",
+    "label": "SAMM Trait",
+    "localName": "Trait",
+    "targetPosition": "TOP_LEVEL_SUBJECT",
+    "body": [
+      "{{modelPrefix}}${1:TraitName} a {{sammCPrefix}}Trait ;",
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammCPrefix}}baseCharacteristic {{modelPrefix}}${4:BaseCharacteristic} ;",
+      "   {{sammCPrefix}}constraint {{modelPrefix}}${5:ConstraintName} .$0"
+    ]
+  },
+  {
+    "id": "samm-c-either",
+    "label": "SAMM Either",
+    "localName": "Either",
+    "targetPosition": "TOP_LEVEL_SUBJECT",
+    "body": [
+      "{{modelPrefix}}${1:EitherName} a {{sammCPrefix}}Either ;",
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammCPrefix}}left {{modelPrefix}}${4:LeftCharacteristic} ;",
+      "   {{sammCPrefix}}right {{modelPrefix}}${5:RightCharacteristic} .$0"
+    ]
+  },
+  {
+    "id": "samm-c-structured-value",
+    "label": "SAMM StructuredValue",
+    "localName": "StructuredValue",
+    "targetPosition": "TOP_LEVEL_SUBJECT",
+    "body": [
+      "{{modelPrefix}}${1:StructuredValueName} a {{sammCPrefix}}StructuredValue ;",
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammPrefix}}dataType {{xsdPrefix}}${4:string} ;",
+      "   {{sammCPrefix}}deconstructionRule \"${5:(.*)}\" ;",
+      "   {{sammCPrefix}}elements ( {{modelPrefix}}${6:elementProperty} ) .$0"
+    ]
+  },
+  {
+    "id": "samm-c-length-constraint",
+    "label": "SAMM LengthConstraint",
+    "localName": "LengthConstraint",
+    "targetPosition": "TOP_LEVEL_SUBJECT",
+    "body": [
+      "{{modelPrefix}}${1:ConstraintName} a {{sammCPrefix}}LengthConstraint ;",
+      "   {{sammCPrefix}}minValue \"${2:0}\"^^{{xsdPrefix}}nonNegativeInteger ;",
+      "   {{sammCPrefix}}maxValue \"${3:10}\"^^{{xsdPrefix}}nonNegativeInteger .$0"
+    ]
+  },
+  {
+    "id": "samm-c-range-constraint",
+    "label": "SAMM RangeConstraint",
+    "localName": "RangeConstraint",
+    "targetPosition": "TOP_LEVEL_SUBJECT",
+    "body": [
+      "{{modelPrefix}}${1:ConstraintName} a {{sammCPrefix}}RangeConstraint ;",
+      "   {{sammCPrefix}}minValue \"${2:0}\"^^{{xsdPrefix}}${3:float} ;",
+      "   {{sammCPrefix}}maxValue \"${4:100}\"^^{{xsdPrefix}}${3:float} ;",
+      "   {{sammCPrefix}}lowerBoundDefinition {{sammCPrefix}}${5:AT_LEAST} ;",
+      "   {{sammCPrefix}}upperBoundDefinition {{sammCPrefix}}${6:AT_MOST} .$0"
+    ]
+  },
+  {
+    "id": "samm-c-regex-constraint",
+    "label": "SAMM RegularExpressionConstraint",
+    "localName": "RegularExpressionConstraint",
+    "keywords": [ "regex" ],
+    "targetPosition": "TOP_LEVEL_SUBJECT",
+    "body": [
+      "{{modelPrefix}}${1:ConstraintName} a {{sammCPrefix}}RegularExpressionConstraint ;",
+      "   {{sammPrefix}}value \"${2:^[A-Z0-9]+$}\" .$0"
+    ]
+  },
+  {
+    "id": "samm-c-encoding-constraint",
+    "label": "SAMM EncodingConstraint",
+    "localName": "EncodingConstraint",
+    "targetPosition": "TOP_LEVEL_SUBJECT",
+    "body": [
+      "{{modelPrefix}}${1:ConstraintName} a {{sammCPrefix}}EncodingConstraint ;",
+      "   {{sammPrefix}}value {{sammPrefix}}${2:UTF-8} .$0"
+    ]
+  },
+  {
+    "id": "samm-c-language-constraint",
+    "label": "SAMM LanguageConstraint",
+    "localName": "LanguageConstraint",
+    "targetPosition": "TOP_LEVEL_SUBJECT",
+    "body": [
+      "{{modelPrefix}}${1:ConstraintName} a {{sammCPrefix}}LanguageConstraint ;",
+      "   {{sammCPrefix}}languageCode \"${2:en}\" .$0"
+    ]
+  },
+  {
+    "id": "samm-c-locale-constraint",
+    "label": "SAMM LocaleConstraint",
+    "localName": "LocaleConstraint",
+    "targetPosition": "TOP_LEVEL_SUBJECT",
+    "body": [
+      "{{modelPrefix}}${1:ConstraintName} a {{sammCPrefix}}LocaleConstraint ;",
+      "   {{sammCPrefix}}localeCode \"${2:de-DE}\" .$0"
+    ]
+  },
+  {
+    "id": "samm-c-fixed-point-constraint",
+    "label": "SAMM FixedPointConstraint",
+    "localName": "FixedPointConstraint",
+    "targetPosition": "TOP_LEVEL_SUBJECT",
+    "body": [
+      "{{modelPrefix}}${1:ConstraintName} a {{sammCPrefix}}FixedPointConstraint ;",
+      "   {{sammCPrefix}}scale \"${2:2}\"^^{{xsdPrefix}}positiveInteger ;",
+      "   {{sammCPrefix}}integer \"${3:5}\"^^{{xsdPrefix}}positiveInteger .$0"
+    ]
+  },
+  {
+    "id": "samm-operation",
+    "label": "SAMM Operation",
+    "localName": "Operation",
+    "targetPosition": "TOP_LEVEL_SUBJECT",
+    "body": [
+      "{{modelPrefix}}${1:operationName} a {{sammPrefix}}Operation ;",
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammPrefix}}input ( {{modelPrefix}}${4:inputProperty} ) ;",
+      "   {{sammPrefix}}output {{modelPrefix}}${5:outputProperty} .$0"
+    ]
+  },
+  {
+    "id": "samm-event",
+    "label": "SAMM Event",
+    "localName": "Event",
+    "targetPosition": "TOP_LEVEL_SUBJECT",
+    "body": [
+      "{{modelPrefix}}${1:eventName} a {{sammPrefix}}Event ;",
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}description \"${3}\"@en ;",
+      "   {{sammPrefix}}parameters ( {{modelPrefix}}${4:parameterProperty} ) .$0"
+    ]
+  },
+  {
+    "id": "samm-unit",
+    "label": "SAMM Unit",
+    "localName": "Unit",
+    "targetPosition": "TOP_LEVEL_SUBJECT",
+    "body": [
+      "{{modelPrefix}}${1:unitName} a {{sammPrefix}}Unit ;",
+      "   {{sammPrefix}}preferredName \"${2}\"@en ;",
+      "   {{sammPrefix}}symbol \"${3}\" ;",
+      "   {{sammPrefix}}referenceUnit {{unitPrefix}}${4:metre} ;",
+      "   {{sammPrefix}}conversionFactor \"${5:10⁻² m}\" ;",
+      "   {{sammPrefix}}numericConversionFactor \"${6:0.01}\"^^{{xsdPrefix}}double .$0"
+    ]
+  },
+  {
+    "id": "samm-description",
+    "label": "SAMM description",
+    "localName": "description",
+    "keywords": [ "samm", "summary", "documentation" ],
+    "targetPosition": "PREDICATE",
+    "body": [
+      "{{sammPrefix}}description \"${1}\"@en{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-preferred-name",
+    "label": "SAMM preferredName",
+    "localName": "preferredName",
+    "keywords": [ "samm", "title", "label", "display name" ],
+    "targetPosition": "PREDICATE",
+    "body": [
+      "{{sammPrefix}}preferredName \"${1}\"@en{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-see",
+    "label": "SAMM see",
+    "localName": "see",
+    "keywords": [ "samm", "reference", "link", "url" ],
+    "targetPosition": "PREDICATE",
+    "allowMultiple": true,
+    "body": [
+      "{{sammPrefix}}see <${1:https://example.com/term/}>{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-properties",
+    "label": "SAMM properties",
+    "localName": "properties",
+    "keywords": [ "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Aspect",
+      "Entity",
+      "AbstractEntity"
+    ],
+    "body": [
+      "{{sammPrefix}}properties ( {{modelPrefix}}${1:property} ){{separator}}"
+    ]
+  },
+  {
+    "id": "samm-operations",
+    "label": "SAMM operations",
+    "localName": "operations",
+    "keywords": [ "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Aspect"
+    ],
+    "body": [
+      "{{sammPrefix}}operations ( {{modelPrefix}}${1:operation} ){{separator}}"
+    ]
+  },
+  {
+    "id": "samm-events",
+    "label": "SAMM events",
+    "localName": "events",
+    "keywords": [ "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Aspect"
+    ],
+    "body": [
+      "{{sammPrefix}}events ( {{modelPrefix}}${1:event} ){{separator}}"
+    ]
+  },
+  {
+    "id": "samm-characteristic-attribute",
+    "label": "SAMM characteristic",
+    "localName": "characteristic",
+    "keywords": [ "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Property"
+    ],
+    "body": [
+      "{{sammPrefix}}characteristic {{modelPrefix}}${1:CharacteristicName}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-extends",
+    "label": "SAMM extends",
+    "localName": "extends",
+    "keywords": [ "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Entity",
+      "AbstractEntity"
+    ],
+    "body": [
+      "{{sammPrefix}}extends {{modelPrefix}}${1:ParentEntityName}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-input",
+    "label": "SAMM input",
+    "localName": "input",
+    "keywords": [ "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Operation"
+    ],
+    "body": [
+      "{{sammPrefix}}input ( {{modelPrefix}}${1:inputProperty} ){{separator}}"
+    ]
+  },
+  {
+    "id": "samm-output",
+    "label": "SAMM output",
+    "localName": "output",
+    "keywords": [ "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Operation"
+    ],
+    "body": [
+      "{{sammPrefix}}output {{modelPrefix}}${1:outputProperty}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-parameters",
+    "label": "SAMM parameters",
+    "localName": "parameters",
+    "keywords": [ "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Event"
+    ],
+    "body": [
+      "{{sammPrefix}}parameters ( {{modelPrefix}}${1:parameterProperty} ){{separator}}"
+    ]
+  },
+  {
+    "id": "samm-value-attribute",
+    "label": "SAMM value",
+    "localName": "value",
+    "keywords": [ "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Value"
+    ],
+    "body": [
+      "{{sammPrefix}}value \"${1}\"{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-data-type",
+    "label": "SAMM dataType",
+    "localName": "dataType",
+    "keywords": [ "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Characteristic",
+      "Enumeration",
+      "State",
+      "Collection",
+      "List",
+      "Set",
+      "SortedSet"
+    ],
+    "body": [
+      "{{sammPrefix}}dataType ${1|{{allDataTypes}}|}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-data-type-numeric",
+    "label": "SAMM dataType",
+    "localName": "dataType",
+    "keywords": [ "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Quantifiable",
+      "Measurement"
+    ],
+    "body": [
+      "{{sammPrefix}}dataType ${1|{{numericDataTypes}}|}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-data-type-duration",
+    "label": "SAMM dataType",
+    "localName": "dataType",
+    "keywords": [ "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Duration"
+    ],
+    "body": [
+      "{{sammPrefix}}dataType ${1|{{durationDataTypes}}|}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-data-type-string",
+    "label": "SAMM dataType",
+    "localName": "dataType",
+    "keywords": [ "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Code",
+      "StructuredValue"
+    ],
+    "body": [
+      "{{sammPrefix}}dataType {{xsdPrefix}}${1:string}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-data-type-entity",
+    "label": "SAMM dataType",
+    "localName": "dataType",
+    "keywords": [ "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "SingleEntity"
+    ],
+    "body": [
+      "{{sammPrefix}}dataType {{modelPrefix}}${1:EntityName}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-data-type-time-series-entity",
+    "label": "SAMM dataType",
+    "localName": "dataType",
+    "keywords": [ "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "TimeSeries"
+    ],
+    "body": [
+      "{{sammPrefix}}dataType {{modelPrefix}}${1:TimeSeriesEntity}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-unit-measurement",
+    "label": "SAMM unit",
+    "localName": "unit",
+    "keywords": [ "samm-c", "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Measurement"
+    ],
+    "body": [
+      "{{sammCPrefix}}unit {{unitPrefix}}${1:kilometrePerHour}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-unit-quantifiable",
+    "label": "SAMM unit",
+    "localName": "unit",
+    "keywords": [ "samm-c", "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Quantifiable"
+    ],
+    "body": [
+      "{{sammCPrefix}}unit {{unitPrefix}}${1:percent}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-unit-duration",
+    "label": "SAMM unit",
+    "localName": "unit",
+    "keywords": [ "samm-c", "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Duration"
+    ],
+    "body": [
+      "{{sammCPrefix}}unit {{unitPrefix}}${1:secondUnitOfTime}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-values",
+    "label": "SAMM values",
+    "localName": "values",
+    "keywords": [ "samm-c", "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Enumeration",
+      "State"
+    ],
+    "body": [
+      "{{sammCPrefix}}values ( ${1} ){{separator}}"
+    ]
+  },
+  {
+    "id": "samm-default-value",
+    "label": "SAMM defaultValue",
+    "localName": "defaultValue",
+    "keywords": [ "samm-c", "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "State"
+    ],
+    "body": [
+      "{{sammCPrefix}}defaultValue ${1}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-element-characteristic",
+    "label": "SAMM elementCharacteristic",
+    "localName": "elementCharacteristic",
+    "keywords": [ "samm-c", "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Collection",
+      "List",
+      "Set",
+      "SortedSet"
+    ],
+    "body": [
+      "{{sammCPrefix}}elementCharacteristic {{modelPrefix}}${1:ElementCharacteristic}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-base-characteristic",
+    "label": "SAMM baseCharacteristic",
+    "localName": "baseCharacteristic",
+    "keywords": [ "samm-c", "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Trait"
+    ],
+    "body": [
+      "{{sammCPrefix}}baseCharacteristic {{modelPrefix}}${1:BaseCharacteristic}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-constraint",
+    "label": "SAMM constraint",
+    "localName": "constraint",
+    "keywords": [ "samm-c", "samm" ],
+    "targetPosition": "PREDICATE",
+    "allowMultiple": true,
+    "requiredSubjectTypes": [
+      "Trait"
+    ],
+    "body": [
+      "{{sammCPrefix}}constraint {{modelPrefix}}${1:ConstraintName}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-left",
+    "label": "SAMM left",
+    "localName": "left",
+    "keywords": [ "samm-c", "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Either"
+    ],
+    "body": [
+      "{{sammCPrefix}}left {{modelPrefix}}${1:LeftCharacteristic}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-right",
+    "label": "SAMM right",
+    "localName": "right",
+    "keywords": [ "samm-c", "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Either"
+    ],
+    "body": [
+      "{{sammCPrefix}}right {{modelPrefix}}${1:RightCharacteristic}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-deconstruction-rule",
+    "label": "SAMM deconstructionRule",
+    "localName": "deconstructionRule",
+    "keywords": [ "samm-c", "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "StructuredValue"
+    ],
+    "body": [
+      "{{sammCPrefix}}deconstructionRule \"${1:(.*)}\"{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-elements",
+    "label": "SAMM elements",
+    "localName": "elements",
+    "keywords": [ "samm-c", "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "StructuredValue"
+    ],
+    "body": [
+      "{{sammCPrefix}}elements ( {{modelPrefix}}${1:elementProperty} ){{separator}}"
+    ]
+  },
+  {
+    "id": "samm-min-value-length",
+    "label": "SAMM minValue",
+    "localName": "minValue",
+    "keywords": [ "samm-c", "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "LengthConstraint"
+    ],
+    "body": [
+      "{{sammCPrefix}}minValue \"${1:0}\"^^{{xsdPrefix}}nonNegativeInteger{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-max-value-length",
+    "label": "SAMM maxValue",
+    "localName": "maxValue",
+    "keywords": [ "samm-c", "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "LengthConstraint"
+    ],
+    "body": [
+      "{{sammCPrefix}}maxValue \"${1:10}\"^^{{xsdPrefix}}nonNegativeInteger{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-min-value-range",
+    "label": "SAMM minValue",
+    "localName": "minValue",
+    "keywords": [ "samm-c", "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "RangeConstraint"
+    ],
+    "body": [
+      "{{sammCPrefix}}minValue \"${1:0}\"^^{{xsdPrefix}}${2:float}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-max-value-range",
+    "label": "SAMM maxValue",
+    "localName": "maxValue",
+    "keywords": [ "samm-c", "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "RangeConstraint"
+    ],
+    "body": [
+      "{{sammCPrefix}}maxValue \"${1:100}\"^^{{xsdPrefix}}${2:float}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-lower-bound-definition",
+    "label": "SAMM lowerBoundDefinition",
+    "localName": "lowerBoundDefinition",
+    "keywords": [ "samm-c", "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "RangeConstraint"
+    ],
+    "body": [
+      "{{sammCPrefix}}lowerBoundDefinition ${1|{{sammCPrefix}}AT_LEAST,{{sammCPrefix}}GREATER_THAN|}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-upper-bound-definition",
+    "label": "SAMM upperBoundDefinition",
+    "localName": "upperBoundDefinition",
+    "keywords": [ "samm-c", "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "RangeConstraint"
+    ],
+    "body": [
+      "{{sammCPrefix}}upperBoundDefinition ${1|{{sammCPrefix}}AT_MOST,{{sammCPrefix}}LESS_THAN|}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-value-regex",
+    "label": "SAMM value",
+    "localName": "value",
+    "keywords": [ "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "RegularExpressionConstraint"
+    ],
+    "body": [
+      "{{sammPrefix}}value \"${1:^[A-Z0-9]+$}\"{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-value-encoding",
+    "label": "SAMM value",
+    "localName": "value",
+    "keywords": [ "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "EncodingConstraint"
+    ],
+    "body": [
+      "{{sammPrefix}}value ${1|{{sammPrefix}}US-ASCII,{{sammPrefix}}ISO-8859-1,{{sammPrefix}}UTF-8,{{sammPrefix}}UTF-16,{{sammPrefix}}UTF-16BE,{{sammPrefix}}UTF-16LE|}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-language-code",
+    "label": "SAMM languageCode",
+    "localName": "languageCode",
+    "keywords": [ "samm-c", "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "LanguageConstraint"
+    ],
+    "body": [
+      "{{sammCPrefix}}languageCode \"${1:en}\"{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-locale-code",
+    "label": "SAMM localeCode",
+    "localName": "localeCode",
+    "keywords": [ "samm-c", "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "LocaleConstraint"
+    ],
+    "body": [
+      "{{sammCPrefix}}localeCode \"${1:de-DE}\"{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-scale",
+    "label": "SAMM scale",
+    "localName": "scale",
+    "keywords": [ "samm-c", "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "FixedPointConstraint"
+    ],
+    "body": [
+      "{{sammCPrefix}}scale \"${1:2}\"^^{{xsdPrefix}}positiveInteger{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-integer",
+    "label": "SAMM integer",
+    "localName": "integer",
+    "keywords": [ "samm-c", "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "FixedPointConstraint"
+    ],
+    "body": [
+      "{{sammCPrefix}}integer \"${1:5}\"^^{{xsdPrefix}}positiveInteger{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-common-code",
+    "label": "SAMM commonCode",
+    "localName": "commonCode",
+    "keywords": [ "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Unit"
+    ],
+    "body": [
+      "{{sammPrefix}}commonCode \"${1}\"{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-symbol",
+    "label": "SAMM symbol",
+    "localName": "symbol",
+    "keywords": [ "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Unit"
+    ],
+    "body": [
+      "{{sammPrefix}}symbol \"${1}\"{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-reference-unit",
+    "label": "SAMM referenceUnit",
+    "localName": "referenceUnit",
+    "keywords": [ "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Unit"
+    ],
+    "body": [
+      "{{sammPrefix}}referenceUnit {{unitPrefix}}${1:metre}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-conversion-factor",
+    "label": "SAMM conversionFactor",
+    "localName": "conversionFactor",
+    "keywords": [ "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Unit"
+    ],
+    "body": [
+      "{{sammPrefix}}conversionFactor \"${1:10⁻² m}\"{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-numeric-conversion-factor",
+    "label": "SAMM numericConversionFactor",
+    "localName": "numericConversionFactor",
+    "keywords": [ "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Unit"
+    ],
+    "body": [
+      "{{sammPrefix}}numericConversionFactor \"${1:0.01}\"^^{{xsdPrefix}}double{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-quantity-kind",
+    "label": "SAMM quantityKind",
+    "localName": "quantityKind",
+    "keywords": [ "samm" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [
+      "Unit"
+    ],
+    "body": [
+      "{{sammPrefix}}quantityKind {{unitPrefix}}${1:length}{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-example-value",
+    "label": "SAMM exampleValue",
+    "localName": "exampleValue",
+    "keywords": [ "samm", "sample" ],
+    "targetPosition": "PREDICATE",
+    "requiredSubjectTypes": [ "Property" ],
+    "body": [
+      "{{sammPrefix}}exampleValue \"${1}\"{{separator}}"
+    ]
+  },
+  {
+    "id": "samm-anon-property-optional",
+    "label": "SAMM Optional Property",
+    "localName": "optional",
+    "keywords": [ "property" ],
+    "targetPosition": "OBJECT_PROPERTIES_LIST",
+    "body": [
+      "[ {{sammPrefix}}property {{modelPrefix}}${1:propertyName} ; {{sammPrefix}}optional true ]$0"
+    ]
+  },
+  {
+    "id": "samm-anon-property-payload-name",
+    "label": "SAMM Property with Payload Name",
+    "localName": "payloadName",
+    "keywords": [ "property" ],
+    "targetPosition": "OBJECT_PROPERTIES_LIST",
+    "body": [
+      "[ {{sammPrefix}}property {{modelPrefix}}${1:propertyName} ; {{sammPrefix}}payloadName \"${2:payloadKey}\" ]$0"
+    ]
+  },
+  {
+    "id": "samm-anon-property-not-in-payload",
+    "label": "SAMM Property Not In Payload",
+    "localName": "notInPayload",
+    "keywords": [ "property" ],
+    "targetPosition": "OBJECT_PROPERTIES_LIST",
+    "requiredSubjectTypes": [ "Entity", "AbstractEntity" ],
+    "body": [
+      "[ {{sammPrefix}}property {{modelPrefix}}${1:propertyName} ; {{sammPrefix}}notInPayload true ]$0"
+    ]
+  },
+  {
+    "id": "samm-anon-property-extends",
+    "label": "SAMM Extended AbstractProperty",
+    "localName": "extends",
+    "keywords": [ "abstractProperty" ],
+    "targetPosition": "OBJECT_PROPERTIES_LIST",
+    "requiredSubjectPredicate": "extends",
+    "body": [
+      "[ {{sammPrefix}}extends {{modelPrefix}}${1:abstractProperty} ; {{sammPrefix}}characteristic {{modelPrefix}}${2:CharacteristicName} ]$0"
+    ]
+  },
+  {
+    "id": "samm-anon-c-length-constraint",
+    "label": "SAMM Anonymous LengthConstraint",
+    "localName": "LengthConstraint",
+    "targetPosition": "OBJECT_CONSTRAINT",
+    "body": [
+      "[",
+      "   a {{sammCPrefix}}LengthConstraint ;",
+      "   {{sammCPrefix}}minValue \"${1:2}\"^^{{xsdPrefix}}nonNegativeInteger ;",
+      "   {{sammCPrefix}}maxValue \"${2:2}\"^^{{xsdPrefix}}nonNegativeInteger",
+      "]$0"
+    ]
+  },
+  {
+    "id": "samm-anon-c-range-constraint",
+    "label": "SAMM Anonymous RangeConstraint",
+    "localName": "RangeConstraint",
+    "targetPosition": "OBJECT_CONSTRAINT",
+    "body": [
+      "[",
+      "   a {{sammCPrefix}}RangeConstraint ;",
+      "   {{sammCPrefix}}minValue \"${1:0}\"^^{{xsdPrefix}}${2:float} ;",
+      "   {{sammCPrefix}}maxValue \"${3:100}\"^^{{xsdPrefix}}${2:float} ;",
+      "   {{sammCPrefix}}lowerBoundDefinition {{sammCPrefix}}${4:AT_LEAST} ;",
+      "   {{sammCPrefix}}upperBoundDefinition {{sammCPrefix}}${5:AT_MOST}",
+      "]$0"
+    ]
+  },
+  {
+    "id": "samm-anon-c-regex-constraint",
+    "label": "SAMM Anonymous RegularExpressionConstraint",
+    "localName": "RegularExpressionConstraint",
+    "keywords": [ "regex" ],
+    "targetPosition": "OBJECT_CONSTRAINT",
+    "body": [
+      "[",
+      "   a {{sammCPrefix}}RegularExpressionConstraint ;",
+      "   {{sammPrefix}}value \"${1:^[A-Z0-9]+$}\"",
+      "]$0"
+    ]
+  },
+  {
+    "id": "samm-anon-c-encoding-constraint",
+    "label": "SAMM Anonymous EncodingConstraint",
+    "localName": "EncodingConstraint",
+    "targetPosition": "OBJECT_CONSTRAINT",
+    "body": [
+      "[",
+      "   a {{sammCPrefix}}EncodingConstraint ;",
+      "   {{sammPrefix}}value {{sammPrefix}}${1:UTF-8}",
+      "]$0"
+    ]
+  },
+  {
+    "id": "samm-anon-c-language-constraint",
+    "label": "SAMM Anonymous LanguageConstraint",
+    "localName": "LanguageConstraint",
+    "targetPosition": "OBJECT_CONSTRAINT",
+    "body": [
+      "[",
+      "   a {{sammCPrefix}}LanguageConstraint ;",
+      "   {{sammCPrefix}}languageCode \"${1:en}\"",
+      "]$0"
+    ]
+  },
+  {
+    "id": "samm-anon-c-locale-constraint",
+    "label": "SAMM Anonymous LocaleConstraint",
+    "localName": "LocaleConstraint",
+    "targetPosition": "OBJECT_CONSTRAINT",
+    "body": [
+      "[",
+      "   a {{sammCPrefix}}LocaleConstraint ;",
+      "   {{sammCPrefix}}localeCode \"${1:de-DE}\"",
+      "]$0"
+    ]
+  },
+  {
+    "id": "samm-anon-c-fixed-point-constraint",
+    "label": "SAMM Anonymous FixedPointConstraint",
+    "localName": "FixedPointConstraint",
+    "targetPosition": "OBJECT_CONSTRAINT",
+    "body": [
+      "[",
+      "   a {{sammCPrefix}}FixedPointConstraint ;",
+      "   {{sammCPrefix}}scale \"${1:2}\"^^{{xsdPrefix}}positiveInteger ;",
+      "   {{sammCPrefix}}integer \"${2:5}\"^^{{xsdPrefix}}positiveInteger",
+      "]$0"
+    ]
+  },
+  {
+    "id": "samm-anon-characteristic",
+    "label": "SAMM Anonymous Characteristic",
+    "localName": "Characteristic",
+    "targetPosition": "OBJECT_CHARACTERISTIC",
+    "body": [
+      "[",
+      "   a {{sammPrefix}}Characteristic ;",
+      "   {{sammPrefix}}dataType ${1|{{allDataTypes}}|}",
+      "]$0"
+    ]
+  },
+  {
+    "id": "samm-anon-c-enumeration",
+    "label": "SAMM Anonymous Enumeration",
+    "localName": "Enumeration",
+    "targetPosition": "OBJECT_CHARACTERISTIC",
+    "body": [
+      "[",
+      "   a {{sammCPrefix}}Enumeration ;",
+      "   {{sammPrefix}}dataType ${1|{{allDataTypes}}|} ;",
+      "   {{sammCPrefix}}values ( ${2} )",
+      "]$0"
+    ]
+  },
+  {
+    "id": "samm-anon-c-state",
+    "label": "SAMM Anonymous State",
+    "localName": "State",
+    "targetPosition": "OBJECT_CHARACTERISTIC",
+    "body": [
+      "[",
+      "   a {{sammCPrefix}}State ;",
+      "   {{sammPrefix}}dataType ${1|{{allDataTypes}}|} ;",
+      "   {{sammCPrefix}}values ( ${2} ) ;",
+      "   {{sammCPrefix}}defaultValue ${3}",
+      "]$0"
+    ]
+  },
+  {
+    "id": "samm-anon-c-measurement",
+    "label": "SAMM Anonymous Measurement",
+    "localName": "Measurement",
+    "targetPosition": "OBJECT_CHARACTERISTIC",
+    "body": [
+      "[",
+      "   a {{sammCPrefix}}Measurement ;",
+      "   {{sammPrefix}}dataType ${1|{{numericDataTypes}}|} ;",
+      "   {{sammCPrefix}}unit {{unitPrefix}}${2:kilometrePerHour}",
+      "]$0"
+    ]
+  },
+  {
+    "id": "samm-anon-c-quantifiable",
+    "label": "SAMM Anonymous Quantifiable",
+    "localName": "Quantifiable",
+    "targetPosition": "OBJECT_CHARACTERISTIC",
+    "body": [
+      "[",
+      "   a {{sammCPrefix}}Quantifiable ;",
+      "   {{sammPrefix}}dataType ${1|{{numericDataTypes}}|} ;",
+      "   {{sammCPrefix}}unit {{unitPrefix}}${2:percent}",
+      "]$0"
+    ]
+  },
+  {
+    "id": "samm-anon-c-duration",
+    "label": "SAMM Anonymous Duration",
+    "localName": "Duration",
+    "targetPosition": "OBJECT_CHARACTERISTIC",
+    "body": [
+      "[",
+      "   a {{sammCPrefix}}Duration ;",
+      "   {{sammPrefix}}dataType ${1|{{durationDataTypes}}|} ;",
+      "   {{sammCPrefix}}unit {{unitPrefix}}${2:secondUnitOfTime}",
+      "]$0"
+    ]
+  },
+  {
+    "id": "samm-anon-c-code",
+    "label": "SAMM Anonymous Code",
+    "localName": "Code",
+    "targetPosition": "OBJECT_CHARACTERISTIC",
+    "body": [
+      "[",
+      "   a {{sammCPrefix}}Code ;",
+      "   {{sammPrefix}}dataType {{xsdPrefix}}${1:string}",
+      "]$0"
+    ]
+  },
+  {
+    "id": "samm-anon-c-single-entity",
+    "label": "SAMM Anonymous SingleEntity",
+    "localName": "SingleEntity",
+    "targetPosition": "OBJECT_CHARACTERISTIC",
+    "body": [
+      "[",
+      "   a {{sammCPrefix}}SingleEntity ;",
+      "   {{sammPrefix}}dataType {{modelPrefix}}${1:EntityName}",
+      "]$0"
+    ]
+  },
+  {
+    "id": "samm-anon-c-collection",
+    "label": "SAMM Anonymous Collection",
+    "localName": "Collection",
+    "targetPosition": "OBJECT_CHARACTERISTIC",
+    "body": [
+      "[",
+      "   a {{sammCPrefix}}Collection ;",
+      "   {{sammCPrefix}}elementCharacteristic {{modelPrefix}}${1:ElementCharacteristic}",
+      "]$0"
+    ]
+  },
+  {
+    "id": "samm-anon-c-list",
+    "label": "SAMM Anonymous List",
+    "localName": "List",
+    "targetPosition": "OBJECT_CHARACTERISTIC",
+    "body": [
+      "[",
+      "   a {{sammCPrefix}}List ;",
+      "   {{sammCPrefix}}elementCharacteristic {{modelPrefix}}${1:ElementCharacteristic}",
+      "]$0"
+    ]
+  },
+  {
+    "id": "samm-anon-c-set",
+    "label": "SAMM Anonymous Set",
+    "localName": "Set",
+    "targetPosition": "OBJECT_CHARACTERISTIC",
+    "body": [
+      "[",
+      "   a {{sammCPrefix}}Set ;",
+      "   {{sammCPrefix}}elementCharacteristic {{modelPrefix}}${1:ElementCharacteristic}",
+      "]$0"
+    ]
+  },
+  {
+    "id": "samm-anon-c-sorted-set",
+    "label": "SAMM Anonymous SortedSet",
+    "localName": "SortedSet",
+    "targetPosition": "OBJECT_CHARACTERISTIC",
+    "body": [
+      "[",
+      "   a {{sammCPrefix}}SortedSet ;",
+      "   {{sammCPrefix}}elementCharacteristic {{modelPrefix}}${1:ElementCharacteristic}",
+      "]$0"
+    ]
+  },
+  {
+    "id": "samm-anon-c-time-series",
+    "label": "SAMM Anonymous TimeSeries",
+    "localName": "TimeSeries",
+    "targetPosition": "OBJECT_CHARACTERISTIC",
+    "body": [
+      "[",
+      "   a {{sammCPrefix}}TimeSeries ;",
+      "   {{sammPrefix}}dataType {{modelPrefix}}${1:TimeSeriesEntity}",
+      "]$0"
+    ]
+  },
+  {
+    "id": "samm-anon-c-trait",
+    "label": "SAMM Anonymous Trait",
+    "localName": "Trait",
+    "targetPosition": "OBJECT_CHARACTERISTIC",
+    "body": [
+      "[",
+      "   a {{sammCPrefix}}Trait ;",
+      "   {{sammCPrefix}}baseCharacteristic {{modelPrefix}}${1:BaseCharacteristic} ;",
+      "   {{sammCPrefix}}constraint {{modelPrefix}}${2:ConstraintName}",
+      "]$0"
+    ]
+  },
+  {
+    "id": "samm-anon-c-either",
+    "label": "SAMM Anonymous Either",
+    "localName": "Either",
+    "targetPosition": "OBJECT_CHARACTERISTIC",
+    "body": [
+      "[",
+      "   a {{sammCPrefix}}Either ;",
+      "   {{sammCPrefix}}left {{modelPrefix}}${1:LeftCharacteristic} ;",
+      "   {{sammCPrefix}}right {{modelPrefix}}${2:RightCharacteristic}",
+      "]$0"
+    ]
+  },
+  {
+    "id": "samm-anon-c-structured-value",
+    "label": "SAMM Anonymous StructuredValue",
+    "localName": "StructuredValue",
+    "targetPosition": "OBJECT_CHARACTERISTIC",
+    "body": [
+      "[",
+      "   a {{sammCPrefix}}StructuredValue ;",
+      "   {{sammPrefix}}dataType {{xsdPrefix}}${1:string} ;",
+      "   {{sammCPrefix}}deconstructionRule \"${2:(.*)}\" ;",
+      "   {{sammCPrefix}}elements ( {{modelPrefix}}${3:elementProperty} )",
+      "]$0"
+    ]
+  }
+]
