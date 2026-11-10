@@ -57,18 +57,42 @@ public final class SammSnippetCompletionService {
       return item;
    }
 
+   /**
+    * The client requests the items once and then filters and ranks them itself on every following
+    * keystroke, by matching the text in the edit range against the filter text. The filter text
+    * therefore consists of the names of the snippet only and never of the text that was typed when the
+    * items were requested: that text would be matched again by the client and distort its ranking.
+    *
+    * @return the names the client matches the typed text against
+    */
    private static String computeFilterText( final SnippetDefinition snippet, final SammCompletionContext context ) {
-      final String typed = context.edit().typedText();
-      final String prefix = context.targetPosition() == TargetPosition.PREDICATE ? snippet.predicatePrefix( context ) : "";
-      final String qualifiedName = prefix + snippet.localName();
       final List<String> parts = new ArrayList<>();
-      if ( !typed.isEmpty() ) {
-         parts.add( typed );
-      }
-      if ( !qualifiedName.equals( snippet.localName() ) ) {
-         parts.add( qualifiedName );
+      if ( context.targetPosition() == TargetPosition.DOCUMENT_HEADER ) {
+         parts.add( "@prefix" );
+      } else if ( context.targetPosition() == TargetPosition.PREDICATE ) {
+         final String prefix = snippet.predicatePrefix( context );
+         if ( !prefix.isEmpty() ) {
+            parts.add( prefix + snippet.localName() );
+         }
       }
       parts.addAll( snippet.searchTerms() );
-      return String.join( " ", parts );
+      final String names = String.join( " ", parts );
+      return context.targetPosition().isAnonymousObject() ? anonymousObjectStart( context.edit().typedText() ) + names : names;
+   }
+
+   /**
+    * The edit range of an anonymous object starts at its opening bracket, so the bracket is part of
+    * the text the client filters with and must be part of the filter text as well.
+    *
+    * @return the opening bracket followed by the whitespace that separates it from the name; a single
+    *         space if none is typed, which matches the name both directly after the bracket and
+    *         after a space
+    */
+   private static String anonymousObjectStart( final String typed ) {
+      int end = 1;
+      while ( end < typed.length() && Character.isWhitespace( typed.charAt( end ) ) ) {
+         end++;
+      }
+      return end == 1 ? "[ " : typed.substring( 0, end );
    }
 }

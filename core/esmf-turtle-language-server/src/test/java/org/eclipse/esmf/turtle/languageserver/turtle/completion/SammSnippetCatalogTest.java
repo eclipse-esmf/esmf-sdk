@@ -112,6 +112,21 @@ class SammSnippetCatalogTest {
    }
 
    @Test
+   void localNamesAreWrittenLikeTheSammTermTheyInsert() {
+      // Elements are written in PascalCase (samm:Property), predicates in camelCase (samm:properties)
+      assertThat( catalog.allSnippets().stream()
+            .filter( snippet -> snippet.targetPosition() == SammCompletionContext.TargetPosition.TOP_LEVEL_SUBJECT ) )
+                  .isNotEmpty()
+                  .allSatisfy( snippet -> assertThat( snippet.localName() ).as( "local name of %s", snippet.id() )
+                        .matches( "[A-Z][A-Za-z0-9]*" ) );
+      assertThat( catalog.allSnippets().stream()
+            .filter( snippet -> snippet.targetPosition() == SammCompletionContext.TargetPosition.PREDICATE ) )
+                  .isNotEmpty()
+                  .allSatisfy( snippet -> assertThat( snippet.localName() ).as( "local name of %s", snippet.id() )
+                        .matches( "[a-z][A-Za-z0-9]*" ) );
+   }
+
+   @Test
    void comparesScoresByTierThenLengthThenMatchIndexThenCatalogOrder() {
       final MatchScore exact = new MatchScore( 0, 0, 0, 20 );
       final MatchScore prefix = new MatchScore( 1, 20, 0, 10 );
@@ -204,6 +219,12 @@ class SammSnippetCatalogTest {
                   List.of( "samm-see", "samm-events", "samm-properties", "samm-operations", "samm-description" ) ),
             Arguments.of( ":A a samm:Aspect ;\n   samm:m| .", List.of( "samm-preferred-name" ) ),
             Arguments.of( "\nPROP|", List.of( "samm-property", "samm-abstract-property" ) ),
+            // Top-level elements match at the start of the name or of a word in it, but not in the middle
+            Arguments.of( "\nAs|", List.of( "samm-aspect" ) ),
+            Arguments.of( "\nPr|", List.of( "samm-property", "samm-abstract-property" ) ),
+            Arguments.of( "\nSAMM|", List.of() ),
+            Arguments.of( "\neasure|", List.of() ),
+            Arguments.of( ":p a samm:Property ; samm:characteristic [easure|] .", List.of() ),
             Arguments.of( "\nentity|", List.of( "samm-entity", "samm-c-single-entity", "samm-abstract-entity" ) ),
             Arguments.of( ":E a samm:Entity ; samm:properties ( [not|] ) .", List.of( "samm-anon-property-not-in-payload" ) ),
             Arguments.of( ":E a samm:AbstractEntity ; samm:properties ( [not|] ) .", List.of( "samm-anon-property-not-in-payload" ) ),

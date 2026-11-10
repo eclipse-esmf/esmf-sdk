@@ -834,12 +834,83 @@ class SammSuggestionServiceTest {
    }
 
    @Test
-   void filterTextIncludesKeywordsAndTypedPrefixForEditorFiltering() {
-      final Request request = request( HEADER + ":p a samm:Property ;\n    samm:des|\n" );
-      final CompletionItem item = snippetNamed( request, "SAMM description" );
-      assertThat( item.getFilterText() ).contains( "samm:des" )
-            .contains( "samm:description" )
-            .contains( "description" );
+   void filterTextOfTopLevelSnippetIsTheLocalNameWithoutTheTypedText() {
+      // The client filters the items of the first request again on every keystroke, so the typed text
+      // must not be part of the filter text: "A State" would rank above "A Aspect" for "As"
+      assertThat( snippetNamed( request( HEADER + "\nA|" ), "SAMM Aspect" ).getFilterText() ).isEqualTo( "Aspect" );
+      assertThat( snippetNamed( request( HEADER + "\nAs|" ), "SAMM Aspect" ).getFilterText() ).isEqualTo( "Aspect" );
+      assertThat( snippetNamed( request( HEADER + "\n|" ), "SAMM Aspect" ).getFilterText() ).isEqualTo( "Aspect" );
+      assertThat( snippetNamed( request( FULL_HEADER + "\nreg|" ), "SAMM RegularExpressionConstraint" ).getFilterText() )
+            .isEqualTo( "RegularExpressionConstraint regex" );
+   }
+
+   @Test
+   void filterTextOfTopLevelPropertyStartsWithUpperCaseLikeTheInsertedElement() {
+      // The client prefers matches in the same letter case, so "Pr" must find "Property"
+      final Request request = request( HEADER + "\nPr|" );
+      assertThat( snippetNamed( request, "SAMM Property" ).getFilterText() ).isEqualTo( "Property" );
+      assertThat( snippetNamed( request, "SAMM AbstractProperty" ).getFilterText() ).isEqualTo( "AbstractProperty" );
+   }
+
+   @ParameterizedTest
+   @ValueSource( strings = { "samm:des|", "des|", "|" } )
+   void filterTextOfPredicateSnippetIsThePrefixedNameAndTheSearchTerms( final String typed ) {
+      final Request request = request( HEADER + ":p a samm:Property ;\n    " + typed + "\n" );
+      assertThat( snippetNamed( request, "SAMM description" ).getFilterText() )
+            .isEqualTo( "samm:description description samm summary documentation" );
+   }
+
+   @ParameterizedTest
+   @ValueSource( strings = { "[|]", "[regex|]", "[ regex|]" } )
+   void filterTextOfAnonymousObjectSnippetStartsWithTheBracketOfTheEditRange( final String typed ) {
+      final Request request = request( FULL_HEADER + ":T a samm-c:Trait ;\n    samm-c:constraint " + typed + " ." );
+      assertThat( snippetNamed( request, "SAMM Anonymous RegularExpressionConstraint" ).getFilterText() )
+            .isEqualTo( "[ RegularExpressionConstraint regex" );
+   }
+
+   @Test
+   void filterTextOfAnonymousObjectSnippetKeepsTheTypedWhitespaceAfterTheBracket() {
+      final Request request = request( FULL_HEADER + ":T a samm-c:Trait ;\n    samm-c:constraint [  regex|] ." );
+      assertThat( snippetNamed( request, "SAMM Anonymous RegularExpressionConstraint" ).getFilterText() )
+            .isEqualTo( "[  RegularExpressionConstraint regex" );
+   }
+
+   @ParameterizedTest
+   @ValueSource( strings = { "@pre|", "pre|" } )
+   void filterTextOfPrefixHeaderMatchesTheDirectiveWithAndWithoutAtSign( final String typed ) {
+      assertThat( snippetNamed( request( typed ), "SAMM Prefix Header" ).getFilterText() ).isEqualTo( "@prefix prefix" );
+   }
+
+   @Test
+   void topLevelSnippetsDoNotMatchInTheMiddleOfName() {
+      // "a" is in the middle of e.g. "State" and "Measurement", "pr" in "RegularExpressionConstraint"
+      assertThat( topLevelLabels( "A" ) ).contains( "SAMM Aspect", "SAMM AbstractProperty", "SAMM AbstractEntity" )
+            .doesNotContain( "SAMM State", "SAMM StructuredValue", "SAMM Measurement", "SAMM RangeConstraint" );
+      assertThat( topLevelLabels( "As" ) ).containsExactly( "SAMM Aspect" );
+      assertThat( topLevelLabels( "Pr" ) ).containsExactly( "SAMM Property", "SAMM AbstractProperty" );
+      assertThat( topLevelLabels( "pr" ) ).containsExactly( "SAMM Property", "SAMM AbstractProperty" );
+      // The start of a word inside the name still matches
+      assertThat( topLevelLabels( "Val" ) ).contains( "SAMM StructuredValue" );
+   }
+
+   @Test
+   void samePrefixAsTheLabelsDoesNotMatchAnyTopLevelSnippet() {
+      assertThat( topLevelLabels( "SAMM" ) ).isEmpty();
+      assertThat( topLevelLabels( "samm" ) ).isEmpty();
+   }
+
+   @Test
+   void anonymousObjectSnippetsDoNotMatchInTheMiddleOfName() {
+      final Request middle = request( FULL_HEADER + ":p a samm:Property ;\n    samm:characteristic [easure|] ." );
+      assertThat( snippets.complete( middle.document, middle.position ) ).isEmpty();
+      final Request start = request( FULL_HEADER + ":p a samm:Property ;\n    samm:characteristic [Meas|] ." );
+      assertThat( snippets.complete( start.document, start.position ) ).extracting( CompletionItem::getLabel )
+            .containsExactly( "SAMM Anonymous Measurement" );
+   }
+
+   private List<String> topLevelLabels( final String typed ) {
+      final Request request = request( FULL_HEADER + "\n" + typed + "|" );
+      return snippets.complete( request.document, request.position ).stream().map( CompletionItem::getLabel ).toList();
    }
 
    @Test

@@ -33,7 +33,7 @@
   {
     "id": "samm-property",
     "label": "SAMM Property",
-    "localName": "property",
+    "localName": "Property",
     "targetPosition": "TOP_LEVEL_SUBJECT",
     "body": [
       "{{modelPrefix}}${1:propertyName} a {{sammPrefix}}Property ;",

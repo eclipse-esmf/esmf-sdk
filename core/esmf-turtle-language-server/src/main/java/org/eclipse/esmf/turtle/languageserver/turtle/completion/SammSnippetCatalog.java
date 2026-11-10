@@ -332,9 +332,10 @@ public final class SammSnippetCatalog {
          candidates.addAll( snippet.searchTerms() );
       }
 
-      // A plain word without prefix is no explicit request for a SAMM term, so it must not match in the
-      // middle of a name
-      final boolean allowSubstring = !plainPredicateWord;
+      // Only a predicate that is typed with its SAMM prefix is an explicit request for a SAMM term and
+      // may match in the middle of a name. Everywhere else, e.g. a plain word or a top-level element,
+      // a match in the middle of a name would offer unrelated snippets such as "State" for "a".
+      final boolean allowSubstring = context.targetPosition() == TargetPosition.PREDICATE && !plainPredicateWord;
       MatchScore best = null;
       for ( final String candidate : candidates ) {
          final MatchScore score = scoreCandidate( candidate, query, catalogIndex, allowSubstring );
