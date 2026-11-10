@@ -42,7 +42,7 @@ public class AspectCommand extends AbstractCommand {
 
    @CommandLine.Parameters(
       paramLabel = "INPUT",
-      description = "Input Aspect Model file, URN or URL",
+      description = "Input Aspect Model file, URN, URL or directory",
       arity = "1",
       index = "0" )
    private String input;
