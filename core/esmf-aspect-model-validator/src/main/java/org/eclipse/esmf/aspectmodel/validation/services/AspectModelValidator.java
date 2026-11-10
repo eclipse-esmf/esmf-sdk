@@ -110,33 +110,40 @@ public class AspectModelValidator implements Validator {
     */
    @Override
    public Either<ViolationReport, AspectModel> loadModel( final Supplier<AspectModel> aspectModelLoader ) {
-      final AspectModel model;
       try {
-         model = aspectModelLoader.get();
-         return Either.right( model );
-      } catch ( final ParserException exception ) {
-         // Regular syntax errors
-         return Either.left( reportForParserException( exception ) );
-      } catch ( final ValueParsingException exception ) {
-         // Failure to parse value literals
-         return Either.left( reportForValueParsingException( exception ) );
-      } catch ( final MetaModelVersionException exception ) {
-         // The file uses meta model terms that do not exist in the version it declares, so it was not
-         // migrated and could not be loaded. One violation is reported per offending term.
-         return Either.left( new ViolationReport( exception.problems().stream()
-               .<Violation>map( problem -> new MetaModelVersionViolation( problem.message(), problem.highlight() ) )
-               .toList() ) );
-      } catch ( final CancelValidation cancelValidation ) {
-         // The validation was short-circuited by the aspectModelLoader function
-         return Either.left( cancelValidation.violations );
-      } catch ( final AspectLoadingException exception ) {
-         return Either.left( reportForAspectLoadingException( exception ) );
-      } catch ( final ModelResolutionException exception ) {
-         return Either.left( reportForModelResolutionException( exception ) );
+         return Either.right( aspectModelLoader.get() );
       } catch ( final Exception exception ) {
-         // Any other exception, e.g., resolution exception
-         return Either.left( reportForDefaultException( exception ) );
+         return Either.left( reportForException( exception ) );
       }
+   }
+
+   private static ViolationReport reportForException( final Exception exception ) {
+      for ( Throwable current = exception; current != null; current = current.getCause() ) {
+         switch ( current ) {
+            case final ParserException e -> {
+               return reportForParserException( e );
+            }
+            case final ValueParsingException e -> {
+               return reportForValueParsingException( e );
+            }
+            case final MetaModelVersionException e -> {
+               return new ViolationReport( e.problems().stream()
+                     .<Violation>map( problem -> new MetaModelVersionViolation( problem.message(), problem.highlight() ) )
+                     .toList() );
+            }
+            case final CancelValidation e -> {
+               return e.violations;
+            }
+            case final AspectLoadingException e -> {
+               return reportForAspectLoadingException( e );
+            }
+            default -> {
+            }
+         }
+      }
+      return exception instanceof final ModelResolutionException e
+            ? reportForModelResolutionException( e )
+            : reportForDefaultException( exception );
    }
 
    private static ViolationReport reportForDefaultException( final Exception exception ) {
