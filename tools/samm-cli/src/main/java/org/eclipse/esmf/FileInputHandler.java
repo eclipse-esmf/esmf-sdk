@@ -20,17 +20,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import org.apache.commons.io.FilenameUtils;
-
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.ViolationReport;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
+import org.eclipse.esmf.aspectmodel.resolver.fs.FlatModelsRoot;
+import org.eclipse.esmf.aspectmodel.resolver.fs.StructuredModelsRoot;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.AspectModel;
 
 import io.vavr.control.Either;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  * The FileInputHandler knows how to load Aspect Models if the given input is a local file
@@ -62,6 +63,27 @@ public class FileInputHandler extends AbstractInputHandler {
       return inputFile.isAbsolute()
             ? inputFile
             : Path.of( System.getProperty( "user.dir" ) ).resolve( inputFile.toPath() ).toFile().getAbsoluteFile();
+   }
+
+   @Override
+   public String validateAspectModel() {
+      return inputFile.isDirectory() ? validateDirectory() : super.validateAspectModel();
+   }
+
+   private String validateDirectory() {
+      final Path root = inputFile.toPath();
+      final List<ResolutionStrategy> strategies = new ArrayList<>();
+      strategies.add( new FileSystemStrategy( new StructuredModelsRoot( root ) ) );
+      strategies.add( new FileSystemStrategy( new FlatModelsRoot( root ) ) );
+      strategies.addAll( configuredStrategies() );
+      final AspectModelLoader loader = new AspectModelLoader( strategies );
+      return violationFormatter.apply( validator.validateModel( () -> {
+         final List<AspectModelFile> files = loader.loadContents().toList();
+         if ( files.isEmpty() ) {
+            throw new CommandException( "No Aspect Model files found in " + root );
+         }
+         return loader.loadAspectModelFiles( files );
+      } ) );
    }
 
    @Override
