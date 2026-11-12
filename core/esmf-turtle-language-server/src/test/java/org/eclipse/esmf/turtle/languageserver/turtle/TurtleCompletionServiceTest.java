@@ -16,11 +16,13 @@ import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TreeSitterTurtleParserService;
 
+import org.apache.jena.rdf.model.Resource;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionParams;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -182,6 +184,38 @@ class TurtleCompletionServiceTest {
                   new Position( 0, 0 )
             )
       );
+   }
+
+   @Test
+   void sammVocabularyCompletionDoesNotOfferEncodings() {
+      final List<String> labels = labels( """
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+
+         samm:""", new Position( 2, 5 ) );
+
+      assertThat( labels ).contains( "Aspect", "Property", "characteristic" )
+            .doesNotContainAnyElementsOf( SammNs.SAMM.allEncodings().stream().map( Resource::getLocalName ).toList() );
+   }
+
+   @Test
+   void encodingsAreStillOfferedAsTheValueOfAnEncodingConstraint() {
+      final List<String> labels = labels( """
+         @prefix : <urn:samm:example.test:1.0.0#> .
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+         @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#> .
+
+         :Encoding a samm-c:EncodingConstraint ;
+            samm:value samm:UTF""", new Position( 5, 22 ) );
+
+      assertThat( labels ).containsExactlyInAnyOrderElementsOf(
+            SammNs.SAMM.allEncodings().stream().map( encoding -> "samm:" + encoding.getLocalName() ).toList() );
+   }
+
+   private List<String> labels( final String content, final Position position ) {
+      final Document document = new Document( "test.ttl", content );
+      final ParsedDocument parsedDocument = parserService.apply( document );
+      final CompletionParams params = new CompletionParams( new TextDocumentIdentifier( "test.ttl" ), position );
+      return completionService.complete( parsedDocument, params, true ).stream().map( CompletionItem::getLabel ).toList();
    }
 
    @ParameterizedTest( name = "{0}" )
