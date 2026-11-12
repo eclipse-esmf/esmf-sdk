@@ -152,6 +152,39 @@ include::example$GenerateJsonSchema.java[tags=imports]
 include::example$GenerateJsonSchema.java[tags=generate]
 ----
 
+== Generating Protocol Buffers Message Schemas
+
+The `AspectModelProtobufGenerator` generates a self-contained proto3 message schema for an Aspect's
+payload. The schema declares a package derived from the Aspect's namespace and full model version.
+The version is appended as a final segment, e.g. `1.2.3` becomes `v1_2_3`.
+All generated messages and their fully qualified references use that package.
+It extends `AspectGenerator` and produces one `ProtobufArtifact`, whose identifier is
+`<AspectName>.proto` and whose content is the schema source. The artifact implements `Artifact`
+through `StringArtifact` and serializes as UTF-8.
+
+`ProtobufGenerationConfig` implements `GenerationConfig`. It currently has no configurable options;
+use the constructor accepting only an Aspect, or supply a configuration explicitly:
+
+[source,java]
+----
+import org.eclipse.esmf.aspectmodel.generator.protobuf.AspectModelProtobufGenerator;
+import org.eclipse.esmf.aspectmodel.generator.protobuf.ProtobufArtifact;
+import org.eclipse.esmf.aspectmodel.generator.protobuf.ProtobufGenerationConfig;
+import org.eclipse.esmf.aspectmodel.generator.protobuf.ProtobufGenerationConfigBuilder;
+
+// The Aspect has already been loaded into 'aspect'.
+final ProtobufGenerationConfig config = ProtobufGenerationConfigBuilder.builder().build();
+final AspectModelProtobufGenerator generator = new AspectModelProtobufGenerator(aspect, config);
+final ProtobufArtifact schema = generator.singleResult();
+final String fileName = schema.getId();
+final String source = schema.getContent();
+----
+
+Use `generator.getContent()` to retrieve the source directly, or `generator.generate(nameMapper)`
+to write artifacts to output streams selected by their identifiers. The CLI and Maven plugin use
+the same generator. See xref:samm-cli.adoc#_protocol_buffers_message_schemas[Protocol Buffers message schemas]
+for mapping rules and field numbering considerations.
+
 == Generating OpenAPI Specification
 
 The OpenAPI specification generator creates either a https://json-schema.org/[JSON Schema] or a https://yaml.org/[Yaml Spec]
