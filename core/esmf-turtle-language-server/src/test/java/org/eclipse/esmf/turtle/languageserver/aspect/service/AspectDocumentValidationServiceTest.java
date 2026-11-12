@@ -37,15 +37,14 @@ import org.eclipse.esmf.turtle.languageserver.aspect.diagnostic.TestViolation;
 import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.DiagnosticMapper;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 
-import org.eclipse.lsp4j.Diagnostic;
-import org.junit.jupiter.api.Test;
-import org.slf4j.LoggerFactory;
-
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import io.vavr.control.Either;
+import org.eclipse.lsp4j.Diagnostic;
+import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
 
 class AspectDocumentValidationServiceTest {
    @Test
@@ -144,27 +143,48 @@ class AspectDocumentValidationServiceTest {
    }
 
    @Test
-   void missingReferencedPropertyFromRealLoadingIsMappedToProcessingDiagnosticWithActionableMessage() {
+   void missingReferencedPropertyIsNamedAndLocatedInTheDiagnostic() {
       final AspectModelValidationService service = new AspectModelValidationService();
 
-      final ViolationReport report = service.validate( parsedDocument( "Aspect.ttl", """
+      final ParsedDocument document = parsedDocument( "Aspect.ttl", """
          @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
          @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
 
          :Aspect a samm:Aspect ;
             samm:properties ( :notExistingProperty ) .
-         """ ) );
+         """ );
+      final ViolationReport report = service.validate( document );
 
-      assertThat( report.violations() ).first()
-            .satisfies( diagnostic -> {
-               assertThat( diagnostic.code().code() ).isEqualTo( ModelResolutionViolation.ERROR_CODE );
-               assertThat( diagnostic ).isInstanceOfSatisfying( ModelResolutionViolation.class, violation -> {
-                  assertThat( violation.location().toString() ).contains( "notExistingProperty" );
-               } );
-               assertThat( diagnostic.message() )
-                     .doesNotContain( "AspectLoadingException" )
-                     .doesNotContain( "\tat" );
-            } );
+      final List<Diagnostic> diagnostics = new DiagnosticMapper().apply( document.sourceDocument(), report ).get( document.getUri() );
+      assertThat( diagnostics ).singleElement().satisfies( diagnostic -> {
+         assertThat( diagnostic.getCode().getLeft() ).isEqualTo( ModelResolutionViolation.ERROR_CODE );
+         assertThat( diagnostic.getMessage().getLeft() ).isEqualTo( "Reference 'notExistingProperty' could not be resolved." );
+         assertThat( diagnostic.getRange().getStart().getLine() ).isEqualTo( 4 );
+         assertThat( diagnostic.getRange().getStart().getCharacter() ).isEqualTo( 21 );
+         assertThat( diagnostic.getRange().getEnd().getLine() ).isEqualTo( 4 );
+         assertThat( diagnostic.getRange().getEnd().getCharacter() ).isEqualTo( 41 );
+      } );
+   }
+
+   @Test
+   void allReferencesToTheSameMissingDefinitionAreLocated() {
+      final ParsedDocument document = parsedDocument( "Aspect.ttl", """
+         @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+
+         :Aspect a samm:Aspect ;
+               samm:properties ( :missing ) .
+            :operation a samm:Operation ;
+               samm:input ( :missing ) .
+            """ );
+      final ViolationReport report = new AspectModelValidationService().validate( document );
+      final List<Diagnostic> diagnostics = new DiagnosticMapper().apply( document.sourceDocument(), report ).get( document.getUri() );
+
+      assertThat( diagnostics ).hasSize( 2 )
+            .allSatisfy( diagnostic -> assertThat( diagnostic.getMessage().getLeft() )
+                  .isEqualTo( "Reference 'missing' could not be resolved." ) );
+      assertThat( diagnostics ).extracting( diagnostic -> diagnostic.getRange().getStart().getLine() )
+            .containsExactlyInAnyOrder( 4, 6 );
    }
 
    @Test
