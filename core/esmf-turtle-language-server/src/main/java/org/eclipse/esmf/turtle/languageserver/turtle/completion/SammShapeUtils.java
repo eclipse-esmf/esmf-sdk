@@ -22,8 +22,10 @@ import java.util.stream.Collectors;
 
 import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.MetaModelFile;
+import org.eclipse.esmf.aspectmodel.shacl.Shape;
 import org.eclipse.esmf.aspectmodel.shacl.ShapeLoader;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.ClassConstraint;
+import org.eclipse.esmf.aspectmodel.shacl.constraint.Constraint;
 import org.eclipse.esmf.aspectmodel.shacl.path.PredicatePath;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
@@ -62,12 +64,12 @@ public final class SammShapeUtils {
     */
    static {
       final Map<String, Set<Resource>> expectedClasses = new HashMap<>();
-      for ( final var shape : new ShapeLoader().apply( MetaModelFile.metaModelShapes() ) ) {
-         for ( final var property : shape.properties() ) {
+      for ( final Shape.Node shape : new ShapeLoader().apply( MetaModelFile.metaModelShapes() ) ) {
+         for ( final Shape.Property property : shape.properties() ) {
             if ( property.path() instanceof final PredicatePath path ) {
                final String predicate = path.predicate().getURI();
                SHAPE_PREDICATES.add( predicate );
-               for ( final var constraint : property.attributes().constraints() ) {
+               for ( final Constraint constraint : property.attributes().constraints() ) {
                   if ( constraint instanceof final ClassConstraint classConstraint ) {
                      expectedClasses.computeIfAbsent( predicate, key -> new HashSet<>() ).add( classConstraint.allowedClass() );
                   }
