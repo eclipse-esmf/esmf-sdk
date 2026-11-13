@@ -83,7 +83,9 @@ of model resolution] for more information.
 .3+| [[help]] help <commands...>   | Get help for a list of subcommands                                                      | `samm help aspect`
                                    |                                                                                         | `samm help aspect to svg`
                                    |                                                                                         | `samm help aspect validate`
-.2+| [[aspect-validate]] aspect <model> validate | Validate Aspect Model                                                     | `samm aspect AspectModel.ttl validate`
+.2+| [[aspect-validate]] aspect <model> validate | Validate Aspect Model. +
+                                    If `<model>` is a directory that follows the models directory structure, all `.ttl` in
+                                    it are validated (<<models-directory-structure>>)                                        | `samm aspect AspectModel.ttl validate`
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements | `samm aspect AspectModel.ttl validate --custom-resolver myresolver.sh`
 .3+| [[aspect-prettyprint]] aspect <model> prettyprint | Pretty-print Aspect Model                                           | `samm aspect AspectModel.ttl prettyprint`
                                    | _--output, -o_ : the output will be saved to the given file                             | `samm aspect AspectModel.ttl prettyprint -o c:\Results\PrettyPrinted.ttl`

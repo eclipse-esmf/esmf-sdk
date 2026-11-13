@@ -171,7 +171,7 @@ public class FileSystemStrategy implements ResolutionStrategy {
       return modelsRoot.paths()
             .map( Path::toFile )
             .map( file -> Try.of( () -> AspectModelFileLoader.load( file ) )
-                  .getOrElseThrow( throwable -> new ModelResolutionException( "Could not load file", throwable ) ) );
+                  .getOrElseThrow( throwable -> fileLoadException( file, throwable ) ) );
    }
 
    @Override
@@ -180,6 +180,10 @@ public class FileSystemStrategy implements ResolutionStrategy {
             .map( Paths::get )
             .map( Path::toFile )
             .map( file -> Try.of( () -> AspectModelFileLoader.load( file ) )
-                  .getOrElseThrow( throwable -> new ModelResolutionException( "Could not load file", throwable ) ) );
+                  .getOrElseThrow( throwable -> fileLoadException( file, throwable ) ) );
+   }
+
+   private ModelResolutionException fileLoadException( final File file, final Throwable cause ) {
+      return new ModelResolutionException( "Could not load file " + file.toURI() + ": " + cause.getMessage(), cause );
    }
 }

@@ -217,6 +217,15 @@ class SammCliTest extends SammCliAbstractTest {
    }
 
    @Test
+   void testAspectValidateDirectory( @TempDir final Path tmp ) throws IOException {
+      final Path versionDir = Files.createDirectories( tmp.resolve( "org.eclipse.esmf.test" ).resolve( "1.0.0" ) );
+      Files.copy( Path.of( defaultInputFile ), versionDir.resolve( "Valid.ttl" ) );
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", tmp.toString(), "validate" );
+      assertThat( result.stdout() ).contains( "Input model is valid" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
    void testAspectFromUrnValidateValidModel() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputUrn, "validate", "--models-root",
             defaultModelsRoot );
