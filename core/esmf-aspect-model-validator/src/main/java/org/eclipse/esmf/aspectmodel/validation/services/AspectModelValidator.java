@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -169,9 +168,9 @@ public class AspectModelValidator implements Validator {
    }
 
    private static ViolationReport reportForModelResolutionException( final ModelResolutionException exception ) {
-      return exception.getCheckedLocations().isEmpty()
+      return exception.getViolations().isEmpty()
             ? new ViolationReport( new ProcessingViolation( exception.getMessage(), Optional.of( exception ) ) )
-            : new ViolationReport( exception.getCheckedLocations().stream().<Violation>map( Function.identity() ).toList() );
+            : new ViolationReport( exception.getViolations() );
    }
 
    private static ViolationReport reportForValueParsingException( final ValueParsingException exception ) {

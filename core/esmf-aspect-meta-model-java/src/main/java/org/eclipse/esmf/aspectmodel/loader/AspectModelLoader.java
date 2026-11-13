@@ -38,20 +38,11 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.jena.graph.Node;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.ResIterator;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.rdf.model.StmtIterator;
-import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.XSD;
-
 import org.eclipse.esmf.aspectmodel.AspectLoadingException;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.Location;
 import org.eclipse.esmf.aspectmodel.RdfUtil;
+import org.eclipse.esmf.aspectmodel.Violation;
 import org.eclipse.esmf.aspectmodel.ViolationReport;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelFileLoader;
 import org.eclipse.esmf.aspectmodel.resolver.EitherStrategy;
@@ -61,11 +52,13 @@ import org.eclipse.esmf.aspectmodel.resolver.ModelSource;
 import org.eclipse.esmf.aspectmodel.resolver.NamespacePackage;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategySupport;
+import org.eclipse.esmf.aspectmodel.resolver.UnresolvedReferenceViolation;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.resolver.fs.FlatModelsRoot;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.DefaultAspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.MetaModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFile;
+import org.eclipse.esmf.aspectmodel.resolver.parser.SmartToken;
 import org.eclipse.esmf.aspectmodel.resolver.parser.TokenRegistry;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
@@ -81,13 +74,21 @@ import org.eclipse.esmf.metamodel.impl.DefaultAspectModel;
 import org.eclipse.esmf.metamodel.impl.DefaultNamespace;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.collect.Streams;
-
 import io.vavr.control.Either;
 import io.vavr.control.Try;
+import org.apache.jena.graph.Node;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.ResIterator;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.XSD;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The core class to load an {@link AspectModel}. The AspectModelLoader is also a
@@ -596,8 +597,56 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
       }
 
       if ( !loadingFailures.isEmpty() ) {
-         throw new ModelResolutionException( loadingFailures );
+         throw new ModelResolutionException( translateLoadingFailures( loadingFailures, context.loadedFiles() ) );
       }
+   }
+
+   private List<Violation> translateLoadingFailures( final List<ModelResolutionViolation> loadingFailures,
+         final Set<AspectModelFile> files ) {
+      final List<Violation> result = new ArrayList<>();
+      final Map<AspectModelUrn, List<ModelResolutionViolation>> loadingFailuresByUrn = new HashMap<>();
+      for ( final ModelResolutionViolation loadingFailure : loadingFailures ) {
+         // keep original violation if it does not contain a potentially locatable urn
+         if ( loadingFailure.element().isEmpty() ) {
+            result.add( loadingFailure );
+            continue;
+         }
+         loadingFailuresByUrn.computeIfAbsent( loadingFailure.element().get(), _ -> new ArrayList<>() ).add( loadingFailure );
+      }
+
+      for ( final Map.Entry<AspectModelUrn, List<ModelResolutionViolation>> entry : loadingFailuresByUrn.entrySet() ) {
+         final AspectModelUrn failureUrn = entry.getKey();
+         final List<ModelResolutionViolation> urnLoadingFailures = entry.getValue();
+         final List<UnresolvedReferenceViolation> locatedUrnLoadingFailures =
+               locateFailureReferencesInFile( failureUrn, urnLoadingFailures, files );
+         // keep original violations if no reference location could be found
+         if ( locatedUrnLoadingFailures.isEmpty() ) {
+            result.addAll( urnLoadingFailures );
+         } else {
+            result.addAll( locatedUrnLoadingFailures );
+         }
+      }
+      return result;
+   }
+
+   private List<UnresolvedReferenceViolation> locateFailureReferencesInFile(
+         final AspectModelUrn urn, final List<ModelResolutionViolation> urnLoadingFailures, final Set<AspectModelFile> files ) {
+      final List<UnresolvedReferenceViolation> references = new ArrayList<>();
+      for ( final AspectModelFile file : files ) {
+         referenceLocations( urn, file ).forEach( location -> references.add(
+               new UnresolvedReferenceViolation( urn, file.sourceUri(), file::sourceRepresentation, location, urnLoadingFailures ) ) );
+      }
+      return references;
+   }
+
+   private Stream<Location> referenceLocations( final AspectModelUrn urn, final AspectModelFile file ) {
+      return file.sourceModel().getGraph().stream()
+            .flatMap( triple -> Stream.of( triple.getSubject(), triple.getPredicate(), triple.getObject() ) )
+            .filter( node -> node.isURI() && replaceLegacyBammUrn( node.getURI() ).equals( urn.toString() ) )
+            .flatMap( node -> TokenRegistry.getToken( node ).stream() )
+            .filter( token -> file.sourceUri().equals( token.getSourceDocument() ) )
+            .map( SmartToken::location )
+            .distinct();
    }
 
    /**

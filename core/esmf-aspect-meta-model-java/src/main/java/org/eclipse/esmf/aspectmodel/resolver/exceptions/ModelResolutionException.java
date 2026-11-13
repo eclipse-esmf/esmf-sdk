@@ -13,44 +13,61 @@
 
 package org.eclipse.esmf.aspectmodel.resolver.exceptions;
 
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.eclipse.esmf.aspectmodel.Violation;
 import org.eclipse.esmf.aspectmodel.resolver.ModelResolutionViolation;
+import org.eclipse.esmf.aspectmodel.resolver.UnresolvedReferenceViolation;
 
 public class ModelResolutionException extends RuntimeException {
-   private final List<ModelResolutionViolation> checkedLocations;
+   private final List<Violation> violations;
 
    public ModelResolutionException( final ModelResolutionViolation checkedLocation ) {
       this( List.of( checkedLocation ) );
    }
 
-   public ModelResolutionException( final List<ModelResolutionViolation> checkedLocations ) {
-      this.checkedLocations = checkedLocations;
+   public ModelResolutionException( final List<? extends Violation> violations ) {
+      this.violations = List.copyOf( violations );
    }
 
    public ModelResolutionException( final String message ) {
       super( message );
-      checkedLocations = List.of();
+      violations = List.of();
    }
 
    public ModelResolutionException( final String message, final Throwable cause ) {
       super( message, cause );
-      checkedLocations = List.of();
+      violations = List.of();
    }
 
    public List<ModelResolutionViolation> getCheckedLocations() {
-      return checkedLocations;
+      final Set<ModelResolutionViolation> checkedLocations = new LinkedHashSet<>();
+      for ( final Violation violation : violations ) {
+         if ( violation instanceof final ModelResolutionViolation attempt ) {
+            checkedLocations.add( attempt );
+         } else if ( violation instanceof final UnresolvedReferenceViolation reference ) {
+            checkedLocations.addAll( reference.checkedLocations() );
+         }
+      }
+      return List.copyOf( checkedLocations );
+   }
+
+   public List<Violation> getViolations() {
+      return violations;
    }
 
    @Override
    public String getMessage() {
-      if ( getCheckedLocations().isEmpty() ) {
+      final List<ModelResolutionViolation> checkedLocations = getCheckedLocations();
+      if ( checkedLocations.isEmpty() ) {
          if ( super.getMessage() == null ) {
             return "Model resolution exception";
          }
          return super.getMessage();
       }
-      return getCheckedLocations().stream().map( ModelResolutionViolation::message ).collect( Collectors.joining( "; " ) );
+      return checkedLocations.stream().map( ModelResolutionViolation::message ).collect( Collectors.joining( "; " ) );
    }
 }
