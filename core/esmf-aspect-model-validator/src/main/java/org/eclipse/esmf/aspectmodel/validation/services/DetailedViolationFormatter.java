@@ -32,6 +32,7 @@ import org.eclipse.esmf.aspectmodel.ElementFocussedViolation;
 import org.eclipse.esmf.aspectmodel.ProjectInfo;
 import org.eclipse.esmf.aspectmodel.Violation;
 import org.eclipse.esmf.aspectmodel.resolver.ModelResolutionViolation;
+import org.eclipse.esmf.aspectmodel.resolver.UnresolvedReferenceViolation;
 import org.eclipse.esmf.aspectmodel.resolver.parser.PlainTextFormatter;
 import org.eclipse.esmf.aspectmodel.shacl.Shape;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.AllowedLanguagesConstraint;
@@ -180,6 +181,9 @@ public class DetailedViolationFormatter extends ViolationFormatter implements Sh
       builder.append( "  - error-code: " ).append( violation.code().code() ).append( "\n" );
       builder.append( "  - location: (line %d, column %d)".formatted( violation.location().fromLine() + 1,
             violation.location().fromColumn() + 1 ) ).append( "\n" );
+      if ( violation instanceof final UnresolvedReferenceViolation reference ) {
+         builder.append( handleModelResolutionViolations( reference.checkedLocations() ) );
+      }
       return builder.toString();
    }
 
