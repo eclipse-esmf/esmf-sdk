@@ -47,7 +47,7 @@ class SammCompletionJsonRpcTransportTest {
       {"textDocument":{"uri":"file:///samm-snippet-demo.ttl"},"position":{"line":3,"character":12}}""";
 
    @Test
-   void returnsOrdinarySnippetsWithoutAdvertisingInlineSupport() throws Exception {
+   void returnsOrdinarySnippetsAndAdvertisesInlineCompletion() throws Exception {
       final TurtleLanguageServer server = new TurtleLanguageServer();
       final TurtleTextDocumentService documents = (TurtleTextDocumentService) server.getTextDocumentService();
       try {
@@ -55,7 +55,7 @@ class SammCompletionJsonRpcTransportTest {
             final JsonNode initialized = request( client, 1, "initialize", """
                {"capabilities":{"textDocument":{"completion":{"completionItem":{"snippetSupport":true}},"inlineCompletion":{}}}}""" );
             final JsonNode capabilities = initialized.path( "result" ).path( "capabilities" );
-            assertThat( capabilities.has( "inlineCompletionProvider" ) ).isFalse();
+            assertThat( capabilities.has( "inlineCompletionProvider" ) ).isTrue();
             assertThat( capabilities.path( "completionProvider" ).path( "triggerCharacters" ).toString() ).isEqualTo( "[\":\",\"[\"]" );
             documents.didOpen( new DidOpenTextDocumentParams( new TextDocumentItem( URI, "turtle", 1, SOURCE ) ) );
 
@@ -90,13 +90,13 @@ class SammCompletionJsonRpcTransportTest {
    }
 
    @Test
-   void olderClientsKeepVocabularyWithoutSnippetsOrInlineProvider() throws Exception {
+   void olderClientsKeepVocabularyWithoutSnippets() throws Exception {
       final TurtleLanguageServer server = new TurtleLanguageServer();
       final TurtleTextDocumentService documents = (TurtleTextDocumentService) server.getTextDocumentService();
       try {
          withConnection( server, client -> {
             final JsonNode initialized = request( client, 1, "initialize", "{\"capabilities\":{}}" );
-            assertThat( initialized.path( "result" ).path( "capabilities" ).has( "inlineCompletionProvider" ) ).isFalse();
+            assertThat( initialized.path( "result" ).path( "capabilities" ).has( "inlineCompletionProvider" ) ).isTrue();
             documents.didOpen( new DidOpenTextDocumentParams( new TextDocumentItem( URI, "turtle", 1, SOURCE ) ) );
             final JsonNode completion = request( client, 2, "textDocument/completion", POSITION_PARAMS );
             assertThat( completion.path( "result" ).isEmpty() ).isFalse();

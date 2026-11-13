@@ -32,7 +32,7 @@ public final class SammSnippetCompletionService {
    private final SammSnippetCatalog catalog = new SammSnippetCatalog();
 
    public List<CompletionItem> complete( final ParsedDocument document, final Position position ) {
-      return detector.detect( document, position )
+      return detector.detect( new TurtleCompletionTree( document ).cursorAt( position ) )
             .map( this::complete )
             .orElseGet( List::of );
    }
