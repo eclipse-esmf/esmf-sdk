@@ -913,6 +913,33 @@ class SammCliTest extends SammCliAbstractTest {
    }
 
    @Test
+   void testAspectToProtobufToFile( @TempDir final Path outputDirectory ) {
+      final File targetFile = outputFile( outputDirectory, "output.proto" );
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "protobuf", "-o",
+            targetFile.getAbsolutePath() );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( targetFile ).content().startsWith( "syntax = \"proto3\";" ).contains( "package org.eclipse.esmf.test.v1_0_0;",
+            "string entityProperty = 1;" );
+   }
+
+   @Test
+   void testAspectToProtobufToStdout() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "protobuf" );
+      assertThat( result.stdout() ).startsWith( "syntax = \"proto3\";" ).contains( "package org.eclipse.esmf.test.v1_0_0;",
+            "string entityProperty = 1;" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectToProtobufWithCustomResolver() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "protobuf",
+            "--custom-resolver", resolverCommand() );
+      assertThat( result.stdout() ).startsWith( "syntax = \"proto3\";" ).contains( "package org.eclipse.esmf.test.v1_0_0;" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
    void testAspectToJsonSchemaToFile( @TempDir final Path outputDirectory ) {
       final File targetFile = outputFile( outputDirectory, "output.schema.json" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "schema", "-o",

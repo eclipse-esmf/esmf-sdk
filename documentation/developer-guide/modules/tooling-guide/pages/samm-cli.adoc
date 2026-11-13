@@ -215,6 +215,9 @@ of model resolution] for more information.
 .3+| [[aspect-to-jsonld]] aspect <model> to jsonld | Generate JSON-LD representation of an Aspect Model                      | `samm aspect AspectModel.ttl to jsonld`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
+.3+| [[aspect-to-protobuf]] aspect <model> to protobuf | Generate a self-contained proto3 message schema for an Aspect Model | `samm aspect AspectModel.ttl to protobuf`
+                                   | _--output, -o_ : output file path (default: stdout; `-` also selects stdout)             | `samm aspect AspectModel.ttl to protobuf -o AspectModel.proto`
+                                   | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
 .4+| [[aspect-to-schema]] aspect <model> to schema | Generate JSON schema for an Aspect Model                                | `samm aspect AspectModel.ttl to schema`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--language, -l_ : The language from the model for which a JSON schema should be
@@ -1340,3 +1343,46 @@ _models root_
 The name of the directory shown as _models root_ above can be chosen freely.
 The SAMM CLI will resolve the file path relative to the input file by following the folder structure described above.
 Each of the files in the `1.0.0` directory should therefore have an empty prefix declaration such as `@prefix : <urn:samm:com.mycompany.myproduct:1.0.0#>`.
+
+== Protocol Buffers message schemas
+
+`aspect <model> to protobuf` generates a proto3 schema containing the Aspect payload and its
+referenced Entities. The Aspect's namespace and full model version determine the `package`
+declaration. The version is appended as the final package segment with a `v` prefix and dots
+replaced by underscores. For example, `urn:samm:org.example.sensors:1.2.3#Sensor` produces
+`package org.example.sensors.v1_2_3;`. The `urn:samm:` prefix and element name are omitted.
+Each dot-separated namespace segment is normalized using the identifier rules below.
+All generated messages, including Entities referenced from other namespaces, belong to this package
+and use fully qualified message references.
+
+Entity inheritance is flattened. Properties marked `notInPayload` and abstract
+Properties are omitted. Payload names are used for fields; characters outside ASCII letters,
+digits and underscores become underscores. Names starting with digits or underscores and reserved
+words receive a `samm_` prefix. Conflicting message names receive numeric suffixes; conflicting
+field names cause an error.
+
+Collections become `repeated` fields and optional singular Properties use `optional`.
+Either Characteristics become wrapper messages with a `oneof` containing `left` and `right`.
+Nested collections also use wrapper messages. Enumeration Characteristics use their underlying
+data type; enumeration restrictions, Constraints, collection uniqueness and mandatory-field
+validation are not enforced by the generated schema. Operations and Events are not generated.
+
+[cols="1,1",options="header"]
+|===
+| SAMM data type | Protobuf type
+| boolean | bool
+| byte, short, int | int32
+| long | int64
+| unsignedByte, unsignedShort, unsignedInt | uint32
+| unsignedLong | uint64
+| float, double | float, double
+| base64Binary, hexBinary | bytes
+| decimal and arbitrary-precision integer types | string (preserves precision and range)
+| Other scalar types, including date/time, duration, URI and langString | string
+| Entity | message
+|===
+
+Field numbers start at 1 in model property order and skip the Protobuf reserved range
+19000 through 19999. Generation is deterministic for an unchanged model. Changes to property
+order or removal of properties can change field numbers; review and maintain field numbers before
+using a regenerated schema with existing serialized data.
