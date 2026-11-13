@@ -283,11 +283,9 @@ public class TurtleTextDocumentService implements TextDocumentService {
       if ( document == null ) {
          return CompletableFuture.completedFuture( Either.forLeft( List.of() ) );
       }
-      return CompletableFuture.supplyAsync( () -> {
-         return turtleParserService.withParsedDocument( document,
-               parsedDocument -> Either
-                     .forLeft( turtleCompletionService.complete( parsedDocument, position, snippetSupport ) ) );
-      }, asyncExecutor );
+      return CompletableFuture.supplyAsync( () -> turtleParserService.withParsedDocument( document,
+            parsedDocument -> Either.forLeft( turtleCompletionService.complete( parsedDocument, position, snippetSupport ) ) ),
+            asyncExecutor );
    }
 
    @Override

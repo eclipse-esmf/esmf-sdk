@@ -16,27 +16,37 @@ package org.eclipse.esmf.turtle.languageserver.turtle;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.esmf.aspectmodel.Location;
-import org.eclipse.esmf.aspectmodel.resolver.modelfile.MetaModelFile;
-import org.eclipse.esmf.aspectmodel.shacl.ShapeLoader;
-import org.eclipse.esmf.aspectmodel.shacl.path.PredicatePath;
+import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
-import org.eclipse.esmf.treesitterturtle.ParserTokenType;
-import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
+import org.eclipse.esmf.turtle.languageserver.turtle.completion.CompletionUtils;
+import org.eclipse.esmf.turtle.languageserver.turtle.completion.SammCompletionContext;
+import org.eclipse.esmf.turtle.languageserver.turtle.completion.SammShapeUtils;
+import org.eclipse.esmf.turtle.languageserver.turtle.completion.SammSuggestionContextDetector;
+import org.eclipse.esmf.turtle.languageserver.turtle.completion.TurtleCompletionTree;
+import org.eclipse.esmf.turtle.languageserver.turtle.completion.TurtleCursor;
 
-import org.apache.jena.rdf.model.Resource;
 import org.eclipse.lsp4j.InlineCompletionItem;
 import org.eclipse.lsp4j.InlineCompletionParams;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
-public class TurtleInlineCompletionService extends AbstractTurtleCompletionService {
-   private static final Set<String> PREDICATE_IRIS = initPredicateIris();
+public class TurtleInlineCompletionService extends TurtleService {
+   /**
+    * Full names ({@code xsd:int}, {@code rdf:langString}, {@code samm:curie}, ...) of all data types a
+    * {@code samm:dataType} may reference
+    */
+   private static final List<String> DATA_TYPE_NAMES = initDataTypeNames();
+   private final SammSuggestionContextDetector contextDetector = new SammSuggestionContextDetector();
+
+   private static List<String> initDataTypeNames() {
+      return SammXsdType.ALL_TYPES.stream()
+            .flatMap( type -> CompletionUtils.prefixedName( type.getURI() ).stream() )
+            .toList();
+   }
 
    /**
     * Inline completion while typing a name. Only a single, unambiguous candidate is suggested.
@@ -44,45 +54,42 @@ public class TurtleInlineCompletionService extends AbstractTurtleCompletionServi
     * <li>A predicate, e.g. {@code samm:chara|}, is suggested together with its single object, e.g.
     * {@code samm:characteristic :Single}. The object is the unique subject of the expected class.</li>
     * <li>An object, e.g. {@code samm:characteristic :Ex|}. Candidates are the document subjects of the
-    * expected
-    * class whose name starts with the typed text.</li>
+    * expected class whose name starts with the typed text.</li>
     * </ul>
     */
    public List<InlineCompletionItem> inlineComplete( final ParsedDocument parsedDocument, final InlineCompletionParams params ) {
       final Position position = params.getPosition();
-      final TurtleSyntaxTree tree = parsedDocument.turtleSyntaxTree();
+      final TurtleCursor analysis = new TurtleCompletionTree( parsedDocument ).cursorAt( position );
 
       // Do not suggest in the middle of an existing name, e.g. "samm:characteristic :Exam|ple"
-      if ( tree.findMatchingTreeSitterToken( List.of( ParserTokenType.NAMESPACE, ParserTokenType.PN_LOCAL ),
-            position.getLine(), position.getCharacter() ) != null ) {
+      if ( analysis.insideName() ) {
          return List.of();
       }
 
-      // Predicate position, e.g. "samm:chara|": a single matching predicate, followed by its single
-      // object
-      final TurtleSyntaxTree.Node typedPredicate = tree.findMatchingTreeSitterToken( List.of( ParserTokenType.PREDICATE ),
-            position.getLine(), position.getCharacter() - 1L );
-      if ( typedPredicate != null ) {
-         return predicateInlineComplete( parsedDocument, position, typedPredicate );
-      }
-
-      // The namespace of the name being typed, e.g. ":" of ":Ex"
-      final Optional<TurtleSyntaxTree.Node> typedNamespaceOptional = namespaceAtCursor( parsedDocument, position );
-      if ( typedNamespaceOptional.isEmpty() ) {
+      final Optional<SammCompletionContext> context = contextDetector.detect( analysis );
+      if ( context.isEmpty() ) {
          return List.of();
       }
+      return switch ( context.get().targetPosition() ) {
+         case PREDICATE -> predicateInlineComplete( analysis, position );
+         case OBJECT_VALUE -> objectInlineComplete( analysis, context.get().activePredicate().map( TurtleCursor::withLatestSammNamespace ),
+               position );
+         default -> List.of();
+      };
+   }
 
-      final TurtleSyntaxTree.Node typedNamespace = typedNamespaceOptional.get();
-      final String prefix = typedNamespace.content();
-      final String typedLocalName = typedLocalName( parsedDocument, position );
-      final TypedStatement statement = typedStatement( tree, position );
-      final boolean isDataType = statement.predicateIri().filter( SammNs.SAMM.dataType().getURI()::equals ).isPresent();
+   private List<InlineCompletionItem> objectInlineComplete( final TurtleCursor analysis, final Optional<String> predicateIri,
+         final Position position ) {
+      final Optional<String> typedPrefix = analysis.prefix();
+      if ( typedPrefix.isEmpty() ) {
+         return List.of();
+      }
+      final String prefix = typedPrefix.get();
+      final String typedLocalName = analysis.localName();
+      final boolean isDataType = predicateIri.filter( SammNs.SAMM.dataType().getURI()::equals ).isPresent();
       // The classes the SAMM shapes expect for the predicate's object, e.g. samm:Characteristic or
       // samm:Entity
-      final Set<Resource> expectedClasses = closestPredicateExpectedClasses( statement.predicateIri() );
-      final Stream<String> matchingTypes = matchingExpectedTypes( tree, prefix, typedLocalName, expectedClasses )
-            // The subject of the statement being edited must not be suggested as its own object
-            .filter( type -> !type.equals( statement.subject() ) );
+      final Stream<String> matchingSubjects = matchingExpectedSubjects( analysis, predicateIri, prefix, typedLocalName );
 
       final Stream<String> matchesStream;
       if ( isDataType ) {
@@ -93,9 +100,9 @@ public class TurtleInlineCompletionService extends AbstractTurtleCompletionServi
          }
          // Data types (samm:dataType) and subjects of the document whose type is (a subclass of) an expected
          // class
-         matchesStream = Stream.concat( dataTypeNames( prefix, typedLocalName ), matchingTypes );
+         matchesStream = Stream.concat( dataTypeNames( prefix, typedLocalName ), matchingSubjects );
       } else {
-         matchesStream = matchingTypes;
+         matchesStream = matchingSubjects;
       }
 
       final List<String> matches = matchesStream.distinct().toList();
@@ -104,84 +111,62 @@ public class TurtleInlineCompletionService extends AbstractTurtleCompletionServi
          return List.of();
       }
       final InlineCompletionItem item = new InlineCompletionItem( Either.forLeft( matches.getFirst() ) );
-      final Location location = typedNamespace.location();
-      final Position start = new Position( location.fromLine(), location.fromColumn() );
-      item.setRange( new Range( start, position ) );
+      item.setRange( new Range( analysis.typedStart(), position ) );
       return List.of( item );
    }
 
    /**
-    * The subjects of the document whose type is (a subclass of) one of the expected classes that
-    * continue the typed name
+    * The prefixed names of the subjects of the document whose type is (a subclass of) one of the
+    * expected
+    * classes, that continue the typed name. The subject of the statement being edited is excluded, so
+    * it is
+    * not suggested as its own object.
     */
-   private Stream<String> matchingExpectedTypes( final TurtleSyntaxTree tree, final String prefix, final String typedLocalName,
-         final Set<Resource> expectedClasses ) {
-      return declaredSubjectNames( tree, expectedClasses )
-            .filter( subject -> continuesTypedName( subject, prefix, typedLocalName ) )
-            .map( TurtleSyntaxTree.Node::content );
+   private Stream<String> matchingExpectedSubjects( final TurtleCursor analysis, final Optional<String> predicateIri,
+         final String prefix, final String typedLocalName ) {
+      final Set<String> subjects = SammShapeUtils.expectedSubjects( analysis.subjectTypes(), predicateIri ).orElse( Set.of() );
+      return analysis.otherLocalNamesOf( prefix ).stream()
+            .filter( name -> name.length() >= typedLocalName.length() && name.startsWith( typedLocalName ) )
+            .filter( name -> subjects.contains( analysis.iri( prefix + name ) ) )
+            .filter( name -> !analysis.isStatementSubject( analysis.iri( prefix + name ) ) )
+            .map( name -> prefix + name );
    }
 
    /**
     * The single subject of the document a predicate completes to, for predicates that
-    * {@link #takesSingleObject}
+    * {@link #takesSingleObject}. Returned as a prefixed name.
     */
-   protected Optional<String> singleObject( final TurtleSyntaxTree tree, final String predicateIri, final String excludedSubject ) {
+   protected Optional<String> singleObject( final TurtleCursor analysis, final String predicateIri, final String excludedSubjectIri ) {
       if ( !takesSingleObject( predicateIri ) ) {
          return Optional.empty();
       }
-      final Set<Resource> expectedClasses = EXPECTED_CLASSES.get( predicateIri );
-      final List<String> objects = declaredSubjectNames( tree, expectedClasses ).map( TurtleSyntaxTree.Node::content )
-            .filter( subject -> !subject.equals( excludedSubject ) )
-            .distinct().toList();
+      final List<String> objects =
+            SammShapeUtils.expectedSubjects( analysis.subjectTypes(), Optional.of( predicateIri ) ).orElse( Set.of() ).stream()
+                  .filter( subject -> !subject.equals( excludedSubjectIri ) )
+                  .map( analysis::toPrefixedName )
+                  .distinct().toList();
       return objects.size() == 1 ? Optional.of( objects.getFirst() ) : Optional.empty();
    }
 
-   /**
-    * Checks whether the candidate uses the given prefix and its local name starts with the typed local
-    * name
-    */
-   private boolean continuesTypedName( final TurtleSyntaxTree.Node candidate, final String prefix, final String typedLocalName ) {
-      if ( !isPrefixedBy( candidate, prefix ) ) {
-         return false;
-      }
-      final String candidateLocalName = localName( candidate );
-      return candidateLocalName.length() >= typedLocalName.length() && candidateLocalName.startsWith( typedLocalName );
-   }
-
-   private List<InlineCompletionItem> predicateInlineComplete( final ParsedDocument parsedDocument, final Position position,
-         final TurtleSyntaxTree.Node typedPredicate ) {
-      final Optional<TurtleSyntaxTree.Node> typedNamespace = namespaceAtCursor( parsedDocument, position );
-      if ( typedNamespace.isEmpty() ) {
+   private List<InlineCompletionItem> predicateInlineComplete( final TurtleCursor analysis, final Position position ) {
+      final Optional<String> typedPrefix = analysis.prefix();
+      if ( typedPrefix.isEmpty() ) {
          return List.of();
       }
-      final String typedLocalName = typedLocalName( parsedDocument, position );
-      final Optional<String> predicateIri = singlePredicateIri( typedNamespace.get().content(), typedLocalName );
-      final Optional<String> predicateName = predicateIri.flatMap( AbstractTurtleCompletionService::prefixedName );
+      final Optional<String> predicateIri = singlePredicateIri( typedPrefix.get(), analysis.localName() );
+      final Optional<String> predicateName = predicateIri.flatMap( CompletionUtils::prefixedName );
       if ( predicateName.isEmpty() ) {
          return List.of();
       }
-      final String statementSubject = typedStatement( parsedDocument.turtleSyntaxTree(), position ).subject();
-      final Optional<String> object = predicateIri.flatMap(
-            iri -> singleObject( parsedDocument.turtleSyntaxTree(), iri, statementSubject ) );
+      final Optional<String> object = predicateIri.flatMap( iri -> singleObject( analysis, iri, analysis.subjectIri() ) );
       // A predicate is only suggested together with its single object, so "samm:data" alone is not
       // completed
       if ( object.isEmpty() ) {
          return List.of();
       }
       final InlineCompletionItem item = new InlineCompletionItem( Either.forLeft( predicateName.get() + " " + object.get() ) );
-      final Location location = typedPredicate.location();
-      item.setRange( new Range( new Position( location.fromLine(), location.fromColumn() ), position ) );
+      item.setRange( new Range( analysis.typedStart(), position ) );
       return List.of( item );
-   }
-
-   protected String typedLocalName( final ParsedDocument parsedDocument, final Position position ) {
-      final TurtleSyntaxTree.Node localName = localNameAtCursor( parsedDocument, position ).orElse( null );
-      if ( localName == null ) {
-         return "";
-      }
-      final String content = localName.content();
-      // Take only the text before the cursor, keeping the end index within the node's content.
-      return content.substring( 0, Math.clamp( position.getCharacter() - localName.location().fromColumn(), 0, content.length() ) );
    }
 
    /**
@@ -190,19 +175,11 @@ public class TurtleInlineCompletionService extends AbstractTurtleCompletionServi
     */
    protected static Optional<String> singlePredicateIri( final String prefix, final String typedLocalName ) {
       final String typedName = prefix + typedLocalName;
-      final List<String> matches = PREDICATE_IRIS.stream()
-            .filter( iri -> prefixedName( iri )
+      final List<String> matches = SammShapeUtils.PREDICATES.stream()
+            .filter( iri -> CompletionUtils.prefixedName( iri )
                   .filter( name -> name.length() >= typedName.length() && name.startsWith( typedName ) ).isPresent() )
             .toList();
       return matches.size() == 1 ? Optional.of( matches.getFirst() ) : Optional.empty();
-   }
-
-   /**
-    * The classes the SAMM shapes expect for the object of the predicate, if any
-    */
-   private static Set<Resource> closestPredicateExpectedClasses( final Optional<String> closestPredicateIri ) {
-      return closestPredicateIri.map( iri -> EXPECTED_CLASSES.getOrDefault( iri, Set.of() ) )
-            .orElse( Set.of() );
    }
 
    /**
@@ -224,23 +201,8 @@ public class TurtleInlineCompletionService extends AbstractTurtleCompletionServi
     * {@code samm:dataType} (39 data types) nor {@code samm:properties} (a list)
     */
    private static boolean takesSingleObject( final String predicateIri ) {
-      return !EXPECTED_CLASSES.getOrDefault( predicateIri, Set.of() ).isEmpty()
+      return !SammShapeUtils.EXPECTED_CLASSES.getOrDefault( predicateIri, Set.of() ).isEmpty()
             && !predicateIri.equals( SammNs.SAMM.properties().getURI() )
             && !predicateIri.equals( SammNs.SAMM.dataType().getURI() );
-   }
-
-   private static String localName( final TurtleSyntaxTree.Node prefixedName ) {
-      return prefixedName.childWithType( ParserTokenType.PN_LOCAL ).map( TurtleSyntaxTree.Node::content ).orElse( "" );
-   }
-
-   /**
-    * All predicates of the SAMM shapes
-    */
-   private static Set<String> initPredicateIris() {
-      return new ShapeLoader().apply( MetaModelFile.metaModelShapes() ).stream()
-            .flatMap( shape -> shape.properties().stream() )
-            .filter( property -> property.path() instanceof PredicatePath )
-            .map( property -> ( (PredicatePath) property.path() ).predicate().getURI() )
-            .collect( Collectors.toSet() );
    }
 }

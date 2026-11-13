@@ -11,6 +11,8 @@ import java.util.stream.Stream;
 
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
+import org.eclipse.esmf.turtle.languageserver.turtle.completion.TurtleCompletionTree;
+import org.eclipse.esmf.turtle.languageserver.turtle.completion.TurtleCursor;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TreeSitterTurtleParserService;
 
@@ -166,13 +168,6 @@ class TurtleInlineCompletionServiceTest {
    }
 
    @Test
-   void singlePredicateIriIsReturnedOnlyForUniqueMatch() {
-      assertThat( TurtleInlineCompletionService.singlePredicateIri( "samm:", "characteristi" )
-            .flatMap( AbstractTurtleCompletionService::prefixedName ) ).contains( "samm:characteristic" );
-      assertThat( TurtleInlineCompletionService.singlePredicateIri( "samm:", "" ) ).isEmpty();
-   }
-
-   @Test
    void singleObjectIsEmptyForSeveralSubjects() {
       final String content = HEADER + """
          :Speed a samm:Characteristic .
@@ -180,7 +175,9 @@ class TurtleInlineCompletionServiceTest {
          """;
       final ParsedDocument parsedDocument = parserService.apply( new Document( "test.ttl", content ) );
 
-      assertThat( inlineService.singleObject( parsedDocument.turtleSyntaxTree(), SAMM_CHARACTERISTIC_IRI, "" ) ).isEmpty();
+      assertThat( inlineService.singleObject( new TurtleCompletionTree( parsedDocument ).cursorAt( new Position( 0, 0 ) ),
+            SAMM_CHARACTERISTIC_IRI, "" ) )
+                  .isEmpty();
    }
 
    @Test
@@ -190,8 +187,9 @@ class TurtleInlineCompletionServiceTest {
          """;
       final ParsedDocument parsedDocument = parserService.apply( new Document( "test.ttl", content ) );
 
-      assertThat( inlineService.singleObject( parsedDocument.turtleSyntaxTree(), SAMM_CHARACTERISTIC_IRI, "" ) )
-            .contains( ":Speed" );
+      assertThat( inlineService.singleObject( new TurtleCompletionTree( parsedDocument ).cursorAt( new Position( 0, 0 ) ),
+            SAMM_CHARACTERISTIC_IRI, "" ) )
+                  .contains( ":Speed" );
    }
 
    @Test
@@ -201,8 +199,9 @@ class TurtleInlineCompletionServiceTest {
          """;
       final ParsedDocument parsedDocument = parserService.apply( new Document( "test.ttl", content ) );
 
-      assertThat( inlineService.singleObject( parsedDocument.turtleSyntaxTree(), SammNs.SAMM.dataType().getURI(), "" ) ).isEmpty();
-      assertThat( inlineService.singleObject( parsedDocument.turtleSyntaxTree(), SammNs.SAMM.properties().getURI(), "" ) ).isEmpty();
+      final TurtleCursor analysis = new TurtleCompletionTree( parsedDocument ).cursorAt( new Position( 0, 0 ) );
+      assertThat( inlineService.singleObject( analysis, SammNs.SAMM.dataType().getURI(), "" ) ).isEmpty();
+      assertThat( inlineService.singleObject( analysis, SammNs.SAMM.properties().getURI(), "" ) ).isEmpty();
    }
 
    private static Position cursorPosition( final String markedContent ) {

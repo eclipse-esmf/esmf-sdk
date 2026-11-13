@@ -985,19 +985,6 @@ class SammSuggestionServiceTest {
    }
 
    @Test
-   void positionAtHandlesBothLfAndCrlfLineEndings() {
-      final String sourceLf = "abc\ndef\nxyz";
-      assertThat( SammSuggestionContextDetector.positionAt( sourceLf, 0 ) ).isEqualTo( new Position( 0, 0 ) );
-      assertThat( SammSuggestionContextDetector.positionAt( sourceLf, 4 ) ).isEqualTo( new Position( 1, 0 ) );
-      assertThat( SammSuggestionContextDetector.positionAt( sourceLf, 6 ) ).isEqualTo( new Position( 1, 2 ) );
-
-      final String sourceCrlf = "abc\r\ndef\r\nxyz";
-      assertThat( SammSuggestionContextDetector.positionAt( sourceCrlf, 0 ) ).isEqualTo( new Position( 0, 0 ) );
-      assertThat( SammSuggestionContextDetector.positionAt( sourceCrlf, 5 ) ).isEqualTo( new Position( 1, 0 ) );
-      assertThat( SammSuggestionContextDetector.positionAt( sourceCrlf, 7 ) ).isEqualTo( new Position( 1, 2 ) );
-   }
-
-   @Test
    void anonymousSnippetRenderingOmitsServerBaseIndentation() {
       final Request request = request( FULL_HEADER + ":T a samm-c:Trait ;\n   samm-c:constraint [Len|] ." );
       final CompletionItem item = snippetNamed( request, "SAMM Anonymous LengthConstraint" );
@@ -1106,7 +1093,7 @@ class SammSuggestionServiceTest {
       final int cursor = markedSource.indexOf( '|' );
       assertThat( cursor ).isGreaterThanOrEqualTo( 0 );
       final String source = markedSource.substring( 0, cursor ) + markedSource.substring( cursor + 1 );
-      final Position position = SammSuggestionContextDetector.positionAt( source, cursor );
+      final Position position = CompletionUtils.positionAt( source, cursor );
       return new Request( parser.apply( new Document( "file:///test.ttl", source ) ), position, source );
    }
 

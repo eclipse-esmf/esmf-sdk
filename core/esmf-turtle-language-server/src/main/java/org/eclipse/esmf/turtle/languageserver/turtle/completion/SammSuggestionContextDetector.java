@@ -13,13 +13,6 @@
 
 package org.eclipse.esmf.turtle.languageserver.turtle.completion;
 
-import static org.eclipse.esmf.turtle.languageserver.turtle.completion.TurtleCompletionTree.collectDocumentFacts;
-import static org.eclipse.esmf.turtle.languageserver.turtle.completion.TurtleCompletionTree.expand;
-import static org.eclipse.esmf.turtle.languageserver.turtle.completion.TurtleCompletionTree.scanBefore;
-
-import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -35,9 +28,6 @@ import org.eclipse.esmf.metamodel.vocabulary.SAMME;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.metamodel.vocabulary.UNIT;
 import org.eclipse.esmf.samm.KnownVersion;
-import org.eclipse.esmf.treesitterturtle.ParserTokenType;
-import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
-import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 import org.eclipse.esmf.turtle.languageserver.turtle.completion.SammCompletionContext.CursorEdit;
 import org.eclipse.esmf.turtle.languageserver.turtle.completion.SammCompletionContext.Namespaces;
 import org.eclipse.esmf.turtle.languageserver.turtle.completion.SammCompletionContext.SubjectFacts;
@@ -49,7 +39,6 @@ import org.eclipse.esmf.turtle.languageserver.turtle.completion.TurtleCompletion
 
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
-import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 
 public final class SammSuggestionContextDetector {
@@ -66,28 +55,23 @@ public final class SammSuggestionContextDetector {
    private static final Pattern LINE_BREAK = Pattern.compile( "\\R" );
    private static final Pattern ANON_TRAILING_ALLOWED = Pattern.compile( "[\\t \\]\\).;,]*+(?:#.*)?$" );
 
-   public Optional<SammCompletionContext> detect( final ParsedDocument document, final Position position ) {
-      final String source = document.sourceDocument().content();
-      final int cursor = offset( source, position );
-      if ( cursor < 0 ) {
+   public Optional<SammCompletionContext> detect( final TurtleCursor analysis ) {
+      if ( analysis.offset() < 0 ) {
          return Optional.empty();
       }
-      final List<Lexeme> tokens = TurtleCompletionTree.tokens( document.turtleSyntaxTree() );
+      final int cursor = analysis.offset();
+      final List<Lexeme> tokens = analysis.tokens();
       if ( tokens.stream().anyMatch( token -> token.protectedAt( cursor ) ) ) {
          return Optional.empty();
       }
-      final Map<String, String> declarations = declaredNamespacesBeforeCursor( document, position, source, cursor );
+      final Map<String, String> declarations = analysis.declarations();
       final List<String> sammNamespaces = declarations.values().stream()
             .filter( ns -> ns.startsWith( SAMM_META_MODEL_NAMESPACE_PREFIX ) )
             .distinct()
             .toList();
-      final Lexeme current = tokens.stream()
-            .filter( token -> ( token.kind() == TokenKind.TERM || token.kind() == TokenKind.STRING )
-                  && token.start() < cursor && cursor <= token.end() )
-            .findFirst()
-            .orElseGet( () -> new Lexeme( "", cursor, cursor, TokenKind.TERM ) );
-      final State cursorState = scanBefore( tokens, current, declarations );
-      final CursorEdit edit = cursorEdit( source, current.start(), current.end(), cursor );
+      final Lexeme current = analysis.typed();
+      final State cursorState = analysis.before();
+      final CursorEdit edit = cursorEdit( analysis );
 
       if ( sammNamespaces.isEmpty() ) {
          return headerContext( cursorState, declarations, edit );
@@ -102,7 +86,7 @@ public final class SammSuggestionContextDetector {
       final Namespaces namespaces = resolvedNamespaces.get();
       final Frame top = cursorState.top();
       if ( top.isEmptyAnonymousBracket() ) {
-         return anonymousContext( source, cursor, tokens, current, cursorState, namespaces );
+         return anonymousContext( analysis, namespaces );
       }
       if ( cursorState.isTopLevelStatement() && top.isSubjectSlot() ) {
          return Optional.of( SammCompletionContext.topLevel( namespaces, edit ) );
@@ -111,14 +95,14 @@ public final class SammSuggestionContextDetector {
          return Optional.empty();
       }
       if ( top.isPredicateSlot() && top.hasSubject() ) {
-         final SubjectFacts subject = collectDocumentFacts( tokens, current, declarations ).factsFor( top.subject() );
+         final SubjectFacts subject = analysis.facts().factsFor( top.subject() );
          return Optional.of( SammCompletionContext.predicate( namespaces, edit, subject,
                determinePredicateSeparator( tokens, current, declarations ) ) );
       }
-      if ( top.isObjectSlot() && top.hasPredicate() ) {
-         final SubjectFacts subject = collectDocumentFacts( tokens, current, declarations ).factsFor( top.subject() );
+      if ( top.isObjectSlot() && !top.statementPredicate().isEmpty() ) {
+         final SubjectFacts subject = analysis.facts().factsFor( top.statementSubject() );
          return Optional.of( SammCompletionContext.objectValue( namespaces, edit, subject,
-               top.predicate(), top.enclosingPredicateIfAnonymous() ) );
+               top.statementPredicate(), top.enclosingPredicateIfAnonymous() ) );
       }
       return Optional.empty();
    }
@@ -133,9 +117,11 @@ public final class SammSuggestionContextDetector {
       return Optional.of( SammCompletionContext.header( declarations, edit ) );
    }
 
-   private static Optional<SammCompletionContext> anonymousContext(
-         final String source, final int cursor, final List<Lexeme> tokens, final Lexeme current,
-         final State cursorState, final Namespaces namespaces ) {
+   private static Optional<SammCompletionContext> anonymousContext( final TurtleCursor analysis, final Namespaces namespaces ) {
+      final String source = analysis.source();
+      final int cursor = analysis.offset();
+      final Lexeme current = analysis.typed();
+      final State cursorState = analysis.before();
       final Optional<TargetPosition> target = detectAnonymousTargetPosition(
             cursorState, namespaces.sammNamespace(), namespaces.characteristicNamespace() );
       if ( target.isEmpty() ) {
@@ -151,19 +137,9 @@ public final class SammSuggestionContextDetector {
       if ( !ANON_TRAILING_ALLOWED.matcher( restOfLine ).matches() ) {
          return Optional.empty();
       }
-      final CursorEdit edit = cursorEdit( source, top.openOffset(), replaceEnd, cursor );
-      final SubjectFacts subject = collectDocumentFacts( tokens, current, namespaces.declarations() ).factsFor( top.enclosingSubject() );
+      final CursorEdit edit = cursorEdit( analysis, top.openOffset(), replaceEnd );
+      final SubjectFacts subject = analysis.facts().factsFor( top.enclosingSubject() );
       return Optional.of( SammCompletionContext.anonymousObject( target.get(), namespaces, edit, subject ) );
-   }
-
-   private static CursorEdit cursorEdit( final String source, final int start, final int end, final int cursor ) {
-      final String linePrefix = source.substring( source.lastIndexOf( '\n', start - 1 ) + 1, start );
-      return new CursorEdit(
-            new Range( positionAt( source, start ), positionAt( source, end ) ),
-            source.substring( start, cursor ),
-            NON_INDENTATION.matcher( linePrefix ).replaceAll( "" ),
-            source.contains( "\r\n" ) ? "\r\n" : "\n",
-            LINE_BREAK.split( source.substring( end ), 2 )[0].isBlank() );
    }
 
    private static Optional<Namespaces> resolveNamespaces( final Map<String, String> namespaces, final String sammNamespace ) {
@@ -277,7 +253,7 @@ public final class SammSuggestionContextDetector {
       if ( Set.of( ".", ";", "]" ).contains( nextToken.text() ) ) {
          return Optional.of( "" );
       }
-      final boolean followedByAnotherPredicate = !expand( nextToken.text(), namespaces ).isEmpty()
+      final boolean followedByAnotherPredicate = !CompletionUtils.expand( nextToken.text(), namespaces ).isEmpty()
             && tokens.stream()
                   .filter( token -> token.start() >= nextToken.end() && token.kind() != TokenKind.COMMENT )
                   .findFirst()
@@ -286,39 +262,6 @@ public final class SammSuggestionContextDetector {
       return followedByAnotherPredicate
             ? Optional.of( nextToken.start() == current.end() ? " ; " : " ;" )
             : Optional.empty();
-   }
-
-   private static Map<String, String> declaredNamespacesBeforeCursor(
-         final ParsedDocument document,
-         final Position position,
-         final String source,
-         final int cursor ) {
-      final Map<String, String> result = new LinkedHashMap<>();
-      final Set<String> conflicting = new HashSet<>();
-      final int byteColumn = source.substring( source.lastIndexOf( '\n', cursor - 1 ) + 1, cursor )
-            .getBytes( StandardCharsets.UTF_8 ).length;
-      document.turtleSyntaxTree().tokens()
-            .filter( node -> Set.of( ParserTokenType.PREFIX_ID, ParserTokenType.SPARQL_PREFIX ).contains( node.type() ) )
-            .filter( node -> node.location().toLine() < position.getLine()
-                  || node.location().toLine() == position.getLine()
-                        && node.location().toColumn() <= byteColumn )
-            .forEach( node -> {
-               final Optional<String> prefix = node.childWithType( ParserTokenType.NAMESPACE )
-                     .filter( TurtleSyntaxTree.Node::isToken )
-                     .map( TurtleSyntaxTree.Node::content );
-               final Optional<String> iri = node.childWithType( ParserTokenType.IRI_REFERENCE )
-                     .filter( TurtleSyntaxTree.Node::isToken )
-                     .map( TurtleSyntaxTree.Node::content );
-               if ( prefix.isPresent() && iri.isPresent() && iri.get().startsWith( "<" ) && iri.get().endsWith( ">" ) ) {
-                  final String namespace = iri.get().substring( 1, iri.get().length() - 1 );
-                  final String previous = result.put( prefix.get(), namespace );
-                  if ( previous != null && !previous.equals( namespace ) ) {
-                     conflicting.add( prefix.get() );
-                  }
-               }
-            } );
-      conflicting.forEach( result::remove );
-      return result;
    }
 
    private static Optional<String> modelPrefix( final Map<String, String> namespaces ) {
@@ -333,33 +276,23 @@ public final class SammSuggestionContextDetector {
       return candidates.size() == 1 ? Optional.of( candidates.getFirst() ) : Optional.empty();
    }
 
-   private static int offset( final String source, final Position position ) {
-      if ( position.getLine() < 0 || position.getCharacter() < 0 ) {
-         return -1;
-      }
-      int lineStart = 0;
-      for ( int line = 0; line < position.getLine(); line++ ) {
-         final int newline = source.indexOf( '\n', lineStart );
-         if ( newline < 0 ) {
-            return -1;
-         }
-         lineStart = newline + 1;
-      }
-      final int newline = source.indexOf( '\n', lineStart );
-      final int lineEnd = newline < 0 ? source.length() : newline > 0 && source.charAt( newline - 1 ) == '\r' ? newline - 1 : newline;
-      return position.getCharacter() <= lineEnd - lineStart ? lineStart + position.getCharacter() : -1;
+   private static CursorEdit cursorEdit( final TurtleCursor analysis ) {
+      return cursorEdit( analysis, analysis.typed().start(), analysis.typed().end() );
    }
 
-   static Position positionAt( final String source, final int offset ) {
-      int line = 0;
-      int lastNewline = -1;
-      for ( int i = 0; i < offset; i++ ) {
-         if ( source.charAt( i ) == '\n' ) {
-            line++;
-            lastNewline = i;
-         }
-      }
-      return new Position( line, offset - lastNewline - 1 );
+   /**
+    * The edit that replaces the text from start to end, with the text up to the cursor as the typed
+    * text
+    */
+   private static CursorEdit cursorEdit( final TurtleCursor analysis, final int start, final int end ) {
+      final String source = analysis.source();
+      final String linePrefix = source.substring( source.lastIndexOf( '\n', start - 1 ) + 1, start );
+      return new CursorEdit(
+            new Range( CompletionUtils.positionAt( source, start ), CompletionUtils.positionAt( source, end ) ),
+            source.substring( start, analysis.offset() ),
+            NON_INDENTATION.matcher( linePrefix ).replaceAll( "" ),
+            source.contains( "\r\n" ) ? "\r\n" : "\n",
+            LINE_BREAK.split( source.substring( end ), 2 )[0].isBlank() );
    }
 
 }
