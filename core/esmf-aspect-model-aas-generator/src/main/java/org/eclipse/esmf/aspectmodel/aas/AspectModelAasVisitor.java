@@ -705,6 +705,9 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
 
       final SubmodelElementBuilder defaultBuilder = property -> {
          final SubmodelElement value = decideOnMapping( property, context );
+         if ( dataTypeDefXsd != null ) {
+            value.setSemanticId( null );
+         }
          final DefaultSubmodelElementList.Builder submodelBuilder = new DefaultSubmodelElementList.Builder()
                .idShort( AasIdShort.from( listIdShort != null ? listIdShort : property.getName() ) )
                .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
