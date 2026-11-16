@@ -100,8 +100,8 @@ public class VersionNumber implements Comparable<VersionNumber> {
     * Parses a version number.
     *
     * @param versionString the version to parse
-    * @throws RuntimeException on parsing failure
     * @return the parsed version
+    * @throws RuntimeException on parsing failure
     */
    public static VersionNumber parse( final String versionString ) {
       final Try<VersionNumber> versionNumber = tryParse( versionString );
