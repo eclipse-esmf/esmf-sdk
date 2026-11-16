@@ -68,6 +68,12 @@ public class VersionNumberTest {
             .isInstanceOf( UnsupportedVersionException.class );
    }
 
+   @ParameterizedTest
+   @MethodSource( value = "invalidVersions" )
+   public void testTryParseInvalidVersions( final TestVersionNumber versionNumber ) {
+      assertThat( VersionNumber.tryParse( versionNumber.version ).isFailure() ).isTrue();
+   }
+
    @Test
    public void testGreaterThan() {
       assertThat( VersionNumber.parse( "111" ).toString() )

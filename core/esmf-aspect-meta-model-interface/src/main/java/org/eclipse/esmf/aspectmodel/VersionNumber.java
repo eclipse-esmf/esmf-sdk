@@ -107,21 +107,28 @@ public class VersionNumber implements Comparable<VersionNumber> {
       throw new RuntimeException( versionNumber.getCause() );
    }
 
+   /**
+    * Parses a version number, returning a failed {@link Try} for invalid input.
+    *
+    * @param versionString the version to parse
+    * @return the parsed version or the parsing failure
+    */
    public static Try<VersionNumber> tryParse( final String versionString ) {
-      if ( StringUtils.isEmpty( versionString ) ) {
-         return Try.failure( new UnsupportedVersionException() );
-      }
-      final VersionNumberParser parser = new VersionNumberParser( versionString );
+      return Try.of( () -> {
+         if ( StringUtils.isEmpty( versionString ) ) {
+            throw new UnsupportedVersionException();
+         }
+         final VersionNumberParser parser = new VersionNumberParser( versionString );
 
-      final int major = parser.parseNextDigit();
-      final int minor = parser.parseNextDigit();
-      final int micro = parser.parseNextDigit();
+         final int major = parser.parseNextDigit();
+         final int minor = parser.parseNextDigit();
+         final int micro = parser.parseNextDigit();
 
-      if ( parser.isEnd() ) {
-         return Try.success( new VersionNumber( major, minor, micro ) );
-      }
-
-      return Try.failure( new UnsupportedVersionException( versionString ) );
+         if ( !parser.isEnd() ) {
+            throw new UnsupportedVersionException( versionString );
+         }
+         return new VersionNumber( major, minor, micro );
+      } );
    }
 
    private static class VersionNumberParser {
