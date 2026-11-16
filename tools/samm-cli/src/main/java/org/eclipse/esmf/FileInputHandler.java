@@ -43,6 +43,9 @@ public class FileInputHandler extends AbstractInputHandler {
          final boolean validate ) {
       super( input, resolverConfig, details, validate );
       inputFile = absoluteFile( new File( input ) );
+      if ( inputFile.isDirectory() && !validate ) {
+         throw new CommandException( "Directory input is only supported by 'validate'" );
+      }
    }
 
    @Override
