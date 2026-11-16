@@ -23,10 +23,10 @@ import java.util.stream.Collectors;
 import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.MetaModelFile;
 import org.eclipse.esmf.aspectmodel.shacl.Shape;
-import org.eclipse.esmf.aspectmodel.shacl.ShapeLoader;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.ClassConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.Constraint;
 import org.eclipse.esmf.aspectmodel.shacl.path.PredicatePath;
+import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import org.apache.jena.rdf.model.Model;
@@ -64,7 +64,7 @@ public final class SammShapeUtils {
     */
    static {
       final Map<String, Set<Resource>> expectedClasses = new HashMap<>();
-      for ( final Shape.Node shape : new ShapeLoader().apply( MetaModelFile.metaModelShapes() ) ) {
+      for ( final Shape.Node shape : AspectModelValidator.shaclValidator().getShapes() ) {
          for ( final Shape.Property property : shape.properties() ) {
             if ( property.path() instanceof final PredicatePath path ) {
                final String predicate = path.predicate().getURI();
