@@ -84,6 +84,10 @@ public class AspectModelValidator implements Validator {
       return shaclValidator;
    }
 
+   public AspectModelValidator() {
+      shaclValidator();
+   }
+
    /**
     * Validates an Aspect Model provided by a Supplier. This can be used to make the validator also
     * catch and handle loading and resolution errors, such as RDF/Turtle syntax errors or missing
@@ -267,6 +271,6 @@ public class AspectModelValidator implements Validator {
     * @return the list of violations
     */
    public List<Violation> validateElement( final Resource element ) {
-      return shaclValidator().validateElement( element );
+      return shaclValidator.validateElement( element );
    }
 }
