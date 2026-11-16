@@ -649,6 +649,17 @@ class AspectModelAasGeneratorTest {
    }
 
    @Test
+   void testSubmodelElementListDirectScalarChildHasNoSemanticId() throws DeserializationException {
+      final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_COLLECTION_OF_SIMPLE_TYPE );
+      final SubmodelElementList sml = (SubmodelElementList) env.getSubmodels().getFirst().getSubmodelElements().getFirst();
+
+      assertThat( sml.getSemanticId() ).isNotNull();
+      assertThat( sml.getValue() )
+            .singleElement()
+            .satisfies( child -> assertThat( child.getSemanticId() ).isNull() );
+   }
+
+   @Test
    void testGeneratedShellHasGlobalAssetId() throws DeserializationException {
       final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_PROPERTY );
 
