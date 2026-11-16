@@ -72,7 +72,8 @@ public class AspectModelValidator implements Validator {
    }
 
    /**
-    * The SHACL validator for the latest meta model version. It is created on first use, after ARQ has been
+    * The SHACL validator for the latest meta model version. It is created on first use, after ARQ has
+    * been
     * initialized, and shared afterwards.
     */
    public static synchronized ShaclValidator shaclValidator() {
