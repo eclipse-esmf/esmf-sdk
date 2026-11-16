@@ -48,7 +48,7 @@ are the attributes of the preceding model element.
 
 | samm:Property.name  | aas:SubmodelElement.idShort | The idShort is derived from the Property's payloadName, which falls back to the Property name if no payloadName is defined, and is sanitized as described above. SubmodelElements that are direct children of an aas:SubmodelElementList carry no idShort.
 
-| samm:Property.urn  | aas:ConceptDescription.id, aas:SubmodelElement.semanticId | Always used as the id of the generated ConceptDescription. It is used as semanticId for aas:Property, aas:MultiLanguageProperty and aas:ReferenceElement, and for aas:SubmodelElementList only if the Collection Characteristic is named. For Entity-typed Properties, the semanticId of the aas:SubmodelElementCollection is the Entity URN, and the aas:SubmodelElementList generated for samm-c:Either carries no semanticId.
+| samm:Property.urn  | aas:ConceptDescription.id, aas:SubmodelElement.semanticId | Always used as the id of the generated ConceptDescription. It is used as semanticId for aas:Property, aas:MultiLanguageProperty and aas:ReferenceElement, and for aas:SubmodelElementList only if the Collection Characteristic is named. For Entity-typed Properties, the semanticId of the aas:SubmodelElementCollection is the Entity URN, and the aas:SubmodelElementList generated for samm-c:Either carries no semanticId. Direct children of an aas:SubmodelElementList with a scalar (XSD or RDF) element type carry no semanticId either.
 
 | samm:Property.preferredName   | aas:SubmodelElement.displayName  | Mapped to displayName on the SubmodelElement. Also mapped to displayName and IEC61360 preferredName on the ConceptDescription.
 
