@@ -23,6 +23,7 @@ import java.util.function.Function;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.ViolationReport;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.resolver.EitherStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.fs.FlatModelsRoot;
@@ -76,16 +77,18 @@ public class FileInputHandler extends AbstractInputHandler {
    private String validateDirectory() {
       final Path root = inputFile.toPath();
       final List<ResolutionStrategy> strategies = new ArrayList<>();
-      strategies.add( new FileSystemStrategy( new StructuredModelsRoot( root ) ) );
-      strategies.add( new FileSystemStrategy( new FlatModelsRoot( root ) ) );
+      final ResolutionStrategy inputDirectoryStrategy = new EitherStrategy(
+            new FileSystemStrategy( new StructuredModelsRoot( root ) ),
+            new FileSystemStrategy( new FlatModelsRoot( root ) ) );
+      strategies.add( inputDirectoryStrategy );
       strategies.addAll( configuredStrategies() );
       final AspectModelLoader loader = new AspectModelLoader( strategies );
       return violationFormatter.apply( validator.validateModel( () -> {
-         final List<AspectModelFile> files = loader.loadContents().toList();
+         final List<AspectModelFile> files = inputDirectoryStrategy.loadContents().toList();
          if ( files.isEmpty() ) {
             throw new CommandException( "No Aspect Model files found in " + root );
          }
-         return loader.loadAspectModelFiles( files );
+         return loader.loadAndResolveAspectModelFiles( files );
       } ) );
    }
 

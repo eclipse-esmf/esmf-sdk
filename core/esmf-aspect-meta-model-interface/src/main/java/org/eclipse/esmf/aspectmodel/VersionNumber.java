@@ -96,6 +96,13 @@ public class VersionNumber implements Comparable<VersionNumber> {
       return String.format( VERSION_TEMPLATE, major, minor, micro );
    }
 
+   /**
+    * Parses a version number.
+    *
+    * @param versionString the version to parse
+    * @throws RuntimeException on parsing failure
+    * @return the parsed version
+    */
    public static VersionNumber parse( final String versionString ) {
       final Try<VersionNumber> versionNumber = tryParse( versionString );
       if ( versionNumber.isSuccess() ) {

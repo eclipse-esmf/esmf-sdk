@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -216,13 +217,45 @@ class SammCliTest extends SammCliAbstractTest {
       assertThat( result.stderr() ).isEmpty();
    }
 
-   @Test
-   void testAspectValidateDirectory( @TempDir final Path tmp ) throws IOException {
-      final Path versionDir = Files.createDirectories( tmp.resolve( "org.eclipse.esmf.test" ).resolve( "1.0.0" ) );
+   @ParameterizedTest
+   @ValueSource( strings = { "org.eclipse.esmf.test/1.0.0", "." } )
+   void testAspectValidateDirectory( final String layout, @TempDir final Path tmp ) throws IOException {
+      final Path versionDir = Files.createDirectories( tmp.resolve( layout ) );
       Files.copy( Path.of( defaultInputFile ), versionDir.resolve( "Valid.ttl" ) );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", tmp.toString(), "validate" );
       assertThat( result.stdout() ).contains( "Input model is valid" );
       assertThat( result.stderr() ).isEmpty();
+   }
+
+   @ParameterizedTest
+   @ValueSource( strings = { ".", "org.eclipse.esmf.test/1.0.0" } )
+   void testAspectValidateDirectoryWithOverlappingModelsRoot( final String inputDirectory, @TempDir final Path tmp )
+         throws IOException {
+      final Path versionDir = Files.createDirectories( tmp.resolve( "org.eclipse.esmf.test/1.0.0" ) );
+      Files.copy( Path.of( defaultInputFile ), versionDir.resolve( "Valid.ttl" ) );
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect",
+            tmp.resolve( inputDirectory ).toString(), "validate", "--models-root", tmp.toString() );
+      assertThat( result.stdout() ).contains( "Input model is valid" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectValidateDirectoryWithDuplicateDefinitions( @TempDir final Path tmp ) throws IOException {
+      final Path versionDir = Files.createDirectories( tmp.resolve( "org.eclipse.esmf.test/1.0.0" ) );
+      Files.copy( Path.of( defaultInputFile ), versionDir.resolve( "First.ttl" ) );
+      Files.copy( Path.of( defaultInputFile ), versionDir.resolve( "Second.ttl" ) );
+      final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", tmp.toString(), "validate" );
+      assertThat( result.stdout() ).contains( "Duplicate definition", "First.ttl", "Second.ttl" );
+   }
+
+   @ParameterizedTest
+   @ValueSource( strings = { "to svg", "prettyprint", "usage" } )
+   void testAspectRejectsDirectoryInput( final String command, @TempDir final Path tmp ) {
+      final List<String> arguments = new ArrayList<>( List.of( "--disable-color", "aspect", tmp.toString() ) );
+      arguments.addAll( List.of( command.split( " " ) ) );
+      final ExecutionResult result = sammCli.apply( arguments.toArray( String[]::new ) );
+      assertThat( result.exitStatus() ).isEqualTo( 1 );
+      assertThat( result.stderr() ).contains( "Directory input is only supported by 'validate'" );
    }
 
    @Test
