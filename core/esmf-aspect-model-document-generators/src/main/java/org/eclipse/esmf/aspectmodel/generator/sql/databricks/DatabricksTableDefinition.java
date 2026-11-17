@@ -38,7 +38,7 @@ public record DatabricksTableDefinition(
       final String extraLineBreak = columns.isEmpty() ? "" : "\n";
       final String extraIndent = columns.isEmpty() ? "" : "  ";
       builder.append( Stream.concat(
-            columns.stream().map( column -> column.apply( config ) ),
+            columns.stream().map( DatabricksColumnDefinition::toString ),
             config.tableConstraints().stream()
       ).collect( Collectors.joining( ",\n  ", "(\n" + extraIndent, extraLineBreak + ")\n" ) ) );
       comment.ifPresent( theComment -> builder.append( new DatabricksCommentDefinition( theComment ) ).append( "\n" ) );

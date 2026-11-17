@@ -18,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.util.Locale;
 
+import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlDialect;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.generator.sql.postgresql.PostgreSqlGenerationConfig;
@@ -43,12 +44,8 @@ public class AspectModelSqlGeneratorTest {
                .includeColumnComments( true )
                .commentLanguage( Locale.ENGLISH )
                .build();
-         final SqlArtifact sqlArtifact = new AspectModelSqlGenerator( aspect, SqlGenerationConfigBuilder.builder()
-               .dialect( SqlGenerationConfig.Dialect.DATABRICKS )
-               .dialectSpecificConfig( dialectSpecificConfig )
-               .build() ).singleResult();
-         final String result = sqlArtifact.getContent();
-
+         final String result = new DenormalizedSqlGenerator<>( dialectSpecificConfig, new DatabricksSqlDialect( dialectSpecificConfig ) )
+               .apply( aspect, dialectSpecificConfig ).getContent();
          assertThat( result ).contains( "TBLPROPERTIES ('x-samm-aspect-model-urn'='" );
          assertThat( result ).doesNotContain( "ARRAY<ARRAY" );
       } ).doesNotThrowAnyException();

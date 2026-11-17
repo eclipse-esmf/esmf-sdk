@@ -14,7 +14,6 @@
 package org.eclipse.esmf.aspectmodel.generator.sql;
 
 import java.util.Optional;
-import java.util.function.Function;
 
 /**
  * SQL column definition
@@ -22,8 +21,7 @@ import java.util.function.Function;
  * @param <C> type for column datatypes
  * @param <D> the self type
  */
-public interface SqlColumnDefinition<D, C extends SqlColumnDefinition<D, C>>
-      extends Function<SqlGenerationConfig.DialectSpecificConfig<D, C>, String> {
+public interface SqlColumnDefinition<D, C extends SqlColumnDefinition<D, C>> {
    String name();
 
    <R extends D> R type();

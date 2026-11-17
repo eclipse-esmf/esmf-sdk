@@ -26,7 +26,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 @SuppressWarnings( "checkstyle:LineLength" )
-class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase {
+class AspectModelDatabricksDenormalizedSqlGeneratorTest extends DatabricksTestBase {
    @Test
    void testAspectWithAbstractEntity() {
       assertThat( sql( TestAspect.ASPECT_WITH_ABSTRACT_ENTITY ) ).isEqualTo( """

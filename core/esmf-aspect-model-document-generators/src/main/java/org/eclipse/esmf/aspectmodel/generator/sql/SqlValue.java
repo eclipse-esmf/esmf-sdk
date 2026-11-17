@@ -19,7 +19,11 @@ package org.eclipse.esmf.aspectmodel.generator.sql;
  * @param <D> the type of the value
  */
 public interface SqlValue<D extends SqlType> {
-   Class<D> type();
+   D type();
 
    Object value();
+
+   default String lexical() {
+      return value().toString();
+   }
 }

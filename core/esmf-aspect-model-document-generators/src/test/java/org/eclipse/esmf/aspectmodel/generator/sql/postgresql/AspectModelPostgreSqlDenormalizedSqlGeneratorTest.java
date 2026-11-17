@@ -18,13 +18,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.Optional;
 
-import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.test.TestAspect;
-import org.eclipse.esmf.test.TestResources;
 
 import org.junit.jupiter.api.Test;
 
-class AspectModelPostgreSqlDenormalizedSqlVisitorTest {
+class AspectModelPostgreSqlDenormalizedSqlGeneratorTest extends PostgreSqlTestBase {
    @Test
    void testCollectionAndComments() {
       assertThat( sql( TestAspect.ASPECT_WITH_COLLECTION, new PostgreSqlGenerationConfig() ) ).isEqualTo( """
@@ -72,11 +70,5 @@ class AspectModelPostgreSqlDenormalizedSqlVisitorTest {
       assertThat( sql( TestAspect.ASPECT_WITH_OPERATION, config ) )
             .contains( "custom_column TEXT[] NOT NULL" )
             .contains( "COMMENT ON COLUMN aspect_with_operation.custom_column IS 'Custom column';" );
-   }
-
-   private String sql( final TestAspect testAspect, final PostgreSqlGenerationConfig config ) {
-      final Aspect aspect = TestResources.load( testAspect ).aspect();
-      return aspect.accept( new AspectModelPostgreSqlDenormalizedSqlVisitor( config ),
-            AspectModelPostgreSqlDenormalizedSqlVisitorContextBuilder.builder().build() );
    }
 }

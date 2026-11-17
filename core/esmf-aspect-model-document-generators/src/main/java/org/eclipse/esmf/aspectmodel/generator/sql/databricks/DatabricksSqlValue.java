@@ -13,9 +13,6 @@
 
 package org.eclipse.esmf.aspectmodel.generator.sql.databricks;
 
-import java.util.List;
-
-import org.eclipse.esmf.aspectmodel.generator.DocumentGenerationException;
 import org.eclipse.esmf.aspectmodel.generator.sql.SqlValue;
 
 import org.jspecify.annotations.NonNull;
@@ -23,23 +20,11 @@ import io.soabase.recordbuilder.core.RecordBuilder;
 
 @RecordBuilder
 public record DatabricksSqlValue<T extends DatabricksType>(
-      Class<T> type,
+      T type,
       Object value
 ) implements SqlValue<T> {
-   public DatabricksSqlValue {
-      final List<Class<? extends DatabricksType>> allowedTypes = List.of(
-            DatabricksType.DatabricksBoolean.class,
-            DatabricksType.DatabricksString.class,
-            DatabricksType.DatabricksInt.class,
-            DatabricksType.DatabricksDecimal.class
-      );
-      if ( type == null || !allowedTypes.contains( type ) ) {
-         throw new DocumentGenerationException( "Invalid type for table property value: " + type + ". Allowed types are: " + allowedTypes );
-      }
-   }
-
    @Override
    public @NonNull String toString() {
-      return type == DatabricksType.DatabricksString.class ? "'" + value + "'" : value.toString();
+      return type == DatabricksType.STRING ? "'" + value + "'" : value.toString();
    }
 }

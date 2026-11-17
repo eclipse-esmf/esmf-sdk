@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksType;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.StructureElement;
 
@@ -37,7 +36,7 @@ public interface SqlDialect<
    }
 
    SqlTableDefinition<D, C> tableDefinition( String name, List<C> columns, Optional<String> comment,
-         List<String> tableConstraints, Map<String, SqlValue<? extends DatabricksType>> tableProperties );
+         List<String> tableConstraints, Map<String, SqlValue<? extends D>> tableProperties );
 
    C columnDefinition( final String name, final D datatype, final boolean isNullable,
          final Optional<String> comment );

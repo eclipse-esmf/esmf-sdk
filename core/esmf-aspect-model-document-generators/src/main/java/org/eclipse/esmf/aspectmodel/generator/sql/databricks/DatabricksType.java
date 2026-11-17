@@ -25,18 +25,18 @@ import org.jspecify.annotations.NonNull;
  * Databricks SQL types.
  */
 public sealed interface DatabricksType extends SqlType {
-   DatabricksType BIGINT = new DatabricksBigint();
-   DatabricksType BINARY = new DatabricksBinary();
-   DatabricksType BOOLEAN = new DatabricksBoolean();
-   DatabricksType DATE = new DatabricksDate();
-   DatabricksType DOUBLE = new DatabricksDouble();
-   DatabricksType FLOAT = new DatabricksFloat();
-   DatabricksType INT = new DatabricksInt();
-   DatabricksType SMALLINT = new DatabricksSmallint();
-   DatabricksType STRING = new DatabricksString();
-   DatabricksType TIMESTAMP = new DatabricksTimestamp();
-   DatabricksType TIMESTAMP_NTZ = new DatabricksTimestampNtz();
-   DatabricksType TINYINT = new DatabricksTinyint();
+   DatabricksType BIGINT = new SimpleDatabricksType( "BIGINT" );
+   DatabricksType BINARY = new SimpleDatabricksType( "BINARY" );
+   DatabricksType BOOLEAN = new SimpleDatabricksType( "BOOLEAN" );
+   DatabricksType DATE = new SimpleDatabricksType( "DATE" );
+   DatabricksType DOUBLE = new SimpleDatabricksType( "DOUBLE" );
+   DatabricksType FLOAT = new SimpleDatabricksType( "FLOAT" );
+   DatabricksType INT = new SimpleDatabricksType( "INT" );
+   DatabricksType SMALLINT = new SimpleDatabricksType( "SMALLINT" );
+   DatabricksType STRING = new SimpleDatabricksType( "STRING" );
+   DatabricksType TIMESTAMP = new SimpleDatabricksType( "TIMESTAMP" );
+   DatabricksType TIMESTAMP_NTZ = new SimpleDatabricksType( "TIMESTAMP_NTZ" );
+   DatabricksType TINYINT = new SimpleDatabricksType( "TINYINT" );
 
    record DatabricksDecimal(
          Optional<Integer> precision,
@@ -103,87 +103,12 @@ public sealed interface DatabricksType extends SqlType {
       }
    }
 
-   final class DatabricksBigint implements DatabricksType {
+   record SimpleDatabricksType(
+         String name
+   ) implements DatabricksType {
       @Override
-      public String toString() {
-         return "BIGINT";
-      }
-   }
-
-   final class DatabricksBinary implements DatabricksType {
-      @Override
-      public String toString() {
-         return "BINARY";
-      }
-   }
-
-   final class DatabricksBoolean implements DatabricksType {
-      @Override
-      public String toString() {
-         return "BOOLEAN";
-      }
-   }
-
-   final class DatabricksDate implements DatabricksType {
-      @Override
-      public String toString() {
-         return "DATE";
-      }
-   }
-
-   final class DatabricksDouble implements DatabricksType {
-      @Override
-      public String toString() {
-         return "DOUBLE";
-      }
-   }
-
-   final class DatabricksFloat implements DatabricksType {
-      @Override
-      public String toString() {
-         return "FLOAT";
-      }
-   }
-
-   final class DatabricksInt implements DatabricksType {
-      @Override
-      public String toString() {
-         return "INT";
-      }
-   }
-
-   final class DatabricksSmallint implements DatabricksType {
-      @Override
-      public String toString() {
-         return "SMALLINT";
-      }
-   }
-
-   final class DatabricksString implements DatabricksType {
-      @Override
-      public String toString() {
-         return "STRING";
-      }
-   }
-
-   final class DatabricksTimestamp implements DatabricksType {
-      @Override
-      public String toString() {
-         return "TIMESTAMP";
-      }
-   }
-
-   final class DatabricksTimestampNtz implements DatabricksType {
-      @Override
-      public String toString() {
-         return "TIMESTAMP_NTZ";
-      }
-   }
-
-   final class DatabricksTinyint implements DatabricksType {
-      @Override
-      public String toString() {
-         return "TINYINT";
+      public @NonNull String toString() {
+         return name;
       }
    }
 }

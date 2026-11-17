@@ -23,7 +23,6 @@ import java.util.stream.Stream;
 import org.apache.jena.vocabulary.XSD;
 
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
-import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksType;
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Characteristic;
@@ -181,11 +180,9 @@ public class DenormalizedSqlGenerator<
 
       @Override
       public Stream<C> visitEntity( final Entity entity, final Context context ) {
-         // final ImmutableList.Builder<C> columnsBuilder = ImmutableList.builder();
          return entity.getProperties().stream()
                .filter( property -> !property.isNotInPayload() )
                .flatMap( property -> column( property, context ) );
-         // return visitStructureElement( entity, context );
       }
 
       private Stream<C> processComplexType( final ComplexType entity, final Context context, final String parentPrefix,
@@ -238,8 +235,7 @@ public class DenormalizedSqlGenerator<
       final Optional<String> comment = config.includeTableComment()
             ? Optional.ofNullable( structureElement.getDescription( config.commentLanguage() ) )
             : Optional.empty();
-      @SuppressWarnings( "unchecked" )
-      final Map<String, SqlValue<? extends DatabricksType>> tableProperties =
+      final Map<String, SqlValue<? extends D>> tableProperties =
             Map.of( AspectModelJsonSchemaGenerator.SAMM_EXTENSION, sqlDialect.sqlStringValue( structureElement.urn().toString() ) );
       return sqlDialect.tableDefinition( sqlDialect.tableName( structureElement ), columns, comment, config.tableConstraints(),
             tableProperties );

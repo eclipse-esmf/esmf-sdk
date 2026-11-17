@@ -13,29 +13,26 @@
 
 package org.eclipse.esmf.aspectmodel.generator.sql.postgresql;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.apache.jena.vocabulary.XSD;
 
-import org.eclipse.esmf.aspectmodel.generator.sql.AspectModelSqlVisitor;
+import org.eclipse.esmf.aspectmodel.generator.sql.SqlDialect;
+import org.eclipse.esmf.aspectmodel.generator.sql.SqlTableDefinition;
+import org.eclipse.esmf.aspectmodel.generator.sql.SqlValue;
 import org.eclipse.esmf.metamodel.datatype.RdfDatatypeUris;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import com.google.common.collect.ImmutableMap;
 
-/**
- * Base class for AspectVisitors creating PostgreSQL statements.
- *
- * @param <C> the context class
- */
-public abstract class AspectModelPostgreSqlVisitor<C> extends AspectModelSqlVisitor<C> {
-   protected final Map<String, PostgreSqlType> postgreSqlTypeMap;
-   protected final PostgreSqlGenerationConfig config;
+public class PostgreSqlDialect
+      implements SqlDialect<PostgreSqlGenerationConfig, PostgreSqlType, PostgreSqlColumnDefinition, PostgreSqlTableDefinition> {
+   protected final Map<String, PostgreSqlType> typeMap;
 
-   public AspectModelPostgreSqlVisitor( final PostgreSqlGenerationConfig config ) {
-      this.config = config;
-      postgreSqlTypeMap = ImmutableMap.<String, PostgreSqlType>builder()
+   public PostgreSqlDialect( final PostgreSqlGenerationConfig config ) {
+      typeMap = ImmutableMap.<String, PostgreSqlType>builder()
             .put( XSD.xstring.getURI(), PostgreSqlType.TEXT )
             .put( XSD.xboolean.getURI(), PostgreSqlType.BOOLEAN )
             .put( XSD.decimal.getURI(), new PostgreSqlType.PostgreSqlNumeric( Optional.of( config.decimalPrecision() ),
@@ -73,5 +70,35 @@ public abstract class AspectModelPostgreSqlVisitor<C> extends AspectModelSqlVisi
             .put( SammNs.SAMM.curie().getURI(), PostgreSqlType.TEXT )
             .put( RdfDatatypeUris.LANG_STRING, PostgreSqlType.TEXT )
             .build();
+   }
+
+   @Override
+   public SqlTableDefinition<PostgreSqlType, PostgreSqlColumnDefinition> tableDefinition( final String name,
+         final List<PostgreSqlColumnDefinition> columns, final Optional<String> comment, final List<String> tableConstraints,
+         final Map<String, SqlValue<? extends PostgreSqlType>> tableProperties ) {
+      return new PostgreSqlTableDefinition( name, columns, comment, tableConstraints, tableProperties );
+   }
+
+   @Override
+   public PostgreSqlColumnDefinition columnDefinition( final String name, final PostgreSqlType datatype, final boolean isNullable,
+         final Optional<String> comment ) {
+      return new PostgreSqlColumnDefinition( name, datatype, isNullable, comment );
+   }
+
+   @SuppressWarnings( "unchecked" )
+   @Override
+   public <V extends PostgreSqlType> SqlValue<V> sqlStringValue( final String value ) {
+      return (SqlValue<V>) new PostgreSqlValue<>( PostgreSqlType.TEXT, value );
+   }
+
+   @Override
+   public PostgreSqlType sqlType( final String sammTypeUri ) {
+      return typeMap.get( sammTypeUri );
+   }
+
+   @SuppressWarnings( "unchecked" )
+   @Override
+   public <A extends PostgreSqlType> A sqlArrayType( final PostgreSqlType baseType ) {
+      return (A) new PostgreSqlType.PostgreSqlArray( baseType );
    }
 }

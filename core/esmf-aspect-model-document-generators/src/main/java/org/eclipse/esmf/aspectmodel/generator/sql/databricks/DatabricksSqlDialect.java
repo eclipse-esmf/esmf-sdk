@@ -19,27 +19,20 @@ import java.util.Optional;
 
 import org.apache.jena.vocabulary.XSD;
 
-import org.eclipse.esmf.aspectmodel.generator.sql.SqlColumnDefinition;
 import org.eclipse.esmf.aspectmodel.generator.sql.SqlDialect;
-import org.eclipse.esmf.aspectmodel.generator.sql.SqlGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.sql.SqlTableDefinition;
-import org.eclipse.esmf.aspectmodel.generator.sql.SqlType;
 import org.eclipse.esmf.aspectmodel.generator.sql.SqlValue;
 import org.eclipse.esmf.metamodel.datatype.RdfDatatypeUris;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import com.google.common.collect.ImmutableMap;
 
-public class DatabricksSqlDialect<
-      U extends SqlGenerationConfig.DialectSpecificConfig<D, C>,
-      D extends SqlType,
-      C extends SqlColumnDefinition<D, C>,
-      T extends SqlTableDefinition<D, C>>
+public class DatabricksSqlDialect
       implements SqlDialect<DatabricksSqlGenerationConfig, DatabricksType, DatabricksColumnDefinition, DatabricksTableDefinition> {
-   protected final Map<String, DatabricksType> databricksTypeMap;
+   protected final Map<String, DatabricksType> typeMap;
 
-   public DatabricksSqlDialect( final U config ) {
-      databricksTypeMap = ImmutableMap.<String, DatabricksType>builder()
+   public DatabricksSqlDialect( final DatabricksSqlGenerationConfig config ) {
+      typeMap = ImmutableMap.<String, DatabricksType>builder()
             .put( XSD.xstring.getURI(), DatabricksType.STRING )
             .put( XSD.xboolean.getURI(), DatabricksType.BOOLEAN )
             .put( XSD.decimal.getURI(), new DatabricksType.DatabricksDecimal( Optional.of( config.decimalPrecision() ),
@@ -92,15 +85,15 @@ public class DatabricksSqlDialect<
       return new DatabricksColumnDefinition( name, datatype, isNullable, comment );
    }
 
+   @SuppressWarnings( "unchecked" )
    @Override
    public <V extends DatabricksType> SqlValue<V> sqlStringValue( final String value ) {
-      // noinspection unchecked
-      return new DatabricksSqlValue<>( (Class<V>) DatabricksType.DatabricksString.class, value );
+      return (SqlValue<V>) new DatabricksSqlValue<>( DatabricksType.STRING, value );
    }
 
    @Override
    public DatabricksType sqlType( final String sammTypeUri ) {
-      return databricksTypeMap.get( sammTypeUri );
+      return typeMap.get( sammTypeUri );
    }
 
    @SuppressWarnings( "unchecked" )
