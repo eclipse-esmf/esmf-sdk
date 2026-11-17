@@ -172,7 +172,6 @@ public class DetailedViolationFormatter extends ViolationFormatter implements Sh
       return builder.toString();
    }
 
-   @SuppressWarnings( "StringBufferReplaceableByString" )
    @Override
    protected String handleDocumentLocationViolation( final DocumentLocationViolation violation ) {
       final StringBuilder builder = new StringBuilder();
