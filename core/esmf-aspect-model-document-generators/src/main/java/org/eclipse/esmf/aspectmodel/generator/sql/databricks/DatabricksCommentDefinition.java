@@ -13,11 +13,13 @@
 
 package org.eclipse.esmf.aspectmodel.generator.sql.databricks;
 
+import org.jspecify.annotations.NonNull;
+
 public record DatabricksCommentDefinition(
       String comment
 ) {
    @Override
-   public String toString() {
+   public @NonNull String toString() {
       return "COMMENT '" + comment
             .replace( "\r\n", "\n" )
             .replace( "'", "\\'" )

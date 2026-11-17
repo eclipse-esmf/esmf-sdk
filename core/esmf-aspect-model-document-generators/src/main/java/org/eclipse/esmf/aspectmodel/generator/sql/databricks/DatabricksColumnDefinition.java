@@ -15,6 +15,9 @@ package org.eclipse.esmf.aspectmodel.generator.sql.databricks;
 
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.generator.sql.SqlColumnDefinition;
+import org.eclipse.esmf.aspectmodel.generator.sql.SqlGenerationConfig;
+
 import io.soabase.recordbuilder.core.RecordBuilder;
 
 /**
@@ -31,9 +34,9 @@ public record DatabricksColumnDefinition(
       DatabricksType type,
       boolean nullable,
       Optional<String> comment
-) {
+) implements SqlColumnDefinition<DatabricksType, DatabricksColumnDefinition> {
    @Override
-   public String toString() {
+   public String apply( final SqlGenerationConfig.DialectSpecificConfig<DatabricksType, DatabricksColumnDefinition> config ) {
       return "%s %s%s%s".formatted(
             name(),
             type(),

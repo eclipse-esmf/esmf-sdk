@@ -13,8 +13,6 @@
 
 package org.eclipse.esmf.aspectmodel.generator.sql.databricks;
 
-import static org.eclipse.esmf.aspectmodel.generator.sql.databricks.AspectModelDatabricksDenormalizedSqlVisitorContextBuilder.builder;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -62,7 +60,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
       }
 
       public AspectModelDatabricksDenormalizedSqlVisitorContextBuilder copy() {
-         return builder()
+         return AspectModelDatabricksDenormalizedSqlVisitorContextBuilder.builder()
                .prefix( prefix() )
                .currentProperty( currentProperty() )
                .forceOptional( forceOptional() )

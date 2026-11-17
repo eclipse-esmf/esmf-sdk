@@ -16,10 +16,15 @@ package org.eclipse.esmf.aspectmodel.generator.sql.databricks;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.generator.DocumentGenerationException;
+import org.eclipse.esmf.aspectmodel.generator.sql.SqlType;
+
+import org.jspecify.annotations.NonNull;
+
 /**
  * Databricks SQL types.
  */
-public sealed interface DatabricksType {
+public sealed interface DatabricksType extends SqlType {
    DatabricksType BIGINT = new DatabricksBigint();
    DatabricksType BINARY = new DatabricksBinary();
    DatabricksType BOOLEAN = new DatabricksBoolean();
@@ -34,7 +39,8 @@ public sealed interface DatabricksType {
    DatabricksType TINYINT = new DatabricksTinyint();
 
    record DatabricksDecimal(
-         Optional<Integer> precision, Optional<Integer> scale
+         Optional<Integer> precision,
+         Optional<Integer> scale
    ) implements DatabricksType {
       public DatabricksDecimal( final Optional<Integer> precision ) {
          this( precision, Optional.empty() );
@@ -45,16 +51,11 @@ public sealed interface DatabricksType {
       }
 
       @Override
-      public String toString() {
-         if ( precision.isPresent() ) {
-            if ( scale().isPresent() ) {
-               // noinspection OptionalGetWithoutIsPresent
-               return "DECIMAL(" + precision().get() + "," + scale().get() + ")";
-            }
-            // noinspection OptionalGetWithoutIsPresent
-            return "DECIMAL(" + precision().get() + ")";
-         }
-         return "DECIMAL";
+      public @NonNull String toString() {
+         return "DECIMAL" + precision().map(
+               precision -> scale().map(
+                     scale -> "(" + precision + "," + scale + ")" ).orElse( "(" + precision + ")" ) )
+               .orElse( "" );
       }
    }
 
@@ -62,22 +63,23 @@ public sealed interface DatabricksType {
          DatabricksType elementType
    ) implements DatabricksType {
       @Override
-      public String toString() {
+      public @NonNull String toString() {
          return "ARRAY<" + elementType() + ">";
       }
    }
 
    record DatabricksMap(
-         DatabricksType keyType, DatabricksType valueType
+         DatabricksType keyType,
+         DatabricksType valueType
    ) implements DatabricksType {
       public DatabricksMap {
          if ( keyType instanceof DatabricksMap ) {
-            throw new RuntimeException( "Key type cannot be MAP" );
+            throw new DocumentGenerationException( "Key type cannot be MAP" );
          }
       }
 
       @Override
-      public String toString() {
+      public @NonNull String toString() {
          return "MAP<" + keyType() + "," + valueType() + ">";
       }
    }
@@ -86,7 +88,7 @@ public sealed interface DatabricksType {
          String name, DatabricksType type, boolean nullable, Optional<String> comment
    ) {
       @Override
-      public String toString() {
+      public @NonNull String toString() {
          return name + ": " + type + ( nullable ? "" : " NOT NULL" )
                + comment.map( theComment -> " " + new DatabricksCommentDefinition( theComment ) ).orElse( "" );
       }
@@ -96,7 +98,7 @@ public sealed interface DatabricksType {
          List<DatabricksStructEntry> entries
    ) implements DatabricksType {
       @Override
-      public String toString() {
+      public @NonNull String toString() {
          return "STRUCT<" + String.join( ", ", entries.stream().map( DatabricksStructEntry::toString ).toList() ) + ">";
       }
    }

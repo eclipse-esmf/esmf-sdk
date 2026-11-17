@@ -13,6 +13,10 @@
 
 package org.eclipse.esmf.aspectmodel.generator.sql;
 
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 import org.eclipse.esmf.aspectmodel.generator.GenerationConfig;
 
 import io.soabase.recordbuilder.core.RecordBuilder;
@@ -28,7 +32,7 @@ import io.soabase.recordbuilder.core.RecordBuilder;
 public record SqlGenerationConfig(
       Dialect dialect,
       MappingStrategy mappingStrategy,
-      DialectSpecificConfig dialectSpecificConfig
+      DialectSpecificConfig<?, ?> dialectSpecificConfig
 ) implements GenerationConfig {
    public enum Dialect {
       DATABRICKS,
@@ -36,13 +40,30 @@ public record SqlGenerationConfig(
    }
 
    public enum MappingStrategy {
-      DENORMALIZED
+      DENORMALIZED,
+      NORMALIZED
    }
 
-   public interface DialectSpecificConfig extends GenerationConfig {
-   }
+   public interface DialectSpecificConfig<D, C extends SqlColumnDefinition<D, C>> extends GenerationConfig {
+      String createTableCommandPrefix();
 
-   public static class DefaultDialectSpecificConfig implements DialectSpecificConfig {
+      boolean includeTableComment();
+
+      boolean includeColumnComments();
+
+      Locale commentLanguage();
+
+      int decimalPrecision();
+
+      int decimalScale();
+
+      List<C> customColumns();
+
+      Map<String, List<C>> customColumnsPerTable();
+
+      List<String> tableConstraints();
+
+      Map<String, List<String>> tableConstraintsPerTable();
    }
 
    public SqlGenerationConfig {
@@ -52,10 +73,6 @@ public record SqlGenerationConfig(
 
       if ( mappingStrategy == null ) {
          mappingStrategy = MappingStrategy.DENORMALIZED;
-      }
-
-      if ( dialectSpecificConfig == null ) {
-         dialectSpecificConfig = new DefaultDialectSpecificConfig();
       }
    }
 }

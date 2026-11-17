@@ -13,13 +13,21 @@
 
 package org.eclipse.esmf.aspectmodel.generator.sql;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.eclipse.esmf.aspectmodel.generator.StringArtifact;
 
 /**
  * Represents a generated SQL script.
  */
 public class SqlArtifact extends StringArtifact {
-   public SqlArtifact( final String id, final String content ) {
-      super( id, content );
+   public <U extends SqlGenerationConfig.DialectSpecificConfig<D, C>,
+         D extends SqlType,
+         C extends SqlColumnDefinition<D, C>,
+         T extends SqlTableDefinition<D, C>> SqlArtifact( final String id,
+               final List<SqlTableDefinition<D, C>> tables, final U config ) {
+      super( id, tables.stream().map( tableDefinition -> tableDefinition.apply( config ) )
+            .collect( Collectors.joining( "\n\n" ) ) );
    }
 }
