@@ -425,10 +425,11 @@ class SubmodelToAspectConverter {
 
    private MetaModelBaseAttributes baseAttributes( final SubmodelElement element, final ElementNamingStrategy elementNamingStrategy,
          final boolean upperCase, final boolean includeSee, final boolean useSemanticIdUrnForAutomaticNames ) {
-      final ElementName elementName;
+      final boolean isAnonymous;
       final AspectModelUrn urn;
       if ( elementNamingStrategy instanceof DetermineAutomatically( final String namePrefix, final boolean appendElementIdShort ) ) {
-         elementName = determineSubmodelElementName( element, namePrefix, upperCase, appendElementIdShort );
+         final ElementName elementName = determineSubmodelElementName( element, namePrefix, upperCase, appendElementIdShort );
+         isAnonymous = elementName.isSynthetic();
          final String uniqueName = nextUniqueName( elementName.name() );
          final boolean useSemanticIdUrn =
                useSemanticIdUrnForAutomaticNames && namePrefix.isEmpty() && appendElementIdShort;
@@ -436,7 +437,7 @@ class SubmodelToAspectConverter {
                ? aspectModelUrnFromSemanticId( element ).orElseGet( () -> aspectUrn.withName( uniqueName ) )
                : aspectUrn.withName( uniqueName );
       } else if ( elementNamingStrategy instanceof UseGivenUrn( final AspectModelUrn aspectModelUrn ) ) {
-         elementName = new ElementName( aspectModelUrn.getName(), false );
+         isAnonymous = false;
          urn = aspectModelUrn;
       } else {
          throw new AspectModelGenerationException( "Unknown ElementNamingStrategy" );
@@ -449,7 +450,7 @@ class SubmodelToAspectConverter {
             .withPreferredNames( preferredNames )
             .withDescriptions( descriptions )
             .withSee( includeSee ? seeReferences( element ) : List.of() )
-            .isAnonymous( elementName.isSynthetic() )
+            .isAnonymous( isAnonymous )
             .build();
    }
 
