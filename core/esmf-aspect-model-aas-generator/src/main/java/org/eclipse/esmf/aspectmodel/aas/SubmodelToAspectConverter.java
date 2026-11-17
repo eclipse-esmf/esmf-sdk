@@ -436,7 +436,7 @@ class SubmodelToAspectConverter {
                ? aspectModelUrnFromSemanticId( element ).orElseGet( () -> aspectUrn.withName( uniqueName ) )
                : aspectUrn.withName( uniqueName );
       } else if ( elementNamingStrategy instanceof UseGivenUrn( final AspectModelUrn aspectModelUrn ) ) {
-         elementName = determineSubmodelElementName( element, "", upperCase, true );
+         elementName = new ElementName( aspectModelUrn.getName(), false );
          urn = aspectModelUrn;
       } else {
          throw new AspectModelGenerationException( "Unknown ElementNamingStrategy" );
@@ -530,11 +530,13 @@ class SubmodelToAspectConverter {
                   ? collectionPropertyBaseAttributes( collection )
                   : baseAttributes( submodelElement, new DetermineAutomatically(), false, true );
       final Characteristic characteristic = createCharacteristic( submodelElement, metaModelBaseAttributes.urn() );
-      final Optional<ScalarValue> exampleValue =
-            submodelElement instanceof final org.eclipse.digitaltwin.aas4j.v3.model.Property property
-                  ? Optional.ofNullable( property.getValue() )
-                        .flatMap( lexicalRepresentation -> exampleValueForProperty( lexicalRepresentation, characteristic.getDataType() ) )
-                  : Optional.empty();
+      final Optional<String> lexicalExampleValue = switch ( submodelElement ) {
+         case final org.eclipse.digitaltwin.aas4j.v3.model.Property property -> Optional.ofNullable( property.getValue() );
+         case final ReferenceElement referenceElement -> globalReferenceValue( referenceElement );
+         default -> Optional.empty();
+      };
+      final Optional<ScalarValue> exampleValue = lexicalExampleValue
+            .flatMap( lexicalRepresentation -> exampleValueForProperty( lexicalRepresentation, characteristic.getDataType() ) );
       final boolean isOptional = isOptionalProperty( submodelElement );
       final Property result = new DefaultProperty(
             metaModelBaseAttributes,
@@ -676,10 +678,16 @@ class SubmodelToAspectConverter {
       return new DefaultTrait( traitMetaModelBaseAttributes, baseCharacteristic, List.of( constraint ) );
    }
 
-   private Characteristic createCharacteristicFromReferenceElement( final ReferenceElement referenceElement,
-         final AspectModelUrn propertyUrn ) {
-      return createDefaultScalarCharacteristic( referenceElement, XSD.xstring.getURI(),
-            new DetermineAutomatically( propertyUrn.getName() + "Reference" ) );
+   private Characteristic createCharacteristicFromReferenceElement( final ReferenceElement referenceElement ) {
+      return createDefaultScalarCharacteristic( referenceElement, XSD.anyURI.getURI(),
+            new UseGivenUrn( AspectModelUrn.fromUrn( SammNs.SAMMC.Reference().getURI() ) ) );
+   }
+
+   private Optional<String> globalReferenceValue( final ReferenceElement referenceElement ) {
+      return Optional.ofNullable( referenceElement.getValue() )
+            .map( Reference::getKeys )
+            .filter( keys -> keys.size() == 1 && keys.getFirst().getType() == KeyTypes.GLOBAL_REFERENCE )
+            .map( keys -> keys.getFirst().getValue() );
    }
 
    private Characteristic createCharacteristicFromCapability( final Capability capability, final AspectModelUrn propertyUrn ) {
@@ -793,7 +801,7 @@ class SubmodelToAspectConverter {
          case MULTI_LANGUAGE_PROPERTY -> createCharacteristicFromMultiLanguageProperty( (MultiLanguageProperty) element );
          case PROPERTY -> createCharacteristicFromProperty( (org.eclipse.digitaltwin.aas4j.v3.model.Property) element, propertyUrn );
          case RANGE -> createCharacteristicFromRange( (Range) element, propertyUrn );
-         case REFERENCE_ELEMENT -> createCharacteristicFromReferenceElement( (ReferenceElement) element, propertyUrn );
+         case REFERENCE_ELEMENT -> createCharacteristicFromReferenceElement( (ReferenceElement) element );
          case CAPABILITY -> createCharacteristicFromCapability( (Capability) element, propertyUrn );
          case ENTITY -> createCharacteristicFromEntity( (org.eclipse.digitaltwin.aas4j.v3.model.Entity) element, propertyUrn );
          case SUBMODEL_ELEMENT_COLLECTION ->

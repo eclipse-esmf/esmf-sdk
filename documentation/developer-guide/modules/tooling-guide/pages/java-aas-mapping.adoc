@@ -72,7 +72,7 @@ are the attributes of the preceding model element.
 
 | xref:samm-specification:ROOT:characteristics.adoc#code-characteristic[**samm-c:Code**] | aas:SubmodelElement, aas:ConceptDescription | Similar to plain Characteristic.
 
-| xref:samm-specification:ROOT:characteristics.adoc#reference-characteristic[**samm-c:Reference**] | aas:ReferenceElement, aas:ConceptDescription | Properties referencing a Reference characteristic are mapped to an aas:ReferenceElement. Its value is an external global reference built from the property value, or from the exampleValue when a template is generated; if neither is available, no value is set.
+| xref:samm-specification:ROOT:characteristics.adoc#reference-characteristic[**samm-c:Reference**] | aas:ReferenceElement, aas:ConceptDescription | Properties referencing a Reference characteristic are mapped to an aas:ReferenceElement. Its value is an external global reference built from the property value, or from the exampleValue when a template is generated; if neither is available, no value is set. In the reverse direction, an aas:ReferenceElement is mapped to samm-c:Reference; a single GlobalReference key value becomes the exampleValue.
 
 | xref:samm-specification:ROOT:characteristics.adoc#structured-value-characteristic[**samm-c:StructuredValue**]  | aas:SubmodelElement, aas:ConceptDescription | The general remarks to Characteristics apply also to StructuredValue. AAS has no concept like deconstruction rule. Thus, the deconstruction rule is ignored and only the Characteristic is mapped.
 
