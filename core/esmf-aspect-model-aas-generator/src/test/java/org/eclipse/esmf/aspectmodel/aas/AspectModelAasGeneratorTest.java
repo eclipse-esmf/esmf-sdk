@@ -306,13 +306,14 @@ class AspectModelAasGeneratorTest {
       final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_DATA_TYPES );
 
       final Map<String, DataTypeIec61360> expectedDataTypes = Map.of(
-            "decimalDurationWithoutUnitProperty", DataTypeIec61360.REAL_COUNT,
+            "decimalWithoutUnitProperty", DataTypeIec61360.REAL_COUNT,
             "decimalDurationWithUnitProperty", DataTypeIec61360.REAL_MEASURE,
             "floatEnumerationProperty", DataTypeIec61360.REAL_COUNT,
             "floatQuantifiableWithUnitProperty", DataTypeIec61360.REAL_MEASURE,
-            "floatQuantifiableWithoutUnitProperty", DataTypeIec61360.REAL_COUNT,
+            "floatWithoutUnitProperty", DataTypeIec61360.REAL_COUNT,
             "decimalMeasureWithUnitProperty", DataTypeIec61360.REAL_MEASURE,
-            "decimalMeasureWithoutUnitProperty", DataTypeIec61360.REAL_COUNT );
+            "integerWithoutUnitProperty", DataTypeIec61360.INTEGER_COUNT,
+            "integerMeasureWithUnitProperty", DataTypeIec61360.INTEGER_MEASURE );
 
       expectedDataTypes.forEach( ( property, dataType ) -> {
          final DataSpecificationIec61360 dataSpecification = (DataSpecificationIec61360) env.getConceptDescriptions().stream()

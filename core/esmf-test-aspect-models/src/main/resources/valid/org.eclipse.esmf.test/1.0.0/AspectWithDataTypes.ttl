@@ -19,15 +19,15 @@
    samm:preferredName "Test Aspect"@en ;
    samm:description "This is a test description"@en ;
    samm:see <http://example.com/> ;
-   samm:properties ( :decimalDurationWithoutUnitProperty :decimalDurationWithUnitProperty :floatEnumerationProperty
-      :floatQuantifiableWithUnitProperty :floatQuantifiableWithoutUnitProperty
-      :decimalMeasureWithUnitProperty :decimalMeasureWithoutUnitProperty ) ;
+   samm:properties ( :decimalWithoutUnitProperty :decimalDurationWithUnitProperty :floatEnumerationProperty
+      :floatQuantifiableWithUnitProperty :floatWithoutUnitProperty :decimalMeasureWithUnitProperty
+      :integerWithoutUnitProperty :integerMeasureWithUnitProperty ) ;
    samm:operations ( ) .
 
-:decimalDurationWithoutUnitProperty a samm:Property ;
-   samm:characteristic :DecimalDurationWithoutUnit .
+:decimalWithoutUnitProperty a samm:Property ;
+   samm:characteristic :DecimalWithoutUnit .
 
-:DecimalDurationWithoutUnit a samm-c:Duration ;
+:DecimalWithoutUnit a samm:Characteristic ;
    samm:dataType xsd:decimal .
 
 :decimalDurationWithUnitProperty a samm:Property ;
@@ -42,7 +42,7 @@
 
 :FloatEnumeration a samm-c:Enumeration ;
    samm:dataType xsd:float ;
-   samm-c:values ( 1.5 2.5 3.5 ) .
+   samm-c:values ( "1.5"^^xsd:float "2.5"^^xsd:float "3.5"^^xsd:float ) .
 
 :floatQuantifiableWithUnitProperty a samm:Property ;
    samm:characteristic :FloatQuantifiableWithUnit .
@@ -51,10 +51,10 @@
    samm-c:unit unit:percent ;
    samm:dataType xsd:float .
 
-:floatQuantifiableWithoutUnitProperty a samm:Property ;
-   samm:characteristic :FloatQuantifiableWithoutUnit .
+:floatWithoutUnitProperty a samm:Property ;
+   samm:characteristic :FloatWithoutUnit .
 
-:FloatQuantifiableWithoutUnit a samm-c:Quantifiable ;
+:FloatWithoutUnit a samm:Characteristic ;
    samm:dataType xsd:float .
 
 :decimalMeasureWithUnitProperty a samm:Property ;
@@ -64,8 +64,15 @@
    samm-c:unit unit:percent ;
    samm:dataType xsd:decimal .
 
-:decimalMeasureWithoutUnitProperty a samm:Property ;
-   samm:characteristic :DecimalMeasureWithoutUnit .
+:integerWithoutUnitProperty a samm:Property ;
+   samm:characteristic :IntegerWithoutUnit .
 
-:DecimalMeasureWithoutUnit a samm-c:Measurement ;
-   samm:dataType xsd:decimal .
+:IntegerWithoutUnit a samm:Characteristic ;
+   samm:dataType xsd:integer .
+
+:integerMeasureWithUnitProperty a samm:Property ;
+   samm:characteristic :IntegerMeasureWithUnit .
+
+:IntegerMeasureWithUnit a samm-c:Measurement ;
+   samm-c:unit unit:percent ;
+   samm:dataType xsd:integer .
