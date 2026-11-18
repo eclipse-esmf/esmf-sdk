@@ -87,7 +87,7 @@ jobs:
         run: |
           java --version
           export MAVEN_OPTS="-Xmx4096m"
-          export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
+          export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8"
           # Actual build of core SDK
           mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
           # Build samm-cli executable jar
