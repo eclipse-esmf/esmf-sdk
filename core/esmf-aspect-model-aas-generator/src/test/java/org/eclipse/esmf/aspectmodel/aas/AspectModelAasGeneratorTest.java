@@ -20,6 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -301,33 +302,30 @@ class AspectModelAasGeneratorTest {
    }
 
    @Test
-   void testQuantifiableWithUnitUsesMeasureDataType() throws DeserializationException {
-      final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_QUANTIFIABLE_WITH_UNIT );
-      final DataSpecificationIec61360 dataSpecification =
-            (DataSpecificationIec61360) getDataSpecificationIec61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
+   void testDataTypesWithAndWithoutUnit() throws DeserializationException {
+      final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_DATA_TYPES );
 
-      assertThat( dataSpecification.getDataType() ).isEqualTo( DataTypeIec61360.REAL_MEASURE );
-      assertThat( dataSpecification.getUnit() ).isEqualTo( "percent" );
-   }
+      final Map<String, DataTypeIec61360> expectedDataTypes = Map.of(
+            "decimalDurationWithoutUnitProperty", DataTypeIec61360.REAL_COUNT,
+            "decimalDurationWithUnitProperty", DataTypeIec61360.REAL_MEASURE,
+            "floatEnumerationProperty", DataTypeIec61360.REAL_COUNT,
+            "floatQuantifiableWithUnitProperty", DataTypeIec61360.REAL_MEASURE,
+            "floatQuantifiableWithoutUnitProperty", DataTypeIec61360.REAL_COUNT,
+            "decimalMeasureWithUnitProperty", DataTypeIec61360.REAL_MEASURE,
+            "decimalMeasureWithoutUnitProperty", DataTypeIec61360.REAL_COUNT );
 
-   @Test
-   void testQuantifiableWithoutUnitUsesCountDataType() throws DeserializationException {
-      final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_QUANTIFIABLE_WITHOUT_UNIT );
-      final DataSpecificationIec61360 dataSpecification =
-            (DataSpecificationIec61360) getDataSpecificationIec61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
-
-      assertThat( dataSpecification.getDataType() ).isEqualTo( DataTypeIec61360.REAL_COUNT );
-      assertThat( dataSpecification.getUnit() ).isNullOrEmpty();
-   }
-
-   @Test
-   void testMeasurementWithUnitUsesMeasureDataType() throws DeserializationException {
-      final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_MEASUREMENT_WITH_UNIT );
-      final DataSpecificationIec61360 dataSpecification =
-            (DataSpecificationIec61360) getDataSpecificationIec61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
-
-      assertThat( dataSpecification.getDataType() ).isEqualTo( DataTypeIec61360.REAL_MEASURE );
-      assertThat( dataSpecification.getUnit() ).isEqualTo( "percent" );
+      expectedDataTypes.forEach( ( property, dataType ) -> {
+         final DataSpecificationIec61360 dataSpecification = (DataSpecificationIec61360) env.getConceptDescriptions().stream()
+               .filter( conceptDescription -> conceptDescription.getIdShort().equals( property ) )
+               .findFirst()
+               .get()
+               .getEmbeddedDataSpecifications()
+               .stream()
+               .findFirst()
+               .get()
+               .getDataSpecificationContent();
+         assertThat( dataSpecification.getDataType() ).as( property ).isEqualTo( dataType );
+      } );
    }
 
    @Test

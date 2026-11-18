@@ -596,7 +596,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       return new DefaultDataSpecificationIec61360.Builder()
             .definition( definitions( definitionsProperty, property.getPreferredNames(), property.getName() ) )
             .preferredName( preferredNames )
-            .dataType( mapPropertyIec61360DataType( property.getCharacteristic() ) )
+            .dataType( mapCharacteristicIec61360DataType( property.getCharacteristic() ) )
             .build();
    }
 
@@ -644,21 +644,15 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
             characteristic.flatMap( Characteristic::getDataType ).map( Type::getUrn ).orElse( RdfDatatypeUris.LANG_STRING ) );
    }
 
-   private DataTypeIec61360 mapIec61360DataType( final Characteristic characteristic ) {
-      return mapIec61360DataType( Optional.of( characteristic ) );
-   }
-
    private DataTypeIec61360 mapIec61360DataType( final String urn ) {
       final Resource resource = ResourceFactory.createResource( urn );
       return TYPE_MAP.getOrDefault( resource, DataTypeIec61360.STRING );
    }
 
    /**
-    * Measure types require a unit in AAS (AASc-3a-009). Only Quantifiables with a unit keep a measure
-    * type; otherwise
-    * the corresponding count type is used.
+    * Measure types require a unit in AAS (AASc-3a-009). Without a unit, the matching count type is used.
     */
-   private DataTypeIec61360 mapPropertyIec61360DataType( final Optional<Characteristic> characteristic ) {
+   private DataTypeIec61360 mapCharacteristicIec61360DataType( final Optional<Characteristic> characteristic ) {
       final DataTypeIec61360 dataType = mapIec61360DataType( characteristic );
       final boolean hasUnit = characteristic
             .filter( Quantifiable.class::isInstance )
@@ -916,7 +910,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       if ( embeddedDataSpecification.stream().findFirst().isPresent() ) {
          final DataSpecificationIec61360 dataSpecificationContent =
                (DataSpecificationIec61360) embeddedDataSpecification.stream().findFirst().get().getDataSpecificationContent();
-         dataSpecificationContent.setDataType( mapIec61360DataType( enumeration ) );
+         dataSpecificationContent.setDataType( mapCharacteristicIec61360DataType( Optional.of( enumeration ) ) );
          final List<ValueReferencePair> valueReferencePairs =
                enumeration.getValues().stream()
                      .map( enumerationValue -> {
