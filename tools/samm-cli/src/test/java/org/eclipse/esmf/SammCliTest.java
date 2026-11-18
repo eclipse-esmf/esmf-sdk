@@ -72,7 +72,7 @@ class SammCliTest extends SammCliAbstractTest {
 
    @Override
    protected ProcessLauncher<?> getCli() {
-      return new MainClassProcessLauncher( SammCli.class, List.of(),
+      return new MainClassProcessLauncher( SammCli.class, List.of( "-Dfile.encoding=UTF8" ),
             argument -> !"-XX:ThreadPriorityPolicy=1".equals( argument ) && !argument.startsWith( "-agentlib:jdwp" ), true
       );
    }
