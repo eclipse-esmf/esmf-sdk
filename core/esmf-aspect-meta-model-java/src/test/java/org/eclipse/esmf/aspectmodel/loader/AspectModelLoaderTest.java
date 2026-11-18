@@ -207,7 +207,7 @@ class AspectModelLoaderTest {
                      } ) );
                assertThat( exception.getViolations() )
                      .extracting( violation -> ( (UnresolvedReferenceViolation) violation ).location() )
-                     .containsExactlyInAnyOrder( new Location( 20, 21, 20, 41 ), new Location( 25, 21, 25, 41 ) );
+                     .containsExactlyInAnyOrder( new Location( 17, 21, 17, 41 ), new Location( 22, 21, 22, 41 ) );
             } );
    }
 
