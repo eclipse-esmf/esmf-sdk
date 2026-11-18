@@ -39,6 +39,7 @@ import org.eclipse.digitaltwin.aas4j.v3.model.ConceptDescription;
 import org.eclipse.digitaltwin.aas4j.v3.model.DataSpecificationContent;
 import org.eclipse.digitaltwin.aas4j.v3.model.DataSpecificationIec61360;
 import org.eclipse.digitaltwin.aas4j.v3.model.DataTypeDefXsd;
+import org.eclipse.digitaltwin.aas4j.v3.model.DataTypeIec61360;
 import org.eclipse.digitaltwin.aas4j.v3.model.EmbeddedDataSpecification;
 import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
 import org.eclipse.digitaltwin.aas4j.v3.model.Key;
@@ -297,6 +298,36 @@ class AspectModelAasGeneratorTest {
             "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
 
       assertThat( ( (DataSpecificationIec61360) dataSpecificationContent ).getUnit() ).isEqualTo( "percent" );
+   }
+
+   @Test
+   void testQuantifiableWithUnitUsesMeasureDataType() throws DeserializationException {
+      final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_QUANTIFIABLE_WITH_UNIT );
+      final DataSpecificationIec61360 dataSpecification =
+            (DataSpecificationIec61360) getDataSpecificationIec61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
+
+      assertThat( dataSpecification.getDataType() ).isEqualTo( DataTypeIec61360.REAL_MEASURE );
+      assertThat( dataSpecification.getUnit() ).isEqualTo( "percent" );
+   }
+
+   @Test
+   void testQuantifiableWithoutUnitUsesCountDataType() throws DeserializationException {
+      final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_QUANTIFIABLE_WITHOUT_UNIT );
+      final DataSpecificationIec61360 dataSpecification =
+            (DataSpecificationIec61360) getDataSpecificationIec61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
+
+      assertThat( dataSpecification.getDataType() ).isEqualTo( DataTypeIec61360.REAL_COUNT );
+      assertThat( dataSpecification.getUnit() ).isNullOrEmpty();
+   }
+
+   @Test
+   void testMeasurementWithUnitUsesMeasureDataType() throws DeserializationException {
+      final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_MEASUREMENT_WITH_UNIT );
+      final DataSpecificationIec61360 dataSpecification =
+            (DataSpecificationIec61360) getDataSpecificationIec61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
+
+      assertThat( dataSpecification.getDataType() ).isEqualTo( DataTypeIec61360.REAL_MEASURE );
+      assertThat( dataSpecification.getUnit() ).isEqualTo( "percent" );
    }
 
    @Test
