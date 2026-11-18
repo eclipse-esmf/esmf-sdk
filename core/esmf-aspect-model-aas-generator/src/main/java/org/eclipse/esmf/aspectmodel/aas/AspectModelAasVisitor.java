@@ -650,7 +650,8 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
    }
 
    /**
-    * Measure types require a unit in AAS (AASc-3a-009). Without a unit, the matching count type is used.
+    * Measure types require a unit in AAS (AASc-3a-009). Without a unit, the matching count type is
+    * used.
     */
    private DataTypeIec61360 mapCharacteristicIec61360DataType( final Optional<Characteristic> characteristic ) {
       final DataTypeIec61360 dataType = mapIec61360DataType( characteristic );

@@ -29,14 +29,14 @@
 
 :DecimalDurationWithoutUnit a samm-c:Duration ;
    samm:dataType xsd:decimal .
-   
+
 :decimalDurationWithUnitProperty a samm:Property ;
    samm:characteristic :DecimalDurationWithUnit .
 
 :DecimalDurationWithUnit a samm-c:Duration ;
    samm:dataType xsd:decimal ;
    samm-c:unit unit:kilosecond .
-   
+
 :floatEnumerationProperty a samm:Property ;
    samm:characteristic :FloatEnumeration .
 
@@ -69,6 +69,3 @@
 
 :DecimalMeasureWithoutUnit a samm-c:Measurement ;
    samm:dataType xsd:decimal .
-   
-   
-
