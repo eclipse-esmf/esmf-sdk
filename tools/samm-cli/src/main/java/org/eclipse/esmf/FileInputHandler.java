@@ -23,11 +23,8 @@ import java.util.function.Function;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.ViolationReport;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
-import org.eclipse.esmf.aspectmodel.resolver.EitherStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
-import org.eclipse.esmf.aspectmodel.resolver.fs.FlatModelsRoot;
-import org.eclipse.esmf.aspectmodel.resolver.fs.StructuredModelsRoot;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.AspectModel;
 
@@ -44,8 +41,8 @@ public class FileInputHandler extends AbstractInputHandler {
          final boolean validate ) {
       super( input, resolverConfig, details, validate );
       inputFile = absoluteFile( new File( input ) );
-      if ( inputFile.isDirectory() && !validate ) {
-         throw new CommandException( "Directory input is only supported by 'validate'" );
+      if ( inputFile.isDirectory() ) {
+         throw new CommandException( "Directory input is not supported: " + inputFile );
       }
    }
 
@@ -67,29 +64,6 @@ public class FileInputHandler extends AbstractInputHandler {
       return inputFile.isAbsolute()
             ? inputFile
             : Path.of( System.getProperty( "user.dir" ) ).resolve( inputFile.toPath() ).toFile().getAbsoluteFile();
-   }
-
-   @Override
-   public String validateAspectModel() {
-      return inputFile.isDirectory() ? validateDirectory() : super.validateAspectModel();
-   }
-
-   private String validateDirectory() {
-      final Path root = inputFile.toPath();
-      final List<ResolutionStrategy> strategies = new ArrayList<>();
-      final ResolutionStrategy inputDirectoryStrategy = new EitherStrategy(
-            new FileSystemStrategy( new StructuredModelsRoot( root ) ),
-            new FileSystemStrategy( new FlatModelsRoot( root ) ) );
-      strategies.add( inputDirectoryStrategy );
-      strategies.addAll( configuredStrategies() );
-      final AspectModelLoader loader = new AspectModelLoader( strategies );
-      return violationFormatter.apply( validator.validateModel( () -> {
-         final List<AspectModelFile> files = inputDirectoryStrategy.loadContents().toList();
-         if ( files.isEmpty() ) {
-            throw new CommandException( "No Aspect Model files found in " + root );
-         }
-         return loader.loadAndResolveAspectModelFiles( files );
-      } ) );
    }
 
    @Override
