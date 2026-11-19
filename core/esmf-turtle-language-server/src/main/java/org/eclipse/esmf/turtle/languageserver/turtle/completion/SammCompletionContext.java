@@ -18,7 +18,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.esmf.metamodel.vocabulary.SAMM;
 import org.eclipse.esmf.metamodel.vocabulary.SAMMC;
@@ -87,6 +89,24 @@ public record SammCompletionContext(
    ) {
       static final SubjectFacts EMPTY = new SubjectFacts( Set.of(), Set.of(), Map.of(), Map.of() );
    }
+
+   private static final String RDF_LANG_STRING = "langString";
+
+   private static final Set<String> CHARACTERISTIC_CLASS_NAMES = SammNs.SAMMC.allCharacteristicClasses().stream()
+         .map( Resource::getLocalName )
+         .collect( Collectors.toUnmodifiableSet() );
+
+   /**
+    * The local names of the samm-c predicates whose object is a Characteristic according to the SAMM
+    * shapes. {@code samm:characteristic} is checked separately in {@link #isCharacteristicPredicate}.
+    * {@code elementCharacteristic} is added by hand: its shape is an {@code sh:alternativePath} with
+    * no {@code sh:class}.
+    */
+   public static final Set<String> CHARACTERISTIC_PREDICATES = Stream.concat(
+         SammShapeUtils.predicatesExpecting( SammNs.SAMM.Characteristic() ).stream()
+               .filter( uri -> uri.startsWith( SammNs.SAMMC.getNamespace() ) )
+               .map( uri -> uri.substring( SammNs.SAMMC.getNamespace().length() ) ),
+         Stream.of( SAMMC.ELEMENT_CHARACTERISTIC ) ).collect( Collectors.toUnmodifiableSet() );
 
    public static SammCompletionContext header( final Map<String, String> declarations, final CursorEdit edit ) {
       final Namespaces namespaces = new Namespaces( "", SammNs.SAMM.getShortForm() + ":", Optional.empty(), Optional.empty(),
@@ -168,16 +188,6 @@ public record SammCompletionContext(
             : namespaces.sammPrefix();
    }
 
-   private static final String RDF_LANG_STRING = "langString";
-
-   private static final Set<String> CHARACTERISTIC_CLASS_NAMES = SammNs.SAMMC.allCharacteristicClasses().stream()
-         .map( Resource::getLocalName )
-         .collect( Collectors.toUnmodifiableSet() );
-
-   public static final Set<String> CHARACTERISTIC_PREDICATES = Set.of(
-         SAMM.CHARACTERISTIC, SAMMC.BASE_CHARACTERISTIC, SAMMC.ELEMENT_CHARACTERISTIC, SAMMC.LEFT, SAMMC.RIGHT
-   );
-
    public static boolean isCharacteristicPredicate(
          final String predicateUri,
          final String sammNamespace,
@@ -227,18 +237,8 @@ public record SammCompletionContext(
          final Predicate<Set<String>> predicate ) {
       return subjects.entrySet().stream()
             .filter( entry -> !entry.getKey().startsWith( "_:" ) && predicate.test( entry.getValue() ) )
-            .map( entry -> toPrefixedName( entry.getKey() ) )
+            .map( entry -> CompletionUtils.toPrefixedName( entry.getKey(), namespaces.declarations(), UnaryOperator.identity() ) )
             .sorted()
             .toList();
-   }
-
-   public String toPrefixedName( final String uri ) {
-      for ( final Map.Entry<String, String> entry : namespaces.declarations().entrySet() ) {
-         final String nsUri = entry.getValue();
-         if ( uri.startsWith( nsUri ) ) {
-            return entry.getKey() + uri.substring( nsUri.length() );
-         }
-      }
-      return uri;
    }
 }

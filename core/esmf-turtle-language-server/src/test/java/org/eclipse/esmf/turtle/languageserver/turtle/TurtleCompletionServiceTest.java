@@ -11,15 +11,17 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
+import org.eclipse.esmf.metamodel.vocabulary.SAMM;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.Document;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 import org.eclipse.esmf.turtle.languageserver.lsp.text.TreeSitterTurtleParserService;
 
-import org.apache.jena.rdf.model.Resource;
 import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.CompletionItemKind;
 import org.eclipse.lsp4j.CompletionParams;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,8 +49,8 @@ class TurtleCompletionServiceTest {
 
                      samm-e:""",
                   new Position( 2, 6 ),
-                  List.of( "TimeSeriesEntity", "Point3d", "FileResource", "Quantity", "resource", "mimeType", "timestamp", "value",
-                        "x", "y", "z", "unit" )
+                  List.of( "samm-e:TimeSeriesEntity", "samm-e:Point3d", "samm-e:FileResource", "samm-e:Quantity", "samm-e:resource",
+                        "samm-e:mimeType", "samm-e:timestamp", "samm-e:value", "samm-e:x", "samm-e:y", "samm-e:z", "samm-e:unit" )
             ),
             Arguments.of(
                   "typing inside the local-name part for a SAMM prefix still resolves by namespace",
@@ -58,8 +60,8 @@ class TurtleCompletionServiceTest {
 
                      samm-e:Tim""",
                   new Position( 3, 8 ),
-                  List.of( "TimeSeriesEntity", "Point3d", "FileResource", "Quantity", "resource", "mimeType", "timestamp", "value",
-                        "x", "y", "z", "unit" )
+                  List.of( "samm-e:TimeSeriesEntity", "samm-e:Point3d", "samm-e:FileResource", "samm-e:Quantity", "samm-e:resource",
+                        "samm-e:mimeType", "samm-e:timestamp", "samm-e:value", "samm-e:x", "samm-e:y", "samm-e:z", "samm-e:unit" )
             ),
             Arguments.of(
                   "typing partial object with default prefix returns local names from the document",
@@ -70,7 +72,20 @@ class TurtleCompletionServiceTest {
                      :subject :otherPredicate :object .
                      :subject :predicate :obj""",
                   new Position( 4, 21 ),
-                  List.of( "subject", "predicate", "object", "otherPredicate", "obj" )
+                  List.of( "predicate", "object", "otherPredicate" )
+            ),
+            Arguments.of(
+                  "typing colon after samm-c:constraint returns the constraint instances",
+                  """
+                     @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+                     @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#> .
+                     @prefix : <urn:test#> .
+
+                     :Speed a samm:Characteristic .
+                     :Range a samm:Constraint .
+                     :Aspect samm-c:constraint :""",
+                  new Position( 6, 27 ),
+                  List.of( "Range" )
             )
       );
    }
@@ -81,14 +96,191 @@ class TurtleCompletionServiceTest {
          final String content,
          final Position position,
          final List<String> expectedLabels ) {
+      assertThat( completionLabels( content, position ) ).containsExactlyInAnyOrder( expectedLabels.toArray( String[]::new ) );
+   }
+
+   @Test
+   void typingPartialEntityAfterDataTypeIncludesMatchingEntity() {
+      assertThat( completionLabels( """
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+         @prefix : <urn:test#> .
+
+         :SpatialEntity a samm:Entity .
+         :Speed samm:dataType :Sp""", new Position( 4, 24 ) ) ).contains( ":SpatialEntity" );
+   }
+
+   @Test
+   void typingColonAfterCharacteristicOffersCharacteristicInstancesAndTypesOnly() {
+      assertThat( completionLabels( """
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+         @prefix : <urn:test#> .
+
+         :Speed a samm:Characteristic .
+         :Range a samm:Constraint .
+         :Aspect samm:characteristic :""", new Position( 5, 29 ) ) )
+            .contains( ":Speed", "samm-c:Text" )
+            .doesNotContain( ":Range" );
+   }
+
+   @Test
+   void typingColonAfterFinishedStatementDoesNotUseItsPredicateExpectedClasses() {
+      assertThat( completionLabels( """
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+         @prefix : <urn:test#> .
+
+         :Characteristic a samm:Characteristic .
+         :weight a samm:Property ;
+            samm:see <https://schema.org/weight> ;
+            samm:characteristic :Weight .
+         :""", new Position( 7, 1 ) ) ).contains( "Characteristic", "weight", "Weight" );
+   }
+
+   @Test
+   void partialXsdDataTypeAfterDataTypeReturnsAllXsdDataTypes() {
+      assertThat( completionLabels( """
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         @prefix : <urn:test#> .
+
+         :Speed samm:dataType xsd:in""", new Position( 4, 27 ) ) ).contains( "xsd:int", "xsd:integer", "xsd:float" );
+   }
+
+   @Test
+   void completeXsdDataTypeAfterDataTypeStillReturnsAllXsdDataTypesForDropdown() {
+      assertThat( completionLabels( """
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+         @prefix : <urn:test#> .
+
+         :Speed samm:dataType xsd:int""", new Position( 4, 28 ) ) ).contains( "xsd:int", "xsd:integer", "xsd:string" );
+   }
+
+   @Test
+   void partialEntityAfterDataTypeReturnsAllEntities() {
+      assertThat( completionLabels( """
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+         @prefix : <urn:test#> .
+
+         :SpatialEntity a samm:Entity .
+         :Other a samm:Entity .
+         :Speed samm:dataType :Sp""", new Position( 5, 24 ) ) ).contains( ":SpatialEntity", ":Other" );
+   }
+
+   @Test
+   void partialRdfDataTypeAfterDataTypeReturnsAllRdfDataTypes() {
+      assertThat( completionLabels( """
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+         @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+         @prefix : <urn:test#> .
+
+         :Speed samm:dataType rdf:langS""", new Position( 4, 30 ) ) ).contains( "rdf:langString" );
+   }
+
+   @Test
+   void unitPrefixReturnsAllUnitNames() {
+      assertThat( completionLabels( """
+         @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.2.0#> .
+         @prefix : <urn:test#> .
+
+         :Speed samm-c:unit unit:pi""", new Position( 3, 26 ) ) ).contains( "unit:metre", "unit:gram" );
+   }
+
+   @Test
+   void unitPrefixDeclaredAsAliasReturnsPrefixedUnitItems() {
+      final List<CompletionItem> items = completionItems( """
+         @prefix samm-u: <urn:samm:org.eclipse.esmf.samm:unit:2.2.0#> .
+
+         samm-u:pi""", new Position( 2, 9 ) );
+
+      final CompletionItem metre = items.stream().filter( item -> "samm-u:metre".equals( item.getLabel() ) ).findFirst().orElseThrow();
+      assertThat( metre.getKind() ).isEqualTo( CompletionItemKind.Reference );
+      assertThat( metre.getDetail() ).isEqualTo( SAMM.UNIT );
+      assertThat( metre.getTextEdit().getLeft().getNewText() ).isEqualTo( "samm-u:metre" );
+      assertThat( metre.getTextEdit().getLeft().getRange() ).isEqualTo( new Range( new Position( 2, 0 ), new Position( 2, 9 ) ) );
+   }
+
+   @Test
+   void colonFallbackReturnsDescribedLocalNamesWithPrefixedFilterText() {
+      final List<CompletionItem> items = completionItems( """
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+         @prefix ex: <http://example.org/> .
+         @prefix : <urn:test#> .
+
+         :Speed a samm:Characteristic .
+         :Aspect ex:knows :""", new Position( 5, 18 ) );
+
+      final CompletionItem speed = items.stream().filter( item -> "Speed".equals( item.getLabel() ) ).findFirst().orElseThrow();
+      assertThat( speed.getKind() ).isEqualTo( CompletionItemKind.Reference );
+      assertThat( speed.getDetail() ).isEqualTo( "Local Characteristic" );
+      assertThat( speed.getFilterText() ).isEqualTo( ":Speed" );
+      assertThat( speed.getTextEdit().getLeft().getNewText() ).isEqualTo( ":Speed" );
+   }
+
+   @Test
+   void colonFallbackNamesMultiWordSammTypesLikeTheAttributeValueService() {
+      final List<CompletionItem> items = completionItems( """
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+         @prefix ex: <http://example.org/> .
+         @prefix : <urn:test#> .
+
+         :Parent a samm:AbstractEntity .
+         :Aspect ex:knows :""", new Position( 5, 18 ) );
+
+      final CompletionItem parent = items.stream().filter( item -> "Parent".equals( item.getLabel() ) ).findFirst().orElseThrow();
+      assertThat( parent.getDetail() ).isEqualTo( "Local Abstract Entity" );
+   }
+
+   @Test
+   void colonFallbackDoesNotOfferTheSubjectOfTheCurrentStatement() {
+      final List<String> labels = completionLabels( """
+         @prefix ex: <http://example.org/> .
+         @prefix : <urn:test#> .
+
+         :Speed ex:name "Speed" .
+         :Aspect ex:knows :""", new Position( 4, 18 ) );
+
+      assertThat( labels ).contains( "Speed" ).doesNotContain( "Aspect" );
+   }
+
+   @Test
+   void vocabularyItemsCarryClassAndAttributeDetail() {
+      final List<CompletionItem> items = completionItems( """
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+
+         samm:""", new Position( 2, 5 ) );
+
+      final CompletionItem entity = items.stream().filter( item -> "samm:Entity".equals( item.getLabel() ) ).findFirst().orElseThrow();
+      assertThat( entity.getKind() ).isEqualTo( CompletionItemKind.Class );
+      assertThat( entity.getDetail() ).isEqualTo( "SAMM Class" );
+
+      final CompletionItem properties =
+            items.stream().filter( item -> "samm:properties".equals( item.getLabel() ) ).findFirst().orElseThrow();
+      assertThat( properties.getKind() ).isEqualTo( CompletionItemKind.Property );
+      assertThat( properties.getDetail() ).isEqualTo( "SAMM Attribute" );
+   }
+
+   @Test
+   void olderSammVersionPrefixReturnsLatestVersionVocabulary() {
+      final List<String> labels = completionLabels( """
+         @prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#> .
+
+         samm-e:""", new Position( 2, 7 ) );
+
+      assertThat( labels ).contains( "samm-e:TimeSeriesEntity" );
+   }
+
+   private List<CompletionItem> completionItems( final String content, final Position position ) {
       final Document document = new Document( "test.ttl", content );
       final ParsedDocument parsedDocument = parserService.apply( document );
       final CompletionParams params = new CompletionParams( new TextDocumentIdentifier( "test.ttl" ), position );
+      return completionService.complete( parsedDocument, params );
+   }
 
-      final List<CompletionItem> completions = completionService.complete( parsedDocument, params );
-
-      final List<String> labels = completions.stream().map( CompletionItem::getLabel ).toList();
-      assertThat( labels ).containsExactlyInAnyOrder( expectedLabels.toArray( String[]::new ) );
+   private List<String> completionLabels( final String content, final Position position ) {
+      final Document document = new Document( "test.ttl", content );
+      final ParsedDocument parsedDocument = parserService.apply( document );
+      final CompletionParams params = new CompletionParams( new TextDocumentIdentifier( "test.ttl" ), position );
+      return completionService.complete( parsedDocument, params ).stream().map( CompletionItem::getLabel ).toList();
    }
 
    static Stream<Arguments> nonEmptyKnownPrefixScenarios() {
@@ -193,8 +385,9 @@ class TurtleCompletionServiceTest {
 
          samm:""", new Position( 2, 5 ) );
 
-      assertThat( labels ).contains( "Aspect", "Property", "characteristic" )
-            .doesNotContainAnyElementsOf( SammNs.SAMM.allEncodings().stream().map( Resource::getLocalName ).toList() );
+      assertThat( labels ).contains( "samm:Aspect", "samm:Property", "samm:characteristic" )
+            .doesNotContainAnyElementsOf(
+                  SammNs.SAMM.allEncodings().stream().map( encoding -> "samm:" + encoding.getLocalName() ).toList() );
    }
 
    @Test
