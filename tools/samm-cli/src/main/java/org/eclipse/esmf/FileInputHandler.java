@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import org.apache.commons.io.FilenameUtils;
-
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.ViolationReport;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
@@ -31,6 +29,7 @@ import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.AspectModel;
 
 import io.vavr.control.Either;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  * The FileInputHandler knows how to load Aspect Models if the given input is a local file
@@ -42,6 +41,9 @@ public class FileInputHandler extends AbstractInputHandler {
          final boolean validate ) {
       super( input, resolverConfig, details, validate );
       inputFile = absoluteFile( new File( input ) );
+      if ( inputFile.isDirectory() ) {
+         throw new CommandException( "Directory input is not supported: " + inputFile );
+      }
    }
 
    @Override

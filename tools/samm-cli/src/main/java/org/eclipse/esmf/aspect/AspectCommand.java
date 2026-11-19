@@ -13,8 +13,11 @@
 
 package org.eclipse.esmf.aspect;
 
+import java.util.List;
+
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.LoggingMixin;
+import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.exception.SubCommandException;
 
 import picocli.CommandLine;
@@ -42,13 +45,20 @@ public class AspectCommand extends AbstractCommand {
 
    @CommandLine.Parameters(
       paramLabel = "INPUT",
-      description = "Input Aspect Model file, URN or URL",
-      arity = "1",
-      index = "0" )
-   private String input;
+      description = "Input Aspect Model file, URN or URL; multiple files are supported by 'validate' only",
+      arity = "1..*",
+      index = "0..*" )
+   private List<String> inputs;
 
    public String getInput() {
-      return input;
+      if ( inputs.size() != 1 ) {
+         throw new CommandException( "Multiple inputs are only supported by 'validate'" );
+      }
+      return inputs.getFirst();
+   }
+
+   public List<String> getInputs() {
+      return inputs;
    }
 
    @Override

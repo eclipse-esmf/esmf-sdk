@@ -21,7 +21,7 @@ import picocli.CommandLine;
 
 @CommandLine.Command(
    name = AspectValidateCommand.COMMAND_NAME,
-   description = "Validate input Aspect Model",
+   description = "Validate input Aspect Models",
    headerHeading = "@|bold Usage|@:%n%n",
    descriptionHeading = "%n@|bold Description|@:%n%n",
    parameterListHeading = "%n@|bold Parameters|@:%n",
@@ -49,6 +49,12 @@ public class AspectValidateCommand extends AbstractCommand {
    public void run() {
       setDetails( details );
       setResolverConfig( resolverConfiguration );
-      System.out.println( getInputHandler( parentCommand.getInput(), true ).validateAspectModel() );
+      for ( final String input : parentCommand.getInputs() ) {
+         System.out.printf( "Validating %s - ", input );
+         // loadAspectModel already loads + validates aspect model
+         // prints violations + exit(1) on violation failure
+         getInputHandler( input, true ).loadAspectModel();
+         System.out.printf( "✔%n" );
+      }
    }
 }
