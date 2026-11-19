@@ -107,7 +107,7 @@ public class JsConstraint implements Constraint {
 
    @SuppressWarnings( "LocalVariableNamingConvention" ) // use this_
    @Override
-   public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
+   public synchronized List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
       if ( !evaluateJavaScript ) {
          return List.of();
       }

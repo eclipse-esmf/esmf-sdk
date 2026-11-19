@@ -30,12 +30,14 @@ import org.eclipse.esmf.metamodel.vocabulary.SAMM;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.treesitterturtle.ParserTokenType;
 import org.eclipse.esmf.treesitterturtle.TurtleSyntaxTree;
+import org.eclipse.esmf.turtle.languageserver.lsp.text.ParsedDocument;
 import org.eclipse.esmf.turtle.languageserver.turtle.completion.SammCompletionContext.SubjectFacts;
 
 import org.apache.jena.vocabulary.RDF;
+import org.eclipse.lsp4j.Position;
 
 /** Projects Tree-sitter's syntactic roles, including recovered nodes, into completion context. */
-final class TurtleCompletionTree {
+public final class TurtleCompletionTree {
    private static final String RDF_TYPE = RDF.type.getURI();
    /**
     * {@code samm:extends} in every known SAMM version. Predicates of other vocabularies that are also
@@ -58,24 +60,80 @@ final class TurtleCompletionTree {
          ParserTokenType.PREFIXED_NAME, ParserTokenType.IRI_REFERENCE, ParserTokenType.BLANK_NODE_LABEL,
          ParserTokenType.STRING, ParserTokenType.BOOLEAN_LITERAL, ParserTokenType.INTEGER, ParserTokenType.DECIMAL,
          ParserTokenType.DOUBLE );
+   private final TurtleSyntaxTree syntaxTree;
    private final String source;
    private final List<Integer> lineStarts = new ArrayList<>();
    private final List<byte[]> lines = new ArrayList<>();
    private final List<Lexeme> tokens = new ArrayList<>();
+   private final List<Lexeme> documentTokens;
 
-   private TurtleCompletionTree( final TurtleSyntaxTree tree ) {
-      source = tree.content();
+   /** A prefix declaration, located by the end of its node */
+   record Directive(
+         int line, int byteColumn, String prefix, String namespace
+   ) {}
+
+   /**
+    * Projects one document. Create it once per request and take the cursor from it.
+    */
+   public TurtleCompletionTree( final ParsedDocument document ) {
+      syntaxTree = document.turtleSyntaxTree();
+      source = syntaxTree.content();
       int lineStart = 0;
       for ( final String line : source.split( "\n", -1 ) ) {
          lineStarts.add( lineStart );
          lines.add( line.getBytes( StandardCharsets.UTF_8 ) );
          lineStart += line.length() + 1;
       }
-      visit( tree.rootNode(), false );
+      visit( syntaxTree.rootNode(), false );
+      documentTokens = List.copyOf( joinUnfinishedPrefixedNames( tokens ) );
    }
 
-   static List<Lexeme> tokens( final TurtleSyntaxTree tree ) {
-      return List.copyOf( joinUnfinishedPrefixedNames( new TurtleCompletionTree( tree ).tokens ) );
+   /**
+    * The cursor at a position of the document
+    */
+   public TurtleCursor cursorAt( final Position position ) {
+      final int offset = offsetAt( position );
+      return new TurtleCursor( position, offset, source, documentTokens, offset < 0 ? List.of() : directives() );
+   }
+
+   /**
+    * The prefix declarations of the document. Read when a cursor is taken, not when the document is
+    * projected.
+    */
+   private List<Directive> directives() {
+      final List<Directive> directives = new ArrayList<>();
+      syntaxTree.tokens()
+            .filter( node -> Set.of( ParserTokenType.PREFIX_ID, ParserTokenType.SPARQL_PREFIX ).contains( node.type() ) )
+            .forEach( node -> {
+               final Optional<String> prefix = node.childWithType( ParserTokenType.NAMESPACE )
+                     .filter( TurtleSyntaxTree.Node::isToken )
+                     .map( TurtleSyntaxTree.Node::content );
+               final Optional<String> iri = node.childWithType( ParserTokenType.IRI_REFERENCE )
+                     .filter( TurtleSyntaxTree.Node::isToken )
+                     .map( TurtleSyntaxTree.Node::content );
+               if ( prefix.isPresent() && iri.isPresent() && iri.get().startsWith( "<" ) && iri.get().endsWith( ">" ) ) {
+                  directives.add( new Directive( node.location().toLine(), node.location().toColumn(), prefix.get(),
+                        iri.get().substring( 1, iri.get().length() - 1 ) ) );
+               }
+            } );
+      return directives;
+   }
+
+   private int offsetAt( final Position position ) {
+      if ( position.getLine() < 0 || position.getCharacter() < 0 ) {
+         return -1;
+      }
+      int lineStart = 0;
+      for ( int line = 0; line < position.getLine(); line++ ) {
+         final int newline = source.indexOf( '\n', lineStart );
+         if ( newline < 0 ) {
+            return -1;
+         }
+         lineStart = newline + 1;
+      }
+      final int newline = source.indexOf( '\n', lineStart );
+      final int lineEnd = newline < 0 ? source.length() : newline > 0 && source.charAt( newline - 1 ) == '\r' ? newline - 1 : newline;
+      return position.getCharacter() <= lineEnd - lineStart ? lineStart + position.getCharacter() : -1;
    }
 
    /**
@@ -249,7 +307,7 @@ final class TurtleCompletionTree {
          // Recover at a resource followed by a predicate, before later semicolons reuse the old subject.
          if ( state.isTopLevelStatement() && i + 1 < tokens.size() && token.kind == TokenKind.TERM ) {
             final Lexeme next = tokens.get( i + 1 );
-            final boolean declaresType = next.text.equals( "a" ) || expand( next.text, namespaces ).equals( RDF_TYPE );
+            final boolean declaresType = next.text.equals( "a" ) || CompletionUtils.expand( next.text, namespaces ).equals( RDF_TYPE );
             // "a" can never be an object, so the term before it must be a subject, even if the parser called it
             // a predicate.
             final boolean startsStatement = declaresType && ( REFERENCE_TYPES.contains( token.type )
@@ -267,20 +325,6 @@ final class TurtleCompletionTree {
          }
       }
       return state;
-   }
-
-   static String expand( final String text, final Map<String, String> namespaces ) {
-      if ( text.startsWith( "<" ) && text.endsWith( ">" ) ) {
-         return text.substring( 1, text.length() - 1 );
-      }
-      final int colon = text.indexOf( ':' );
-      if ( colon >= 0 ) {
-         final String namespace = namespaces.get( text.substring( 0, colon + 1 ) );
-         if ( namespace != null ) {
-            return namespace + text.substring( colon + 1 );
-         }
-      }
-      return "";
    }
 
    enum TokenKind {
@@ -308,7 +352,7 @@ final class TurtleCompletionTree {
       }
    }
 
-   enum Slot {
+   private enum Slot {
       SUBJECT, PREDICATE, OBJECT, NONE, INVALID
    }
 
@@ -322,7 +366,7 @@ final class TurtleCompletionTree {
       private Slot slot;
       private boolean hasContent;
 
-      Frame( final String delimiter, final int openOffset, final String enclosingSubject,
+      private Frame( final String delimiter, final int openOffset, final String enclosingSubject,
             final String enclosingPredicate, final String subject, final Slot slot ) {
          this.delimiter = delimiter;
          this.openOffset = openOffset;
@@ -352,6 +396,16 @@ final class TurtleCompletionTree {
          return enclosingPredicate;
       }
 
+      /** The subject of the statement the position is in, also for a list inside it */
+      String statementSubject() {
+         return isList() ? enclosingSubject : subject;
+      }
+
+      /** The predicate of the statement the position is in, also for a list inside it */
+      String statementPredicate() {
+         return isList() ? enclosingPredicate : predicate;
+      }
+
       boolean isEmptyAnonymousBracket() {
          return "[".equals( delimiter ) && !hasContent && slot != Slot.INVALID;
       }
@@ -377,7 +431,7 @@ final class TurtleCompletionTree {
       }
 
       boolean isInsideSupportedDelimiter() {
-         return delimiter.isEmpty() || "[".equals( delimiter );
+         return delimiter.isEmpty() || "[".equals( delimiter ) || isList();
       }
 
       boolean isList() {
@@ -399,7 +453,7 @@ final class TurtleCompletionTree {
       private boolean inDirective;
       private boolean hasTripleStatements;
 
-      State( final Map<String, String> namespaces, final boolean recoverAtSeparator ) {
+      private State( final Map<String, String> namespaces, final boolean recoverAtSeparator ) {
          this.namespaces = new LinkedHashMap<>( namespaces );
          this.recoverAtSeparator = recoverAtSeparator;
          frames.push( new Frame( "", -1, "", "", "", Slot.SUBJECT ) );
@@ -430,13 +484,24 @@ final class TurtleCompletionTree {
          return hasTripleStatements;
       }
 
+      /**
+       * Namespaces declared before the cursor and anywhere in the document
+       */
+      Map<String, String> namespaces() {
+         return Map.copyOf( namespaces );
+      }
+
+      Map<String, Set<String>> typesBySubject() {
+         return Map.copyOf( typesBySubject );
+      }
+
       SubjectFacts factsFor( final String subject ) {
          return new SubjectFacts( Set.copyOf( typesBySubject.getOrDefault( subject, Set.of() ) ),
                Set.copyOf( predicatesBySubject.getOrDefault( subject, Set.of() ) ),
                Map.copyOf( typesBySubject ), Map.copyOf( extendedBySubject ) );
       }
 
-      void accept( final Lexeme token ) {
+      private void accept( final Lexeme token ) {
          if ( token.kind == TokenKind.COMMENT || token.kind == TokenKind.ANNOTATION ) {
             return;
          }
@@ -489,20 +554,20 @@ final class TurtleCompletionTree {
          // A lone subject in an ERROR region can lack the SUBJECT wrapper.
          if ( frame.slot == Slot.SUBJECT
                && ( ParserTokenType.SUBJECT.equals( token.type ) || REFERENCE_TYPES.contains( token.type ) ) ) {
-            frame.subject = token.text.startsWith( "_:" ) ? token.text : expand( token.text, namespaces );
+            frame.subject = token.text.startsWith( "_:" ) ? token.text : CompletionUtils.expand( token.text, namespaces );
             frame.slot = frame.hasSubject() ? Slot.PREDICATE : Slot.INVALID;
          } else if ( frame.slot == Slot.PREDICATE && ( ParserTokenType.PREDICATE.equals( token.type )
                || recoverAtSeparator && ( token.text.equals( "a" )
-                     || expand( token.text, namespaces ).equals( RDF_TYPE )
+                     || CompletionUtils.expand( token.text, namespaces ).equals( RDF_TYPE )
                      || Set.of( ParserTokenType.PREFIXED_NAME, ParserTokenType.IRI_REFERENCE ).contains( token.type ) ) ) ) {
-            frame.predicate = token.text.equals( "a" ) ? RDF_TYPE : expand( token.text, namespaces );
+            frame.predicate = token.text.equals( "a" ) ? RDF_TYPE : CompletionUtils.expand( token.text, namespaces );
             if ( frame.hasPredicate() && frame.hasSubject() ) {
                predicatesBySubject.computeIfAbsent( frame.subject, ignored -> new HashSet<>() ).add( frame.predicate );
             }
             frame.slot = frame.hasPredicate() ? Slot.OBJECT : Slot.INVALID;
          } else if ( frame.slot == Slot.OBJECT && ( OBJECT_TYPES.contains( token.type )
                || recoverAtSeparator && ParserTokenType.PREDICATE.equals( token.type ) ) ) {
-            final String object = expand( token.text, namespaces );
+            final String object = CompletionUtils.expand( token.text, namespaces );
             if ( REFERENCE_TYPES.contains( token.type ) && object.isEmpty() && !token.text.startsWith( "_:" ) ) {
                frame.slot = Slot.INVALID;
                return;
