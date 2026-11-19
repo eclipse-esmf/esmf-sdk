@@ -148,7 +148,8 @@ class SammSnippetCatalogTest {
       final String source = markedSource.substring( 0, cursor ) + markedSource.substring( cursor + 1 );
       final ParsedDocument document = parser.apply( new Document( "file:///test.ttl", source ) );
       final SammCompletionContext context = new SammSuggestionContextDetector()
-            .detect( document, SammSuggestionContextDetector.positionAt( source, cursor ) ).orElseThrow();
+            .detect( new TurtleCompletionTree( document ).cursorAt( CompletionUtils.positionAt( source, cursor ) ) )
+            .orElseThrow();
       assertThat( catalog.matchingSnippets( context ) ).extracting( SnippetDefinition::id ).containsExactlyElementsOf( expectedIds );
    }
 

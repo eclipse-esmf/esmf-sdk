@@ -166,58 +166,6 @@ public final class GraphicalViewTargetResolver extends TurtleService {
       return expandedPrefixedName( subject, tree );
    }
 
-   private Optional<String> expandedIri( final TurtleSyntaxTree.Node node, final TurtleSyntaxTree tree ) {
-      final Optional<TurtleSyntaxTree.Node> iriReference = descendantWithType( node, ParserTokenType.IRI_REFERENCE );
-      if ( iriReference.isPresent() ) {
-         final String value = iriReference.get().content();
-         return Optional.of( value.startsWith( "<" ) && value.endsWith( ">" ) ? value.substring( 1, value.length() - 1 ) : value );
-      }
-      return descendantWithType( node, ParserTokenType.PREFIXED_NAME )
-            .flatMap( prefixedName -> expandedPrefixedName( prefixedName, tree ) );
-   }
-
-   private Optional<String> expandedPrefixedName( final TurtleSyntaxTree.Node prefixedName, final TurtleSyntaxTree tree ) {
-      final Optional<String> local = prefixedName.children().stream()
-            .filter( child -> child.isToken() && ParserTokenType.PN_LOCAL.equals( child.type() ) )
-            .map( TurtleSyntaxTree.Node::content ).findFirst();
-      final String prefix = prefixedName.children().stream()
-            .filter( child -> ParserTokenType.NAMESPACE.equals( child.type() ) )
-            .map( TurtleSyntaxTree.Node::content ).findFirst().orElse( "" );
-      final String prefixName = prefix.endsWith( ":" ) ? prefix.substring( 0, prefix.length() - 1 ) : prefix;
-      return local.flatMap( name -> getPrefixIri( prefixName, tree ).map( iri -> iri + name ) );
-   }
-
-   private Optional<String> getPrefixIri( final String prefixName, final TurtleSyntaxTree tree ) {
-      return tree.nodes().filter( node -> ParserTokenType.DIRECTIVE.equals( node.type() ) )
-            .flatMap( node -> node.children().stream() )
-            .filter( node -> ParserTokenType.PREFIX_ID.equals( node.type() ) )
-            .filter( prefixId -> matchesPrefixName( prefixId, prefixName ) ).findFirst()
-            .flatMap( prefixId -> prefixId.childWithType( ParserTokenType.IRI_REFERENCE ) )
-            .map( iriNode -> {
-               final String iri = iriNode.content();
-               return iri.startsWith( "<" ) && iri.endsWith( ">" ) ? iri.substring( 1, iri.length() - 1 ) : iri;
-            } );
-   }
-
-   private boolean matchesPrefixName( final TurtleSyntaxTree.Node prefixIdNode, final String prefixName ) {
-      final Optional<TurtleSyntaxTree.Node> namespaceNode = prefixIdNode.childWithType( ParserTokenType.NAMESPACE );
-      if ( namespaceNode.isEmpty() ) {
-         return prefixName.isEmpty();
-      }
-      return namespaceNode.get().children().stream()
-            .filter( node -> node.isToken() && ParserTokenType.PN_PREFIX.equals( node.type() ) )
-            .map( TurtleSyntaxTree.Node::content ).findFirst()
-            .map( prefixName::equals ).orElse( prefixName.isEmpty() );
-   }
-
-   private Optional<TurtleSyntaxTree.Node> descendantWithType( final TurtleSyntaxTree.Node node, final String type ) {
-      if ( type.equals( node.type() ) ) {
-         return Optional.of( node );
-      }
-      return node.children().stream().map( child -> descendantWithType( child, type ) )
-            .flatMap( Optional::stream ).findFirst();
-   }
-
    private boolean hasLanguage( final TurtleSyntaxTree.Node property, final String language ) {
       return descendantsWithType( property, ParserTokenType.LANG_TAG ).map( TurtleSyntaxTree.Node::content )
             .map( value -> value.startsWith( "@" ) ? value.substring( 1 ) : value )
