@@ -35,7 +35,6 @@ import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.DeserializationException
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.xml.XmlDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.model.AasSubmodelElements;
 import org.eclipse.digitaltwin.aas4j.v3.model.AbstractLangString;
-import org.eclipse.digitaltwin.aas4j.v3.model.Blob;
 import org.eclipse.digitaltwin.aas4j.v3.model.ConceptDescription;
 import org.eclipse.digitaltwin.aas4j.v3.model.DataSpecificationContent;
 import org.eclipse.digitaltwin.aas4j.v3.model.DataSpecificationIec61360;
@@ -140,12 +139,46 @@ class AspectModelAasGeneratorTest {
             .singleElement()
             .satisfies( subModel -> assertThat( subModel.getSubmodelElements() )
                   .anySatisfy( sme -> assertThat( sme ).asInstanceOf( type( SubmodelElementList.class ) )
-                        .extracting( SubmodelElementList::getValue )
-                        .asInstanceOf( InstanceOfAssertFactories.LIST )
-                        .singleElement()
-                        .satisfies( element -> assertThat( element ).asInstanceOf( type( Blob.class ) )
-                              .extracting( Blob::getValue )
-                              .satisfies( blobData -> assertThat( new String( blobData ) ).isEqualTo( "1,2,3,4,5,6" ) ) ) ) );
+                        .satisfies( list -> {
+                           assertThat( list.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.PROPERTY );
+                           assertThat( list.getValueTypeListElement() ).isEqualTo( DataTypeDefXsd.INT );
+                           assertThat( list.getValue() ).allSatisfy( element -> assertThat( element ).isInstanceOf( Property.class ) );
+                           assertThat( list.getValue() )
+                                 .extracting( element -> ( (Property) element ).getValue() )
+                                 .containsExactly( "1", "2", "3", "4", "5", "6" );
+                        } ) ) );
+   }
+
+   @Test
+   void generateAasxWithAspectDataForStringCollectionPreservesItemBoundaries() throws DeserializationException {
+      final Environment env = getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_MULTIPLE_COLLECTIONS_OF_SIMPLE_TYPE );
+      assertThat( env.getSubmodels() )
+            .singleElement()
+            .satisfies( subModel -> {
+               assertThat( subModel.getSubmodelElements() )
+                     .anySatisfy( sme -> assertThat( sme ).asInstanceOf( type( SubmodelElementList.class ) )
+                           .satisfies( list -> {
+                              assertThat( list.getIdShort() ).isEqualTo( "testListInt" );
+                              assertThat( list.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.PROPERTY );
+                              assertThat( list.getValueTypeListElement() ).isEqualTo( DataTypeDefXsd.INT );
+                              assertThat( list.getValue() )
+                                    .allSatisfy( element -> assertThat( element ).isInstanceOf( Property.class ) );
+                              assertThat( list.getValue() )
+                                    .extracting( element -> ( (Property) element ).getValue() )
+                                    .containsExactly( "1", "2", "3", "4", "5", "6" );
+                           } ) )
+                     .anySatisfy( sme -> assertThat( sme ).asInstanceOf( type( SubmodelElementList.class ) )
+                           .satisfies( list -> {
+                              assertThat( list.getIdShort() ).isEqualTo( "testListString" );
+                              assertThat( list.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.PROPERTY );
+                              assertThat( list.getValueTypeListElement() ).isEqualTo( DataTypeDefXsd.STRING );
+                              assertThat( list.getValue() )
+                                    .allSatisfy( element -> assertThat( element ).isInstanceOf( Property.class ) );
+                              assertThat( list.getValue() )
+                                    .extracting( element -> ( (Property) element ).getValue() )
+                                    .containsExactly( "a,b", "c" );
+                           } ) );
+            } );
    }
 
    @Test
