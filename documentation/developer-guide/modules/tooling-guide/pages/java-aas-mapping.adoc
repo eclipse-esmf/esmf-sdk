@@ -62,7 +62,7 @@ are the attributes of the preceding model element.
 
 | xref:samm-specification:ROOT:characteristics.adoc#characteristic-characteristic[**samm-c:Characteristic**]  | aas:SubmodelElement, aas:ConceptDescription  | Characteristics in SAMM define the meaning and type of a property. In AAS, type and description are separated. Characteristics help create the SubmodelElements and fill the ConceptDescriptions (with DataSpecificationIEC61360).
 
-| xref:samm-specification:ROOT:characteristics.adoc#collection-characteristic[**samm-c:Collection**] | aas:SubmodelElementList, aas:ConceptDescription  | The general remarks to Characteristics apply also to Collection type Characteristics. Properties referencing Collections (including samm-c:List, samm-c:Set, samm-c:SortedSet, and samm-c:TimeSeries) are mapped to SubmodelElementLists. In both template and instance mode, orderRelevant is set to true for samm-c:List, samm-c:SortedSet, and samm-c:TimeSeries, and to false for samm-c:Collection and samm-c:Set. Uniqueness and specific sorting constraints are not represented in AAS beyond this ordered/unordered distinction. When aspect data is supplied and the element type is a scalar, all values are serialized into a single aas:Blob with content type text/plain and comma-separated values.
+| xref:samm-specification:ROOT:characteristics.adoc#collection-characteristic[**samm-c:Collection**] | aas:SubmodelElementList, aas:ConceptDescription  | The general remarks to Characteristics apply also to Collection type Characteristics. Properties referencing Collections (including samm-c:List, samm-c:Set, samm-c:SortedSet, and samm-c:TimeSeries) are mapped to SubmodelElementLists. In both template and instance mode, orderRelevant is set to true for samm-c:List, samm-c:SortedSet, and samm-c:TimeSeries, and to false for samm-c:Collection and samm-c:Set. Uniqueness and specific sorting constraints are not represented in AAS beyond this ordered/unordered distinction. When aspect data is supplied, each scalar collection item is mapped separately (typically to an aas:Property), preserving item boundaries.
 
 | xref:samm-specification:ROOT:characteristics.adoc#quantifiable-characteristic[**samm-c:Quantifiable**]  | aas:SubmodelElement, aas:ConceptDescription | The general remarks to Characteristics apply also to Quantifiable type Characteristics. Quantifiables (also Duration and Measurement) reference a unit, which is added to the ConceptDescription corresponding the mapped Characteristic. The dataType of that ConceptDescription is a measure type only when a unit is set; without a unit, the corresponding count type is used.
 
@@ -92,7 +92,6 @@ However, there are still limitations:
 * Recursive optional properties of SAMM model are not included in output but dropped straight away
 * Abstract Properties and Properties without a Characteristic are skipped during mapping
 * Constraints of samm-c:Trait as well as uniqueness and specific sorting constraints of collections are not represented in AAS; collection ordering is represented by orderRelevant
-* Collections of scalar values are represented as a single aas:Blob when aspect data is supplied
 
 [[translate-aspect-model-to-aas]]
 == Translate Aspect Model to AAS
