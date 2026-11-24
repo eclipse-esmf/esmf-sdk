@@ -166,6 +166,10 @@ class AspectModelAasGeneratorTest {
                               assertThat( list.getValue() )
                                     .extracting( element -> ( (Property) element ).getValue() )
                                     .containsExactly( "1", "2", "3", "4", "5", "6" );
+                              assertThat( list.getValue() ).allSatisfy( element -> {
+                                 assertThat( element.getIdShort() ).isNull();
+                                 assertThat( element.getSemanticId() ).isNull();
+                              } );
                            } ) )
                      .anySatisfy( sme -> assertThat( sme ).asInstanceOf( type( SubmodelElementList.class ) )
                            .satisfies( list -> {
@@ -177,8 +181,56 @@ class AspectModelAasGeneratorTest {
                               assertThat( list.getValue() )
                                     .extracting( element -> ( (Property) element ).getValue() )
                                     .containsExactly( "a,b", "c" );
+                              assertThat( list.getValue() ).allSatisfy( element -> {
+                                 assertThat( element.getIdShort() ).isNull();
+                                 assertThat( element.getSemanticId() ).isNull();
+                              } );
                            } ) );
             } );
+   }
+
+   @Test
+   void generateAasxWithAspectDataForEmptyCollectionKeepsListType() throws DeserializationException {
+      final byte[] contentFromAspectWithData = getContentFromAspectWithData( TestAspect.ASPECT_WITH_COLLECTION_OF_SIMPLE_TYPE,
+            "{\"testList\": []}" );
+      final Environment env = loadAasx( contentFromAspectWithData );
+      assertThat( env.getSubmodels() )
+            .singleElement()
+            .satisfies( subModel -> assertThat( subModel.getSubmodelElements() )
+                  .anySatisfy( sme -> assertThat( sme ).asInstanceOf( type( SubmodelElementList.class ) )
+                        .satisfies( list -> {
+                           assertThat( list.getValue() ).isEmpty();
+                           assertThat( list.getTypeValueListElement() ).isNotNull();
+                        } ) ) );
+   }
+
+   @Test
+   void generateAasxWithAspectDataForEmptyCollectionIsSchemaValid() {
+      final byte[] contentFromAspectWithData = getContentFromAspectWithData( TestAspect.ASPECT_WITH_COLLECTION_OF_SIMPLE_TYPE,
+            "{\"testList\": []}" );
+      validate( new ByteArrayInputStream( contentFromAspectWithData ) );
+   }
+
+   @Test
+   void generateAasxWithAspectDataForEmptyCollectionOfEntityKeepsListType() throws DeserializationException {
+      final byte[] contentFromAspectWithData = getContentFromAspectWithData( TestAspect.ASPECT_WITH_ENTITY_LIST,
+            "{\"testList\": []}" );
+      final Environment env = loadAasx( contentFromAspectWithData );
+      assertThat( env.getSubmodels() )
+            .singleElement()
+            .satisfies( subModel -> assertThat( subModel.getSubmodelElements() )
+                  .anySatisfy( sme -> assertThat( sme ).asInstanceOf( type( SubmodelElementList.class ) )
+                        .satisfies( list -> {
+                           assertThat( list.getValue() ).isEmpty();
+                           assertThat( list.getTypeValueListElement() ).isNotNull();
+                        } ) ) );
+   }
+
+   @Test
+   void generateAasxWithAspectDataForEmptyCollectionOfEntityIsSchemaValid() {
+      final byte[] contentFromAspectWithData = getContentFromAspectWithData( TestAspect.ASPECT_WITH_ENTITY_LIST,
+            "{\"testList\": []}" );
+      validate( new ByteArrayInputStream( contentFromAspectWithData ) );
    }
 
    @Test
@@ -831,6 +883,16 @@ class AspectModelAasGeneratorTest {
 
       assertThat( embeddedDataSpecifications ).as( "There is no EmbeddedDataSpecification" ).isNotEmpty();
       return embeddedDataSpecifications.stream().findFirst().get().getDataSpecificationContent();
+   }
+
+   private byte[] getContentFromAspectWithData( final TestAspect testAspect, final String data ) {
+      final Aspect aspect = TestResources.load( testAspect ).aspect();
+      final JsonNode aspectData = new tools.jackson.databind.json.JsonMapper().readTree( data );
+      final AasGenerationConfig config = AasGenerationConfigBuilder.builder()
+            .format( AasFileFormat.XML )
+            .aspectData( aspectData )
+            .build();
+      return new AspectModelAasGenerator( aspect, config ).getContent();
    }
 
    private Environment getAssetAdministrationShellFromAspect( final TestAspect testAspect ) throws DeserializationException {

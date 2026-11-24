@@ -756,8 +756,9 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
                                  .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
                                  .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
                                  .value( values )
-                                 .typeValueListElement(
-                                       values.isEmpty() ? null : SubmodelToAspectUtils.submodelElementType( values.getFirst() ) )
+                                 .typeValueListElement( values.isEmpty()
+                                       ? inferEmptyListElementType( property, context )
+                                       : SubmodelToAspectUtils.submodelElementType( values.getFirst() ) )
                                  .valueTypeListElement( dataTypeDefXsd )
                                  .orderRelevant( collection.isOrdered() )
                                  .semanticId( buildReferenceForCollection( propertyUrn ) )
@@ -786,8 +787,17 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       return submodelElements;
    }
 
-   private <T extends Collection> List<SubmodelElement> getValues( final Property property, final Context context,
-         final ArrayNode arrayNode ) {
+   // An empty list has no data to derive the child type from, so the type is taken from the mapping of
+   // the list's
+   // property. A separate context is used so that this mapping does not alter the state of the current
+   // visit.
+   private AasSubmodelElements inferEmptyListElementType( final Property property, final Context context ) {
+      final Context templateContext = new Context( context.getEnvironment(), new DefaultSubmodel.Builder().build() );
+      templateContext.setProperty( property );
+      return SubmodelToAspectUtils.submodelElementType( decideOnMapping( property, templateContext ) );
+   }
+
+   private List<SubmodelElement> getValues( final Property property, final Context context, final ArrayNode arrayNode ) {
       final List<SubmodelElement> values = StreamSupport.stream( arrayNode.spliterator(), false )
             .map( _ -> {
                context.iterate( property );
