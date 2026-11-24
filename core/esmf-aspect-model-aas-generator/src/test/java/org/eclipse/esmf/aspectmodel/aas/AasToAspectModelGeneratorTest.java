@@ -45,6 +45,7 @@ import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
 import org.eclipse.digitaltwin.aas4j.v3.model.Key;
 import org.eclipse.digitaltwin.aas4j.v3.model.KeyTypes;
 import org.eclipse.digitaltwin.aas4j.v3.model.ModellingKind;
+import org.eclipse.digitaltwin.aas4j.v3.model.ReferenceElement;
 import org.eclipse.digitaltwin.aas4j.v3.model.ReferenceTypes;
 import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
@@ -57,6 +58,7 @@ import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultLangStringNameType;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultLangStringTextType;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultProperty;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultReference;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultReferenceElement;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodel;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodelElementCollection;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodelElementList;
@@ -80,6 +82,7 @@ import org.eclipse.esmf.metamodel.characteristic.Set;
 import org.eclipse.esmf.metamodel.characteristic.Trait;
 import org.eclipse.esmf.metamodel.datatype.LangString;
 import org.eclipse.esmf.metamodel.datatype.SammType;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
@@ -285,6 +288,114 @@ class AasToAspectModelGeneratorTest {
       assertThat( property.getCharacteristic() ).isPresent();
       assertThat( property.getCharacteristic().get() ).isInstanceOf( Set.class );
       assertThat( property.getCharacteristic().get().urn().getName() ).endsWith( "Set" );
+   }
+
+   @Test
+   void testReferenceElementWithGlobalReferenceIsMappedToSammReference() {
+      final ReferenceElement referenceElement = new DefaultReferenceElement.Builder()
+            .idShort( "myRef" )
+            .value( new DefaultReference.Builder()
+                  .type( ReferenceTypes.EXTERNAL_REFERENCE )
+                  .keys( new DefaultKey.Builder().type( KeyTypes.GLOBAL_REFERENCE ).value( "urn:example:target-element" ).build() )
+                  .build() )
+            .build();
+      final AasToAspectModelGenerator aspectModelGenerator =
+            AasToAspectModelGenerator.fromEnvironment( buildTemplateEnvironment( referenceElement ) );
+
+      final Aspect aspect = aspectModelGenerator.generate().map( AspectArtifact::getContent ).toList().getFirst();
+      final Property property = aspect.getProperties().getFirst();
+
+      assertSammReferenceCharacteristic( property );
+      assertThat( property.getExampleValue() ).isPresent()
+            .get()
+            .satisfies( exampleValue -> {
+               assertThat( exampleValue.getType() ).isEqualTo( SammType.ANY_URI );
+               assertThat( exampleValue.getValue().toString() ).isEqualTo( "urn:example:target-element" );
+            } );
+      assertValidSerializedAspect( aspect, URI.create( "urn:test:reference-element-global-reference" ) );
+   }
+
+   @Test
+   void testReferenceElementWithModelReferenceIsMappedToSammReferenceWithoutExampleValue() {
+      final ReferenceElement referenceElement = new DefaultReferenceElement.Builder()
+            .idShort( "myRef" )
+            .value( new DefaultReference.Builder()
+                  .type( ReferenceTypes.MODEL_REFERENCE )
+                  .keys( List.of(
+                        new DefaultKey.Builder().type( KeyTypes.SUBMODEL ).value( "urn:example:submodel:pump-42" ).build(),
+                        new DefaultKey.Builder().type( KeyTypes.PROPERTY ).value( "temperature" ).build() ) )
+                  .build() )
+            .build();
+      final AasToAspectModelGenerator aspectModelGenerator =
+            AasToAspectModelGenerator.fromEnvironment( buildTemplateEnvironment( referenceElement ) );
+
+      final Aspect aspect = aspectModelGenerator.generate().map( AspectArtifact::getContent ).toList().getFirst();
+      final Property property = aspect.getProperties().getFirst();
+
+      assertSammReferenceCharacteristic( property );
+      assertThat( property.getExampleValue() ).isEmpty();
+      assertValidSerializedAspect( aspect, URI.create( "urn:test:reference-element-model-reference" ) );
+   }
+
+   @Test
+   void testListOfReferenceElementsWithoutIdShortIsMappedToListOfSammReference() {
+      final ReferenceElement referenceElement = new DefaultReferenceElement.Builder()
+            .value( new DefaultReference.Builder()
+                  .type( ReferenceTypes.EXTERNAL_REFERENCE )
+                  .keys( new DefaultKey.Builder().type( KeyTypes.GLOBAL_REFERENCE ).value( "urn:example:target-element" ).build() )
+                  .build() )
+            .build();
+      final SubmodelElementList submodelElementList = new DefaultSubmodelElementList.Builder()
+            .idShort( "references" )
+            .orderRelevant( true )
+            .typeValueListElement( AasSubmodelElements.REFERENCE_ELEMENT )
+            .value( List.of( referenceElement ) )
+            .build();
+      final AasToAspectModelGenerator aspectModelGenerator =
+            AasToAspectModelGenerator.fromEnvironment( buildTemplateEnvironment( submodelElementList ) );
+
+      final Aspect aspect = aspectModelGenerator.generate().map( AspectArtifact::getContent ).toList().getFirst();
+      final Characteristic characteristic = aspect.getProperties().getFirst().getCharacteristic().orElseThrow();
+
+      assertThat( characteristic ).isInstanceOf( Collection.class );
+      assertThat( ( (Collection) characteristic ).getElementCharacteristic() ).isPresent()
+            .get()
+            .satisfies( elementCharacteristic -> {
+               assertThat( elementCharacteristic.urn().toString() ).isEqualTo( SammNs.SAMMC.Reference().getURI() );
+               assertThat( elementCharacteristic.isAnonymous() ).isFalse();
+            } );
+      assertValidSerializedAspect( aspect, URI.create( "urn:test:list-of-reference-elements" ) );
+   }
+
+   @Test
+   void testSammReferenceRoundtripKeepsCharacteristicAndExampleValue() throws DeserializationException {
+      final Aspect originalAspect = TestResources.load( TestAspect.ASPECT_WITH_REFERENCE ).aspect();
+      final Property originalProperty = originalAspect.getProperties().getFirst();
+      final Environment environment = new JsonDeserializer().read(
+            new ByteArrayInputStream( new AspectModelAasGenerator( originalAspect,
+                  AasGenerationConfigBuilder.builder().format( AasFileFormat.JSON ).build() ).getContent() ),
+            Environment.class );
+
+      final Aspect aspect = AasToAspectModelGenerator.fromEnvironment( environment ).generate()
+            .map( AspectArtifact::getContent ).toList().getFirst();
+      final Property property = aspect.getProperties().getFirst();
+
+      assertThat( property.getName() ).isEqualTo( originalProperty.getName() );
+      assertSammReferenceCharacteristic( property );
+      assertThat( property.getExampleValue() ).isPresent()
+            .get()
+            .satisfies( exampleValue -> assertThat( exampleValue.getValue().toString() )
+                  .isEqualTo( originalProperty.getExampleValue().orElseThrow().getValue().toString() ) );
+      assertValidSerializedAspect( aspect, URI.create( aspect.urn().toString() ) );
+   }
+
+   private static void assertSammReferenceCharacteristic( final Property property ) {
+      assertThat( property.getCharacteristic() ).isPresent()
+            .get()
+            .satisfies( characteristic -> {
+               assertThat( characteristic.urn().toString() ).isEqualTo( SammNs.SAMMC.Reference().getURI() );
+               assertThat( characteristic.getDataType() ).contains( SammType.ANY_URI );
+            } );
    }
 
    @Test

@@ -63,7 +63,7 @@ public class TurtleLanguageServer implements LanguageServer, LanguageClientAware
    // R=18, D=4, F=6
    public static final int DEFAULT_PORT = 1846;
 
-   private static final List<String> COMPLETION_TRIGGER_SYMBOLS = List.of( ":" );
+   private static final List<String> COMPLETION_TRIGGER_SYMBOLS = List.of( ":", "[" );
    private static final Logger LOG = LoggerFactory.getLogger( TurtleLanguageServer.class );
    private static volatile boolean serverRunning = true;
    private final TurtleTextDocumentService textDocumentService;
@@ -76,6 +76,7 @@ public class TurtleLanguageServer implements LanguageServer, LanguageClientAware
 
    @Override
    public CompletableFuture<InitializeResult> initialize( final InitializeParams params ) {
+      textDocumentService.initialize( params );
       final ServerCapabilities capabilities = new ServerCapabilities();
       final TextDocumentSyncOptions syncOptions = new TextDocumentSyncOptions();
       syncOptions.setOpenClose( true );
@@ -84,6 +85,7 @@ public class TurtleLanguageServer implements LanguageServer, LanguageClientAware
       capabilities.setTextDocumentSync( syncOptions );
       capabilities.setDefinitionProvider( true );
       capabilities.setCompletionProvider( new CompletionOptions( false, COMPLETION_TRIGGER_SYMBOLS ) );
+      capabilities.setInlineCompletionProvider( true );
       capabilities.setSemanticTokensProvider(
             new SemanticTokensWithRegistrationOptions( TurtleTokenService.SUPPORTED_TOKEN_TYPES, true, false ) );
       capabilities.setDocumentSymbolProvider( new DocumentSymbolOptions( "Turtle Document Symbols" ) );

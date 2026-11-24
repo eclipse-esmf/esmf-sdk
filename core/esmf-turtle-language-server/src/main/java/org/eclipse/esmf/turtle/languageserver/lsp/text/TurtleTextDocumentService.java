@@ -41,11 +41,14 @@ import org.eclipse.esmf.turtle.languageserver.lsp.diagnostic.ViolationProvider;
 import org.eclipse.esmf.turtle.languageserver.structure.DocumentSymbolService;
 import org.eclipse.esmf.turtle.languageserver.structure.TurtleTokenService;
 import org.eclipse.esmf.turtle.languageserver.turtle.TurtleCompletionService;
+import org.eclipse.esmf.turtle.languageserver.turtle.TurtleInlineCompletionService;
 import org.eclipse.esmf.turtle.languageserver.turtle.ValidationCoordinator;
 import org.eclipse.esmf.turtle.languageserver.turtle.navigation.TurtleDefinitionService;
 
 import com.google.common.collect.Streams;
+import org.eclipse.lsp4j.ClientCapabilities;
 import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.CompletionItemCapabilities;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.CompletionParams;
 import org.eclipse.lsp4j.DefinitionParams;
@@ -55,6 +58,10 @@ import org.eclipse.lsp4j.DidOpenTextDocumentParams;
 import org.eclipse.lsp4j.DidSaveTextDocumentParams;
 import org.eclipse.lsp4j.DocumentSymbol;
 import org.eclipse.lsp4j.DocumentSymbolParams;
+import org.eclipse.lsp4j.InlineCompletionItem;
+import org.eclipse.lsp4j.InlineCompletionList;
+import org.eclipse.lsp4j.InlineCompletionParams;
+import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.LocationLink;
 import org.eclipse.lsp4j.SemanticTokens;
@@ -74,6 +81,7 @@ public class TurtleTextDocumentService implements TextDocumentService {
    private final TurtleDefinitionService turtleDefinitionService;
    private final AspectCrossFileDefinitionService aspectCrossFileDefinitionService;
    private final TurtleCompletionService turtleCompletionService;
+   private final TurtleInlineCompletionService turtleInlineCompletionService;
    private final ValidationCoordinator validationCoordinator;
    private final TreeSitterTurtleParserService turtleParserService;
    private final TurtleTokenService tokenService;
@@ -88,11 +96,13 @@ public class TurtleTextDocumentService implements TextDocumentService {
             return t;
          } );
    private final AtomicBoolean closed = new AtomicBoolean();
+   private volatile boolean snippetSupport;
 
    public TurtleTextDocumentService() {
       clientNotifier = new TextDocumentClientNotifier( new DiagnosticMapper() );
       turtleDefinitionService = new TurtleDefinitionService();
       turtleCompletionService = new TurtleCompletionService();
+      turtleInlineCompletionService = new TurtleInlineCompletionService();
       turtleParserService = new TreeSitterTurtleParserService();
       tokenService = new TurtleTokenService();
       aspectCrossFileDefinitionService = new AspectCrossFileDefinitionService( turtleParserService, documents, resolutionStrategyService );
@@ -154,6 +164,10 @@ public class TurtleTextDocumentService implements TextDocumentService {
       }
       final ParsedDocument parsedDocument = turtleParserService.apply( document );
       return validationCoordinator.validateAsync( parsedDocument );
+   }
+
+   public void initialize( final InitializeParams params ) {
+      snippetSupport = supportsSnippets( params );
    }
 
    @Override
@@ -269,9 +283,32 @@ public class TurtleTextDocumentService implements TextDocumentService {
       if ( document == null ) {
          return CompletableFuture.completedFuture( Either.forLeft( List.of() ) );
       }
-      return CompletableFuture.supplyAsync( () -> {
-         return turtleParserService.withParsedDocument( document,
-               parsedDocument -> Either.forLeft( turtleCompletionService.complete( parsedDocument, position ) ) );
-      }, asyncExecutor );
+      return CompletableFuture.supplyAsync( () -> turtleParserService.withParsedDocument( document,
+            parsedDocument -> Either.forLeft( turtleCompletionService.complete( parsedDocument, position, snippetSupport ) ) ),
+            asyncExecutor );
+   }
+
+   @Override
+   public CompletableFuture<Either<List<InlineCompletionItem>, InlineCompletionList>> inlineCompletion(
+         final InlineCompletionParams params ) {
+      final String uri = params.getTextDocument().getUri();
+      final Document document = documents.get( uri );
+      if ( document == null ) {
+         return CompletableFuture.completedFuture( Either.forLeft( List.of() ) );
+      }
+      return CompletableFuture.supplyAsync( () -> turtleParserService.withParsedDocument( document,
+            parsedDocument -> Either.forLeft( turtleInlineCompletionService.inlineComplete( parsedDocument, params ) ) ), asyncExecutor );
+   }
+
+   private boolean supportsSnippets( final InitializeParams params ) {
+      if ( params == null || params.getCapabilities() == null ) {
+         return false;
+      }
+      final ClientCapabilities client = params.getCapabilities();
+      if ( client.getTextDocument() == null || client.getTextDocument().getCompletion() == null ) {
+         return false;
+      }
+      final CompletionItemCapabilities item = client.getTextDocument().getCompletion().getCompletionItem();
+      return item != null && Boolean.TRUE.equals( item.getSnippetSupport() );
    }
 }

@@ -18,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CyclicBarrier;
@@ -25,6 +26,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 
 import org.eclipse.esmf.turtle.languageserver.graphical.protocol.GraphicalViewRenderParams;
 import org.eclipse.esmf.turtle.languageserver.turtle.ValidationCoordinator;
@@ -63,8 +65,18 @@ class TurtleTextDocumentServiceLifecycleTest {
       assertThat( ownedThreads() ).isNotEmpty();
 
       service.shutdown();
+      // Executor termination only guarantees that tasks have finished; worker threads may still be alive
+      // for a moment while they exit.
+      awaitCondition( () -> ownedThreads().isEmpty(), Duration.ofSeconds( 5 ) );
 
       assertThat( ownedThreads() ).isEmpty();
+   }
+
+   private static void awaitCondition( final BooleanSupplier condition, final Duration timeout ) throws InterruptedException {
+      final long deadline = System.nanoTime() + timeout.toNanos();
+      while ( !condition.getAsBoolean() && System.nanoTime() < deadline ) {
+         Thread.sleep( 10 );
+      }
    }
 
    private static List<String> ownedThreads() {

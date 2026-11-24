@@ -20,6 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,6 +40,7 @@ import org.eclipse.digitaltwin.aas4j.v3.model.ConceptDescription;
 import org.eclipse.digitaltwin.aas4j.v3.model.DataSpecificationContent;
 import org.eclipse.digitaltwin.aas4j.v3.model.DataSpecificationIec61360;
 import org.eclipse.digitaltwin.aas4j.v3.model.DataTypeDefXsd;
+import org.eclipse.digitaltwin.aas4j.v3.model.DataTypeIec61360;
 import org.eclipse.digitaltwin.aas4j.v3.model.EmbeddedDataSpecification;
 import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
 import org.eclipse.digitaltwin.aas4j.v3.model.Key;
@@ -297,6 +299,34 @@ class AspectModelAasGeneratorTest {
             "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
 
       assertThat( ( (DataSpecificationIec61360) dataSpecificationContent ).getUnit() ).isEqualTo( "percent" );
+   }
+
+   @Test
+   void testDataTypesWithAndWithoutUnit() throws DeserializationException {
+      final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_DATA_TYPES );
+
+      final Map<String, DataTypeIec61360> expectedDataTypes = Map.of(
+            "decimalWithoutUnitProperty", DataTypeIec61360.REAL_COUNT,
+            "decimalDurationWithUnitProperty", DataTypeIec61360.REAL_MEASURE,
+            "floatEnumerationProperty", DataTypeIec61360.REAL_COUNT,
+            "floatQuantifiableWithUnitProperty", DataTypeIec61360.REAL_MEASURE,
+            "floatWithoutUnitProperty", DataTypeIec61360.REAL_COUNT,
+            "decimalMeasureWithUnitProperty", DataTypeIec61360.REAL_MEASURE,
+            "integerWithoutUnitProperty", DataTypeIec61360.INTEGER_COUNT,
+            "integerMeasureWithUnitProperty", DataTypeIec61360.INTEGER_MEASURE );
+
+      expectedDataTypes.forEach( ( property, dataType ) -> {
+         final DataSpecificationIec61360 dataSpecification = (DataSpecificationIec61360) env.getConceptDescriptions().stream()
+               .filter( conceptDescription -> conceptDescription.getIdShort().equals( property ) )
+               .findFirst()
+               .get()
+               .getEmbeddedDataSpecifications()
+               .stream()
+               .findFirst()
+               .get()
+               .getDataSpecificationContent();
+         assertThat( dataSpecification.getDataType() ).as( property ).isEqualTo( dataType );
+      } );
    }
 
    @Test
@@ -646,6 +676,17 @@ class AspectModelAasGeneratorTest {
       assertThat( sml.getValue() )
             .singleElement()
             .satisfies( child -> assertThat( child.getIdShort() ).isNull() );
+   }
+
+   @Test
+   void testSubmodelElementListDirectScalarChildHasNoSemanticId() throws DeserializationException {
+      final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_COLLECTION_OF_SIMPLE_TYPE );
+      final SubmodelElementList sml = (SubmodelElementList) env.getSubmodels().getFirst().getSubmodelElements().getFirst();
+
+      assertThat( sml.getSemanticId() ).isNotNull();
+      assertThat( sml.getValue() )
+            .singleElement()
+            .satisfies( child -> assertThat( child.getSemanticId() ).isNull() );
    }
 
    @Test

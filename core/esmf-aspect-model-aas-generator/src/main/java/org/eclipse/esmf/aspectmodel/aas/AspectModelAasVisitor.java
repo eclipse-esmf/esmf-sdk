@@ -132,7 +132,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
    private static final Map<Resource, DataTypeIec61360> TYPE_MAP =
          ImmutableMap.<Resource, DataTypeIec61360>builder()
                .put( XSD.xboolean, DataTypeIec61360.BOOLEAN )
-               .put( XSD.decimal, DataTypeIec61360.INTEGER_MEASURE )
+               .put( XSD.decimal, DataTypeIec61360.REAL_MEASURE )
                .put( XSD.integer, DataTypeIec61360.INTEGER_MEASURE )
                .put( XSD.xfloat, DataTypeIec61360.REAL_MEASURE )
                .put( XSD.xdouble, DataTypeIec61360.REAL_MEASURE )
@@ -596,7 +596,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       return new DefaultDataSpecificationIec61360.Builder()
             .definition( definitions( definitionsProperty, property.getPreferredNames(), property.getName() ) )
             .preferredName( preferredNames )
-            .dataType( mapIec61360DataType( property.getCharacteristic() ) )
+            .dataType( mapCharacteristicIec61360DataType( property.getCharacteristic() ) )
             .build();
    }
 
@@ -644,13 +644,30 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
             characteristic.flatMap( Characteristic::getDataType ).map( Type::getUrn ).orElse( RdfDatatypeUris.LANG_STRING ) );
    }
 
-   private DataTypeIec61360 mapIec61360DataType( final Characteristic characteristic ) {
-      return mapIec61360DataType( Optional.of( characteristic ) );
-   }
-
    private DataTypeIec61360 mapIec61360DataType( final String urn ) {
       final Resource resource = ResourceFactory.createResource( urn );
       return TYPE_MAP.getOrDefault( resource, DataTypeIec61360.STRING );
+   }
+
+   /**
+    * Measure types require a unit in AAS (AASc-3a-009). Without a unit, the matching count type is
+    * used.
+    */
+   private DataTypeIec61360 mapCharacteristicIec61360DataType( final Optional<Characteristic> characteristic ) {
+      final DataTypeIec61360 dataType = mapIec61360DataType( characteristic );
+      final boolean hasUnit = characteristic
+            .filter( Quantifiable.class::isInstance )
+            .map( Quantifiable.class::cast )
+            .flatMap( Quantifiable::getUnit )
+            .isPresent();
+      if ( hasUnit ) {
+         return dataType;
+      }
+      return switch ( dataType ) {
+         case REAL_MEASURE -> DataTypeIec61360.REAL_COUNT;
+         case INTEGER_MEASURE -> DataTypeIec61360.INTEGER_COUNT;
+         default -> dataType;
+      };
    }
 
    private void createSubmodelElement( final SubmodelElementBuilder op, final Context context ) {
@@ -705,6 +722,9 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
 
       final SubmodelElementBuilder defaultBuilder = property -> {
          final SubmodelElement value = decideOnMapping( property, context );
+         if ( dataTypeDefXsd != null ) {
+            value.setSemanticId( null );
+         }
          final DefaultSubmodelElementList.Builder submodelBuilder = new DefaultSubmodelElementList.Builder()
                .idShort( AasIdShort.from( listIdShort != null ? listIdShort : property.getName() ) )
                .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
@@ -891,7 +911,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       if ( embeddedDataSpecification.stream().findFirst().isPresent() ) {
          final DataSpecificationIec61360 dataSpecificationContent =
                (DataSpecificationIec61360) embeddedDataSpecification.stream().findFirst().get().getDataSpecificationContent();
-         dataSpecificationContent.setDataType( mapIec61360DataType( enumeration ) );
+         dataSpecificationContent.setDataType( mapCharacteristicIec61360DataType( Optional.of( enumeration ) ) );
          final List<ValueReferencePair> valueReferencePairs =
                enumeration.getValues().stream()
                      .map( enumerationValue -> {

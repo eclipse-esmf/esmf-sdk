@@ -278,6 +278,61 @@ Configuration Properties:
 | `language` | The language from the model for which a JSON Schema should be generated. | `String` | en | {nok}
 |===
 
+[[generate-protobuf-schema]]
+== Generate a Protocol Buffers Schema for an Aspect Model
+
+The `generateProtobufSchema` goal generates a self-contained proto3 message schema for each Aspect
+Model in `includes`. The default lifecycle phase is `generate-resources`. Each schema is written as
+`<AspectName>.proto` in `outputDirectory`; missing output directories are created automatically.
+The schema's package is derived from the Aspect's namespace with its full version appended as a
+final segment, e.g. `1.2.3` becomes `v1_2_3`.
+The goal uses the same generation rules as xref:samm-cli.adoc#aspect-to-protobuf[the CLI's `to protobuf` command].
+See xref:samm-cli.adoc#_protocol_buffers_message_schemas[Protocol Buffers message schemas] for type
+mappings, supported model elements and field numbering considerations.
+
+Usage:
+
+[source,xml,subs=attributes+]
+----
+<build>
+  <plugins>
+    <plugin>
+      <groupId>org.eclipse.esmf</groupId>
+      <artifactId>esmf-aspect-model-maven-plugin</artifactId>
+      <version>{esmf-sdk-version}</version>
+      <executions>
+        <execution>
+          <id>generate-protobuf-schema</id>
+          <goals>
+            <goal>generateProtobufSchema</goal>
+          </goals>
+        </execution>
+      </executions>
+      <configuration>
+        <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
+        <includes>
+          <include>$\{urn-of-aspect-model-to-be-included}</include>
+        </includes>
+        <outputDirectory>$\{project.build.directory}/generated-resources/protobuf</outputDirectory>
+      </configuration>
+    </plugin>
+  </plugins>
+</build>
+----
+
+Configuration Properties:
+
+[width="100%", options="header", cols="20,50,10,10,10"]
+|===
+| Property | Description | Type | Default Value | Required
+| `modelsRootDirectory` | The root directory containing the Aspect Model files. See <<model-resolution>>. | `String` | none | {nok}
+| `githubServerIds` | Server IDs in Maven `settings.xml` for GitHub model resolution. | `List<String>` | none | {nok}
+| `includes` | Aspect Model URNs to generate schemas for. | `Set<String>` | none | {ok}
+| `outputDirectory` | Directory for the generated `.proto` files. | `String` | Current working directory | {nok}
+| `detailedValidationMessages` | Include detailed validation messages when a model cannot be loaded. | `Boolean` | `false` | {nok}
+| `skip` | Skip generation; can also be set with `-Dgen.skip=true`. | `Boolean` | `false` | {nok}
+|===
+
 [[generate-openapi-specification]]
 == Generate an OpenAPI Specification from an Aspect Model
 
