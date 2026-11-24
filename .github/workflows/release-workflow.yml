@@ -117,9 +117,9 @@ jobs:
           # Build native executable with warp-packer
           bundle="samm-cli-${RELEASE_VERSION}"
           mkdir -p ${bundle}/runtime
-          curl -Lo jre.tar.gz https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.5%2B8/OpenJDK25U-jre_x64_linux_hotspot_25.0.5_8.tar.gz
+          curl -Lo jre.tar.gz https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.5.1%2B2/OpenJDK25U-jre_x64_linux_hotspot_25.0.5.1_2.tar.gz
           tar -xvf jre.tar.gz
-          mv ./jdk-25.0.5+8-jre ./${bundle}/runtime/jre
+          mv ./jdk-25.0.5.1+2-jre ./${bundle}/runtime/jre
           # The jar must not sit in or next to a directory that ClassGraph probes for
           # JRE/ext jars (java.home and its parent), hence the jre lives under runtime/
           cp tools/samm-cli/target/samm-cli-${RELEASE_VERSION}.jar ./${bundle}/
@@ -196,9 +196,9 @@ jobs:
           # Build native binary
           bundle="samm-cli-${RELEASE_VERSION}"
           mkdir -p ${bundle}/runtime
-          curl -Lo jre.tar.gz https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.5%2B8/OpenJDK25U-jre_x64_mac_hotspot_25.0.5_8.tar.gz
+          curl -Lo jre.tar.gz https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.5.1%2B2/OpenJDK25U-jre_x64_mac_hotspot_25.0.5.1_2.tar.gz
           tar -xvf jre.tar.gz
-          mv ./jdk-25.0.5+8-jre ./${bundle}/runtime/jre
+          mv ./jdk-25.0.5.1+2-jre ./${bundle}/runtime/jre
           # The jar must not sit in or next to a directory that ClassGraph probes for
           # JRE/ext jars (java.home and its parent), hence the jre lives under runtime/
           cp tools/samm-cli/target/samm-cli-${RELEASE_VERSION}.jar ./${bundle}/
@@ -287,9 +287,9 @@ jobs:
           # Build native executable
           bundle="samm-cli-${RELEASE_VERSION}"
           mkdir -p ${bundle}/runtime
-          curl -Lo jre.zip https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.5%2B8/OpenJDK25U-jre_x64_windows_hotspot_25.0.5_8.zip
+          curl -Lo jre.zip https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.5.1%2B2/OpenJDK25U-jre_x64_windows_hotspot_25.0.5.1_2.zip
           7z x jre.zip
-          mv ./jdk-25.0.5+8-jre ./${bundle}/runtime/jre
+          mv ./jdk-25.0.5.1+2-jre ./${bundle}/runtime/jre
           # The jar must not sit in or next to a directory that ClassGraph probes for
           # JRE/ext jars (java.home and its parent), hence the jre lives under runtime/
           cp tools/samm-cli/target/samm-cli-${RELEASE_VERSION}.jar ./${bundle}/
