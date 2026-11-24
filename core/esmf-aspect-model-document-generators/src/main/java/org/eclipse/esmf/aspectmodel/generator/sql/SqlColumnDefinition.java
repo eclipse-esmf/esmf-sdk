@@ -21,7 +21,9 @@ import java.util.Optional;
  * @param <C> type for column datatypes
  * @param <D> the self type
  */
-public interface SqlColumnDefinition<D, C extends SqlColumnDefinition<D, C>> {
+public interface SqlColumnDefinition<
+      D extends SqlType,
+      C extends SqlColumnDefinition<D, C>> {
    String name();
 
    <R extends D> R type();

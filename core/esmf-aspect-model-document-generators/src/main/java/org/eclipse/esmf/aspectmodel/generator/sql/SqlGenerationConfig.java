@@ -32,7 +32,7 @@ import io.soabase.recordbuilder.core.RecordBuilder;
 public record SqlGenerationConfig(
       Dialect dialect,
       MappingStrategy mappingStrategy,
-      DialectSpecificConfig<?, ?> dialectSpecificConfig
+      DialectSpecificConfig<?, ?, ?> dialectSpecificConfig
 ) implements GenerationConfig {
    public enum Dialect {
       DATABRICKS,
@@ -44,7 +44,10 @@ public record SqlGenerationConfig(
       NORMALIZED
    }
 
-   public interface DialectSpecificConfig<D, C extends SqlColumnDefinition<D, C>> extends GenerationConfig {
+   public interface DialectSpecificConfig<
+         D extends SqlType,
+         C extends SqlColumnDefinition<D, C>,
+         X extends SqlConstraint> extends GenerationConfig {
       String createTableCommandPrefix();
 
       boolean includeTableComment();
@@ -61,9 +64,9 @@ public record SqlGenerationConfig(
 
       Map<String, List<C>> customColumnsPerTable();
 
-      List<String> tableConstraints();
+      List<X> tableConstraints();
 
-      Map<String, List<String>> tableConstraintsPerTable();
+      Map<String, List<X>> tableConstraintsPerTable();
    }
 
    public SqlGenerationConfig {

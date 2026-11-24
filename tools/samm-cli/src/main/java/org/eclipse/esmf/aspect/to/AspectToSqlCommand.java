@@ -27,10 +27,13 @@ import org.eclipse.esmf.aspectmodel.generator.sql.SqlArtifact;
 import org.eclipse.esmf.aspectmodel.generator.sql.SqlGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksColumnDefinition;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksColumnDefinitionParser;
+import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksConstraint;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.generator.sql.postgresql.PostgreSqlColumnDefinition;
 import org.eclipse.esmf.aspectmodel.generator.sql.postgresql.PostgreSqlColumnDefinitionParser;
+import org.eclipse.esmf.aspectmodel.generator.sql.postgresql.PostgreSqlConstraint;
+import org.eclipse.esmf.aspectmodel.generator.sql.postgresql.PostgreSqlGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.sql.postgresql.PostgreSqlGenerationConfigBuilder;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.Aspect;
@@ -127,8 +130,11 @@ public class AspectToSqlCommand extends AbstractCommand {
       setResolverConfig( resolverConfiguration );
 
       final Aspect aspect = getInputHandler( parentCommand.parentCommand.getInput() ).loadAspect();
-      final SqlGenerationConfig.DialectSpecificConfig generatorConfig = dialectSpecificConfig();
-      final SqlGenerationConfig sqlConfig = new SqlGenerationConfig( dialect, strategy, generatorConfig );
+      final SqlGenerationConfig.DialectSpecificConfig<?, ?, ?> generationConfig = switch ( dialect ) {
+         case DATABRICKS -> databricksSpecificConfig();
+         case POSTGRESQL -> postgreSqlSpecificConfig();
+      };
+      final SqlGenerationConfig sqlConfig = new SqlGenerationConfig( dialect, strategy, generationConfig );
       final SqlArtifact result = new AspectModelSqlGenerator( aspect, sqlConfig ).singleResult();
 
       try ( final OutputStream out = getStreamForFile( outputFilePath ) ) {
@@ -138,38 +144,41 @@ public class AspectToSqlCommand extends AbstractCommand {
       }
    }
 
-   private SqlGenerationConfig.DialectSpecificConfig dialectSpecificConfig() {
-      return switch ( dialect ) {
-         case DATABRICKS -> {
-            final List<DatabricksColumnDefinition> columns = customColumns.stream()
-                  .map( column -> new DatabricksColumnDefinitionParser( column ).get() )
-                  .toList();
-            yield DatabricksSqlGenerationConfigBuilder.builder()
-                  .commentLanguage( Locale.forLanguageTag( language ) )
-                  .includeTableComment( includeTableComment )
-                  .includeColumnComments( includeColumnComments )
-                  .createTableCommandPrefix( tableCommandPrefix )
-                  .decimalPrecision( decimalPrecision )
-                  .decimalScale( decimalScale )
-                  .customColumns( columns )
-                  .tableConstraints( tableConstraints )
-                  .build();
-         }
-         case POSTGRESQL -> {
-            final List<PostgreSqlColumnDefinition> columns = customColumns.stream()
-                  .map( column -> new PostgreSqlColumnDefinitionParser( column ).get() )
-                  .toList();
-            yield PostgreSqlGenerationConfigBuilder.builder()
-                  .commentLanguage( Locale.forLanguageTag( language ) )
-                  .includeTableComment( includeTableComment )
-                  .includeColumnComments( includeColumnComments )
-                  .createTableCommandPrefix( tableCommandPrefix )
-                  .decimalPrecision( decimalPrecision )
-                  .decimalScale( decimalScale )
-                  .customColumns( columns )
-                  .tableConstraints( tableConstraints )
-                  .build();
-         }
-      };
+   private DatabricksSqlGenerationConfig databricksSpecificConfig() {
+      final List<DatabricksColumnDefinition> columns = customColumns.stream()
+            .map( column -> new DatabricksColumnDefinitionParser( column ).get() )
+            .toList();
+      final List<DatabricksConstraint> constraints = tableConstraints.stream()
+            .<DatabricksConstraint>map( DatabricksConstraint.GenericConstraint::new )
+            .toList();
+      return DatabricksSqlGenerationConfigBuilder.builder()
+            .commentLanguage( Locale.forLanguageTag( language ) )
+            .includeTableComment( includeTableComment )
+            .includeColumnComments( includeColumnComments )
+            .createTableCommandPrefix( tableCommandPrefix )
+            .decimalPrecision( decimalPrecision )
+            .decimalScale( decimalScale )
+            .customColumns( columns )
+            .tableConstraints( constraints )
+            .build();
+   }
+
+   private PostgreSqlGenerationConfig postgreSqlSpecificConfig() {
+      final List<PostgreSqlColumnDefinition> columns = customColumns.stream()
+            .map( column -> new PostgreSqlColumnDefinitionParser( column ).get() )
+            .toList();
+      final List<PostgreSqlConstraint> constraints = tableConstraints.stream()
+            .<PostgreSqlConstraint>map( PostgreSqlConstraint.GenericConstraint::new )
+            .toList();
+      return PostgreSqlGenerationConfigBuilder.builder()
+            .commentLanguage( Locale.forLanguageTag( language ) )
+            .includeTableComment( includeTableComment )
+            .includeColumnComments( includeColumnComments )
+            .createTableCommandPrefix( tableCommandPrefix )
+            .decimalPrecision( decimalPrecision )
+            .decimalScale( decimalScale )
+            .customColumns( columns )
+            .tableConstraints( constraints )
+            .build();
    }
 }

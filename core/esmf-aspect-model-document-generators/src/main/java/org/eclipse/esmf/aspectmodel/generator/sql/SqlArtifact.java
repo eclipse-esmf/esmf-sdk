@@ -14,20 +14,31 @@
 package org.eclipse.esmf.aspectmodel.generator.sql;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
+import org.eclipse.esmf.aspectmodel.generator.LocalizedArtifact;
 import org.eclipse.esmf.aspectmodel.generator.StringArtifact;
 
 /**
  * Represents a generated SQL script.
  */
-public class SqlArtifact extends StringArtifact {
-   public <U extends SqlGenerationConfig.DialectSpecificConfig<D, C>,
+public class SqlArtifact extends StringArtifact implements LocalizedArtifact {
+   private final Locale language;
+
+   public <U extends SqlGenerationConfig.DialectSpecificConfig<D, C, X>,
          D extends SqlType,
          C extends SqlColumnDefinition<D, C>,
-         T extends SqlTableDefinition<D, C>> SqlArtifact( final String id,
-               final List<SqlTableDefinition<D, C>> tables, final U config ) {
+         T extends SqlTableDefinition<D, C, X>,
+         X extends SqlConstraint> SqlArtifact( final String id,
+               final List<SqlTableDefinition<D, C, X>> tables, final U config ) {
       super( id, tables.stream().map( tableDefinition -> tableDefinition.apply( config ) )
-            .collect( Collectors.joining( "\n\n" ) ) );
+            .collect( Collectors.joining( "\n" ) ) );
+      language = config.commentLanguage();
+   }
+
+   @Override
+   public Locale language() {
+      return language;
    }
 }

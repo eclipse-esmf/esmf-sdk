@@ -23,10 +23,10 @@ import io.soabase.recordbuilder.core.RecordBuilder;
 /**
  * Represents a column definition in Databricks SQL.
  *
- * @param name The name of the column.
- * @param type The type of the column.
- * @param nullable Whether the column is nullable.
- * @param comment An optional comment for the column.
+ * @param name The name of the column
+ * @param type The type of the column
+ * @param nullable Whether the column is nullable
+ * @param comment An optional comment for the column
  */
 @RecordBuilder
 public record DatabricksColumnDefinition(
@@ -37,10 +37,12 @@ public record DatabricksColumnDefinition(
 ) implements SqlColumnDefinition<DatabricksType, DatabricksColumnDefinition> {
    @Override
    public @NonNull String toString() {
-      return "%s %s%s%s".formatted(
-            name(),
-            type(),
-            nullable ? "" : " NOT NULL",
-            comment.map( theComment -> " " + new DatabricksCommentDefinition( theComment ) ).orElse( "" ) );
+      final StringBuilder builder = new StringBuilder();
+      builder.append( name() ).append( " " ).append( type() );
+      if ( !nullable ) {
+         builder.append( " NOT NULL" );
+      }
+      comment.ifPresent( theComment -> builder.append( " " ).append( new DatabricksCommentDefinition( theComment ) ) );
+      return builder.toString();
    }
 }

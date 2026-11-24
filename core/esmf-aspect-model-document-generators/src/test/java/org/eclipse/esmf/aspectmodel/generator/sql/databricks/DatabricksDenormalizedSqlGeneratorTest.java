@@ -18,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.eclipse.esmf.test.TestAspect;
 
@@ -26,7 +27,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 @SuppressWarnings( "checkstyle:LineLength" )
-class AspectModelDatabricksDenormalizedSqlGeneratorTest extends DatabricksTestBase {
+class DatabricksDenormalizedSqlGeneratorTest extends DatabricksTestBase {
    @Test
    void testAspectWithAbstractEntity() {
       assertThat( sql( TestAspect.ASPECT_WITH_ABSTRACT_ENTITY ) ).isEqualTo( """
@@ -533,7 +534,8 @@ class AspectModelDatabricksDenormalizedSqlGeneratorTest extends DatabricksTestBa
    @Test
    void testTableConstraints() {
       final DatabricksSqlGenerationConfig config = DatabricksSqlGenerationConfigBuilder.builder()
-            .tableConstraints( List.of( "PRIMARY KEY (test)", "UNIQUE (test)", "CHECK (test <> 'x')" ) )
+            .tableConstraints( Stream.of( "PRIMARY KEY (test)", "UNIQUE (test)", "CHECK (test <> 'x')" )
+                  .<DatabricksConstraint>map( DatabricksConstraint.GenericConstraint::new ).toList() )
             .build();
       assertThat( sql( TestAspect.ASPECT_WITH_PROPERTY_WITH_PAYLOAD_NAME, config ) )
             .contains( "PRIMARY KEY (test),\n  UNIQUE (test),\n  CHECK (test <> 'x')\n)" );

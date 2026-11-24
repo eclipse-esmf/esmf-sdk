@@ -28,7 +28,8 @@ import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import com.google.common.collect.ImmutableMap;
 
 public class DatabricksSqlDialect
-      implements SqlDialect<DatabricksSqlGenerationConfig, DatabricksType, DatabricksColumnDefinition, DatabricksTableDefinition> {
+      implements SqlDialect<DatabricksSqlGenerationConfig, DatabricksType, DatabricksColumnDefinition, DatabricksTableDefinition,
+            DatabricksConstraint> {
    protected final Map<String, DatabricksType> typeMap;
 
    public DatabricksSqlDialect( final DatabricksSqlGenerationConfig config ) {
@@ -73,8 +74,8 @@ public class DatabricksSqlDialect
    }
 
    @Override
-   public SqlTableDefinition<DatabricksType, DatabricksColumnDefinition> tableDefinition( final String name,
-         final List<DatabricksColumnDefinition> columns, final Optional<String> comment, final List<String> tableConstraints,
+   public SqlTableDefinition<DatabricksType, DatabricksColumnDefinition, DatabricksConstraint> tableDefinition( final String name,
+         final List<DatabricksColumnDefinition> columns, final Optional<String> comment, final List<DatabricksConstraint> tableConstraints,
          final Map<String, SqlValue<? extends DatabricksType>> tableProperties ) {
       return new DatabricksTableDefinition( name, columns, comment, tableConstraints, tableProperties );
    }
@@ -96,10 +97,34 @@ public class DatabricksSqlDialect
       return typeMap.get( sammTypeUri );
    }
 
+   @Override
+   public DatabricksType sqlIdColumnType() {
+      return DatabricksType.BIGINT;
+   }
+
    @SuppressWarnings( "unchecked" )
    @Override
    public <A extends DatabricksType> A sqlArrayType( final DatabricksType baseType ) {
       final DatabricksType.DatabricksArray databricksArray = new DatabricksType.DatabricksArray( baseType );
       return (A) databricksArray;
+   }
+
+   @SuppressWarnings( "unchecked" )
+   @Override
+   public <A extends DatabricksConstraint> A sqlPrimaryKeyConstraint( final String column ) {
+      return (A) new DatabricksConstraint.PrimaryKey( column );
+   }
+
+   @SuppressWarnings( "unchecked" )
+   @Override
+   public <A extends DatabricksConstraint> A sqlForeignKeyConstraint( final String column, final String foreignTable,
+         final String foreignColumn ) {
+      return (A) new DatabricksConstraint.ForeignKey( column, foreignTable, foreignColumn );
+   }
+
+   @SuppressWarnings( "unchecked" )
+   @Override
+   public <A extends DatabricksConstraint> A sqlUniqueConstraint( final String name, final String column ) {
+      return (A) new DatabricksConstraint.Unique( name, column );
    }
 }

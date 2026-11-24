@@ -23,10 +23,11 @@ import org.eclipse.esmf.metamodel.StructureElement;
 import com.google.common.base.CaseFormat;
 
 public interface SqlDialect<
-      U extends SqlGenerationConfig.DialectSpecificConfig<D, C>,
+      U extends SqlGenerationConfig.DialectSpecificConfig<D, C, X>,
       D extends SqlType,
       C extends SqlColumnDefinition<D, C>,
-      T extends SqlTableDefinition<D, C>> {
+      T extends SqlTableDefinition<D, C, X>,
+      X extends SqlConstraint> {
    default String tableName( final StructureElement element ) {
       return CaseFormat.UPPER_CAMEL.to( CaseFormat.LOWER_UNDERSCORE, element.getName() );
    }
@@ -35,11 +36,10 @@ public interface SqlDialect<
       return CaseFormat.LOWER_CAMEL.to( CaseFormat.LOWER_UNDERSCORE, property.getPayloadName() );
    }
 
-   SqlTableDefinition<D, C> tableDefinition( String name, List<C> columns, Optional<String> comment,
-         List<String> tableConstraints, Map<String, SqlValue<? extends D>> tableProperties );
+   SqlTableDefinition<D, C, X> tableDefinition( String name, List<C> columns, Optional<String> comment,
+         List<X> tableConstraints, Map<String, SqlValue<? extends D>> tableProperties );
 
-   C columnDefinition( final String name, final D datatype, final boolean isNullable,
-         final Optional<String> comment );
+   C columnDefinition( final String name, final D datatype, final boolean isNullable, final Optional<String> comment );
 
    /**
     * Type-safe cast of a string into a SQL-dialect specific string type
@@ -52,5 +52,13 @@ public interface SqlDialect<
 
    D sqlType( String sammTypeUri );
 
+   D sqlIdColumnType();
+
    <A extends D> A sqlArrayType( D baseType );
+
+   <A extends X> A sqlPrimaryKeyConstraint( String column );
+
+   <A extends X> A sqlForeignKeyConstraint( String column, String foreignTable, String foreignColumn );
+
+   <A extends X> A sqlUniqueConstraint( String name, String column );
 }

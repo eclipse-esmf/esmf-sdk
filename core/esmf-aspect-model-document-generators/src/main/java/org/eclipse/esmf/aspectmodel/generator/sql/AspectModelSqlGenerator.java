@@ -13,6 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.generator.sql;
 
+import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.generator.AspectGenerator;
@@ -30,6 +31,18 @@ public class AspectModelSqlGenerator extends AspectGenerator<String, String, Sql
       super( aspect, config );
    }
 
+   private <U extends SqlGenerationConfig.DialectSpecificConfig<D, C, X>,
+         D extends SqlType,
+         C extends SqlColumnDefinition<D, C>,
+         T extends SqlTableDefinition<D, C, X>,
+         X extends SqlConstraint> BiFunction<Aspect, U, SqlArtifact> generator(
+               final SqlDialect<U, D, C, T, X> dialect, final SqlGenerationConfig.MappingStrategy mappingStrategy, final U config ) {
+      return switch ( mappingStrategy ) {
+         case NORMALIZED -> new NormalizedSqlGenerator<>( config, dialect );
+         case DENORMALIZED -> new DenormalizedSqlGenerator<>( config, dialect );
+      };
+   }
+
    @Override
    public Stream<SqlArtifact> generate() {
       return Stream.of( switch ( config.dialect() ) {
@@ -38,30 +51,16 @@ public class AspectModelSqlGenerator extends AspectGenerator<String, String, Sql
                   config.dialectSpecificConfig() instanceof final DatabricksSqlGenerationConfig databricksConfig
                         ? databricksConfig
                         : new DatabricksSqlGenerationConfig();
-            yield switch ( config.mappingStrategy() ) {
-               case DENORMALIZED -> {
-                  yield new DenormalizedSqlGenerator<>( generationConfig, new DatabricksSqlDialect( generationConfig ) )
-                        .apply( aspect(), generationConfig );
-               }
-               default -> {
-                  throw new UnsupportedOperationException();
-               }
-            };
+            final DatabricksSqlDialect dialect = new DatabricksSqlDialect( generationConfig );
+            yield generator( dialect, config.mappingStrategy(), generationConfig ).apply( aspect(), generationConfig );
          }
          case POSTGRESQL -> {
             final PostgreSqlGenerationConfig generationConfig =
                   config.dialectSpecificConfig() instanceof final PostgreSqlGenerationConfig postgresSpecificConfig
                         ? postgresSpecificConfig
                         : new PostgreSqlGenerationConfig();
-            yield switch ( config.mappingStrategy() ) {
-               case DENORMALIZED -> {
-                  yield new DenormalizedSqlGenerator<>( generationConfig, new PostgreSqlDialect( generationConfig ) )
-                        .apply( aspect(), generationConfig );
-               }
-               default -> {
-                  throw new UnsupportedOperationException();
-               }
-            };
+            final PostgreSqlDialect dialect = new PostgreSqlDialect( generationConfig );
+            yield generator( dialect, config.mappingStrategy(), generationConfig ).apply( aspect(), generationConfig );
          }
       } );
    }

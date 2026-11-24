@@ -23,16 +23,20 @@ import java.util.function.Function;
  * 
  * @param <D> the type of the column datatypes
  * @param <C> the column definition type
+ * @param <X> the constraint type
  */
-public interface SqlTableDefinition<D, C extends SqlColumnDefinition<D, C>>
-      extends Function<SqlGenerationConfig.DialectSpecificConfig<D, C>, String> {
+public interface SqlTableDefinition<
+      D extends SqlType,
+      C extends SqlColumnDefinition<D, C>,
+      X extends SqlConstraint>
+      extends Function<SqlGenerationConfig.DialectSpecificConfig<D, C, X>, String> {
    String name();
 
    List<C> columns();
 
    Optional<String> comment();
 
-   List<String> tableConstraints();
+   List<X> tableConstraints();
 
    Map<String, SqlValue<? extends D>> tableProperties();
 }

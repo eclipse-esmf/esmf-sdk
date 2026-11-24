@@ -43,10 +43,9 @@ public record PostgreSqlGenerationConfig(
       int decimalScale,
       List<PostgreSqlColumnDefinition> customColumns,
       Map<String, List<PostgreSqlColumnDefinition>> customColumnsPerTable,
-      List<String> tableConstraints,
-      Map<String, List<String>> tableConstraintsPerTable
-) implements SqlGenerationConfig.DialectSpecificConfig<PostgreSqlType, PostgreSqlColumnDefinition> {
-
+      List<PostgreSqlConstraint> tableConstraints,
+      Map<String, List<PostgreSqlConstraint>> tableConstraintsPerTable
+) implements SqlGenerationConfig.DialectSpecificConfig<PostgreSqlType, PostgreSqlColumnDefinition, PostgreSqlConstraint> {
    public static final String DEFAULT_TABLE_COMMAND_PREFIX = "CREATE TABLE IF NOT EXISTS";
    public static final int DECIMAL_DEFAULT_PRECISION = 10;
    public static final int DECIMAL_MAX_PRECISION = 1000;

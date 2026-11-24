@@ -27,8 +27,8 @@ import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import com.google.common.collect.ImmutableMap;
 
-public class PostgreSqlDialect
-      implements SqlDialect<PostgreSqlGenerationConfig, PostgreSqlType, PostgreSqlColumnDefinition, PostgreSqlTableDefinition> {
+public class PostgreSqlDialect implements
+      SqlDialect<PostgreSqlGenerationConfig, PostgreSqlType, PostgreSqlColumnDefinition, PostgreSqlTableDefinition, PostgreSqlConstraint> {
    protected final Map<String, PostgreSqlType> typeMap;
 
    public PostgreSqlDialect( final PostgreSqlGenerationConfig config ) {
@@ -73,8 +73,8 @@ public class PostgreSqlDialect
    }
 
    @Override
-   public SqlTableDefinition<PostgreSqlType, PostgreSqlColumnDefinition> tableDefinition( final String name,
-         final List<PostgreSqlColumnDefinition> columns, final Optional<String> comment, final List<String> tableConstraints,
+   public SqlTableDefinition<PostgreSqlType, PostgreSqlColumnDefinition, PostgreSqlConstraint> tableDefinition( final String name,
+         final List<PostgreSqlColumnDefinition> columns, final Optional<String> comment, final List<PostgreSqlConstraint> tableConstraints,
          final Map<String, SqlValue<? extends PostgreSqlType>> tableProperties ) {
       return new PostgreSqlTableDefinition( name, columns, comment, tableConstraints, tableProperties );
    }
@@ -96,9 +96,33 @@ public class PostgreSqlDialect
       return typeMap.get( sammTypeUri );
    }
 
+   @Override
+   public PostgreSqlType sqlIdColumnType() {
+      return PostgreSqlType.BIGINT;
+   }
+
    @SuppressWarnings( "unchecked" )
    @Override
    public <A extends PostgreSqlType> A sqlArrayType( final PostgreSqlType baseType ) {
       return (A) new PostgreSqlType.PostgreSqlArray( baseType );
+   }
+
+   @SuppressWarnings( "unchecked" )
+   @Override
+   public <A extends PostgreSqlConstraint> A sqlPrimaryKeyConstraint( final String column ) {
+      return (A) new PostgreSqlConstraint.PrimaryKey( column );
+   }
+
+   @SuppressWarnings( "unchecked" )
+   @Override
+   public <A extends PostgreSqlConstraint> A sqlForeignKeyConstraint( final String column, final String foreignTable,
+         final String foreignColumn ) {
+      return (A) new PostgreSqlConstraint.ForeignKey( column, foreignTable, foreignColumn );
+   }
+
+   @SuppressWarnings( "unchecked" )
+   @Override
+   public <A extends PostgreSqlConstraint> A sqlUniqueConstraint( final String name, final String column ) {
+      return (A) new PostgreSqlConstraint.Unique( name, column );
    }
 }

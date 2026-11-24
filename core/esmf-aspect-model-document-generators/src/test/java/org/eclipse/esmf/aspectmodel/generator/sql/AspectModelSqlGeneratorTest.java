@@ -36,7 +36,7 @@ public class AspectModelSqlGeneratorTest {
    @ParameterizedTest
    @Execution( ExecutionMode.CONCURRENT )
    @EnumSource( value = TestAspect.class )
-   void testDatabricksGeneration( final TestAspect testAspect ) {
+   void testDatabricksDenormalizedGeneration( final TestAspect testAspect ) {
       final Aspect aspect = TestResources.load( testAspect ).aspect();
       assertThatCode( () -> {
          final DatabricksSqlGenerationConfig dialectSpecificConfig = DatabricksSqlGenerationConfigBuilder.builder()
@@ -54,7 +54,25 @@ public class AspectModelSqlGeneratorTest {
    @ParameterizedTest
    @Execution( ExecutionMode.CONCURRENT )
    @EnumSource( value = TestAspect.class )
-   void testDatabricksGenerationExcludeComments( final TestAspect testAspect ) {
+   void testDatabricksNormalizedGeneration( final TestAspect testAspect ) {
+      final Aspect aspect = TestResources.load( testAspect ).aspect();
+      assertThatCode( () -> {
+         final DatabricksSqlGenerationConfig dialectSpecificConfig = DatabricksSqlGenerationConfigBuilder.builder()
+               .includeTableComment( true )
+               .includeColumnComments( true )
+               .commentLanguage( Locale.ENGLISH )
+               .build();
+         final String result = new NormalizedSqlGenerator<>( dialectSpecificConfig, new DatabricksSqlDialect( dialectSpecificConfig ) )
+               .apply( aspect, dialectSpecificConfig ).getContent();
+         assertThat( result ).contains( "TBLPROPERTIES ('x-samm-aspect-model-urn'='" );
+         assertThat( result ).doesNotContain( "ARRAY<ARRAY" );
+      } ).doesNotThrowAnyException();
+   }
+
+   @ParameterizedTest
+   @Execution( ExecutionMode.CONCURRENT )
+   @EnumSource( value = TestAspect.class )
+   void testDatabricksDenormalizedGenerationExcludeComments( final TestAspect testAspect ) {
       final Aspect aspect = TestResources.load( testAspect ).aspect();
       assertThatCode( () -> {
          final DatabricksSqlGenerationConfig dialectSpecificConfig = DatabricksSqlGenerationConfigBuilder.builder()
@@ -95,10 +113,11 @@ public class AspectModelSqlGeneratorTest {
    @ParameterizedTest
    @Execution( ExecutionMode.CONCURRENT )
    @EnumSource( value = TestAspect.class )
-   void testPostgreSqlGeneration( final TestAspect testAspect ) {
+   void testPostgreSqlDenormalizedGeneration( final TestAspect testAspect ) {
       final Aspect aspect = TestResources.load( testAspect ).aspect();
       assertThatCode( () -> {
          final SqlArtifact sqlArtifact = new AspectModelSqlGenerator( aspect, SqlGenerationConfigBuilder.builder()
+               .mappingStrategy( SqlGenerationConfig.MappingStrategy.DENORMALIZED )
                .dialect( SqlGenerationConfig.Dialect.POSTGRESQL )
                .dialectSpecificConfig( new PostgreSqlGenerationConfig() )
                .build() ).singleResult();

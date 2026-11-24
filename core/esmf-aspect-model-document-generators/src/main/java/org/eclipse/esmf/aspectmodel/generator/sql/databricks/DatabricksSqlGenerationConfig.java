@@ -54,9 +54,9 @@ public record DatabricksSqlGenerationConfig(
       int decimalScale,
       List<DatabricksColumnDefinition> customColumns,
       Map<String, List<DatabricksColumnDefinition>> customColumnsPerTable,
-      List<String> tableConstraints,
-      Map<String, List<String>> tableConstraintsPerTable
-) implements SqlGenerationConfig.DialectSpecificConfig<DatabricksType, DatabricksColumnDefinition> {
+      List<DatabricksConstraint> tableConstraints,
+      Map<String, List<DatabricksConstraint>> tableConstraintsPerTable
+) implements SqlGenerationConfig.DialectSpecificConfig<DatabricksType, DatabricksColumnDefinition, DatabricksConstraint> {
    public static final String DEFAULT_TABLE_COMMAND_PREFIX = "CREATE TABLE IF NOT EXISTS";
    // As defined in https://docs.databricks.com/en/sql/language-manual/data-types/decimal-type.html
    public static final int DECIMAL_DEFAULT_PRECISION = 10;

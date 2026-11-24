@@ -20,7 +20,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 import com.google.common.collect.ImmutableMap;
@@ -129,14 +128,14 @@ public abstract class AbstractSchemaArtifact<T extends JsonNode> extends JsonArt
    protected Map<Path, JsonNode> getContentWithSeparateSchemasAsJson( final Optional<String> mainSpec ) {
       final JsonNode jsonContent = getContent();
       final String aspectName = AspectModelUrn.fromUrn(
-            jsonContent.get( "info" ).get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION ).asString() ).getName();
+            jsonContent.get( "info" ).get( GeneratorConstants.SAMM_EXTENSION ).asString() ).getName();
       return getSeparateSchemas( aspectName, "json", mainSpec );
    }
 
    protected Map<Path, String> getContentWithSeparateSchemasAsYaml( final Optional<String> mainSpec ) {
       final JsonNode jsonContent = getContent();
       final String aspectName = AspectModelUrn.fromUrn(
-            jsonContent.get( "info" ).get( AspectModelJsonSchemaGenerator.SAMM_EXTENSION ).asString() ).getName();
+            jsonContent.get( "info" ).get( GeneratorConstants.SAMM_EXTENSION ).asString() ).getName();
       return getSeparateSchemas( aspectName, "yaml", mainSpec ).entrySet().stream().collect( Collectors.toMap(
             Map.Entry::getKey, entry -> jsonToYaml( entry.getValue() ) ) );
    }

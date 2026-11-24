@@ -17,12 +17,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.eclipse.esmf.test.TestAspect;
 
 import org.junit.jupiter.api.Test;
 
-class AspectModelPostgreSqlDenormalizedSqlGeneratorTest extends PostgreSqlTestBase {
+class PostgreSqlDenormalizedSqlGeneratorTest extends PostgreSqlTestBase {
    @Test
    void testCollectionAndComments() {
       assertThat( sql( TestAspect.ASPECT_WITH_COLLECTION, new PostgreSqlGenerationConfig() ) ).isEqualTo( """
@@ -52,7 +53,8 @@ class AspectModelPostgreSqlDenormalizedSqlGeneratorTest extends PostgreSqlTestBa
    @Test
    void testTableConstraints() {
       final PostgreSqlGenerationConfig config = PostgreSqlGenerationConfigBuilder.builder()
-            .tableConstraints( List.of( "PRIMARY KEY (test)", "UNIQUE (test)", "CHECK (test <> 'x')" ) )
+            .tableConstraints( Stream.of( "PRIMARY KEY (test)", "UNIQUE (test)", "CHECK (test <> 'x')" )
+                  .<PostgreSqlConstraint>map( PostgreSqlConstraint.GenericConstraint::new ).toList() )
             .build();
       assertThat( sql( TestAspect.ASPECT_WITH_PROPERTY_WITH_PAYLOAD_NAME, config ) )
             .contains( "PRIMARY KEY (test),\n  UNIQUE (test),\n  CHECK (test <> 'x')\n)" );

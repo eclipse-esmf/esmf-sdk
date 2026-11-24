@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.VersionNumber;
+import org.eclipse.esmf.aspectmodel.generator.GeneratorConstants;
 import org.eclipse.esmf.aspectmodel.generator.JsonGenerator;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaVisitor;
@@ -141,7 +142,7 @@ public class AspectModelOpenApiGenerator extends JsonGenerator<Aspect, OpenApiSc
          ( (ObjectNode) rootNode.get( "info" ) )
                .put( "title", aspect().getPreferredName( config.locale() ) )
                .put( "version", apiVersion )
-               .put( AspectModelJsonSchemaGenerator.SAMM_EXTENSION, aspect().urn().toString() );
+               .put( GeneratorConstants.SAMM_EXTENSION, aspect().urn().toString() );
          final String apiPath = Optional.ofNullable( config.readApiPath() )
                .orElse( READ_SERVER_PATH.formatted( apiVersion ) );
          setServers( rootNode, config.baseUrl(), apiVersion, apiPath );

@@ -27,11 +27,12 @@ public record PostgreSqlTableDefinition(
       String name,
       List<PostgreSqlColumnDefinition> columns,
       Optional<String> comment,
-      List<String> tableConstraints,
+      List<PostgreSqlConstraint> tableConstraints,
       Map<String, SqlValue<? extends PostgreSqlType>> tableProperties
-) implements SqlTableDefinition<PostgreSqlType, PostgreSqlColumnDefinition> {
+) implements SqlTableDefinition<PostgreSqlType, PostgreSqlColumnDefinition, PostgreSqlConstraint> {
    @Override
-   public String apply( final SqlGenerationConfig.DialectSpecificConfig<PostgreSqlType, PostgreSqlColumnDefinition> config ) {
+   public String apply(
+         final SqlGenerationConfig.DialectSpecificConfig<PostgreSqlType, PostgreSqlColumnDefinition, PostgreSqlConstraint> config ) {
       final StringBuilder builder = new StringBuilder();
       builder.append( config.createTableCommandPrefix() ).append( " " );
       builder.append( name ).append( " " );
@@ -39,22 +40,17 @@ public record PostgreSqlTableDefinition(
       final String extraIndent = columns.isEmpty() ? "" : "  ";
       builder.append( Stream.concat(
             columns.stream().map( PostgreSqlColumnDefinition::toString ),
-            config.tableConstraints().stream()
+            config.tableConstraints().stream().map( Object::toString )
       ).collect( Collectors.joining( ",\n  ", "(\n" + extraIndent, extraLineBreak + ");\n" ) ) );
-
-      comment.ifPresent( theComment -> {
-         builder.append( "COMMENT ON TABLE " ).append( name ).append( " IS '" ).append( theComment ).append( "';\n" );
-      } );
-      columns.forEach( column -> {
-         column.comment().ifPresent( theComment -> {
-            builder.append( "COMMENT ON COLUMN " ).append( name ).append( "." ).append( column.name() )
-                  .append( " IS '" ).append( theComment ).append( "';\n" );
-         } );
-      } );
-      builder.append( tableProperties().entrySet().stream().sorted()
-            .map( tablePropertyEntry -> "-- %s: %s".formatted( tablePropertyEntry.getKey(),
-                  tablePropertyEntry.getValue().lexical() ) )
-            .collect( Collectors.joining( "\n", "", "\n" ) ) );
+      comment.ifPresent( comment -> builder.append( "COMMENT ON TABLE %s IS '%s';\n".formatted( name, comment ) ) );
+      columns.forEach( column -> column.comment().ifPresent(
+            comment -> builder.append( "COMMENT ON COLUMN %s.%s IS '%s';\n".formatted( name, column.name(), comment ) ) ) );
+      if ( !tableProperties().isEmpty() ) {
+         builder.append( tableProperties().entrySet().stream().sorted()
+               .map( tablePropertyEntry -> "-- %s: %s".formatted( tablePropertyEntry.getKey(),
+                     tablePropertyEntry.getValue().lexical() ) )
+               .collect( Collectors.joining( "\n", "", "\n" ) ) );
+      }
       return builder.toString();
    }
 }

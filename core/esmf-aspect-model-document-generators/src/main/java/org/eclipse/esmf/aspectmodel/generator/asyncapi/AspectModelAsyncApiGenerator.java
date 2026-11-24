@@ -15,8 +15,8 @@ package org.eclipse.esmf.aspectmodel.generator.asyncapi;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.esmf.aspectmodel.VersionNumber;
+import org.eclipse.esmf.aspectmodel.generator.GeneratorConstants;
 import org.eclipse.esmf.aspectmodel.generator.JsonGenerator;
-import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaVisitor;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.JsonSchemaGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.JsonSchemaGenerationConfigBuilder;
@@ -115,7 +115,7 @@ public class AspectModelAsyncApiGenerator extends JsonGenerator<Aspect, AsyncApi
          final ObjectNode info = (ObjectNode) rootNode.get( "info" );
          info.put( TITLE_FIELD, aspect().getPreferredName( config.locale() ) + " MQTT API" );
          info.put( "version", apiVersion );
-         info.put( AspectModelJsonSchemaGenerator.SAMM_EXTENSION, aspect().urn().toString() );
+         info.put( GeneratorConstants.SAMM_EXTENSION, aspect().urn().toString() );
          Optional.ofNullable( aspect().getDescription( config.locale() ) )
                .ifPresent( description -> info.put( DESCRIPTION_FIELD, description ) );
 
