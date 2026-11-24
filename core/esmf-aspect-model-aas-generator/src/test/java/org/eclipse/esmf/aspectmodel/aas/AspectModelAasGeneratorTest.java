@@ -70,6 +70,7 @@ import org.xml.sax.SAXException;
 
 import io.vavr.control.Try;
 import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 
 class AspectModelAasGeneratorTest {
 
@@ -887,7 +888,7 @@ class AspectModelAasGeneratorTest {
 
    private byte[] getContentFromAspectWithData( final TestAspect testAspect, final String data ) {
       final Aspect aspect = TestResources.load( testAspect ).aspect();
-      final JsonNode aspectData = new tools.jackson.databind.json.JsonMapper().readTree( data );
+      final JsonNode aspectData = new JsonMapper().readTree( data );
       final AasGenerationConfig config = AasGenerationConfigBuilder.builder()
             .format( AasFileFormat.XML )
             .aspectData( aspectData )
