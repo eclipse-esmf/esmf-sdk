@@ -16,7 +16,6 @@ package org.eclipse.esmf.aspectmodel.generator.sql;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 
 /**
  * The definition of a relational table
@@ -28,8 +27,7 @@ import java.util.function.Function;
 public interface SqlTableDefinition<
       D extends SqlType,
       C extends SqlColumnDefinition<D, C>,
-      X extends SqlConstraint>
-      extends Function<SqlGenerationConfig.DialectSpecificConfig<D, C, X>, String> {
+      X extends SqlConstraint> {
    String name();
 
    List<C> columns();

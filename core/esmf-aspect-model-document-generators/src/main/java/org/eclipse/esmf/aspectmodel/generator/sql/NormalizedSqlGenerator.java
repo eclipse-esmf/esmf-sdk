@@ -273,6 +273,6 @@ public class NormalizedSqlGenerator<
       final Context<D, C, X> context = NormalizedSqlGeneratorContextBuilder.<D, C, X>builder().build();
       aspect.accept( this, context );
       final List<SqlTableDefinition<D, C, X>> tables = context.tables().stream().toList();
-      return new <U, D, C, T, X>SqlArtifact( aspect.getName() + ".sql", tables, generationConfig );
+      return new SqlArtifact( aspect.getName() + ".sql", tables, generationConfig, sqlDialect );
    }
 }

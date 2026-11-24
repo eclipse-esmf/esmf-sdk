@@ -16,11 +16,7 @@ package org.eclipse.esmf.aspectmodel.generator.sql.databricks;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import org.eclipse.esmf.aspectmodel.generator.sql.SqlConstraint;
-import org.eclipse.esmf.aspectmodel.generator.sql.SqlGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.sql.SqlTableDefinition;
 import org.eclipse.esmf.aspectmodel.generator.sql.SqlValue;
 
@@ -30,33 +26,4 @@ public record DatabricksTableDefinition(
       Optional<String> comment,
       List<DatabricksConstraint> tableConstraints,
       Map<String, SqlValue<? extends DatabricksType>> tableProperties
-) implements SqlTableDefinition<DatabricksType, DatabricksColumnDefinition, DatabricksConstraint> {
-   @Override
-   public String apply(
-         final SqlGenerationConfig.DialectSpecificConfig<DatabricksType, DatabricksColumnDefinition, DatabricksConstraint> config ) {
-      final StringBuilder builder = new StringBuilder();
-      builder.append( config.createTableCommandPrefix() ).append( " " );
-      builder.append( name ).append( " " );
-      final String extraLineBreak = columns.isEmpty() ? "" : "\n";
-      final String extraIndent = columns.isEmpty() ? "" : "  ";
-      builder.append( Stream.concat(
-            columns.stream().map( column -> {
-               final String constraints = tableConstraints().stream()
-                     .filter( constraint -> constraint instanceof final SqlConstraint.ColumnConstraint columnConstraint
-                           && columnConstraint.column().equals( column.name() ) )
-                     .sorted()
-                     .map( Object::toString )
-                     .collect( Collectors.joining( " " ) );
-               return column.toString() + ( constraints.isEmpty() ? "" : " " + constraints );
-            } ),
-            tableConstraints().stream().filter( SqlConstraint.TableConstraint.class::isInstance ).map( Object::toString )
-      ).collect( Collectors.joining( ",\n  ", "(\n" + extraIndent, extraLineBreak + ")\n" ) ) );
-      comment.ifPresent( theComment -> builder.append( new DatabricksCommentDefinition( theComment ) ).append( "\n" ) );
-      if ( !tableProperties().isEmpty() ) {
-         builder.append( tableProperties().entrySet().stream().sorted()
-               .map( tablePropertyEntry -> "'%s'=%s".formatted( tablePropertyEntry.getKey(), tablePropertyEntry.getValue() ) )
-               .collect( Collectors.joining( ", ", "TBLPROPERTIES (", ");\n" ) ) );
-      }
-      return builder.toString();
-   }
-}
+) implements SqlTableDefinition<DatabricksType, DatabricksColumnDefinition, DatabricksConstraint> {}

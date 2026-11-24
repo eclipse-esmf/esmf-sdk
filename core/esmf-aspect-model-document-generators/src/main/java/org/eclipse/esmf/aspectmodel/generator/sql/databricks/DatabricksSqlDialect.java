@@ -16,10 +16,11 @@ package org.eclipse.esmf.aspectmodel.generator.sql.databricks;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.jena.vocabulary.XSD;
 
-import org.eclipse.esmf.aspectmodel.generator.sql.SqlDialect;
+import org.eclipse.esmf.aspectmodel.generator.sql.SqlDialectBase;
 import org.eclipse.esmf.aspectmodel.generator.sql.SqlTableDefinition;
 import org.eclipse.esmf.aspectmodel.generator.sql.SqlValue;
 import org.eclipse.esmf.metamodel.datatype.RdfDatatypeUris;
@@ -28,7 +29,7 @@ import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import com.google.common.collect.ImmutableMap;
 
 public class DatabricksSqlDialect
-      implements SqlDialect<DatabricksSqlGenerationConfig, DatabricksType, DatabricksColumnDefinition, DatabricksTableDefinition,
+      extends SqlDialectBase<DatabricksSqlGenerationConfig, DatabricksType, DatabricksColumnDefinition, DatabricksTableDefinition,
             DatabricksConstraint> {
    protected final Map<String, DatabricksType> typeMap;
 
@@ -126,5 +127,21 @@ public class DatabricksSqlDialect
    @Override
    public <A extends DatabricksConstraint> A sqlUniqueConstraint( final String name, final String column ) {
       return (A) new DatabricksConstraint.Unique( name, column );
+   }
+
+   @Override
+   public String renderTableDefinition(
+         final SqlTableDefinition<DatabricksType, DatabricksColumnDefinition, DatabricksConstraint> tableDefinition,
+         final DatabricksSqlGenerationConfig config ) {
+      final StringBuilder builder = new StringBuilder();
+      renderTableDefinitionBaseStructure( builder, tableDefinition, config );
+      builder.append( "\n" );
+      tableDefinition.comment().ifPresent( theComment -> builder.append( new DatabricksCommentDefinition( theComment ) ).append( "\n" ) );
+      if ( !tableDefinition.tableProperties().isEmpty() ) {
+         builder.append( tableDefinition.tableProperties().entrySet().stream().sorted()
+               .map( tablePropertyEntry -> "'%s'=%s".formatted( tablePropertyEntry.getKey(), tablePropertyEntry.getValue() ) )
+               .collect( Collectors.joining( ", ", "TBLPROPERTIES (", ");\n" ) ) );
+      }
+      return builder.toString();
    }
 }

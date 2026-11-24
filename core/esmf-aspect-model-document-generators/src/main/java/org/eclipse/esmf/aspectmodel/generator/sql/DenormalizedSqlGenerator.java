@@ -212,7 +212,6 @@ public class DenormalizedSqlGenerator<
    public SqlArtifact apply( final Aspect aspect, final U generationConfig ) {
       final Context context = DenormalizedSqlGeneratorContextBuilder.builder().build();
       final ImmutableList.Builder<C> columnsBuilder = ImmutableList.builder();
-      // noinspection DuplicatedCode
       aspect.getProperties().stream()
             .filter( property -> !property.isNotInPayload() )
             .flatMap( property -> property.accept( this, context ) )
@@ -225,6 +224,6 @@ public class DenormalizedSqlGenerator<
             Map.of( GeneratorConstants.SAMM_EXTENSION, sqlDialect.sqlStringValue( aspect.urn().toString() ) );
       final SqlTableDefinition<D, C, X> tableDefinition = sqlDialect.tableDefinition( sqlDialect.tableName( aspect ), columns, comment,
             config.tableConstraints(), tableProperties );
-      return new <U, D, C, T, X>SqlArtifact( aspect.getName() + ".sql", List.of( tableDefinition ), generationConfig );
+      return new SqlArtifact( aspect.getName() + ".sql", List.of( tableDefinition ), generationConfig, sqlDialect );
    }
 }

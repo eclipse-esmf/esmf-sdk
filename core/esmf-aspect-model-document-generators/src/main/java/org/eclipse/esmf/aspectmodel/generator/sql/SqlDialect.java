@@ -61,4 +61,6 @@ public interface SqlDialect<
    <A extends X> A sqlForeignKeyConstraint( String column, String foreignTable, String foreignColumn );
 
    <A extends X> A sqlUniqueConstraint( String name, String column );
+
+   String renderTableDefinition( SqlTableDefinition<D, C, X> tableDefinition, U config );
 }

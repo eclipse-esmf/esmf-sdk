@@ -16,10 +16,11 @@ package org.eclipse.esmf.aspectmodel.generator.sql.postgresql;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.jena.vocabulary.XSD;
 
-import org.eclipse.esmf.aspectmodel.generator.sql.SqlDialect;
+import org.eclipse.esmf.aspectmodel.generator.sql.SqlDialectBase;
 import org.eclipse.esmf.aspectmodel.generator.sql.SqlTableDefinition;
 import org.eclipse.esmf.aspectmodel.generator.sql.SqlValue;
 import org.eclipse.esmf.metamodel.datatype.RdfDatatypeUris;
@@ -27,8 +28,8 @@ import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import com.google.common.collect.ImmutableMap;
 
-public class PostgreSqlDialect implements
-      SqlDialect<PostgreSqlGenerationConfig, PostgreSqlType, PostgreSqlColumnDefinition, PostgreSqlTableDefinition, PostgreSqlConstraint> {
+public class PostgreSqlDialect extends SqlDialectBase<PostgreSqlGenerationConfig, PostgreSqlType, PostgreSqlColumnDefinition,
+      PostgreSqlTableDefinition, PostgreSqlConstraint> {
    protected final Map<String, PostgreSqlType> typeMap;
 
    public PostgreSqlDialect( final PostgreSqlGenerationConfig config ) {
@@ -124,5 +125,26 @@ public class PostgreSqlDialect implements
    @Override
    public <A extends PostgreSqlConstraint> A sqlUniqueConstraint( final String name, final String column ) {
       return (A) new PostgreSqlConstraint.Unique( name, column );
+   }
+
+   @Override
+   public String renderTableDefinition(
+         final SqlTableDefinition<PostgreSqlType, PostgreSqlColumnDefinition, PostgreSqlConstraint> tableDefinition,
+         final PostgreSqlGenerationConfig config ) {
+      final StringBuilder builder = new StringBuilder();
+      renderTableDefinitionBaseStructure( builder, tableDefinition, config );
+      builder.append( ";\n" );
+      tableDefinition.comment()
+            .ifPresent( comment -> builder.append( "COMMENT ON TABLE %s IS '%s';\n".formatted( tableDefinition.name(), comment ) ) );
+      tableDefinition.columns().forEach( column -> column.comment().ifPresent(
+            comment -> builder
+                  .append( "COMMENT ON COLUMN %s.%s IS '%s';\n".formatted( tableDefinition.name(), column.name(), comment ) ) ) );
+      if ( !tableDefinition.tableProperties().isEmpty() ) {
+         builder.append( tableDefinition.tableProperties().entrySet().stream().sorted()
+               .map( tablePropertyEntry -> "-- %s: %s".formatted( tablePropertyEntry.getKey(),
+                     tablePropertyEntry.getValue().lexical() ) )
+               .collect( Collectors.joining( "\n", "", "\n" ) ) );
+      }
+      return builder.toString();
    }
 }
