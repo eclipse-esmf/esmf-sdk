@@ -200,7 +200,7 @@ class AspectModelAasGeneratorTest {
                   .anySatisfy( sme -> assertThat( sme ).asInstanceOf( type( SubmodelElementList.class ) )
                         .satisfies( list -> {
                            assertThat( list.getValue() ).isEmpty();
-                           assertThat( list.getTypeValueListElement() ).isNotNull();
+                           assertThat( list.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.PROPERTY );
                         } ) ) );
    }
 
@@ -222,7 +222,7 @@ class AspectModelAasGeneratorTest {
                   .anySatisfy( sme -> assertThat( sme ).asInstanceOf( type( SubmodelElementList.class ) )
                         .satisfies( list -> {
                            assertThat( list.getValue() ).isEmpty();
-                           assertThat( list.getTypeValueListElement() ).isNotNull();
+                           assertThat( list.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.SUBMODEL_ELEMENT_COLLECTION );
                         } ) ) );
    }
 
