@@ -16,6 +16,15 @@ package org.eclipse.esmf.aspectmodel.generator.sql;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Base class for SQL dialect implementations
+ *
+ * @param <U> the SQL dialect-specific configuration type
+ * @param <D> the type of the column datatypes
+ * @param <C> the column definition type
+ * @param <T> the table definition type
+ * @param <X> the constraint type
+ */
 public abstract class SqlDialectBase<
       U extends SqlGenerationConfig.DialectSpecificConfig<D, C, X>,
       D extends SqlType,
@@ -23,8 +32,8 @@ public abstract class SqlDialectBase<
       T extends SqlTableDefinition<D, C, X>,
       X extends SqlConstraint>
       implements SqlDialect<U, D, C, T, X> {
-   protected void renderTableDefinitionBaseStructure( final StringBuilder builder, final SqlTableDefinition<D, C, X> tableDefinition,
-         final U config ) {
+
+   protected void renderTableDefinitionBaseStructure( final StringBuilder builder, final T tableDefinition, final U config ) {
       builder.append( config.createTableCommandPrefix() ).append( " " );
       builder.append( tableDefinition.name() ).append( " " );
       final String extraLineBreak = tableDefinition.columns().isEmpty() ? "" : "\n";

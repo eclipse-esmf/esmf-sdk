@@ -17,27 +17,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.eclipse.esmf.metamodel.Property;
-import org.eclipse.esmf.metamodel.StructureElement;
-
-import com.google.common.base.CaseFormat;
-
+/**
+ * Represents a specific SQL dialect
+ *
+ * @param <U> the SQL dialect-specific configuration type
+ * @param <D> the type of the column datatypes
+ * @param <C> the column definition type
+ * @param <T> the table definition type
+ * @param <X> the constraint type
+ */
 public interface SqlDialect<
       U extends SqlGenerationConfig.DialectSpecificConfig<D, C, X>,
       D extends SqlType,
       C extends SqlColumnDefinition<D, C>,
       T extends SqlTableDefinition<D, C, X>,
       X extends SqlConstraint> {
-   default String tableName( final StructureElement element ) {
-      return CaseFormat.UPPER_CAMEL.to( CaseFormat.LOWER_UNDERSCORE, element.getName() );
-   }
-
-   default String columnName( final Property property ) {
-      return CaseFormat.LOWER_CAMEL.to( CaseFormat.LOWER_UNDERSCORE, property.getPayloadName() );
-   }
-
-   SqlTableDefinition<D, C, X> tableDefinition( String name, List<C> columns, Optional<String> comment,
-         List<X> tableConstraints, Map<String, SqlValue<? extends D>> tableProperties );
+   T tableDefinition( String name, List<C> columns, Optional<String> comment, List<X> tableConstraints,
+         Map<String, SqlValue<? extends D>> tableProperties );
 
    C columnDefinition( final String name, final D datatype, final boolean isNullable, final Optional<String> comment );
 
@@ -62,5 +58,5 @@ public interface SqlDialect<
 
    <A extends X> A sqlUniqueConstraint( String name, String column );
 
-   String renderTableDefinition( SqlTableDefinition<D, C, X> tableDefinition, U config );
+   String renderTableDefinition( T tableDefinition, U config );
 }

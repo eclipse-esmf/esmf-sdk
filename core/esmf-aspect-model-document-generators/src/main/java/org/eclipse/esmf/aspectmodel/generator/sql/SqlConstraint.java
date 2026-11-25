@@ -13,10 +13,19 @@
 
 package org.eclipse.esmf.aspectmodel.generator.sql;
 
+/**
+ * Represents a SQL constraint
+ */
 public interface SqlConstraint {
+   /**
+    * A table constraint refers to a table
+    */
    interface TableConstraint extends SqlConstraint {
    }
 
+   /**
+    * A column constraint refers to a given column in a table
+    */
    interface ColumnConstraint extends SqlConstraint {
       String column();
    }

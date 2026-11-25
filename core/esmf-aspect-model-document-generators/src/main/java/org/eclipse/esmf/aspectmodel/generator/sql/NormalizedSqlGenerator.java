@@ -41,7 +41,7 @@ import com.google.common.collect.ImmutableList;
 import io.soabase.recordbuilder.core.RecordBuilder;
 
 /**
- * Generator for normalized SQL tables.
+ * Dialect-agnostic SQL generator that creates normalized schemas.
  *
  * @param <U> the SQL dialect-specific configuration type
  * @param <D> the type of the column datatypes
@@ -56,18 +56,19 @@ public class NormalizedSqlGenerator<
       T extends SqlTableDefinition<D, C, X>,
       X extends SqlConstraint>
       extends SqlArtifactGeneratorBase<U, D, C, T, X>
-      implements AspectVisitor<Stream<C>, NormalizedSqlGenerator.Context<D, C, X>> {
+      implements AspectVisitor<Stream<C>, NormalizedSqlGenerator.Context<D, C, T, X>> {
 
    @RecordBuilder
-   public record Context<D extends SqlType, C extends SqlColumnDefinition<D, C>, X extends SqlConstraint>(
-         String columnName,
-         StructureElement currentStructureElement,
-         Property currentProperty,
-         boolean forceOptional,
-         ModelElement forceDescriptionFromElement,
-         List<SqlTableDefinition<D, C, X>> tables,
-         Set<StructureElement> visitedStructureElements
-   ) {
+   public record Context<D extends SqlType, C extends SqlColumnDefinition<D, C>, T extends SqlTableDefinition<D, C,
+         X>, X extends SqlConstraint>(
+               String columnName,
+               StructureElement currentStructureElement,
+               Property currentProperty,
+               boolean forceOptional,
+               ModelElement forceDescriptionFromElement,
+               List<T> tables,
+               Set<StructureElement> visitedStructureElements
+         ) {
       public Context {
          if ( tables == null ) {
             tables = new ArrayList<>();
@@ -77,8 +78,8 @@ public class NormalizedSqlGenerator<
          }
       }
 
-      public NormalizedSqlGeneratorContextBuilder<D, C, X> copy() {
-         return NormalizedSqlGeneratorContextBuilder.<D, C, X>builder()
+      public NormalizedSqlGeneratorContextBuilder<D, C, T, X> copy() {
+         return NormalizedSqlGeneratorContextBuilder.<D, C, T, X>builder()
                .columnName( columnName() )
                .currentStructureElement( currentStructureElement() )
                .currentProperty( currentProperty() )
@@ -94,15 +95,15 @@ public class NormalizedSqlGenerator<
    }
 
    @Override
-   public Stream<C> visitBase( final ModelElement modelElement, final Context<D, C, X> context ) {
+   public Stream<C> visitBase( final ModelElement modelElement, final Context<D, C, T, X> context ) {
       return Stream.empty();
    }
 
    @Override
-   public Stream<C> visitProperty( final Property property, final Context<D, C, X> context ) {
+   public Stream<C> visitProperty( final Property property, final Context<D, C, T, X> context ) {
       return property.getCharacteristic().stream().flatMap( characteristic -> {
-         final NormalizedSqlGenerator.Context<D, C, X> newContext = context.copy()
-               .columnName( sqlDialect.columnName( property ) )
+         final NormalizedSqlGenerator.Context<D, C, T, X> newContext = context.copy()
+               .columnName( columnName( property ) )
                .currentProperty( property )
                .forceOptional( false )
                .build();
@@ -111,12 +112,12 @@ public class NormalizedSqlGenerator<
    }
 
    @Override
-   public Stream<C> visitAspect( final Aspect aspect, final Context<D, C, X> context ) {
+   public Stream<C> visitAspect( final Aspect aspect, final Context<D, C, T, X> context ) {
       return visitStructureElement( aspect, context );
    }
 
    @Override
-   public Stream<C> visitCharacteristic( final Characteristic characteristic, final Context<D, C, X> context ) {
+   public Stream<C> visitCharacteristic( final Characteristic characteristic, final Context<D, C, T, X> context ) {
       if ( characteristic.getDataType().isEmpty() ) {
          return Stream.empty();
       }
@@ -141,7 +142,7 @@ public class NormalizedSqlGenerator<
    }
 
    @Override
-   public Stream<C> visitEither( final Either either, final Context<D, C, X> context ) {
+   public Stream<C> visitEither( final Either either, final Context<D, C, T, X> context ) {
       final Stream<C> leftResult = either.getLeft().accept( this, context.copy()
             .columnName( context.columnName() + LEVEL_DELIMITER + "left" )
             .forceOptional( true )
@@ -156,23 +157,23 @@ public class NormalizedSqlGenerator<
    }
 
    @Override
-   public Stream<C> visitTrait( final Trait trait, final Context<D, C, X> context ) {
+   public Stream<C> visitTrait( final Trait trait, final Context<D, C, T, X> context ) {
       return trait.getBaseCharacteristic().accept( this, context );
    }
 
-   private void addTable( final SqlTableDefinition<D, C, X> tableDefinition, final Context<D, C, X> context ) {
+   private void addTable( final T tableDefinition, final Context<D, C, T, X> context ) {
       if ( context.tables().stream().noneMatch( t -> t.name().equals( tableDefinition.name() ) ) ) {
          context.tables().add( tableDefinition );
       }
    }
 
-   private SqlTableDefinition<D, C, X> referenceTableForComplexType( final ComplexType complexType, final boolean addIndexColumn,
-         final Context<D, C, X> context ) {
+   private T referenceTableForComplexType( final ComplexType complexType, final boolean addIndexColumn,
+         final Context<D, C, T, X> context ) {
       // The additional underscore is intentional and necessary:
       // If the source table structure element happens to have a property called "references" which a
       // collection Characteristic, this would also lead to a table name "typename__references".
       // Therefore, an additional underscore is added.
-      final String tableName = sqlDialect.tableName( complexType ) + LEVEL_DELIMITER + "_references";
+      final String tableName = tableName( complexType ) + LEVEL_DELIMITER + "_references";
       final ImmutableList.Builder<C> builder = ImmutableList.<C>builder()
             .add( sqlDialect.columnDefinition( "_id_source", sqlDialect.sqlIdColumnType(), false, Optional.empty() ) )
             .add( sqlDialect.columnDefinition( "_id_target", sqlDialect.sqlIdColumnType(), false, Optional.empty() ) )
@@ -188,14 +189,14 @@ public class NormalizedSqlGenerator<
             sqlDialect.columnDefinition( "property_name", sqlDialect.sqlType( XSD.xstring.getURI() ), false, Optional.empty() )
       );
       final List<X> constraints = ImmutableList.<X>builder()
-            .add( sqlDialect.sqlForeignKeyConstraint( "_id_source", sqlDialect.tableName( context.currentStructureElement() ), "_id" ) )
-            .add( sqlDialect.sqlForeignKeyConstraint( "_id_target", sqlDialect.tableName( complexType ), "_id" ) )
+            .add( sqlDialect.sqlForeignKeyConstraint( "_id_source", tableName( context.currentStructureElement() ), "_id" ) )
+            .add( sqlDialect.sqlForeignKeyConstraint( "_id_target", tableName( complexType ), "_id" ) )
             .build();
       return sqlDialect.tableDefinition( tableName, columns, Optional.empty(), constraints, Map.of() );
    }
 
    @Override
-   public Stream<C> visitCollection( final Collection collection, final Context<D, C, X> context ) {
+   public Stream<C> visitCollection( final Collection collection, final Context<D, C, T, X> context ) {
       final Type type = collection.getDataType().orElseThrow();
       if ( type instanceof final ComplexType complexType ) {
          // Result of this call is not needed, but it will add the additional table for the complex type to
@@ -206,44 +207,42 @@ public class NormalizedSqlGenerator<
       }
 
       // Build values table
-      final String tableName = sqlDialect.tableName( context.currentStructureElement() ) + LEVEL_DELIMITER + context.columnName();
+      final String tableName = tableName( context.currentStructureElement() ) + LEVEL_DELIMITER + context.columnName();
       final List<C> columns = List.of(
             sqlDialect.columnDefinition( "_id_source", sqlDialect.sqlIdColumnType(), false, Optional.empty() ),
             sqlDialect.columnDefinition( "value", sqlDialect.sqlType( type.getUrn() ), false, Optional.empty() )
       );
       final ImmutableList.Builder<X> constraintBuilder = ImmutableList.builder();
-      constraintBuilder.add(
-            sqlDialect.sqlForeignKeyConstraint( "_id_source", sqlDialect.tableName( context.currentStructureElement() ), "_id" ) );
+      constraintBuilder.add( sqlDialect.sqlForeignKeyConstraint( "_id_source", tableName( context.currentStructureElement() ), "_id" ) );
       if ( collection.getCollectionType() == CollectionValue.CollectionType.SET
             || collection.getCollectionType() == CollectionValue.CollectionType.SORTEDSET ) {
          constraintBuilder.add( sqlDialect.sqlUniqueConstraint( "u_value", "value" ) );
       }
-      final SqlTableDefinition<D, C, X> valuesTable =
-            sqlDialect.tableDefinition( tableName, columns, Optional.empty(), constraintBuilder.build(), Map.of() );
+      final T valuesTable = sqlDialect.tableDefinition( tableName, columns, Optional.empty(), constraintBuilder.build(), Map.of() );
       addTable( valuesTable, context );
       return Stream.empty();
    }
 
    @Override
-   public Stream<C> visitComplexType( final ComplexType complexType, final Context<D, C, X> context ) {
+   public Stream<C> visitComplexType( final ComplexType complexType, final Context<D, C, T, X> context ) {
       return processStructureElement( complexType, complexType.getAllProperties(), context );
    }
 
    @Override
-   public Stream<C> visitStructureElement( final StructureElement structureElement, final Context<D, C, X> context ) {
+   public Stream<C> visitStructureElement( final StructureElement structureElement, final Context<D, C, T, X> context ) {
       return processStructureElement( structureElement, structureElement.getProperties(), context );
    }
 
    private Stream<C> processStructureElement( final StructureElement structureElement, final List<Property> properties,
-         final Context<D, C, X> context ) {
+         final Context<D, C, T, X> context ) {
       if ( context.visitedStructureElements().contains( structureElement ) ) {
          return Stream.empty();
       }
       context.visitedStructureElements().add( structureElement );
-      final String tableName = sqlDialect.tableName( structureElement );
+      final String tableName = tableName( structureElement );
       final ImmutableList.Builder<C> columnsBuilder = ImmutableList.builder();
       columnsBuilder.add( sqlDialect.columnDefinition( "_id", sqlDialect.sqlIdColumnType(), false, Optional.empty() ) );
-      final Context<D, C, X> newContext = context.copy()
+      final Context<D, C, T, X> newContext = context.copy()
             .currentStructureElement( structureElement )
             .build();
       properties.stream()
@@ -262,17 +261,16 @@ public class NormalizedSqlGenerator<
             .addAll( config.tableConstraintsPerTable().getOrDefault( tableName, List.of() ) )
             .add( sqlDialect.sqlPrimaryKeyConstraint( "_id" ) )
             .build();
-      final SqlTableDefinition<D, C, X> table =
-            sqlDialect.tableDefinition( tableName, columns, comment, tableConstraints, tableProperties );
+      final T table = sqlDialect.tableDefinition( tableName, columns, comment, tableConstraints, tableProperties );
       addTable( table, context );
       return columns.stream();
    }
 
    @Override
    public SqlArtifact apply( final Aspect aspect, final U generationConfig ) {
-      final Context<D, C, X> context = NormalizedSqlGeneratorContextBuilder.<D, C, X>builder().build();
+      final Context<D, C, T, X> context = NormalizedSqlGeneratorContextBuilder.<D, C, T, X>builder().build();
       aspect.accept( this, context );
-      final List<SqlTableDefinition<D, C, X>> tables = context.tables().stream().toList();
+      final List<T> tables = context.tables().stream().toList();
       return new SqlArtifact( aspect.getName() + ".sql", tables, generationConfig, sqlDialect );
    }
 }

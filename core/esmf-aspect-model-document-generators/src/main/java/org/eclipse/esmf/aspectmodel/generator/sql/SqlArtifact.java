@@ -31,7 +31,7 @@ public class SqlArtifact extends StringArtifact implements LocalizedArtifact {
          C extends SqlColumnDefinition<D, C>,
          T extends SqlTableDefinition<D, C, X>,
          X extends SqlConstraint> SqlArtifact( final String id,
-               final List<SqlTableDefinition<D, C, X>> tables, final U config, final SqlDialect<U, D, C, T, X> dialect ) {
+               final List<T> tables, final U config, final SqlDialect<U, D, C, T, X> dialect ) {
       super( id, tables.stream().map( tableDefinition -> dialect.renderTableDefinition( tableDefinition, config ) )
             .collect( Collectors.joining( "\n" ) ) );
       language = config.commentLanguage();

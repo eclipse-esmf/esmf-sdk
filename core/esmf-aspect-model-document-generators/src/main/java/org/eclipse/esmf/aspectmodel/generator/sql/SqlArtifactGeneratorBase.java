@@ -16,6 +16,10 @@ package org.eclipse.esmf.aspectmodel.generator.sql;
 import java.util.function.BiFunction;
 
 import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.Property;
+import org.eclipse.esmf.metamodel.StructureElement;
+
+import com.google.common.base.CaseFormat;
 
 /**
  * Base class for SQL artifact generators
@@ -41,5 +45,13 @@ public abstract class SqlArtifactGeneratorBase<
    public SqlArtifactGeneratorBase( final U config, final SqlDialect<U, D, C, T, X> sqlDialect ) {
       this.config = config;
       this.sqlDialect = sqlDialect;
+   }
+
+   protected String tableName( final StructureElement element ) {
+      return CaseFormat.UPPER_CAMEL.to( CaseFormat.LOWER_UNDERSCORE, element.getName() );
+   }
+
+   protected String columnName( final Property property ) {
+      return CaseFormat.LOWER_CAMEL.to( CaseFormat.LOWER_UNDERSCORE, property.getPayloadName() );
    }
 }

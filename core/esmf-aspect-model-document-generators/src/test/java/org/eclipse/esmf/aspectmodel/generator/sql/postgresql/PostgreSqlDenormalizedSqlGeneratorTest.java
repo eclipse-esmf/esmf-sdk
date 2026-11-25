@@ -25,6 +25,16 @@ import org.junit.jupiter.api.Test;
 
 class PostgreSqlDenormalizedSqlGeneratorTest extends PostgreSqlTestBase {
    @Test
+   void testGenerationConfigNormalizesInvalidValues() {
+      final PostgreSqlGenerationConfig config = PostgreSqlGenerationConfigBuilder.builder().build();
+      assertThat( config.createTableCommandPrefix() ).isEqualTo( PostgreSqlGenerationConfig.DEFAULT_TABLE_COMMAND_PREFIX );
+      assertThat( config.decimalPrecision() ).isEqualTo( PostgreSqlGenerationConfig.DECIMAL_DEFAULT_PRECISION );
+      assertThat( config.decimalScale() ).isEqualTo( PostgreSqlGenerationConfig.DECIMAL_DEFAULT_SCALE );
+      assertThat( config.customColumns() ).isEmpty();
+      assertThat( config.tableConstraints() ).isEmpty();
+   }
+
+   @Test
    void testCollectionAndComments() {
       assertThat( sql( TestAspect.ASPECT_WITH_COLLECTION, new PostgreSqlGenerationConfig() ) ).isEqualTo( """
          CREATE TABLE IF NOT EXISTS aspect_with_collection (

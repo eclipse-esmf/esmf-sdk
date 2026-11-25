@@ -127,4 +127,28 @@ public class AspectModelSqlGeneratorTest {
          assertThat( result ).doesNotContain( "TBLPROPERTIES", "ARRAY<", " STRING" );
       } ).doesNotThrowAnyException();
    }
+
+   @Test
+   void testSqlGenerationConfigDefaults() {
+      final SqlGenerationConfig config = SqlGenerationConfigBuilder.builder().build();
+      assertThat( config.dialect() ).isEqualTo( SqlGenerationConfig.Dialect.DATABRICKS );
+      assertThat( config.mappingStrategy() ).isEqualTo( SqlGenerationConfig.MappingStrategy.DENORMALIZED );
+   }
+
+   @Test
+   void testPostgreSqlNormalizedGeneration() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_COLLECTION ).aspect();
+      final SqlArtifact artifact = new AspectModelSqlGenerator( aspect, SqlGenerationConfigBuilder.builder()
+            .mappingStrategy( SqlGenerationConfig.MappingStrategy.NORMALIZED )
+            .dialect( SqlGenerationConfig.Dialect.POSTGRESQL )
+            .dialectSpecificConfig( new PostgreSqlGenerationConfig() )
+            .build() ).singleResult();
+
+      assertThat( artifact.language() ).isEqualTo( Locale.ENGLISH );
+      assertThat( artifact.getContent() )
+            .contains( "CREATE TABLE IF NOT EXISTS aspect_with_collection__test_property" )
+            .contains( "value TEXT NOT NULL" )
+            .contains( "REFERENCES aspect_with_collection (_id)" )
+            .contains( "-- x-samm-aspect-model-urn: " + aspect.urn() );
+   }
 }

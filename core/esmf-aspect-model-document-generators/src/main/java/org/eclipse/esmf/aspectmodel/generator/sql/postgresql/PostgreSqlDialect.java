@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 
 import org.apache.jena.vocabulary.XSD;
 
+import org.eclipse.esmf.aspectmodel.generator.DocumentGenerationException;
 import org.eclipse.esmf.aspectmodel.generator.sql.SqlDialectBase;
-import org.eclipse.esmf.aspectmodel.generator.sql.SqlTableDefinition;
 import org.eclipse.esmf.aspectmodel.generator.sql.SqlValue;
 import org.eclipse.esmf.metamodel.datatype.RdfDatatypeUris;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
@@ -74,7 +74,7 @@ public class PostgreSqlDialect extends SqlDialectBase<PostgreSqlGenerationConfig
    }
 
    @Override
-   public SqlTableDefinition<PostgreSqlType, PostgreSqlColumnDefinition, PostgreSqlConstraint> tableDefinition( final String name,
+   public PostgreSqlTableDefinition tableDefinition( final String name,
          final List<PostgreSqlColumnDefinition> columns, final Optional<String> comment, final List<PostgreSqlConstraint> tableConstraints,
          final Map<String, SqlValue<? extends PostgreSqlType>> tableProperties ) {
       return new PostgreSqlTableDefinition( name, columns, comment, tableConstraints, tableProperties );
@@ -94,7 +94,8 @@ public class PostgreSqlDialect extends SqlDialectBase<PostgreSqlGenerationConfig
 
    @Override
    public PostgreSqlType sqlType( final String sammTypeUri ) {
-      return typeMap.get( sammTypeUri );
+      return Optional.ofNullable( typeMap.get( sammTypeUri ) ).orElseThrow(
+            () -> new DocumentGenerationException( "Unable to map SAMM type " + sammTypeUri + " to corresponding SQL type" ) );
    }
 
    @Override
@@ -128,9 +129,7 @@ public class PostgreSqlDialect extends SqlDialectBase<PostgreSqlGenerationConfig
    }
 
    @Override
-   public String renderTableDefinition(
-         final SqlTableDefinition<PostgreSqlType, PostgreSqlColumnDefinition, PostgreSqlConstraint> tableDefinition,
-         final PostgreSqlGenerationConfig config ) {
+   public String renderTableDefinition( final PostgreSqlTableDefinition tableDefinition, final PostgreSqlGenerationConfig config ) {
       final StringBuilder builder = new StringBuilder();
       renderTableDefinitionBaseStructure( builder, tableDefinition, config );
       builder.append( ";\n" );

@@ -51,6 +51,10 @@ public sealed interface DatabricksConstraint extends SqlConstraint {
          String name,
          String column
    ) implements DatabricksConstraint, TableConstraint {
+      public Unique( final String column ) {
+         this( "u_" + column, column );
+      }
+
       @Override
       public @NonNull String toString() {
          return "CONSTRAINT " + name + " UNIQUE (" + column + ")";

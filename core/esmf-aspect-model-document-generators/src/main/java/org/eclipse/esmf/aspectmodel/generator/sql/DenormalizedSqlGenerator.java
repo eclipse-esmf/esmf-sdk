@@ -94,7 +94,7 @@ public class DenormalizedSqlGenerator<
       context.recursionDepth().put( property, context.recursionDepth().getOrDefault( property, 0 ) + 1 );
       return property.getCharacteristic().stream().flatMap( characteristic -> {
          final Context newContext = context.copy()
-               .prefix( ( context.prefix().isEmpty() ? "" : context.prefix() + LEVEL_DELIMITER ) + sqlDialect.columnName( property ) )
+               .prefix( ( context.prefix().isEmpty() ? "" : context.prefix() + LEVEL_DELIMITER ) + columnName( property ) )
                .currentProperty( property )
                .build();
          return characteristic.accept( this, newContext );
@@ -177,20 +177,19 @@ public class DenormalizedSqlGenerator<
          }
 
          final Type type = property.getDataType().get();
-         String columnPrefix = sqlDialect.columnName( property );
+         String columnPrefix = columnName( property );
 
          final Stream<C> idColumn;
          if ( parentPrefix.contains( LEVEL_DELIMITER ) ) {
-            columnPrefix = parentPrefix + LEVEL_DELIMITER + sqlDialect.columnName( property );
-            final C column =
-                  sqlDialect.columnDefinition( columnPrefix + "_id", sqlDialect.sqlIdColumnType(), false, Optional.empty() );
+            columnPrefix = parentPrefix + LEVEL_DELIMITER + columnName( property );
+            final C column = sqlDialect.columnDefinition( columnPrefix + "_id", sqlDialect.sqlIdColumnType(), false, Optional.empty() );
             idColumn = Stream.of( column );
          } else {
             idColumn = Stream.empty();
          }
 
          if ( isDefaultList && !parentPrefix.contains( LEVEL_DELIMITER ) ) {
-            columnPrefix = parentPrefix + LEVEL_DELIMITER + sqlDialect.columnName( property );
+            columnPrefix = parentPrefix + LEVEL_DELIMITER + columnName( property );
          }
 
          final Stream<C> regularColumns;
@@ -222,7 +221,7 @@ public class DenormalizedSqlGenerator<
             : Optional.empty();
       final Map<String, SqlValue<? extends D>> tableProperties =
             Map.of( GeneratorConstants.SAMM_EXTENSION, sqlDialect.sqlStringValue( aspect.urn().toString() ) );
-      final SqlTableDefinition<D, C, X> tableDefinition = sqlDialect.tableDefinition( sqlDialect.tableName( aspect ), columns, comment,
+      final T tableDefinition = sqlDialect.tableDefinition( tableName( aspect ), columns, comment,
             config.tableConstraints(), tableProperties );
       return new SqlArtifact( aspect.getName() + ".sql", List.of( tableDefinition ), generationConfig, sqlDialect );
    }

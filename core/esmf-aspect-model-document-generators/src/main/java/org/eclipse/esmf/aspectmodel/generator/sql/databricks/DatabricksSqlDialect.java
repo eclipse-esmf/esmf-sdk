@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 
 import org.apache.jena.vocabulary.XSD;
 
+import org.eclipse.esmf.aspectmodel.generator.DocumentGenerationException;
 import org.eclipse.esmf.aspectmodel.generator.sql.SqlDialectBase;
-import org.eclipse.esmf.aspectmodel.generator.sql.SqlTableDefinition;
 import org.eclipse.esmf.aspectmodel.generator.sql.SqlValue;
 import org.eclipse.esmf.metamodel.datatype.RdfDatatypeUris;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
@@ -75,7 +75,7 @@ public class DatabricksSqlDialect
    }
 
    @Override
-   public SqlTableDefinition<DatabricksType, DatabricksColumnDefinition, DatabricksConstraint> tableDefinition( final String name,
+   public DatabricksTableDefinition tableDefinition( final String name,
          final List<DatabricksColumnDefinition> columns, final Optional<String> comment, final List<DatabricksConstraint> tableConstraints,
          final Map<String, SqlValue<? extends DatabricksType>> tableProperties ) {
       return new DatabricksTableDefinition( name, columns, comment, tableConstraints, tableProperties );
@@ -95,7 +95,8 @@ public class DatabricksSqlDialect
 
    @Override
    public DatabricksType sqlType( final String sammTypeUri ) {
-      return typeMap.get( sammTypeUri );
+      return Optional.ofNullable( typeMap.get( sammTypeUri ) ).orElseThrow(
+            () -> new DocumentGenerationException( "Unable to map SAMM type " + sammTypeUri + " to corresponding SQL type" ) );
    }
 
    @Override
@@ -130,9 +131,7 @@ public class DatabricksSqlDialect
    }
 
    @Override
-   public String renderTableDefinition(
-         final SqlTableDefinition<DatabricksType, DatabricksColumnDefinition, DatabricksConstraint> tableDefinition,
-         final DatabricksSqlGenerationConfig config ) {
+   public String renderTableDefinition( final DatabricksTableDefinition tableDefinition, final DatabricksSqlGenerationConfig config ) {
       final StringBuilder builder = new StringBuilder();
       renderTableDefinitionBaseStructure( builder, tableDefinition, config );
       builder.append( "\n" );

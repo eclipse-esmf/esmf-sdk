@@ -29,6 +29,19 @@ import org.junit.jupiter.params.provider.ValueSource;
 @SuppressWarnings( "checkstyle:LineLength" )
 class DatabricksDenormalizedSqlGeneratorTest extends DatabricksTestBase {
    @Test
+   void testGenerationConfigNormalizesInvalidValues() {
+      final DatabricksSqlGenerationConfig config = DatabricksSqlGenerationConfigBuilder.builder().build();
+      assertThat( config.createTableCommandPrefix() ).isEqualTo( DatabricksSqlGenerationConfig.DEFAULT_TABLE_COMMAND_PREFIX );
+      assertThat( config.commentLanguage() ).isEqualTo( Locale.ENGLISH );
+      assertThat( config.decimalPrecision() ).isEqualTo( DatabricksSqlGenerationConfig.DECIMAL_DEFAULT_PRECISION );
+      assertThat( config.decimalScale() ).isEqualTo( DatabricksSqlGenerationConfig.DECIMAL_DEFAULT_SCALE );
+      assertThat( config.customColumns() ).isEmpty();
+      assertThat( config.customColumnsPerTable() ).isEmpty();
+      assertThat( config.tableConstraints() ).isEmpty();
+      assertThat( config.tableConstraintsPerTable() ).isEmpty();
+   }
+
+   @Test
    void testAspectWithAbstractEntity() {
       assertThat( sql( TestAspect.ASPECT_WITH_ABSTRACT_ENTITY ) ).isEqualTo( """
          CREATE TABLE IF NOT EXISTS aspect_with_abstract_entity (
