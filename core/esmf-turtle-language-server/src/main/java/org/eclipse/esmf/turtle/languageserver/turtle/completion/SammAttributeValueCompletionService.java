@@ -46,6 +46,8 @@ import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
 public final class SammAttributeValueCompletionService {
+   private static final String SAMM_CLASS_DETAIL = "SAMM Class";
+
    private static final String XSD_NAMESPACE = XSD.getURI();
 
    private static final List<String> ISO_639_1_LANGUAGES = Arrays.stream( Locale.getISOLanguages() ).sorted().toList();
@@ -183,7 +185,7 @@ public final class SammAttributeValueCompletionService {
    private final SammSuggestionContextDetector detector = new SammSuggestionContextDetector();
 
    public List<CompletionItem> complete( final ParsedDocument document, final Position position ) {
-      return detector.detect( document, position )
+      return detector.detect( new TurtleCompletionTree( document ).cursorAt( position ) )
             .map( this::complete )
             .orElseGet( List::of );
    }
@@ -525,16 +527,16 @@ public final class SammAttributeValueCompletionService {
       }
 
       final List<CompletionItem> result = prefixedResourceCompletions( context, TOP_LEVEL_CORE_CLASSES, sammPrefix,
-            CompletionItemKind.Class, "SAMM Core Class", indexedSort( "01" ) );
+            CompletionItemKind.Class, SAMM_CLASS_DETAIL, indexedSort( "01" ) );
       result.addAll( characteristicClassesCompletions( context, charPrefix, "02" ) );
       result.addAll( constraintClassesCompletions( context, charPrefix, "03" ) );
 
       final String unitClass = sammPrefix + SAMM.UNIT;
       result.add( createCompletionItem( unitClass, context, CompletionItemKind.Class,
-            "SAMM Unit Class", "04_01_Unit", unitClass + " " + SAMM.UNIT ) );
+            SAMM_CLASS_DETAIL, "04_01_Unit", unitClass + " " + SAMM.UNIT ) );
       final String qkClass = sammPrefix + SAMM.QUANTITY_KIND_CLASS;
       result.add( createCompletionItem( qkClass, context, CompletionItemKind.Class,
-            "SAMM QuantityKind Class", "04_02_QuantityKind", qkClass + " " + SAMM.QUANTITY_KIND_CLASS ) );
+            SAMM_CLASS_DETAIL, "04_02_QuantityKind", qkClass + " " + SAMM.QUANTITY_KIND_CLASS ) );
 
       return result;
    }
@@ -576,13 +578,13 @@ public final class SammAttributeValueCompletionService {
    private List<CompletionItem> characteristicClassesCompletions( final SammCompletionContext context, final String prefix,
          final String sortPrefix ) {
       return prefixedResourceCompletions( context, CHARACTERISTIC_CLASSES, prefix, CompletionItemKind.Class,
-            "SAMM Characteristic Class", indexedSort( sortPrefix ) );
+            SAMM_CLASS_DETAIL, indexedSort( sortPrefix ) );
    }
 
    private List<CompletionItem> constraintClassesCompletions( final SammCompletionContext context, final String prefix,
          final String sortPrefix ) {
       return prefixedResourceCompletions( context, CONSTRAINT_CLASSES, prefix, CompletionItemKind.Class,
-            "SAMM Constraint Class", indexedSort( sortPrefix ) );
+            SAMM_CLASS_DETAIL, indexedSort( sortPrefix ) );
    }
 
    private static List<CompletionItem> prefixedResourceCompletions( final SammCompletionContext context, final List<String> names,

@@ -17,6 +17,7 @@ import static org.eclipse.esmf.aspectmodel.StreamUtil.asSortedMap;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
@@ -68,13 +69,6 @@ public abstract class TurtleService {
             .anyMatch( n -> SAMM_PREFIXES.contains( n.content() ) );
    }
 
-   protected boolean isPrefixedBy( final TurtleSyntaxTree.Node prefixedName, final String prefix ) {
-      return prefixedName.children().stream()
-            .filter( TurtleSyntaxTree.Node::isToken )
-            .filter( n -> ParserTokenType.NAMESPACE.equals( n.type() ) )
-            .anyMatch( n -> n.content().equals( prefix ) );
-   }
-
    protected Map<TurtleSyntaxTree.Node, TurtleSyntaxTree.Node> predicateObjectMapForTriple( final TurtleSyntaxTree.Token triple ) {
       return triple.childWithType( ParserTokenType.PROPERTY_LIST ).stream()
             .flatMap( propertyList -> propertyList.children().stream()
@@ -118,10 +112,75 @@ public abstract class TurtleService {
             .filter( n -> ParserTokenType.PREFIXED_NAME.equals( n.type() ) );
    }
 
+   /**
+    * Expands an IRI reference or prefixed name found in the node, using the first matching
+    * {@code @prefix} declaration.
+    * Relative IRIs and Turtle escapes are not resolved.
+    */
+   protected Optional<String> expandedIri( final TurtleSyntaxTree.Node node, final TurtleSyntaxTree tree ) {
+      final Optional<TurtleSyntaxTree.Node> iriReference = descendantWithType( node, ParserTokenType.IRI_REFERENCE );
+      if ( iriReference.isPresent() ) {
+         final String value = iriReference.get().content();
+         return Optional.of( value.startsWith( "<" ) && value.endsWith( ">" ) ? value.substring( 1, value.length() - 1 ) : value );
+      }
+      return descendantWithType( node, ParserTokenType.PREFIXED_NAME )
+            .flatMap( prefixedName -> expandedPrefixedName( prefixedName, tree ) );
+   }
+
+   protected Optional<String> expandedPrefixedName( final TurtleSyntaxTree.Node prefixedName, final TurtleSyntaxTree tree ) {
+      final Optional<String> local = prefixedName.children().stream()
+            .filter( child -> child.isToken() && ParserTokenType.PN_LOCAL.equals( child.type() ) )
+            .map( TurtleSyntaxTree.Node::content ).findFirst();
+      final String prefix = prefixedName.children().stream()
+            .filter( child -> ParserTokenType.NAMESPACE.equals( child.type() ) )
+            .map( TurtleSyntaxTree.Node::content ).findFirst().orElse( "" );
+      final String prefixName = prefix.endsWith( ":" ) ? prefix.substring( 0, prefix.length() - 1 ) : prefix;
+      return local.flatMap( name -> getPrefixIri( prefixName, tree ).map( iri -> iri + name ) );
+   }
+
+   /**
+    * Retrieves the namespace IRI from the first matching {@code @prefix} declaration.
+    */
+   protected Optional<String> getPrefixIri( final String prefixName, final TurtleSyntaxTree tree ) {
+      return tree.nodes().filter( node -> ParserTokenType.DIRECTIVE.equals( node.type() ) )
+            .flatMap( node -> node.children().stream() )
+            .filter( node -> ParserTokenType.PREFIX_ID.equals( node.type() ) )
+            .filter( prefixId -> matchesPrefixName( prefixId, prefixName ) ).findFirst()
+            .flatMap( prefixId -> prefixId.childWithType( ParserTokenType.IRI_REFERENCE ) )
+            .map( TurtleSyntaxTree.Node::content )
+            // IRI_REFERENCE content includes angle brackets: <urn:samm:...#>
+            .map( TurtleService::stripAngleBrackets );
+   }
+
+   private boolean matchesPrefixName( final TurtleSyntaxTree.Node prefixIdNode, final String prefixName ) {
+      final Optional<TurtleSyntaxTree.Node> namespaceNode = prefixIdNode.childWithType( ParserTokenType.NAMESPACE );
+      if ( namespaceNode.isEmpty() ) {
+         // Default prefix (:) has no pn_prefix child; empty prefixName matches it
+         return prefixName.isEmpty();
+      }
+      // If there is no PN_PREFIX token, it's the default prefix (@prefix : <iri>)
+      return namespaceNode.get().children().stream()
+            .filter( node -> node.isToken() && ParserTokenType.PN_PREFIX.equals( node.type() ) )
+            .map( TurtleSyntaxTree.Node::content ).findFirst()
+            .map( prefixName::equals ).orElse( prefixName.isEmpty() );
+   }
+
+   protected Optional<TurtleSyntaxTree.Node> descendantWithType( final TurtleSyntaxTree.Node node, final String type ) {
+      if ( type.equals( node.type() ) ) {
+         return Optional.of( node );
+      }
+      return node.children().stream().map( child -> descendantWithType( child, type ) )
+            .flatMap( Optional::stream ).findFirst();
+   }
+
    protected Location getLocationForLsp( final ParsedDocument parsedDocument, final TurtleSyntaxTree.Node node ) {
       final Range range = new Range(
             new Position( node.location().fromLine(), node.location().fromColumn() ),
             new Position( node.location().toLine(), node.location().toColumn() ) );
       return new Location( parsedDocument.getUri().toString(), range );
+   }
+
+   private static String stripAngleBrackets( final String iri ) {
+      return iri.startsWith( "<" ) && iri.endsWith( ">" ) ? iri.substring( 1, iri.length() - 1 ) : iri;
    }
 }
