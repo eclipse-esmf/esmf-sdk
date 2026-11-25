@@ -166,9 +166,173 @@ include::example$sample-file-header.vm[]
 Using the Aspect Model SQL generator, an SQL script can be generated that sets up a table for data
 corresponding to the Aspect. The current implementation provides support for the
 https://docs.databricks.com/en/sql/language-manual/index.html[Databricks SQL] and
-https://www.postgresql.org/docs/current/sql.html[PostgreSQL] dialects and a mapping
-strategy that uses a denormalized table, i.e., the table contains one column for each Property used
-in the Aspect Model (or any of its transitively referenced Entities).
+https://www.postgresql.org/docs/current/sql.html[PostgreSQL] dialects and denormalized and
+normalized mapping strategies.
+
+The following sections explain how the mapping strategies differ based on the following example
+model:
+
+[source,turtle]
+----
+include::example$Maintenance.ttl[tags=model]
+----
+
+[[denormalized-mapping-strategy]]
+=== Denormalized Mapping Strategy
+
+The _denormalized_ mapping strategy creates a single table for an Aspect that contains one column
+for each Property used in the Aspect Model or any of its transitively referenced Entities. Column
+names are built by concatenating Property names from the parent element with Property elements from
+the child element.
+
+By following the _denormalized_ mapping strategy, the SQL code generated for the example model looks
+like the following:
+
+[tabs]
+====
+Databricks SQL::
++
+--
+[source,sql]
+----
+CREATE TABLE IF NOT EXISTS maintenance ( -- <1>
+  last_service__service_date TIMESTAMP NOT NULL COMMENT 'When was the maintenance performed', -- <2>
+  last_service__technician_name STRING NOT NULL COMMENT 'Who performed the maintenance', -- <3>
+  last_service__duration_of_deployment DECIMAL(10,0) NOT NULL COMMENT 'How long did the maintenance take'
+)
+COMMENT 'Machine maintenance information' -- <4>
+TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.examples:1.0.0#Maintenance'); -- <5>
+----
+
+<1> The table name is created by translating the Aspect name from camel case to snake case.
+<2> Column names are concatenated, following the path from the root element. If all Properties on
+the path (in this case `lastService` on `Maintenance` and `serviceDate` on `ServiceRecord`) are
+mandatory (not marked optional), a `NOT NULL` constraint is added. Column comments contain the
+description from the original Propery's `samm:description` attribute.
+<3> SQL types are derived from the used Characteristic's `samm:dataType`, see <<databricks-type-mapping>>.
+<4> A table comment is added with the Aspect's `samm:description`.
+<5> A table property indicating the original source of the table structure is added.
+--
+PostgreSQL::
++
+--
+[source,sql]
+----
+CREATE TABLE IF NOT EXISTS maintenance ( -- <1>
+  last_service__service_date TIMESTAMP NOT NULL, -- <2>
+  last_service__technician_name TEXT NOT NULL, -- <3>
+  last_service__duration_of_deployment NUMERIC(10,0) NOT NULL
+);
+COMMENT ON TABLE maintenance IS 'Machine maintenance information'; -- <4>
+COMMENT ON COLUMN maintenance.last_service__service_date IS 'When was the maintenance performed';
+COMMENT ON COLUMN maintenance.last_service__technician_name IS 'Who performed the maintenance';
+COMMENT ON COLUMN maintenance.last_service__duration_of_deployment IS 'How long did the maintenance take';
+-- x-samm-aspect-model-urn: urn:samm:org.eclipse.esmf.examples:1.0.0#Maintenance
+----
+
+<1> The table name is created by translating the Aspect name from camel case to snake case.
+<2> Column names are concatenated, following the path from the root element. If all Properties on
+the path (in this case `lastService` on `Maintenance` and `serviceDate` on `ServiceRecord`) are
+mandatory (not marked optional), a `NOT NULL` constraint is added. Column comments contain the
+description from the original Propery's `samm:description` attribute.
+<3> SQL types are derived from the used Characteristic's `samm:dataType`, see <<postgresql-type-mapping>>.
+<4> A table comment is added with the Aspect's `samm:description`.
+--
+====
+
+[[normalized-mapping-strategy]]
+=== Normalized Mapping Strategy
+
+In the _normalized_ mapping strategy, a separate table is created for each structure element (Aspect
+or Entity). Tables have numeric primary keys and are related to each other using relationship tables.
+
+By following the _normalized_ mapping strategy, the SQL code generated for the example model looks
+like the following:
+
+[tabs]
+====
+Databricks SQL::
++
+--
+[source,sql]
+----
+CREATE TABLE IF NOT EXISTS maintenance (
+  _id BIGINT NOT NULL PRIMARY KEY -- <1>
+)
+COMMENT 'Machine maintenance information'
+TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.examples:1.0.0#Maintenance');
+
+CREATE TABLE IF NOT EXISTS service_record ( -- <2>
+  _id BIGINT NOT NULL PRIMARY KEY,
+  service_date TIMESTAMP NOT NULL COMMENT 'When was the maintenance performed',
+  technician_name STRING NOT NULL COMMENT 'Who performed the maintenance',
+  duration_of_deployment DECIMAL(10,0) NOT NULL COMMENT 'How long did the maintenance take'
+)
+TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.examples:1.0.0#ServiceRecord');
+
+CREATE TABLE IF NOT EXISTS service_record___references ( -- <3>
+  _id_source BIGINT NOT NULL,
+  _id_target BIGINT NOT NULL,
+  property_name STRING NOT NULL, -- <4>
+  FOREIGN KEY (_id_source) REFERENCES maintenance(_id),
+  FOREIGN KEY (_id_target) REFERENCES service_record(_id)
+)
+----
+
+<1> The table has an _id_ column as well as columns for scalar Properties. Properties with
+collection Characteristics or which use Entities as data types don't appear.
+<2> A separate table is created for the `ServiceRecord` Entity.
+<3> A references table connects the source (`maintenance`) with the target (`service_record`).
+<4> Entries in the references table explicitly mention the source's property name, since multiple
+properties may refer to the same target structure. In the example, this column would always contain
+"lastService".
+--
+PostgreSQL::
++
+--
+[source,sql]
+----
+CREATE TABLE IF NOT EXISTS maintenance ( -- <1>
+  _id BIGINT NOT NULL PRIMARY KEY
+);
+COMMENT ON TABLE maintenance IS 'Machine maintenance information';
+-- x-samm-aspect-model-urn: urn:samm:org.eclipse.esmf.examples:1.0.0#Maintenance
+
+CREATE TABLE IF NOT EXISTS service_record ( -- <2>
+  _id BIGINT NOT NULL PRIMARY KEY,
+  service_date TIMESTAMP NOT NULL,
+  technician_name TEXT NOT NULL,
+  duration_of_deployment NUMERIC(10,0) NOT NULL
+);
+COMMENT ON COLUMN service_record.service_date IS 'When was the maintenance performed';
+COMMENT ON COLUMN service_record.technician_name IS 'Who performed the maintenance';
+COMMENT ON COLUMN service_record.duration_of_deployment IS 'How long did the maintenance take';
+-- x-samm-aspect-model-urn: urn:samm:org.eclipse.esmf.examples:1.0.0#ServiceRecord
+
+CREATE TABLE IF NOT EXISTS service_record___references ( -- <3>
+  _id_source BIGINT NOT NULL REFERENCES maintenance (_id),
+  _id_target BIGINT NOT NULL REFERENCES service_record (_id),
+  property_name TEXT NOT NULL --<4>
+);
+----
+
+<1> The table has an _id_ column as well as columns for scalar Properties. Properties with
+collection Characteristics or which use Entities as data types don't appear.
+<2> A separate table is created for the `ServiceRecord` Entity.
+<3> A references table connects the source (`maintenance`) with the target (`service_record`).
+<4> Entries in the references table explicitly mention the source's property name, since multiple
+properties may refer to the same target structure. In the example, this column would always contain
+"lastService".
+--
+====
+
+[[generating-sql-code-example]]
+=== Code Example
+
+The following code demonstrates how to generate SQL for an Aspect, using the _denormalized_ mapping
+strategy. The example uses the Databricks SQL dialect; alternatively you can use the equivalent
+Postgres-specific classes to work with PostgreSQL instead: `PostgreSqlGenerationConfig`,
+`PostgreSqlType`, `PostgreSqlConstraint` and so on.
 
 ++++
 <details>
@@ -192,10 +356,21 @@ constraint definitions. Each definition is inserted verbatim after the column de
 caller is responsible for using valid syntax and column names for the selected dialect; the
 generator does not validate them.
 
+When generating SQL using the _normalized_ mapping strategy and you want to include custom columns
+or constraints, you need to configure to which table they should apply. In the dialect-specific
+`SqlGenerationConfigBuilder`, instead of `customColumns()` and `tableConstraints()` use
+`customColumnsPerTable()` and `tableConstraintsPerTable()`, respectively:
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateSql.java[tags=generateNormalized]
+----
+
 [[databricks-type-mapping]]
 === Databricks Type Mapping
 
-xref:samm-specification:ROOT:datatypes.adoc#data-types[Data types] in the Aspect Model are mapped to Databricks types using the following correspondences:
+xref:samm-specification:ROOT:datatypes.adoc#data-types[Data types] in the Aspect Model are mapped to
+Databricks types using the following correspondences:
 
 [width="100%", options="header", cols="33,33,33"]
 |===

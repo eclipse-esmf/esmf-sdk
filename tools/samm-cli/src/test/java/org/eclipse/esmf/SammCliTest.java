@@ -28,6 +28,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.parquet.hadoop.ParquetFileReader;
+import org.apache.parquet.hadoop.metadata.CompressionCodecName;
+import org.apache.parquet.io.LocalInputFile;
+import org.apache.tika.mime.MediaType;
+
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.validation.InvalidSyntaxViolation;
@@ -41,13 +48,6 @@ import org.eclipse.esmf.test.TestSharedModel;
 import org.eclipse.esmf.util.process.ProcessLauncher;
 import org.eclipse.esmf.util.process.ProcessLauncher.ExecutionResult;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.parquet.hadoop.ParquetFileReader;
-import org.apache.parquet.io.LocalInputFile;
-import org.apache.tika.mime.MediaType;
-import org.apache.parquet.hadoop.ParquetFileReader;
-import org.apache.parquet.hadoop.metadata.CompressionCodecName;
-import org.apache.parquet.io.LocalInputFile;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
@@ -68,7 +68,6 @@ import tools.jackson.databind.ObjectMapper;
 @ExtendWith( LogExtension.class )
 @TestInstance( TestInstance.Lifecycle.PER_CLASS )
 class SammCliTest extends SammCliAbstractTest {
-
    @Override
    protected ProcessLauncher<?> getCli() {
       return new MainClassProcessLauncher( SammCli.class, List.of(),
@@ -1377,6 +1376,25 @@ class SammCliTest extends SammCliAbstractTest {
    }
 
    @Test
+   void testAspectToSqlWithNormalizedStrategy() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "sql",
+            "--mapping-strategy", "normalized" );
+      // One table for each: Aspect, Entity and references table
+      assertThat( StringUtils.countMatches( result.stdout(), "CREATE TABLE" ) ).isEqualTo( 3 );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectToSqlWithNormalizedStrategyAndCustomColumnsPerTable() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "sql",
+            "--mapping-strategy", "normalized",
+            "--custom-columns-for-table", "aspect_with_entity=custom ARRAY<STRING> NOT NULL COMMENT 'Custom column'" );
+      assertThat( StringUtils.countMatches( result.stdout(), "CREATE TABLE" ) ).isEqualTo( 3 );
+      assertThat( result.stdout() ).contains( "custom ARRAY<STRING> NOT NULL COMMENT 'Custom column'" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
    void testAspectToPostgreSqlWithCustomColumnToStdout() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "sql",
             "--dialect", "postgresql", "--custom-column", "custom TEXT[] NOT NULL" );
@@ -1398,6 +1416,15 @@ class SammCliTest extends SammCliAbstractTest {
          assertThat( result.stdout() ).contains( constraints.get( 1 ) );
          assertThat( result.stderr() ).isEmpty();
       }
+   }
+
+   @Test
+   void testAspectToSqlWithNormalizedStrategyAndCustomConstraintsPerTable() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "sql",
+            "--mapping-strategy", "normalized",
+            "--table-constraints-for-table", "aspect_with_entity=CHECK (_id > 0)" );
+      assertThat( result.stdout() ).contains( "CHECK (_id > 0)" );
+      assertThat( result.stderr() ).isEmpty();
    }
 
    @Test

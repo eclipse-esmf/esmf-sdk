@@ -16,12 +16,14 @@ package examples;
 // tag::imports[]
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.generator.sql.AspectModelSqlGenerator;
 import org.eclipse.esmf.aspectmodel.generator.sql.SqlGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.sql.SqlGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksColumnDefinitionBuilder;
+import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksConstraint;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksType;
@@ -57,6 +59,8 @@ public class GenerateSql extends AbstractGenerator {
                               .nullable( false )
                               .comment( Optional.of( "Custom column" ) )
                               .build() ) )
+                  .tableConstraints( List.of(         // optional
+                        new DatabricksConstraint.Unique( "custom_column" ) ) )
                   .build();
       final SqlGenerationConfig sqlGenerationConfig =
             SqlGenerationConfigBuilder.builder()
@@ -66,5 +70,28 @@ public class GenerateSql extends AbstractGenerator {
                   .build();
       final String result = new AspectModelSqlGenerator( aspectModel.aspect(), sqlGenerationConfig ).getContent();
       // end::generate[]
+   }
+
+   @Test
+   void generateNormalized() {
+      final AspectModel aspectModel = // ...
+            new AspectModelLoader().load(
+                  new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) );
+
+      // tag::generateNormalized[]
+      final DatabricksSqlGenerationConfig databricksSqlGenerationConfig =
+            DatabricksSqlGenerationConfigBuilder.builder()
+                  .tableConstraintsPerTable( Map.of(
+                        "movement",
+                        List.of( new DatabricksConstraint.Unique( "speed" ) ) ) )
+                  .build();
+      final SqlGenerationConfig sqlGenerationConfig =
+            SqlGenerationConfigBuilder.builder()
+                  .dialect( SqlGenerationConfig.Dialect.DATABRICKS )
+                  .mappingStrategy( SqlGenerationConfig.MappingStrategy.NORMALIZED )
+                  .dialectSpecificConfig( databricksSqlGenerationConfig )
+                  .build();
+      final String result = new AspectModelSqlGenerator( aspectModel.aspect(), sqlGenerationConfig ).getContent();
+      // end::generateNormalized[]
    }
 }
