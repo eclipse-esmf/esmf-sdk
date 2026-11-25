@@ -19,7 +19,7 @@ import java.util.Optional;
 
 /**
  * The definition of a relational table
- * 
+ *
  * @param <D> the type of the column datatypes
  * @param <C> the column definition type
  * @param <X> the constraint type

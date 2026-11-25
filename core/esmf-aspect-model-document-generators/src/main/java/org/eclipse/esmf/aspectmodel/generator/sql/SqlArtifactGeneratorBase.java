@@ -23,7 +23,7 @@ import com.google.common.base.CaseFormat;
 
 /**
  * Base class for SQL artifact generators
- * 
+ *
  * @param <U> the user-provided config
  * @param <D> the type of the column datatypes
  * @param <C> the column definition type

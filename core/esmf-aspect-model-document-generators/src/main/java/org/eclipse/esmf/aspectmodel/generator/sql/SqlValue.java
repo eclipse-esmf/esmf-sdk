@@ -15,7 +15,7 @@ package org.eclipse.esmf.aspectmodel.generator.sql;
 
 /**
  * A typed SQL value
- * 
+ *
  * @param <D> the type of the value
  */
 public interface SqlValue<D extends SqlType> {
