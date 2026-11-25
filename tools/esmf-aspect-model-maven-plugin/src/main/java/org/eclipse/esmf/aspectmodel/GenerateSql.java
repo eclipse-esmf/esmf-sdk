@@ -13,10 +13,14 @@
 
 package org.eclipse.esmf.aspectmodel;
 
+import static org.eclipse.esmf.aspectmodel.StreamUtil.asMap;
+
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -75,8 +79,14 @@ public class GenerateSql extends AspectModelMojo {
    @Parameter( property = "column" )
    private List<String> customColumns = List.of();
 
+   @Parameter( property = "columns" )
+   private Map<String, String> customColumnsForTable = Map.of();
+
    @Parameter
    private List<String> tableConstraints = List.of();
+
+   @Parameter( property = "constraintsForTable" )
+   private Map<String, String> constraintsForTable = Map.of();
 
    @Override
    public void executeGeneration() throws MojoExecutionException {
@@ -115,8 +125,20 @@ public class GenerateSql extends AspectModelMojo {
             .decimalPrecision( decimalPrecision )
             .decimalScale( decimalScale )
             .customColumns( columns )
+            .customColumnsPerTable( customColumnsForTable.entrySet().stream()
+                  .map( entry -> Map.entry( entry.getKey(),
+                        Arrays.stream( entry.getValue().split( ";" ) )
+                              .map( column -> new DatabricksColumnDefinitionParser( column ).get() )
+                              .toList() ) )
+                  .collect( asMap() ) )
             .tableConstraints( tableConstraints.stream()
                   .<DatabricksConstraint>map( DatabricksConstraint.GenericConstraint::new ).toList() )
+            .tableConstraintsPerTable( constraintsForTable.entrySet().stream()
+                  .map( entry -> Map.entry( entry.getKey(),
+                        Arrays.stream( entry.getValue().split( ";" ) )
+                              .<DatabricksConstraint>map( DatabricksConstraint.GenericConstraint::new )
+                              .toList() ) )
+                  .collect( asMap() ) )
             .build();
    }
 
@@ -132,8 +154,20 @@ public class GenerateSql extends AspectModelMojo {
             .decimalPrecision( decimalPrecision )
             .decimalScale( decimalScale )
             .customColumns( columns )
+            .customColumnsPerTable( customColumnsForTable.entrySet().stream()
+                  .map( entry -> Map.entry( entry.getKey(),
+                        Arrays.stream( entry.getValue().split( ";" ) )
+                              .map( column -> new PostgreSqlColumnDefinitionParser( column ).get() )
+                              .toList() ) )
+                  .collect( asMap() ) )
             .tableConstraints( tableConstraints.stream()
                   .<PostgreSqlConstraint>map( PostgreSqlConstraint.GenericConstraint::new ).toList() )
+            .tableConstraintsPerTable( constraintsForTable.entrySet().stream()
+                  .map( entry -> Map.entry( entry.getKey(),
+                        Arrays.stream( entry.getValue().split( ";" ) )
+                              .<PostgreSqlConstraint>map( PostgreSqlConstraint.GenericConstraint::new )
+                              .toList() ) )
+                  .collect( asMap() ) )
             .build();
    }
 }
