@@ -8,7 +8,7 @@
 
 In certain situations, particularly for test code, it is desirable to programmatically create an
 Aspect Model. For this, the `SammBuilder` class can be used. It provides static builder methods for
-all model element types, e.g., `aspect()`, `property()` and so on. Using the `Elements.*` static
+all model element types, e.g., `aspect()`, `property()` and so on. Using the `Elements.\*` static
 import allows easy access to predefined model elements such as `samm_c.Text`. The `DataTypes.*`
 static import allows access to all valid SAMM data types, such as `xsd.integer`, `xsd.dateTime` and
 `samm.curie`.
@@ -42,7 +42,7 @@ include::example$AssertJ.java[tags=assertj]
 =====
 
 Overloaded `assertThat()` methods are provided for all Aspect Model Elements, e.g., `Aspect`,
-`Property`, `Characteristic`, `Trait`, etc., as well as for `AspectModel` and `AspectModel`.
+`Property`, `Characteristic`, `Trait`, etc., as well as for `AspectModel` and `AspectModelFile`.
 
 [[modifying-and-creating-aspect-models]]
 == Modifying Aspect Models
