@@ -35,13 +35,6 @@ public interface InputHandler {
    AspectModel loadAspectModel();
 
    /**
-    * Loads the AspectModel given the input and validates it
-    *
-    * @return the validation message
-    */
-   String validateAspectModel();
-
-   /**
     * Loads the single Aspect given in the input if there is one, otherwise will return a
     * {@link NoSuchElementException}.
     *

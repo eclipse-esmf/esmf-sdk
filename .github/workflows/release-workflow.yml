@@ -90,7 +90,7 @@ jobs:
         run: |
           set -x
           export MAVEN_OPTS="-Xmx4096m"
-          export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
+          export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8"
 
           # Required for reactor dependencies
           mvn clean install -DskipTests -Dmaven.javadoc.skip=true -Dskip.maven.failsafe
@@ -182,7 +182,7 @@ jobs:
         run: |
           set -x
           export MAVEN_OPTS="-Xmx4096m"
-          export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
+          export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8"
           # Required for reactor dependencies
           mvn clean install -DskipTests -Dmaven.javadoc.skip=true -Dskip.maven.failsafe
           mvn versions:set -DnewVersion=${RELEASE_VERSION}
@@ -272,7 +272,7 @@ jobs:
         run: |
           set -x
           export MAVEN_OPTS="-Xmx4096m"
-          export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
+          export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8"
 
           mvn clean install -DskipTests -Dmaven.javadoc.skip=true -Dskip.maven.failsafe
           mvn versions:set -DnewVersion=${RELEASE_VERSION}
