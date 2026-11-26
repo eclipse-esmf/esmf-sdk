@@ -887,7 +887,7 @@ class SammAttributeValueCompletionServiceTest {
       final int cursor = markedSource.indexOf( '|' );
       assertThat( cursor ).isGreaterThanOrEqualTo( 0 );
       final String source = markedSource.substring( 0, cursor ) + markedSource.substring( cursor + 1 );
-      final Position position = SammSuggestionContextDetector.positionAt( source, cursor );
+      final Position position = CompletionUtils.positionAt( source, cursor );
       return new Request( parser.apply( new Document( "file:///test.ttl", source ) ), position, source );
    }
 

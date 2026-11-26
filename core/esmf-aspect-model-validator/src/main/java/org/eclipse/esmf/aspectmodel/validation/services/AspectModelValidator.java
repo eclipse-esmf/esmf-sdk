@@ -60,7 +60,7 @@ import io.vavr.control.Either;
  * Uses SHACL to validate an Aspect Model against the defined semantics of the Aspect Meta Model.
  */
 public class AspectModelValidator implements Validator {
-   private final ShaclValidator shaclValidator;
+   private static ShaclValidator shaclValidator;
    private static boolean arqInitialized = false;
 
    private static synchronized void initArq() {
@@ -71,11 +71,20 @@ public class AspectModelValidator implements Validator {
    }
 
    /**
-    * Default constructor that will use the latest meta model version
+    * The SHACL validator for the latest meta model version. It is created on first use, after ARQ has
+    * been
+    * initialized, and shared afterwards.
     */
+   public static synchronized ShaclValidator shaclValidator() {
+      if ( shaclValidator == null ) {
+         initArq();
+         shaclValidator = new ShaclValidator( MetaModelFile.metaModelShapes() );
+      }
+      return shaclValidator;
+   }
+
    public AspectModelValidator() {
-      initArq();
-      shaclValidator = new ShaclValidator( MetaModelFile.metaModelShapes() );
+      shaclValidator();
    }
 
    /**
@@ -245,7 +254,7 @@ public class AspectModelValidator implements Validator {
    @Override
    public ViolationReport validateModel( final Model model ) {
       final Stream<Supplier<RdfBasedValidator>> builtInValidators = Stream.of(
-            () -> shaclValidator,
+            AspectModelValidator::shaclValidator,
             ModelCycleDetector::new,
             RegularExpressionExampleValueValidator::new
       );

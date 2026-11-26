@@ -533,6 +533,8 @@ java -jar samm-cli-{esmf-sdk-version}.jar aspect _AspectModel.ttl_ to openapi -b
 
 === Configuration of security schemas
 
+Security schemes are not generated, but can be added with `--template-file`.
+`components.securitySchemes` defines the schemes (`apiKey`, `http`, `oauth2`, `openIdConnect` or `mutualTLS`) and `security` applies them to all endpoints.
 For example, to configure OAuth2 authentication the template could look like this:
 
 [source,yaml]
@@ -562,6 +564,10 @@ paths:
             - write:aspects
 
 ----
+
+`security` under `__DEFAULT_QUERIES_TEMPLATE__` applies to the read, query and operations endpoints only.
+For the POST/PUT/PATCH endpoints, define it under their explicit path instead, e.g. `paths./resources.put.security`.
+`mutualTLS` requires OpenAPI 3.1 (`--comment`).
 
 === Mapping between the Aspect Models and the OpenAPI Specification
 
