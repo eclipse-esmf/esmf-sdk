@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
@@ -29,6 +30,7 @@ import org.eclipse.esmf.aspectmodel.VersionNumber;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidVersionException;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFile;
+import org.eclipse.esmf.aspectmodel.resolver.parser.TokenRegistry;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.urn.ElementType;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
@@ -138,6 +140,17 @@ public class MetaModelVersionMigrator implements UnaryOperator<AspectModelFile> 
             throw new MetaModelVersionException( problems );
          }
       } );
+
+      // retain the unmigrated user input file as originating file
+      // ttl serialization of the migrated input will deviate from the original input
+      // e.g. error messages would point to invalid text snippets if this was not done
+      modelFile.sourceModel().getGraph().stream()
+            .flatMap( triple -> Stream.of( triple.getSubject(), triple.getPredicate(), triple.getObject() ) )
+            .forEach( node -> TokenRegistry.getToken( node ).ifPresent( token -> {
+               if ( token.getOriginatingFile() == null ) {
+                  token.setOriginatingFile( modelFile );
+               }
+            } ) );
 
       if ( sourceVersion.equals( LATEST_SAMM ) ) {
          return modelFile;
