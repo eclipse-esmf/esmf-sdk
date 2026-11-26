@@ -633,20 +633,23 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
          final AspectModelUrn urn, final List<ModelResolutionViolation> urnLoadingFailures, final Set<AspectModelFile> files ) {
       final List<UnresolvedReferenceViolation> references = new ArrayList<>();
       for ( final AspectModelFile file : files ) {
-         referenceLocations( urn, file ).forEach( location -> references.add(
-               new UnresolvedReferenceViolation( urn, file.sourceUri(), file::sourceRepresentation, location, urnLoadingFailures ) ) );
+         referenceTokens( urn, file ).forEach( token -> {
+            final AspectModelFile source = token.getOriginatingFile() == null ? file : token.getOriginatingFile();
+            references.add( new UnresolvedReferenceViolation( urn, file.sourceUri(), source::sourceRepresentation, token.location(),
+                  urnLoadingFailures ) );
+         } );
       }
       return references;
    }
 
-   private Stream<Location> referenceLocations( final AspectModelUrn urn, final AspectModelFile file ) {
+   private Stream<SmartToken> referenceTokens( final AspectModelUrn urn, final AspectModelFile file ) {
+      final Set<Location> locations = new HashSet<>();
       return file.sourceModel().getGraph().stream()
             .flatMap( triple -> Stream.of( triple.getSubject(), triple.getPredicate(), triple.getObject() ) )
             .filter( node -> node.isURI() && replaceLegacyBammUrn( node.getURI() ).equals( urn.toString() ) )
             .flatMap( node -> TokenRegistry.getToken( node ).stream() )
             .filter( token -> file.sourceUri().equals( token.getSourceDocument() ) )
-            .map( SmartToken::location )
-            .distinct();
+            .filter( token -> locations.add( token.location() ) );
    }
 
    /**
@@ -726,11 +729,6 @@ public class AspectModelLoader implements ModelSource, ResolutionStrategySupport
             .map( this::migrate )
             .toList();
 
-      for ( final AspectModelFile file : migratedInputs ) {
-         file.sourceModel().getGraph().stream()
-               .flatMap( triple -> Stream.of( triple.getSubject(), triple.getPredicate(), triple.getObject() ) )
-               .forEach( node -> TokenRegistry.getToken( node ).ifPresent( token -> token.setOriginatingFile( file ) ) );
-      }
       final Model mergedModel = buildMergedModel( migratedInputs );
       mergedModelValidator.accept( mergedModel );
 

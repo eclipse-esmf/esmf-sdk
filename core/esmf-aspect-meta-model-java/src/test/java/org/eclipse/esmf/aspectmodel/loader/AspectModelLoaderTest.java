@@ -58,6 +58,7 @@ import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class AspectModelLoaderTest {
    @ParameterizedTest
@@ -209,6 +210,37 @@ class AspectModelLoaderTest {
                      .extracting( violation -> ( (UnresolvedReferenceViolation) violation ).location() )
                      .containsExactlyInAnyOrder( new Location( 17, 21, 17, 41 ), new Location( 22, 21, 22, 41 ) );
             } );
+   }
+
+   @ParameterizedTest
+   @ValueSource( strings = { "1.0.0", "2.0.0", "2.1.0", "2.2.0" } )
+   void testMigratedReferencesUseOriginalSource( final String version ) {
+      final String source = """
+         @prefix : <urn:samm:org.example:1.0.0#> .
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> .
+
+         :Test a samm:Aspect ;
+             samm:description "Description."@en ;
+             samm:preferredName "Name"@en ;
+             samm:properties ( :missingProperty ) ;
+             samm:events () .
+         """.formatted( version );
+      final URI uri = URI.create( "file:///Test.ttl" );
+      assertThatThrownBy( () -> new AspectModelLoader().load( source, uri ) )
+            .isInstanceOfSatisfying( ModelResolutionException.class, exception -> assertThat( exception.getViolations() ).singleElement()
+                  .isInstanceOfSatisfying( UnresolvedReferenceViolation.class, reference -> {
+                     assertThat( reference.documentContent().get() ).isEqualTo( source );
+                     assertThat( reference.location() ).isEqualTo( new Location( 6, 22, 6, 38 ) );
+                     assertThat( reference.documentContent().get().lines().toList().get( reference.location().fromLine() )
+                           .substring( reference.location().fromColumn(), reference.location().toColumn() ) )
+                                 .isEqualTo( ":missingProperty" );
+                  } ) );
+
+      final String validSource = source.replace( ":missingProperty", "" );
+      final AspectModel model = new AspectModelLoader().load( validSource, uri );
+      final Node aspect = model.files().getFirst().sourceModel().getGraph().stream( null, RDF.type.asNode(), null )
+            .map( Triple::getSubject ).filter( Node::isURI ).findFirst().orElseThrow();
+      assertThat( TokenRegistry.getToken( aspect ).orElseThrow().getOriginatingFile().sourceRepresentation() ).isEqualTo( validSource );
    }
 
    @Test
