@@ -18,10 +18,12 @@ chcp 65001 >nul
 if /i "%HostProcessName%"=="explorer.exe" (
   cd /d "%ExeWorkingDir%"
   for %%i in (%~dp0samm-cli-*.jar) do %~dp0runtime\jre\bin\java --enable-native-access=ALL-UNNAMED --sun-misc-unsafe-memory-access=allow -Dpolyglotimpl.DisableMultiReleaseCheck=true -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -jar "%%i"
+  call set "JavaExitCode=%%ERRORLEVEL%%"
   cmd /k
 ) else (
   for %%i in (%~dp0samm-cli-*.jar) do %~dp0runtime\jre\bin\java --enable-native-access=ALL-UNNAMED --sun-misc-unsafe-memory-access=allow -Dpolyglotimpl.DisableMultiReleaseCheck=true -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -jar "%%i" %*
+  call set "JavaExitCode=%%ERRORLEVEL%%"
 )
 rem Switch back to original code page
 chcp %CurrentCodePage% >nul
-endlocal
+endlocal & exit /b %JavaExitCode%
