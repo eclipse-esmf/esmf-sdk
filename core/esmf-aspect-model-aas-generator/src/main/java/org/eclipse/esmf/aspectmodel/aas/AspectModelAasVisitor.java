@@ -35,7 +35,6 @@ import org.eclipse.esmf.metamodel.Entity;
 import org.eclipse.esmf.metamodel.EntityInstance;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Property;
-import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.characteristic.Code;
@@ -87,7 +86,6 @@ import org.eclipse.digitaltwin.aas4j.v3.model.ValueReferencePair;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultAdministrativeInformation;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultAssetAdministrationShell;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultAssetInformation;
-import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultBlob;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultConceptDescription;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultDataSpecificationIec61360;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultEmbeddedDataSpecification;
@@ -722,14 +720,11 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
 
       final SubmodelElementBuilder defaultBuilder = property -> {
          final SubmodelElement value = decideOnMapping( property, context );
-         if ( dataTypeDefXsd != null ) {
-            value.setSemanticId( null );
-         }
          final DefaultSubmodelElementList.Builder submodelBuilder = new DefaultSubmodelElementList.Builder()
                .idShort( AasIdShort.from( listIdShort != null ? listIdShort : property.getName() ) )
                .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
                .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
-               .value( List.of( clearDirectListChildIdShort( value ) ) )
+               .value( List.of( clearDirectListChildIdShortAndSemanticId( value, dataTypeDefXsd != null ) ) )
                .typeValueListElement( SubmodelToAspectUtils.submodelElementType( value ) )
                .valueTypeListElement( dataTypeDefXsd )
                .supplementalSemanticIds( buildGlobalReferenceForSeeReferences( collection ) )
@@ -754,15 +749,16 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
                         .map( ArrayNode.class::cast )
                         .map( arrayNode -> ( final Property property ) -> {
                            final List<SubmodelElement> values =
-                                 clearDirectListChildIdShorts( getValues( collection, property, context, arrayNode ) );
+                                 clearDirectListChildIdShortsAndSemanticIds( collection, getValues( property, context, arrayNode ) );
                            final String propertyUrn = DEFAULT_MAPPER.determineIdentifierFor( property );
                            return new DefaultSubmodelElementList.Builder()
                                  .idShort( AasIdShort.from( listIdShort != null ? listIdShort : property.getName() ) )
                                  .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
                                  .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
                                  .value( values )
-                                 .typeValueListElement(
-                                       values.isEmpty() ? null : SubmodelToAspectUtils.submodelElementType( values.getFirst() ) )
+                                 .typeValueListElement( values.isEmpty()
+                                       ? inferEmptyListElementType( property, context )
+                                       : SubmodelToAspectUtils.submodelElementType( values.getFirst() ) )
                                  .valueTypeListElement( dataTypeDefXsd )
                                  .orderRelevant( collection.isOrdered() )
                                  .semanticId( buildReferenceForCollection( propertyUrn ) )
@@ -776,37 +772,40 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       return context.getEnvironment();
    }
 
-   private SubmodelElement clearDirectListChildIdShort( final SubmodelElement submodelElement ) {
+   private SubmodelElement clearDirectListChildIdShortAndSemanticId( final SubmodelElement submodelElement, final boolean isScalar ) {
       submodelElement.setIdShort( null );
+      if ( isScalar ) {
+         submodelElement.setSemanticId( null );
+      }
       return submodelElement;
    }
 
-   private List<SubmodelElement> clearDirectListChildIdShorts( final List<SubmodelElement> submodelElements ) {
-      submodelElements.forEach( this::clearDirectListChildIdShort );
+   private <T extends Collection> List<SubmodelElement> clearDirectListChildIdShortsAndSemanticIds( final T collection,
+         final List<SubmodelElement> submodelElements ) {
+      final boolean isScalar = collection.getDataType().map( Type::isScalar ).orElse( false );
+      submodelElements.forEach( element -> clearDirectListChildIdShortAndSemanticId( element, isScalar ) );
       return submodelElements;
    }
 
-   private <T extends Collection> List<SubmodelElement> getValues( final T collection, final Property property, final Context context,
-         final ArrayNode arrayNode ) {
-      return collection.getDataType()
-            .map( dataType -> {
-               if ( Scalar.class.isAssignableFrom( dataType.getClass() ) ) {
-                  return List.of( (SubmodelElement) new DefaultBlob.Builder().value( StreamSupport.stream( arrayNode.spliterator(), false )
-                        .map( node -> node.isValueNode() ? node.asString() : node.toString() )
-                        .collect( Collectors.joining( "," ) )
-                        .getBytes( StandardCharsets.UTF_8 ) )
-                        .contentType( "text/plain" ).build() );
-               } else {
-                  final List<SubmodelElement> values = StreamSupport.stream( arrayNode.spliterator(), false )
-                        .map( node -> {
-                           context.iterate( property );
-                           return decideOnMapping( property, context );
-                        } )
-                        .toList();
-                  context.finishIteration( property );
-                  return values;
-               }
-            } ).orElseGet( List::of );
+   // An empty list has no data to derive the child type from, so the type is taken from the mapping of
+   // the list's
+   // property. A separate context is used so that this mapping does not alter the state of the current
+   // visit.
+   private AasSubmodelElements inferEmptyListElementType( final Property property, final Context context ) {
+      final Context templateContext = new Context( context.getEnvironment(), new DefaultSubmodel.Builder().build() );
+      templateContext.setProperty( property );
+      return SubmodelToAspectUtils.submodelElementType( decideOnMapping( property, templateContext ) );
+   }
+
+   private List<SubmodelElement> getValues( final Property property, final Context context, final ArrayNode arrayNode ) {
+      final List<SubmodelElement> values = StreamSupport.stream( arrayNode.spliterator(), false )
+            .map( _ -> {
+               context.iterate( property );
+               return decideOnMapping( property, context );
+            } )
+            .toList();
+      context.finishIteration( property );
+      return values;
    }
 
    // Either will be mapped by adding both the left and the right side to the SubmodelTemplate.
