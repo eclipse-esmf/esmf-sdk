@@ -66,6 +66,30 @@ class ViolationFormatterTest {
    }
 
    @Test
+   void testMigratedUnresolvedReferenceCaret() {
+      final String source = """
+         @prefix : <urn:samm:org.example:1.0.0#> .
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+
+         :Test a samm:Aspect ;
+             samm:description "Description."@en ;
+             samm:preferredName "Name"@en ;
+             samm:properties ( :missingProperty ) ;
+             samm:events () .
+         """;
+      final Either<ViolationReport, AspectModel> result =
+            validator.loadModel( () -> new AspectModelLoader().load( source, URI.create( "file:///Test.ttl" ) ) );
+      final String output = formatter.apply( result.getLeft() );
+      final List<String> lines = output.lines().toList();
+      final int sourceLine = java.util.stream.IntStream.range( 0, lines.size() )
+            .filter( index -> lines.get( index ).contains( "samm:properties ( :missingProperty )" ) )
+            .findFirst().orElseThrow();
+      assertThat( output ).contains( "Error at line 7 column 23" );
+      assertThat( lines.get( sourceLine + 1 ).indexOf( '^' ) )
+            .isEqualTo( lines.get( sourceLine ).indexOf( "missingProperty" ) );
+   }
+
+   @Test
    void testInvalidCharacteristicDatatypeViolation() {
       final Either<ViolationReport, AspectModel> result = TestResources.loadWithValidation(
             InvalidTestAspect.INVALID_CHARACTERISTIC_DATATYPE, validator );
