@@ -33,7 +33,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 public class DatabricksNormalizedSqlGeneratorTest extends DatabricksTestBase {
    @Override
    protected String applyGenerator( final Aspect aspect, final DatabricksSqlGenerationConfig config ) {
-      return new NormalizedSqlGenerator<>( config, new DatabricksSqlDialect( config ) ).apply( aspect, config ).getContent();
+      return new NormalizedSqlGenerator<>( config, new DatabricksSqlDialect( config ) ).apply( aspect ).getContent();
    }
 
    @Test

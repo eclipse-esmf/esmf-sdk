@@ -20,7 +20,7 @@ import org.eclipse.esmf.test.TestResources;
 
 public abstract class PostgreSqlTestBase {
    protected String applyGenerator( final Aspect aspect, final PostgreSqlGenerationConfig config ) {
-      return new DenormalizedSqlGenerator<>( config, new PostgreSqlDialect( config ) ).apply( aspect, config ).getContent();
+      return new DenormalizedSqlGenerator<>( config, new PostgreSqlDialect( config ) ).apply( aspect ).getContent();
    }
 
    protected String sql( final TestAspect testAspect, final PostgreSqlGenerationConfig config ) {

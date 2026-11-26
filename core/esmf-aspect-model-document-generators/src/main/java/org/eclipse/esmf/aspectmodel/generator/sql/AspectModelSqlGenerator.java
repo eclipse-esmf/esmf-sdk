@@ -13,7 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.generator.sql;
 
-import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.generator.AspectGenerator;
@@ -35,7 +35,7 @@ public class AspectModelSqlGenerator extends AspectGenerator<String, String, Sql
          D extends SqlType,
          C extends SqlColumnDefinition<D, C>,
          T extends SqlTableDefinition<D, C, X>,
-         X extends SqlConstraint> BiFunction<Aspect, U, SqlArtifact> generator(
+         X extends SqlConstraint> Function<Aspect, SqlArtifact> generator(
                final SqlDialect<U, D, C, T, X> dialect, final SqlGenerationConfig.MappingStrategy mappingStrategy, final U config ) {
       return switch ( mappingStrategy ) {
          case NORMALIZED -> new NormalizedSqlGenerator<>( config, dialect );
@@ -52,7 +52,7 @@ public class AspectModelSqlGenerator extends AspectGenerator<String, String, Sql
                         ? databricksConfig
                         : new DatabricksSqlGenerationConfig();
             final DatabricksSqlDialect dialect = new DatabricksSqlDialect( generationConfig );
-            yield generator( dialect, config.mappingStrategy(), generationConfig ).apply( aspect(), generationConfig );
+            yield generator( dialect, config.mappingStrategy(), generationConfig ).apply( aspect() );
          }
          case POSTGRESQL -> {
             final PostgreSqlGenerationConfig generationConfig =
@@ -60,7 +60,7 @@ public class AspectModelSqlGenerator extends AspectGenerator<String, String, Sql
                         ? postgresSpecificConfig
                         : new PostgreSqlGenerationConfig();
             final PostgreSqlDialect dialect = new PostgreSqlDialect( generationConfig );
-            yield generator( dialect, config.mappingStrategy(), generationConfig ).apply( aspect(), generationConfig );
+            yield generator( dialect, config.mappingStrategy(), generationConfig ).apply( aspect() );
          }
       } );
    }

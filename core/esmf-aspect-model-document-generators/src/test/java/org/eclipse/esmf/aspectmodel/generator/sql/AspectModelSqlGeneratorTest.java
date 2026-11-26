@@ -45,7 +45,7 @@ public class AspectModelSqlGeneratorTest {
                .commentLanguage( Locale.ENGLISH )
                .build();
          final String result = new DenormalizedSqlGenerator<>( dialectSpecificConfig, new DatabricksSqlDialect( dialectSpecificConfig ) )
-               .apply( aspect, dialectSpecificConfig ).getContent();
+               .apply( aspect ).getContent();
          assertThat( result ).contains( "TBLPROPERTIES ('x-samm-aspect-model-urn'='" );
          assertThat( result ).doesNotContain( "ARRAY<ARRAY" );
       } ).doesNotThrowAnyException();
@@ -63,7 +63,7 @@ public class AspectModelSqlGeneratorTest {
                .commentLanguage( Locale.ENGLISH )
                .build();
          final String result = new NormalizedSqlGenerator<>( dialectSpecificConfig, new DatabricksSqlDialect( dialectSpecificConfig ) )
-               .apply( aspect, dialectSpecificConfig ).getContent();
+               .apply( aspect ).getContent();
          assertThat( result ).contains( "TBLPROPERTIES ('x-samm-aspect-model-urn'='" );
          assertThat( result ).doesNotContain( "ARRAY<ARRAY" );
       } ).doesNotThrowAnyException();

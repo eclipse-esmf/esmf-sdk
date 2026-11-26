@@ -20,7 +20,7 @@ import org.eclipse.esmf.test.TestResources;
 
 public abstract class DatabricksTestBase {
    protected String applyGenerator( final Aspect aspect, final DatabricksSqlGenerationConfig config ) {
-      return new DenormalizedSqlGenerator<>( config, new DatabricksSqlDialect( config ) ).apply( aspect, config ).getContent();
+      return new DenormalizedSqlGenerator<>( config, new DatabricksSqlDialect( config ) ).apply( aspect ).getContent();
    }
 
    protected String sql( final TestAspect testAspect, final DatabricksSqlGenerationConfig config ) {

@@ -208,7 +208,7 @@ public class DenormalizedSqlGenerator<
    }
 
    @Override
-   public SqlArtifact apply( final Aspect aspect, final U generationConfig ) {
+   public SqlArtifact apply( final Aspect aspect ) {
       final Context context = DenormalizedSqlGeneratorContextBuilder.builder().build();
       final ImmutableList.Builder<C> columnsBuilder = ImmutableList.builder();
       aspect.getProperties().stream()
@@ -223,6 +223,6 @@ public class DenormalizedSqlGenerator<
             Map.of( GeneratorConstants.SAMM_EXTENSION, sqlDialect.sqlStringValue( aspect.urn().toString() ) );
       final T tableDefinition = sqlDialect.tableDefinition( tableName( aspect ), columns, comment,
             config.tableConstraints(), tableProperties );
-      return new SqlArtifact( aspect.getName() + ".sql", List.of( tableDefinition ), generationConfig, sqlDialect );
+      return new SqlArtifact( aspect.getName() + ".sql", List.of( tableDefinition ), config, sqlDialect );
    }
 }

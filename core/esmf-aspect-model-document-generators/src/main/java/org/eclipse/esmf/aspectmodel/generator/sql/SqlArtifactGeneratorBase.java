@@ -13,7 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.generator.sql;
 
-import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Property;
@@ -36,7 +36,7 @@ public abstract class SqlArtifactGeneratorBase<
       C extends SqlColumnDefinition<D, C>,
       T extends SqlTableDefinition<D, C, X>,
       X extends SqlConstraint>
-      implements BiFunction<Aspect, U, SqlArtifact> {
+      implements Function<Aspect, SqlArtifact> {
    protected static final int MAX_RECURSION_DEPTH = 20;
    protected static final String LEVEL_DELIMITER = "__";
    protected final U config;

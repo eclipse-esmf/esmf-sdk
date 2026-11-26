@@ -267,10 +267,10 @@ public class NormalizedSqlGenerator<
    }
 
    @Override
-   public SqlArtifact apply( final Aspect aspect, final U generationConfig ) {
+   public SqlArtifact apply( final Aspect aspect ) {
       final Context<D, C, T, X> context = NormalizedSqlGeneratorContextBuilder.<D, C, T, X>builder().build();
       aspect.accept( this, context );
       final List<T> tables = context.tables().stream().toList();
-      return new SqlArtifact( aspect.getName() + ".sql", tables, generationConfig, sqlDialect );
+      return new SqlArtifact( aspect.getName() + ".sql", tables, config, sqlDialect );
    }
 }
