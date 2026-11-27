@@ -23,6 +23,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryCancelledException;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QuerySolution;
@@ -45,6 +46,9 @@ import org.eclipse.esmf.aspectmodel.shacl.path.PredicatePath;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.validation.RdfBasedValidator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.collect.Streams;
 
 /**
@@ -53,6 +57,7 @@ import com.google.common.collect.Streams;
  * specific resource.
  */
 public class ShaclValidator implements RdfBasedValidator {
+   private static final Logger LOG = LoggerFactory.getLogger( ShaclValidator.class );
    private final List<Shape.Node> shapes;
    private final Map<Resource, List<Shape.Node>> shapesWithClassTargets;
    private final Model shapesModel;
@@ -164,6 +169,8 @@ public class ShaclValidator implements RdfBasedValidator {
             final QuerySolution solution = resultSet.next();
             targets.add( solution.getResource( "this" ) );
          }
+      } catch ( final QueryCancelledException exception ) {
+         LOG.debug( "Could not complete SPARQL query: {}", query, exception );
       }
       return targets;
    }

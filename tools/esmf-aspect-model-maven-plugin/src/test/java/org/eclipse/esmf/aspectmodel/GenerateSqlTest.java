@@ -59,6 +59,24 @@ public class GenerateSqlTest extends AspectModelMojoTest {
    @Test
    @InjectMojo(
       goal = GenerateSql.MAVEN_GOAL,
+      pom = "src/test/resources/generate-sql-pom-normalized/pom.xml" )
+   public void testGenerateSqlWithNormalizedStrategy( final GenerateSql generateSql ) throws IOException {
+      assertThatCode( generateSql::execute ).doesNotThrowAnyException();
+      final Path generatedFile = generatedFilePath( "AspectWithEntity.sql" );
+      assertThat( generatedFile ).exists();
+      final String sqlContent = new String( Files.readAllBytes( generatedFile ) );
+
+      assertThat( sqlContent ).contains( "CREATE TABLE aspect_with_entity" );
+      assertThat( sqlContent ).contains( "custom_column1 ARRAY<STRING> NOT NULL COMMENT 'Custom column'" );
+      assertThat( sqlContent ).contains( "custom_column2 INT" );
+      assertThat( sqlContent ).contains( "CREATE TABLE test_entity" );
+      assertThat( sqlContent ).contains( "PRIMARY KEY (string_property)" );
+      assertThat( sqlContent ).contains( "CHECK (entity_property <> 'invalid')" );
+   }
+
+   @Test
+   @InjectMojo(
+      goal = GenerateSql.MAVEN_GOAL,
       pom = "src/test/resources/generate-sql-pom-valid-aspect-model-postgresql/pom.xml" )
    public void testGeneratePostgreSql( final GenerateSql generateSql ) throws IOException {
       assertThatCode( generateSql::execute ).doesNotThrowAnyException();

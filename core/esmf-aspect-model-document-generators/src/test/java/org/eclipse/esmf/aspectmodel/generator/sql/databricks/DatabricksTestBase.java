@@ -13,15 +13,18 @@
 
 package org.eclipse.esmf.aspectmodel.generator.sql.databricks;
 
+import org.eclipse.esmf.aspectmodel.generator.sql.DenormalizedSqlGenerator;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
-public class DatabricksTestBase {
+public abstract class DatabricksTestBase {
+   protected String applyGenerator( final Aspect aspect, final DatabricksSqlGenerationConfig config ) {
+      return new DenormalizedSqlGenerator<>( config, new DatabricksSqlDialect( config ) ).apply( aspect ).getContent();
+   }
+
    protected String sql( final TestAspect testAspect, final DatabricksSqlGenerationConfig config ) {
-      final Aspect aspect = TestResources.load( testAspect ).aspect();
-      return aspect.accept( new AspectModelDatabricksDenormalizedSqlVisitor( config ),
-            AspectModelDatabricksDenormalizedSqlVisitorContextBuilder.builder().build() );
+      return applyGenerator( TestResources.load( testAspect ).aspect(), config );
    }
 
    protected String sql( final TestAspect testAspect ) {

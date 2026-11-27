@@ -17,14 +17,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
-import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.test.TestAspect;
-import org.eclipse.esmf.test.TestResources;
 
 import org.junit.jupiter.api.Test;
 
-class AspectModelPostgreSqlDenormalizedSqlVisitorTest {
+class PostgreSqlDenormalizedSqlGeneratorTest extends PostgreSqlTestBase {
+   @Test
+   void testGenerationConfigNormalizesInvalidValues() {
+      final PostgreSqlGenerationConfig config = PostgreSqlGenerationConfigBuilder.builder().build();
+      assertThat( config.createTableCommandPrefix() ).isEqualTo( PostgreSqlGenerationConfig.DEFAULT_TABLE_COMMAND_PREFIX );
+      assertThat( config.decimalPrecision() ).isEqualTo( PostgreSqlGenerationConfig.DECIMAL_DEFAULT_PRECISION );
+      assertThat( config.decimalScale() ).isEqualTo( PostgreSqlGenerationConfig.DECIMAL_DEFAULT_SCALE );
+      assertThat( config.customColumns() ).isEmpty();
+      assertThat( config.tableConstraints() ).isEmpty();
+   }
+
    @Test
    void testCollectionAndComments() {
       assertThat( sql( TestAspect.ASPECT_WITH_COLLECTION, new PostgreSqlGenerationConfig() ) ).isEqualTo( """
@@ -54,7 +63,8 @@ class AspectModelPostgreSqlDenormalizedSqlVisitorTest {
    @Test
    void testTableConstraints() {
       final PostgreSqlGenerationConfig config = PostgreSqlGenerationConfigBuilder.builder()
-            .tableConstraints( List.of( "PRIMARY KEY (test)", "UNIQUE (test)", "CHECK (test <> 'x')" ) )
+            .tableConstraints( Stream.of( "PRIMARY KEY (test)", "UNIQUE (test)", "CHECK (test <> 'x')" )
+                  .<PostgreSqlConstraint>map( PostgreSqlConstraint.GenericConstraint::new ).toList() )
             .build();
       assertThat( sql( TestAspect.ASPECT_WITH_PROPERTY_WITH_PAYLOAD_NAME, config ) )
             .contains( "PRIMARY KEY (test),\n  UNIQUE (test),\n  CHECK (test <> 'x')\n)" );
@@ -72,11 +82,5 @@ class AspectModelPostgreSqlDenormalizedSqlVisitorTest {
       assertThat( sql( TestAspect.ASPECT_WITH_OPERATION, config ) )
             .contains( "custom_column TEXT[] NOT NULL" )
             .contains( "COMMENT ON COLUMN aspect_with_operation.custom_column IS 'Custom column';" );
-   }
-
-   private String sql( final TestAspect testAspect, final PostgreSqlGenerationConfig config ) {
-      final Aspect aspect = TestResources.load( testAspect ).aspect();
-      return aspect.accept( new AspectModelPostgreSqlDenormalizedSqlVisitor( config ),
-            AspectModelPostgreSqlDenormalizedSqlVisitorContextBuilder.builder().build() );
    }
 }

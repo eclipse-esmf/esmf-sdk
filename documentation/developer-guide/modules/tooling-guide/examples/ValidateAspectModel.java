@@ -36,18 +36,21 @@ public class ValidateAspectModel {
             // end::validate[]
             new AspectModelLoader().load(
                   new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) );
+      // tag::validate[]
       final ViolationReport report = new AspectModelValidator().validateModel( aspectModel );
-      if ( report.isEmpty() ) {
+      if ( report.violations().isEmpty() ) {
          // Aspect Model is valid!
          return;
       } else {
          for ( Violation violation : report.violations() ) {
             Violation.Code errorCode = violation.code();
             String message = violation.message();
+            // ...
          }
       }
 
-      final String validationReport = new ViolationFormatter().apply( report ); // <1>
+      // Easy formatting of a complete ViolationReport
+      final String validationReport = new ViolationFormatter().apply( report );
       final String detailedReport = new DetailedViolationFormatter().apply( report );
       // end::validate[]
    }

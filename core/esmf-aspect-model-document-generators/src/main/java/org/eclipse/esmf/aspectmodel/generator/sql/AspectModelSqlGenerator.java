@@ -13,14 +13,13 @@
 
 package org.eclipse.esmf.aspectmodel.generator.sql;
 
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.generator.AspectGenerator;
-import org.eclipse.esmf.aspectmodel.generator.sql.databricks.AspectModelDatabricksDenormalizedSqlVisitor;
-import org.eclipse.esmf.aspectmodel.generator.sql.databricks.AspectModelDatabricksDenormalizedSqlVisitorContextBuilder;
+import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlDialect;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfig;
-import org.eclipse.esmf.aspectmodel.generator.sql.postgresql.AspectModelPostgreSqlDenormalizedSqlVisitor;
-import org.eclipse.esmf.aspectmodel.generator.sql.postgresql.AspectModelPostgreSqlDenormalizedSqlVisitorContextBuilder;
+import org.eclipse.esmf.aspectmodel.generator.sql.postgresql.PostgreSqlDialect;
 import org.eclipse.esmf.aspectmodel.generator.sql.postgresql.PostgreSqlGenerationConfig;
 import org.eclipse.esmf.metamodel.Aspect;
 
@@ -28,41 +27,41 @@ import org.eclipse.esmf.metamodel.Aspect;
  * Generates SQL scripts from an Aspect Model that set up tables to contain the data of the Aspect.
  */
 public class AspectModelSqlGenerator extends AspectGenerator<String, String, SqlGenerationConfig, SqlArtifact> {
-   public static final SqlGenerationConfig DEFAULT_CONFIG = SqlGenerationConfigBuilder.builder().build();
-
-   public AspectModelSqlGenerator( final Aspect aspect ) {
-      this( aspect, DEFAULT_CONFIG );
-   }
-
    public AspectModelSqlGenerator( final Aspect aspect, final SqlGenerationConfig config ) {
       super( aspect, config );
    }
 
+   private <U extends SqlGenerationConfig.DialectSpecificConfig<D, C, X>,
+         D extends SqlType,
+         C extends SqlColumnDefinition<D, C>,
+         T extends SqlTableDefinition<D, C, X>,
+         X extends SqlConstraint> Function<Aspect, SqlArtifact> generator(
+               final SqlDialect<U, D, C, T, X> dialect, final SqlGenerationConfig.MappingStrategy mappingStrategy, final U config ) {
+      return switch ( mappingStrategy ) {
+         case NORMALIZED -> new NormalizedSqlGenerator<>( config, dialect );
+         case DENORMALIZED -> new DenormalizedSqlGenerator<>( config, dialect );
+      };
+   }
+
    @Override
    public Stream<SqlArtifact> generate() {
-      final String content = switch ( config.dialect() ) {
-         case DATABRICKS -> switch ( config.mappingStrategy() ) {
-            case DENORMALIZED -> {
-               final DatabricksSqlGenerationConfig dataBricksConfig =
-                     config.dialectSpecificConfig() instanceof final DatabricksSqlGenerationConfig databricksConfig
-                           ? databricksConfig
-                           : new DatabricksSqlGenerationConfig();
-               yield aspect().accept( new AspectModelDatabricksDenormalizedSqlVisitor( dataBricksConfig ),
-                     AspectModelDatabricksDenormalizedSqlVisitorContextBuilder.builder().build() );
-            }
-         };
-         case POSTGRESQL -> switch ( config.mappingStrategy() ) {
-            case DENORMALIZED -> {
-               final PostgreSqlGenerationConfig postgreSqlConfig =
-                     config.dialectSpecificConfig() instanceof final PostgreSqlGenerationConfig postgresConfig
-                           ? postgresConfig
-                           : new PostgreSqlGenerationConfig();
-               yield aspect().accept( new AspectModelPostgreSqlDenormalizedSqlVisitor( postgreSqlConfig ),
-                     AspectModelPostgreSqlDenormalizedSqlVisitorContextBuilder.builder().build() );
-            }
-         };
-      };
-
-      return Stream.of( new SqlArtifact( aspect().getName() + ".sql", content ) );
+      return Stream.of( switch ( config.dialect() ) {
+         case DATABRICKS -> {
+            final DatabricksSqlGenerationConfig generationConfig =
+                  config.dialectSpecificConfig() instanceof final DatabricksSqlGenerationConfig databricksConfig
+                        ? databricksConfig
+                        : new DatabricksSqlGenerationConfig();
+            final DatabricksSqlDialect dialect = new DatabricksSqlDialect( generationConfig );
+            yield generator( dialect, config.mappingStrategy(), generationConfig ).apply( aspect() );
+         }
+         case POSTGRESQL -> {
+            final PostgreSqlGenerationConfig generationConfig =
+                  config.dialectSpecificConfig() instanceof final PostgreSqlGenerationConfig postgresSpecificConfig
+                        ? postgresSpecificConfig
+                        : new PostgreSqlGenerationConfig();
+            final PostgreSqlDialect dialect = new PostgreSqlDialect( generationConfig );
+            yield generator( dialect, config.mappingStrategy(), generationConfig ).apply( aspect() );
+         }
+      } );
    }
 }

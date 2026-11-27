@@ -15,6 +15,7 @@ package org.eclipse.esmf.aspectmodel.generator.sql.postgresql;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.eclipse.esmf.aspectmodel.generator.sql.SqlGenerationConfig;
 
@@ -41,8 +42,10 @@ public record PostgreSqlGenerationConfig(
       int decimalPrecision,
       int decimalScale,
       List<PostgreSqlColumnDefinition> customColumns,
-      List<String> tableConstraints
-) implements SqlGenerationConfig.DialectSpecificConfig {
+      Map<String, List<PostgreSqlColumnDefinition>> customColumnsPerTable,
+      List<PostgreSqlConstraint> tableConstraints,
+      Map<String, List<PostgreSqlConstraint>> tableConstraintsPerTable
+) implements SqlGenerationConfig.DialectSpecificConfig<PostgreSqlType, PostgreSqlColumnDefinition, PostgreSqlConstraint> {
    public static final String DEFAULT_TABLE_COMMAND_PREFIX = "CREATE TABLE IF NOT EXISTS";
    public static final int DECIMAL_DEFAULT_PRECISION = 10;
    public static final int DECIMAL_MAX_PRECISION = 1000;
@@ -53,17 +56,7 @@ public record PostgreSqlGenerationConfig(
 
    public PostgreSqlGenerationConfig() {
       this( DEFAULT_TABLE_COMMAND_PREFIX, DEFAULT_INCLUDE_TABLE_COMMENT, DEFAULT_INCLUDE_COLUMN_COMMENTS, DEFAULT_COMMENT_LANGUAGE,
-            DECIMAL_DEFAULT_PRECISION, DECIMAL_DEFAULT_SCALE, List.of(), List.of() );
-   }
-
-   /**
-    * Creates a configuration without additional table constraints.
-    */
-   public PostgreSqlGenerationConfig( final String createTableCommandPrefix, final boolean includeTableComment,
-         final boolean includeColumnComments, final Locale commentLanguage, final int decimalPrecision,
-         final int decimalScale, final List<PostgreSqlColumnDefinition> customColumns ) {
-      this( createTableCommandPrefix, includeTableComment, includeColumnComments, commentLanguage, decimalPrecision,
-            decimalScale, customColumns, List.of() );
+            DECIMAL_DEFAULT_PRECISION, DECIMAL_DEFAULT_SCALE, List.of(), Map.of(), List.of(), Map.of() );
    }
 
    public PostgreSqlGenerationConfig {

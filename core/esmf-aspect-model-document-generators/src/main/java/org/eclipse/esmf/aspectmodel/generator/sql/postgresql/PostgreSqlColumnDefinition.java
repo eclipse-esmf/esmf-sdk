@@ -15,6 +15,9 @@ package org.eclipse.esmf.aspectmodel.generator.sql.postgresql;
 
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.generator.sql.SqlColumnDefinition;
+
+import org.jspecify.annotations.NonNull;
 import io.soabase.recordbuilder.core.RecordBuilder;
 
 /**
@@ -31,9 +34,9 @@ public record PostgreSqlColumnDefinition(
       PostgreSqlType type,
       boolean nullable,
       Optional<String> comment
-) {
+) implements SqlColumnDefinition<PostgreSqlType, PostgreSqlColumnDefinition> {
    @Override
-   public String toString() {
+   public @NonNull String toString() {
       return "%s %s%s".formatted( name(), type(), nullable ? "" : " NOT NULL" );
    }
 }

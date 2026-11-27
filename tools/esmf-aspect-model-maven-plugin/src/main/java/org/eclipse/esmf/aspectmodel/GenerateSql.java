@@ -13,28 +13,36 @@
 
 package org.eclipse.esmf.aspectmodel;
 
+import static org.eclipse.esmf.aspectmodel.StreamUtil.asMap;
+
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
+
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 
 import org.eclipse.esmf.aspectmodel.generator.sql.AspectModelSqlGenerator;
 import org.eclipse.esmf.aspectmodel.generator.sql.SqlArtifact;
 import org.eclipse.esmf.aspectmodel.generator.sql.SqlGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksColumnDefinition;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksColumnDefinitionParser;
+import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksConstraint;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.generator.sql.postgresql.PostgreSqlColumnDefinition;
 import org.eclipse.esmf.aspectmodel.generator.sql.postgresql.PostgreSqlColumnDefinitionParser;
+import org.eclipse.esmf.aspectmodel.generator.sql.postgresql.PostgreSqlConstraint;
+import org.eclipse.esmf.aspectmodel.generator.sql.postgresql.PostgreSqlGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.sql.postgresql.PostgreSqlGenerationConfigBuilder;
 import org.eclipse.esmf.metamodel.Aspect;
 
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,15 +79,24 @@ public class GenerateSql extends AspectModelMojo {
    @Parameter( property = "column" )
    private List<String> customColumns = List.of();
 
+   @Parameter( property = "columns" )
+   private Map<String, String> customColumnsForTable = Map.of();
+
    @Parameter
    private List<String> tableConstraints = List.of();
+
+   @Parameter( property = "constraintsForTable" )
+   private Map<String, String> constraintsForTable = Map.of();
 
    @Override
    public void executeGeneration() throws MojoExecutionException {
       validateParameters();
 
       final SqlGenerationConfig.Dialect sqlDialect = SqlGenerationConfig.Dialect.valueOf( dialect.toUpperCase() );
-      final SqlGenerationConfig.DialectSpecificConfig generatorConfig = dialectSpecificConfig( sqlDialect );
+      final SqlGenerationConfig.DialectSpecificConfig<?, ?, ?> generatorConfig = switch ( sqlDialect ) {
+         case DATABRICKS -> databricksSpecificConfig();
+         case POSTGRESQL -> postgreSqlSpecificConfig();
+      };
 
       final Set<Aspect> aspectModels = loadAspects();
       for ( final Aspect aspect : aspectModels ) {
@@ -96,38 +113,61 @@ public class GenerateSql extends AspectModelMojo {
       LOG.info( "Successfully generated SQL script." );
    }
 
-   private SqlGenerationConfig.DialectSpecificConfig dialectSpecificConfig( final SqlGenerationConfig.Dialect sqlDialect ) {
-      return switch ( sqlDialect ) {
-         case DATABRICKS -> {
-            final List<DatabricksColumnDefinition> columns = customColumns.stream()
-                  .map( column -> new DatabricksColumnDefinitionParser( column ).get() )
-                  .toList();
-            yield DatabricksSqlGenerationConfigBuilder.builder()
-                  .commentLanguage( Locale.forLanguageTag( language ) )
-                  .includeTableComment( includeTableComment )
-                  .includeColumnComments( includeColumnComments )
-                  .createTableCommandPrefix( tableCommandPrefix )
-                  .decimalPrecision( decimalPrecision )
-                  .decimalScale( decimalScale )
-                  .customColumns( columns )
-                  .tableConstraints( tableConstraints )
-                  .build();
-         }
-         case POSTGRESQL -> {
-            final List<PostgreSqlColumnDefinition> columns = customColumns.stream()
-                  .map( column -> new PostgreSqlColumnDefinitionParser( column ).get() )
-                  .toList();
-            yield PostgreSqlGenerationConfigBuilder.builder()
-                  .commentLanguage( Locale.forLanguageTag( language ) )
-                  .includeTableComment( includeTableComment )
-                  .includeColumnComments( includeColumnComments )
-                  .createTableCommandPrefix( tableCommandPrefix )
-                  .decimalPrecision( decimalPrecision )
-                  .decimalScale( decimalScale )
-                  .customColumns( columns )
-                  .tableConstraints( tableConstraints )
-                  .build();
-         }
-      };
+   private DatabricksSqlGenerationConfig databricksSpecificConfig() {
+      final List<DatabricksColumnDefinition> columns = customColumns.stream()
+            .map( column -> new DatabricksColumnDefinitionParser( column ).get() )
+            .toList();
+      return DatabricksSqlGenerationConfigBuilder.builder()
+            .commentLanguage( Locale.forLanguageTag( language ) )
+            .includeTableComment( includeTableComment )
+            .includeColumnComments( includeColumnComments )
+            .createTableCommandPrefix( tableCommandPrefix )
+            .decimalPrecision( decimalPrecision )
+            .decimalScale( decimalScale )
+            .customColumns( columns )
+            .customColumnsPerTable( customColumnsForTable.entrySet().stream()
+                  .map( entry -> Map.entry( entry.getKey(),
+                        Arrays.stream( entry.getValue().split( ";" ) )
+                              .map( column -> new DatabricksColumnDefinitionParser( column ).get() )
+                              .toList() ) )
+                  .collect( asMap() ) )
+            .tableConstraints( tableConstraints.stream()
+                  .<DatabricksConstraint>map( DatabricksConstraint.GenericConstraint::new ).toList() )
+            .tableConstraintsPerTable( constraintsForTable.entrySet().stream()
+                  .map( entry -> Map.entry( entry.getKey(),
+                        Arrays.stream( entry.getValue().split( ";" ) )
+                              .<DatabricksConstraint>map( DatabricksConstraint.GenericConstraint::new )
+                              .toList() ) )
+                  .collect( asMap() ) )
+            .build();
+   }
+
+   private PostgreSqlGenerationConfig postgreSqlSpecificConfig() {
+      final List<PostgreSqlColumnDefinition> columns = customColumns.stream()
+            .map( column -> new PostgreSqlColumnDefinitionParser( column ).get() )
+            .toList();
+      return PostgreSqlGenerationConfigBuilder.builder()
+            .commentLanguage( Locale.forLanguageTag( language ) )
+            .includeTableComment( includeTableComment )
+            .includeColumnComments( includeColumnComments )
+            .createTableCommandPrefix( tableCommandPrefix )
+            .decimalPrecision( decimalPrecision )
+            .decimalScale( decimalScale )
+            .customColumns( columns )
+            .customColumnsPerTable( customColumnsForTable.entrySet().stream()
+                  .map( entry -> Map.entry( entry.getKey(),
+                        Arrays.stream( entry.getValue().split( ";" ) )
+                              .map( column -> new PostgreSqlColumnDefinitionParser( column ).get() )
+                              .toList() ) )
+                  .collect( asMap() ) )
+            .tableConstraints( tableConstraints.stream()
+                  .<PostgreSqlConstraint>map( PostgreSqlConstraint.GenericConstraint::new ).toList() )
+            .tableConstraintsPerTable( constraintsForTable.entrySet().stream()
+                  .map( entry -> Map.entry( entry.getKey(),
+                        Arrays.stream( entry.getValue().split( ";" ) )
+                              .<PostgreSqlConstraint>map( PostgreSqlConstraint.GenericConstraint::new )
+                              .toList() ) )
+                  .collect( asMap() ) )
+            .build();
    }
 }

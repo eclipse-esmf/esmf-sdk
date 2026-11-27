@@ -206,29 +206,32 @@ of model resolution] for more information.
                                        `gYearMonth`, and `gMonthDay`. Model example values take precedence unless
                                        `--ignore-example-value` is also set.                                                  | `samm aspect AspectModel.ttl to parquet --random-timestamp`
                                    | _--ignore-example-value_ : Ignore example values defined in the Aspect Model and generate
-                                       random values for all Properties                                                      |
+                                       random values for all Properties                                                       |
                                    | _--compression-codec_ : Compression codec for the Parquet file. Valid values are
                                        `uncompressed`, `snappy`, `gzip`, `lzo`, `brotli`, `lz4`, `zstd`, and `lz4_raw`
                                        (default: `snappy`). See the
                                        https://parquet.apache.org/docs/file-format/data-pages/compression/#codecs[Apache Parquet codec reference]
-                                       for details.                                                                         | `samm aspect AspectModel.ttl to parquet --compression-codec gzip`
+                                       for details.                                                                          | `samm aspect AspectModel.ttl to parquet --compression-codec gzip`
 .3+| [[aspect-to-jsonld]] aspect <model> to jsonld | Generate JSON-LD representation of an Aspect Model                      | `samm aspect AspectModel.ttl to jsonld`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
 .3+| [[aspect-to-protobuf]] aspect <model> to protobuf | Generate a self-contained proto3 message schema for an Aspect Model | `samm aspect AspectModel.ttl to protobuf`
-                                   | _--output, -o_ : output file path (default: stdout; `-` also selects stdout)             | `samm aspect AspectModel.ttl to protobuf -o AspectModel.proto`
+                                   | _--output, -o_ : output file path (default: stdout; `-` also selects stdout)            | `samm aspect AspectModel.ttl to protobuf -o AspectModel.proto`
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
 .4+| [[aspect-to-schema]] aspect <model> to schema | Generate JSON schema for an Aspect Model                                | `samm aspect AspectModel.ttl to schema`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--language, -l_ : The language from the model for which a JSON schema should be
                                        generated (default: en)                                                               | `samm aspect AspectModel.ttl to schema -l de`
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
-.12+| [[aspect-to-sql]] aspect <model> to sql | Generate SQL script that sets up a table for data for this Aspect            | `samm aspect AspectModel.ttl to sql`
+.14+| [[aspect-to-sql]] aspect <model> to sql | Generate SQL script that sets up a table for data for this Aspect. For
+                                     details about the mapping also see xref:tooling-guide:java-code-generation.adoc#generating-sql[Generating SQL].
+                                                                                                                             | `samm aspect AspectModel.ttl to sql`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--language, -l_ : The language from the model to use for generated comments            |
                                    | _--dialect, -d_ : The SQL dialect to generate for: `databricks` or `postgresql`
-                                     (default: `databricks`)                                                               |
-                                   | _--mapping-strategy, -s_ : The mapping strategy to use (default: `denormalized`)        |
+                                     (default: `databricks`)                                                                 |
+                                   | _--mapping-strategy, -s_ : The mapping strategy to use: `denormalized` or `normalized`
+                                     (default: `denormalized`)                                                               |
                                    | _--include-table-comment, -tc_ : Include table comment in the generated SQL script
                                      (default: `true`)                                                                       |
                                    | _--include-column-comments, -cc_ : Include column comments in the generated SQL
@@ -240,8 +243,16 @@ of model resolution] for more information.
                                    | _--custom-column, -col_ : Additional custom column definition
                                      following the pattern `column_name DATATYPE [NOT NULL] [COMMENT 'custom']`. This
                                      parameter can be repeated for multiple columns.                                         | `samm aspect AspectModel.ttl to sql --custom-column "column_name STRING NOT NULL COMMENT 'custom'"`
-                                   | _--table-constraint_ : SQL table constraint inserted verbatim into the CREATE TABLE definition.
-                                     Repeat for multiple constraints. Syntax and referenced columns are not validated; use syntax supported by the selected dialect. | `samm aspect AspectModel.ttl to sql --dialect postgresql --table-constraint "PRIMARY KEY (id)" --table-constraint "CHECK (amount > 0)"`
+                                   | _--custom-columns-for-table_ : Additional custom column definition(s) for a named table
+                                     following the pattern `table_name=columndef[;columndef]` where columndef follows the
+                                     pattern `column_name DATATYPE [NOT NULL] [COMMENT 'custom']`. This is intended to be
+                                     used in conjunction with the _normalized_ mapping strategy.                             | `samm aspect AspectModel.ttl to sql --mapping-strategy normalized --custom-columns-for-table "table_name=column_name1 STRING NOT NULL COMMENT 'custom';column_name2 INT NOT NULL"`
+                                   | _--table-constraint_ : SQL table constraint inserted verbatim into the CREATE TABLE
+                                     definition. Repeat for multiple constraints. Syntax and referenced columns are not
+                                     validated; use syntax supported by the selected dialect.                                | `samm aspect AspectModel.ttl to sql --dialect postgresql --table-constraint "PRIMARY KEY (id)" --table-constraint "CHECK (amount > 0)"`
+                                   | _--table-constraints-for-table_ : SQL table constraint(s) inserted verbatim into the
+                                     CREATE TABLE definition for a named table. Specify multiple contraints separated using
+                                     `;`. This is intended to be used in conjunction with the _normalized_ mapping strategy. | `samm aspect AspectModel.ttl to sql --mapping-strategy normalized --table-constraints-for-table "table_name=PRIMARY KEY (id);CHECK (amount > 0)"`
 .5+| [[aspect-to-aas]] aspect <model> to aas | Generate an Asset Administration Shell (AAS) submodel template from an
                                      Aspect Model                                                                            | `samm aspect AspectModel.ttl to aas`
                                    | _--output, -o_ : output file path (default: stdout)                                     | `samm aspect AspectModel.ttl to aas -o="somewhere\new-file-name.extension"`

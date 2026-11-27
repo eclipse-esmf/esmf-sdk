@@ -143,7 +143,7 @@ class AspectModelJsonPayloadGeneratorTest {
       final JsonPayloadGenerator<Aspect> generator = new JsonPayloadGenerator<>( aspect, config );
       final List<String> values = IntStream.range( 0, 100 )
             .mapToObj( i -> type.accept( generator,
-                  new JsonPayloadGenerator.Context( List.of(), Set.of(), Map.of(), false ) ).asText() )
+                  new JsonPayloadGenerator.Context( List.of(), Set.of(), Map.of(), false ) ).asString() )
             .toList();
 
       assertThat( values ).allMatch( type::isValid );
@@ -156,7 +156,7 @@ class AspectModelJsonPayloadGeneratorTest {
             .build();
       final JsonPayloadGenerator<Aspect> sameSeedGenerator = new JsonPayloadGenerator<>( aspect, sameSeedConfig );
       assertThat( type.accept( sameSeedGenerator,
-            new JsonPayloadGenerator.Context( List.of(), Set.of(), Map.of(), false ) ).asText() )
+            new JsonPayloadGenerator.Context( List.of(), Set.of(), Map.of(), false ) ).asString() )
                   .isEqualTo( values.getFirst() );
    }
 
@@ -381,7 +381,7 @@ class AspectModelJsonPayloadGeneratorTest {
       final JsonPayloadGenerator<Aspect> generator = new JsonPayloadGenerator<>( aspect, config );
 
       final Set<String> generatedValues = IntStream.range( 0, 100 )
-            .mapToObj( ignored -> SammType.YEAR_MONTH_DURATION.accept( generator, null ).textValue() )
+            .mapToObj( ignored -> SammType.YEAR_MONTH_DURATION.accept( generator, null ).stringValue() )
             .collect( Collectors.toSet() );
 
       assertThat( generatedValues )
@@ -398,7 +398,7 @@ class AspectModelJsonPayloadGeneratorTest {
       final JsonPayloadGenerator<Aspect> generator = new JsonPayloadGenerator<>( aspect, config );
 
       final Set<String> generatedValues = IntStream.range( 0, 100 )
-            .mapToObj( ignored -> SammType.DAY_TIME_DURATION.accept( generator, null ).textValue() )
+            .mapToObj( ignored -> SammType.DAY_TIME_DURATION.accept( generator, null ).stringValue() )
             .collect( Collectors.toSet() );
 
       assertThat( generatedValues )

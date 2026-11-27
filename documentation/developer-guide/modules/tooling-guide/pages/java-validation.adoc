@@ -64,16 +64,5 @@ include::example$ValidateAspectModel.java[tags=imports]
 
 [source,java,indent=0,subs="+macros,+quotes"]
 ----
-include::example$ValidateAspectModel.java[tags=violations]
-----
-
-
-== Error Aggregation
-
-For applications that need to process multiple violations efficiently, you can group errors by type
-for batch processing:
-
-[source,java,indent=0,subs="+macros,+quotes"]
-----
-include::example$CustomViolationFormatter.java[tags=error-aggregation]
+include::example$ValidateAspectModel.java[tags=validate]
 ----

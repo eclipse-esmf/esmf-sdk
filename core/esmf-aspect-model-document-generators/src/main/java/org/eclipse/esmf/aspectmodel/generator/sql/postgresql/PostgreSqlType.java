@@ -15,10 +15,14 @@ package org.eclipse.esmf.aspectmodel.generator.sql.postgresql;
 
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.generator.sql.SqlType;
+
+import org.jspecify.annotations.NonNull;
+
 /**
  * PostgreSQL data types supported for custom columns.
  */
-public sealed interface PostgreSqlType {
+public sealed interface PostgreSqlType extends SqlType {
    PostgreSqlType BIGINT = new SimplePostgreSqlType( "BIGINT" );
    PostgreSqlType BOOLEAN = new SimplePostgreSqlType( "BOOLEAN" );
    PostgreSqlType BYTEA = new SimplePostgreSqlType( "BYTEA" );
@@ -44,7 +48,7 @@ public sealed interface PostgreSqlType {
       }
 
       @Override
-      public String toString() {
+      public @NonNull String toString() {
          return precision.map( value -> "NUMERIC(" + value + scale.map( scaleValue -> "," + scaleValue ).orElse( "" ) + ")" )
                .orElse( "NUMERIC" );
       }
@@ -54,7 +58,7 @@ public sealed interface PostgreSqlType {
          PostgreSqlType elementType
    ) implements PostgreSqlType {
       @Override
-      public String toString() {
+      public @NonNull String toString() {
          return elementType + "[]";
       }
    }
@@ -63,7 +67,7 @@ public sealed interface PostgreSqlType {
          String sql
    ) implements PostgreSqlType {
       @Override
-      public String toString() {
+      public @NonNull String toString() {
          return sql;
       }
    }

@@ -15,15 +15,18 @@ package org.eclipse.esmf.aspectmodel.generator.sql.databricks;
 
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.generator.sql.SqlColumnDefinition;
+
+import org.jspecify.annotations.NonNull;
 import io.soabase.recordbuilder.core.RecordBuilder;
 
 /**
  * Represents a column definition in Databricks SQL.
  *
- * @param name The name of the column.
- * @param type The type of the column.
- * @param nullable Whether the column is nullable.
- * @param comment An optional comment for the column.
+ * @param name The name of the column
+ * @param type The type of the column
+ * @param nullable Whether the column is nullable
+ * @param comment An optional comment for the column
  */
 @RecordBuilder
 public record DatabricksColumnDefinition(
@@ -31,13 +34,15 @@ public record DatabricksColumnDefinition(
       DatabricksType type,
       boolean nullable,
       Optional<String> comment
-) {
+) implements SqlColumnDefinition<DatabricksType, DatabricksColumnDefinition> {
    @Override
-   public String toString() {
-      return "%s %s%s%s".formatted(
-            name(),
-            type(),
-            nullable ? "" : " NOT NULL",
-            comment.map( theComment -> " " + new DatabricksCommentDefinition( theComment ) ).orElse( "" ) );
+   public @NonNull String toString() {
+      final StringBuilder builder = new StringBuilder();
+      builder.append( name() ).append( " " ).append( type() );
+      if ( !nullable ) {
+         builder.append( " NOT NULL" );
+      }
+      comment.ifPresent( theComment -> builder.append( " COMMENT " ).append( new DatabricksCommentDefinition( theComment ) ) );
+      return builder.toString();
    }
 }
