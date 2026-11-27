@@ -223,7 +223,7 @@ of model resolution] for more information.
                                    | _--language, -l_ : The language from the model for which a JSON schema should be
                                        generated (default: en)                                                               | `samm aspect AspectModel.ttl to schema -l de`
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
-.14+| [[aspect-to-sql]] aspect <model> to sql | Generate SQL script that sets up a table for data for this Aspect. For
+.15+| [[aspect-to-sql]] aspect <model> to sql | Generate SQL script that sets up a table for data for this Aspect. For
                                      details about the mapping also see xref:tooling-guide:java-code-generation.adoc#generating-sql[Generating SQL].
                                                                                                                              | `samm aspect AspectModel.ttl to sql`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
@@ -240,19 +240,24 @@ of model resolution] for more information.
                                      commands (default: `CREATE TABLE IF NOT EXISTS`)                                        |
                                    | _--decimal-precision, -dp_ : The precision to use for decimal columns (default: 10).    |
                                    | _--decimal-scale, -ds_ : The scale to use for decimal columns (default: 0).             |
+                                   | _--flatten-scalar-collections_ : Properties with scalar collections are turned to a
+                                     single column with array type instead of separate table. This is used in conjunction
+                                     with the _normalized_ mapping strategy.                                                 | `samm aspect AspectModel.ttl to sql --mapping-strategy normalized --flatten-scalar-collections`
                                    | _--custom-column, -col_ : Additional custom column definition
                                      following the pattern `column_name DATATYPE [NOT NULL] [COMMENT 'custom']`. This
-                                     parameter can be repeated for multiple columns.                                         | `samm aspect AspectModel.ttl to sql --custom-column "column_name STRING NOT NULL COMMENT 'custom'"`
+                                     parameter can be repeated for multiple columns. This is used in conjunction with the
+                                     _denormalized_ mapping strategy.                                                        | `samm aspect AspectModel.ttl to sql --custom-column "column_name STRING NOT NULL COMMENT 'custom'"`
                                    | _--custom-columns-for-table_ : Additional custom column definition(s) for a named table
                                      following the pattern `table_name=columndef[;columndef]` where columndef follows the
-                                     pattern `column_name DATATYPE [NOT NULL] [COMMENT 'custom']`. This is intended to be
-                                     used in conjunction with the _normalized_ mapping strategy.                             | `samm aspect AspectModel.ttl to sql --mapping-strategy normalized --custom-columns-for-table "table_name=column_name1 STRING NOT NULL COMMENT 'custom';column_name2 INT NOT NULL"`
+                                     pattern `column_name DATATYPE [NOT NULL] [COMMENT 'custom']`. This is used in
+                                     conjunction with the _normalized_ mapping strategy.                                     | `samm aspect AspectModel.ttl to sql --mapping-strategy normalized --custom-columns-for-table "table_name=column_name1 STRING NOT NULL COMMENT 'custom';column_name2 INT NOT NULL"`
                                    | _--table-constraint_ : SQL table constraint inserted verbatim into the CREATE TABLE
                                      definition. Repeat for multiple constraints. Syntax and referenced columns are not
-                                     validated; use syntax supported by the selected dialect.                                | `samm aspect AspectModel.ttl to sql --dialect postgresql --table-constraint "PRIMARY KEY (id)" --table-constraint "CHECK (amount > 0)"`
+                                     validated; use syntax supported by the selected dialect. This is used in conjunction
+                                     with the _denormalized_ mapping strategy.                                               | `samm aspect AspectModel.ttl to sql --dialect postgresql --table-constraint "PRIMARY KEY (id)" --table-constraint "CHECK (amount > 0)"`
                                    | _--table-constraints-for-table_ : SQL table constraint(s) inserted verbatim into the
                                      CREATE TABLE definition for a named table. Specify multiple contraints separated using
-                                     `;`. This is intended to be used in conjunction with the _normalized_ mapping strategy. | `samm aspect AspectModel.ttl to sql --mapping-strategy normalized --table-constraints-for-table "table_name=PRIMARY KEY (id);CHECK (amount > 0)"`
+                                     `;`. This is used in conjunction with the _normalized_ mapping strategy.                | `samm aspect AspectModel.ttl to sql --mapping-strategy normalized --table-constraints-for-table "table_name=PRIMARY KEY (id);CHECK (amount > 0)"`
 .5+| [[aspect-to-aas]] aspect <model> to aas | Generate an Asset Administration Shell (AAS) submodel template from an
                                      Aspect Model                                                                            | `samm aspect AspectModel.ttl to aas`
                                    | _--output, -o_ : output file path (default: stdout)                                     | `samm aspect AspectModel.ttl to aas -o="somewhere\new-file-name.extension"`

@@ -50,15 +50,17 @@ public record SqlGenerationConfig(
          X extends SqlConstraint> extends GenerationConfig {
       String createTableCommandPrefix();
 
-      boolean includeTableComment();
+      Boolean includeTableComment();
 
-      boolean includeColumnComments();
+      Boolean includeColumnComments();
 
       Locale commentLanguage();
 
       int decimalPrecision();
 
       int decimalScale();
+
+      Boolean flattenScalarCollections();
 
       List<C> customColumns();
 

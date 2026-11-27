@@ -44,7 +44,7 @@ class PostgreSqlDialectTest extends PostgreSqlTestBase {
 
    @Test
    void testRenderTableWithCommentsAndColumnConstraint() {
-      final PostgreSqlGenerationConfig config = new PostgreSqlGenerationConfig();
+      final PostgreSqlGenerationConfig config = PostgreSqlGenerationConfigBuilder.builder().build();
       final PostgreSqlDialect dialect = new PostgreSqlDialect( config );
       final PostgreSqlColumnDefinition column =
             new PostgreSqlColumnDefinition( "value", PostgreSqlType.TEXT, false, Optional.of( "A value" ) );

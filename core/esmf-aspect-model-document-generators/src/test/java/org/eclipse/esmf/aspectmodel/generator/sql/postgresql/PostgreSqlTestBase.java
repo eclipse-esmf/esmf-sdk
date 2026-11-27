@@ -28,7 +28,7 @@ public abstract class PostgreSqlTestBase {
    }
 
    protected String sql( final TestAspect testAspect ) {
-      final PostgreSqlGenerationConfig config = new PostgreSqlGenerationConfig();
+      final PostgreSqlGenerationConfig config = PostgreSqlGenerationConfigBuilder.builder().build();
       return sql( testAspect, config );
    }
 }

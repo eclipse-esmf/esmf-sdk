@@ -1092,4 +1092,19 @@ public class DatabricksNormalizedSqlGeneratorTest extends DatabricksTestBase {
          TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithUpwardTransitionInNestedEntity');
          """ );
    }
+
+   @Test
+   void testFlattenScalarCollections() {
+      final DatabricksSqlGenerationConfig config = DatabricksSqlGenerationConfigBuilder.builder()
+            .flattenScalarCollections( true )
+            .build();
+      assertThat( sql( TestAspect.ASPECT_WITH_COLLECTION, config ) ).isEqualTo( """
+         CREATE TABLE IF NOT EXISTS aspect_with_collection (
+           _id BIGINT NOT NULL PRIMARY KEY,
+           test_property ARRAY<STRING> NOT NULL COMMENT 'This is a test property.'
+         )
+         COMMENT 'This is a test description'
+         TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithCollection');
+         """ );
+   }
 }

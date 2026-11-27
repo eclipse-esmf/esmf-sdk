@@ -46,7 +46,7 @@ class DatabricksSqlDialectTest extends DatabricksTestBase {
 
    @Test
    void testRenderTableWithPropertiesCommentAndConstraints() {
-      final DatabricksSqlGenerationConfig config = new DatabricksSqlGenerationConfig();
+      final DatabricksSqlGenerationConfig config = DatabricksSqlGenerationConfigBuilder.builder().build();
       final DatabricksSqlDialect dialect = new DatabricksSqlDialect( config );
       final DatabricksTableDefinition table = dialect.tableDefinition(
             "example",

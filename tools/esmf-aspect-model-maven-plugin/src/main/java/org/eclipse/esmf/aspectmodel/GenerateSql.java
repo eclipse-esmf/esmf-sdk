@@ -67,6 +67,9 @@ public class GenerateSql extends AspectModelMojo {
    @Parameter( defaultValue = "" + DatabricksSqlGenerationConfig.DECIMAL_DEFAULT_SCALE )
    private int decimalScale = DatabricksSqlGenerationConfig.DECIMAL_DEFAULT_SCALE;
 
+   @Parameter( defaultValue = "" + DatabricksSqlGenerationConfig.DEFAULT_FLATTEN_SCALAR_COLLECTIONS )
+   private boolean flattenScalarCollections;
+
    @Parameter( defaultValue = "en" )
    private String language = DatabricksSqlGenerationConfig.DEFAULT_COMMENT_LANGUAGE.getLanguage();
 
@@ -124,6 +127,7 @@ public class GenerateSql extends AspectModelMojo {
             .createTableCommandPrefix( tableCommandPrefix )
             .decimalPrecision( decimalPrecision )
             .decimalScale( decimalScale )
+            .flattenScalarCollections( flattenScalarCollections )
             .customColumns( columns )
             .customColumnsPerTable( customColumnsForTable.entrySet().stream()
                   .map( entry -> Map.entry( entry.getKey(),
@@ -153,6 +157,7 @@ public class GenerateSql extends AspectModelMojo {
             .createTableCommandPrefix( tableCommandPrefix )
             .decimalPrecision( decimalPrecision )
             .decimalScale( decimalScale )
+            .flattenScalarCollections( flattenScalarCollections )
             .customColumns( columns )
             .customColumnsPerTable( customColumnsForTable.entrySet().stream()
                   .map( entry -> Map.entry( entry.getKey(),

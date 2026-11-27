@@ -35,6 +35,7 @@ import io.soabase.recordbuilder.core.RecordBuilder;
  * @param decimalScale the scale to use for decimal columns, see <a href=
  *        "https://docs.databricks.com/en/sql/language-manual/data-types/decimal-type.html">DECIMAL
  *        type</a> for more info.
+ * @param flattenScalarCollections whether to flatten scalar collections into a single column
  * @param customColumns custom columns to add to the table (for
  *        {@link SqlGenerationConfig.MappingStrategy#DENORMALIZED})
  * @param customColumnsPerTable custom columns to add to each table, indexed by table name (for
@@ -47,11 +48,12 @@ import io.soabase.recordbuilder.core.RecordBuilder;
 @RecordBuilder
 public record DatabricksSqlGenerationConfig(
       String createTableCommandPrefix,
-      boolean includeTableComment,
-      boolean includeColumnComments,
+      Boolean includeTableComment,
+      Boolean includeColumnComments,
       Locale commentLanguage,
       int decimalPrecision,
       int decimalScale,
+      Boolean flattenScalarCollections,
       List<DatabricksColumnDefinition> customColumns,
       Map<String, List<DatabricksColumnDefinition>> customColumnsPerTable,
       List<DatabricksConstraint> tableConstraints,
@@ -66,27 +68,18 @@ public record DatabricksSqlGenerationConfig(
    public static final int DECIMAL_DEFAULT_SCALE = 0;
    public static final boolean DEFAULT_INCLUDE_TABLE_COMMENT = true;
    public static final boolean DEFAULT_INCLUDE_COLUMN_COMMENTS = true;
+   public static final boolean DEFAULT_FLATTEN_SCALAR_COLLECTIONS = false;
    public static final Locale DEFAULT_COMMENT_LANGUAGE = Locale.ENGLISH;
-
-   public DatabricksSqlGenerationConfig() {
-      this( DEFAULT_TABLE_COMMAND_PREFIX, DEFAULT_INCLUDE_TABLE_COMMENT, DEFAULT_INCLUDE_COLUMN_COMMENTS,
-            DEFAULT_COMMENT_LANGUAGE, DECIMAL_DEFAULT_PRECISION, DECIMAL_DEFAULT_SCALE, List.of(), Map.of(), List.of(), Map.of() );
-   }
-
-   /**
-    * Creates a configuration without additional table constraints.
-    */
-   public DatabricksSqlGenerationConfig( final String createTableCommandPrefix,
-         final boolean includeTableComment, final boolean includeColumnComments, final Locale commentLanguage, final int decimalPrecision,
-         final int decimalScale, final List<DatabricksColumnDefinition> customColumns,
-         final Map<String, List<DatabricksColumnDefinition>> customColumnsPerTable ) {
-      this( createTableCommandPrefix, includeTableComment, includeColumnComments, commentLanguage, decimalPrecision,
-            decimalScale, customColumns, customColumnsPerTable, List.of(), Map.of() );
-   }
 
    public DatabricksSqlGenerationConfig {
       if ( createTableCommandPrefix == null ) {
          createTableCommandPrefix = DEFAULT_TABLE_COMMAND_PREFIX;
+      }
+      if ( includeTableComment == null ) {
+         includeTableComment = DEFAULT_INCLUDE_TABLE_COMMENT;
+      }
+      if ( includeColumnComments == null ) {
+         includeColumnComments = DEFAULT_INCLUDE_COLUMN_COMMENTS;
       }
       if ( decimalPrecision <= 0 ) {
          decimalPrecision = DECIMAL_DEFAULT_PRECISION;
@@ -102,6 +95,9 @@ public record DatabricksSqlGenerationConfig(
       }
       if ( commentLanguage == null ) {
          commentLanguage = DEFAULT_COMMENT_LANGUAGE;
+      }
+      if ( flattenScalarCollections == null ) {
+         flattenScalarCollections = DEFAULT_FLATTEN_SCALAR_COLLECTIONS;
       }
       if ( tableConstraints == null ) {
          tableConstraints = List.of();

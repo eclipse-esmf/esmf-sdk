@@ -104,23 +104,30 @@ public class AspectToSqlCommand extends AbstractCommand {
    private int decimalScale = DatabricksSqlGenerationConfig.DECIMAL_DEFAULT_SCALE;
 
    @CommandLine.Option(
+      names = { "--flatten-scalar-collections" },
+      description = "Properties with scalar collections are turned to a single column with array type instead of separate table. "
+            + "Used in normalized mapping. (default: ${DEFAULT-VALUE})" )
+   private boolean flattenScalarCollections = DatabricksSqlGenerationConfig.DEFAULT_FLATTEN_SCALAR_COLLECTIONS;
+
+   @CommandLine.Option(
       names = { "--custom-column", "-col" },
-      description = "Custom column to add to the table, can be repeated for multiple columns" )
+      description = "Custom column to add to the table, can be repeated for multiple columns. Used in denormalized mapping." )
    private List<String> customColumns = List.of();
 
    @CommandLine.Option(
       names = { "--custom-columns-for-table" },
-      description = "Custom column(s) to add to the given table. Separate multiple columns using ;" )
+      description = "Custom column(s) to add to the given table. Separate multiple columns using ';'. Used in normalized mapping." )
    private Map<String, String> customColumnsForTable = Map.of();
 
    @CommandLine.Option(
       names = { "--table-constraint" },
-      description = "SQL table constraint to add, repeatable for multiple constraints" )
+      description = "SQL table constraint to add, repeatable for multiple constraints. Used in denormalized mapping." )
    private List<String> tableConstraints = List.of();
 
    @CommandLine.Option(
       names = { "--table-constraints-for-table" },
-      description = "SQL table constraint(s) to add to the given table. Separate multiple constraints using ;" )
+      description = "SQL table constraint(s) to add to the given table. Separate multiple constraints using ';'. "
+            + "Used in normalized mapping." )
    private Map<String, String> tableConstraintsForTable = Map.of();
 
    @SuppressWarnings( "FieldCanBeLocal" )
@@ -172,6 +179,7 @@ public class AspectToSqlCommand extends AbstractCommand {
             .createTableCommandPrefix( tableCommandPrefix )
             .decimalPrecision( decimalPrecision )
             .decimalScale( decimalScale )
+            .flattenScalarCollections( flattenScalarCollections )
             .customColumns( columns )
             .customColumnsPerTable( customColumnsForTable.entrySet().stream()
                   .map( entry -> Map.entry( entry.getKey(),
@@ -203,6 +211,7 @@ public class AspectToSqlCommand extends AbstractCommand {
             .createTableCommandPrefix( tableCommandPrefix )
             .decimalPrecision( decimalPrecision )
             .decimalScale( decimalScale )
+            .flattenScalarCollections( flattenScalarCollections )
             .customColumns( columns )
             .customColumnsPerTable( customColumnsForTable.entrySet().stream()
                   .map( entry -> Map.entry( entry.getKey(),

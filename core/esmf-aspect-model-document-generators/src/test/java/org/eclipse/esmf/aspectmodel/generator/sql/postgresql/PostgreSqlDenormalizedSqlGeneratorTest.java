@@ -36,7 +36,7 @@ class PostgreSqlDenormalizedSqlGeneratorTest extends PostgreSqlTestBase {
 
    @Test
    void testCollectionAndComments() {
-      assertThat( sql( TestAspect.ASPECT_WITH_COLLECTION, new PostgreSqlGenerationConfig() ) ).isEqualTo( """
+      assertThat( sql( TestAspect.ASPECT_WITH_COLLECTION, PostgreSqlGenerationConfigBuilder.builder().build() ) ).isEqualTo( """
          CREATE TABLE IF NOT EXISTS aspect_with_collection (
            test_property TEXT[] NOT NULL
          );
@@ -48,7 +48,7 @@ class PostgreSqlDenormalizedSqlGeneratorTest extends PostgreSqlTestBase {
 
    @Test
    void testPostgreSqlTypes() {
-      final String result = sql( TestAspect.ASPECT_WITH_SIMPLE_TYPES, new PostgreSqlGenerationConfig() );
+      final String result = sql( TestAspect.ASPECT_WITH_SIMPLE_TYPES, PostgreSqlGenerationConfigBuilder.builder().build() );
 
       assertThat( result )
             .contains( "base64_binary_property BYTEA NOT NULL" )

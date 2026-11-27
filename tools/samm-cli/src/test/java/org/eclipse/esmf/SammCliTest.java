@@ -1489,6 +1489,16 @@ class SammCliTest extends SammCliAbstractTest {
    }
 
    @Test
+   void testAspectToSqlWithNormalizedStrategyAndFlattenedColumns() {
+      final String inputFile = inputFile( TestAspect.ASPECT_WITH_COLLECTION ).getAbsolutePath();
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", inputFile, "to", "sql",
+            "--mapping-strategy", "normalized", "--flatten-scalar-collections" );
+      assertThat( StringUtils.countMatches( result.stdout(), "CREATE TABLE" ) ).isEqualTo( 1 );
+      assertThat( result.stdout() ).contains( "ARRAY<STRING>" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
    void testAspectToPostgreSqlWithCustomColumnToStdout() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "sql",
             "--dialect", "postgresql", "--custom-column", "custom TEXT[] NOT NULL" );

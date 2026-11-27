@@ -28,7 +28,7 @@ public abstract class DatabricksTestBase {
    }
 
    protected String sql( final TestAspect testAspect ) {
-      final DatabricksSqlGenerationConfig config = new DatabricksSqlGenerationConfig();
+      final DatabricksSqlGenerationConfig config = DatabricksSqlGenerationConfigBuilder.builder().build();
       return sql( testAspect, config );
    }
 }
