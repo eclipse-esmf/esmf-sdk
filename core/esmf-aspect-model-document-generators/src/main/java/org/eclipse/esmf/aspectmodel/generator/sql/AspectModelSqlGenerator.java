@@ -13,7 +13,6 @@
 
 package org.eclipse.esmf.aspectmodel.generator.sql;
 
-import java.util.Locale;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
