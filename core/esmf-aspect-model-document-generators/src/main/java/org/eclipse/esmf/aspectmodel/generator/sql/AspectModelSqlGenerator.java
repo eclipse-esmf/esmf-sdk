@@ -13,14 +13,17 @@
 
 package org.eclipse.esmf.aspectmodel.generator.sql;
 
+import java.util.Locale;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.generator.AspectGenerator;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlDialect;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfig;
+import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.generator.sql.postgresql.PostgreSqlDialect;
 import org.eclipse.esmf.aspectmodel.generator.sql.postgresql.PostgreSqlGenerationConfig;
+import org.eclipse.esmf.aspectmodel.generator.sql.postgresql.PostgreSqlGenerationConfigBuilder;
 import org.eclipse.esmf.metamodel.Aspect;
 
 /**
@@ -50,7 +53,7 @@ public class AspectModelSqlGenerator extends AspectGenerator<String, String, Sql
             final DatabricksSqlGenerationConfig generationConfig =
                   config.dialectSpecificConfig() instanceof final DatabricksSqlGenerationConfig databricksConfig
                         ? databricksConfig
-                        : new DatabricksSqlGenerationConfig();
+                        : DatabricksSqlGenerationConfigBuilder.builder().build();
             final DatabricksSqlDialect dialect = new DatabricksSqlDialect( generationConfig );
             yield generator( dialect, config.mappingStrategy(), generationConfig ).apply( aspect() );
          }
@@ -58,7 +61,7 @@ public class AspectModelSqlGenerator extends AspectGenerator<String, String, Sql
             final PostgreSqlGenerationConfig generationConfig =
                   config.dialectSpecificConfig() instanceof final PostgreSqlGenerationConfig postgresSpecificConfig
                         ? postgresSpecificConfig
-                        : new PostgreSqlGenerationConfig();
+                        : PostgreSqlGenerationConfigBuilder.builder().build();
             final PostgreSqlDialect dialect = new PostgreSqlDialect( generationConfig );
             yield generator( dialect, config.mappingStrategy(), generationConfig ).apply( aspect() );
          }

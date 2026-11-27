@@ -22,6 +22,7 @@ import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlDialec
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.generator.sql.postgresql.PostgreSqlGenerationConfig;
+import org.eclipse.esmf.aspectmodel.generator.sql.postgresql.PostgreSqlGenerationConfigBuilder;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
@@ -119,7 +120,7 @@ public class AspectModelSqlGeneratorTest {
          final SqlArtifact sqlArtifact = new AspectModelSqlGenerator( aspect, SqlGenerationConfigBuilder.builder()
                .mappingStrategy( SqlGenerationConfig.MappingStrategy.DENORMALIZED )
                .dialect( SqlGenerationConfig.Dialect.POSTGRESQL )
-               .dialectSpecificConfig( new PostgreSqlGenerationConfig() )
+               .dialectSpecificConfig( PostgreSqlGenerationConfigBuilder.builder().build() )
                .build() ).singleResult();
          final String result = sqlArtifact.getContent();
 
@@ -141,7 +142,7 @@ public class AspectModelSqlGeneratorTest {
       final SqlArtifact artifact = new AspectModelSqlGenerator( aspect, SqlGenerationConfigBuilder.builder()
             .mappingStrategy( SqlGenerationConfig.MappingStrategy.NORMALIZED )
             .dialect( SqlGenerationConfig.Dialect.POSTGRESQL )
-            .dialectSpecificConfig( new PostgreSqlGenerationConfig() )
+            .dialectSpecificConfig( PostgreSqlGenerationConfigBuilder.builder().build() )
             .build() ).singleResult();
 
       assertThat( artifact.language() ).isEqualTo( Locale.ENGLISH );

@@ -30,17 +30,25 @@ import io.soabase.recordbuilder.core.RecordBuilder;
  * @param commentLanguage the language to use for comments
  * @param decimalPrecision the precision to use for numeric columns
  * @param decimalScale the scale to use for decimal columns
- * @param customColumns custom columns to add to the table
- * @param tableConstraints SQL table constraints to add to the table
+ * @param flattenScalarCollections whether to flatten scalar collections into a single column
+ * @param customColumns custom columns to add to the table (for
+ *        {@link SqlGenerationConfig.MappingStrategy#DENORMALIZED})
+ * @param customColumnsPerTable custom columns to add to each table, indexed by table name (for
+ *        {@link SqlGenerationConfig.MappingStrategy#NORMALIZED})
+ * @param tableConstraints SQL table constraints to add to the table (for
+ *        {@link SqlGenerationConfig.MappingStrategy#DENORMALIZED})
+ * @param tableConstraintsPerTable SQL table constraints to add to each table, indexed by table name
+ *        (for {@link SqlGenerationConfig.MappingStrategy#NORMALIZED})
  */
 @RecordBuilder
 public record PostgreSqlGenerationConfig(
       String createTableCommandPrefix,
-      boolean includeTableComment,
-      boolean includeColumnComments,
+      Boolean includeTableComment,
+      Boolean includeColumnComments,
       Locale commentLanguage,
       int decimalPrecision,
       int decimalScale,
+      Boolean flattenScalarCollections,
       List<PostgreSqlColumnDefinition> customColumns,
       Map<String, List<PostgreSqlColumnDefinition>> customColumnsPerTable,
       List<PostgreSqlConstraint> tableConstraints,
@@ -52,16 +60,18 @@ public record PostgreSqlGenerationConfig(
    public static final int DECIMAL_DEFAULT_SCALE = 0;
    public static final boolean DEFAULT_INCLUDE_TABLE_COMMENT = true;
    public static final boolean DEFAULT_INCLUDE_COLUMN_COMMENTS = true;
+   public static final boolean DEFAULT_FLATTEN_SCALAR_COLLECTIONS = false;
    public static final Locale DEFAULT_COMMENT_LANGUAGE = Locale.ENGLISH;
-
-   public PostgreSqlGenerationConfig() {
-      this( DEFAULT_TABLE_COMMAND_PREFIX, DEFAULT_INCLUDE_TABLE_COMMENT, DEFAULT_INCLUDE_COLUMN_COMMENTS, DEFAULT_COMMENT_LANGUAGE,
-            DECIMAL_DEFAULT_PRECISION, DECIMAL_DEFAULT_SCALE, List.of(), Map.of(), List.of(), Map.of() );
-   }
 
    public PostgreSqlGenerationConfig {
       if ( createTableCommandPrefix == null ) {
          createTableCommandPrefix = DEFAULT_TABLE_COMMAND_PREFIX;
+      }
+      if ( includeTableComment == null ) {
+         includeTableComment = DEFAULT_INCLUDE_TABLE_COMMENT;
+      }
+      if ( includeColumnComments == null ) {
+         includeColumnComments = DEFAULT_INCLUDE_COLUMN_COMMENTS;
       }
       if ( decimalPrecision <= 0 ) {
          decimalPrecision = DECIMAL_DEFAULT_PRECISION;
@@ -78,11 +88,20 @@ public record PostgreSqlGenerationConfig(
       if ( commentLanguage == null ) {
          commentLanguage = DEFAULT_COMMENT_LANGUAGE;
       }
+      if ( flattenScalarCollections == null ) {
+         flattenScalarCollections = DEFAULT_FLATTEN_SCALAR_COLLECTIONS;
+      }
       if ( tableConstraints == null ) {
          tableConstraints = List.of();
       }
+      if ( tableConstraintsPerTable == null ) {
+         tableConstraintsPerTable = Map.of();
+      }
       if ( customColumns == null ) {
          customColumns = List.of();
+      }
+      if ( customColumnsPerTable == null ) {
+         customColumnsPerTable = Map.of();
       }
    }
 }

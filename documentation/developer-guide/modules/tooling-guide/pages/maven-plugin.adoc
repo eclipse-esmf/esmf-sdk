@@ -616,18 +616,21 @@ Configuration Properties:
 | `githubServerId` | The id of the `<server>` entry describing the GitHub repository to resolve models from. | `String` | none | {nok}
 | `outputDirectory` | The path to the directory where the generated SQL script will be written to. | `String` | none | {ok}
 | `dialect` | The SQL dialect to generate for: `databricks` or `postgresql`. | `String` | `databricks` | {nok}
-| `strategy` | The mapping strategy to use. | `String` | `denormalized` | {nok}
+| `strategy` | The mapping strategy to use: `denormalized` or `normalized`. | `String` | `denormalized` | {nok}
 | `language` | The language from the model to use for generated comments. | `String` | en | {nok}
 | `includeTableComment` | Include table comment in the generated SQL script. | `Boolean` | `true` | {nok}
 | `includeColumnComments` | Include column comments in the generated SQL script. | `Boolean` | `true` | {nok}
 | `tableCommandPrefix` | The prefix to use for table creation commands. | `String` | `CREATE TABLE IF NOT EXISTS` | {nok}
 | `decimalPrecision` | The precision to use for decimal columns. Databricks supports up to 38 and PostgreSQL up to 1000. | `Integer` | 10 | {nok}
 | `decimalScale` | The scale to use for decimal columns, between 0 and the precision. | `Integer` | 0 | {nok}
-| `customColumns` | Contains `<column>` elements, each of which defines a custom column to add. Column defintions follow the pattern `column_name DATATYPE [NOT NULL] [COMMENT 'custom']`. | `<column>`... | | {nok}
-| `tableConstraints` | Contains `<constraint>` elements inserted verbatim, in order, into the `CREATE TABLE` definition. The generator does not validate SQL syntax or referenced columns; use constraints supported by the selected dialect. | `<constraint>`... | none | {nok}
+| `flattenScalarCollections` | Properties with scalar collections are turned to a single column with array type instead of separate table. This is used in conjunction with the _normalized_ mapping strategy. | `Boolean` | `false` | {nok}
+| `customColumns` | Contains `<column>` elements, each of which defines a custom column to add. Column defintions follow the pattern `column_name DATATYPE [NOT NULL] [COMMENT 'custom']`. This is used in conjunction with the _denormalized_ mapping strategy. | `<column>`... | | {nok}
+| `customColumnsForTable` | Contains elements for each of the tables, with the custom columns, separated by `;`. For example: `<aspect_with_entity>custom_column1 ARRAY&lt;STRING&gt; NOT NULL COMMENT 'Custom column';custom_column2 INT</aspect_with_entity>`. This is used in conjunction with the _normalized_ mapping strategy. | `<table_name>`... | | {nok}
+| `tableConstraints` | Contains `<constraint>` elements inserted verbatim, in order, into the `CREATE TABLE` definition. The generator does not validate SQL syntax or referenced columns; use constraints supported by the selected dialect. This is used in conjunction with the _denormalized_ mapping strategy. | `<constraint>`... | none | {nok}
+| `constraintsForTable` | Contains elements for each of the tables, with the custom constraints, separated by `;`. For example: `<aspect_with_entity>PRIMARY KEY (string_property);CHECK (some_other_property &lt;&gt; 'invalid')</aspect_with_entity>`. This is used in conjunction with the _normalized_ mapping strategy. | `<table_name>`... | | {nok}
 |===
 
-For example, configure table constraints as follows, using the generated SQL column names:
+For example, configure table constraints for the _denormalized_ mapping strategy as follows, using the generated SQL column names:
 
 [source,xml]
 ----
@@ -636,6 +639,16 @@ For example, configure table constraints as follows, using the generated SQL col
   <constraint>UNIQUE (serial_number)</constraint>
   <constraint>CHECK (amount &gt; 0)</constraint>
 </tableConstraints>
+----
+
+For the _normalized_ mapping strategy, constraints are added like this:
+
+[source,xml]
+----
+<constraintsForTable>
+  <aspect_with_entity>PRIMARY KEY (string_property)</aspect_with_entity>
+  <test_entity>CHECK (entity_property &lt;&gt; 'invalid')</test_entity>
+</constraintsForTable>
 ----
 
 == Generate Documentation for an Aspect Model

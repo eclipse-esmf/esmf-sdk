@@ -206,6 +206,17 @@ public class NormalizedSqlGenerator<
          return Stream.empty();
       }
 
+      if ( config.flattenScalarCollections() ) {
+         final D arrayType = sqlDialect.sqlArrayType( sqlDialect.sqlType( type.getUrn() ) );
+         final Property property = context.currentProperty();
+         final Optional<String> comment = config.includeColumnComments()
+               ? Optional.ofNullable( Optional.ofNullable( context.forceDescriptionFromElement() ).orElse( property )
+                     .getDescription( config.commentLanguage() ) )
+               : Optional.empty();
+         return Stream.of(
+               sqlDialect.columnDefinition( context.columnName(), arrayType, property.isOptional() || context.forceOptional(), comment ) );
+      }
+
       // Build values table
       final String tableName = tableName( context.currentStructureElement() ) + LEVEL_DELIMITER + context.columnName();
       final List<C> columns = List.of(
