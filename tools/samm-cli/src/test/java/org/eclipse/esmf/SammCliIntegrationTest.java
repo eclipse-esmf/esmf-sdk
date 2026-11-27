@@ -39,14 +39,15 @@ public class SammCliIntegrationTest extends SammCliAbstractTest {
       if ( jarFile == null || !new File( jarFile ).exists() ) {
          throw new ProcessExecutionException( "Executable jar " + jarFile + " not found" );
       }
-      return new ExecutableJarLauncher( new File( jarFile ), List.of( "-Djava.awt.headless=true" ), true );
+      return new ExecutableJarLauncher( new File( jarFile ),
+            List.of( "-Djava.awt.headless=true", "-Dfile.encoding=UTF-8", "-Dstdout.encoding=UTF-8", "-Dstderr.encoding=UTF-8" ), true );
    }
 
    @Test
    void testAspectValidateValidModel() {
       final ProcessLauncher.ExecutionResult result =
             sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "validate" );
-      assertThat( result.stdout() ).contains( "Input model is valid" );
+      assertThat( result.stdout() ).isEqualTo( "Validating " + defaultInputFile + " - ✔" + System.lineSeparator() );
       assertThat( result.stderr() ).isEmpty();
    }
 

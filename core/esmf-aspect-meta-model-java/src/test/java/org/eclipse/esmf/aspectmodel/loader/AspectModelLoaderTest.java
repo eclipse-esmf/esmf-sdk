@@ -33,11 +33,16 @@ import org.assertj.core.api.Assertions;
 
 import org.eclipse.esmf.aspectmodel.AspectLoadingException;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.Location;
 import org.eclipse.esmf.aspectmodel.ValueParsingException;
+import org.eclipse.esmf.aspectmodel.resolver.FromLoadedFileStrategy;
+import org.eclipse.esmf.aspectmodel.resolver.ModelResolutionViolation;
+import org.eclipse.esmf.aspectmodel.resolver.UnresolvedReferenceViolation;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFileBuilder;
 import org.eclipse.esmf.aspectmodel.resolver.parser.SmartToken;
 import org.eclipse.esmf.aspectmodel.resolver.parser.TokenRegistry;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.ComplexType;
@@ -53,6 +58,7 @@ import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class AspectModelLoaderTest {
    @ParameterizedTest
@@ -183,5 +189,81 @@ class AspectModelLoaderTest {
 
       assertThat( wrappedAspectNode ).isSameAs( aspectNode );
       assertThat( TokenRegistry.getToken( wrappedAspectNode ) ).containsSame( token );
+   }
+
+   @Test
+   void testInvalidReferencesAreNamedAndLocated() {
+      assertThatThrownBy( () -> TestResources.load( InvalidTestAspect.INVALID_REFERENCES ) )
+            .isInstanceOfSatisfying( ModelResolutionException.class, exception -> {
+               assertThat( exception.getCheckedLocations() ).isNotEmpty();
+               assertThat( exception.getViolations() ).hasSize( 2 ).allSatisfy(
+                     violation -> assertThat( violation ).isInstanceOfSatisfying( UnresolvedReferenceViolation.class, reference -> {
+                        assertThat( reference.message() ).isEqualTo( "Reference 'notExistingProperty' could not be resolved." );
+                        assertThat( reference.code().code() ).isEqualTo( ModelResolutionViolation.ERROR_CODE );
+                        assertThat( reference.sourceDocument().toString() ).endsWith( "/InvalidReferences.ttl" );
+                        assertThat( reference.checkedLocations() ).isSubsetOf( exception.getCheckedLocations() );
+                        final String line = reference.documentContent().get().lines().toList().get( reference.location().fromLine() );
+                        assertThat( line.substring( reference.location().fromColumn(), reference.location().toColumn() ) )
+                              .isEqualTo( ":notExistingProperty" );
+                     } ) );
+               assertThat( exception.getViolations() )
+                     .extracting( violation -> ( (UnresolvedReferenceViolation) violation ).location() )
+                     .containsExactlyInAnyOrder( new Location( 17, 21, 17, 41 ), new Location( 22, 21, 22, 41 ) );
+            } );
+   }
+
+   @ParameterizedTest
+   @ValueSource( strings = { "1.0.0", "2.0.0", "2.1.0", "2.2.0" } )
+   void testMigratedReferencesUseOriginalSource( final String version ) {
+      final String source = """
+         @prefix : <urn:samm:org.example:1.0.0#> .
+         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> .
+
+         :Test a samm:Aspect ;
+             samm:description "Description."@en ;
+             samm:preferredName "Name"@en ;
+             samm:properties ( :missingProperty ) ;
+             samm:events () .
+         """.formatted( version );
+      final URI uri = URI.create( "file:///Test.ttl" );
+      assertThatThrownBy( () -> new AspectModelLoader().load( source, uri ) )
+            .isInstanceOfSatisfying( ModelResolutionException.class, exception -> assertThat( exception.getViolations() ).singleElement()
+                  .isInstanceOfSatisfying( UnresolvedReferenceViolation.class, reference -> {
+                     assertThat( reference.documentContent().get() ).isEqualTo( source );
+                     assertThat( reference.location() ).isEqualTo( new Location( 6, 22, 6, 38 ) );
+                     assertThat( reference.documentContent().get().lines().toList().get( reference.location().fromLine() )
+                           .substring( reference.location().fromColumn(), reference.location().toColumn() ) )
+                                 .isEqualTo( ":missingProperty" );
+                  } ) );
+
+      final String validSource = source.replace( ":missingProperty", "" );
+      final AspectModel model = new AspectModelLoader().load( validSource, uri );
+      final Node aspect = model.files().getFirst().sourceModel().getGraph().stream( null, RDF.type.asNode(), null )
+            .map( Triple::getSubject ).filter( Node::isURI ).findFirst().orElseThrow();
+      assertThat( TokenRegistry.getToken( aspect ).orElseThrow().getOriginatingFile().sourceRepresentation() ).isEqualTo( validSource );
+   }
+
+   @Test
+   void testResolutionFailureWithoutSourceLocation() {
+      final AspectModelFile input = TestResources.load( TestAspect.ASPECT ).files().getFirst();
+      final AspectModelUrn missing = InvalidTestAspect.INVALID_REFERENCES.getUrn();
+      assertThatThrownBy( () -> new AspectModelLoader( new FromLoadedFileStrategy( input ) ).load( missing ) )
+            .isInstanceOfSatisfying( ModelResolutionException.class, exception -> {
+               assertThat( exception.getCheckedLocations() ).hasSize( 1 );
+               assertThat( exception.getViolations() ).containsExactlyElementsOf( exception.getCheckedLocations() );
+            } );
+   }
+
+   @Test
+   void testResolutionAttemptsAreDeduplicatedInEncounterOrder() {
+      final ModelResolutionViolation attempt = new ModelResolutionViolation(
+            Optional.empty(), URI.create( "file:///missing.ttl" ), "File does not exist", Optional.empty() );
+      final ModelResolutionViolation otherAttempt = new ModelResolutionViolation(
+            Optional.empty(), attempt.location(), "Could not read file", Optional.empty() );
+      final ModelResolutionException exception = new ModelResolutionException( List.of( attempt, otherAttempt, attempt ) );
+
+      assertThat( exception.getViolations() ).containsExactly( attempt, otherAttempt, attempt );
+      assertThat( exception.getCheckedLocations() ).containsExactly( attempt, otherAttempt );
+      assertThat( exception.getMessage() ).isEqualTo( "File does not exist; Could not read file" );
    }
 }

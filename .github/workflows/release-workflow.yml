@@ -26,7 +26,7 @@ jobs:
         uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad #v6.1.0
         with:
           distribution: 'temurin'
-          java-version: '25.0.1'
+          java-version: '25.0.5'
           overwrite-settings: false
 
       - name: Setup Git
@@ -67,7 +67,7 @@ jobs:
         uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad #v6.1.0
         with:
           distribution: 'temurin'
-          java-version: '25.0.1'
+          java-version: '25.0.5'
           server-id: central
           # The following variables are defined in https://github.com/eclipse-esmf/.eclipsefdn/blob/main/otterdog/eclipse-esmf.jsonnet
           gpg-private-key: ${{ secrets.PGP_KEY }}
@@ -90,7 +90,7 @@ jobs:
         run: |
           set -x
           export MAVEN_OPTS="-Xmx4096m"
-          export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
+          export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8"
 
           # Required for reactor dependencies
           mvn clean install -DskipTests -Dmaven.javadoc.skip=true -Dskip.maven.failsafe
@@ -117,9 +117,9 @@ jobs:
           # Build native executable with warp-packer
           bundle="samm-cli-${RELEASE_VERSION}"
           mkdir -p ${bundle}/runtime
-          curl -Lo jre.tar.gz https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.1%2B8/OpenJDK25U-jre_x64_linux_hotspot_25.0.1_8.tar.gz
+          curl -Lo jre.tar.gz https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.5.1%2B2/OpenJDK25U-jre_x64_linux_hotspot_25.0.5.1_2.tar.gz
           tar -xvf jre.tar.gz
-          mv ./jdk-25.0.1+8-jre ./${bundle}/runtime/jre
+          mv ./jdk-25.0.5.1+2-jre ./${bundle}/runtime/jre
           # The jar must not sit in or next to a directory that ClassGraph probes for
           # JRE/ext jars (java.home and its parent), hence the jre lives under runtime/
           cp tools/samm-cli/target/samm-cli-${RELEASE_VERSION}.jar ./${bundle}/
@@ -168,7 +168,7 @@ jobs:
       - name: Setup JDK
         uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad #v6.1.0
         with:
-          java-version: '25.0.1'
+          java-version: '25.0.5'
           distribution: 'temurin'
 
       - name: Cache Maven packages
@@ -182,7 +182,7 @@ jobs:
         run: |
           set -x
           export MAVEN_OPTS="-Xmx4096m"
-          export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
+          export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8"
           # Required for reactor dependencies
           mvn clean install -DskipTests -Dmaven.javadoc.skip=true -Dskip.maven.failsafe
           mvn versions:set -DnewVersion=${RELEASE_VERSION}
@@ -196,9 +196,9 @@ jobs:
           # Build native binary
           bundle="samm-cli-${RELEASE_VERSION}"
           mkdir -p ${bundle}/runtime
-          curl -Lo jre.tar.gz https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.1%2B8/OpenJDK25U-jre_x64_mac_hotspot_25.0.1_8.tar.gz
+          curl -Lo jre.tar.gz https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.5.1%2B2/OpenJDK25U-jre_x64_mac_hotspot_25.0.5.1_2.tar.gz
           tar -xvf jre.tar.gz
-          mv ./jdk-25.0.1+8-jre ./${bundle}/runtime/jre
+          mv ./jdk-25.0.5.1+2-jre ./${bundle}/runtime/jre
           # The jar must not sit in or next to a directory that ClassGraph probes for
           # JRE/ext jars (java.home and its parent), hence the jre lives under runtime/
           cp tools/samm-cli/target/samm-cli-${RELEASE_VERSION}.jar ./${bundle}/
@@ -251,7 +251,7 @@ jobs:
       - name: Setup JDK
         uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad #v6.1.0
         with:
-          java-version: '25.0.1'
+          java-version: '25.0.5'
           distribution: 'temurin'
 
       - name: Setup Python
@@ -272,7 +272,7 @@ jobs:
         run: |
           set -x
           export MAVEN_OPTS="-Xmx4096m"
-          export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
+          export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8"
 
           mvn clean install -DskipTests -Dmaven.javadoc.skip=true -Dskip.maven.failsafe
           mvn versions:set -DnewVersion=${RELEASE_VERSION}
@@ -287,9 +287,9 @@ jobs:
           # Build native executable
           bundle="samm-cli-${RELEASE_VERSION}"
           mkdir -p ${bundle}/runtime
-          curl -Lo jre.zip https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.1%2B8/OpenJDK25U-jre_x64_windows_hotspot_25.0.1_8.zip
+          curl -Lo jre.zip https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.5.1%2B2/OpenJDK25U-jre_x64_windows_hotspot_25.0.5.1_2.zip
           7z x jre.zip
-          mv ./jdk-25.0.1+8-jre ./${bundle}/runtime/jre
+          mv ./jdk-25.0.5.1+2-jre ./${bundle}/runtime/jre
           # The jar must not sit in or next to a directory that ClassGraph probes for
           # JRE/ext jars (java.home and its parent), hence the jre lives under runtime/
           cp tools/samm-cli/target/samm-cli-${RELEASE_VERSION}.jar ./${bundle}/
@@ -334,7 +334,7 @@ jobs:
         uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad #v6.1.0
         with:
           distribution: 'temurin'
-          java-version: '25.0.1'
+          java-version: '25.0.5'
           server-id: central
           # The following variables are defined in https://github.com/eclipse-esmf/.eclipsefdn/blob/main/otterdog/eclipse-esmf.jsonnet
           server-username: CENTRAL_SONATYPE_TOKEN_USERNAME
@@ -344,7 +344,7 @@ jobs:
       - name: Setup JDK
         uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad #v6.1.0
         with:
-          java-version: '25.0.1'
+          java-version: '25.0.5'
           distribution: 'temurin'
 
       - name: Fetch Linux Artifacts
