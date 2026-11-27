@@ -20,7 +20,7 @@ public record DatabricksCommentDefinition(
 ) {
    @Override
    public @NonNull String toString() {
-      return "COMMENT '" + comment
+      return "'" + comment
             .replace( "\r\n", "\n" )
             .replace( "'", "\\'" )
             .replace( "\n", "\\n" )

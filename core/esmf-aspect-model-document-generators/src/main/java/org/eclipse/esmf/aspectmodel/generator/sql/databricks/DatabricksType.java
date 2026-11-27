@@ -90,7 +90,7 @@ public sealed interface DatabricksType extends SqlType {
       @Override
       public @NonNull String toString() {
          return name + ": " + type + ( nullable ? "" : " NOT NULL" )
-               + comment.map( theComment -> " " + new DatabricksCommentDefinition( theComment ) ).orElse( "" );
+               + comment.map( theComment -> " COMMENT " + new DatabricksCommentDefinition( theComment ) ).orElse( "" );
       }
    }
 

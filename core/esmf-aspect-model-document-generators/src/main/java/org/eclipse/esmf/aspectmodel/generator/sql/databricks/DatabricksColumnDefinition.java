@@ -42,7 +42,7 @@ public record DatabricksColumnDefinition(
       if ( !nullable ) {
          builder.append( " NOT NULL" );
       }
-      comment.ifPresent( theComment -> builder.append( " " ).append( new DatabricksCommentDefinition( theComment ) ) );
+      comment.ifPresent( theComment -> builder.append( " COMMENT " ).append( new DatabricksCommentDefinition( theComment ) ) );
       return builder.toString();
    }
 }

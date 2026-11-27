@@ -134,10 +134,12 @@ public class PostgreSqlDialect extends SqlDialectBase<PostgreSqlGenerationConfig
       renderTableDefinitionBaseStructure( builder, tableDefinition, config );
       builder.append( ";\n" );
       tableDefinition.comment()
-            .ifPresent( comment -> builder.append( "COMMENT ON TABLE %s IS '%s';\n".formatted( tableDefinition.name(), comment ) ) );
-      tableDefinition.columns().forEach( column -> column.comment().ifPresent(
-            comment -> builder
-                  .append( "COMMENT ON COLUMN %s.%s IS '%s';\n".formatted( tableDefinition.name(), column.name(), comment ) ) ) );
+            .map( PostgreSqlCommentDefinition::new )
+            .ifPresent( comment -> builder.append( "COMMENT ON TABLE %s IS %s;\n".formatted( tableDefinition.name(), comment ) ) );
+      tableDefinition.columns().forEach( column -> column.comment()
+            .map( PostgreSqlCommentDefinition::new )
+            .ifPresent( comment -> builder
+                  .append( "COMMENT ON COLUMN %s.%s IS %s;\n".formatted( tableDefinition.name(), column.name(), comment ) ) ) );
       if ( !tableDefinition.tableProperties().isEmpty() ) {
          builder.append( tableDefinition.tableProperties().entrySet().stream().sorted()
                .map( tablePropertyEntry -> "-- %s: %s".formatted( tablePropertyEntry.getKey(),

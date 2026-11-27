@@ -10,15 +10,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.apache.jena.vocabulary.XSD;
 
 import org.eclipse.esmf.aspectmodel.generator.DocumentGenerationException;
+import org.eclipse.esmf.test.TestAspect;
 
 import org.junit.jupiter.api.Test;
 
-class DatabricksSqlDialectTest {
+class DatabricksSqlDialectTest extends DatabricksTestBase {
    @Test
    void testDialectFactoriesAndTypeMappings() {
       final DatabricksSqlGenerationConfig config = DatabricksSqlGenerationConfigBuilder.builder()
@@ -51,7 +53,7 @@ class DatabricksSqlDialectTest {
             List.of( new DatabricksColumnDefinition( "value", DatabricksType.STRING, false, Optional.of( "A value" ) ) ),
             Optional.of( "Example table" ),
             List.of( new DatabricksConstraint.Unique( "value" ) ),
-            java.util.Map.of( "urn", dialect.sqlStringValue( "urn:test" ) ) );
+            Map.of( "urn", dialect.sqlStringValue( "urn:test" ) ) );
 
       assertThat( dialect.renderTableDefinition( table, config ) ).isEqualTo(
             """
@@ -62,5 +64,12 @@ class DatabricksSqlDialectTest {
                COMMENT 'Example table'
                TBLPROPERTIES ('urn'='urn:test');
                """ );
+   }
+
+   @Test
+   void testRenderCommentsWithLinebreaksAndSingleQuotes() {
+      assertThat( sql( TestAspect.ASPECT_WITH_MARKDOWN_DESCRIPTION ) )
+            .contains( "COMMENT '\\n      This is a sample" )
+            .contains( "Here\\'s a second line" );
    }
 }

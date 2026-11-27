@@ -135,7 +135,9 @@ public class DatabricksSqlDialect
       final StringBuilder builder = new StringBuilder();
       renderTableDefinitionBaseStructure( builder, tableDefinition, config );
       builder.append( "\n" );
-      tableDefinition.comment().ifPresent( theComment -> builder.append( new DatabricksCommentDefinition( theComment ) ).append( "\n" ) );
+      tableDefinition.comment()
+            .map( DatabricksCommentDefinition::new )
+            .ifPresent( theComment -> builder.append( "COMMENT " ).append( theComment ).append( "\n" ) );
       if ( !tableDefinition.tableProperties().isEmpty() ) {
          builder.append( tableDefinition.tableProperties().entrySet().stream().sorted()
                .map( tablePropertyEntry -> "'%s'=%s".formatted( tablePropertyEntry.getKey(), tablePropertyEntry.getValue() ) )

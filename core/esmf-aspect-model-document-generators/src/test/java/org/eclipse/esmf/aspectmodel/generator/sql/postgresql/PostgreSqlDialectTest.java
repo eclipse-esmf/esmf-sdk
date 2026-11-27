@@ -15,10 +15,11 @@ import java.util.Optional;
 import org.apache.jena.vocabulary.XSD;
 
 import org.eclipse.esmf.aspectmodel.generator.DocumentGenerationException;
+import org.eclipse.esmf.test.TestAspect;
 
 import org.junit.jupiter.api.Test;
 
-class PostgreSqlDialectTest {
+class PostgreSqlDialectTest extends PostgreSqlTestBase {
    @Test
    void testDialectFactoriesAndTypeMappings() {
       final PostgreSqlGenerationConfig config = PostgreSqlGenerationConfigBuilder.builder()
@@ -62,5 +63,12 @@ class PostgreSqlDialectTest {
                COMMENT ON TABLE example IS 'Example table';
                COMMENT ON COLUMN example.value IS 'A value';
                """ );
+   }
+
+   @Test
+   void testRenderCommentsWithLinebreaksAndSingleQuotes() {
+      assertThat( sql( TestAspect.ASPECT_WITH_MARKDOWN_DESCRIPTION ) )
+            .contains( "COMMENT ON COLUMN aspect_with_markdown_description.my_property IS E'\\n      This is a sample" )
+            .contains( "Here\\'s a second line" );
    }
 }
