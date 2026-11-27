@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -71,7 +72,8 @@ class SammCliTest extends SammCliAbstractTest {
 
    @Override
    protected ProcessLauncher<?> getCli() {
-      return new MainClassProcessLauncher( SammCli.class, List.of(),
+      return new MainClassProcessLauncher( SammCli.class,
+            List.of( "-Dfile.encoding=UTF-8", "-Dstdout.encoding=UTF-8", "-Dstderr.encoding=UTF-8" ),
             argument -> !"-XX:ThreadPriorityPolicy=1".equals( argument ) && !argument.startsWith( "-agentlib:jdwp" ), true
       );
    }
@@ -109,7 +111,7 @@ class SammCliTest extends SammCliAbstractTest {
    @Test
    void testNonExistingFile() {
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile + 'x', "validate" );
-      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stdout() ).isEqualTo( "Validating " + defaultInputFile + "x - " );
       assertThat( result.stderr() ).contains( "File not found" );
       assertThat( result.stderr() ).doesNotContain( "CommandException" );
    }
@@ -117,7 +119,7 @@ class SammCliTest extends SammCliAbstractTest {
    @Test
    void testNonExistingFileWithDebugLogLevel() {
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile + 'x', "validate", "-vvv" );
-      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stdout() ).isEqualTo( "Validating " + defaultInputFile + "x - " );
       assertThat( result.stderr() ).contains( "File not found" );
       assertThat( result.stderr() ).contains( "CommandException" );
    }
@@ -212,22 +214,114 @@ class SammCliTest extends SammCliAbstractTest {
    @Test
    void testAspectValidateValidModel() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "validate" );
-      assertThat( result.stdout() ).contains( "Input model is valid" );
+      assertThat( result.stdout() ).isEqualTo( "Validating " + defaultInputFile + " - ✔" + System.lineSeparator() );
       assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectValidateMultipleFiles() {
+      final String secondInput = inputFile( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).getAbsolutePath();
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect",
+            defaultInputFile, secondInput, defaultInputFile, "validate" );
+      assertThat( result.stdout().lines().toList() ).containsExactly(
+            "Validating " + defaultInputFile + " - ✔", "Validating " + secondInput + " - ✔",
+            "Validating " + defaultInputFile + " - ✔" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+
+   @Test
+   void testAspectValidateMultipleFilesWithOverlappingModelsRoot( @TempDir final Path tmp ) throws IOException {
+      final Path versionDir = Files.createDirectories( tmp.resolve( "org.eclipse.esmf.test/1.0.0" ) );
+      final Path first = Files.copy( Path.of( defaultInputFile ), versionDir.resolve( "First.ttl" ) );
+      final Path second = Files.copy( inputFile( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES ).toPath(), versionDir.resolve( "Second.ttl" ) );
+      Files.copy( inputFile( InvalidTestAspect.INVALID_SYNTAX ).toPath(), versionDir.resolve( "Unselected.ttl" ) );
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect",
+            first.toString(), second.toString(), "validate", "--models-root", tmp.toString() );
+      assertThat( result.stdout().lines().toList() ).containsExactly(
+            "Validating " + first + " - ✔", "Validating " + second + " - ✔" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectValidateMultipleFilesWithDuplicateDefinitions( @TempDir final Path tmp ) throws IOException {
+      final Path first = Files.copy( Path.of( defaultInputFile ), tmp.resolve( "First.ttl" ) );
+      final Path second = Files.copy( Path.of( defaultInputFile ), tmp.resolve( "Second.ttl" ) );
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect",
+            first.toString(), second.toString(), "validate" );
+      assertThat( result.stdout() ).doesNotContain( "Duplicate definition" );
+      assertThat( result.stdout().lines().toList() ).containsExactly(
+            "Validating " + first + " - ✔", "Validating " + second + " - ✔" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectValidateMultipleFilesWithMissingFile() {
+      final ExecutionResult result = sammCli.apply( "--disable-color", "aspect",
+            defaultInputFile + 'x', defaultInputFile, "validate" );
+      assertThat( result.exitStatus() ).isEqualTo( 1 );
+      assertThat( result.stdout() ).isEqualTo( "Validating " + defaultInputFile + "x - " );
+      assertThat( result.stderr() ).contains( "File not found" );
+   }
+
+   @Test
+   void testAspectValidateMultipleInputsWithUrn() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect",
+            defaultInputFile, defaultInputUrn, "validate", "--models-root", defaultModelsRoot );
+      assertThat( result.stdout().lines().toList() ).containsExactly(
+            "Validating " + defaultInputFile + " - ✔", "Validating " + defaultInputUrn + " - ✔" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @ParameterizedTest
+   @ValueSource( strings = { "validate", "to svg", "prettyprint", "usage" } )
+   void testAspectRejectsDirectoryInput( final String command, @TempDir final Path tmp ) {
+      final List<String> arguments = new ArrayList<>( List.of( "--disable-color", "aspect", tmp.toString() ) );
+      arguments.addAll( List.of( command.split( " " ) ) );
+      final ExecutionResult result = sammCli.apply( arguments.toArray( String[]::new ) );
+      assertThat( result.exitStatus() ).isEqualTo( 1 );
+      assertThat( result.stderr() ).contains( "Directory input is not supported" );
+   }
+
+   @ParameterizedTest
+   @ValueSource( strings = { "to svg", "prettyprint", "usage" } )
+   void testAspectRejectsMultipleInputsForOtherCommands( final String command ) {
+      final List<String> arguments = new ArrayList<>( List.of( "--disable-color", "aspect", defaultInputFile, defaultInputFile ) );
+      arguments.addAll( List.of( command.split( " " ) ) );
+      final ExecutionResult result = sammCli.apply( arguments.toArray( String[]::new ) );
+      assertThat( result.exitStatus() ).isEqualTo( 1 );
+      assertThat( result.stderr() ).contains( "Multiple inputs are only supported by 'validate'" );
    }
 
    @Test
    void testAspectFromUrnValidateValidModel() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputUrn, "validate", "--models-root",
             defaultModelsRoot );
-      assertThat( result.stdout() ).contains( "Input model is valid" );
+      assertThat( result.stdout() ).isEqualTo( "Validating " + defaultInputUrn + " - ✔" + System.lineSeparator() );
       assertThat( result.stderr() ).isEmpty();
    }
 
    @Test
    void testAspectValidateFromUrnWithoutModelsRoot() {
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputUrn, "validate" );
-      assertThat( result.stdout() ).contains( "at least one models root directory" );
+      assertThat( result.exitStatus() ).isEqualTo( 1 );
+      assertThat( result.stdout() ).contains( "Validating " + defaultInputUrn + " - ", "at least one models root directory" )
+            .doesNotContain( "✔" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectValidateInvalidUrnInputPreservesReportAndStopsEarly() {
+      final File invalidInput = inputFile( InvalidTestAspect.INVALID_SYNTAX );
+      final String modelsRoot = invalidInput.getParentFile().getParentFile().getParent();
+      final String invalidUrn = InvalidTestAspect.INVALID_SYNTAX.getUrn().toString();
+      final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, invalidUrn,
+            defaultInputFile + 'x', "validate", "--models-root", modelsRoot, "--details" );
+      assertThat( result.exitStatus() ).isEqualTo( 1 );
+      assertThat( result.stdout() )
+            .startsWith( "Validating " + defaultInputFile + " - ✔"
+                  + System.lineSeparator() + "Validating " + invalidUrn + " - " )
+            .contains( InvalidSyntaxViolation.ERROR_CODE ).doesNotContain( defaultInputFile + 'x' );
       assertThat( result.stderr() ).isEmpty();
    }
 
@@ -238,7 +332,7 @@ class SammCliTest extends SammCliAbstractTest {
             "https://github.com/eclipse-esmf/esmf-sdk/blob/main/core/esmf-test-aspect-models/src/main/resources/valid/org.eclipse.esmf"
                   + ".test/1.0.0/AspectWithEntity.ttl",
             "validate" );
-      assertThat( result.stdout() ).contains( "Input model is valid" );
+      assertThat( result.stdout() ).contains( "Validating https://github.com/", " - ✔" );
       assertThat( result.stderr() ).isEmpty();
    }
 
@@ -248,7 +342,7 @@ class SammCliTest extends SammCliAbstractTest {
       final String remoteModelsDirectory = "core/esmf-test-aspect-models/src/main/resources/valid";
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect",
             defaultInputUrn, "validate", "--github", "eclipse-esmf/esmf-sdk", "--github-directory", remoteModelsDirectory );
-      assertThat( result.stdout() ).contains( "Input model is valid" );
+      assertThat( result.stdout() ).isEqualTo( "Validating " + defaultInputUrn + " - ✔" + System.lineSeparator() );
       assertThat( result.stderr() ).isEmpty();
    }
 
@@ -269,7 +363,7 @@ class SammCliTest extends SammCliAbstractTest {
 
       final ExecutionResult result = sammCli.apply( List.of( "--disable-color", "aspect", relativeFileName, "validate" ), Optional.empty(),
             workingDirectory );
-      assertThat( result.stdout() ).contains( "Input model is valid" );
+      assertThat( result.stdout() ).isEqualTo( "Validating " + relativeFileName + " - ✔" + System.lineSeparator() );
       assertThat( result.stderr() ).isEmpty();
    }
 
@@ -286,7 +380,7 @@ class SammCliTest extends SammCliAbstractTest {
    @Test
    void testAspectValidateWithDetails() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "validate", "--details" );
-      assertThat( result.stdout() ).contains( "Input model is valid" );
+      assertThat( result.stdout() ).isEqualTo( "Validating " + defaultInputFile + " - ✔" + System.lineSeparator() );
       assertThat( result.stderr() ).isEmpty();
 
       final File invalidModel = inputFile( InvalidTestAspect.INVALID_SYNTAX );
@@ -302,7 +396,7 @@ class SammCliTest extends SammCliAbstractTest {
    void testAspectValidateWithCustomResolver() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "validate",
             "--custom-resolver", resolverCommand() );
-      assertThat( result.stdout() ).contains( "Input model is valid" );
+      assertThat( result.stdout() ).isEqualTo( "Validating " + defaultInputFile + " - ✔" + System.lineSeparator() );
       assertThat( result.stderr() ).isEmpty();
    }
 

@@ -157,10 +157,4 @@ public abstract class AbstractInputHandler implements InputHandler {
                         + expectedAspectName + "': " + aspectModel.aspects().stream().map( Aspect::getName )
                               .collect( Collectors.joining( ", " ) ) ) );
    }
-
-   @Override
-   public String validateAspectModel() {
-      final ViolationReport violations = validator.validateModel( loadAspectModel() );
-      return violationFormatter.apply( violations );
-   }
 }
